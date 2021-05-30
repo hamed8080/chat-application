@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  ChatApplication
 //
-//  Created by Hamed Hosseini on 5/29/21.
+//  Created by Hamed Hosseini on 5/27/21.
 //
 
 import UIKit

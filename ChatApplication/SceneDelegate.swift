@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  ChatApplication
 //
-//  Created by Hamed Hosseini on 5/29/21.
+//  Created by Hamed Hosseini on 5/27/21.
 //
 
 import UIKit
@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
         // Create the SwiftUI view that provides the window contents.
-        let contentView = ContentView()
+        let contentView = ThreadsContentView()
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
@@ -28,6 +28,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window = window
             window.makeKeyAndVisible()
         }
+        
+        guard let _ = (scene as? UIWindowScene) else { return }
+        ChatDelegateImplementation.sharedInstance.createChatObject()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
