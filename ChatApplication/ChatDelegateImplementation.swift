@@ -8,6 +8,10 @@
 import Foundation
 import FanapPodChatSDK
 
+
+let CONNECTION_STATUS_NAME        = "CONNECTION_STATUS_NAME"
+let CONNECTION_STATUS_NAME_OBJECT = Notification.Name.init(CONNECTION_STATUS_NAME)
+
 class ChatDelegateImplementation: ChatDelegates {
     
     //Sandbox
@@ -18,11 +22,11 @@ class ChatDelegateImplementation: ChatDelegates {
 //    let fileServer     = "http://sandbox.fanapium.com:8080"
     
     //Integration
-    let socketAddresss   =  "ws://172.16.110.235:8003/ws" // {*REQUIRED*} Socket Address
-    let ssoHost          =  "http://172.16.110.76" // {*REQUIRED*} Socket Address
-    let platformHost     =  "http://172.16.110.235:8003/srv/bptest-core"
-    let fileServer       =  "http://172.16.110.76:8080" // {*REQUIRED*} File Server Address
-    let serverName       =  "chatlocal" // {*REQUIRED*} Server to to
+//    let socketAddresss   =  "ws://172.16.110.235:8003/ws" // {*REQUIRED*} Socket Address
+//    let ssoHost          =  "http://172.16.110.76" // {*REQUIRED*} Socket Address
+//    let platformHost     =  "http://172.16.110.235:8003/srv/bptest-core"
+//    let fileServer       =  "http://172.16.110.76:8080" // {*REQUIRED*} File Server Address
+//    let serverName       =  "chatlocal" // {*REQUIRED*} Server to to
     
     //    let socketAddress           = "ws://172.16.110.235:8003/ws"
     //    let ssoHost                 = "http://172.16.110.76"
@@ -31,11 +35,11 @@ class ChatDelegateImplementation: ChatDelegates {
     //    let serverName              = "chatlocal"
 
     //Main0
-//    let socketAddresss = "wss://msg.pod.ir/ws"
-//    let serverName     = "chat-server"
-//    let ssoHost        = "https://accounts.pod.ir"
-//    let platformHost   = "https://api.pod.ir/srv/core"
-//    let fileServer     = "https://core.pod.ir"
+    let socketAddresss = "wss://msg.pod.ir/ws"
+    let serverName     = "chat-server"
+    let ssoHost        = "https://accounts.pod.ir"
+    let platformHost   = "https://api.pod.ir/srv/core"
+    let fileServer     = "https://core.pod.ir"
     
 	private (set) static var sharedInstance = ChatDelegateImplementation()
     
@@ -44,7 +48,7 @@ class ChatDelegateImplementation: ChatDelegates {
 		print("token is: \(token ?? "")")
 		Chat.sharedInstance.createChatObject(config: .init(socketAddress: socketAddresss,
 														   serverName: serverName,
-														   token: "3dd6895c8dc64f93bcd43b58dcc2aab3" ?? "3dd6895c8dc64f93bcd43b58dcc2aab3",
+														   token: "5d40718a5ea042af90f741a56cb61e33" ?? "3dd6895c8dc64f93bcd43b58dcc2aab3",
 														   ssoHost: ssoHost,
 														   platformHost: platformHost,
 														   fileServer: fileServer,
@@ -89,22 +93,22 @@ class ChatDelegateImplementation: ChatDelegates {
 	
 	func chatConnect() {
         print("🟡 chat connected")
-//        NotificationCenter.default.post(name: ViewController.NOTIFICATION_STATUS_NAME ,object: "🟡 chat connected")
+        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "Connecting ...")
 	}
 	
 	func chatDisconnect() {
         print("🔴 chat Disconnect")
-//        NotificationCenter.default.post(name: ViewController.NOTIFICATION_STATUS_NAME ,object: "🔴 chat Disconnect")
+        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "Disconnected")
 	}
 	
 	func chatReconnect() {
 		print("🔄 chat Reconnect")
-//        NotificationCenter.default.post(name: ViewController.NOTIFICATION_STATUS_NAME ,object: "🔄 chat Reconnect")
+        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "Reconnecting ...")
 	}
 	
 	func chatReady(withUserInfo: User) {
         print("🟢 chat ready Called\(withUserInfo)")
-//        NotificationCenter.default.post(name: ViewController.NOTIFICATION_STATUS_NAME ,object: "🟢 chat ready")
+        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "")
 	}
 	
 	func chatState(state: AsyncStateType) {
@@ -112,13 +116,14 @@ class ChatDelegateImplementation: ChatDelegates {
 	}
 	
 	func chatError(errorCode: Int, errorMessage: String, errorResult: Any?) {
-//		if errorCode == 21  || errorCode == 401{
+		if errorCode == 21  || errorCode == 401{
+            NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "Un Authorized!!!")
 //            let st = UIStoryboard(name: "Main", bundle: nil)
 //            let vc = st.instantiateViewController(identifier: "UpdateTokenController")
 //            guard let rootVC = SceneDelegate.getRootViewController() else {return}
 //            rootVC.presentedViewController?.dismiss(animated: true)
 //            rootVC.present(vc, animated: true)
-//		}
+		}
 	}
 	
 	func botEvents(model: BotEventModel) {

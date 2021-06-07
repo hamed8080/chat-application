@@ -16,10 +16,10 @@ struct Avatar :View{
     private (set) var url:String?
     private (set) var userName:String?
     
-    init(url:String?, userName:String?) {
+    init(url:String?, userName:String? , fileMetaData:String?) {
         self.url = url
         self.userName = userName
-        imageLoader = ImageLoader(url: url)
+        imageLoader = ImageLoader(url: url , fileMetaData:fileMetaData)
     }
     
     var body: some View{
@@ -50,7 +50,7 @@ struct Avatar :View{
 struct Acatar_Previews: PreviewProvider {
     
     static var previews: some View {
-        Avatar(url: nil, userName: "Hamed Hosseini")
+        Avatar(url: nil, userName: "Hamed Hosseini" , fileMetaData:nil)
     }
 }
 

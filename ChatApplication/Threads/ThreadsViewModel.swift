@@ -40,4 +40,17 @@ class ThreadsViewModel:ObservableObject{
         }
     }
     
+    func refresh() {
+        clear()
+        getThreads()
+    }
+    
+    func clear(){
+        model.clear()
+    }
+    
+    func setupPreview(){
+        model.setupPreview()
+    }
+    
 }

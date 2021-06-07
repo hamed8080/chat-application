@@ -8,6 +8,8 @@
 import Foundation
 import Combine
 import UIKit
+import FanapPodChatSDK
+
 class ImageLoader : ObservableObject{
     
     private (set) var didChange = PassthroughSubject<UIImage?,Never>()
@@ -18,8 +20,10 @@ class ImageLoader : ObservableObject{
         return UIImage(data: data)
     }
     
-    init(url:String?) {
-        guard let stringUrl = url , let url = URL(string: stringUrl) else {
+    init(url:String? , fileMetaData:String? = nil) {
+        let fileMetaDataModel = try? JSONDecoder().decode(FileMetaData.self, from: fileMetaData?.data(using: .utf8) ?? Data())
+        let smallImageFileUrl = getPodspaceSmallImage(fileHash: fileMetaDataModel?.fileHash)
+        guard let stringUrl = url , let url = URL(string: smallImageFileUrl ?? stringUrl) else {
             data = nil
             return
         }
@@ -32,5 +36,11 @@ class ImageLoader : ObservableObject{
             }
         }
         task.resume()
+    }
+    
+    func getPodspaceSmallImage(fileHash:String?)->String?{
+        guard let fileHash = fileHash else {return nil}
+        let smallImageFileUrl = "https://podspace.pod.ir/api/images/\(fileHash)?size=SMALL"
+        return smallImageFileUrl
     }
 }
