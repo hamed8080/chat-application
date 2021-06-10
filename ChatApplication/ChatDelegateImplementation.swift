@@ -48,7 +48,7 @@ class ChatDelegateImplementation: ChatDelegates {
 		print("token is: \(token ?? "")")
 		Chat.sharedInstance.createChatObject(config: .init(socketAddress: socketAddresss,
 														   serverName: serverName,
-														   token: "5d40718a5ea042af90f741a56cb61e33" ?? "3dd6895c8dc64f93bcd43b58dcc2aab3",
+														   token: "fc383b36efa54c27b5f02fd1f3b5679a" ?? "3dd6895c8dc64f93bcd43b58dcc2aab3",
 														   ssoHost: ssoHost,
 														   platformHost: platformHost,
 														   fileServer: fileServer,

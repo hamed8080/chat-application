@@ -17,7 +17,7 @@ struct ThreadContentList:View {
             GeometryReader{ reader in
                 List {
                     ForEach(viewModel.model.threads , id:\.id) { thread in
-                        ThreadRow(thread: thread)
+                        ThreadRow(thread: thread,viewModel: viewModel)
                             .onAppear {
                                 if viewModel.model.threads.last == thread{
                                     viewModel.loadMore()
@@ -26,7 +26,7 @@ struct ThreadContentList:View {
                     }.onDelete(perform: { indexSet in
                         print("on delete")
                     })
-                }.listStyle(PlainListStyle())
+				}.listStyle(PlainListStyle())
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
             }
             .navigationBarTitle(Text("Chats"), displayMode: .inline)

@@ -53,4 +53,29 @@ class ThreadsViewModel:ObservableObject{
         model.setupPreview()
     }
     
+	
+	func pinUnpinThread(_ thread:Conversation){
+		guard let id = thread.id else{return}
+		if thread.pin == false{
+			Chat.sharedInstance.pinThread(.init(threadId: id)) { threadId, uniqueId, error in
+				if error == nil && threadId != nil{
+					self.model.pinThread(thread)
+				}
+			}
+		}else{
+			Chat.sharedInstance.unpinThread(.init(threadId: id)) { threadId, uniqueId, error in
+				if error == nil && threadId != nil{
+					self.model.unpinThread(thread)
+				}
+			}
+		}
+	}
+	
+	func muteUnMuteThread(_ thread:Conversation){
+		
+	}
+	
+	func deleteThread(_ thread:Conversation){
+		
+	}
 }

@@ -41,7 +41,14 @@ struct ThreadsModel {
         self.totalCount = 0
         self.threads    = []
     }
+	
+	mutating func pinThread(_ thread:Conversation){
+		threads.first(where: {$0.id == thread.id})?.pin = true
+	}
     
+	mutating func unpinThread(_ thread:Conversation){
+		threads.first(where: {$0.id == thread.id})?.pin = false
+	}
 }
 
 extension ThreadsModel{
