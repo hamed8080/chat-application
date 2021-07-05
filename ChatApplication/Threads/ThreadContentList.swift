@@ -10,7 +10,6 @@ import SwiftUI
 struct ThreadContentList:View {
     
     @StateObject var viewModel:ThreadsViewModel
-    @State var connectionStatus:String?     = "Connecting ..."
     
     var body: some View{
         NavigationView{
@@ -32,15 +31,12 @@ struct ThreadContentList:View {
             .navigationBarTitle(Text("Chats"), displayMode: .inline)
             .toolbar{
                 ToolbarItem(placement:.navigationBarLeading){
-                    Text(connectionStatus ?? "")
+                    Text(viewModel.model.connectionStatus ?? "")
                         .font(.headline)
                         .foregroundColor(Color.gray)
                 }
             }
-        }.onReceive(NotificationCenter.default.publisher(for: CONNECTION_STATUS_NAME_OBJECT), perform: { value in
-            connectionStatus = value.object as? String
-        })
-       
+        }
     }
 }
 

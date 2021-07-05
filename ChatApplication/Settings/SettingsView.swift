@@ -9,79 +9,86 @@ import SwiftUI
 
 struct SettingsView:View {
     
-    @State var dark:Bool = false
-    @State var showContacts = false
+    @State var showLogs:Bool = false
     
+    @EnvironmentObject
+    var appSatate:AppState
     
     var body: some View{
-        GeometryReader{ reader in
-            HStack(spacing:0){
-                VStack{
-                    HStack{
-                        Spacer()
-                        Button(action: {
+        NavigationView{
+            GeometryReader{ reader in
+                HStack(spacing:0){
+                    VStack{
+                        HStack{
+                            Spacer()
+                            Button(action: {
+                                
+                            }, label: {
+                                Image(systemName:"square.and.pencil")
+                                    .font(.title)
+                            })
+                        }
+                        .padding(.top)
+                        .padding(.bottom , 25)
+                        
+                        Circle()
+                            .fill(Color.gray.opacity(0.08))
+                            .frame(width: 128, height: 128)
+                            .shadow(color: .black, radius: 20, x: 0, y: 0)
+                            .overlay(
+                                Image("avatar")
+                                    .resizable()
+                                    .padding()
+                            )
+                        
+                        
+                        VStack(spacing:12){
+                            Text("Hamed Hosseini")
+                                .font(.title.bold())
+                            Text("+98 936 916 16 01")
+                                .font(.subheadline)
+                        }
+                        .padding(.top , 25)
+                        
+                        HStack{
+                            Image(systemName:"moon.fill")
+                                .font(.title2)
+                            Text("Dark Mode")
+                                .font(.title2)
                             
-                        }, label: {
-                            Image(systemName:"square.and.pencil")
-                                .font(.title)
-                        })
-                    }
-                    .padding(.top)
-                    .padding(.bottom , 25)
-                    
-                    Circle()
-                        .fill(Color.gray.opacity(0.08))
-                        .frame(width: 128, height: 128)
-                        .shadow(color: .black, radius: 20, x: 0, y: 0)
-                        .overlay(
-                            Image("avatar")
-                                .resizable()
-                                .padding()
-                        )
+                            Spacer()
+                            
+                            Button(action: {
+                                appSatate.dark.toggle()
+                                UIApplication.shared.windows.first?.rootViewController?.view.overrideUserInterfaceStyle = appSatate.dark ? .dark : .light
+                                UIApplication.shared.windows.first?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
+                            }, label: {
+                                Image("on")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .foregroundColor(appSatate.dark ? .white : .black)
+                                    .frame(width: 48, height: 42, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                                    .scaledToFit()
+                                    .rotationEffect(.init(degrees: appSatate.dark ? 180 : 0))
+                            })
+                        }
+                        .padding(.top , 25)
                         
-                        
-                    VStack(spacing:12){
-                        Text("Hamed Hosseini")
-                            .font(.title.bold())
-                        Text("+98 936 916 16 01")
-                            .font(.subheadline)
-                    }
-                    .padding(.top , 25)
-                    
-                    HStack{
-                        Image(systemName:"moon.fill")
-                            .font(.title2)
-                        Text("Dark Mode")
-                            .font(.title2)
-                        
+                        Group{
+                            GroupItemInSlideMenu(name: "gear", title: "Setting", color: .blue,destinationView:EmptyView())
+                            Divider()
+                            GroupItemInSlideMenu<EmptyView>(name: "phone", title: "Calls", color: .green,destinationView:EmptyView())
+                            GroupItemInSlideMenu<EmptyView>(name: "bookmark", title: "Saved Messages", color: Color.purple , destinationView:EmptyView())
+                            GroupItemInSlideMenu<ResultView>(name: "note.text", title: "Logs", color: Color.yellow , destinationView:ResultView())
+                        }
                         Spacer()
-                        
-                        Button(action: {
-                            dark.toggle()
-                            UIApplication.shared.windows.first?.rootViewController?.view.overrideUserInterfaceStyle = dark ? .dark : .light
-                            UIApplication.shared.windows.first?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
-                        }, label: {
-                            Image("on")
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(dark ? .white : .black)
-                                .frame(width: 48, height: 42, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                                .rotationEffect(.init(degrees: dark ? 180 : 0))
-                        })
+                        NavigationLink(destination: ResultView(),isActive: $showLogs){}.hidden()
                     }
-                    .padding(.top , 25)
-                    
-                    Group{
-                        GroupItemInSlideMenu(name: "gear", title: "Setting", color: .blue,destinationView:EmptyView())
-                        Divider()
-                        GroupItemInSlideMenu<EmptyView>(name: "phone", title: "Calls", color: .green,destinationView:EmptyView())
-                        GroupItemInSlideMenu<EmptyView>(name: "bookmark", title: "Saved Messages", color: Color.purple , destinationView:EmptyView())
-                    }
-                    Spacer()
+                    .foregroundColor(.primary)
+                    .padding(.horizontal , 36)
                 }
-                .foregroundColor(.primary)
-                .padding(.horizontal , 36)
             }
+            .navigationBarTitle(Text("Settings"), displayMode: .inline)
         }
     }
 }

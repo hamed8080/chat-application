@@ -16,15 +16,25 @@ class ContactsViewModel:ObservableObject{
     private (set) var model = ContactsModel()
     
     init() {
-        getContacts()
+        NotificationCenter.default.addObserver(self, selector: #selector(onConnectionStatusChanged(_:)), name: CONNECTION_STATUS_NAME_OBJECT, object: nil)
+        if ChatDelegateImplementation.lastConnectionStatus == .CONNECTED{
+            getContacts()
+        }
+    }
+    
+    @objc private func onConnectionStatusChanged(_ notification:NSNotification){
+        if let connectionStatus = notification.object as? ConnectionStatus{
+            if model.contacts.count == 0 && connectionStatus == .CONNECTED {
+                getContacts()
+            }
+        }
     }
     
     func getContacts() {
         Chat.sharedInstance.getContacts(.init(count:model.count,offset: model.offset)) { [weak self] contacts, uniqueId, pagination, error in
-            if let contacts = contacts{
-                self?.model.setContacts(contacts: contacts)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
-            }
+            self?.model.setContacts(contacts: contacts, totalCount: pagination?.totalCount ?? 0)
+        } cacheResponse: { [weak self] contacts, uniqueId, pagination, error in
+            self?.model.setContacts(contacts: contacts, totalCount: pagination?.totalCount ?? 0)
         }
     }
     

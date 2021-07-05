@@ -534,13 +534,70 @@
 		AB50D9A9763641996CC30B54DCF6F6F8 /* MessageDeliveredUsersRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD83D6BA1052A41DC175DD424BBCBF7 /* MessageDeliveredUsersRequest.swift */; };
 		AB994905DF8696E1DC8DF825714BFD77 /* GetAllUnreadMessagesCountCallbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96343E1BF4B39F5E726E9940DD760213 /* GetAllUnreadMessagesCountCallbacks.swift */; };
 		AB9FBE274F52B2E180921237D1ABB0A6 /* ImageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E68DA1CDECF9156BE796BAADBBC43EF /* ImageModel.swift */; };
+		AC008F4F268C989700B008FF /* SendClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F4E268C989700B008FF /* SendClient.swift */; };
+		AC008F51268C9A0700B008FF /* ClientType.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F50268C9A0700B008FF /* ClientType.swift */; };
 		AC16E13E0BBA00BE95A1D5F3491BE0B1 /* CMImage+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1531905FD2BD8F7F626C8DF5CBA0DF1 /* CMImage+CoreDataProperties.swift */; };
 		AC28666A180C79A08E259CF84ED984FE /* SyncContactsRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA5D85339FC5933416F6E581E642CEC /* SyncContactsRequestHandler.swift */; };
 		AC4A9268B6476C8B3B62949F95213EFB /* EnumsAndStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DCE8BF4026D744C5196CE47136211D /* EnumsAndStructs.swift */; };
 		AC6442BA166B728DEA02E8972960C7AB /* ChangeThreadTypeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78425A80BE7D1C776B94FD910F20565F /* ChangeThreadTypeRequest.swift */; };
+		AC754E1A268C3368003E4F71 /* RemoveCallParticipantsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E19268C3368003E4F71 /* RemoveCallParticipantsRequest.swift */; };
+		AC754E1C268C33AB003E4F71 /* RemoveCallParticipantRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E1B268C33AB003E4F71 /* RemoveCallParticipantRequestHandler.swift */; };
+		AC754E1E268C3652003E4F71 /* TurnONVideoCallRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E1D268C3652003E4F71 /* TurnONVideoCallRequestHandler.swift */; };
+		AC754E20268C3663003E4F71 /* TurnOnVideoCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E1F268C3663003E4F71 /* TurnOnVideoCallRequest.swift */; };
+		AC754E22268C36EF003E4F71 /* TurnOffVideoCallRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E21268C36EF003E4F71 /* TurnOffVideoCallRequestHandler.swift */; };
+		AC754E24268C3729003E4F71 /* TurnOffVideoCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E23268C3729003E4F71 /* TurnOffVideoCallRequest.swift */; };
+		AC754E26268C37EE003E4F71 /* MuteCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E25268C37EE003E4F71 /* MuteCallRequest.swift */; };
+		AC754E2A268C386C003E4F71 /* UNMuteCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E29268C386C003E4F71 /* UNMuteCallRequest.swift */; };
+		AC754E2C268C38B1003E4F71 /* MuteCallRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E2B268C38B1003E4F71 /* MuteCallRequestHandler.swift */; };
+		AC754E2E268C3AA1003E4F71 /* UNMuteCallRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E2D268C3AA1003E4F71 /* UNMuteCallRequestHandler.swift */; };
+		AC754E30268C3B39003E4F71 /* TerminateCallRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E2F268C3B38003E4F71 /* TerminateCallRequestHandler.swift */; };
+		AC754E32268C3BB9003E4F71 /* TerminateCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E31268C3BB9003E4F71 /* TerminateCallRequest.swift */; };
+		AC754E34268C3CDD003E4F71 /* ActiveCallParticipantsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E33268C3CDD003E4F71 /* ActiveCallParticipantsRequest.swift */; };
+		AC754E36268C3D24003E4F71 /* ActiveCallParticipantsRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E35268C3D24003E4F71 /* ActiveCallParticipantsRequestHandler.swift */; };
+		AC754E38268C3DEA003E4F71 /* StartCallRecordingRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E37268C3DEA003E4F71 /* StartCallRecordingRequestHandler.swift */; };
+		AC754E3A268C3E0E003E4F71 /* StartCallRecordingRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E39268C3E0E003E4F71 /* StartCallRecordingRequest.swift */; };
+		AC754E3C268C3E8A003E4F71 /* StopCallRecordingRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E3B268C3E8A003E4F71 /* StopCallRecordingRequestHandler.swift */; };
+		AC754E3E268C3EBD003E4F71 /* StopCallRecordingRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E3D268C3EBD003E4F71 /* StopCallRecordingRequest.swift */; };
+		AC754E40268C4422003E4F71 /* CallsHistoryRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E3F268C4422003E4F71 /* CallsHistoryRequest.swift */; };
+		AC754E42268C4431003E4F71 /* CallsHistoryRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC754E41268C4431003E4F71 /* CallsHistoryRequestHandler.swift */; };
 		AC87DDD685B7C5ABEB863C0860B9E10B /* ContactNotSeenDurationRespoonse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83DEAB3174A1052BB22E1053725C2BB /* ContactNotSeenDurationRespoonse.swift */; };
 		AC9608AC290DC9E3439DFEAAAFE28BB7 /* QueueOfEditMessages+extenstions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB576ED21A7740B6337652959C2AE3EE /* QueueOfEditMessages+extenstions.swift */; };
 		AC9EB7D137FE88CE9C5E7A5E02CDB949 /* MuteThreadCallbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238603077A1C9DBD64B3F8D88BEA66BC /* MuteThreadCallbacks.swift */; };
+		ACC7235E268AE4E40057F43C /* SystemEventMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7235D268AE4E40057F43C /* SystemEventMessageModel.swift */; };
+		ACC72365268B17DE0057F43C /* AddCallParticipantRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72364268B17DE0057F43C /* AddCallParticipantRequestHandler.swift */; };
+		ACC72368268B18AC0057F43C /* CreateCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72367268B18AC0057F43C /* CreateCall.swift */; };
+		ACC7236A268B1A000057F43C /* CallType.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72369268B1A000057F43C /* CallType.swift */; };
+		ACC7236D268B1ADA0057F43C /* AcceptCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7236C268B1ADA0057F43C /* AcceptCallRequest.swift */; };
+		ACC7236F268B1D990057F43C /* StartCallRequestResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7236E268B1D990057F43C /* StartCallRequestResponseHandler.swift */; };
+		ACC72371268B1E7D0057F43C /* RejectCallResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72370268B1E7D0057F43C /* RejectCallResponseHandler.swift */; };
+		ACC72373268B312B0057F43C /* Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72372268B312B0057F43C /* Call.swift */; };
+		ACC72375268B32C50057F43C /* CallStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72374268B32C50057F43C /* CallStatus.swift */; };
+		ACC72377268B33BA0057F43C /* DeliverCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72376268B33BA0057F43C /* DeliverCallRequest.swift */; };
+		ACC72379268B343C0057F43C /* DeliverCallResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72378268B343C0057F43C /* DeliverCallResponseHandler.swift */; };
+		ACC7237B268B34EA0057F43C /* CallStartedResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7237A268B34EA0057F43C /* CallStartedResponseHandler.swift */; };
+		ACC7237D268B350D0057F43C /* StartCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7237C268B350D0057F43C /* StartCall.swift */; };
+		ACC7237F268B35710057F43C /* ClientDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7237E268B35710057F43C /* ClientDTO.swift */; };
+		ACC72381268B37D30057F43C /* RemoveCallParticipantResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72380268B37D30057F43C /* RemoveCallParticipantResponseHandler.swift */; };
+		ACC72383268B38100057F43C /* CallParticipant.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72382268B38100057F43C /* CallParticipant.swift */; };
+		ACC72385268B39620057F43C /* MuteCallParticipantResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72384268B39620057F43C /* MuteCallParticipantResponseHandler.swift */; };
+		ACC72387268B39980057F43C /* UNMuteCallParticipantResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72386268B39980057F43C /* UNMuteCallParticipantResponseHandler.swift */; };
+		ACC72389268B3A080057F43C /* TurnOnVideoCallResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72388268B3A080057F43C /* TurnOnVideoCallResponseHandler.swift */; };
+		ACC7238B268B3A5E0057F43C /* TurnOffVideoCallResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7238A268B3A5E0057F43C /* TurnOffVideoCallResponseHandler.swift */; };
+		ACC7238D268B3AB60057F43C /* LeaveCallResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7238C268B3AB60057F43C /* LeaveCallResponseHandler.swift */; };
+		ACC7238F268B3BCA0057F43C /* CallSessionCreatedResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7238E268B3BCA0057F43C /* CallSessionCreatedResponseHandler.swift */; };
+		ACC72391268B3C490057F43C /* StartCallRecordingResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72390268B3C490057F43C /* StartCallRecordingResponseHandler.swift */; };
+		ACC72393268B3C7D0057F43C /* StopCallRecordingResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72392268B3C7D0057F43C /* StopCallRecordingResponseHandler.swift */; };
+		ACC72395268B3CEE0057F43C /* EndCallResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72394268B3CEE0057F43C /* EndCallResponseHandler.swift */; };
+		ACC72397268B3D890057F43C /* CallParticipantJoinedResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72396268B3D890057F43C /* CallParticipantJoinedResponseHandler.swift */; };
+		ACC72399268B3DD30057F43C /* ActiveCallParticipantsResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC72398268B3DD30057F43C /* ActiveCallParticipantsResponseHandler.swift */; };
+		ACC7239B268B3E400057F43C /* GetCallsResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7239A268B3E400057F43C /* GetCallsResponseHandler.swift */; };
+		ACC7239D268B3EBF0057F43C /* StartCallGroupRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7239C268B3EBF0057F43C /* StartCallGroupRequestHandler.swift */; };
+		ACC7239F268B3F790057F43C /* StartCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC7239E268B3F790057F43C /* StartCallRequest.swift */; };
+		ACC723A1268B41170057F43C /* StartCallRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC723A0268B41170057F43C /* StartCallRequestHandler.swift */; };
+		ACC723A3268B42970057F43C /* EndCallRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC723A2268B42970057F43C /* EndCallRequestHandler.swift */; };
+		ACC723A5268B42B80057F43C /* EndCallRequest copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC723A4268B42B80057F43C /* EndCallRequest copy.swift */; };
+		ACC723A7268B49160057F43C /* AddCallParticipantsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC723A6268B49160057F43C /* AddCallParticipantsRequest.swift */; };
+		ACC723A9268B4B7E0057F43C /* AcceptCallRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC723A8268B4B7E0057F43C /* AcceptCallRequestHandler.swift */; };
 		ACE5A18B4A14B1222AEEB0E1F6FD2DD0 /* CreateThreadCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194FADBB5B7E53FD3B2D79A38E84D2F1 /* CreateThreadCallback.swift */; };
 		ACEACF6F16184C6BC50A7726F37B0F47 /* FanapPodAsyncSDK-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 039A15E1EE30DD0C315BF836B5183051 /* FanapPodAsyncSDK-dummy.m */; };
 		AD0A576154DAD11085081550E4257DF9 /* MapRoutingRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB11055C9ACA75A9594F0C2149BD717 /* MapRoutingRequest.swift */; };
@@ -943,16 +1000,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00678C410085C1B5684FD48570CFB992 /* SentryCrashMonitor_AppState.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMonitor_AppState.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_AppState.c; sourceTree = "<group>"; };
+		00678C410085C1B5684FD48570CFB992 /* SentryCrashMonitor_AppState.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMonitor_AppState.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_AppState.c; sourceTree = "<group>"; };
 		00D90383991CC8F20EEDE91E37666D40 /* SentryCrashJSONCodecObjC.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashJSONCodecObjC.h; path = Sources/SentryCrash/Recording/Tools/SentryCrashJSONCodecObjC.h; sourceTree = "<group>"; };
-		0115C3C00C175D77422084DD0542CE6F /* Sentry.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Sentry.framework; path = Sentry.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		011C1C7392F87809A0EA99807C9DEAFE /* Each.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Each.framework; path = Each.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0115C3C00C175D77422084DD0542CE6F /* Sentry.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Sentry.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		011C1C7392F87809A0EA99807C9DEAFE /* Each.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Each.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		013BC4F737BFC9523A8B1BB514BA90BA /* IsThreadNamePublicRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IsThreadNamePublicRequest.swift; sourceTree = "<group>"; };
 		02783F7FD41C5DD986E22A1F0F09EE4C /* Compression.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Compression.swift; path = Sources/Starscream/Compression.swift; sourceTree = "<group>"; };
 		028F3455164239DD7CD6E237B2AD0F21 /* Starscream-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Starscream-Info.plist"; sourceTree = "<group>"; };
 		033270DCBCBB4BE2E052A7872EFB57F4 /* Starscream.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Starscream.debug.xcconfig; sourceTree = "<group>"; };
 		0353F05D130DCF819C76A2DCAB524110 /* Pods-ChatApplication.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-ChatApplication.modulemap"; sourceTree = "<group>"; };
-		035BA8017F2E1A0B1EE79C11F2F5E729 /* SentryCrashMemory.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMemory.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashMemory.c; sourceTree = "<group>"; };
+		035BA8017F2E1A0B1EE79C11F2F5E729 /* SentryCrashMemory.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMemory.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashMemory.c; sourceTree = "<group>"; };
 		037D85762F839444710A0D60E18F0290 /* MuteUnmuteThreadResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MuteUnmuteThreadResponse.swift; sourceTree = "<group>"; };
 		039A15E1EE30DD0C315BF836B5183051 /* FanapPodAsyncSDK-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "FanapPodAsyncSDK-dummy.m"; sourceTree = "<group>"; };
 		050D71053425900DB67059559C21D1CE /* UserEventTypes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserEventTypes.swift; sourceTree = "<group>"; };
@@ -964,7 +1021,7 @@
 		062617734C9EDEB0398CEE698131CCBB /* MultipartFormData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MultipartFormData.swift; path = Source/MultipartFormData.swift; sourceTree = "<group>"; };
 		0641BFFE200FC2E24863C9E9710174A1 /* GCDTimer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GCDTimer.swift; sourceTree = "<group>"; };
 		070E1A5CCB54D1608D05E347B2CA41CF /* NewJoinPublicThreadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewJoinPublicThreadRequest.swift; sourceTree = "<group>"; };
-		07137CB32D721AB13AA764B8AFD9EB4E /* SentryCrashStackCursor.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashStackCursor.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashStackCursor.c; sourceTree = "<group>"; };
+		07137CB32D721AB13AA764B8AFD9EB4E /* SentryCrashStackCursor.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashStackCursor.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashStackCursor.c; sourceTree = "<group>"; };
 		079065EA1691CDD175B459CF5B97001A /* CMReplyInfo+extenstions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMReplyInfo+extenstions.swift"; sourceTree = "<group>"; };
 		07B829A527BEC4B9FE67346F63CAC035 /* SentryCrashCString.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashCString.h; path = Sources/SentryCrash/Reporting/Tools/SentryCrashCString.h; sourceTree = "<group>"; };
 		07E3AD22203D0F447B779493FAFE2022 /* AddBotCommandCallback.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBotCommandCallback.swift; sourceTree = "<group>"; };
@@ -980,7 +1037,7 @@
 		09905904CCF814A77A835866E1B61DF1 /* CreateThreadMessageInput.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreateThreadMessageInput.swift; sourceTree = "<group>"; };
 		09DA3BF8EE7D2E81CB601CE4AE38C146 /* SentryCrashJSONCodec.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashJSONCodec.h; path = Sources/SentryCrash/Recording/Tools/SentryCrashJSONCodec.h; sourceTree = "<group>"; };
 		09FE29F5EDA5F5F9CEFECA60E31BB1BC /* SentryException.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryException.h; path = Sources/Sentry/include/SentryException.h; sourceTree = "<group>"; };
-		0A44D6467EC622FAF1E0791D0252BFE5 /* SentryCrashC.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashC.c; path = Sources/SentryCrash/Recording/SentryCrashC.c; sourceTree = "<group>"; };
+		0A44D6467EC622FAF1E0791D0252BFE5 /* SentryCrashC.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashC.c; path = Sources/SentryCrash/Recording/SentryCrashC.c; sourceTree = "<group>"; };
 		0A4566C0B050AFDE4B21AE3DE6AD0EB4 /* ThreadParticipantsResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThreadParticipantsResponseHandler.swift; sourceTree = "<group>"; };
 		0A741D51CE9AB2AABE2382722BA2BCB5 /* DeactiveAssistantRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeactiveAssistantRequestHandler.swift; sourceTree = "<group>"; };
 		0BAF0548CE868636FF39670614DB899C /* MethodsOnSocketConnection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MethodsOnSocketConnection.swift; sourceTree = "<group>"; };
@@ -988,7 +1045,7 @@
 		0C7B4F580840390EC0EE99FDEC6A45FE /* AddBotCommandRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBotCommandRequestHandler.swift; sourceTree = "<group>"; };
 		0CA24E47D913E220180653DDF838CB65 /* SendTextMessageRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SendTextMessageRequestHandler.swift; sourceTree = "<group>"; };
 		0D22729F8BDA28758A8D138C8C5FEFEC /* ClearHistoryResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClearHistoryResponseHandler.swift; sourceTree = "<group>"; };
-		0D66E2EF243D779CC2BBB25084902CA9 /* SentryCrashMonitor_Signal.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMonitor_Signal.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_Signal.c; sourceTree = "<group>"; };
+		0D66E2EF243D779CC2BBB25084902CA9 /* SentryCrashMonitor_Signal.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMonitor_Signal.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_Signal.c; sourceTree = "<group>"; };
 		0DC337ADB23C43FDCB93984D9C963161 /* ThreadHistory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThreadHistory.swift; sourceTree = "<group>"; };
 		0E0074EDCE8BE36865E80B5135096485 /* CurrentUserRolesRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CurrentUserRolesRequestHandler.swift; sourceTree = "<group>"; };
 		0E407D98975F34CE3FA130D3642EA401 /* AllThreads.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AllThreads.swift; sourceTree = "<group>"; };
@@ -1016,14 +1073,14 @@
 		1435C2ADC433946670AF5BBD48C9B625 /* GetAllUnreadMessageCountRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetAllUnreadMessageCountRequest.swift; sourceTree = "<group>"; };
 		14438D23C482BE6286FC03B13D87B3A6 /* ContactEventModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContactEventModel.swift; sourceTree = "<group>"; };
 		1458F4ED46BF473D2581CB8308D38DBE /* SentryDsn.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryDsn.m; path = Sources/Sentry/SentryDsn.m; sourceTree = "<group>"; };
-		14B64B2A110CA403CA57564814E790DA /* SentryCrashMonitor_User.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMonitor_User.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_User.c; sourceTree = "<group>"; };
+		14B64B2A110CA403CA57564814E790DA /* SentryCrashMonitor_User.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMonitor_User.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_User.c; sourceTree = "<group>"; };
 		150AD835724E78F91660C8DC907070E3 /* Each.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Each.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		150EDAFF2140FD5FE44E543BAD833F14 /* SentryCrashMonitor_Zombie.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashMonitor_Zombie.h; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_Zombie.h; sourceTree = "<group>"; };
 		1532026755E96256AF7A8E1E0AAB9C31 /* SentryCrashObjC.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashObjC.h; path = Sources/SentryCrash/Recording/Tools/SentryCrashObjC.h; sourceTree = "<group>"; };
 		153DDCA2A5A78C9836C222D6ABA6B91F /* MapSearch.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MapSearch.swift; sourceTree = "<group>"; };
 		159FB2E5CCFD2D9EC8910EC7B8036F6F /* PhoneContact+extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PhoneContact+extensions.swift"; sourceTree = "<group>"; };
 		1638F9A8400FCDF884B2C9BA822CF17C /* SentryCrashReportConverter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryCrashReportConverter.m; path = Sources/Sentry/SentryCrashReportConverter.m; sourceTree = "<group>"; };
-		16A5D8DDA978DFD1E6E56DBF98C2ACE8 /* SentryCrashCachedData.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashCachedData.c; path = Sources/SentryCrash/Recording/SentryCrashCachedData.c; sourceTree = "<group>"; };
+		16A5D8DDA978DFD1E6E56DBF98C2ACE8 /* SentryCrashCachedData.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashCachedData.c; path = Sources/SentryCrash/Recording/SentryCrashCachedData.c; sourceTree = "<group>"; };
 		1705D8AFD10ADB36C60C36A23D407BE9 /* Starscream-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Starscream-umbrella.h"; sourceTree = "<group>"; };
 		176BD3CEAD851727C03D9A9C127209D2 /* GetContactsResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetContactsResponse.swift; sourceTree = "<group>"; };
 		17CB2812FDC1BFD188867FA21B59AB3F /* ClearHistoryCallback.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClearHistoryCallback.swift; sourceTree = "<group>"; };
@@ -1042,7 +1099,7 @@
 		1B533F7C638902DC69890CC4E7EB771B /* SignalMessageType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SignalMessageType.swift; sourceTree = "<group>"; };
 		1BDD1BA9BE7BC5F203B75AF48F4138AE /* Sentry.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Sentry.modulemap; sourceTree = "<group>"; };
 		1BE74E2CC85AF885E6C2BDA3B9232D94 /* WebSocketM.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WebSocketM.swift; sourceTree = "<group>"; };
-		1BF500C5D55E2448E98517DB67A1D69D /* SentryCrashSignalInfo.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashSignalInfo.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashSignalInfo.c; sourceTree = "<group>"; };
+		1BF500C5D55E2448E98517DB67A1D69D /* SentryCrashSignalInfo.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashSignalInfo.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashSignalInfo.c; sourceTree = "<group>"; };
 		1C4C921AC5CCC9285CA39F6ACF12F4FA /* BlockRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockRequest.swift; sourceTree = "<group>"; };
 		1C5D124EDC36AD49BA1435ACDB181A99 /* QueueOnCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = QueueOnCache.swift; sourceTree = "<group>"; };
 		1CE41A4E3743E5028C2CCC4F463AFC3A /* RemoveRoleFromUserCallback.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoveRoleFromUserCallback.swift; sourceTree = "<group>"; };
@@ -1120,7 +1177,7 @@
 		339D0A488197D5A6755EB7A48A3DF9D6 /* NewBlockRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewBlockRequest.swift; sourceTree = "<group>"; };
 		33DD2DE2B67749FD166F92B1886FF5A7 /* QueueOfUploadImages+extenstions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "QueueOfUploadImages+extenstions.swift"; sourceTree = "<group>"; };
 		33E160B12B89827A5C368EE2E98ECB2E /* SwiftyJSON.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftyJSON.release.xcconfig; sourceTree = "<group>"; };
-		33F272BE81305B25E5A48AC82CC679C9 /* Pods_ChatApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_ChatApplication.framework; path = "Pods-ChatApplication.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		33F272BE81305B25E5A48AC82CC679C9 /* Pods_ChatApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		33F5BDF4EE62ED0BB5012A0D74F5C6D1 /* NewSafeLeaveThreadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewSafeLeaveThreadRequest.swift; sourceTree = "<group>"; };
 		33F830DA5FC9E45667DBD1D4F5316316 /* LeaveThreadRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LeaveThreadRequestHandler.swift; sourceTree = "<group>"; };
 		3451DF9AE42203A8C332925CEEC655A2 /* FanapPodChatSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "FanapPodChatSDK-Info.plist"; sourceTree = "<group>"; };
@@ -1144,7 +1201,7 @@
 		3A05292FDFCA6A81722F982058AAA978 /* SentryCrashFileUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashFileUtils.h; path = Sources/SentryCrash/Recording/Tools/SentryCrashFileUtils.h; sourceTree = "<group>"; };
 		3A1B7137011ED035FD84344BAA56955C /* AddParticipantsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddParticipantsRequest.swift; sourceTree = "<group>"; };
 		3A25B046D8DD8E20766B0EF55C6B8D94 /* CMFile+extenstions copy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMFile+extenstions copy.swift"; sourceTree = "<group>"; };
-		3A31C72CAFC76A28361C37208B33CE43 /* FanapPodChatSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FanapPodChatSDK.framework; path = FanapPodChatSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A31C72CAFC76A28361C37208B33CE43 /* FanapPodChatSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FanapPodChatSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AA75E7E0901321A9577A0C9AB4B3805 /* CreateBotRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreateBotRequest.swift; sourceTree = "<group>"; };
 		3AAA152EB1979255C7A7156F1B0EB672 /* Each-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Each-Info.plist"; sourceTree = "<group>"; };
 		3AC4B75A9C9FFBC6751EEE4885381EAA /* QueueOfTextMessages+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "QueueOfTextMessages+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -1161,7 +1218,7 @@
 		3E53C2E1234D676116D5DE6A94F89EAD /* ThreadsResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThreadsResponseHandler.swift; sourceTree = "<group>"; };
 		3E6AAA03B527B8F78E3A0B99DCEBA59F /* ProgressImplementation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProgressImplementation.swift; sourceTree = "<group>"; };
 		3E7F2404995267EE0CBE1F9053921BE3 /* CMAssistant+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMAssistant+CoreDataClass.swift"; sourceTree = "<group>"; };
-		3E8B0FFCE246B9BA0EF92CAA2ADBA737 /* SentryCrashMonitorType.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMonitorType.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitorType.c; sourceTree = "<group>"; };
+		3E8B0FFCE246B9BA0EF92CAA2ADBA737 /* SentryCrashMonitorType.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMonitorType.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitorType.c; sourceTree = "<group>"; };
 		3E9EEA0B754DFFFB42A39FE3C319650C /* UserRolesResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserRolesResponseHandler.swift; sourceTree = "<group>"; };
 		3EF4187C3D9FD4CB91B3F1E96F983482 /* UnBlockResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnBlockResponseHandler.swift; sourceTree = "<group>"; };
 		3F4F402BD208968EAC4D70B9EC31BC36 /* LogResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LogResult.swift; sourceTree = "<group>"; };
@@ -1170,7 +1227,7 @@
 		407AA8E07184A2ACF30BBE35BED3DB55 /* PinUnpinThreadResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PinUnpinThreadResponse.swift; sourceTree = "<group>"; };
 		40F978A8BCD33E1BD756CD460088ED28 /* DeliverMessageResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeliverMessageResponseHandler.swift; sourceTree = "<group>"; };
 		40F9D5D7D811A0994FB088BB1872728B /* JoinThreadResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JoinThreadResponseHandler.swift; sourceTree = "<group>"; };
-		413645824B0F6A9ADA909ADE81DFEFD0 /* SentryCrashSysCtl.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashSysCtl.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashSysCtl.c; sourceTree = "<group>"; };
+		413645824B0F6A9ADA909ADE81DFEFD0 /* SentryCrashSysCtl.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashSysCtl.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashSysCtl.c; sourceTree = "<group>"; };
 		413D3F5C483C91D7FE25AA7AA482135B /* GetMessageSeenList.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetMessageSeenList.swift; sourceTree = "<group>"; };
 		416229CAB34D8D6869A66A7B8447AFFC /* Pods-ChatApplication-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-ChatApplication-frameworks.sh"; sourceTree = "<group>"; };
 		4221D15087E434CB9BC5BAD24454AB0A /* SentryCrashReportConverter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashReportConverter.h; path = Sources/Sentry/include/SentryCrashReportConverter.h; sourceTree = "<group>"; };
@@ -1179,13 +1236,13 @@
 		428C9A739F6372D08D99F54C36C6B3C1 /* TaskDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TaskDelegate.swift; path = Source/TaskDelegate.swift; sourceTree = "<group>"; };
 		42CD4F2C042AA0EC6B984664080E297C /* Starscream-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Starscream-dummy.m"; sourceTree = "<group>"; };
 		42D70A41FCEF1BE5BF4D98625B6C31F4 /* FileManagementMethods.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileManagementMethods.swift; sourceTree = "<group>"; };
-		432B396864E1CDE3FB92FA219E1B909A /* SentryCrashSymbolicator.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashSymbolicator.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashSymbolicator.c; sourceTree = "<group>"; };
+		432B396864E1CDE3FB92FA219E1B909A /* SentryCrashSymbolicator.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashSymbolicator.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashSymbolicator.c; sourceTree = "<group>"; };
 		4377C99619A35C0BC493286B3B1C9365 /* UpdateThreadInfoRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UpdateThreadInfoRequestHandler.swift; sourceTree = "<group>"; };
 		4415CA539C76EA5040E8C52F96C089A6 /* NewCloseThreadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewCloseThreadRequest.swift; sourceTree = "<group>"; };
 		445F2436DB35A4D1FC2A959617D1144B /* FanapPodAsyncSDK-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "FanapPodAsyncSDK-Info.plist"; sourceTree = "<group>"; };
 		44659D042CAE266523D2B2B7720676E0 /* SentryCrashReportWriter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashReportWriter.h; path = Sources/SentryCrash/Recording/SentryCrashReportWriter.h; sourceTree = "<group>"; };
 		44904BDA5B3F7BA924C2F0CB6E52E692 /* JoinPublicThreadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JoinPublicThreadRequest.swift; sourceTree = "<group>"; };
-		44A5ABB3660C0450140E03E364E6A595 /* SentryCrashStackCursor_SelfThread.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashStackCursor_SelfThread.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashStackCursor_SelfThread.c; sourceTree = "<group>"; };
+		44A5ABB3660C0450140E03E364E6A595 /* SentryCrashStackCursor_SelfThread.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashStackCursor_SelfThread.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashStackCursor_SelfThread.c; sourceTree = "<group>"; };
 		44C0BB3E20E999D3782E2563CC4FEA1A /* PrivateMethodsToCheckConnectionState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrivateMethodsToCheckConnectionState.swift; sourceTree = "<group>"; };
 		44E154613384E0D5705194BE67DB862E /* SentryCrashExceptionApplication.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryCrashExceptionApplication.m; path = Sources/Sentry/SentryCrashExceptionApplication.m; sourceTree = "<group>"; };
 		46226056F939C2CF8A0AF893FFAEA354 /* SentryCrashJSONCodecObjC.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryCrashJSONCodecObjC.m; path = Sources/SentryCrash/Recording/Tools/SentryCrashJSONCodecObjC.m; sourceTree = "<group>"; };
@@ -1211,7 +1268,7 @@
 		4BBF1226893402A08DB219DB10A1AD19 /* SafeLeaveThreadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SafeLeaveThreadRequest.swift; sourceTree = "<group>"; };
 		4BF663C4E841B45E0F6E93EAA57BC3C0 /* Each-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Each-prefix.pch"; sourceTree = "<group>"; };
 		4C7F2F59CA145682D8FA534F314C1B89 /* QueueOfFileMessages+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "QueueOfFileMessages+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		4CC08B156C037DF547B84AE19F141BA4 /* SentryCrashID.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashID.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashID.c; sourceTree = "<group>"; };
+		4CC08B156C037DF547B84AE19F141BA4 /* SentryCrashID.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashID.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashID.c; sourceTree = "<group>"; };
 		4D01552581F5D8CC3B01F6BE0D7F0038 /* SendStatusPingRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SendStatusPingRequest.swift; sourceTree = "<group>"; };
 		4D14218E6099A433A2EF4DFFB136AD75 /* BotVO.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BotVO.swift; sourceTree = "<group>"; };
 		4D185864A30EBA269430949D72055958 /* ThreadManagementMethods.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThreadManagementMethods.swift; sourceTree = "<group>"; };
@@ -1240,11 +1297,11 @@
 		53AE6DF62BDCCEBDADB68FAB198E4E49 /* NewMapRoutingResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewMapRoutingResponse.swift; sourceTree = "<group>"; };
 		540732A823679F2E38A921ABBC95BE72 /* Each-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Each-umbrella.h"; sourceTree = "<group>"; };
 		5504F0BFCE25D33837C609ED15D1A582 /* NewMapSearchRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewMapSearchRequest.swift; sourceTree = "<group>"; };
-		5517B461462D7807437BD75B451A9831 /* FanapPodAsyncSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = FanapPodAsyncSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5517B461462D7807437BD75B451A9831 /* FanapPodAsyncSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = FanapPodAsyncSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		5571EDEF3AF753ACB8E4AB19ABF8CA87 /* Pods-ChatApplication-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-ChatApplication-umbrella.h"; sourceTree = "<group>"; };
 		55782DD30CDD16C6DF7D6CBF90B757C4 /* IsThreadNamePublicRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IsThreadNamePublicRequestHandler.swift; sourceTree = "<group>"; };
 		561446841EB9C87C7FC167D56B202E0D /* MuteThreadResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MuteThreadResponse.swift; sourceTree = "<group>"; };
-		562B313AB61A74094BC71155B64EEED7 /* SentryCrashStackCursor_MachineContext.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashStackCursor_MachineContext.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashStackCursor_MachineContext.c; sourceTree = "<group>"; };
+		562B313AB61A74094BC71155B64EEED7 /* SentryCrashStackCursor_MachineContext.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashStackCursor_MachineContext.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashStackCursor_MachineContext.c; sourceTree = "<group>"; };
 		568997FE5878F8F52FC95616B538F079 /* Pods-ChatApplication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ChatApplication.debug.xcconfig"; sourceTree = "<group>"; };
 		56A145EAECBCD3CD64CE5CC58EA375DE /* SentryJavaScriptBridgeHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryJavaScriptBridgeHelper.h; path = Sources/Sentry/include/SentryJavaScriptBridgeHelper.h; sourceTree = "<group>"; };
 		56C4837C5A9B0A0D26F25E3B746D3FE0 /* CMForwardInfo+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMForwardInfo+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -1268,13 +1325,13 @@
 		5BD1881C1F7723DFFA1628612344133E /* SBPlatformDestination.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SBPlatformDestination.swift; path = Sources/SBPlatformDestination.swift; sourceTree = "<group>"; };
 		5C32AB4FDF556385D244CE68DD96596C /* SentryInstallation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryInstallation.h; path = Sources/Sentry/include/SentryInstallation.h; sourceTree = "<group>"; };
 		5C516EDE983A0F2CDFDCCC340833A510 /* CMMessage+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMMessage+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		5C635654F25104E2EAFB27D387F114D2 /* SentryCrashFileUtils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashFileUtils.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashFileUtils.c; sourceTree = "<group>"; };
+		5C635654F25104E2EAFB27D387F114D2 /* SentryCrashFileUtils.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashFileUtils.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashFileUtils.c; sourceTree = "<group>"; };
 		5CA8D5E2FC74542890371961767A8201 /* RegisterAssistantRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RegisterAssistantRequest.swift; sourceTree = "<group>"; };
 		5CD2EDBB985671D4FDF1AA6823DA510D /* Networking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		5CF57132E18B800B522026781BE2776D /* GetCurrentUserRolesCallback.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetCurrentUserRolesCallback.swift; sourceTree = "<group>"; };
 		5D2BE2AEA1ED39EF5C0C55C7CE6ACCF0 /* NewUpdateThreadInfoRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewUpdateThreadInfoRequest.swift; sourceTree = "<group>"; };
 		5D70BB1138B9DC6807668CAE585AA9D3 /* SentryCrashMachineContext_Apple.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashMachineContext_Apple.h; path = Sources/SentryCrash/Recording/Tools/SentryCrashMachineContext_Apple.h; sourceTree = "<group>"; };
-		5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Alamofire.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E308079246DF7DC2911CD23AFB908D8 /* BatchDeleteMessageRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BatchDeleteMessageRequestHandler.swift; sourceTree = "<group>"; };
 		5F057E308082EED32F5DBF2734626FFD /* MuteThreadResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MuteThreadResponseHandler.swift; sourceTree = "<group>"; };
 		5F21F5E833C361485F293FBA6A4BF805 /* CacheData.xcdatamodel */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.xcdatamodel; path = CacheData.xcdatamodel; sourceTree = "<group>"; };
@@ -1285,7 +1342,7 @@
 		61615A3346273B899834AD325A72D425 /* ChangeThreadTypeRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChangeThreadTypeRequestHandler.swift; sourceTree = "<group>"; };
 		6192F777F8A00FDE84681FC8BFA4238B /* SentryCrashInstallation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryCrashInstallation.m; path = Sources/SentryCrash/Installations/SentryCrashInstallation.m; sourceTree = "<group>"; };
 		61AE8EA18094F68C47A857629C3BF671 /* FileUploadEventModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FileUploadEventModel.swift; sourceTree = "<group>"; };
-		61E70DFC62129BD53FE535FD563CDDBE /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		61E70DFC62129BD53FE535FD563CDDBE /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		61EE7DBD76D1A8E29C86B8689AF645D0 /* SentryFrame.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryFrame.m; path = Sources/Sentry/SentryFrame.m; sourceTree = "<group>"; };
 		6232AFC8E225E4C4D220A5A244FD1BF2 /* GetContactNotSeenDurationRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetContactNotSeenDurationRequest.swift; sourceTree = "<group>"; };
 		623A883A8630AD60E658E852471301BB /* IsAvailableNameResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IsAvailableNameResponse.swift; sourceTree = "<group>"; };
@@ -1298,7 +1355,7 @@
 		650B414E9995D70878811D0194480459 /* SystemEventModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SystemEventModel.swift; sourceTree = "<group>"; };
 		6515FD3A64D2FC628EBCFDF73903867A /* SentryDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryDefines.h; path = Sources/Sentry/include/SentryDefines.h; sourceTree = "<group>"; };
 		65764CC3C89BF6F59C0D480A85CC6FDB /* SaveDataToCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SaveDataToCache.swift; sourceTree = "<group>"; };
-		669CBA29910D90827F1EA77F0832E1F2 /* SentryCrashDate.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashDate.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashDate.c; sourceTree = "<group>"; };
+		669CBA29910D90827F1EA77F0832E1F2 /* SentryCrashDate.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashDate.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashDate.c; sourceTree = "<group>"; };
 		6721943BD27804555C65264BDEC90BE3 /* NewReplyMessageRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewReplyMessageRequest.swift; sourceTree = "<group>"; };
 		677D2BE1B004017158FF0A59C2626CCB /* CloseThreadRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloseThreadRequestHandler.swift; sourceTree = "<group>"; };
 		6809AE8A6C85CC3228629789CC0481FD /* NSString+SentryNSUIntegerValue.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSString+SentryNSUIntegerValue.m"; path = "Sources/Sentry/NSString+SentryNSUIntegerValue.m"; sourceTree = "<group>"; };
@@ -1313,7 +1370,7 @@
 		6A80F52CC843681B018B2A9A32F23D27 /* GetContactsRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetContactsRequestHandler.swift; sourceTree = "<group>"; };
 		6A94623BD5509B83914C19EAA51219F2 /* CMUserRole+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMUserRole+CoreDataClass.swift"; sourceTree = "<group>"; };
 		6A9FA3FFB40D6DAA9F8631362C58FEB7 /* NetworkReachabilityManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NetworkReachabilityManager.swift; path = Source/NetworkReachabilityManager.swift; sourceTree = "<group>"; };
-		6B22B53F66EC0A19E907D36BD3E3242B /* SentryCrashThread.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashThread.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashThread.c; sourceTree = "<group>"; };
+		6B22B53F66EC0A19E907D36BD3E3242B /* SentryCrashThread.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashThread.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashThread.c; sourceTree = "<group>"; };
 		6B37B1D3C3414185DAC4D074F5C84752 /* SwiftyJSON-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftyJSON-prefix.pch"; sourceTree = "<group>"; };
 		6B3B0C50AB4C4840540055BD96A5140B /* SentryCrashCString.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryCrashCString.m; path = Sources/SentryCrash/Reporting/Tools/SentryCrashCString.m; sourceTree = "<group>"; };
 		6B82E4ECA53688A262BC831038117E2B /* ThreadParticipantsRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThreadParticipantsRequestHandler.swift; sourceTree = "<group>"; };
@@ -1358,7 +1415,7 @@
 		79DD2FAD4E8A9AD8C745B390559D9649 /* MapRoutingRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MapRoutingRequestHandler.swift; sourceTree = "<group>"; };
 		7A55730F0AF04D0829EDFF5AD3AB832D /* Route.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		7A59A7AC769F971A50C7239CFC765839 /* NewPinUnpinMessageRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewPinUnpinMessageRequest.swift; sourceTree = "<group>"; };
-		7A5F7001277980B8F3EEA75BCD346E53 /* SwiftyBeaver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftyBeaver.framework; path = SwiftyBeaver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A5F7001277980B8F3EEA75BCD346E53 /* SwiftyBeaver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyBeaver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A6012B45B6953E6098930058CBB90B5 /* SentryEvent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryEvent.m; path = Sources/Sentry/SentryEvent.m; sourceTree = "<group>"; };
 		7B76B0CCA801ED0988FA3592DAB6E554 /* SendAsyncMessageVO.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SendAsyncMessageVO.swift; sourceTree = "<group>"; };
 		7C89CFF0F9EA02382F6B9D68EA90DB4A /* UnMuteThreadRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnMuteThreadRequestHandler.swift; sourceTree = "<group>"; };
@@ -1368,7 +1425,7 @@
 		7DAC1D5118157DCB1F3F75F1874F1B20 /* MapReverseResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MapReverseResponse.swift; sourceTree = "<group>"; };
 		7E8FDED1925989A737F449BC1651546D /* FanapPodChatSDK-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FanapPodChatSDK-umbrella.h"; sourceTree = "<group>"; };
 		7E9F6A79C89674C5EB68EB862B23E6E8 /* Invitee.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Invitee.swift; sourceTree = "<group>"; };
-		7E9FB667D74E736C522FFE4344B3D5CD /* FanapPodAsyncSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = FanapPodAsyncSDK.framework; path = FanapPodAsyncSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E9FB667D74E736C522FFE4344B3D5CD /* FanapPodAsyncSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FanapPodAsyncSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EA392235757C4C3FEAC8C69703C081F /* CreateBotResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreateBotResponse.swift; sourceTree = "<group>"; };
 		7EE7934AC45748E5B2B2F2387D60309B /* SentryDebugMeta.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryDebugMeta.h; path = Sources/Sentry/include/SentryDebugMeta.h; sourceTree = "<group>"; };
 		7F4630D666864B9C4961F7A1DD047751 /* ContactsResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContactsResponseHandler.swift; sourceTree = "<group>"; };
@@ -1412,8 +1469,8 @@
 		888F24660FC93A8431356F90E29B40EA /* PinThreadResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PinThreadResponse.swift; sourceTree = "<group>"; };
 		88D022EE53C3CEC1BC5AA5B18F6479A5 /* RemoveContactRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoveContactRequestHandler.swift; sourceTree = "<group>"; };
 		88F33CBEA14CDE125AD0A5FEBC567335 /* JoinPublicThreadCallbacks.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JoinPublicThreadCallbacks.swift; sourceTree = "<group>"; };
-		891B2270823847ED23F2ECFC28F935EC /* Starscream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Starscream.framework; path = Starscream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		891FF7D0A08230768721B086C8CB2D41 /* SentryCrashJSONCodec.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashJSONCodec.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashJSONCodec.c; sourceTree = "<group>"; };
+		891B2270823847ED23F2ECFC28F935EC /* Starscream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Starscream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		891FF7D0A08230768721B086C8CB2D41 /* SentryCrashJSONCodec.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashJSONCodec.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashJSONCodec.c; sourceTree = "<group>"; };
 		8942C2B82A62886D9BB0E470A836CEF0 /* MuteThreadRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MuteThreadRequestHandler.swift; sourceTree = "<group>"; };
 		897197C97AAF30346F29E0EA07DEF721 /* MapManagementMethods.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MapManagementMethods.swift; sourceTree = "<group>"; };
 		898133637E415FFDEF8588B0C6B96CB6 /* GetContactNotSeenDurationResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetContactNotSeenDurationResponse.swift; sourceTree = "<group>"; };
@@ -1444,7 +1501,7 @@
 		8F619ABF7BB2E9AEC571CA25D6F58FC8 /* Base64.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Base64.swift; path = Sources/Base64.swift; sourceTree = "<group>"; };
 		8FC6D8BA7D21A2357B20A1B0104A2621 /* QueueOfUploadFiles+extenstions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "QueueOfUploadFiles+extenstions.swift"; sourceTree = "<group>"; };
 		9013D1132A2D6D67437C6A0999A012E2 /* Response.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Response.swift; path = Source/Response.swift; sourceTree = "<group>"; };
-		905AEA8A770DDD7C9A9E2CF3483D7DC8 /* SentryCrashStackCursor_Backtrace.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashStackCursor_Backtrace.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashStackCursor_Backtrace.c; sourceTree = "<group>"; };
+		905AEA8A770DDD7C9A9E2CF3483D7DC8 /* SentryCrashStackCursor_Backtrace.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashStackCursor_Backtrace.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashStackCursor_Backtrace.c; sourceTree = "<group>"; };
 		909ED8E84261DB65154EE1C439F7F806 /* GetThreadsCallbacks.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetThreadsCallbacks.swift; sourceTree = "<group>"; };
 		90C0576BB010930C1A12D32C4AB44AFD /* RemoveParticipantResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoveParticipantResponseHandler.swift; sourceTree = "<group>"; };
 		916273DEC66BC0C04DC5007FF885A9E3 /* PinUnpinThreadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PinUnpinThreadRequest.swift; sourceTree = "<group>"; };
@@ -1483,7 +1540,7 @@
 		9D05301141E0DD9692D1E94431BEC298 /* SentryCrashMach.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashMach.h; path = Sources/SentryCrash/Recording/Tools/SentryCrashMach.h; sourceTree = "<group>"; };
 		9D65D08A82769A86A795B1E33BC6ACBA /* DevicesResposne.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DevicesResposne.swift; sourceTree = "<group>"; };
 		9D8DB72D3DF36227996855C2E524F19D /* DownloadFileResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DownloadFileResponse.swift; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9D97D0B5E8281906D9FDDF28CC4BA27C /* AssistantsResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssistantsResponseHandler.swift; sourceTree = "<group>"; };
 		9DB2C55D9D5E6D0E1696429BF67D7544 /* SwiftyJSON-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftyJSON-umbrella.h"; sourceTree = "<group>"; };
 		9DC0915C172AEEEEFA9E4871929FD13B /* SentryCrashDate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashDate.h; path = Sources/SentryCrash/Recording/Tools/SentryCrashDate.h; sourceTree = "<group>"; };
@@ -1494,7 +1551,7 @@
 		9F1F14CE2465BB1FA07F262DD23EE50B /* Each-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Each-dummy.m"; sourceTree = "<group>"; };
 		9F7563F5D986A32E320CA89EC65B858F /* CMCurrentUserRoles+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMCurrentUserRoles+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A0191A356D1A7A4D28B49268BFECC249 /* LastSeenResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LastSeenResponseHandler.swift; sourceTree = "<group>"; };
-		A03ED4107601B84C13585BD001EEAC0A /* SentryCrashReportFixer.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashReportFixer.c; path = Sources/SentryCrash/Recording/SentryCrashReportFixer.c; sourceTree = "<group>"; };
+		A03ED4107601B84C13585BD001EEAC0A /* SentryCrashReportFixer.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashReportFixer.c; path = Sources/SentryCrash/Recording/SentryCrashReportFixer.c; sourceTree = "<group>"; };
 		A09A220DF260BC17EC3067A0A78969C4 /* GetThreadParticipantsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetThreadParticipantsRequest.swift; sourceTree = "<group>"; };
 		A0B1BD04932204FD60A486247B608444 /* CloseThreadCallbacks.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloseThreadCallbacks.swift; sourceTree = "<group>"; };
 		A125C7257B7F5B4517A19B0082D97BBC /* AssistantsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssistantsRequest.swift; sourceTree = "<group>"; };
@@ -1515,7 +1572,7 @@
 		A57ACD35F0AB0845F20FAE5D82136864 /* GetContactsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetContactsRequest.swift; sourceTree = "<group>"; };
 		A5BAD600A0EA1909458ED373E2770E7B /* CreateThreadWithFileMessageRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreateThreadWithFileMessageRequest.swift; sourceTree = "<group>"; };
 		A5E18E9B24F1F74D03129D6D3DB32390 /* SentryCrashMonitor_NSException.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashMonitor_NSException.h; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_NSException.h; sourceTree = "<group>"; };
-		A695EB7FBB68E48596D14ADE8010746E /* SentryCrashReport.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashReport.c; path = Sources/SentryCrash/Recording/SentryCrashReport.c; sourceTree = "<group>"; };
+		A695EB7FBB68E48596D14ADE8010746E /* SentryCrashReport.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashReport.c; path = Sources/SentryCrash/Recording/SentryCrashReport.c; sourceTree = "<group>"; };
 		A6D3EE20FF3EC1A4A95584C4B8C37E21 /* BotManagementMethods.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BotManagementMethods.swift; sourceTree = "<group>"; };
 		A6F88B52D096095061EF9BA796A24BA1 /* Sentry-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Sentry-Info.plist"; sourceTree = "<group>"; };
 		A74312BA9FCAD23C8C66200AB3FF66F3 /* CMCurrentUserRoles+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMCurrentUserRoles+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -1523,7 +1580,7 @@
 		A76E585C32BC35640C436363847F7F58 /* AddBotCommandRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBotCommandRequest.swift; sourceTree = "<group>"; };
 		A7EA7A8B03661B2E6DB0203EE9FE8B1C /* EncodableExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EncodableExtensions.swift; sourceTree = "<group>"; };
 		A844E26442D32875BD01A5CD047F088D /* IsPublicThreadNameAvailableRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IsPublicThreadNameAvailableRequest.swift; sourceTree = "<group>"; };
-		A8617BBF4B62BBE6B94472C12B97547C /* FanapPodChatSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = FanapPodChatSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		A8617BBF4B62BBE6B94472C12B97547C /* FanapPodChatSDK.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = FanapPodChatSDK.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A8AEC648DF231F06AA3E90A1E7F4E941 /* BlockedAssistantsRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockedAssistantsRequestHandler.swift; sourceTree = "<group>"; };
 		A9500D8569552F9394016F5536119789 /* CMForwardInfo+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMForwardInfo+CoreDataClass.swift"; sourceTree = "<group>"; };
 		A9A67B0E3257DFBF0929872A1B34E4BD /* SentryCrashReport.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashReport.h; path = Sources/SentryCrash/Recording/SentryCrashReport.h; sourceTree = "<group>"; };
@@ -1533,8 +1590,65 @@
 		AB298911886F03905CB3017C39CC7C05 /* QueueOfTextMessages+extenstions copy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "QueueOfTextMessages+extenstions copy.swift"; sourceTree = "<group>"; };
 		AB576ED21A7740B6337652959C2AE3EE /* QueueOfEditMessages+extenstions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "QueueOfEditMessages+extenstions.swift"; sourceTree = "<group>"; };
 		AB7FB759BD42F74E6C87474EEAB62892 /* UpdateDataOnCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UpdateDataOnCache.swift; sourceTree = "<group>"; };
+		AC008F4E268C989700B008FF /* SendClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendClient.swift; sourceTree = "<group>"; };
+		AC008F50268C9A0700B008FF /* ClientType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientType.swift; sourceTree = "<group>"; };
 		AC3FD307EE2A134C5B7B1A69E2D21BD8 /* SpamPrivateThread.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpamPrivateThread.swift; sourceTree = "<group>"; };
+		AC754E19268C3368003E4F71 /* RemoveCallParticipantsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveCallParticipantsRequest.swift; sourceTree = "<group>"; };
+		AC754E1B268C33AB003E4F71 /* RemoveCallParticipantRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveCallParticipantRequestHandler.swift; sourceTree = "<group>"; };
+		AC754E1D268C3652003E4F71 /* TurnONVideoCallRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnONVideoCallRequestHandler.swift; sourceTree = "<group>"; };
+		AC754E1F268C3663003E4F71 /* TurnOnVideoCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOnVideoCallRequest.swift; sourceTree = "<group>"; };
+		AC754E21268C36EF003E4F71 /* TurnOffVideoCallRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOffVideoCallRequestHandler.swift; sourceTree = "<group>"; };
+		AC754E23268C3729003E4F71 /* TurnOffVideoCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOffVideoCallRequest.swift; sourceTree = "<group>"; };
+		AC754E25268C37EE003E4F71 /* MuteCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuteCallRequest.swift; sourceTree = "<group>"; };
+		AC754E29268C386C003E4F71 /* UNMuteCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UNMuteCallRequest.swift; sourceTree = "<group>"; };
+		AC754E2B268C38B1003E4F71 /* MuteCallRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuteCallRequestHandler.swift; sourceTree = "<group>"; };
+		AC754E2D268C3AA1003E4F71 /* UNMuteCallRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UNMuteCallRequestHandler.swift; sourceTree = "<group>"; };
+		AC754E2F268C3B38003E4F71 /* TerminateCallRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminateCallRequestHandler.swift; sourceTree = "<group>"; };
+		AC754E31268C3BB9003E4F71 /* TerminateCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminateCallRequest.swift; sourceTree = "<group>"; };
+		AC754E33268C3CDD003E4F71 /* ActiveCallParticipantsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveCallParticipantsRequest.swift; sourceTree = "<group>"; };
+		AC754E35268C3D24003E4F71 /* ActiveCallParticipantsRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveCallParticipantsRequestHandler.swift; sourceTree = "<group>"; };
+		AC754E37268C3DEA003E4F71 /* StartCallRecordingRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallRecordingRequestHandler.swift; sourceTree = "<group>"; };
+		AC754E39268C3E0E003E4F71 /* StartCallRecordingRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallRecordingRequest.swift; sourceTree = "<group>"; };
+		AC754E3B268C3E8A003E4F71 /* StopCallRecordingRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopCallRecordingRequestHandler.swift; sourceTree = "<group>"; };
+		AC754E3D268C3EBD003E4F71 /* StopCallRecordingRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopCallRecordingRequest.swift; sourceTree = "<group>"; };
+		AC754E3F268C4422003E4F71 /* CallsHistoryRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsHistoryRequest.swift; sourceTree = "<group>"; };
+		AC754E41268C4431003E4F71 /* CallsHistoryRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsHistoryRequestHandler.swift; sourceTree = "<group>"; };
 		AC822691C6DA4EB524A460762D228647 /* SocketStateType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SocketStateType.swift; sourceTree = "<group>"; };
+		ACC7235D268AE4E40057F43C /* SystemEventMessageModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemEventMessageModel.swift; sourceTree = "<group>"; };
+		ACC72364268B17DE0057F43C /* AddCallParticipantRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCallParticipantRequestHandler.swift; sourceTree = "<group>"; };
+		ACC72367268B18AC0057F43C /* CreateCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCall.swift; sourceTree = "<group>"; };
+		ACC72369268B1A000057F43C /* CallType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallType.swift; sourceTree = "<group>"; };
+		ACC7236C268B1ADA0057F43C /* AcceptCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcceptCallRequest.swift; sourceTree = "<group>"; };
+		ACC7236E268B1D990057F43C /* StartCallRequestResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallRequestResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72370268B1E7D0057F43C /* RejectCallResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RejectCallResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72372268B312B0057F43C /* Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Call.swift; sourceTree = "<group>"; };
+		ACC72374268B32C50057F43C /* CallStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStatus.swift; sourceTree = "<group>"; };
+		ACC72376268B33BA0057F43C /* DeliverCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliverCallRequest.swift; sourceTree = "<group>"; };
+		ACC72378268B343C0057F43C /* DeliverCallResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliverCallResponseHandler.swift; sourceTree = "<group>"; };
+		ACC7237A268B34EA0057F43C /* CallStartedResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStartedResponseHandler.swift; sourceTree = "<group>"; };
+		ACC7237C268B350D0057F43C /* StartCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCall.swift; sourceTree = "<group>"; };
+		ACC7237E268B35710057F43C /* ClientDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientDTO.swift; sourceTree = "<group>"; };
+		ACC72380268B37D30057F43C /* RemoveCallParticipantResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveCallParticipantResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72382268B38100057F43C /* CallParticipant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallParticipant.swift; sourceTree = "<group>"; };
+		ACC72384268B39620057F43C /* MuteCallParticipantResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuteCallParticipantResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72386268B39980057F43C /* UNMuteCallParticipantResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UNMuteCallParticipantResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72388268B3A080057F43C /* TurnOnVideoCallResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOnVideoCallResponseHandler.swift; sourceTree = "<group>"; };
+		ACC7238A268B3A5E0057F43C /* TurnOffVideoCallResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOffVideoCallResponseHandler.swift; sourceTree = "<group>"; };
+		ACC7238C268B3AB60057F43C /* LeaveCallResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveCallResponseHandler.swift; sourceTree = "<group>"; };
+		ACC7238E268B3BCA0057F43C /* CallSessionCreatedResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallSessionCreatedResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72390268B3C490057F43C /* StartCallRecordingResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallRecordingResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72392268B3C7D0057F43C /* StopCallRecordingResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopCallRecordingResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72394268B3CEE0057F43C /* EndCallResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndCallResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72396268B3D890057F43C /* CallParticipantJoinedResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallParticipantJoinedResponseHandler.swift; sourceTree = "<group>"; };
+		ACC72398268B3DD30057F43C /* ActiveCallParticipantsResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveCallParticipantsResponseHandler.swift; sourceTree = "<group>"; };
+		ACC7239A268B3E400057F43C /* GetCallsResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCallsResponseHandler.swift; sourceTree = "<group>"; };
+		ACC7239C268B3EBF0057F43C /* StartCallGroupRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallGroupRequestHandler.swift; sourceTree = "<group>"; };
+		ACC7239E268B3F790057F43C /* StartCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallRequest.swift; sourceTree = "<group>"; };
+		ACC723A0268B41170057F43C /* StartCallRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallRequestHandler.swift; sourceTree = "<group>"; };
+		ACC723A2268B42970057F43C /* EndCallRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndCallRequestHandler.swift; sourceTree = "<group>"; };
+		ACC723A4268B42B80057F43C /* EndCallRequest copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EndCallRequest copy.swift"; sourceTree = "<group>"; };
+		ACC723A6268B49160057F43C /* AddCallParticipantsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCallParticipantsRequest.swift; sourceTree = "<group>"; };
+		ACC723A8268B4B7E0057F43C /* AcceptCallRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcceptCallRequestHandler.swift; sourceTree = "<group>"; };
 		ACC80D158B843A6FED6621D2558F0A57 /* SentryJavaScriptBridgeHelper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryJavaScriptBridgeHelper.m; path = Sources/Sentry/SentryJavaScriptBridgeHelper.m; sourceTree = "<group>"; };
 		AD0DDF5E2A9DCDE2A6E3676FAD6F4067 /* CMAssistant+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMAssistant+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		AD3344ADCAE7CDCC7903AC93C6B7F8A1 /* GetThreadsResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetThreadsResponse.swift; sourceTree = "<group>"; };
@@ -1546,7 +1660,7 @@
 		AEE797F0CA9CC095E62E66FA77031FA8 /* UnreadMessageCountRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnreadMessageCountRequest.swift; sourceTree = "<group>"; };
 		AFDB99F665F0ADC1EB36A93993A53D30 /* UploadFile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UploadFile.swift; sourceTree = "<group>"; };
 		AFE7E813B2C157E6C160E85B941407E5 /* RetrieveDataFromCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RetrieveDataFromCache.swift; sourceTree = "<group>"; };
-		B072CCA58A17939CE34500602284B64B /* SentryCrashReportStore.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashReportStore.c; path = Sources/SentryCrash/Recording/SentryCrashReportStore.c; sourceTree = "<group>"; };
+		B072CCA58A17939CE34500602284B64B /* SentryCrashReportStore.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashReportStore.c; path = Sources/SentryCrash/Recording/SentryCrashReportStore.c; sourceTree = "<group>"; };
 		B09EE7AEFF1E48D89A93ECC9AACC8C47 /* MessageResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageResponseHandler.swift; sourceTree = "<group>"; };
 		B0B982DD058B9B3E8C64030519A3D523 /* ContactsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContactsRequest.swift; sourceTree = "<group>"; };
 		B0DC22A31EA68B76A7A20F955AADA651 /* Alamofire.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Alamofire.modulemap; sourceTree = "<group>"; };
@@ -1554,7 +1668,7 @@
 		B16607D262A49A70963E967173034F09 /* NotSeenDurationRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotSeenDurationRequest.swift; sourceTree = "<group>"; };
 		B16B50D00D8D2BA51A7C83E5E20FE9B0 /* AddContactRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddContactRequest.swift; sourceTree = "<group>"; };
 		B1876B712C87194C4133EA51E0775A8F /* Starscream.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Starscream.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B1E6A4422712580433136AC5FB721DFD /* SentryCrashDebug.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashDebug.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashDebug.c; sourceTree = "<group>"; };
+		B1E6A4422712580433136AC5FB721DFD /* SentryCrashDebug.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashDebug.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashDebug.c; sourceTree = "<group>"; };
 		B1F98BAC9CE5FE3944B470A2D9A7DB07 /* CallbacksManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CallbacksManager.swift; sourceTree = "<group>"; };
 		B24F78ADAF4CEDBB7E1B433212D4FF6B /* Pods-ChatApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-ChatApplication.release.xcconfig"; sourceTree = "<group>"; };
 		B27F734389DC36C0434547E8D114F6E6 /* Pods-ChatApplication-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-ChatApplication-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -1564,21 +1678,21 @@
 		B32924987F39E61CD6072D7C3F1DAEB2 /* SwiftyBeaver.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SwiftyBeaver.modulemap; sourceTree = "<group>"; };
 		B3B12C603334965D36DF131AB77B44B2 /* GetBlockedContactsRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetBlockedContactsRequestHandler.swift; sourceTree = "<group>"; };
 		B40A347E7037739F0DC51A183CA160E9 /* HTTPMethod.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
-		B4746CCB627FC90E3D9A8DB333F2EDF7 /* SentryCrashCPU_arm64.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashCPU_arm64.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU_arm64.c; sourceTree = "<group>"; };
+		B4746CCB627FC90E3D9A8DB333F2EDF7 /* SentryCrashCPU_arm64.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashCPU_arm64.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU_arm64.c; sourceTree = "<group>"; };
 		B480385E25C90A8571AFBCC0AFB4CDC3 /* UnBlockContactRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnBlockContactRequestHandler.swift; sourceTree = "<group>"; };
 		B4ECBB76969A333C0AC65562E4FF7BEE /* NewLeaveThreadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewLeaveThreadRequest.swift; sourceTree = "<group>"; };
 		B4F2EE8BE47B1DC9F1FB5B67D9D15D09 /* RemoveParticipantsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoveParticipantsRequest.swift; sourceTree = "<group>"; };
 		B50C433400BFBEE94A9CF68003D54356 /* NSError+SentrySimpleConstructor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSError+SentrySimpleConstructor.h"; path = "Sources/SentryCrash/Recording/Tools/NSError+SentrySimpleConstructor.h"; sourceTree = "<group>"; };
-		B5371E8FAF8747F7F7BA35D3464D2AE7 /* SentryCrashCPU.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashCPU.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU.c; sourceTree = "<group>"; };
+		B5371E8FAF8747F7F7BA35D3464D2AE7 /* SentryCrashCPU.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashCPU.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU.c; sourceTree = "<group>"; };
 		B54F96250407D99905387BFB34F00BC9 /* MessageSeenByUsersResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageSeenByUsersResponseHandler.swift; sourceTree = "<group>"; };
-		B55FF7F12C084CCBABECEBF0E8A3F113 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		B55FF7F12C084CCBABECEBF0E8A3F113 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		B56C768AC14D216E5B40A33E45AA4434 /* DeleteMessageRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeleteMessageRequest.swift; sourceTree = "<group>"; };
 		B5A3BA49631C2E7BA46002E82827FB06 /* MessageType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageType.swift; sourceTree = "<group>"; };
 		B5C6AC918DA9B497F5A67DDA20600779 /* LogLevel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LogLevel.swift; sourceTree = "<group>"; };
 		B5E93DCAF8874EC19F7434F3EBD6CB59 /* UploadManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 		B66E247E9217065B09898FAC4873B56E /* MessageDeliverRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageDeliverRequest.swift; sourceTree = "<group>"; };
-		B684A55D04109F71624996B0712927D5 /* SentryCrashMonitor.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMonitor.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor.c; sourceTree = "<group>"; };
-		B6BBDC31461D3E0981D7416C058CCDEB /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		B684A55D04109F71624996B0712927D5 /* SentryCrashMonitor.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMonitor.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor.c; sourceTree = "<group>"; };
+		B6BBDC31461D3E0981D7416C058CCDEB /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		B6D52CA7F420F9A64A001CFFEAC78F88 /* GetBlockedListCallbacks.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetBlockedListCallbacks.swift; sourceTree = "<group>"; };
 		B71DFB6976BE6B05E80860C73FE1B124 /* AllocatedSizeOfDirectory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AllocatedSizeOfDirectory.swift; sourceTree = "<group>"; };
 		B7A1BD739B5B553DB731459FD5C60A91 /* CMLinkedUser+extenstions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMLinkedUser+extenstions.swift"; sourceTree = "<group>"; };
@@ -1602,7 +1716,7 @@
 		BC1972960781F01F4696C293E1E7B3C2 /* QueueOfUploadFiles+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "QueueOfUploadFiles+CoreDataClass.swift"; sourceTree = "<group>"; };
 		BC67201964E819382BCF25E4431D9E59 /* BotEventModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BotEventModel.swift; sourceTree = "<group>"; };
 		BC703AD1C7E4A750D43B92C33B4EBD32 /* MessageManagementMethods.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageManagementMethods.swift; sourceTree = "<group>"; };
-		BC995C889C0FB4939C8D2E2B16018383 /* SentryCrashCPU_arm.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashCPU_arm.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU_arm.c; sourceTree = "<group>"; };
+		BC995C889C0FB4939C8D2E2B16018383 /* SentryCrashCPU_arm.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashCPU_arm.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU_arm.c; sourceTree = "<group>"; };
 		BD04FE685852478064E7A2B168AF481B /* PinUnpinMessageResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PinUnpinMessageResponse.swift; sourceTree = "<group>"; };
 		BD05F73C3440A5A35BEC27DA47BDE016 /* FileDestination.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FileDestination.swift; path = Sources/FileDestination.swift; sourceTree = "<group>"; };
 		BD67D610C8D694574B0613B45AD0FAA2 /* ChatMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
@@ -1625,13 +1739,13 @@
 		C1C02E7C22366A819757E865841F71F7 /* ManageUploadRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManageUploadRequestHandler.swift; sourceTree = "<group>"; };
 		C1C28958354270E6AE401EBA6EB16219 /* ThreadsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ThreadsRequest.swift; sourceTree = "<group>"; };
 		C1FF1EA9EEB72E479D33AE31C1F643B9 /* SentryCrashMonitor_Deadlock.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryCrashMonitor_Deadlock.m; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_Deadlock.m; sourceTree = "<group>"; };
-		C273AEEDF1C5B3B2E77A1932E0835CA5 /* SentryCrashMach.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMach.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashMach.c; sourceTree = "<group>"; };
+		C273AEEDF1C5B3B2E77A1932E0835CA5 /* SentryCrashMach.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMach.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashMach.c; sourceTree = "<group>"; };
 		C2835EDAEE4052BF256E7FF0EE1B1A17 /* UserRole.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserRole.swift; sourceTree = "<group>"; };
 		C290F2BF9B2045A1B7C4BDB896EABE0E /* SentryContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryContext.h; path = Sources/Sentry/include/SentryContext.h; sourceTree = "<group>"; };
 		C2A3FDACA9014F518312216D0A7F8A27 /* FanapPodAsyncSDK-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FanapPodAsyncSDK-prefix.pch"; sourceTree = "<group>"; };
 		C353092BAC78EDFC3468EAB5DC08D117 /* UserRemovedFromThreadServerAction.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserRemovedFromThreadServerAction.swift; sourceTree = "<group>"; };
 		C3DCE8BF4026D744C5196CE47136211D /* EnumsAndStructs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EnumsAndStructs.swift; sourceTree = "<group>"; };
-		C4BA812C0AC096A793268344F62C1B68 /* SentryCrashLogger.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashLogger.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashLogger.c; sourceTree = "<group>"; };
+		C4BA812C0AC096A793268344F62C1B68 /* SentryCrashLogger.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashLogger.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashLogger.c; sourceTree = "<group>"; };
 		C4FC0BBFEFE19042AB1F0B7DA0271E97 /* EditMessageResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditMessageResponse.swift; sourceTree = "<group>"; };
 		C535BD5FE7D675C685A2B77DD275DD31 /* CMUserRole+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMUserRole+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C542EDC3E158CDAAFBE42E535A97D27A /* SentryCrashReportFilterBasic.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryCrashReportFilterBasic.m; path = Sources/SentryCrash/Reporting/Filters/SentryCrashReportFilterBasic.m; sourceTree = "<group>"; };
@@ -1669,7 +1783,7 @@
 		D07C391EBD6A8AB392EED7427C9AE4AE /* Starscream.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Starscream.modulemap; sourceTree = "<group>"; };
 		D0E4497237C704893AB2FA401B947448 /* NewChatMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewChatMessage.swift; sourceTree = "<group>"; };
 		D1017E4030A3479B14AC73A600C56D07 /* ServerTrustPolicy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ServerTrustPolicy.swift; path = Source/ServerTrustPolicy.swift; sourceTree = "<group>"; };
-		D1666DD2DF7A674F6F2733E6A11D8D2C /* SentryCrashMachineContext.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMachineContext.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashMachineContext.c; sourceTree = "<group>"; };
+		D1666DD2DF7A674F6F2733E6A11D8D2C /* SentryCrashMachineContext.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMachineContext.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashMachineContext.c; sourceTree = "<group>"; };
 		D1B7D647EB9E434A78D865BAEEAE2998 /* Conversation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 		D21B3FE3B843537A9FB29E665B2E80CB /* AsyncDelegatesImplementation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AsyncDelegatesImplementation.swift; sourceTree = "<group>"; };
 		D30DFA905A41D39DF951E7DDD659ACAC /* PinThreadCallback.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PinThreadCallback.swift; sourceTree = "<group>"; };
@@ -1700,7 +1814,7 @@
 		DBD2481F597E11031C41A75DC2089A1F /* Cache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		DC1377A00C03F0B90B556645CFA49EA2 /* SeenMessageResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SeenMessageResponseHandler.swift; sourceTree = "<group>"; };
 		DC42F093A0E55192C89EAF702BE54032 /* ChatPrivateMethods.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatPrivateMethods.swift; sourceTree = "<group>"; };
-		DC9029C5D42FA8FFB5CA3006507CB027 /* SentryCrashString.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashString.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashString.c; sourceTree = "<group>"; };
+		DC9029C5D42FA8FFB5CA3006507CB027 /* SentryCrashString.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashString.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashString.c; sourceTree = "<group>"; };
 		DCE74F37AC78706AFA2E99ADB0C1651A /* NewMapSearchResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewMapSearchResponse.swift; sourceTree = "<group>"; };
 		DD1770D99BBF86F6F81D3F96DC901A00 /* AsyncMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AsyncMessage.swift; sourceTree = "<group>"; };
 		DDA0180988509C70A1663467696961F2 /* SentryCrash.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryCrash.m; path = Sources/SentryCrash/Recording/SentryCrash.m; sourceTree = "<group>"; };
@@ -1714,7 +1828,7 @@
 		E16BE9D229A55078EF430555D7E7C3DE /* ParticipantManagementMethods.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParticipantManagementMethods.swift; sourceTree = "<group>"; };
 		E17BFE1ED3650F54E23BD010B7C8DB45 /* LeaveThreadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LeaveThreadRequest.swift; sourceTree = "<group>"; };
 		E2145A192A79C80DDD9FFFA2A46CF9A2 /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E23C076BA70925415F490FEDB215DA92 /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftyJSON.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E23C076BA70925415F490FEDB215DA92 /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E276E291482ADD63D02E57507DB1634A /* DiskStatus.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiskStatus.swift; sourceTree = "<group>"; };
 		E2E58E2B5837477B29B8CC7654161FB5 /* Alamofire-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Alamofire-Info.plist"; sourceTree = "<group>"; };
 		E3488DBB737D7370F5023FFA41DD9CB5 /* ReplaceAdminAndLeaveThreadRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReplaceAdminAndLeaveThreadRequestHandler.swift; sourceTree = "<group>"; };
@@ -1730,8 +1844,8 @@
 		E6E5917F7296294A700588EB78D8FFF9 /* BlockedResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockedResponseHandler.swift; sourceTree = "<group>"; };
 		E72508FE3E0575B29177D5273DE65D59 /* NewStartStopBotRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewStartStopBotRequest.swift; sourceTree = "<group>"; };
 		E8280D8DFAB46D9F15223E38DB551C0E /* SendFileMessageRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SendFileMessageRequest.swift; sourceTree = "<group>"; };
-		E8A4D86C5700E3ACBB7B489D485A5357 /* SentryCrashCPU_x86_32.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashCPU_x86_32.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU_x86_32.c; sourceTree = "<group>"; };
-		E8D95097A31C9052FDDD08CF27FF2779 /* SentryCrashCPU_x86_64.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashCPU_x86_64.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU_x86_64.c; sourceTree = "<group>"; };
+		E8A4D86C5700E3ACBB7B489D485A5357 /* SentryCrashCPU_x86_32.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashCPU_x86_32.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU_x86_32.c; sourceTree = "<group>"; };
+		E8D95097A31C9052FDDD08CF27FF2779 /* SentryCrashCPU_x86_64.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashCPU_x86_64.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashCPU_x86_64.c; sourceTree = "<group>"; };
 		E90191282047C1B492168F2340FDD3CB /* SwiftyBeaver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyBeaver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E965C1E01E9BB82C5F75A7F8079DDD1C /* NewPinUnpinThreadRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewPinUnpinThreadRequest.swift; sourceTree = "<group>"; };
 		E99A34F5B14360068A239199836C8534 /* SentryCrashMachineContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashMachineContext.h; path = Sources/SentryCrash/Recording/Tools/SentryCrashMachineContext.h; sourceTree = "<group>"; };
@@ -1753,20 +1867,20 @@
 		EDCBF8E1D07AA8A9833D5C2AF75765AC /* RemoveContactsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoveContactsRequest.swift; sourceTree = "<group>"; };
 		EEDA09727983D018EB8CE85CFBB04A5D /* BlockContactRequestHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockContactRequestHandler.swift; sourceTree = "<group>"; };
 		EF017DFC72A703FF0E4DB385B81A4D02 /* SentryEvent.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryEvent.h; path = Sources/Sentry/include/SentryEvent.h; sourceTree = "<group>"; };
-		EF6C75CF6CF8FF7334405542D91B596E /* SentryCrashObjC.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashObjC.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashObjC.c; sourceTree = "<group>"; };
+		EF6C75CF6CF8FF7334405542D91B596E /* SentryCrashObjC.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashObjC.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashObjC.c; sourceTree = "<group>"; };
 		EFA81AE7875B39C3B7ADE9D51F26B259 /* SentryException.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SentryException.m; path = Sources/Sentry/SentryException.m; sourceTree = "<group>"; };
 		F001F96951F276147BBECDF18850929C /* BlockedUser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockedUser.swift; sourceTree = "<group>"; };
 		F01FBC7201E82CDBC23BEF7A98A82BF1 /* SetRemoveRoleModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SetRemoveRoleModel.swift; sourceTree = "<group>"; };
 		F033C2E24C5ECC37F4BB0C297D2AD534 /* SwiftyBeaver-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftyBeaver-dummy.m"; sourceTree = "<group>"; };
 		F10895A5A495369F2D33EC4239C35A59 /* SearchContactsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SearchContactsRequest.swift; sourceTree = "<group>"; };
 		F1166744F247CF8CFCA6171B51213587 /* MapSearchRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MapSearchRequest.swift; sourceTree = "<group>"; };
-		F16A6AFC14F157B2AFF529D9B33C5056 /* SentryCrashMonitor_MachException.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMonitor_MachException.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_MachException.c; sourceTree = "<group>"; };
+		F16A6AFC14F157B2AFF529D9B33C5056 /* SentryCrashMonitor_MachException.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMonitor_MachException.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_MachException.c; sourceTree = "<group>"; };
 		F1792D0E8DD1C50552AC0414F1636AEF /* CMParticipant+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMParticipant+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		F2BADC86015F2D81DEBC6F278DCDD734 /* SetProfileResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SetProfileResponseHandler.swift; sourceTree = "<group>"; };
 		F30D6F33E9BC1CAF4C7946F22C3470D8 /* SentryCrashMonitor_Deadlock.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashMonitor_Deadlock.h; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_Deadlock.h; sourceTree = "<group>"; };
 		F32FEEACECB3C07E6C19FE58D8B0C128 /* ContactEventTypes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContactEventTypes.swift; sourceTree = "<group>"; };
 		F369DE3F0822115469E1DB1E1E41A64D /* CMUser+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CMUser+CoreDataClass.swift"; sourceTree = "<group>"; };
-		F3F79FC32FB3D104F6E98149725B8243 /* SentryCrashDynamicLinker.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashDynamicLinker.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashDynamicLinker.c; sourceTree = "<group>"; };
+		F3F79FC32FB3D104F6E98149725B8243 /* SentryCrashDynamicLinker.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashDynamicLinker.c; path = Sources/SentryCrash/Recording/Tools/SentryCrashDynamicLinker.c; sourceTree = "<group>"; };
 		F451633B065AA038164B9C70735AEDFE /* ReceiveMessageFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReceiveMessageFactory.swift; sourceTree = "<group>"; };
 		F4829B50D7452A2A35C916D66C528434 /* SystemMessageResponseHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SystemMessageResponseHandler.swift; sourceTree = "<group>"; };
 		F4D35E4698E14B3FB944D43F302DB55A /* CacheDataModel.xcdatamodel */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.xcdatamodel; path = CacheDataModel.xcdatamodel; sourceTree = "<group>"; };
@@ -1810,7 +1924,7 @@
 		FDDFB8ECBBAD4817185B8E7681262775 /* GetThreadParticipantsCallbacks.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetThreadParticipantsCallbacks.swift; sourceTree = "<group>"; };
 		FDE024AD790D4DFE44EB985E58F3B3C0 /* SentryCrashMonitorContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashMonitorContext.h; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitorContext.h; sourceTree = "<group>"; };
 		FDF9739895F7D695E43EF58B37A4D8E0 /* SentryCrashStackCursor_SelfThread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SentryCrashStackCursor_SelfThread.h; path = Sources/SentryCrash/Recording/Tools/SentryCrashStackCursor_SelfThread.h; sourceTree = "<group>"; };
-		FE1F396F6CDE2EAA2C9B2DA91BF49E46 /* SentryCrashMonitor_Zombie.c */ = {isa = PBXFileReference; includeInIndex = 1; name = SentryCrashMonitor_Zombie.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_Zombie.c; sourceTree = "<group>"; };
+		FE1F396F6CDE2EAA2C9B2DA91BF49E46 /* SentryCrashMonitor_Zombie.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = SentryCrashMonitor_Zombie.c; path = Sources/SentryCrash/Recording/Monitors/SentryCrashMonitor_Zombie.c; sourceTree = "<group>"; };
 		FE58BE56A388C9B6564A9559ABDF758A /* GetThreadParticipantsResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GetThreadParticipantsResponse.swift; sourceTree = "<group>"; };
 		FEB4CBE131DEBB1DE75DFAF2E188FC5E /* SwiftyJSON-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftyJSON-dummy.m"; sourceTree = "<group>"; };
 		FF5F2E677353605E85691502DA0E54C6 /* NewUpdateChatProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NewUpdateChatProfile.swift; sourceTree = "<group>"; };
@@ -1922,7 +2036,6 @@
 				8A116226D615B44E973D70463FD8C23A /* UnpinThreadCallback.swift */,
 				84DCC40D6D889B87F253A9274712D92C /* UpdateThreadInfoCallback.swift */,
 			);
-			name = ThreadResponses;
 			path = ThreadResponses;
 			sourceTree = "<group>";
 		};
@@ -1934,7 +2047,6 @@
 				176BD3CEAD851727C03D9A9C127209D2 /* GetContactsResponse.swift */,
 				57BD30E9432D41BED5D07B1164DB1B35 /* RemoveContactResponse.swift */,
 			);
-			name = ContactOutputModels;
 			path = ContactOutputModels;
 			sourceTree = "<group>";
 		};
@@ -1947,7 +2059,6 @@
 				72831288CA39691B2F5FBE928473F3A1 /* UnblockRequest.swift */,
 				0F6AC474B0A17D0DBB951DE2228C0C35 /* UpdateChatProfileRequest.swift */,
 			);
-			name = UserInputModels;
 			path = UserInputModels;
 			sourceTree = "<group>";
 		};
@@ -1956,7 +2067,6 @@
 			children = (
 				2BDF69AA4CCEBB8D4B1C97679DE34A47 /* AsyncPublicMethods.swift */,
 			);
-			name = AsyncPublicMethods;
 			path = AsyncPublicMethods;
 			sourceTree = "<group>";
 		};
@@ -1966,7 +2076,6 @@
 				C04F39BF18523A4EFAC25B7719029ABB /* SwiftyJSON.swift */,
 				BC03AFB6BBB91BB081D3816BC4276BE5 /* Support Files */,
 			);
-			name = SwiftyJSON;
 			path = SwiftyJSON;
 			sourceTree = "<group>";
 		};
@@ -1978,7 +2087,6 @@
 				4D01552581F5D8CC3B01F6BE0D7F0038 /* SendStatusPingRequest.swift */,
 				B9F7444B41CE50BCDF7B965DC22AF7FD /* UserInfoRequest.swift */,
 			);
-			name = REQ;
 			path = REQ;
 			sourceTree = "<group>";
 		};
@@ -1997,7 +2105,6 @@
 				B22FC9C514AF333761597810C32D783D /* ThreadInputModels */,
 				02FCE8BFA574784D3958B64CB206CDDB /* UserInputModels */,
 			);
-			name = InputModels;
 			path = InputModels;
 			sourceTree = "<group>";
 		};
@@ -2007,7 +2114,6 @@
 				3D01EDEFB2E84F4A0C5B847D88A0099B /* Each.swift */,
 				B9F9AA0390DA2338FBBEA824FD127D4E /* Support Files */,
 			);
-			name = Each;
 			path = Each;
 			sourceTree = "<group>";
 		};
@@ -2028,16 +2134,15 @@
 				718AE23D15154080CDBAACACD82CE536 /* FileModel.swift */,
 				0E68DA1CDECF9156BE796BAADBBC43EF /* ImageModel.swift */,
 			);
-			name = FileManager;
 			path = FileManager;
 			sourceTree = "<group>";
 		};
 		0F44D868A963EF2965736F57C629336A /* System */ = {
 			isa = PBXGroup;
 			children = (
+				ACC7235B268AE4E40057F43C /* DTO */,
 				B2ABC28900F8672937A80AF02F0BE16B /* Handlers */,
 			);
-			name = System;
 			path = System;
 			sourceTree = "<group>";
 		};
@@ -2057,7 +2162,6 @@
 				3F5272DE9D31D91C58E7EA8880D0C496 /* DTO */,
 				BDF32C3908EF80CDD22121BB58FFD3AC /* Handlers */,
 			);
-			name = Thread;
 			path = Thread;
 			sourceTree = "<group>";
 		};
@@ -2067,7 +2171,6 @@
 				8D2A51E83C3B0D9003BE3FDB8CDFBC56 /* DTO */,
 				6EDC54A0616401529B46D8A6EAABB9A6 /* Handlers */,
 			);
-			name = File;
 			path = File;
 			sourceTree = "<group>";
 		};
@@ -2079,7 +2182,6 @@
 				08880B863CB03B7C4109C6049F53A79C /* StartBotCallback.swift */,
 				3ADCDCF07E6E07398B5FFAD6DEDAB471 /* StopBotCallback.swift */,
 			);
-			name = BotResponses;
 			path = BotResponses;
 			sourceTree = "<group>";
 		};
@@ -2094,7 +2196,6 @@
 				BD04FE685852478064E7A2B168AF481B /* PinUnpinMessageResponse.swift */,
 				5384D8C6E7AA538E10F2CE9EDB7622A2 /* SendMessageResponse.swift */,
 			);
-			name = MessageOutputModels;
 			path = MessageOutputModels;
 			sourceTree = "<group>";
 		};
@@ -2121,7 +2222,6 @@
 				4702B9A286A5D3EADB8D81EA661093A4 /* DTO */,
 				8B01CCE55482622127581B9C081969B6 /* Handlers */,
 			);
-			name = User;
 			path = User;
 			sourceTree = "<group>";
 		};
@@ -2152,7 +2252,6 @@
 				A4EDE62EEFAA5FAE2437A40D185357DB /* ThreadParticipantsRequest.swift */,
 				C1C28958354270E6AE401EBA6EB16219 /* ThreadsRequest.swift */,
 			);
-			name = REQ;
 			path = REQ;
 			sourceTree = "<group>";
 		};
@@ -2162,7 +2261,6 @@
 				1F1716812B1BFAFB32E0EDFFE249FF23 /* CacheEnums.swift */,
 				0E5E7B2F3E2F6A59D0DFAF37B5E4A80E /* CacheExtensions.swift */,
 			);
-			name = Helpers;
 			path = Helpers;
 			sourceTree = "<group>";
 		};
@@ -2176,7 +2274,6 @@
 				C77D2248E89C78520B029842030E712D /* StopBotRequestHandler.swift */,
 				47B7E24C09EDAB016001987F0689448E /* UserBotsBotsRequestHandler.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -2191,7 +2288,6 @@
 				F10895A5A495369F2D33EC4239C35A59 /* SearchContactsRequest.swift */,
 				42718CE0AFCF604DFA8853D91A422BED /* UpdateContactsRequest.swift */,
 			);
-			name = ContactInputModels;
 			path = ContactInputModels;
 			sourceTree = "<group>";
 		};
@@ -2212,7 +2308,6 @@
 				D8EC1A31D69493F53E58D28EDA7E63C9 /* ThreadOutputModels */,
 				F157906FFE00A933C320E25BD0D4D15B /* UserOutputModels */,
 			);
-			name = OutputModels;
 			path = OutputModels;
 			sourceTree = "<group>";
 		};
@@ -2222,7 +2317,6 @@
 				57A8EC7AFE12208E57B6E5547402C176 /* REQ */,
 				7EBC5A096AC101E7BD4943176321BDEC /* RES */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -2248,7 +2342,6 @@
 				B480385E25C90A8571AFBCC0AFB4CDC3 /* UnBlockContactRequestHandler.swift */,
 				8BCDE4993DC22885B964FB3C2E1B371C /* UpdateContactRequestHandler.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -2263,7 +2356,6 @@
 				E72508FE3E0575B29177D5273DE65D59 /* NewStartStopBotRequest.swift */,
 				1950B608F29B83A4E61848B03C6065FF /* RemoveBotCommandRequest.swift */,
 			);
-			name = REQ;
 			path = REQ;
 			sourceTree = "<group>";
 		};
@@ -2286,7 +2378,6 @@
 				764EA84C970E35F386EF297C0BA68623 /* Core */,
 				63CCC0B1500B068FF9CF673D509B8726 /* Support Files */,
 			);
-			name = Sentry;
 			path = Sentry;
 			sourceTree = "<group>";
 		};
@@ -2313,7 +2404,6 @@
 			children = (
 				5F56A172C00740E13A593083F9315FE4 /* NewUploadFileResponse.swift */,
 			);
-			name = RES;
 			path = RES;
 			sourceTree = "<group>";
 		};
@@ -2323,7 +2413,6 @@
 				5187D532BE699666C72D7494E46F7687 /* DTO */,
 				BD3E8BA853C020732E613E6EE281CCB0 /* Handlers */,
 			);
-			name = Bot;
 			path = Bot;
 			sourceTree = "<group>";
 		};
@@ -2333,7 +2422,6 @@
 				206DF0476B9C0C0C7268CF50C2B7A508 /* REQ */,
 				5128D43E39D9F6BC31880E4DEA869A0D /* RES */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -2349,7 +2437,6 @@
 				B7B5A7AB62C92610CCF44D3E8C899006 /* UploadFileRequestHandler.swift */,
 				3E107176980A7113D54359083D15B4B2 /* UploadImageRequestHandler.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -2359,7 +2446,6 @@
 				824708C9751BFD09FBB148247BE9B939 /* DTO */,
 				FE8BDF78A8D4ADC71F0D9D3741F0B8C1 /* Handlers */,
 			);
-			name = Contact;
 			path = Contact;
 			sourceTree = "<group>";
 		};
@@ -2372,7 +2458,6 @@
 				FCA41D507A1D9672AA408F9922A85DDB /* WebSocket.swift */,
 				861F8FC322F59991EC5C8B8DEFAC9D81 /* Support Files */,
 			);
-			name = Starscream;
 			path = Starscream;
 			sourceTree = "<group>";
 		};
@@ -2382,7 +2467,6 @@
 				098C70CD0ED1361FDF0E5AFE4B9C5E78 /* REQ */,
 				625D5F63A32878DD3CC994D9AA28CE41 /* RES */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -2422,7 +2506,6 @@
 				A15807CFE20BCE03C1F0A4E42B5FCF92 /* SendSignalMessageRequest.swift */,
 				D4D197540392B04FF2C3D916B551792A /* SendTextMessageRequest.swift */,
 			);
-			name = MessageInputModels;
 			path = MessageInputModels;
 			sourceTree = "<group>";
 		};
@@ -2450,7 +2533,6 @@
 				888F24660FC93A8431356F90E29B40EA /* PinThreadResponse.swift */,
 				CA1E72E8BACD2AEDB28B08CA8EAA88D6 /* PublicThreadNameAvailableResponse.swift */,
 			);
-			name = RES;
 			path = RES;
 			sourceTree = "<group>";
 		};
@@ -2459,7 +2541,6 @@
 			children = (
 				36846631A94FCB9FAE721CBA872A8CA6 /* REQ */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -2468,7 +2549,6 @@
 			children = (
 				A7EA7A8B03661B2E6DB0203EE9FE8B1C /* EncodableExtensions.swift */,
 			);
-			name = Extensions;
 			path = Extensions;
 			sourceTree = "<group>";
 		};
@@ -2495,7 +2575,6 @@
 				2A0650D6278D6195D496F7FE0637D6AF /* UploadFileResponse.swift */,
 				59B729F94A99541810EA8E7E95F38CFE /* UploadImageResponse.swift */,
 			);
-			name = FileOutputModels;
 			path = FileOutputModels;
 			sourceTree = "<group>";
 		};
@@ -2507,7 +2586,6 @@
 				E276E291482ADD63D02E57507DB1634A /* DiskStatus.swift */,
 				8BF5DCAC3D66C3DB36FE1D15FD837009 /* Networking.swift */,
 			);
-			name = ChatPrivateMethods;
 			path = ChatPrivateMethods;
 			sourceTree = "<group>";
 		};
@@ -2519,7 +2597,6 @@
 				5504F0BFCE25D33837C609ED15D1A582 /* NewMapSearchRequest.swift */,
 				292B103FF4325C6CA79F4BC6D11D8737 /* NewMapStaticImageRequest.swift */,
 			);
-			name = REQ;
 			path = REQ;
 			sourceTree = "<group>";
 		};
@@ -2534,7 +2611,6 @@
 				6DAE7BA4B97A6A3096ABE1049A8CB0EB /* UpdateChatProfileRequestHandler.swift */,
 				E9C9AEE8AEB0ECAD7C3121F3C202983C /* UserInfoRequestHandler.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -2544,7 +2620,6 @@
 				89D81BFDD9FC31E14A4EC598D3DACE31 /* JSONExtentions.swift */,
 				290F2C36240EA4188DD5201D37A01B8D /* StringExtentions.swift */,
 			);
-			name = Extensions;
 			path = Extensions;
 			sourceTree = "<group>";
 		};
@@ -2553,7 +2628,6 @@
 			children = (
 				9D65D08A82769A86A795B1E33BC6ACBA /* DevicesResposne.swift */,
 			);
-			name = RES;
 			path = RES;
 			sourceTree = "<group>";
 		};
@@ -2587,7 +2661,6 @@
 				9CE9FBDB711A1548D7506CA92FAA63E1 /* DTO */,
 				A6E5A3AF7AA72BF01F1736E3DCED8D1D /* Handlers */,
 			);
-			name = Message;
 			path = Message;
 			sourceTree = "<group>";
 		};
@@ -2599,7 +2672,6 @@
 				F1166744F247CF8CFCA6171B51213587 /* MapSearchRequest.swift */,
 				22A25169EF2796BFAF10EB2169B8F071 /* MapStaticImageRequest.swift */,
 			);
-			name = MapInputModels;
 			path = MapInputModels;
 			sourceTree = "<group>";
 		};
@@ -2623,7 +2695,6 @@
 			children = (
 				3FA3F544995115AE410B58E042389942 /* Request */,
 			);
-			name = Handlers;
 			path = Handlers;
 			sourceTree = "<group>";
 		};
@@ -2637,7 +2708,6 @@
 				1B533F7C638902DC69890CC4E7EB771B /* SignalMessageType.swift */,
 				C0A003A24E1E2D993FB4EBEC6587EBAC /* ThreadTypes.swift */,
 			);
-			name = Types;
 			path = Types;
 			sourceTree = "<group>";
 		};
@@ -2646,7 +2716,6 @@
 			children = (
 				0F56439C3968322A18811D73E5CF94CB /* SendStartTypingRequestHandler.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -2655,7 +2724,6 @@
 			children = (
 				F4829B50D7452A2A35C916D66C528434 /* SystemMessageResponseHandler.swift */,
 			);
-			name = Response;
 			path = Response;
 			sourceTree = "<group>";
 		};
@@ -2708,7 +2776,6 @@
 				9AA632FAF1330221A578CAC982A8774C /* QueueOfUploadImages+CoreDataClass.swift */,
 				8E53B8D14F1F51909F985994D752FE8D /* QueueOfUploadImages+CoreDataProperties.swift */,
 			);
-			name = CacheModels;
 			path = CacheModels;
 			sourceTree = "<group>";
 		};
@@ -2919,7 +2986,6 @@
 				80F7FD0151F15CD2C38A99AAB2D267B6 /* UnblockCallbacks.swift */,
 				751CF927DD25A6DEEFBEF5B95FA570CD /* UpdateChatProfileCallback.swift */,
 			);
-			name = UserResponses;
 			path = UserResponses;
 			sourceTree = "<group>";
 		};
@@ -2955,7 +3021,6 @@
 				5B54B3CF3DBD37D41C824F39A6702F08 /* UnPinThreadRequestHandler.swift */,
 				4377C99619A35C0BC493286B3B1C9365 /* UpdateThreadInfoRequestHandler.swift */,
 			);
-			name = Reqsuest;
 			path = Reqsuest;
 			sourceTree = "<group>";
 		};
@@ -2967,7 +3032,6 @@
 				53AE6DF62BDCCEBDADB68FAB198E4E49 /* NewMapRoutingResponse.swift */,
 				DCE74F37AC78706AFA2E99ADB0C1651A /* NewMapSearchResponse.swift */,
 			);
-			name = RES;
 			path = RES;
 			sourceTree = "<group>";
 		};
@@ -2982,7 +3046,6 @@
 				57C5DDAAE51EEC4B01562A3ED57E177C /* ContactsSyncedResponseHandler.swift */,
 				3EF4187C3D9FD4CB91B3F1E96F983482 /* UnBlockResponseHandler.swift */,
 			);
-			name = Response;
 			path = Response;
 			sourceTree = "<group>";
 		};
@@ -3007,7 +3070,6 @@
 				AA8314DA32EC8BCB9769F1FF5366B6D9 /* REQ */,
 				B1F3B8A15917F358047DF92C00167A44 /* RES */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -3035,7 +3097,6 @@
 				6944FC8B8F05C6584B67108D6BC93EE0 /* RemoveParticipantResponse.swift */,
 				22827EC99E870D97457521826CEBFBD6 /* UserRolesResponse.swift */,
 			);
-			name = ParticipantOutputModels;
 			path = ParticipantOutputModels;
 			sourceTree = "<group>";
 		};
@@ -3045,7 +3106,6 @@
 				5B25E3895B23CD781C508B3AEADFF7E8 /* Request */,
 				ABD368875F5AA825BBEA52DFDF5810C5 /* Response */,
 			);
-			name = Handlers;
 			path = Handlers;
 			sourceTree = "<group>";
 		};
@@ -3060,7 +3120,6 @@
 				BBD11BC352053CBBB8C39F457AE2E547 /* StopBotResponseHandler.swift */,
 				F92C07C920CCB8D464900160B0106C13 /* UserBotsResposneHandler.swift */,
 			);
-			name = Response;
 			path = Response;
 			sourceTree = "<group>";
 		};
@@ -3070,7 +3129,6 @@
 				C8614FF6BA1079977FD9E5DED8630094 /* REQ */,
 				3B4203B16C3A883DFE1B0D68A099384A /* RES */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -3085,7 +3143,6 @@
 				838D1B1E050F64989C00682678AF3AF3 /* ThreadEventModel.swift */,
 				C97C2B31B658C01082B0D8667DB5F07F /* UserEventModel.swift */,
 			);
-			name = EventModels;
 			path = EventModels;
 			sourceTree = "<group>";
 		};
@@ -3095,7 +3152,6 @@
 				F508034405D2218664BA57D0F35DEF9D /* DeleteMessageReponse.swift */,
 				E9F0AF2EBE91E615D972A6CDC132680B /* MessageResponse.swift */,
 			);
-			name = RES;
 			path = RES;
 			sourceTree = "<group>";
 		};
@@ -3120,7 +3176,6 @@
 				C66E228919AADD9B083132621737DD63 /* MapRoutingResponse.swift */,
 				690F6E328A9F13084936F1937E25BDCB /* MapSearchResponse.swift */,
 			);
-			name = MapOutputModels;
 			path = MapOutputModels;
 			sourceTree = "<group>";
 		};
@@ -3130,7 +3185,6 @@
 				DF49289FFA83123C90C4551258BDD32F /* REQ */,
 				919C07F587CCC29E2CE5C13117D72F65 /* RES */,
 			);
-			name = DTO;
 			path = DTO;
 			sourceTree = "<group>";
 		};
@@ -3151,15 +3205,13 @@
 				32DC9D7590643A585C7FC2B433334600 /* SentMessageResponseHandler.swift */,
 				FBA5D3293C0045933E06CD419C8950F6 /* UnPinMessageResponseHandler.swift */,
 			);
-			name = Response;
 			path = Response;
 			sourceTree = "<group>";
 		};
 		9F1256849F5E782042E11C7F7EA1E7EA /* NewChat */ = {
 			isa = PBXGroup;
 			children = (
-				608D018A59265D37B2D469E69E3FB29E /* NewChat.swift */,
-				F451633B065AA038164B9C70735AEDFE /* ReceiveMessageFactory.swift */,
+				ACC7235F268AFE200057F43C /* Call */,
 				3CA51CF003AF50B18AF3639CEE852A9D /* Bot */,
 				ABB63797F79B209707F5B9EE11AB3271 /* Cache */,
 				407E83DC4FF4014B2E39FEF75D8718B1 /* Contact */,
@@ -3170,8 +3222,9 @@
 				0F44D868A963EF2965736F57C629336A /* System */,
 				116917F974F23362C02FEBFF8EABA177 /* Thread */,
 				203717C9EF88434A96D74B6AC370BB9E /* User */,
+				608D018A59265D37B2D469E69E3FB29E /* NewChat.swift */,
+				F451633B065AA038164B9C70735AEDFE /* ReceiveMessageFactory.swift */,
 			);
-			name = NewChat;
 			path = NewChat;
 			sourceTree = "<group>";
 		};
@@ -3194,7 +3247,6 @@
 				E55DB4DFE8F5A3AAD9826BA37F0D773A /* Request */,
 				9F10F522CF161D4E7A4083CA9F3E8404 /* Response */,
 			);
-			name = Handlers;
 			path = Handlers;
 			sourceTree = "<group>";
 		};
@@ -3237,7 +3289,6 @@
 				91CD9BD6CD16693848EEB2AEFB756C0E /* Validation.swift */,
 				CA7CD9EDE41B3D06E6E8D75EE944FC45 /* Support Files */,
 			);
-			name = Alamofire;
 			path = Alamofire;
 			sourceTree = "<group>";
 		};
@@ -3269,7 +3320,6 @@
 				B16607D262A49A70963E967173034F09 /* NotSeenDurationRequest.swift */,
 				2E65780F7B6C3D91F4C17AB0C8775132 /* UpdateContactRequest.swift */,
 			);
-			name = REQ;
 			path = REQ;
 			sourceTree = "<group>";
 		};
@@ -3281,7 +3331,6 @@
 				3D4BD305B3EBD1234C0456B4B9F73661 /* PSM.swift */,
 				CEF1C77A54770762E59686767EC2DB01 /* CoreDataExtensions */,
 			);
-			name = Cache;
 			path = Cache;
 			sourceTree = "<group>";
 		};
@@ -3294,8 +3343,134 @@
 				4A1E67DFE50E1824BEB92F93E6E8ED2A /* UserRemoveRolesResponseHandler.swift */,
 				3E9EEA0B754DFFFB42A39FE3C319650C /* UserRolesResponseHandler.swift */,
 			);
-			name = Response;
 			path = Response;
+			sourceTree = "<group>";
+		};
+		ACC7235B268AE4E40057F43C /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				ACC7235C268AE4E40057F43C /* RES */,
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
+		ACC7235C268AE4E40057F43C /* RES */ = {
+			isa = PBXGroup;
+			children = (
+				ACC7235D268AE4E40057F43C /* SystemEventMessageModel.swift */,
+			);
+			path = RES;
+			sourceTree = "<group>";
+		};
+		ACC7235F268AFE200057F43C /* Call */ = {
+			isa = PBXGroup;
+			children = (
+				ACC72360268B0B8D0057F43C /* DTO */,
+				ACC72361268B17950057F43C /* Handlers */,
+			);
+			path = Call;
+			sourceTree = "<group>";
+		};
+		ACC72360268B0B8D0057F43C /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				ACC7236B268B1AD00057F43C /* REQ */,
+				ACC72366268B18A20057F43C /* RES */,
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
+		ACC72361268B17950057F43C /* Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				ACC72362268B17A30057F43C /* Request */,
+				ACC72363268B17AB0057F43C /* Response */,
+			);
+			path = Handlers;
+			sourceTree = "<group>";
+		};
+		ACC72362268B17A30057F43C /* Request */ = {
+			isa = PBXGroup;
+			children = (
+				ACC723A8268B4B7E0057F43C /* AcceptCallRequestHandler.swift */,
+				AC754E35268C3D24003E4F71 /* ActiveCallParticipantsRequestHandler.swift */,
+				ACC72364268B17DE0057F43C /* AddCallParticipantRequestHandler.swift */,
+				ACC723A2268B42970057F43C /* EndCallRequestHandler.swift */,
+				AC754E2B268C38B1003E4F71 /* MuteCallRequestHandler.swift */,
+				AC754E1B268C33AB003E4F71 /* RemoveCallParticipantRequestHandler.swift */,
+				ACC7239C268B3EBF0057F43C /* StartCallGroupRequestHandler.swift */,
+				ACC723A0268B41170057F43C /* StartCallRequestHandler.swift */,
+				AC754E2F268C3B38003E4F71 /* TerminateCallRequestHandler.swift */,
+				AC754E21268C36EF003E4F71 /* TurnOffVideoCallRequestHandler.swift */,
+				AC754E1D268C3652003E4F71 /* TurnONVideoCallRequestHandler.swift */,
+				AC754E37268C3DEA003E4F71 /* StartCallRecordingRequestHandler.swift */,
+				AC754E3B268C3E8A003E4F71 /* StopCallRecordingRequestHandler.swift */,
+				AC754E41268C4431003E4F71 /* CallsHistoryRequestHandler.swift */,
+				AC754E2D268C3AA1003E4F71 /* UNMuteCallRequestHandler.swift */,
+			);
+			path = Request;
+			sourceTree = "<group>";
+		};
+		ACC72363268B17AB0057F43C /* Response */ = {
+			isa = PBXGroup;
+			children = (
+				ACC72370268B1E7D0057F43C /* RejectCallResponseHandler.swift */,
+				ACC72378268B343C0057F43C /* DeliverCallResponseHandler.swift */,
+				ACC7237A268B34EA0057F43C /* CallStartedResponseHandler.swift */,
+				ACC72380268B37D30057F43C /* RemoveCallParticipantResponseHandler.swift */,
+				ACC72396268B3D890057F43C /* CallParticipantJoinedResponseHandler.swift */,
+				ACC72384268B39620057F43C /* MuteCallParticipantResponseHandler.swift */,
+				ACC72386268B39980057F43C /* UNMuteCallParticipantResponseHandler.swift */,
+				ACC72388268B3A080057F43C /* TurnOnVideoCallResponseHandler.swift */,
+				ACC7238A268B3A5E0057F43C /* TurnOffVideoCallResponseHandler.swift */,
+				ACC7238C268B3AB60057F43C /* LeaveCallResponseHandler.swift */,
+				ACC7238E268B3BCA0057F43C /* CallSessionCreatedResponseHandler.swift */,
+				ACC72390268B3C490057F43C /* StartCallRecordingResponseHandler.swift */,
+				ACC72392268B3C7D0057F43C /* StopCallRecordingResponseHandler.swift */,
+				ACC72394268B3CEE0057F43C /* EndCallResponseHandler.swift */,
+				ACC72398268B3DD30057F43C /* ActiveCallParticipantsResponseHandler.swift */,
+				ACC7239A268B3E400057F43C /* GetCallsResponseHandler.swift */,
+				ACC7236E268B1D990057F43C /* StartCallRequestResponseHandler.swift */,
+			);
+			path = Response;
+			sourceTree = "<group>";
+		};
+		ACC72366268B18A20057F43C /* RES */ = {
+			isa = PBXGroup;
+			children = (
+				ACC72367268B18AC0057F43C /* CreateCall.swift */,
+				ACC72369268B1A000057F43C /* CallType.swift */,
+				ACC72372268B312B0057F43C /* Call.swift */,
+				ACC72374268B32C50057F43C /* CallStatus.swift */,
+				ACC72376268B33BA0057F43C /* DeliverCallRequest.swift */,
+				ACC7237C268B350D0057F43C /* StartCall.swift */,
+				ACC7237E268B35710057F43C /* ClientDTO.swift */,
+				ACC72382268B38100057F43C /* CallParticipant.swift */,
+			);
+			path = RES;
+			sourceTree = "<group>";
+		};
+		ACC7236B268B1AD00057F43C /* REQ */ = {
+			isa = PBXGroup;
+			children = (
+				ACC7236C268B1ADA0057F43C /* AcceptCallRequest.swift */,
+				AC754E33268C3CDD003E4F71 /* ActiveCallParticipantsRequest.swift */,
+				ACC723A6268B49160057F43C /* AddCallParticipantsRequest.swift */,
+				AC754E3F268C4422003E4F71 /* CallsHistoryRequest.swift */,
+				ACC723A4268B42B80057F43C /* EndCallRequest copy.swift */,
+				AC754E25268C37EE003E4F71 /* MuteCallRequest.swift */,
+				AC754E19268C3368003E4F71 /* RemoveCallParticipantsRequest.swift */,
+				AC754E39268C3E0E003E4F71 /* StartCallRecordingRequest.swift */,
+				ACC7239E268B3F790057F43C /* StartCallRequest.swift */,
+				AC754E3D268C3EBD003E4F71 /* StopCallRecordingRequest.swift */,
+				AC754E31268C3BB9003E4F71 /* TerminateCallRequest.swift */,
+				AC754E23268C3729003E4F71 /* TurnOffVideoCallRequest.swift */,
+				AC754E1F268C3663003E4F71 /* TurnOnVideoCallRequest.swift */,
+				AC754E29268C386C003E4F71 /* UNMuteCallRequest.swift */,
+				AC008F50268C9A0700B008FF /* ClientType.swift */,
+				AC008F4E268C989700B008FF /* SendClient.swift */,
+			);
+			path = REQ;
 			sourceTree = "<group>";
 		};
 		B1F3B8A15917F358047DF92C00167A44 /* RES */ = {
@@ -3305,7 +3480,6 @@
 				600FDE69D168D7443DF498507201E210 /* NewContactResponse.swift */,
 				CBCD87A67E10F59695910D43A7F5EE88 /* NewRemoveContactResponse.swift */,
 			);
-			name = RES;
 			path = RES;
 			sourceTree = "<group>";
 		};
@@ -3328,7 +3502,6 @@
 				C08E21DA1F34CD01B5B52F7AABCFBEF5 /* SpamPrivateThreadRequest.swift */,
 				F863F17059B55A04C8750C885EBB7798 /* UpdateThreadInfoRequest.swift */,
 			);
-			name = ThreadInputModels;
 			path = ThreadInputModels;
 			sourceTree = "<group>";
 		};
@@ -3338,7 +3511,6 @@
 				71C6CB412CD32EEB836533921E0AFAD6 /* Request */,
 				73310ED510A94D7108E61669AD50BEB7 /* Response */,
 			);
-			name = Handlers;
 			path = Handlers;
 			sourceTree = "<group>";
 		};
@@ -3362,7 +3534,6 @@
 				36F1CD2661C66D824D2B4A874425743E /* QueueOfWaitUploadFilesResponse.swift */,
 				225966127EB0F4D1E9E80DB9B7AF1B77 /* QueueOfWaitUploadImagesResponse.swift */,
 			);
-			name = QueueOfNotSendRequests;
 			path = QueueOfNotSendRequests;
 			sourceTree = "<group>";
 		};
@@ -3379,7 +3550,6 @@
 				4D185864A30EBA269430949D72055958 /* ThreadManagementMethods.swift */,
 				7F7C40EF802F3EF02DF2DD367F9E5CA5 /* UserManagementMethods.swift */,
 			);
-			name = ChatPublicMethods;
 			path = ChatPublicMethods;
 			sourceTree = "<group>";
 		};
@@ -3419,7 +3589,6 @@
 				22DAF2536C0211F19B7BC4E1CC599616 /* Request */,
 				8BF2F27DEF56323B7781F6B601AA5BB4 /* Response */,
 			);
-			name = Handlers;
 			path = Handlers;
 			sourceTree = "<group>";
 		};
@@ -3429,7 +3598,6 @@
 				7AFEB3E0D71A0F2137A6AACDADE0A851 /* Reqsuest */,
 				FE7C86F93282D9661FD81AF4AF68AD63 /* Response */,
 			);
-			name = Handlers;
 			path = Handlers;
 			sourceTree = "<group>";
 		};
@@ -3463,7 +3631,6 @@
 				83F665F176AF55F76F6074DA9F3B831A /* User.swift */,
 				C2835EDAEE4052BF256E7FF0EE1B1A17 /* UserRole.swift */,
 			);
-			name = PrimaryModels;
 			path = PrimaryModels;
 			sourceTree = "<group>";
 		};
@@ -3475,7 +3642,6 @@
 				F9A4A0A114A1E1EA04A6E15436CB83A2 /* MapSearchRequestHandler.swift */,
 				70E81E5C98447BDE14082D236FE679C9 /* MapStaticImageRequestHandler.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -3486,7 +3652,6 @@
 				7EA392235757C4C3FEAC8C69703C081F /* CreateBotResponse.swift */,
 				86F8EC34CA7C9CD9ED8FAE642280703A /* StartStopBotResponse.swift */,
 			);
-			name = BotOutputModels;
 			path = BotOutputModels;
 			sourceTree = "<group>";
 		};
@@ -3499,7 +3664,6 @@
 				5289AA445B1EDAAA9BA2D2853E89FE93 /* NewUploadFileRequest.swift */,
 				6CF361DD58EE66FA70937CD8192E3552 /* NewUploadImageRequest.swift */,
 			);
-			name = REQ;
 			path = REQ;
 			sourceTree = "<group>";
 		};
@@ -3513,7 +3677,6 @@
 				023C7F79D160242E542D568BD7A30A03 /* ThreadResponses */,
 				79F00E3926AA2016908DB7611919808A /* UserResponses */,
 			);
-			name = CallbackClasses;
 			path = CallbackClasses;
 			sourceTree = "<group>";
 		};
@@ -3541,7 +3704,6 @@
 				B5E93DCAF8874EC19F7434F3EBD6CB59 /* UploadManager.swift */,
 				E5A1CC613E73D6AAFCFABBFD67465511 /* Extra */,
 			);
-			name = Networking;
 			path = Networking;
 			sourceTree = "<group>";
 		};
@@ -3571,7 +3733,6 @@
 				8FC6D8BA7D21A2357B20A1B0104A2621 /* QueueOfUploadFiles+extenstions.swift */,
 				33DD2DE2B67749FD166F92B1886FF5A7 /* QueueOfUploadImages+extenstions.swift */,
 			);
-			name = CoreDataExtensions;
 			path = CoreDataExtensions;
 			sourceTree = "<group>";
 		};
@@ -3593,7 +3754,6 @@
 				79BD76B2936D92A45EC9B4520C464CFD /* GetContactNotSeenDurationCallback.swift */,
 				8D1111C9FF12B0501285BC365C704CF1 /* GetContactsCallback.swift */,
 			);
-			name = ContactResponses;
 			path = ContactResponses;
 			sourceTree = "<group>";
 		};
@@ -3620,7 +3780,6 @@
 				25F0E4EBC26D8B55731D5FAEA558B667 /* DownloadMapStaticImageRequestHandler.swift */,
 				C6347A196F069DF5EFC978AAC481ED46 /* Request */,
 			);
-			name = Handlers;
 			path = Handlers;
 			sourceTree = "<group>";
 		};
@@ -3634,7 +3793,6 @@
 				407AA8E07184A2ACF30BBE35BED3DB55 /* PinUnpinThreadResponse.swift */,
 				2032448BC922404C06BF44B5E7120A94 /* ThreadResponse.swift */,
 			);
-			name = ThreadOutputModels;
 			path = ThreadOutputModels;
 			sourceTree = "<group>";
 		};
@@ -3649,7 +3807,6 @@
 				1DACF3F0EC7540BFFD084ED56475153E /* ThreadEventTypes.swift */,
 				050D71053425900DB67059559C21D1CE /* UserEventTypes.swift */,
 			);
-			name = EventTypes;
 			path = EventTypes;
 			sourceTree = "<group>";
 		};
@@ -3669,7 +3826,6 @@
 				225835793F359253C266F7F09A7D4CB6 /* SwiftyBeaver.swift */,
 				7F7CC4F522E8AF0399BA4879BF2567EA /* Support Files */,
 			);
-			name = SwiftyBeaver;
 			path = SwiftyBeaver;
 			sourceTree = "<group>";
 		};
@@ -3697,7 +3853,6 @@
 				BA68C1233EF125CB7AA359ACAC8B26CD /* NotifyDeliveredMessageRequest.swift */,
 				AEE797F0CA9CC095E62E66FA77031FA8 /* UnreadMessageCountRequest.swift */,
 			);
-			name = REQ;
 			path = REQ;
 			sourceTree = "<group>";
 		};
@@ -3708,7 +3863,6 @@
 				3AA75E7E0901321A9577A0C9AB4B3805 /* CreateBotRequest.swift */,
 				E6C16149AA19D292A1695F7D69781DD1 /* StartStopBotRequest.swift */,
 			);
-			name = BotInputModels;
 			path = BotInputModels;
 			sourceTree = "<group>";
 		};
@@ -3732,7 +3886,6 @@
 				44C0BB3E20E999D3782E2563CC4FEA1A /* PrivateMethodsToCheckConnectionState.swift */,
 				2F24817D121A0E2D4E38CEC76835C95B /* PrivateMethodsToSendMessage.swift */,
 			);
-			name = AsyncPrivateMethods;
 			path = AsyncPrivateMethods;
 			sourceTree = "<group>";
 		};
@@ -3758,7 +3911,6 @@
 				0CA24E47D913E220180653DDF838CB65 /* SendTextMessageRequestHandler.swift */,
 				2CFD2293312F904B3784FA94ECF2630B /* UnPinMessageRequestHandler.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -3769,7 +3921,6 @@
 				3E6AAA03B527B8F78E3A0B99DCEBA59F /* ProgressImplementation.swift */,
 				2ECA94B4F848B8CEC6F52E7D4029B789 /* UploadFileProgress copy.swift */,
 			);
-			name = Extra;
 			path = Extra;
 			sourceTree = "<group>";
 		};
@@ -3781,7 +3932,6 @@
 				1CE41A4E3743E5028C2CCC4F463AFC3A /* RemoveRoleFromUserCallback.swift */,
 				18B9543288EEAA09DED6B7D60A601DFF /* SetRoleToUserCallback.swift */,
 			);
-			name = ParticipantResponses;
 			path = ParticipantResponses;
 			sourceTree = "<group>";
 		};
@@ -3795,7 +3945,6 @@
 				B4F2EE8BE47B1DC9F1FB5B67D9D15D09 /* RemoveParticipantsRequest.swift */,
 				79887064D51CA03F94E151BCE8A7A17B /* SetRemoveRoleRequest.swift */,
 			);
-			name = ParticipantsInputModels;
 			path = ParticipantsInputModels;
 			sourceTree = "<group>";
 		};
@@ -3808,7 +3957,6 @@
 				D8CCA523871DB7FB085470EACDD2C815 /* UploadImageRequest.swift */,
 				48AB3271BE058F28C02A95378468D98A /* UploadRequest.swift */,
 			);
-			name = FileInputModels;
 			path = FileInputModels;
 			sourceTree = "<group>";
 		};
@@ -3824,7 +3972,6 @@
 				413D3F5C483C91D7FE25AA7AA482135B /* GetMessageSeenList.swift */,
 				EB2F3D5ECB61BDFCEE3F43841B51DB4C /* SendMessageCallbacks.swift */,
 			);
-			name = MessageResponses;
 			path = MessageResponses;
 			sourceTree = "<group>";
 		};
@@ -3836,7 +3983,6 @@
 				9B9B2438AB73D855E967CB91F15328AB /* GetUserInfoResponse.swift */,
 				2ECF065B79203F1156E90F0B1FF34B0C /* ProfileResponse.swift */,
 			);
-			name = UserOutputModels;
 			path = UserOutputModels;
 			sourceTree = "<group>";
 		};
@@ -3846,7 +3992,6 @@
 				2A6E73B306B524AD18ED5ACDA44AB561 /* DTO */,
 				D37310C382F073B698D7F41D687715D3 /* Handlers */,
 			);
-			name = Map;
 			path = Map;
 			sourceTree = "<group>";
 		};
@@ -3869,7 +4014,6 @@
 				0E9DB9EC8CF335B7032EA43C101843CF /* FileManager */,
 				CBF0A400EDB6E5F1C6FA8E940B852FFE /* Networking */,
 			);
-			name = Helpers;
 			path = Helpers;
 			sourceTree = "<group>";
 		};
@@ -3901,7 +4045,6 @@
 				AEA1C4997E1A33A7C60577B7D04F50F1 /* UpdateThreadInfoResponseHandler.swift */,
 				C353092BAC78EDFC3468EAB5DC08D117 /* UserRemovedFromThreadServerAction.swift */,
 			);
-			name = Response;
 			path = Response;
 			sourceTree = "<group>";
 		};
@@ -3911,7 +4054,6 @@
 				35F093F0B560E9656F7C6977589625ED /* Request */,
 				7F75CA8F75566816A8BF16128C834DEA /* Response */,
 			);
-			name = Handlers;
 			path = Handlers;
 			sourceTree = "<group>";
 		};
@@ -4374,12 +4516,14 @@
 				7963867683411A454BEEE6FA7626166B /* AddBotCommandCallback.swift in Sources */,
 				1617DA2C930D1BA24D44D56BCE4F6DB0 /* AddBotCommandRequest.swift in Sources */,
 				E1DBD0EC3AE1F9956041E29D484EC571 /* AddBotCommandRequestHandler.swift in Sources */,
+				AC754E32268C3BB9003E4F71 /* TerminateCallRequest.swift in Sources */,
 				44E0CB4F451AAF060A1C86B866DBA952 /* AddBotCommandResponse.swift in Sources */,
 				3BEA10E2F559C97C22330A0C17EB0D42 /* AddContactRequest.swift in Sources */,
 				FBEB8E7BA81F7434F3DD4243C09AD44B /* AddContactRequestHandler.swift in Sources */,
 				261DFDC31A52381E61AAB94354CB1E35 /* AddContactsRequest.swift in Sources */,
 				A088B502D4955D6717383DC60434AEA0 /* AddContactsRequestHandler.swift in Sources */,
 				E14C6923A6DAF5A59446CB8C08A6CBEA /* AddParticipantRequest.swift in Sources */,
+				ACC723A3268B42970057F43C /* EndCallRequestHandler.swift in Sources */,
 				32460BD591B6B284507E208848C9D55D /* AddParticipantResponse.swift in Sources */,
 				F973603117A31D33145E7EC653A27A27 /* AddParticipantResponseHandler.swift in Sources */,
 				C18F53EE7B5EB0BA56343467FF385DFF /* AddParticipantsCallback.swift in Sources */,
@@ -4391,9 +4535,11 @@
 				1B89C8C64B847D8D469FF23CC43F0C63 /* AllUnreadMessageCountRequestHandler.swift in Sources */,
 				DAAAE5EDBCD5320CD1CC2EDC7CDCA11D /* AllUnreadMessageCountResponseHandler.swift in Sources */,
 				22AC0E2451E8F9C9450F1C3C42701501 /* Assistant.swift in Sources */,
+				AC008F51268C9A0700B008FF /* ClientType.swift in Sources */,
 				C6CF3D8A8256D39169B335CA75E01725 /* AssistantAction.swift in Sources */,
 				E0BD539103F4E33C859666A3FB48902F /* AssistantsHistoryResponseHandler.swift in Sources */,
 				C6AEE8F7B86C73A686571445EE4F9ABF /* AssistantsRequest.swift in Sources */,
+				ACC7237B268B34EA0057F43C /* CallStartedResponseHandler.swift in Sources */,
 				7DBB4C5E9CDDE05D45845975D318DD61 /* AssistantsResponseHandler.swift in Sources */,
 				1E7ABA39DF950BF2C14494EC6AC0DBF9 /* AsyncDelegatesImplementation.swift in Sources */,
 				050FC15A6150FE4CB5E683547E33D0AB /* AsyncMessage.swift in Sources */,
@@ -4402,7 +4548,9 @@
 				A87793CD23DD37B2CF10149D2FF81F5E /* BatchDeleteMessageRequest.swift in Sources */,
 				5FF375E7B0D0717DB932A2491CAF25F4 /* BatchDeleteMessageRequestHandler.swift in Sources */,
 				548EFACC11A26DD8F4217A870E7D4E08 /* BlockAssistnatRequestHandler.swift in Sources */,
+				ACC72381268B37D30057F43C /* RemoveCallParticipantResponseHandler.swift in Sources */,
 				B7A29E3C8C0F170E5920DC7A19169F12 /* BlockCallbacks.swift in Sources */,
+				ACC72397268B3D890057F43C /* CallParticipantJoinedResponseHandler.swift in Sources */,
 				BF527FDBC77DC7A36EDF118F7AD53BD0 /* BlockContactRequestHandler.swift in Sources */,
 				8801CAAF7106FF2F3D25B9BFE3707DFB /* BlockedAssistantsRequest.swift in Sources */,
 				25F283A091382A9BCBCED508D68E385A /* BlockedAssistantsRequestHandler.swift in Sources */,
@@ -4410,6 +4558,7 @@
 				732650E681AB7C8D06F9C2BCA33C1030 /* BlockedContactsResponseHandler.swift in Sources */,
 				6DC6A427601B71C8E71BEA806455330E /* BlockedListRequest.swift in Sources */,
 				88806E1B8A3A2CDE822713189304137B /* BlockedResponseHandler.swift in Sources */,
+				AC754E22268C36EF003E4F71 /* TurnOffVideoCallRequestHandler.swift in Sources */,
 				EF8797A56627A5061CF2957E77139BA3 /* BlockedUser.swift in Sources */,
 				0C82BDAA5CE6EF2264B9048EE5768F13 /* BlockRequest.swift in Sources */,
 				362867087E3AF147C8C85227988E75CD /* BlockUnblockAssistantRequest.swift in Sources */,
@@ -4422,6 +4571,7 @@
 				FEED804A88BECEEC23283AA4E9DAC26A /* BotInfoVO.swift in Sources */,
 				CB376B1954355EF0CED0475B344A34C0 /* BotManagementMethods.swift in Sources */,
 				4BD2ABAA2265E1F4EAA34DF3243F7591 /* BotMessageResponseHandler.swift in Sources */,
+				ACC72368268B18AC0057F43C /* CreateCall.swift in Sources */,
 				361E9F908D56CC2EDB7E0596CE6EBF59 /* BotVO.swift in Sources */,
 				16D746C8E8E1F4FF58A01717DC474C1F /* Cache.swift in Sources */,
 				111FAE33BED1FDEF239BB033D66B69F5 /* CacheData.xcdatamodeld in Sources */,
@@ -4435,6 +4585,7 @@
 				75687762E9013E1BC03EC3798EF1B62C /* CasheFactory.swift in Sources */,
 				AC6442BA166B728DEA02E8972960C7AB /* ChangeThreadTypeRequest.swift in Sources */,
 				AE6B978E5FD9DF2C75DE3C3986964F23 /* ChangeThreadTypeRequestHandler.swift in Sources */,
+				AC754E3C268C3E8A003E4F71 /* StopCallRecordingRequestHandler.swift in Sources */,
 				EBEA398B58A55AB9D1D935297E10953B /* ChangeThreadTypeResposneHandler.swift in Sources */,
 				5B10EC34C7C36EB0D4A74FE714001ACF /* Chat.swift in Sources */,
 				E0F13AD7FFF021A9740569E928E27758 /* ChatConfig.swift in Sources */,
@@ -4472,6 +4623,8 @@
 				A8C68DC7BD14098141ADCBAF367F0811 /* CMFile+CoreDataClass.swift in Sources */,
 				5F137F532407301A1344A0D197268DE8 /* CMFile+CoreDataProperties.swift in Sources */,
 				FB2E2D4CFA5D4561FD6CA2D4E7F801DA /* CMFile+extenstions copy.swift in Sources */,
+				AC754E36268C3D24003E4F71 /* ActiveCallParticipantsRequestHandler.swift in Sources */,
+				ACC72385268B39620057F43C /* MuteCallParticipantResponseHandler.swift in Sources */,
 				8CEB147C05B0A82678A94F23078C8F58 /* CMForwardInfo+CoreDataClass.swift in Sources */,
 				113E52A87DFC74E897E12B75EF47A302 /* CMForwardInfo+CoreDataProperties.swift in Sources */,
 				AA2C0A84E4FAFD658B0BB22131F10EF7 /* CMForwardInfo+extenstions.swift in Sources */,
@@ -4495,23 +4648,27 @@
 				9A335052BBF1F0A5E111D9FD0C33B408 /* CMReplyInfo+CoreDataClass.swift in Sources */,
 				ADC8AF559519704C824FFE611EF44295 /* CMReplyInfo+CoreDataProperties.swift in Sources */,
 				7BF3462876ECBA78F6203BC3D6AD51BF /* CMReplyInfo+extenstions.swift in Sources */,
+				AC754E2C268C38B1003E4F71 /* MuteCallRequestHandler.swift in Sources */,
 				83D1137F5B9582065598547BF84618E9 /* CMUser+CoreDataClass.swift in Sources */,
 				366B8E727F235BBFE0C96C84CA2FBD64 /* CMUser+CoreDataProperties.swift in Sources */,
 				4D4D6B79E1D7FEA4528ED17D4C800611 /* CMUser+extenstions.swift in Sources */,
 				1180CC33E32005E2CB11DDB4C08CA525 /* CMUserRole+CoreDataClass.swift in Sources */,
 				FC11C591E5E407FD7B767914F36ED104 /* CMUserRole+CoreDataProperties.swift in Sources */,
 				3E5D0A82DC6C209EB075B9059B0223AD /* CMUserRole+extenstions.swift in Sources */,
+				ACC723A7268B49160057F43C /* AddCallParticipantsRequest.swift in Sources */,
 				C6E1341C29A7526F127E29E2CB9B4230 /* ConsoleLogLevel.swift in Sources */,
 				A9DABBCB4EEBB1848204AB7C2A2BED2B /* Contact.swift in Sources */,
 				AF638F2C9CB86F7097F37778EAFCD3C7 /* ContactEventModel.swift in Sources */,
 				A90069FB7A13033A389260C10D2777A5 /* ContactEventTypes.swift in Sources */,
 				C7C7EB7562AEAEF935DF6144AAC20FDE /* ContactManagementMethods.swift in Sources */,
 				B873BEB7A3B98023AB1A76A2EC442340 /* ContactNotSeenDurationHandler.swift in Sources */,
+				ACC723A1268B41170057F43C /* StartCallRequestHandler.swift in Sources */,
 				AC87DDD685B7C5ABEB863C0860B9E10B /* ContactNotSeenDurationRespoonse.swift in Sources */,
 				0B85765966D4C092FA7E33CDD5ABFC2E /* ContactResponse.swift in Sources */,
 				D77948C2794308B62E227784F941F78A /* ContactsLastSeenResponseHandler.swift in Sources */,
 				05384C2CD952060A6991F73AC3578625 /* ContactsRequest.swift in Sources */,
 				E286B1A40349915DB6159A46E68A53EA /* ContactsResponseHandler.swift in Sources */,
+				ACC7236A268B1A000057F43C /* CallType.swift in Sources */,
 				3B37AA4A3A89A3B3D51E3420B44B511D /* ContactsSyncedResponseHandler.swift in Sources */,
 				4B4DC08EB0A9EEC25C5FF0402EAA29E7 /* Conversation.swift in Sources */,
 				BF5C1D0B8038FABB7849A580A16A8A0B /* CoreDataCrud.swift in Sources */,
@@ -4529,12 +4686,14 @@
 				B21795473BD2EEF63E2CCD866CE5D381 /* CreateThreadRequestHandler.swift in Sources */,
 				949B9888CC0B952BA2C83D87BC65E034 /* CreateThreadResponseHandler.swift in Sources */,
 				70DBAB86578896AAC6C9154687C9D73E /* CreateThreadWithFileMessageRequest.swift in Sources */,
+				ACC72379268B343C0057F43C /* DeliverCallResponseHandler.swift in Sources */,
 				6F9B21CD22B42BFF3C69BC3B357A334E /* CreateThreadWithFileMessageRequestHandler.swift in Sources */,
 				A0D4600E7E64707023DB8537D44B7639 /* CreateThreadWithMessage.swift in Sources */,
 				761079E345BC76B53ECB3C6C26C14E4B /* CreateThreadWithMessageRequest.swift in Sources */,
 				12AF3CD83D7604BF0E145962F7F16FC1 /* CreateThreadWithMessageRequestHandler.swift in Sources */,
 				5083AF0410EDF5D4E5CD76C290D59FA0 /* CurrentUserRolesRequest.swift in Sources */,
 				B4EA6E7A4DB8D402DB62E037E149AC66 /* CurrentUserRolesRequestHandler.swift in Sources */,
+				AC754E1A268C3368003E4F71 /* RemoveCallParticipantsRequest.swift in Sources */,
 				57973038B7FFEC9E4242F9A67E441677 /* CurrentUserRolesResponseHandler.swift in Sources */,
 				D195798A8017E5A1682E4027FEEE3599 /* DeactiveAssistantRequest.swift in Sources */,
 				8284AD636B1FDF693DF562F0671B0AD3 /* DeactiveAssistantRequestHandler.swift in Sources */,
@@ -4557,6 +4716,7 @@
 				B899C0915A44F89184A82019F56DAD4F /* DownloadFileResponse.swift in Sources */,
 				A06AF58AB76D4DEA8A1951C5187025BC /* DownloadImageRequestHandler.swift in Sources */,
 				CD1F015A8C3F409EF2BFBBA9A8111A68 /* DownloadImageResponse.swift in Sources */,
+				AC754E3A268C3E0E003E4F71 /* StartCallRecordingRequest.swift in Sources */,
 				220CA2FC32198583DBB1D676A1751B64 /* DownloadManager.swift in Sources */,
 				52694D89D93A0235CD838BF4AA25B4B3 /* DownloadMapStaticImageRequestHandler.swift in Sources */,
 				836566DACF580CF4C5EE48AD7B93AAD5 /* DownloaUploadActions.swift in Sources */,
@@ -4565,6 +4725,7 @@
 				A22F2C6ECD5BE56AD0610772A2E5D5CA /* EditMessageResponse.swift in Sources */,
 				B45C9A8577ABA0BB8C7063CF86ABC064 /* EditMessageResponseHandler.swift in Sources */,
 				447F6C50E234E30BA9A50E800A48E82B /* EditTextMessageRequest.swift in Sources */,
+				ACC72365268B17DE0057F43C /* AddCallParticipantRequestHandler.swift in Sources */,
 				0740AB1A5012BDD48AAD89A87F851B2B /* EncodableExtensions.swift in Sources */,
 				AC4A9268B6476C8B3B62949F95213EFB /* EnumsAndStructs.swift in Sources */,
 				AEA5D7D7995FC2D811993F6BD3A1362F /* ErrorResponseHandler.swift in Sources */,
@@ -4594,10 +4755,12 @@
 				585D53AEAD8765D88CC9F6EDEA6B4580 /* GetContactNotSeenDurationResponse.swift in Sources */,
 				D5365E911B2822263224DC753D574438 /* GetContactsCallback.swift in Sources */,
 				ED33BD899A3E9725B4A71BB4F5D2FEBE /* GetContactsRequest.swift in Sources */,
+				AC754E38268C3DEA003E4F71 /* StartCallRecordingRequestHandler.swift in Sources */,
 				B17A5F04C69578445E2D524460B8927A /* GetContactsRequestHandler.swift in Sources */,
 				25A7DB7FFD033C92967EEFB093F21800 /* GetContactsResponse.swift in Sources */,
 				84CAFE0BFAB8E71D96884C599E199B97 /* GetCurrentUserRolesCallback.swift in Sources */,
 				B9A49BBBB3729D839FFF2845E6B406B3 /* GetCurrentUserRolesRequest.swift in Sources */,
+				AC754E2E268C3AA1003E4F71 /* UNMuteCallRequestHandler.swift in Sources */,
 				C01DC187D9F29BF9B3D61E05D4069888 /* GetCurrentUserRolesResponse.swift in Sources */,
 				9B33DF0DB76CC1BA6AC67BC8FB7D6C7B /* GetFileRequest.swift in Sources */,
 				19F7E6A3B20EF11F90B54BC961265096 /* GetHistoryCallbacks.swift in Sources */,
@@ -4605,6 +4768,7 @@
 				F4559E10200A97E729AB5680EA40EE0B /* GetHistoryRequestHandler.swift in Sources */,
 				6E42B087809CEC53B92B90A33B1B4989 /* GetHistoryResponse.swift in Sources */,
 				4CFE6CEF47F3E9099B9C106CEF104CFA /* GetImageRequest.swift in Sources */,
+				ACC72375268B32C50057F43C /* CallStatus.swift in Sources */,
 				03A44FF525CEBCCAF11ED9750428AFE9 /* GetMentionedRequest.swift in Sources */,
 				8F9A1F24744800D2CA08F9B77F8ED70E /* GetMessageDeliveredSeenListRequest.swift in Sources */,
 				DC9AF48CACB7199AC8E3713D15CACE64 /* GetMessageDeliverList.swift in Sources */,
@@ -4626,6 +4790,7 @@
 				FB07E836E73908E63D52CE0A884773E7 /* Invitee.swift in Sources */,
 				C8183EA9D8B470A7967A6A60C64502DF /* InviteeVoIdTypes.swift in Sources */,
 				50ED478DB71788A25CD7A62A0E7F0313 /* IsAvailableNameResponse.swift in Sources */,
+				ACC72377268B33BA0057F43C /* DeliverCallRequest.swift in Sources */,
 				22C20F813169E32C0A4F0025947F2CC3 /* IsPublicThreadNameAvailableCallbacks.swift in Sources */,
 				BDFEDC6D6691B36B3B3D432303FF8D1C /* IsPublicThreadNameAvailableRequest.swift in Sources */,
 				E836C8076E1EEDC6C0A79043A7C41B21 /* IsPublicThreadNameAvailableResponseHandler.swift in Sources */,
@@ -4639,6 +4804,7 @@
 				5103E327D544BFDA35FFB2AC57AFC1CE /* LastSeenResponseHandler.swift in Sources */,
 				F7C1A4651FF3A1539CA48947A5D24640 /* LeaveThreadCallbacks.swift in Sources */,
 				96D951BF2371D884E0B2B6E3ACC21691 /* LeaveThreadRequest.swift in Sources */,
+				AC008F4F268C989700B008FF /* SendClient.swift in Sources */,
 				158829DFB41A8D51C00E0014B34E7B7B /* LeaveThreadRequestHandler.swift in Sources */,
 				CDC3D8BFD5035E3108A40E6538CC7CA6 /* LeaveThreadResponseHandler.swift in Sources */,
 				435402DE47284469ED354D46D195EE39 /* LinkedUser.swift in Sources */,
@@ -4657,6 +4823,7 @@
 				738D177EA684C22ED86CF5AFD000EC67 /* MapRoutingRequestHandler.swift in Sources */,
 				A55D740F5CFC021BDAAE2EEEF473883C /* MapRoutingResponse.swift in Sources */,
 				6ACDED1A33E4DBC6D3D364FFB7FC9FB3 /* MapSearch.swift in Sources */,
+				ACC72373268B312B0057F43C /* Call.swift in Sources */,
 				2F9B3F2D823534B917F95F1A330B8A41 /* MapSearchRequest.swift in Sources */,
 				39E801F7002F1C78316CF2F7F00EE87C /* MapSearchRequestHandler.swift in Sources */,
 				31157BC05DEB6F1FFBBB4FDBE476CB0A /* MapSearchResponse.swift in Sources */,
@@ -4664,12 +4831,16 @@
 				2E3FAD1FFBC151C9DBEF15198E848B37 /* MapStaticImageRequestHandler.swift in Sources */,
 				1B4E230240DB2F216B46CBF11C1DBFF1 /* MentionRequest.swift in Sources */,
 				DE6DD1C01D626868F108B247186E4EB9 /* MentionsRequestHandler.swift in Sources */,
+				AC754E1C268C33AB003E4F71 /* RemoveCallParticipantRequestHandler.swift in Sources */,
+				ACC7239B268B3E400057F43C /* GetCallsResponseHandler.swift in Sources */,
 				A7646CB3ABEF00A9EE4B4126E8DA86CE /* Message.swift in Sources */,
 				330A806579982835A10DA33FF1794280 /* MessageChangeState.swift in Sources */,
+				ACC72387268B39980057F43C /* UNMuteCallParticipantResponseHandler.swift in Sources */,
 				AB50D9A9763641996CC30B54DCF6F6F8 /* MessageDeliveredUsersRequest.swift in Sources */,
 				6AA101B7A832E7DFEA17588664033C95 /* MessageDeliveredUsersResponseHandler.swift in Sources */,
 				E4BFA295F8746BFE059A3CEEA2818B09 /* MessageDeliverRequest.swift in Sources */,
 				17A3DFD372907D65FA2E76E7C38CFD0A /* MessageDeliveryParticipantsRequestHandler.swift in Sources */,
+				ACC7238D268B3AB60057F43C /* LeaveCallResponseHandler.swift in Sources */,
 				60C4DC3380DE0756937758CC8141A02F /* MessageEventModel.swift in Sources */,
 				46F33A8C99330A9FF71641B78C7046CC /* MessageEventTypes.swift in Sources */,
 				111C5B341B62E786DB53FC59FA61502B /* MessageGaps+CoreDataClass.swift in Sources */,
@@ -4684,34 +4855,45 @@
 				F421DEE0D9DF5FDDADFC9FBE0BF6B3EB /* MessagSeenByUsersRequestHandler.swift in Sources */,
 				AC9EB7D137FE88CE9C5E7A5E02CDB949 /* MuteThreadCallbacks.swift in Sources */,
 				357023C9330B163F01305E0C5EDAD99D /* MuteThreadRequestHandler.swift in Sources */,
+				AC754E30268C3B39003E4F71 /* TerminateCallRequestHandler.swift in Sources */,
 				7B2E99E187F12133F2F7801713EC2BAE /* MuteThreadResponse.swift in Sources */,
 				821E4902C081CBF90E77BE63F7CE087F /* MuteThreadResponseHandler.swift in Sources */,
+				ACC723A9268B4B7E0057F43C /* AcceptCallRequestHandler.swift in Sources */,
+				AC754E26268C37EE003E4F71 /* MuteCallRequest.swift in Sources */,
 				1371F6E044C7385878B0EE7568960CC5 /* MuteUnmuteThreadRequest.swift in Sources */,
 				3D41F36D6DD5A67AB3082CF128B688C8 /* MuteUnmuteThreadResponse.swift in Sources */,
 				6BBCA25DD623B9BCD1DC9CFE76DF5B8F /* MutualGroupsRequest.swift in Sources */,
 				B136B7FF21FCC6D09A12B2E48D14BF6A /* MutualGroupsRequestHandler.swift in Sources */,
 				5E22CC626964B13CA8853B59DABBDCD8 /* MutualGroupsResponseHandler.swift in Sources */,
+				ACC72393268B3C7D0057F43C /* StopCallRecordingResponseHandler.swift in Sources */,
 				1245F8ECB3430EB0FBB532952565E75B /* Networking.swift in Sources */,
 				1245F8ECB3430EB0FBB532952565E75B /* Networking.swift in Sources */,
 				AE0627965EC53A6FBC09C15EBD914004 /* NewAddBotCommandRequest.swift in Sources */,
 				78F4D0F52A23EF675ABAA85A9D6FE7CA /* NewAddContactRequest.swift in Sources */,
+				ACC72389268B3A080057F43C /* TurnOnVideoCallResponseHandler.swift in Sources */,
+				AC754E3E268C3EBD003E4F71 /* StopCallRecordingRequest.swift in Sources */,
 				9F3FDB523CC74DECD3F0363D7F568AF9 /* NewBlockRequest.swift in Sources */,
 				8998158C2376617459F345009C14F7E7 /* NewCancelMessageRequest.swift in Sources */,
 				AAF1A1223EED002E3D5903B0783351E4 /* NewChat.swift in Sources */,
+				ACC7235E268AE4E40057F43C /* SystemEventMessageModel.swift in Sources */,
 				237515F04B90B0BE51A8ED365EC4CEA8 /* NewChatMessage.swift in Sources */,
 				29BCFBB4F5613989077A8E9617A22652 /* NewChatMessageVOTypes.swift in Sources */,
+				ACC7237F268B35710057F43C /* ClientDTO.swift in Sources */,
 				DFC0F7660882715D7C2A900239B4A76C /* NewClearHistoryRequest.swift in Sources */,
 				BB009438D3430227B0C6BFB89F265FBB /* NewCloseThreadRequest.swift in Sources */,
 				2AE81A7A3F3D6DCD0E070BC1076C5B9A /* NewContactResponse.swift in Sources */,
+				ACC72371268B1E7D0057F43C /* RejectCallResponseHandler.swift in Sources */,
 				F4892F7C907ED4EF7388C802B20B235C /* NewCreateBotRequest.swift in Sources */,
 				6523E64D48EBC6E7393B9D21BDCE96A5 /* NewCreateThreadRequest.swift in Sources */,
 				6EE8AE545A40F7780D45BC5EEAA77800 /* NewDeleteMessageRequest.swift in Sources */,
 				3D147902F3769C97F84E809CD366CC70 /* NewEditMessageRequest.swift in Sources */,
+				AC754E34268C3CDD003E4F71 /* ActiveCallParticipantsRequest.swift in Sources */,
 				67AB114DF7617259A5BD9FF8FA314807 /* NewForwardMessageRequest.swift in Sources */,
 				C3FCF6ADCFE172F4692061DB89A0CFB0 /* NewGetHistoryRequest.swift in Sources */,
 				2B35D9A61217ACB5E5CF0C327B81F43A /* NewJoinPublicThreadRequest.swift in Sources */,
 				F3F72AA4FE4A86B03F7F1B45A9E82885 /* NewLeaveThreadRequest.swift in Sources */,
 				D98A1E22FF284C3D251471F3B085398A /* NewMapReverse.swift in Sources */,
+				ACC72395268B3CEE0057F43C /* EndCallResponseHandler.swift in Sources */,
 				8E09FEE58DBD469B5F4128EFA14E3390 /* NewMapReverseModel.swift in Sources */,
 				73AAD46B070E8701A1B120715FD944BF /* NewMapReverseRequest.swift in Sources */,
 				FA1398277FB28521E3E98003EB64B30B /* NewMapRoutingRequest.swift in Sources */,
@@ -4723,6 +4905,7 @@
 				D22146C9E6A2EB236CD188C843F7EE08 /* NewPinUnpinMessageRequest.swift in Sources */,
 				4C386A34268CF7962CDFCE6BEBB170E6 /* NewPinUnpinThreadRequest.swift in Sources */,
 				72D3FCB1258908FCEF9074A47966C210 /* NewRemoveContactResponse.swift in Sources */,
+				AC754E24268C3729003E4F71 /* TurnOffVideoCallRequest.swift in Sources */,
 				74479F376D89532D2D156478B081EF7A /* NewRemoveContactsRequest.swift in Sources */,
 				597EE7225185307E3C00FEC5F57DD342 /* NewRemoveParticipantsRequest.swift in Sources */,
 				6B9DCC5F75E471186FC8C5E404386A0C /* NewReplyMessageRequest.swift in Sources */,
@@ -4739,10 +4922,12 @@
 				F628124E828BF9EB7785AF3CD99F6FB0 /* NewUploadFileResponse.swift in Sources */,
 				FCFAA91E1E174D3862CA8E9536FE1831 /* NewUploadImageRequest.swift in Sources */,
 				99989201A6C4FCB6057DACA94048E49E /* NotifyDeliveredMessageRequest.swift in Sources */,
+				ACC72391268B3C490057F43C /* StartCallRecordingResponseHandler.swift in Sources */,
 				4DA81C311B950131ADDE14A354B93813 /* NotSeenContactRequestHandler.swift in Sources */,
 				E36685EBB06EADFE6626C187BF5F3B76 /* NotSeenDurationRequest.swift in Sources */,
 				BB0BFF2E25CF2FD0A391C14431E05142 /* OutputModel.swift in Sources */,
 				50A0F38D47F2FCECDB6FC4A026BF45CF /* Pagination.swift in Sources */,
+				ACC72399268B3DD30057F43C /* ActiveCallParticipantsResponseHandler.swift in Sources */,
 				6CD761D7D12EFBA206940C1A22673207 /* Participant.swift in Sources */,
 				A3B94C56C55852273CDC10A4A3C46807 /* ParticipantManagementMethods.swift in Sources */,
 				2CF8E1D1969904539262ABD2135CF649 /* PhoneContact+CoreDataClass.swift in Sources */,
@@ -4754,12 +4939,14 @@
 				59F7B4060497D2F228EA8A5CDF75DA8B /* PinThreadCallback.swift in Sources */,
 				A47DF012586997FF3412BDFE2EEC9848 /* PinThreadRequestHandler.swift in Sources */,
 				31D3EA806E1F830DC4CA742E03E67B60 /* PinThreadResponse.swift in Sources */,
+				AC754E20268C3663003E4F71 /* TurnOnVideoCallRequest.swift in Sources */,
 				E51569EFD10FCC0BAAA3D2461C058F85 /* PinThreadResponseHandler.swift in Sources */,
 				ECB719247B16D5C7C0DE5B77045EE8AF /* PinUnpinMessage.swift in Sources */,
 				4678ECC9C0902DFD8A7651B88753D8A9 /* PinUnpinMessageRequest.swift in Sources */,
 				BB4D07993706A29E8891BB9D11B48E12 /* PinUnpinMessageResponse.swift in Sources */,
 				825360F3742CF1EEE59DC4BC450BF124 /* PinUnpinThreadRequest.swift in Sources */,
 				72CA7F0FDABB9D63A00C750CA2E79B7E /* PinUnpinThreadResponse.swift in Sources */,
+				ACC72383268B38100057F43C /* CallParticipant.swift in Sources */,
 				D388E90511C3AF6A4EA5C7A41E467C1E /* Profile.swift in Sources */,
 				6380CDA2174BA36023FBEA8AB230C457 /* ProfileResponse.swift in Sources */,
 				EC2F025C5657114D05A6770A7BA4CA71 /* ProgressImplementation.swift in Sources */,
@@ -4801,6 +4988,7 @@
 				925D7D4D547EF5291B034E4D7BF0DDFD /* RemoveContactResponse.swift in Sources */,
 				FD03906AECD3D153DAB4050217404CC3 /* RemoveContactsRequest.swift in Sources */,
 				6C53319A51E032D11E7AAA436E23C745 /* RemoveParticipantResponse.swift in Sources */,
+				ACC7239F268B3F790057F43C /* StartCallRequest.swift in Sources */,
 				99C75179B0A9F04941F4E714DA97A547 /* RemoveParticipantResponseHandler.swift in Sources */,
 				0E048911F021D8A45E310755B8A44874 /* RemoveParticipantsCallback.swift in Sources */,
 				44D6826108D0057355D3F34BC586C251 /* RemoveParticipantsRequest.swift in Sources */,
@@ -4815,11 +5003,14 @@
 				70374A22EFA0C449544D40266C53239B /* ResponseHandler.swift in Sources */,
 				126D8693DBA51950BC8BE7666B70DB9B /* ResponseModel.swift in Sources */,
 				EA4F97F7958625F30279D8AE2AA98066 /* ResponseModelDelegates.swift in Sources */,
+				ACC7236F268B1D990057F43C /* StartCallRequestResponseHandler.swift in Sources */,
 				88746D72AA025CD3894E28AE8DD45970 /* RetrieveDataFromCache.swift in Sources */,
+				ACC7237D268B350D0057F43C /* StartCall.swift in Sources */,
 				0B6483C38FF0C32759FACA208BBDF030 /* Roles.swift in Sources */,
 				D2552B8FA030581F70011BF6F7AC8826 /* RolesRequest.swift in Sources */,
 				64617CB94308B9609B0522BB7BEC2291 /* Route.swift in Sources */,
 				5BF79B2520A6A6298CC9B521EF93CA67 /* SafeLeaveThreadRequest.swift in Sources */,
+				ACC7238F268B3BCA0057F43C /* CallSessionCreatedResponseHandler.swift in Sources */,
 				1496C0D72CFBE210533A2E5D49EEE9AB /* SaveDataToCache.swift in Sources */,
 				A76CD342BF588CED16B14BE422DEBAAB /* SearchContactsRequest.swift in Sources */,
 				891034231F648669260003715AE565B9 /* SeenMessageResponseHandler.swift in Sources */,
@@ -4835,9 +5026,12 @@
 				69E3AA0A3B5EEB732BA68BE10880F634 /* SendMessageCallbacks.swift in Sources */,
 				0294778A520D074DB9B1D716B7744A17 /* SendMessageResponse.swift in Sources */,
 				EEA56CB68A35600F96A6D935A9FFE4AE /* SendReplyFileMessageRequest.swift in Sources */,
+				ACC723A5268B42B80057F43C /* EndCallRequest copy.swift in Sources */,
 				A2223695582A21A07CC017C560896C91 /* SendSignalMessageRequest.swift in Sources */,
+				ACC7236D268B1ADA0057F43C /* AcceptCallRequest.swift in Sources */,
 				80B19DDC86005976C377C3F70AC5D146 /* SendStartTypingRequestHandler.swift in Sources */,
 				D019D9F8C5A0825DC12F8A344ADB9A26 /* SendStatusPingRequest.swift in Sources */,
+				ACC7238B268B3A5E0057F43C /* TurnOffVideoCallResponseHandler.swift in Sources */,
 				05023B9CAD0406E4B47007B7CFF585DF /* SendStatusPingRequestHandler.swift in Sources */,
 				E81B6CF88056AEAB374236B19729E2B1 /* SendTextMessageRequest.swift in Sources */,
 				98DB6A9AC935DDC2D735BBE2A4BC7810 /* SendTextMessageRequestHandler.swift in Sources */,
@@ -4846,6 +5040,7 @@
 				6AAABD75D3125E862C5FCF7EEED1E61A /* SetProfileResponseHandler.swift in Sources */,
 				17495EF6AC3A3A18AE6F6C56F11BD0D5 /* SetRemoveRoleModel.swift in Sources */,
 				ED4491776B043C2C2C9929CA0612155D /* SetRemoveRoleRequest.swift in Sources */,
+				ACC7239D268B3EBF0057F43C /* StartCallGroupRequestHandler.swift in Sources */,
 				14B806EF8240706BD7266AA09CF369BE /* SetRoleRequestHandler.swift in Sources */,
 				98B350A5DFE8BEC3B782564B64B15129 /* SetRoleToUserCallback.swift in Sources */,
 				B2D12D9B7FE544257078F99765E74832 /* SignalMessageType.swift in Sources */,
@@ -4874,10 +5069,12 @@
 				63C839EA8C7B93552E7AC61966E171FE /* ThreadEventTypes.swift in Sources */,
 				33A6992017FA8FA0157EE486DF174FE7 /* ThreadHistory.swift in Sources */,
 				FF2151767DFD023ED261907525A6FB97 /* ThreadManagementMethods.swift in Sources */,
+				AC754E42268C4431003E4F71 /* CallsHistoryRequestHandler.swift in Sources */,
 				193FAA8782E92E77C2A67120C6207E37 /* ThreadParticipants.swift in Sources */,
 				62C5DF47BE20F0CEFFBEA4C7D59CEFFE /* ThreadParticipantsRequest.swift in Sources */,
 				B8857F6B14E7C9A3B1903412D6514613 /* ThreadParticipantsRequestHandler.swift in Sources */,
 				1403DE5F55120C834276808AE7A16052 /* ThreadParticipantsResponseHandler.swift in Sources */,
+				AC754E1E268C3652003E4F71 /* TurnONVideoCallRequestHandler.swift in Sources */,
 				BEAC916F7DA39A8D402CA8F7F793BE2D /* ThreadResponse.swift in Sources */,
 				C0A668D1446F5C0C96A6159128DA7EB2 /* ThreadsRequest.swift in Sources */,
 				A70D688CA1E844904CD9A8C1CD9C3AA4 /* ThreadsResponseHandler.swift in Sources */,
@@ -4907,6 +5104,7 @@
 				EFEFB1BF86EF40323CE081D265A708FF /* UpdateThreadInfoRequestHandler.swift in Sources */,
 				6CB70D909E77211F89B757F967CEA97F /* UpdateThreadInfoResponseHandler.swift in Sources */,
 				642E9C531572FA8C371EC43D8D06679B /* UploadFile.swift in Sources */,
+				AC754E2A268C386C003E4F71 /* UNMuteCallRequest.swift in Sources */,
 				04C96F688608BA494F7DE3374F71C2AA /* UploadFileProgress copy.swift in Sources */,
 				ECE46A61617EEAFEDA0D799C88943E72 /* UploadFileRequest.swift in Sources */,
 				CEEBC6EE41F5601CDD441E8933B9406E /* UploadFileRequestHandler.swift in Sources */,
@@ -4918,6 +5116,7 @@
 				3E3E948E96038033A5FBAB88CADCD96E /* UploadManager.swift in Sources */,
 				1DE918CD0CBA3874509B3E4682D6DB7F /* UploadRequest.swift in Sources */,
 				576096CF5CB90C067F2514647540A325 /* User.swift in Sources */,
+				AC754E40268C4422003E4F71 /* CallsHistoryRequest.swift in Sources */,
 				8214D7D4DB86474D3FFD430AE95BF8B5 /* UserBotsBotsRequestHandler.swift in Sources */,
 				D9B6C5783B75649BA22155BE42EFBFF4 /* UserBotsResposneHandler.swift in Sources */,
 				05C61242101621DF94E5FC5A87603CEF /* UserEventModel.swift in Sources */,
@@ -6089,6 +6288,7 @@
 			children = (
 				F4D35E4698E14B3FB944D43F302DB55A /* CacheDataModel.xcdatamodel */,
 			);
+			currentVersion = F4D35E4698E14B3FB944D43F302DB55A /* CacheDataModel.xcdatamodel */;
 			name = CacheDataModel.xcdatamodeld;
 			path = "Pod-Chat-iOS-SDK/Chat/CacheDataModel.xcdatamodeld";
 			sourceTree = "<group>";
@@ -6099,6 +6299,7 @@
 			children = (
 				5F21F5E833C361485F293FBA6A4BF805 /* CacheData.xcdatamodel */,
 			);
+			currentVersion = 5F21F5E833C361485F293FBA6A4BF805 /* CacheData.xcdatamodel */;
 			name = CacheData.xcdatamodeld;
 			path = "Pod-Chat-iOS-SDK/Chat/CacheData.xcdatamodeld";
 			sourceTree = "<group>";

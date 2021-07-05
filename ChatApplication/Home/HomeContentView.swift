@@ -15,30 +15,54 @@ struct HomeContentView: View {
     @StateObject
     var contactsViewModel:ContactsViewModel
     
-
+    @StateObject
+    var callsHistoryViewModel:CallsHistoryViewModel
     
     @State private var seletedTabTag = 2
     
+    @EnvironmentObject var appState:AppState
+    
+    
+    @Environment(\.localStatusBarStyle)
+    var statusBarStyle          :LocalStatusBarStyle
+    
     var body: some View {
-        TabView(selection:$seletedTabTag){
-            
-            ContactContentList(viewModel: contactsViewModel)
-                .tabItem {
-                    Label("Contacts", systemImage: "person.fill")
-                }.tag(1)
+        if appState.showCallView{
+            CallControlsContent(viewModel: CallControlsViewModel())
+                .transition(.asymmetric(insertion: .scale.animation(.spring().speed(2)), removal: .move(edge: .trailing)))
+        }else{
+            TabView(selection:$seletedTabTag){
+                
+                ContactContentList(viewModel: contactsViewModel)
+                    .tabItem {
+                        Label("Contacts", systemImage: "person.fill")
+                    }.tag(1)
 
-            ThreadContentList(viewModel: threadsViewModel)
-                .tabItem {
-                    Label("Chats", systemImage: "bubble.left.and.bubble.right.fill")
-                }.tag(2)
-            
-            
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }.tag(3)
-            
+                ThreadContentList(viewModel: threadsViewModel)
+                    .tabItem {
+                        Label("Chats", systemImage: "bubble.left.and.bubble.right.fill")
+                    }.tag(2)
+                
+                CallsHistoryContentList(viewModel: callsHistoryViewModel)
+                    .tabItem {
+                        Label("Calls", systemImage: "phone")
+                    }.tag(3)
+                
+                SettingsView()
+                    .tabItem {
+                        Label("Settings", systemImage: "gear")
+                    }.tag(4)
+                
+            }
+            .onReceive(appState.$dark, perform: { _ in
+                self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
+            })
+            .onAppear{
+                self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
+            }
+            .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
         }
+       
     }
 }
 
@@ -48,7 +72,8 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let threadsViewModel = ThreadsViewModel()
         let contactsViewModel = ContactsViewModel()
-        HomeContentView(threadsViewModel:threadsViewModel,contactsViewModel:contactsViewModel)
+        let callsHistoryViewModel = CallsHistoryViewModel()
+        HomeContentView(threadsViewModel:threadsViewModel,contactsViewModel:contactsViewModel,callsHistoryViewModel:callsHistoryViewModel)
             .onAppear(){
                 threadsViewModel.setupPreview()
             }

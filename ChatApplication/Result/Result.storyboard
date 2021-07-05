@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="DMM-7k-JOi">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Result View Controller-->
+        <scene sceneID="SiC-uD-Nac">
+            <objects>
+                <viewController id="DMM-7k-JOi" customClass="ResultViewController" customModule="ChatApplication" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="25S-ad-1Mp">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f6f-et-JIA" userLabel="btnClearLogs">
+                                <rect key="frame" x="4" y="60" width="406" height="48"/>
+                                <color key="backgroundColor" name="AccentColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="fmK-u9-dhc"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="29"/>
+                                <state key="normal" title="Clear Logs">
+                                    <color key="titleColor" systemColor="secondarySystemBackgroundColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnClearLogsTaped:" destination="DMM-7k-JOi" eventType="touchUpInside" id="03N-Og-99Y"/>
+                                </connections>
+                            </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="bA0-hn-23f" userLabel="tblLogs">
+                                <rect key="frame" x="0.0" y="116" width="414" height="780"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LogCell" rowHeight="62" id="sPE-su-vRP" customClass="LogCell" customModule="ChatImplementation" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="24.5" width="414" height="62"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="sPE-su-vRP" id="sPa-5m-NOt">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="62"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="afdasfa fa asdf asf dasf asf a fadsf das as fasd as as fsad ads as fdas ads a as as as ad a a fa" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Jya-nt-dsl" userLabel="tvLog">
+                                                    <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="48" id="qtu-MD-J94"/>
+                                                    </constraints>
+                                                    <color key="textColor" systemColor="labelColor"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                </textView>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="86F-Tz-f10" userLabel="seprator">
+                                                    <rect key="frame" x="0.0" y="60" width="414" height="2"/>
+                                                    <color key="backgroundColor" systemColor="systemBlueColor"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="2" id="QI9-78-2PD"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="86F-Tz-f10" firstAttribute="centerX" secondItem="sPa-5m-NOt" secondAttribute="centerX" id="G1p-q5-tmC"/>
+                                                <constraint firstItem="Jya-nt-dsl" firstAttribute="width" secondItem="sPa-5m-NOt" secondAttribute="width" id="IGm-CY-s2T"/>
+                                                <constraint firstItem="86F-Tz-f10" firstAttribute="width" secondItem="sPa-5m-NOt" secondAttribute="width" id="L1i-BE-gE2"/>
+                                                <constraint firstItem="86F-Tz-f10" firstAttribute="bottom" secondItem="sPa-5m-NOt" secondAttribute="bottom" id="c9x-N9-gxv"/>
+                                                <constraint firstAttribute="height" secondItem="Jya-nt-dsl" secondAttribute="height" constant="12" id="hyK-IP-Bqp"/>
+                                                <constraint firstItem="Jya-nt-dsl" firstAttribute="centerX" secondItem="sPa-5m-NOt" secondAttribute="centerX" id="wm8-LJ-TJG"/>
+                                                <constraint firstItem="Jya-nt-dsl" firstAttribute="top" secondItem="sPa-5m-NOt" secondAttribute="top" id="x6j-6c-lOg"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="contentViewHeightConstraint" destination="hyK-IP-Bqp" id="LlS-Gy-fds"/>
+                                            <outlet property="myContentView" destination="sPa-5m-NOt" id="hUu-nY-CfF"/>
+                                            <outlet property="tvHeighConstraint" destination="qtu-MD-J94" id="3mk-1n-GBc"/>
+                                            <outlet property="tvLog" destination="Jya-nt-dsl" id="Bii-ye-mNX"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="DMM-7k-JOi" id="f5Q-Eo-6Mi"/>
+                                    <outlet property="delegate" destination="DMM-7k-JOi" id="Tus-PL-spc"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="v2k-Wb-VPm"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="bA0-hn-23f" firstAttribute="width" secondItem="25S-ad-1Mp" secondAttribute="width" id="9ot-wI-fU6"/>
+                            <constraint firstItem="f6f-et-JIA" firstAttribute="centerX" secondItem="v2k-Wb-VPm" secondAttribute="centerX" id="CKn-Z4-4v0"/>
+                            <constraint firstItem="bA0-hn-23f" firstAttribute="centerX" secondItem="v2k-Wb-VPm" secondAttribute="centerX" id="YNd-2N-xZs"/>
+                            <constraint firstItem="bA0-hn-23f" firstAttribute="bottom" secondItem="25S-ad-1Mp" secondAttribute="bottom" id="f57-AD-FXR"/>
+                            <constraint firstItem="f6f-et-JIA" firstAttribute="width" secondItem="25S-ad-1Mp" secondAttribute="width" constant="-8" id="kyO-mQ-9Ul"/>
+                            <constraint firstItem="bA0-hn-23f" firstAttribute="top" secondItem="f6f-et-JIA" secondAttribute="bottom" constant="8" id="vFc-un-b0s"/>
+                            <constraint firstItem="f6f-et-JIA" firstAttribute="top" secondItem="v2k-Wb-VPm" secondAttribute="top" constant="16" id="w5x-v4-JLr"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tblLogs" destination="bA0-hn-23f" id="Ovf-DC-GLF"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qe9-Iy-aE8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-100.00000000000001" y="-9.375"/>
+        </scene>
+    </scenes>
+    <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

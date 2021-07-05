@@ -6,18 +6,20 @@
 //
 
 import SwiftUI
+import FanapPodChatSDK
 
 struct ContactContentList:View {
     
-    @StateObject var viewModel:ContactsViewModel
-    @State var isInEditMode: Bool = false
+    @StateObject var viewModel :ContactsViewModel
+    
+    @State var isInEditMode             = false
     
     var body: some View{
         NavigationView{
             GeometryReader{ reader in
                 List {
                     ForEach(viewModel.model.contacts , id:\.id) { contact in
-        
+                        
                         ContactRow(contact: contact , isInEditMode: $isInEditMode , viewModel: viewModel)
                             .onAppear {
                                 if viewModel.model.contacts.last == contact{
@@ -40,14 +42,17 @@ struct ContactContentList:View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    
-                    Button("Delete"){
-                        withAnimation {
-                            viewModel.deleteSelectedItems()
+                    if isInEditMode == true{
+                        Button("Delete"){
+                            withAnimation {
+                                viewModel.deleteSelectedItems()
+                            }
                         }
                     }
                 }
+                
             }
+            
         }
     }
 }

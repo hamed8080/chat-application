@@ -16,11 +16,25 @@ class ThreadsViewModel:ObservableObject{
     private (set) var model = ThreadsModel()
     
     init() {
-        getThreads()
+        NotificationCenter.default.addObserver(self, selector: #selector(onConnectionStatusChanged(_:)), name: CONNECTION_STATUS_NAME_OBJECT, object: nil)
+    }
+    
+    @objc private func onConnectionStatusChanged(_ notification:NSNotification){
+        if let connectionStatus = notification.object as? ConnectionStatus{
+            model.setConnectionStatus(connectionStatus)
+            if model.threads.count == 0 && connectionStatus == .CONNECTED{
+                getThreads()
+            }
+        }
     }
     
     func getThreads() {
         Chat.sharedInstance.getThreads(.init(count:model.count,offset: model.offset)) {[weak self] threads, uniqueId, pagination, error in
+            if let threads = threads{
+                self?.model.setThreads(threads: threads)
+                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
+            }
+        }cacheResponse: { [weak self] threads, uniqueId, pagination, error in
             if let threads = threads{
                 self?.model.setThreads(threads: threads)
                 self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
@@ -36,6 +50,11 @@ class ThreadsViewModel:ObservableObject{
             if let threads = threads{
                 self?.model.appendThreads(threads: threads)
                 self?.isLoading = false
+            }
+        }cacheResponse: { [weak self] threads, uniqueId, pagination, error in
+            if let threads = threads{
+                self?.model.setThreads(threads: threads)
+                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
             }
         }
     }

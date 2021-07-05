@@ -7,108 +7,69 @@
 
 import Foundation
 import FanapPodChatSDK
-
+import UIKit
 
 let CONNECTION_STATUS_NAME        = "CONNECTION_STATUS_NAME"
 let CONNECTION_STATUS_NAME_OBJECT = Notification.Name.init(CONNECTION_STATUS_NAME)
 
+enum ConnectionStatus:Int{
+    case Connecting   = 0
+    case Disconnected = 1
+    case Reconnecting = 2
+    case UnAuthorized = 3
+    case CONNECTED    = 4
+}
+
 class ChatDelegateImplementation: ChatDelegates {
     
-    //Sandbox
-//    let socketAddresss = "wss://chat-sandbox.pod.ir/ws"
-//    let serverName     = "chat-server"
-//    let ssoHost        = "https://accounts.pod.ir"
-//    let platformHost   = "https://sandbox.pod.ir:8043/srv/basic-platform"
-//    let fileServer     = "http://sandbox.fanapium.com:8080"
-    
-    //Integration
-//    let socketAddresss   =  "ws://172.16.110.235:8003/ws" // {*REQUIRED*} Socket Address
-//    let ssoHost          =  "http://172.16.110.76" // {*REQUIRED*} Socket Address
-//    let platformHost     =  "http://172.16.110.235:8003/srv/bptest-core"
-//    let fileServer       =  "http://172.16.110.76:8080" // {*REQUIRED*} File Server Address
-//    let serverName       =  "chatlocal" // {*REQUIRED*} Server to to
-    
-    //    let socketAddress           = "ws://172.16.110.235:8003/ws"
-    //    let ssoHost                 = "http://172.16.110.76"
-    //    let platformHost            = "http://172.16.110.235:8003/srv/bptest-core"
-    //    let fileServer              = "http://172.16.110.76:8080"
-    //    let serverName              = "chatlocal"
-
-    //Main0
-    let socketAddresss = "wss://msg.pod.ir/ws"
-    let serverName     = "chat-server"
-    let ssoHost        = "https://accounts.pod.ir"
-    let platformHost   = "https://api.pod.ir/srv/core"
-    let fileServer     = "https://core.pod.ir"
-    
+    static var lastConnectionStatus:ConnectionStatus =  .Connecting
+       
 	private (set) static var sharedInstance = ChatDelegateImplementation()
     
     func createChatObject(){
-		let token = UserDefaults.standard.string(forKey: "token")
-		print("token is: \(token ?? "")")
-		Chat.sharedInstance.createChatObject(config: .init(socketAddress: socketAddresss,
-														   serverName: serverName,
-														   token: "fc383b36efa54c27b5f02fd1f3b5679a" ?? "3dd6895c8dc64f93bcd43b58dcc2aab3",
-														   ssoHost: ssoHost,
-														   platformHost: platformHost,
-														   fileServer: fileServer,
-                                                           enableCache: true,
-                                                           msgTTL: 800000,//for integeration server need to be long time
-														   reconnectOnClose: true,
-                                                           isDebuggingLogEnabled: true,
-                                                           enableNotificationLogObserver: true
-                                                           
-                                                        
-		))
-		
-//        Chat.sharedInstance.createChatObject(socketAddress:             "String",
-//                                             ssoHost:                   "String",
-//                                             platformHost:              "String",
-//                                             fileServer:                "String",
-//                                             serverName:                "String",
-//                                             token:                     "String",
-//                                             mapApiKey:                 "String",
-//                                             mapServer:                 "String",
-//                                             typeCode:                  "String",
-//                                             enableCache:               false,
-//                                             cacheTimeStampInSec:       nil,
-//                                             msgPriority:               nil,
-//                                             msgTTL:                    nil,
-//                                             httpRequestTimeout:        nil,
-//                                             actualTimingLog:           nil,
-//                                             wsConnectionWaitTime:      0,
-//                                             connectionRetryInterval:   0,
-//                                             connectionCheckTimeout:    0,
-//                                             messageTtl:                0,
-//                                             getDeviceIdFromToken:      false,
-//                                             captureLogsOnSentry:       false,
-//                                             maxReconnectTimeInterval:  0,
-//                                             reconnectOnClose:          false,
-//                                             localImageCustomPath:      nil,
-//                                             localFileCustomPath:       nil,
-//                                             deviecLimitationSpaceMB:   nil,
-//                                             showDebuggingLogLevel:     nil)
-		Chat.sharedInstance.delegate = self
+        if let config = Config.getConfig(.Sandbox){
+            let token = UserDefaults.standard.string(forKey: "token")
+            print("token is: \(token ?? "")")
+            Chat.sharedInstance.createChatObject(config: .init(socketAddress: config.socketAddresss,
+                                                               serverName: config.serverName,
+                                                               token: token ?? config.debugToken,
+                                                               ssoHost: config.ssoHost,
+                                                               platformHost: config.platformHost,
+                                                               fileServer: config.fileServer,
+                                                               enableCache: true,
+                                                               msgTTL: 800000,//for integeration server need to be long time
+                                                               reconnectOnClose: true,
+                                                               isDebuggingLogEnabled: true,
+                                                               enableNotificationLogObserver: true
+                                                               
+                                                               
+            ))
+            Chat.sharedInstance.delegate = self
+        }
     }
 	
 	func chatConnect() {
         print("🟡 chat connected")
-        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "Connecting ...")
+        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.Connecting)
+        ChatDelegateImplementation.lastConnectionStatus = .Connecting
 	}
 	
 	func chatDisconnect() {
         print("🔴 chat Disconnect")
-        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "Disconnected")
+        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.Disconnected)
+        ChatDelegateImplementation.lastConnectionStatus = .Disconnected
 	}
 	
 	func chatReconnect() {
 		print("🔄 chat Reconnect")
-        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "Reconnecting ...")
+        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.Reconnecting)
+        ChatDelegateImplementation.lastConnectionStatus = .Reconnecting
 	}
 	
 	func chatReady(withUserInfo: User) {
         print("🟢 chat ready Called\(withUserInfo)")
-        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "")
+        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.CONNECTED)
+        ChatDelegateImplementation.lastConnectionStatus = .CONNECTED
 	}
 	
 	func chatState(state: AsyncStateType) {
@@ -117,7 +78,7 @@ class ChatDelegateImplementation: ChatDelegates {
 	
 	func chatError(errorCode: Int, errorMessage: String, errorResult: Any?) {
 		if errorCode == 21  || errorCode == 401{
-            NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: "Un Authorized!!!")
+            NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.UnAuthorized)
 //            let st = UIStoryboard(name: "Main", bundle: nil)
 //            let vc = st.instantiateViewController(identifier: "UpdateTokenController")
 //            guard let rootVC = SceneDelegate.getRootViewController() else {return}

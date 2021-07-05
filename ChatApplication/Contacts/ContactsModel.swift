@@ -15,7 +15,7 @@ struct ContactsModel {
     private (set) var totalCount                      = 0
     private (set) var contacts :[Contact]             = []
     private (set) var selectedContacts :[Contact]     = []
-    
+        
     func hasNext()->Bool{
         return contacts.count < totalCount
     }
@@ -28,8 +28,12 @@ struct ContactsModel {
         self.totalCount = totalCount
     }
     
-    mutating func setContacts(contacts:[Contact]){
-        self.contacts = contacts
+    mutating func setContacts(contacts:[Contact]? , totalCount:Int ){
+        if let contacts = contacts{
+            self.contacts = contacts
+            setContentCount(totalCount:totalCount)
+        }
+        
     }
     
     mutating func appendContacts(contacts:[Contact]){
@@ -63,7 +67,7 @@ extension ContactsModel{
     mutating func setupPreview(){
         let t1 = ContactRow_Previews.contact
         t1.firstName = "Hamed"
-        t1.lastName  =  "Hosseini"
+        t1.lastName  =  "Hosseini23232"
         t1.id = 1
         
         let t2 = ContactRow_Previews.contact

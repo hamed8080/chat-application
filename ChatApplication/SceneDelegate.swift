@@ -7,10 +7,13 @@
 
 import UIKit
 import SwiftUI
+import FanapPodChatSDK
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    
+    @State var appState = AppState()
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -19,18 +22,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
         // Create the SwiftUI view that provides the window contents.
-        let contentView = HomeContentView(threadsViewModel:ThreadsViewModel(),contactsViewModel: ContactsViewModel())
+        NotificationCenter.default.addObserver(self, selector: #selector(addLog), name: NSNotification.Name("log"), object: nil)
+        let contentView = HomeContentView(threadsViewModel:ThreadsViewModel(),
+                                          contactsViewModel: ContactsViewModel(),
+                                          callsHistoryViewModel: CallsHistoryViewModel())
+            .environmentObject(appState)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: contentView)
+            window.rootViewController = CustomUIHostinViewController(rootView: contentView) //CustomUIHosting Needed for change status bar color per page
             self.window = window
             window.makeKeyAndVisible()
         }
         
         guard let _ = (scene as? UIWindowScene) else { return }
         ChatDelegateImplementation.sharedInstance.createChatObject()
+    }
+    
+    
+    @objc func addLog(notification: NSNotification){
+        if let log = notification.object as? LogResult{
+            ResultViewController.addToLog(logResult: log)
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

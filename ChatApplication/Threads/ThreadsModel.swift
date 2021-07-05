@@ -10,13 +10,23 @@ import FanapPodChatSDK
 
 struct ThreadsModel {
     
-    private (set) var count                   = 15
-    private (set) var offset                  = 0
-    private (set) var totalCount              = 0
-    private (set) var threads :[Conversation] = []
+    
+    private (set) var connectionStatus:String?      = "Connecting ..."
+    private (set) var count                         = 15
+    private (set) var offset                        = 0
+    private (set) var totalCount                    = 0
+    private (set) var threads :[Conversation]       = []
     
     func hasNext()->Bool{
         return threads.count < totalCount
+    }
+    
+    mutating func setConnectionStatus(_ status:ConnectionStatus){
+        if status == .CONNECTED{
+            connectionStatus = ""
+        }else{
+            connectionStatus = String(describing: status) + " ..."
+        }
     }
     
     mutating func preparePaginiation(){
