@@ -1,9 +1,0 @@
-${PODS_ROOT}/Target Support Files/Pods-ChatApplication/Pods-ChatApplication-frameworks.sh
-${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework
-${BUILT_PRODUCTS_DIR}/Each/Each.framework
-${BUILT_PRODUCTS_DIR}/FanapPodAsyncSDK/FanapPodAsyncSDK.framework
-${BUILT_PRODUCTS_DIR}/FanapPodChatSDK/FanapPodChatSDK.framework
-${BUILT_PRODUCTS_DIR}/Sentry/Sentry.framework
-${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework
-${BUILT_PRODUCTS_DIR}/SwiftyBeaver/SwiftyBeaver.framework
-${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework

@@ -1,6 +1,0 @@
-framework module FanapPodChatSDK {
-  umbrella header "FanapPodChatSDK-umbrella.h"
-
-  export *
-  module * { export * }
-}

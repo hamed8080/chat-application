@@ -14,6 +14,12 @@ class AppState: ObservableObject {
     var showCallView = false
     
     @Published var dark:Bool = false
+	
+	var receiveCall:CreateCall? = nil
+	
+	init() {
+		NotificationCenter.default.addObserver(self, selector: #selector(onReceiveCall(_:)), name: RECEIVE_CALL_NAME_OBJECT, object: nil)
+	}
     
     
     var selectedContacts :[Contact] = []
@@ -28,5 +34,12 @@ class AppState: ObservableObject {
             return groupName ?? "Group"
         }
     }
+	
+	@objc func onReceiveCall(_ notification: NSNotification){
+		if let createCall = notification.object as? CreateCall{
+			receiveCall = createCall
+			showCallView.toggle()
+		}
+	}
 
 }

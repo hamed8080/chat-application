@@ -78,17 +78,18 @@ struct CallControlsContent: View {
             )
         }
         .onAppear{
-            
-            viewModel.satrtCallWithThreadId(37299)
+//            let c = Contact(blocked: nil, cellphoneNumber: nil, email: nil, firstName: nil, hasUser: false, id: 63239, image: nil, lastName: nil, linkedUser: nil, notSeenDuration: nil, timeStamp: nil, userId: nil)
+//			viewModel.startP2PCall([c])
+//            viewModel.satrtCallWithThreadId(8087)
 //
-//            if let threadId = appState.callThreadId{
-//                viewModel.satrtCallWithThreadId(threadId)
-//            }
-//            else if appState.isP2PCalling{
-//                viewModel.startP2PCall(appState.selectedContacts)
-//            }else{
-//                viewModel.startGroupCall(appState.selectedContacts)
-//            }
+            if let threadId = appState.callThreadId{
+                viewModel.satrtCallWithThreadId(threadId)
+            }
+            else if appState.isP2PCalling{
+                viewModel.startP2PCall(appState.selectedContacts)
+            }else{
+                viewModel.startGroupCall(appState.selectedContacts)
+            }
         }
     }
 }

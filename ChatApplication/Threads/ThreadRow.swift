@@ -12,6 +12,7 @@ struct ThreadRow: View {
 	
 	private (set) var thread:Conversation
 	@State private (set) var showActionSheet:Bool = false
+	@State private (set) var showParticipants:Bool = false
 	private var viewModel:ThreadsViewModel
 
 	init(thread: Conversation , viewModel:ThreadsViewModel) {
@@ -32,6 +33,14 @@ struct ThreadRow: View {
 							.lineLimit(2)
 							.font(.subheadline)
 					}
+					#if DEBUG
+						Text("threadId:\(thread.id ?? 0)")
+						Button {
+							showActionSheet.toggle()
+						} label: {
+							Text("participant Count:\(thread.participantCount ?? 0)")
+						}
+					#endif
 				}
 				Spacer()
 				if thread.pin == true{

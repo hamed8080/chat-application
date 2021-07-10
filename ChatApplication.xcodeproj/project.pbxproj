@@ -17,6 +17,10 @@
 		AC008F49268C8BA400B008FF /* CallControlsContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F48268C8B9300B008FF /* CallControlsContent.swift */; };
 		AC008F4B268C8C0A00B008FF /* CallControlsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F4A268C8C0A00B008FF /* CallControlsViewModel.swift */; };
 		AC008F4D268C8C2900B008FF /* CallControlsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F4C268C8C2900B008FF /* CallControlsModel.swift */; };
+		AC0435FC26998D3700B1C87B /* ParticipantsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FB26998D2200B1C87B /* ParticipantsModel.swift */; };
+		AC0435FD26998D3E00B1C87B /* ParticipantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FA26998D0C00B1C87B /* ParticipantsViewModel.swift */; };
+		AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FE26998D4400B1C87B /* ParticipantRow.swift */; };
+		AC04360126998D5F00B1C87B /* ParticipantsContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC04360026998D5F00B1C87B /* ParticipantsContentList.swift */; };
 		AC085F3B2692EA8A001492B2 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = AC085F3A2692EA8A001492B2 /* Config.json */; };
 		AC085F3E2692EC71001492B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC085F3D2692EC71001492B2 /* Config.swift */; };
 		AC0889AA2691C32F00FD4552 /* TestSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0889A92691C32F00FD4552 /* TestSwiftUI.swift */; };
@@ -61,6 +65,10 @@
 		AC008F48268C8B9300B008FF /* CallControlsContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsContent.swift; sourceTree = "<group>"; };
 		AC008F4A268C8C0A00B008FF /* CallControlsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsViewModel.swift; sourceTree = "<group>"; };
 		AC008F4C268C8C2900B008FF /* CallControlsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsModel.swift; sourceTree = "<group>"; };
+		AC0435FA26998D0C00B1C87B /* ParticipantsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsViewModel.swift; sourceTree = "<group>"; };
+		AC0435FB26998D2200B1C87B /* ParticipantsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsModel.swift; sourceTree = "<group>"; };
+		AC0435FE26998D4400B1C87B /* ParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantRow.swift; sourceTree = "<group>"; };
+		AC04360026998D5F00B1C87B /* ParticipantsContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsContentList.swift; sourceTree = "<group>"; };
 		AC085F3A2692EA8A001492B2 /* Config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Config.json; sourceTree = "<group>"; };
 		AC085F3D2692EC71001492B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		AC0889A92691C32F00FD4552 /* TestSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSwiftUI.swift; sourceTree = "<group>"; };
@@ -135,6 +143,17 @@
 				AC008F4C268C8C2900B008FF /* CallControlsModel.swift */,
 			);
 			path = CallControls;
+			sourceTree = "<group>";
+		};
+		AC0435F926998CF300B1C87B /* Participants */ = {
+			isa = PBXGroup;
+			children = (
+				AC0435FA26998D0C00B1C87B /* ParticipantsViewModel.swift */,
+				AC0435FB26998D2200B1C87B /* ParticipantsModel.swift */,
+				AC0435FE26998D4400B1C87B /* ParticipantRow.swift */,
+				AC04360026998D5F00B1C87B /* ParticipantsContentList.swift */,
+			);
+			path = Participants;
 			sourceTree = "<group>";
 		};
 		AC085F3C2692EC2E001492B2 /* Supporting Files */ = {
@@ -246,6 +265,7 @@
 		AC1D2CC32662016D00AA351A /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				AC0435F926998CF300B1C87B /* Participants */,
 				AC1D2CC42662016D00AA351A /* ThreadsModel.swift */,
 				AC1D2CC52662016D00AA351A /* ThreadsViewModel.swift */,
 				AC1D2CC72662016D00AA351A /* ThreadRow.swift */,
@@ -429,10 +449,14 @@
 				AC008F3F268C520B00B008FF /* CallsHistoryViewModel.swift in Sources */,
 				AC7EBFF7266CAF3100984E81 /* ContactsModel.swift in Sources */,
 				AC0889B02691E14500FD4552 /* CustomHostinViewController.swift in Sources */,
+				AC0435FC26998D3700B1C87B /* ParticipantsModel.swift in Sources */,
 				AC122EC4266B83A800C0630F /* SettingsView.swift in Sources */,
 				AC0B1D652690721000C6917A /* LogCell.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
 				AC7EBFF6266CAF2E00984E81 /* ContactsViewModel.swift in Sources */,
+				AC04360126998D5F00B1C87B /* ParticipantsContentList.swift in Sources */,
+				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
+				AC0435FD26998D3E00B1C87B /* ParticipantsViewModel.swift in Sources */,
 				AC1D2CCE2662016E00AA351A /* ThreadsModel.swift in Sources */,
 				AC085F3E2692EC71001492B2 /* Config.swift in Sources */,
 				AC008F4D268C8C2900B008FF /* CallControlsModel.swift in Sources */,
