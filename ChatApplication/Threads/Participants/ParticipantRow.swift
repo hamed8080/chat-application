@@ -46,6 +46,6 @@ struct ParticipantRow_Previews: PreviewProvider {
 	}
 	
 	static var previews: some View {
-		ParticipantRow(participant: participant, viewModel: ParticipantsViewModel())
+        ParticipantRow(participant: participant, viewModel: ParticipantsViewModel())
 	}
 }

@@ -9,10 +9,10 @@ import SwiftUI
 
 struct ParticipantsContentList:View {
     
-	var threadId:Int
-	
+    var threadId:Int
+    
     @StateObject
-	private var viewModel:ParticipantsViewModel = ParticipantsViewModel()
+    private var viewModel:ParticipantsViewModel = ParticipantsViewModel()
     
     var body: some View{
         NavigationView{
@@ -21,9 +21,9 @@ struct ParticipantsContentList:View {
                     ForEach(viewModel.model.participants , id:\.id) { participant in
                         ParticipantRow(participant: participant,viewModel: viewModel)
                             .onAppear {
-//                                if viewModel.model.threads.last == thread{
-//                                    viewModel.loadMore()
-//                                }
+                                if viewModel.model.participants.last == participant{
+                                    viewModel.loadMore()
+                                }
                             }
                     }.onDelete(perform: { indexSet in
                         print("on delete")
@@ -31,10 +31,14 @@ struct ParticipantsContentList:View {
 				}.listStyle(PlainListStyle())
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
             }
+            .onAppear{
+                viewModel.threadId = threadId
+                viewModel.getParticipantsIfConnected()
+            }
             .navigationBarTitle(Text("Chats"), displayMode: .inline)
             .toolbar{
                 ToolbarItem(placement:.navigationBarLeading){
-                    Text(viewModel.model.connectionStatus ?? "")
+                    Text(AppState.shared.connectionStatusString)
                         .font(.headline)
                         .foregroundColor(Color.gray)
                 }

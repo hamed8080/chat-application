@@ -31,7 +31,7 @@ struct ThreadContentList:View {
             .navigationBarTitle(Text("Chats"), displayMode: .inline)
             .toolbar{
                 ToolbarItem(placement:.navigationBarLeading){
-                    Text(viewModel.model.connectionStatus ?? "")
+                    Text(AppState.shared.connectionStatusString)
                         .font(.headline)
                         .foregroundColor(Color.gray)
                 }

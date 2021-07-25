@@ -10,31 +10,21 @@ import FanapPodChatSDK
 
 struct CallControlsModel {
     
-    private (set) var connectionStatus:String?      = "Connecting ..."
     private (set) var callId:Int?                   = nil
     private (set) var isMute:Bool                   = true
     private (set) var isVideoOn:Bool                = false
     private (set) var isSpeakerOn:Bool              = false
     
-    
-    mutating func setConnectionStatus(_ status:ConnectionStatus){
-        if status == .CONNECTED{
-            connectionStatus = ""
-        }else{
-            connectionStatus = String(describing: status) + " ..."
-        }
-    }
-    
     mutating func clear(){
  
     }
     
-    mutating func setMute(_ state:Bool){
-        isMute = state
+    mutating func toggleMute(){
+        isMute.toggle()
     }
     
-    mutating func setVideo(_ state:Bool){
-        isVideoOn = state
+    mutating func toggleVideo(){
+        isVideoOn.toggle()
     }
     
     mutating func setSpeaker(_ state:Bool){

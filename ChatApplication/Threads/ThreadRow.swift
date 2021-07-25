@@ -34,12 +34,19 @@ struct ThreadRow: View {
 							.font(.subheadline)
 					}
 					#if DEBUG
-						Text("threadId:\(thread.id ?? 0)")
-						Button {
-							showActionSheet.toggle()
-						} label: {
-							Text("participant Count:\(thread.participantCount ?? 0)")
-						}
+                    Text("threadId: \(String(thread.id ?? 0))")
+                    if let id = thread.id{
+                        NavigationLink(
+                            destination: ParticipantsContentList(threadId: id),
+                            isActive: $showParticipants,
+                            label: {
+                                Button(action: {
+                                    showParticipants.toggle()
+                                }, label: {
+                                    Text("participant count: \(String(thread.participantCount ?? 0))")
+                                })
+                            })
+                    }
 					#endif
 				}
 				Spacer()

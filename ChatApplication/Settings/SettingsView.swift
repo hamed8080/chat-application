@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FanapPodChatSDK
 
 struct SettingsView:View {
     
@@ -80,6 +81,9 @@ struct SettingsView:View {
                             GroupItemInSlideMenu<EmptyView>(name: "phone", title: "Calls", color: .green,destinationView:EmptyView())
                             GroupItemInSlideMenu<EmptyView>(name: "bookmark", title: "Saved Messages", color: Color.purple , destinationView:EmptyView())
                             GroupItemInSlideMenu<ResultView>(name: "note.text", title: "Logs", color: Color.yellow , destinationView:ResultView())
+                            GroupItemInSlideMenu<EmptyView>(name: "trash.fill", title: "Clear Cache Data", color: Color.red , destinationView:EmptyView()){
+                                CacheFactory.write(cacheType: .DELETE_ALL_CACHE_DATA)
+                            }
                         }
                         Spacer()
                         NavigationLink(destination: ResultView(),isActive: $showLogs){}.hidden()
@@ -98,8 +102,9 @@ struct GroupItemInSlideMenu<DestinationView:View>:View {
     var name:String
     var title:String
     var color:Color
-    var action: (()->Void)?
     var destinationView:DestinationView? = nil
+    var action: (()->Void)?
+    
     @State var isActive = false
     
     var body: some View{

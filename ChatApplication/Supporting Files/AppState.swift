@@ -10,36 +10,24 @@ import FanapPodChatSDK
 
 class AppState: ObservableObject {
     
-    @Published
-    var showCallView = false
+    static let shared = AppState()
     
     @Published var dark:Bool = false
-	
-	var receiveCall:CreateCall? = nil
-	
-	init() {
-		NotificationCenter.default.addObserver(self, selector: #selector(onReceiveCall(_:)), name: RECEIVE_CALL_NAME_OBJECT, object: nil)
-	}
     
+    @Published
+    var connectionStatus:ConnectionStatus = .Connecting
     
-    var selectedContacts :[Contact] = []
-    var isP2PCalling     :Bool      = false
-    var callThreadId     :Int?      = nil
-    var groupName        :String?   = nil
+    @Published
+    var connectionStatusString = ""
     
-    var titleOfCalling:String{
-        if isP2PCalling{
-            return selectedContacts.first?.linkedUser?.username ?? "\(selectedContacts.first?.firstName ?? "") \(selectedContacts.first?.lastName ?? "")"
+    func setConnectionStatus(_ status:ConnectionStatus){
+        if status == .CONNECTED{
+            connectionStatusString = ""
         }else{
-            return groupName ?? "Group"
+            connectionStatusString = String(describing: status) + " ..."
         }
     }
-	
-	@objc func onReceiveCall(_ notification: NSNotification){
-		if let createCall = notification.object as? CreateCall{
-			receiveCall = createCall
-			showCallView.toggle()
-		}
-	}
-
+    
+	private init() {}
+    
 }

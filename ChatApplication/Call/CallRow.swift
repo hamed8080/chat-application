@@ -23,20 +23,34 @@ struct CallRow: View {
 		
 		Button(action: {}, label: {
 			HStack{
-                Text(call.partnerParticipant?.name ?? "")
-                    .foregroundColor(.black)
+                Avatar(url: call.partnerParticipant?.image, userName: call.partnerParticipant?.name , size: 48,textSize: 18)
+                VStack(alignment: .leading){
+                    Text(call.partnerParticipant?.name ?? "")
+                        .foregroundColor(.black)
+                    HStack{
+                        Image(systemName: call.isIncomingCall ? "arrow.down.left" : "arrow.up.right")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 12, height: 12)
+                            .foregroundColor( call.isIncomingCall ? Color.red : Color.green)
+                        
+                        if let createTime = call.createTime, let date = Date(milliseconds: Int64(createTime)){
+                            Text(date.getShortFormatOfDate())
+                                .font(.system(size: 14))
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+                
                 Spacer()
                 VStack(alignment:.trailing){
-                    if let createTime = call.createTime, let date = Date(milliseconds: Int64(createTime)){
-                        Text(date.timeAgoSinceDate())
-                            .font(.system(size: 14))
-                            .foregroundColor(.gray)
-                    }
-                    Image(systemName: "phone")
+                   
+                    Image(systemName: call.type == .VIDEO_CALL ? "video.fill" : "phone.fill")
                         .resizable()
+                        .scaledToFit()
                         .padding(12)
-                        .rotationEffect(Angle(degrees: 270))
-                        .frame(width: 48, height: 48)
+                        .frame(width: 38, height: 38)
+                        .foregroundColor(.blue.opacity(0.9))
                 }
                 
 			}
@@ -95,12 +109,12 @@ struct CallRow_Previews: PreviewProvider {
                                              chatProfileVO: nil)
 	let call = Call(id: 1763,
                     creatorId: 18478,
-                    type: 1,
+                    type: .VOICE_CALL,
                     isGroup: false,
-                    createTime: 1612076744136,
+                    createTime: 1626173608000,
                     startTime: nil,
                     endTime: 1612076779373,
-                    status: .DECLINED,
+                    status: .ACCEPTED,
                     callParticipants: nil,
                     partnerParticipant: partnerParticipant)
 		return call

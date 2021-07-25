@@ -62,7 +62,7 @@ struct CallsHistoryContentList: View {
             .navigationBarTitle(Text("Calls"), displayMode: .inline)
             .toolbar{
                 ToolbarItem(placement:.navigationBarLeading){
-                    Text(viewModel.model.connectionStatus ?? "")
+                    Text(AppState.shared.connectionStatusString)
                         .font(.headline)
                         .foregroundColor(Color.gray)
                 }

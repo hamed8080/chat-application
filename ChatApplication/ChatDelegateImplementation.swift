@@ -9,9 +9,6 @@ import Foundation
 import FanapPodChatSDK
 import UIKit
 
-let CONNECTION_STATUS_NAME        = "CONNECTION_STATUS_NAME"
-let CONNECTION_STATUS_NAME_OBJECT = Notification.Name.init(CONNECTION_STATUS_NAME)
-
 enum ConnectionStatus:Int{
     case Connecting   = 0
     case Disconnected = 1
@@ -21,9 +18,7 @@ enum ConnectionStatus:Int{
 }
 
 class ChatDelegateImplementation: ChatDelegates {
-    
-    static var lastConnectionStatus:ConnectionStatus =  .Connecting
-       
+           
 	private (set) static var sharedInstance = ChatDelegateImplementation()
     
     func createChatObject(){
@@ -50,26 +45,22 @@ class ChatDelegateImplementation: ChatDelegates {
 	
 	func chatConnect() {
         print("🟡 chat connected")
-        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.Connecting)
-        ChatDelegateImplementation.lastConnectionStatus = .Connecting
+        AppState.shared.connectionStatus = .Connecting
 	}
 	
 	func chatDisconnect() {
         print("🔴 chat Disconnect")
-        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.Disconnected)
-        ChatDelegateImplementation.lastConnectionStatus = .Disconnected
+        AppState.shared.connectionStatus = .Disconnected
 	}
 	
 	func chatReconnect() {
 		print("🔄 chat Reconnect")
-        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.Reconnecting)
-        ChatDelegateImplementation.lastConnectionStatus = .Reconnecting
+        AppState.shared.connectionStatus = .Reconnecting
 	}
 	
 	func chatReady(withUserInfo: User) {
         print("🟢 chat ready Called\(withUserInfo)")
-        NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.CONNECTED)
-        ChatDelegateImplementation.lastConnectionStatus = .CONNECTED
+        AppState.shared.connectionStatus = .CONNECTED
 	}
 	
 	func chatState(state: AsyncStateType) {
@@ -78,7 +69,6 @@ class ChatDelegateImplementation: ChatDelegates {
 	
 	func chatError(errorCode: Int, errorMessage: String, errorResult: Any?) {
 		if errorCode == 21  || errorCode == 401{
-            NotificationCenter.default.post(name: CONNECTION_STATUS_NAME_OBJECT ,object: ConnectionStatus.UnAuthorized)
 //            let st = UIStoryboard(name: "Main", bundle: nil)
 //            let vc = st.instantiateViewController(identifier: "UpdateTokenController")
 //            guard let rootVC = SceneDelegate.getRootViewController() else {return}

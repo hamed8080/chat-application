@@ -10,23 +10,13 @@ import FanapPodChatSDK
 
 struct ParticipantsModel {
     
-    
-    private (set) var connectionStatus:String?      = "Connecting ..."
     private (set) var count                         = 15
     private (set) var offset                        = 0
     private (set) var totalCount                    = 0
-    private (set) var participants :[Participant]     = []
+    private (set) var participants :[Participant]   = []
     
     func hasNext()->Bool{
         return participants.count < totalCount
-    }
-    
-    mutating func setConnectionStatus(_ status:ConnectionStatus){
-        if status == .CONNECTED{
-            connectionStatus = ""
-        }else{
-            connectionStatus = String(describing: status) + " ..."
-        }
     }
     
     mutating func preparePaginiation(){
@@ -37,11 +27,11 @@ struct ParticipantsModel {
         self.totalCount = totalCount
     }
     
-    mutating func setThreads(participants:[Participant]){
+    mutating func setParticipants(participants:[Participant]){
         self.participants = participants
     }
     
-    mutating func appendThreads(participants:[Participant]){
+    mutating func appendParticipants(participants:[Participant]){
         self.participants.append(contentsOf: participants)
     }
     
@@ -53,20 +43,20 @@ struct ParticipantsModel {
     }
 }
 
-//extension ParticipantsModel{
-//    
-//    mutating func setupPreview(){
-//        let t1 = ThreadRow_Previews.thread
-//        t1.title = "Hamed Hosseini"
-//        t1.id = 1
-//        
-//        let t2 = ThreadRow_Previews.thread
-//        t2.title = "Masoud Amjadi"
-//        t2.id = 2
-//        
-//        let t3 = ThreadRow_Previews.thread
-//        t2.title = "Pod Group"
-//        t3.id = 3
-//        appendThreads(threads: [t1 , t2, t3])
-//    }
-//}
+extension ParticipantsModel{
+    
+    mutating func setupPreview(){
+        let t1 = ParticipantRow_Previews.participant
+        t1.name = "Hamed Hosseini"
+        t1.id = 1
+        
+        let t2 = ParticipantRow_Previews.participant
+        t2.name = "Masoud Amjadi"
+        t2.id = 2
+        
+        let t3 = ParticipantRow_Previews.participant
+        t2.name = "Pooria Pahlevani"
+        t3.id = 3
+        appendParticipants(participants: [t1 , t2, t3])
+    }
+}

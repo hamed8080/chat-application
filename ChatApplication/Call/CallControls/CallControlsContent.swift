@@ -14,10 +14,13 @@ struct CallControlsContent: View {
     var viewModel               :CallControlsViewModel
     
     @EnvironmentObject
-    var appState                :AppState
+    var callState:CallState
     
     @Environment(\.localStatusBarStyle)
     var statusBarStyle          :LocalStatusBarStyle
+    
+    @State
+    var showCallParticipants:Bool = false
     
     var body: some View {
         GeometryReader{ reader in
@@ -26,45 +29,76 @@ struct CallControlsContent: View {
                 Text("")
                     .padding(.bottom , 48)
                 
-                Text(appState.titleOfCalling.uppercased())
+                Text(callState.receiveCall?.creator.name?.uppercased() ?? callState.titleOfCalling.uppercased())
                     .foregroundColor(.white)
                     .font(.system(size: 22))
                     .fontWeight(.heavy)
                     .padding(.bottom)
-                
-                Text("Calling...")
-                    .foregroundColor(.white)
-                    .fontWeight(.medium)
+                if callState.isCallStarted{
+                    Text(callState.timerCallString ?? "")
+                        .foregroundColor(.white)
+                        .fontWeight(.medium)
+                    
+                }else{
+                    Text(callState.receiveCall?.creator.name != nil ? "Ringing..." : "Calling...")
+                        .foregroundColor(.white)
+                        .fontWeight(.medium)
+                }
                 
                 Spacer()
                 
-                HStack(spacing:32){
-                    
-                    CallControlItem(iconSfSymbolName: viewModel.model.isMute ? "mic.slash.fill" : "mic.fill"  , subtitle: "Mute", color: .gray){
-                        viewModel.toggleMute()
-                    }
-                    
-                    CallControlItem(iconSfSymbolName: viewModel.model.isVideoOn ? "video.fill" : "video.slash.fill", subtitle: "Video", color: .gray){
-                        viewModel.toggleVideo()
-                    }
-                    
-                    CallControlItem(iconSfSymbolName: viewModel.model.isSpeakerOn ? "speaker.wave.2.fill" : "speaker.slash.fill", subtitle: "Speaker", color: .gray){
-                        //                            viewModel.setSpeaker()
-                    }
-                    
-                    CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray){
-                        //                            viewModel.addParticipant()
-                    }
-                    
-                    CallControlItem(iconSfSymbolName: "phone.down.fill", subtitle: "End Call", color: .red){
-                        viewModel.endCall()
-                        withAnimation{
-                            appState.showCallView.toggle()
+                if callState.receiveCall != nil{
+                    HStack(spacing:32){
+                        
+                        CallControlItem(iconSfSymbolName: "phone.fill", subtitle: "Answer", color: .green){
+                            viewModel.answerCall()
+                        }
+                        
+                        Spacer()
+                        
+                        CallControlItem(iconSfSymbolName: "phone.down.fill", subtitle: "Reject Call", color: .red){
+                            viewModel.rejectCall()
+                            withAnimation{
+                                callState.showCallView.toggle()
+                            }
                         }
                     }
+                    .padding(64)
+                    .frame(width: reader.size.width, height: 72)
+                }else{
+                    HStack(spacing:32){
+                        
+                        CallControlItem(iconSfSymbolName: viewModel.model.isMute ? "mic.slash.fill" : "mic.fill"  , subtitle: "Mute", color: viewModel.model.isMute ? .gray : .green){
+                            viewModel.toggleMute()
+                        }
+                        
+                        CallControlItem(iconSfSymbolName: viewModel.model.isVideoOn ? "video.fill" : "video.slash.fill", subtitle: "Video", color: viewModel.model.isVideoOn ? .green : .gray){
+                            viewModel.toggleVideo()
+                        }
+                        
+                        CallControlItem(iconSfSymbolName: viewModel.model.isSpeakerOn ? "speaker.wave.2.fill" : "speaker.slash.fill", subtitle: "Speaker", color: .gray){
+                            viewModel.toggleSpeaker()
+                        }
+                        
+                        CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray){
+                            withAnimation {
+                                showCallParticipants.toggle()
+                            }
+                        }.sheet(isPresented: $showCallParticipants, content: {
+                            CallParticipantsContentList(callId: callState.startCall?.callId ?? 0)
+                        })
+                        
+                        CallControlItem(iconSfSymbolName: "phone.down.fill", subtitle: "End Call", color: .red){
+                            viewModel.endCall()
+                            withAnimation{
+                                callState.showCallView.toggle()
+                            }
+                        }
+                    }
+                    .padding(4)
+                    .frame(width: reader.size.width, height: 72)
                 }
-                .padding(4)
-                .frame(width: reader.size.width, height: 72)
+                
             }
             .onAppear{
                 self.statusBarStyle.currentStyle = .lightContent
@@ -78,18 +112,7 @@ struct CallControlsContent: View {
             )
         }
         .onAppear{
-//            let c = Contact(blocked: nil, cellphoneNumber: nil, email: nil, firstName: nil, hasUser: false, id: 63239, image: nil, lastName: nil, linkedUser: nil, notSeenDuration: nil, timeStamp: nil, userId: nil)
-//			viewModel.startP2PCall([c])
-//            viewModel.satrtCallWithThreadId(8087)
-//
-            if let threadId = appState.callThreadId{
-                viewModel.satrtCallWithThreadId(threadId)
-            }
-            else if appState.isP2PCalling{
-                viewModel.startP2PCall(appState.selectedContacts)
-            }else{
-                viewModel.startGroupCall(appState.selectedContacts)
-            }
+            viewModel.startRequestCallIfNeeded()
         }
     }
 }
@@ -136,10 +159,15 @@ struct CallControlsView_Previews: PreviewProvider {
     static var previews: some View {
         
         let viewModel = CallControlsViewModel()
-        let appState = AppState()
+        let appState = AppState.shared
+        let callState = CallState.shared
+        
         CallControlsContent(viewModel:viewModel)
             .environmentObject(appState)
+            .environmentObject(callState)
             .onAppear(){
+//                let participant = ParticipantRow_Previews.participant
+//                callState.receiveCall = CreateCall(type: .VOICE_CALL, creatorId: 0, creator: participant, threadId: 0, callId: 0, group: false)
                 viewModel.setupPreview()
             }
         

@@ -18,11 +18,8 @@ struct GroupCallSelectionContentList: View {
     @StateObject
     var contactViewModel    :ContactsViewModel = ContactsViewModel()
     
-    @State
-    var navigateToCallView                     = false
-    
     @EnvironmentObject
-    var appState            :AppState
+    var callState:CallState
         
     var body: some View {
         GeometryReader{ reader in
@@ -43,10 +40,9 @@ struct GroupCallSelectionContentList: View {
                 VStack{
                     Spacer()
                     Button(action: {
-                        appState.isP2PCalling = false
-                        appState.selectedContacts = contactViewModel.model.selectedContacts
-                        navigateToCallView.toggle()
-                        
+                        callState.isP2PCalling = false
+                        callState.selectedContacts = contactViewModel.model.selectedContacts
+                        callState.showCallView.toggle()
                     }, label: {
                         HStack{
                             Text("Start Group Call".uppercased())
@@ -62,11 +58,6 @@ struct GroupCallSelectionContentList: View {
                     })
                     .frame(width: reader.size.width, height: 48)
                     .background(Color.blue)
-                }
-                NavigationLink(
-                    destination: CallControlsContent(viewModel: CallControlsViewModel()),
-                    isActive: $navigateToCallView){
-                    EmptyView()
                 }
             }
             LoadingViewAtBottomOfView(isLoading:contactViewModel.isLoading ,reader:reader)

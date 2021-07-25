@@ -7,23 +7,22 @@
 
 import Foundation
 import FanapPodChatSDK
+import Combine
 
 class CallsHistoryViewModel:ObservableObject{
     
+    @Published
     var isLoading                       = false
     
     @Published
     private (set) var model = CallsHistoryModel()
     
-    init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(onConnectionStatusChanged(_:)), name: CONNECTION_STATUS_NAME_OBJECT, object: nil)
-    }
+    private (set) var connectionStatusCancelable:AnyCancellable? = nil
     
-    @objc private func onConnectionStatusChanged(_ notification:NSNotification){
-        if let connectionStatus = notification.object as? ConnectionStatus{
-            model.setConnectionStatus(connectionStatus)
-            if model.calls.count == 0 && connectionStatus == .CONNECTED{
-                getCallsHistory()
+    init() {
+        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
+            if self.model.calls.count == 0 && status == .CONNECTED{
+                self.getCallsHistory()
             }
         }
     }

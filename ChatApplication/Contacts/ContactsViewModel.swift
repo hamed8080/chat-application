@@ -7,25 +7,22 @@
 
 import Foundation
 import FanapPodChatSDK
+import Combine
 
 class ContactsViewModel:ObservableObject{
     
+    @Published
     var isLoading = false
     
     @Published
     private (set) var model = ContactsModel()
     
-    init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(onConnectionStatusChanged(_:)), name: CONNECTION_STATUS_NAME_OBJECT, object: nil)
-        if ChatDelegateImplementation.lastConnectionStatus == .CONNECTED{
-            getContacts()
-        }
-    }
+    private (set) var connectionStatusCancelable:AnyCancellable? = nil
     
-    @objc private func onConnectionStatusChanged(_ notification:NSNotification){
-        if let connectionStatus = notification.object as? ConnectionStatus{
-            if model.contacts.count == 0 && connectionStatus == .CONNECTED {
-                getContacts()
+    init() {
+        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
+            if self.model.contacts.count == 0 && status == .CONNECTED{
+                self.getContacts()
             }
         }
     }

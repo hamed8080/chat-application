@@ -56,4 +56,20 @@ extension Date {
         self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
     }
     
+    func getDurationTimerString()->String{
+        let interval =  Date().timeIntervalSince1970 - self.timeIntervalSince1970
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour,.minute,.second]
+        formatter.zeroFormattingBehavior = .pad
+        formatter.unitsStyle = .positional
+        return formatter.string(from: interval) ?? ""
+    }
+    
+    func getShortFormatOfDate()->String{
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: self)
+    }
+    
 }

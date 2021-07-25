@@ -13,7 +13,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     
-    @State var appState = AppState()
+    @State var appState = AppState.shared
+    @State var callState = CallState.shared
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -27,6 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                           contactsViewModel: ContactsViewModel(),
                                           callsHistoryViewModel: CallsHistoryViewModel())
             .environmentObject(appState)
+            .environmentObject(callState)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {

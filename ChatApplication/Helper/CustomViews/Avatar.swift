@@ -9,35 +9,45 @@ import SwiftUI
 struct Avatar :View{
     
     @ObservedObject
-    var imageLoader:ImageLoader
+    var imageLoader                  :ImageLoader
     
-    @State var image:UIImage = UIImage()
+    @State
+    var image                        :UIImage = UIImage()
     
-    private (set) var url:String?
-    private (set) var userName:String?
+    private (set) var url            :String?
+    private (set) var userName       :String?
+    private (set) var size           :CGFloat
+    private (set) var textSize        :CGFloat
     
-    init(url:String?, userName:String? , fileMetaData:String?) {
-        self.url = url
+    init(url          :String?,
+         userName     :String?,
+         fileMetaData :String? = nil,
+         size         :CGFloat = 64,
+         textSize     :CGFloat = 24
+    ) {
+        self.url      = url
         self.userName = userName
+        self.size     = size
+        self.textSize = textSize
         imageLoader = ImageLoader(url: url , fileMetaData:fileMetaData)
     }
     
     var body: some View{
-        HStack{
+        HStack(alignment:.center){
             if url != nil{
                 Image(uiImage:imageLoader.image ?? self.image)
                     .resizable()
-                    .frame(width: 64, height: 64, alignment: .center)
-                    .cornerRadius(32)
+                    .frame(width: size, height: size)
+                    .cornerRadius(size / 2)
                     .scaledToFit()
             }else{
                 Text(String(userName?.first ?? "A" ))
                     .fontWeight(.heavy)
-                    .font(.title)
+                    .font(.system(size: textSize))
                     .foregroundColor(.white)
-                    .frame(width: 64, height: 64, alignment: .center)
+                    .frame(width: size, height: size)
                     .background(Color.blue.opacity(0.4))
-                    .cornerRadius(32)
+                    .cornerRadius(size / 2)
             }
         }
         .onReceive(imageLoader.didChange) { image in

@@ -10,9 +10,7 @@ PODS:
   - FanapPodChatSDK (0.10.0.0):
     - Alamofire (~> 4.8.2)
     - FanapPodAsyncSDK (~> 0.9.5.1)
-    - GoogleWebRTC (~> 1.1.31999)
     - Sentry (~> 4.3.1)
-  - GoogleWebRTC (1.1.31999)
   - Sentry (4.3.4):
     - Sentry/Core (= 4.3.4)
   - Sentry/Core (4.3.4)
@@ -28,7 +26,6 @@ SPEC REPOS:
   trunk:
     - Alamofire
     - Each
-    - GoogleWebRTC
     - Sentry
     - Starscream
     - SwiftyBeaver
@@ -44,13 +41,12 @@ SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   Each: 53d089bc231f4a7221ed201bf23ac343c5c4d560
   FanapPodAsyncSDK: f025309247880664153718042fde68223cc24955
-  FanapPodChatSDK: 81bed5ac7c55a83629706d2e0a53b0e6d72e0b31
-  GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
+  FanapPodChatSDK: cbfdf41dc40a1e8acb269f91c9ff7c2d3dacc6be
   Sentry: 26f0e6492b103e87434d1a5eea2d241a36f2c2a2
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
   SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
 
-PODFILE CHECKSUM: 038d03a2c697d5ced280e98f0706c3618e4cc5ba
+PODFILE CHECKSUM: a55d14a3b5f42ce1bba30775e49734663c367f67
 
 COCOAPODS: 1.10.1

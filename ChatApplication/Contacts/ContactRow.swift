@@ -19,9 +19,9 @@ struct ContactRow: View {
     public var isInEditMode:Bool
     
     public var viewModel:ContactsViewModel
-    
+ 
     @EnvironmentObject
-    var appState:AppState
+    var callState:CallState
     
     var body: some View {
         VStack{
@@ -65,10 +65,10 @@ struct ContactRow: View {
                     if isInEditMode == false{
                         Button(action: {
                             
-                            appState.isP2PCalling = true
-                            appState.selectedContacts = [contact]
+                            callState.isP2PCalling = true
+                            callState.selectedContacts = [contact]
                             withAnimation(.spring()){
-                                appState.showCallView.toggle()
+                                callState.showCallView.toggle()
                             }
                             
                         }, label: {

@@ -7,23 +7,22 @@
 
 import Foundation
 import FanapPodChatSDK
+import Combine
 
 class ThreadsViewModel:ObservableObject{
     
+    @Published
     var isLoading = false
     
     @Published
     private (set) var model = ThreadsModel()
     
-    init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(onConnectionStatusChanged(_:)), name: CONNECTION_STATUS_NAME_OBJECT, object: nil)
-    }
+    private (set) var connectionStatusCancelable:AnyCancellable? = nil
     
-    @objc private func onConnectionStatusChanged(_ notification:NSNotification){
-        if let connectionStatus = notification.object as? ConnectionStatus{
-            model.setConnectionStatus(connectionStatus)
-            if model.threads.count == 0 && connectionStatus == .CONNECTED{
-                getThreads()
+    init() {
+        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
+            if self.model.threads.count == 0 && status == .CONNECTED{
+                self.getThreads()
             }
         }
     }
