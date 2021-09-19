@@ -17,13 +17,15 @@ enum ConnectionStatus:Int{
     case CONNECTED    = 4
 }
 
+let CONNECT_NAME = Notification.Name("NotificationIdentifier")
+
 class ChatDelegateImplementation: ChatDelegates {
            
 	private (set) static var sharedInstance = ChatDelegateImplementation()
     
     func createChatObject(){
         if let config = Config.getConfig(.Sandbox){
-            let token = UserDefaults.standard.string(forKey: "token")
+            let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
             print("token is: \(token ?? "")")
             Chat.sharedInstance.createChatObject(config: .init(socketAddress: config.socketAddresss,
                                                                serverName: config.serverName,
@@ -34,6 +36,7 @@ class ChatDelegateImplementation: ChatDelegates {
                                                                enableCache: true,
                                                                msgTTL: 800000,//for integeration server need to be long time
                                                                reconnectOnClose: true,
+//                                                               showDebuggingLogLevel:.debug,
                                                                isDebuggingLogEnabled: true,
                                                                enableNotificationLogObserver: true
                                                                
@@ -61,6 +64,7 @@ class ChatDelegateImplementation: ChatDelegates {
 	func chatReady(withUserInfo: User) {
         print("🟢 chat ready Called\(withUserInfo)")
         AppState.shared.connectionStatus = .CONNECTED
+        NotificationCenter.default.post(name: CONNECT_NAME, object: nil)
 	}
 	
 	func chatState(state: AsyncStateType) {
@@ -69,6 +73,7 @@ class ChatDelegateImplementation: ChatDelegates {
 	
 	func chatError(errorCode: Int, errorMessage: String, errorResult: Any?) {
 		if errorCode == 21  || errorCode == 401{
+            TokenManager.shared.getNewTokenWithRefreshToken()
 //            let st = UIStoryboard(name: "Main", bundle: nil)
 //            let vc = st.instantiateViewController(identifier: "UpdateTokenController")
 //            guard let rootVC = SceneDelegate.getRootViewController() else {return}

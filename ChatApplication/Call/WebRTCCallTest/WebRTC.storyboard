@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="DMM-7k-JOi">
-    <device id="ipad10_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
+    <device id="ipad12_9" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -13,13 +13,14 @@
             <objects>
                 <viewController id="DMM-7k-JOi" customClass="WebRTCViewController" customModule="ChatApplication" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="25S-ad-1Mp">
-                        <rect key="frame" x="0.0" y="0.0" width="820" height="1180"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l5c-pQ-SZe" userLabel="localCamera">
-                                <rect key="frame" x="8" y="848" width="256" height="256"/>
+                                <rect key="frame" x="8" y="895" width="256" height="256"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="l5c-pQ-SZe" secondAttribute="height" multiplier="1:1" id="6v3-4v-k7o"/>
+                                    <constraint firstAttribute="width" constant="192" id="Hb2-x9-Jui"/>
                                     <constraint firstAttribute="width" constant="256" id="NaD-gn-nlM"/>
                                     <constraint firstAttribute="height" constant="256" id="rnc-C5-lTx"/>
                                 </constraints>
@@ -32,43 +33,132 @@
                                 <variation key="heightClass=regular-widthClass=regular">
                                     <mask key="constraints">
                                         <exclude reference="6v3-4v-k7o"/>
+                                        <exclude reference="Hb2-x9-Jui"/>
                                         <include reference="NaD-gn-nlM"/>
                                         <include reference="rnc-C5-lTx"/>
                                     </mask>
                                 </variation>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="crX-TU-5k5" userLabel="actions">
-                                <rect key="frame" x="8" y="1112" width="804" height="48"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="crX-TU-5k5" userLabel="actions">
+                                <rect key="frame" x="8" y="1159" width="1008" height="207"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="75s-dB-119" userLabel="offer">
-                                        <rect key="frame" x="0.0" y="0.0" width="399.5" height="48"/>
-                                        <color key="backgroundColor" systemColor="linkColor"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="48" id="5uA-Ed-nDz"/>
-                                        </constraints>
-                                        <state key="normal" title="OFFER">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="offerTaped:" destination="DMM-7k-JOi" eventType="touchUpInside" id="nDJ-L2-umd"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ggh-Dd-p4j" userLabel="answer">
-                                        <rect key="frame" x="404.5" y="0.0" width="399.5" height="48"/>
-                                        <color key="backgroundColor" systemColor="linkColor"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="48" id="ZF5-BO-0oZ"/>
-                                        </constraints>
-                                        <state key="normal" title="ANSWER">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="answerTaped:" destination="DMM-7k-JOi" eventType="touchUpInside" id="Pmn-6n-vkm"/>
-                                        </connections>
-                                    </button>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="5Rq-sI-f6F">
+                                        <rect key="frame" x="0.0" y="0.0" width="1008" height="48"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="za0-Qc-Uff" userLabel="full_offer">
+                                                <rect key="frame" x="0.0" y="0.0" width="1008" height="48"/>
+                                                <color key="backgroundColor" systemColor="linkColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="HcK-EO-KZ8"/>
+                                                </constraints>
+                                                <state key="normal" title="FULL OFFER - VIDEO &amp; AUDIO">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="fullOfferTaped:" destination="DMM-7k-JOi" eventType="touchUpInside" id="wGp-6s-9of"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="29c-yV-Bep">
+                                        <rect key="frame" x="0.0" y="53" width="1008" height="48"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BTz-bu-4pK" userLabel="offer_video">
+                                                <rect key="frame" x="0.0" y="0.0" width="501.5" height="48"/>
+                                                <color key="backgroundColor" systemColor="linkColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="Vux-wp-Qk5"/>
+                                                </constraints>
+                                                <state key="normal" title="OFFER VIDEO">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="offerVideoTaped:" destination="DMM-7k-JOi" eventType="touchUpInside" id="icQ-h1-LQm"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lSN-We-2nW" userLabel="offer_audio">
+                                                <rect key="frame" x="506.5" y="0.0" width="501.5" height="48"/>
+                                                <color key="backgroundColor" systemColor="linkColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="e8d-fg-tns"/>
+                                                </constraints>
+                                                <state key="normal" title="OFFER AUDIO">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="offerAudioTaped" destination="DMM-7k-JOi" eventType="touchUpInside" id="aZc-J3-hoe"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="4b4-bT-BgM">
+                                        <rect key="frame" x="0.0" y="106" width="1008" height="48"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zF6-VI-KvO" userLabel="enable_speaker">
+                                                <rect key="frame" x="0.0" y="0.0" width="501.5" height="48"/>
+                                                <color key="backgroundColor" systemColor="linkColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="emG-VC-322"/>
+                                                </constraints>
+                                                <state key="normal" title="ENABLE SPAEKER">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="speakerOnTaped" destination="DMM-7k-JOi" eventType="touchUpInside" id="G3A-Aa-Sa7"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="75s-dB-119" userLabel="disable_speaker">
+                                                <rect key="frame" x="506.5" y="0.0" width="501.5" height="48"/>
+                                                <color key="backgroundColor" systemColor="linkColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="5uA-Ed-nDz"/>
+                                                </constraints>
+                                                <state key="normal" title="DISABLE SPAEKER">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="speakerOffTaped" destination="DMM-7k-JOi" eventType="touchUpInside" id="vXI-gw-4UV"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="OTY-vL-PRm">
+                                        <rect key="frame" x="0.0" y="159" width="1008" height="48"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zNw-VG-Zi2" userLabel="stop">
+                                                <rect key="frame" x="0.0" y="0.0" width="501.5" height="48"/>
+                                                <color key="backgroundColor" systemColor="linkColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="2zt-2E-n7a"/>
+                                                </constraints>
+                                                <state key="normal" title="STOP">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="stopTaped:" destination="DMM-7k-JOi" eventType="touchUpInside" id="aNa-UK-p9X"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ggh-Dd-p4j" userLabel="answer">
+                                                <rect key="frame" x="506.5" y="0.0" width="501.5" height="48"/>
+                                                <color key="backgroundColor" systemColor="linkColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="48" id="ZF5-BO-0oZ"/>
+                                                </constraints>
+                                                <state key="normal" title="ANSWER">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="answerTaped:" destination="DMM-7k-JOi" eventType="touchUpInside" id="Pmn-6n-vkm"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="48" id="RcK-Lq-Qve"/>
+                                    <constraint firstItem="29c-yV-Bep" firstAttribute="width" secondItem="crX-TU-5k5" secondAttribute="width" id="ejK-y4-3bM"/>
+                                    <constraint firstItem="4b4-bT-BgM" firstAttribute="width" secondItem="crX-TU-5k5" secondAttribute="width" id="hhx-6b-vDr"/>
+                                    <constraint firstItem="5Rq-sI-f6F" firstAttribute="width" secondItem="crX-TU-5k5" secondAttribute="width" id="p9W-Hv-OCl"/>
+                                    <constraint firstItem="OTY-vL-PRm" firstAttribute="width" secondItem="crX-TU-5k5" secondAttribute="width" id="vaU-F7-xA1"/>
                                 </constraints>
                             </stackView>
                         </subviews>
@@ -77,16 +167,10 @@
                         <constraints>
                             <constraint firstItem="crX-TU-5k5" firstAttribute="width" secondItem="25S-ad-1Mp" secondAttribute="width" constant="-16" id="ASt-PW-iyI"/>
                             <constraint firstItem="l5c-pQ-SZe" firstAttribute="bottom" secondItem="crX-TU-5k5" secondAttribute="top" constant="-8" id="Afd-oV-nb4"/>
-                            <constraint firstItem="l5c-pQ-SZe" firstAttribute="leading" secondItem="75s-dB-119" secondAttribute="leading" id="RWN-YR-yT0"/>
-                            <constraint firstItem="l5c-pQ-SZe" firstAttribute="trailing" secondItem="75s-dB-119" secondAttribute="trailing" id="dud-EA-mMX"/>
+                            <constraint firstItem="l5c-pQ-SZe" firstAttribute="leading" secondItem="crX-TU-5k5" secondAttribute="leading" id="Flp-gg-MhL"/>
                             <constraint firstItem="crX-TU-5k5" firstAttribute="centerX" secondItem="v2k-Wb-VPm" secondAttribute="centerX" id="hTK-vW-Xll"/>
                             <constraint firstItem="v2k-Wb-VPm" firstAttribute="bottom" secondItem="crX-TU-5k5" secondAttribute="bottom" id="lAv-o0-LGi"/>
                         </constraints>
-                        <variation key="heightClass=regular-widthClass=regular">
-                            <mask key="constraints">
-                                <exclude reference="dud-EA-mMX"/>
-                            </mask>
-                        </variation>
                     </view>
                     <connections>
                         <outlet property="localView" destination="l5c-pQ-SZe" id="Kb2-mw-4Ru"/>

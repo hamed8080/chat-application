@@ -36,9 +36,11 @@ class ResultViewController: UIViewController , UITableViewDelegate , UITableView
     }
     
     public class func addToLog(logResult:LogResult){
-        ResultViewController.logs.insert(logResult, at: 0)
-        if let resultVC = getResultViewController(){
-            resultVC.tblLogs.insertRows(at: [IndexPath(row: 0, section: 0)], with: .right)
+        DispatchQueue.main.async {
+            ResultViewController.logs.insert(logResult, at: 0)
+            if let resultVC = getResultViewController(){
+                resultVC.tblLogs.insertRows(at: [IndexPath(row: 0, section: 0)], with: .right)
+            }
         }
     }
     

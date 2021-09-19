@@ -26,9 +26,12 @@ struct ContactContentList:View {
                                     viewModel.loadMore()
                                 }
                             }
-                        
-                    }.onDelete(perform:viewModel.delete)
-                }.listStyle(PlainListStyle())
+                            .hideRowSeparator()
+                    }
+                    .onDelete(perform:viewModel.delete)
+                }
+                .listStyle(PlainListStyle())
+                
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
             }
             .navigationBarTitle(Text("Contacts"), displayMode: .inline)

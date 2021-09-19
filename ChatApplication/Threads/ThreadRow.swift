@@ -87,7 +87,9 @@ struct ThreadRow: View {
 					viewModel.muteUnMuteThread(thread)
 				},
 				.default(Text("Delete")){
-					viewModel.deleteThread(thread)
+                    withAnimation {
+                        viewModel.deleteThread(thread)
+                    }
 				}
 			])
 		}

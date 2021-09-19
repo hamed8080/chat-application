@@ -35,6 +35,12 @@ class ContactsViewModel:ObservableObject{
         }
     }
     
+    func createThread(invitees:[Invitee]){
+        Chat.sharedInstance.createThread(.init(invitees: invitees, title: "", type:.NORMAL)) { conversation, uniqueId, error in
+            
+        }
+    }
+    
     func loadMore(){
         if !model.hasNext() || isLoading{return}
         isLoading = true

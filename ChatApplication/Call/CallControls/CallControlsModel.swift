@@ -14,17 +14,10 @@ struct CallControlsModel {
     private (set) var isMute:Bool                   = true
     private (set) var isVideoOn:Bool                = false
     private (set) var isSpeakerOn:Bool              = false
+    private (set) var isFrontCamera:Bool            = true
     
     mutating func clear(){
  
-    }
-    
-    mutating func toggleMute(){
-        isMute.toggle()
-    }
-    
-    mutating func toggleVideo(){
-        isVideoOn.toggle()
     }
     
     mutating func setSpeaker(_ state:Bool){
@@ -33,6 +26,26 @@ struct CallControlsModel {
     
     mutating func setCallId(_ callId:Int){
         self.callId = callId
+    }
+    
+    mutating func setMute(_ isMute:Bool){
+        self.isMute = isMute
+    }
+    
+    mutating func setCameraOn(_ isCameraOn:Bool){
+        self.isVideoOn = isCameraOn
+    }
+    
+    mutating func setIsFront(_ isFtont:Bool){
+        self.isFrontCamera = isFtont
+    }
+    
+    mutating func setIsVideoOn(_ isVideoOn:Bool){
+        self.isVideoOn = isVideoOn
+    }
+    
+    mutating func toggleIsFront(){
+        self.isFrontCamera.toggle()
     }
     
     mutating func endCall(){

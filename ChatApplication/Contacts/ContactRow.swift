@@ -19,26 +19,30 @@ struct ContactRow: View {
     public var isInEditMode:Bool
     
     public var viewModel:ContactsViewModel
- 
+    
+    @State
+    public var showActionViews:Bool = false
+    
     @EnvironmentObject
     var callState:CallState
     
     var body: some View {
         VStack{
-            Button(action:{
-                isSelected.toggle()
-                viewModel.toggleSelectedContact(contact ,isSelected)
-            }){
+            VStack{
                 HStack(spacing: 0, content: {
                     if isInEditMode{
                         Image(systemName: isSelected ? "checkmark.circle" : "circle")
                             .font(.title)
-                            .frame(width: 22, height: 22, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                            .frame(width: 22, height: 22, alignment: .center)
                             .foregroundColor(Color.blue)
                             .padding(24)
+                            .onTapGesture {
+                                isSelected.toggle()
+                                viewModel.toggleSelectedContact(contact ,isSelected)
+                            }
                     }
                     Avatar(url:contact.image ,userName: contact.firstName, fileMetaData: nil)
-                        
+                    
                     VStack(alignment: .leading, spacing:8){
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                             .padding(.leading , 16)
@@ -62,26 +66,54 @@ struct ContactRow: View {
                                     .stroke(Color.red)
                             )
                     }
-                    if isInEditMode == false{
-                        Button(action: {
-                            
-                            callState.isP2PCalling = true
-                            callState.selectedContacts = [contact]
-                            withAnimation(.spring()){
-                                callState.showCallView.toggle()
-                            }
-                            
-                        }, label: {
-                            Image(systemName: "phone")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                        })
-                        .padding(16)
-                    }
-                    
                 })
+                .onTapGesture {
+                    withAnimation {
+                        showActionViews.toggle()
+                    }
+                }
+                
+                if showActionViews{
+                    getActionsView()
+                }else{
+                    EmptyView()
+                }
             }
+            .padding(16)
+            .animation(.default)
+            .background(Color.black.opacity(0.05))
+            .cornerRadius(16)
+            
         }.padding()
+    }
+    
+    
+    @ViewBuilder
+    func getActionsView()->some View{
+        Divider()
+        HStack(spacing:48){
+            
+            ActionButton(iconSfSymbolName: "message",taped:{
+                viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)])
+            })
+            
+            ActionButton(iconSfSymbolName: "video",height: 16,taped:{
+                callState.model.setIsVideoCallRequest(true)
+                callState.model.setIsP2PCalling(true)
+                callState.model.setSelectedContacts([contact])
+                withAnimation(.spring()){
+                    callState.model.setShowCallView(true)
+                }
+            })
+            
+            ActionButton(iconSfSymbolName: "phone", taped:{
+                callState.model.setIsP2PCalling(true)
+                callState.model.setSelectedContacts([contact])
+                withAnimation(.spring()){
+                    callState.model.setShowCallView(true)
+                }
+            })
+        }
     }
     
     func getDate(contact:Contact) -> String?{
@@ -91,6 +123,27 @@ struct ContactRow: View {
         }else{
             return nil
         }
+    }
+}
+
+
+struct ActionButton: View{
+    
+    var iconSfSymbolName :String
+    var height           :CGFloat      = 22
+    var taped            :(()->Void)?
+    
+    var body: some View{
+        Button(action: {
+            taped?()
+        }, label: {
+            Image(systemName: iconSfSymbolName)
+                .resizable()
+                .frame(width: 24, height: height)
+                .foregroundColor(.blue)
+        })
+        .buttonStyle(BorderlessButtonStyle())//don't remove this line click happen in all veiws
+        .padding(16)
     }
 }
 

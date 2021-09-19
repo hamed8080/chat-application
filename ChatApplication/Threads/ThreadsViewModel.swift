@@ -90,10 +90,22 @@ class ThreadsViewModel:ObservableObject{
 	}
 	
 	func muteUnMuteThread(_ thread:Conversation){
-		
+        guard let threadId = thread.id else {return}
+        if thread.mute == false{
+            Chat.sharedInstance.muteThread(.init(threadId: threadId)) { threadId, uniqueId, error in
+                
+            }
+        }else{
+            Chat.sharedInstance.unmuteThread(.init(threadId: threadId)) { threadId, uniqueId, error in
+                
+            }
+        }
 	}
 	
-	func deleteThread(_ thread:Conversation){
-		
+    func deleteThread(_ thread:Conversation){
+        guard let threadId = thread.id else {return}
+        Chat.sharedInstance.leaveThread(.init(threadId: threadId)) { removedThread, unqiuesId, error in
+            self.model.removeThread(thread)
+        }
 	}
 }

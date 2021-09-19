@@ -25,29 +25,45 @@ struct WebRTCView:UIViewControllerRepresentable {
 }
 
 class WebRTCViewController: UIViewController, WebRTCClientDelegate{
-  
-    
+ 
     @IBOutlet weak var localView: UIView!
-    var webRTCClient:WebRTCClient?
+    var webRTCClient:WebRTCClientNew?
     private var localRenderer:RTCVideoRenderer?
+    
+    let isClientA = false
+    
+    func getConfig()->WebRTCConfig {
+        return WebRTCConfig(peerName:"KuretoAdmin2",
+                                  iceServers: ["stun:46.32.6.188:3478","turn:46.32.6.188:3478"],
+                                  topicVideoSend: isClientA ? "Vi-hossein" : "Vi-masoud",
+                                  topicVideoReceive: isClientA ? "Vi-masoud" : "Vi-hossein",
+                                  topicAudioSend: isClientA ? "Au-hossein" : "Au-masoud",
+                                  topicAudioReceive: isClientA ? "Au-masoud" : "Au-hossein",
+                                  brokerAddress: "10.56.16.53:9093",
+                                  dataChannel: false,
+                                  customFrameCapturer: false,
+                                  userName: "mkhorrami",
+                                  password: "mkh_123456",
+                                  videoConfig: nil)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let iceServers = ["stun:stun.l.google.com:19302",
-                          "stun:stun1.l.google.com:19302",
-                          "stun:stun2.l.google.com:19302",
-                          "stun:stun3.l.google.com:19302",
-                          "stun:stun4.l.google.com:19302"]
-
-        let config = WebRTCConfig(socketSignalingAddress: "ws://192.168.1.15:8080",
-                                  iceServers: iceServers,
-                                  videoTrack: true,
-                                  audioTrack: false,
-                                  dataChannel: false,
-                                  customFrameCapturer: false,
-                                  turnServerAddress: nil,
-                                  videoConfig: nil)
-        webRTCClient = WebRTCClient(config: config, delegate: self)
+        NotificationCenter.default.addObserver(self,selector: #selector(self.connectedToSokect),name: CONNECT_NAME, object: nil)
+        self.view.subviews.forEach{ view in
+            view.isUserInteractionEnabled = false
+            view.alpha = 0.5
+        }
+    }
+    
+    @objc func connectedToSokect(){
+        
+        self.view.subviews.forEach{ view in
+            view.isUserInteractionEnabled = true
+            view.alpha = 1
+        }
+        if webRTCClient != nil {return}
+        webRTCClient = WebRTCClientNew(config: getConfig(), delegate: self)
         #if arch(arm64)
             // Using metal (arm64 only)
             let localRenderer = RTCMTLVideoView(frame: self.localView?.frame ?? CGRect.zero)
@@ -63,7 +79,7 @@ class WebRTCViewController: UIViewController, WebRTCClientDelegate{
         //setup local camera view
         localView.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)//mirror view to show correct posiotion on view
         self.localRenderer = localRenderer
-        self.webRTCClient?.startCaptureLocalVideo(renderer: localRenderer)
+        self.webRTCClient?.startCaptureLocalVideo(renderer: localRenderer,fileName: "")
         localRenderer.frame.origin = .zero //to fit to local view position
         localView.addSubview(localRenderer)
         localView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(switchCamera)))
@@ -73,7 +89,6 @@ class WebRTCViewController: UIViewController, WebRTCClientDelegate{
         remoteRenderer.frame.origin = .zero //to fit to local view position
         self.view.addSubview(remoteRenderer)
         view.sendSubviewToBack(remoteRenderer)
-        
     }
     
     @objc func switchCamera(){
@@ -81,16 +96,47 @@ class WebRTCViewController: UIViewController, WebRTCClientDelegate{
         webRTCClient?.switchCameraPosition(renderer: renderer)
     }
     
-    @IBAction func offerTaped(_ senderf:UIButton){
-        webRTCClient?.getLocalSDPWithOffer(onSuccess: { sdp in
-            self.webRTCClient?.sendOfferToPeer(sdp)
+    //webrtc signaling nodejs - app test
+    
+    //never re run app when call is open must tap on close
+    @IBAction func stopTaped(_ senderf:UIButton){
+        Chat.sharedInstance.closeSignalingServerCall(peerName: getConfig().peerName) //free call for token user
+    }
+    
+    @IBAction func fullOfferTaped(_ senderf:UIButton){
+        offerVideoTaped(UIButton())
+        offerAudioTaped(UIButton())
+    }
+    
+    @IBAction func offerVideoTaped(_ senderf:UIButton){
+        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicVideoSend!,onSuccess: { sdp in
+            self.webRTCClient?.sendOfferToPeer(sdp ,topic: self.getConfig().topicVideoSend! ,mediaType: .VIDEO)
+        })
+        
+        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicVideoReceive! ,onSuccess: { sdp in
+            self.webRTCClient?.sendOfferToPeer(sdp , topic: self.getConfig().topicVideoReceive!,mediaType: .VIDEO)
         })
     }
     
-    @IBAction func answerTaped(_ senderf:UIButton){
-        webRTCClient?.getAnswerSDP(onSuccess: { sdp in
-            self.webRTCClient?.sendAnswerToPeer(sdp)
+    @IBAction func offerAudioTaped(_ senderf:UIButton){
+        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicAudioSend!,onSuccess: { sdp in
+            self.webRTCClient?.sendOfferToPeer(sdp , topic: self.getConfig().topicAudioSend! ,mediaType: .AUDIO)
         })
+        
+        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicAudioReceive! ,onSuccess: { sdp in
+            self.webRTCClient?.sendOfferToPeer(sdp , topic: self.getConfig().topicAudioReceive!,mediaType: .AUDIO)
+        })
+    }
+    
+    @IBAction func speakerOnTaped(){
+        webRTCClient?.setSpeaker(on: true)
+    }
+    
+    @IBAction func speakerOffTaped(){
+        webRTCClient?.setSpeaker(on: false)
+    }
+    
+    @IBAction func answerTaped(_ senderf:UIButton){
     }
     
     func didIceConnectionStateChanged(iceConnectionState: RTCIceConnectionState) {

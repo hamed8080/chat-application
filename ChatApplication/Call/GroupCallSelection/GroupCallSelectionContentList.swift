@@ -40,9 +40,9 @@ struct GroupCallSelectionContentList: View {
                 VStack{
                     Spacer()
                     Button(action: {
-                        callState.isP2PCalling = false
-                        callState.selectedContacts = contactViewModel.model.selectedContacts
-                        callState.showCallView.toggle()
+                        callState.model.setIsP2PCalling(false)
+                        callState.model.setSelectedContacts(contactViewModel.model.selectedContacts)
+                        callState.model.setShowCallView(true)
                     }, label: {
                         HStack{
                             Text("Start Group Call".uppercased())

@@ -49,6 +49,11 @@ struct ThreadsModel {
 	mutating func unpinThread(_ thread:Conversation){
 		threads.first(where: {$0.id == thread.id})?.pin = false
 	}
+    
+    mutating func removeThread(_ thread:Conversation){
+        guard let index = threads.firstIndex(of: thread) else{return}
+        threads.remove(at: index)
+    }
 }
 
 extension ThreadsModel{
