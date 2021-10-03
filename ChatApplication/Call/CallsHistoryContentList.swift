@@ -12,12 +12,16 @@ struct CallsHistoryContentList: View {
     @StateObject
     var viewModel:CallsHistoryViewModel
     
+    @EnvironmentObject var appState:AppState
+    
     @State
     var navigateToGroupCallSelction = false
     
+    @State var title    :String  = "Calls"
+    
     var body: some View {
-        NavigationView{
-            GeometryReader{ reader in
+        GeometryReader{ reader in
+            PageWithNavigationBarView(title:$title, subtitle:$appState.connectionStatusString){
                 ZStack{
                     List {
                         ForEach(viewModel.model.calls , id:\.id) { call in
@@ -32,24 +36,22 @@ struct CallsHistoryContentList: View {
                             print("on delete")
                         })
                     }.listStyle(PlainListStyle())
-                    VStack{
-                        Button(action: {
-                            navigateToGroupCallSelction.toggle()
-                        }, label: {
-                            Circle()
-                                .fill(Color.blue)
-                                .shadow(color: .blue, radius: 20, x: 0, y: 0)
-                                .overlay(
-                                    Image(systemName:"person.3.fill")
-                                        .scaledToFit()
-                                        .foregroundColor(.white)
-                                        .padding(16)
-                                )
-
-                        })
-                    }
+                    Button(action: {
+                        navigateToGroupCallSelction.toggle()
+                    }, label: {
+                        Circle()
+                            .fill(Color.blue)
+                            .shadow(color: .blue, radius: 20, x: 0, y: 0)
+                            .overlay(
+                                Image(systemName:"person.3.fill")
+                                    .scaledToFit()
+                                    .foregroundColor(.white)
+                                    .padding(16)
+                            )
+                        
+                    })
                     .frame(width: 64, height: 64)
-                    .position(x: reader.size.width - 48, y: reader.size.height - reader.safeAreaInsets.bottom)
+                    .position(x: reader.size.width - 48, y: reader.size.height - (reader.safeAreaInsets.bottom  + 24))
                 }
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
                 
@@ -59,19 +61,9 @@ struct CallsHistoryContentList: View {
                     EmptyView()
                 }
             }
-            .navigationBarTitle(Text("Calls"), displayMode: .inline)
-            .toolbar{
-                ToolbarItem(placement:.navigationBarLeading){
-                    Text(AppState.shared.connectionStatusString)
-                        .font(.headline)
-                        .foregroundColor(Color.gray)
-                }
-            }
         }
     }
 }
-
-
 
 struct CallsHistoryView_Previews: PreviewProvider {
     static var previews: some View {
@@ -80,5 +72,6 @@ struct CallsHistoryView_Previews: PreviewProvider {
             .onAppear(){
                 viewModel.setupPreview()
             }
+            .environmentObject(AppState.shared)
     }
 }

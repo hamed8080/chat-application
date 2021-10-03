@@ -27,6 +27,9 @@ class LoginViewModel: ObservableObject {
             .setUrl(Routes.HANDSHAKE)
             .setMethod(.post)
             .setParamsAsQueryString(req)
+            .setOnError({ data, error in
+                print("error on login:\(error.debugDescription)")
+            })
             .request { [weak self] response in
                 guard let self = self else {return}
                 self.requestOTP(identity: self.model.phoneNumber, handskahe: response)
@@ -42,9 +45,12 @@ class LoginViewModel: ObservableObject {
             .setMethod(.post)            
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
+            .setOnError({ data, error in
+                print("error on requestOTP:\(error.debugDescription)")
+            })
             .request { [weak self] response in
                 guard let self = self else {return}
-                if let _ = response.result?.userId{
+                if let _ = response.result?.identity{
                     self.model.setIsInVerifyState(true)
                     self.model.setKeyId(keyId)
                 }
@@ -60,8 +66,8 @@ class LoginViewModel: ObservableObject {
             .setMethod(.post)
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
-            .setOnError({ data, Error in
-                
+            .setOnError({ data, error in
+                print("error on verifyCode:\(error.debugDescription)")
             })
             .request { [weak self] response in
                 guard let self = self else {return}
@@ -83,8 +89,8 @@ class LoginViewModel: ObservableObject {
             .setMethod(.post)
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
-            .setOnError({ data, Error in
-                
+            .setOnError({ data, error in
+                print("error on refreshToken:\(error.debugDescription)")
             })
             .request { [weak self] response in
                 guard let self = self else {return}
@@ -96,12 +102,17 @@ class LoginViewModel: ObservableObject {
     }
 }
 
-class TokenManager{
+class TokenManager : ObservableObject{
     
     
     
     static let shared = TokenManager()
-    private init(){}
+    
+    @Published
+    private (set) var isLoggedIn = false //to update login logout ui
+    private init(){
+        _ = getSSOTokenFromUserDefaults() //need first time app luanch to set hasToken
+    }
     
     
     private var timer :Timer?                = nil
@@ -114,8 +125,8 @@ class TokenManager{
             let client = RestClient<SSOTokenResponse>()
             client
                 .setUrl(Routes.REFRESH_TOKEN + "?refreshToken=\(refreshToken)")
-                .setOnError({ data, Error in
-                    
+                .setOnError({ data, error in
+                    print("error on getNewTokenWithRefreshToken:\(error.debugDescription)")
                 })
                 .request { [weak self] response in
                     guard let self = self else {return}
@@ -130,8 +141,10 @@ class TokenManager{
     
     func getSSOTokenFromUserDefaults()->SSOTokenResponse.Result?{
         if let data = UserDefaults.standard.data(forKey: TokenManager.SSO_TOKEN_KEY) , let ssoToken = try? JSONDecoder().decode(SSOTokenResponse.Result.self, from: data){
+            setIsLoggedIn(isLoggedIn: true)
             return ssoToken
         }else{
+            setIsLoggedIn(isLoggedIn: false)
             return nil
         }
     }
@@ -143,6 +156,7 @@ class TokenManager{
             UserDefaults.standard.set(encodedData, forKey: TokenManager.SSO_TOKEN_KEY)
             UserDefaults.standard.synchronize()
         }
+        setIsLoggedIn(isLoggedIn: true)
     }
     
     func refreshCreateTokenDate(){
@@ -163,4 +177,13 @@ class TokenManager{
         }
     }
     
+    func setIsLoggedIn(isLoggedIn:Bool){
+        self.isLoggedIn = isLoggedIn
+    }
+    
+    func clearToken(){
+        UserDefaults.standard.removeObject(forKey: TokenManager.SSO_TOKEN_KEY)
+        UserDefaults.standard.synchronize()
+        setIsLoggedIn(isLoggedIn: false)
+    }
 }

@@ -14,7 +14,10 @@ struct ThreadRow: View {
 	@State private (set) var showActionSheet:Bool = false
 	@State private (set) var showParticipants:Bool = false
 	private var viewModel:ThreadsViewModel
-
+    
+    @EnvironmentObject
+    var appState:AppState
+    
 	init(thread: Conversation , viewModel:ThreadsViewModel) {
 		self.thread = thread
 		self.viewModel = viewModel
@@ -24,7 +27,7 @@ struct ThreadRow: View {
 		
 		Button(action: {}, label: {
 			HStack{
-				Avatar(url:thread.image ,userName: thread.inviter?.firstName, fileMetaData: thread.metadata)
+                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata)
 				VStack(alignment: .leading, spacing:8){
 					Text(thread.title ?? "")
 						.font(.headline)
@@ -33,21 +36,6 @@ struct ThreadRow: View {
 							.lineLimit(2)
 							.font(.subheadline)
 					}
-					#if DEBUG
-                    Text("threadId: \(String(thread.id ?? 0))")
-                    if let id = thread.id{
-                        NavigationLink(
-                            destination: ParticipantsContentList(threadId: id),
-                            isActive: $showParticipants,
-                            label: {
-                                Button(action: {
-                                    showParticipants.toggle()
-                                }, label: {
-                                    Text("participant count: \(String(thread.participantCount ?? 0))")
-                                })
-                            })
-                    }
-					#endif
 				}
 				Spacer()
 				if thread.pin == true{
@@ -72,9 +60,8 @@ struct ThreadRow: View {
 			.padding([.top , .bottom] , 4)
 		})
 		.onTapGesture {
-			print("on tap gesture")
+            appState.selectedThread = thread
 		}.onLongPressGesture {
-			print("long press triggred")
 			showActionSheet.toggle()
 		}
 		.actionSheet(isPresented: $showActionSheet){
@@ -86,6 +73,9 @@ struct ThreadRow: View {
 				.default(Text( (thread.mute ?? false) ? "Unmute" : "Mute" )){
 					viewModel.muteUnMuteThread(thread)
 				},
+                .default(Text("Clear History")){
+                    viewModel.clearHistory(thread)
+                },
 				.default(Text("Delete")){
                     withAnimation {
                         viewModel.deleteThread(thread)
@@ -98,8 +88,9 @@ struct ThreadRow: View {
 
 struct ThreadRow_Previews: PreviewProvider {
 	static var thread:Conversation{
+        
 		let lastMessageVO = Message(threadId: nil, deletable: nil, delivered: nil, editable: nil, edited: nil, id: nil, mentioned: nil, message: "Hi hamed how are you? are you ok? and what are you ding now. And i was thinking you are sad for my behavoi last night.", messageType: nil, metadata: nil, ownerId: nil, pinned: nil, previousId: nil, seen: nil, systemMetadata: nil, time: nil, timeNanos: nil, uniqueId: nil, conversation: nil, forwardInfo: nil, participant: nil, replyInfo: nil)
-		let thread = Conversation(admin: false, canEditInfo: true, canSpam: true, closedThread: false, description: "des", group: true, id: 123, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", joinDate: nil, lastMessage: nil, lastParticipantImage: nil, lastParticipantName: nil, lastSeenMessageId: nil, lastSeenMessageNanos: nil, lastSeenMessageTime: nil, mentioned: nil, metadata: nil, mute: nil, participantCount: nil, partner: nil, partnerLastDeliveredMessageId: nil, partnerLastDeliveredMessageNanos: nil, partnerLastDeliveredMessageTime: nil, partnerLastSeenMessageId: nil, partnerLastSeenMessageNanos: nil, partnerLastSeenMessageTime: nil, pin: nil, time: nil, title: "Hamed Hosseini", type: nil, unreadCount: 3000, uniqueName: nil, userGroupHash: nil, inviter: nil, lastMessageVO: lastMessageVO, participants: nil, pinMessage: nil)
+		let thread = Conversation(admin: false, canEditInfo: true, canSpam: true, closedThread: false, description: "des", group: true, id: 123, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", joinDate: nil, lastMessage: nil, lastParticipantImage: nil, lastParticipantName: nil, lastSeenMessageId: nil, lastSeenMessageNanos: nil, lastSeenMessageTime: nil, mentioned: nil, metadata: nil, mute: nil, participantCount: nil, partner: nil, partnerLastDeliveredMessageId: nil, partnerLastDeliveredMessageNanos: nil, partnerLastDeliveredMessageTime: nil, partnerLastSeenMessageId: nil, partnerLastSeenMessageNanos: nil, partnerLastSeenMessageTime: nil, pin: false, time: nil, title: "Hamed Hosseini", type: nil, unreadCount: 3000, uniqueName: nil, userGroupHash: nil, inviter: nil, lastMessageVO: lastMessageVO, participants: nil, pinMessage: nil)
 		return thread
 	}
 	

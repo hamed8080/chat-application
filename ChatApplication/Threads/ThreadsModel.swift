@@ -20,7 +20,7 @@ struct ThreadsModel {
     }
     
     mutating func preparePaginiation(){
-        offset = threads.count
+        offset = count + offset
     }
     
     mutating func setContentCount(totalCount:Int){

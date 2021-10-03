@@ -15,10 +15,26 @@ class AppState: ObservableObject {
     @Published var dark:Bool = false
     
     @Published
-    var connectionStatus:ConnectionStatus = .Connecting
+    var connectionStatus:ConnectionStatus = .Connecting{
+        didSet{
+            setConnectionStatus(connectionStatus)
+        }
+    }
     
     @Published
     var connectionStatusString = ""
+    
+    @Published
+    var selectedThread:Conversation? = nil{
+        didSet{
+            if selectedThread != nil{
+                showThread = true
+            }
+        }
+    }
+    
+    @Published
+    var showThread = false
     
     func setConnectionStatus(_ status:ConnectionStatus){
         if status == .CONNECTED{

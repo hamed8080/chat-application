@@ -151,7 +151,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
             
             //Vo - Voice and Vi- Video its hardcoded in all sdks such as:Android-Js,...
             let config =  WebRTCConfig(peerName           : startCall.chatDataDto.kurentoAddress,
-                                      iceServers          : ["stun:46.32.6.188:3478","turn:\(startCall.chatDataDto.turnAddress)"],
+                                      iceServers          : ["turn:\(startCall.chatDataDto.turnAddress)"],//"stun:46.32.6.188:3478",
                                       topicVideoSend      : answeredWithVideo || model.isVideoCall ? "Vi-\(startCall.clientDTO.topicSend)" : nil,
                                       topicVideoReceive   : "Vi-\(startCall.clientDTO.topicReceive)",
                                       topicAudioSend      : "Vo-\(startCall.clientDTO.topicSend)",
@@ -166,10 +166,11 @@ class CallState:ObservableObject,WebRTCClientDelegate {
             if let renderer = localVideoRenderer {
                 CallState.webrtcClient?.startCaptureLocalVideo(renderer: renderer,fileName: model.isReceiveCall ? "webrtc_user_b.mp4" : "webrtc_user_a.mp4")
             }
-            
+
             if let renderer = remoteVideoRenderer {
                 CallState.webrtcClient?.renderRemoteVideo(renderer)
             }
+            CallState.webrtcClient?.startSendKeyFrame()
         }
     }
 
@@ -206,6 +207,10 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     }
     
     func resetCall(){
+        localVideoRenderer      = nil
+        remoteVideoRenderer     = nil
+        startCallTimer?.invalidate()
+        startCallTimer          = nil
         model                   = CallStateModel()
         CallState.webrtcClient  = nil
     }
@@ -237,6 +242,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     
     func close(){
         CallState.webrtcClient?.close()
+        resetCall()
     }
     
     func startTimer() {

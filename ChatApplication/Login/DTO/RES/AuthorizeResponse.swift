@@ -14,7 +14,7 @@ struct AuthorizeResponse:Codable{
         
         let identity  : String?
         let type      : String?
-        let userId    : String
+        let userId    : String?
         let expiresIn : Int
         
         private enum CodingKeys:String , CodingKey{

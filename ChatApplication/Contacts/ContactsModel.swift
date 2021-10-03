@@ -33,7 +33,6 @@ struct ContactsModel {
             self.contacts = contacts
             setContentCount(totalCount:totalCount)
         }
-        
     }
     
     mutating func appendContacts(contacts:[Contact]){

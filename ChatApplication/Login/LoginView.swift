@@ -31,6 +31,16 @@ struct VerifyContentView:View{
     
     var body: some View{
         VStack(alignment:.trailing){
+            HStack{
+                Button("< Back") {
+                    viewModel.model.setIsInVerifyState(false)
+                }
+                .font(.headline.bold())
+                Spacer()
+            }
+            
+            Spacer()
+            
             TextFieldLogin(title:"Enter Verification Code",textBinding: $viewModel.model.verifyCode){
                  viewModel.verifyCode()
             }
@@ -44,6 +54,7 @@ struct VerifyContentView:View{
                 Text("Verification Code was incorrect!")
                     .foregroundColor(.red)
             }
+            Spacer()
         }
         .transition(.move(edge: .trailing))
 
@@ -78,6 +89,7 @@ struct TextFieldLogin:View{
     @Binding var textBinding        :String
     @State var isEditing          :Bool         = false
     var onCommit                  :(()->())?    = nil
+    var keyboardType:UIKeyboardType = .phonePad
     
     var body: some View{
         TextField(
@@ -89,7 +101,7 @@ struct TextFieldLogin:View{
             onCommit?()
         }
         .frame(minWidth: 100, minHeight: 48, alignment: .center)
-        .keyboardType(.phonePad)
+        .keyboardType(keyboardType)
         .padding(.init(top: 0, leading: 8, bottom: 0, trailing: 8))
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.black.opacity(0.2), style: StrokeStyle(lineWidth:1)))
     }
@@ -109,10 +121,10 @@ struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = LoginViewModel()
         LoginView(viewModel: vm).onAppear{
-            Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
-                vm.model.setIsInVerifyState(true)
-            }
-//            vm.model.isInVerifyState(false)
+//            Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
+//                vm.model.setIsInVerifyState(true)
+//            }
+            vm.model.setIsInVerifyState(true)
         }
     }
 }

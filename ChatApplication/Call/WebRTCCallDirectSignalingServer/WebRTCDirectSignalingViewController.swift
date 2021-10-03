@@ -49,32 +49,32 @@ class WebRTCDirectSignalingViewController: UIViewController, WebRTCClientDelegat
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        webRTCClient = WebRTCClientNewDirectServer(config: getConfig(isClientA: false), delegate: self)
-        #if arch(arm64)
-            // Using metal (arm64 only)
-            let localRenderer = RTCMTLVideoView(frame: self.localView?.frame ?? CGRect.zero)
-            let remoteRenderer = RTCMTLVideoView(frame: self.view.frame)
-            localRenderer.videoContentMode = .scaleAspectFill
-            remoteRenderer.videoContentMode = .scaleAspectFill
-        #else
-            // Using OpenGLES for the rest
-            let localRenderer = RTCEAGLVideoView(frame: self.localView?.frame ?? CGRect.zero)
-            let remoteRenderer = RTCEAGLVideoView(frame: self.view.frame)
-        #endif
-        
-        //setup local camera view
-        localView.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)//mirror view to show correct posiotion on view
-        self.localRenderer = localRenderer
-        self.webRTCClient?.startCaptureLocalVideo(renderer: localRenderer)
-        localRenderer.frame.origin = .zero //to fit to local view position
-        localView.addSubview(localRenderer)
-        localView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(switchCamera)))
-
-        //setup remote camera view
-        self.webRTCClient?.renderRemoteVideo(remoteRenderer)
-        remoteRenderer.frame.origin = .zero //to fit to local view position
-        self.view.addSubview(remoteRenderer)
-        view.sendSubviewToBack(remoteRenderer)
+//        webRTCClient = WebRTCClientNewDirectServer(config: getConfig(isClientA: false), delegate: self)
+//        #if arch(arm64)
+//            // Using metal (arm64 only)
+//            let localRenderer = RTCMTLVideoView(frame: self.localView?.frame ?? CGRect.zero)
+//            let remoteRenderer = RTCMTLVideoView(frame: self.view.frame)
+//            localRenderer.videoContentMode = .scaleAspectFill
+//            remoteRenderer.videoContentMode = .scaleAspectFill
+//        #else
+//            // Using OpenGLES for the rest
+//            let localRenderer = RTCEAGLVideoView(frame: self.localView?.frame ?? CGRect.zero)
+//            let remoteRenderer = RTCEAGLVideoView(frame: self.view.frame)
+//        #endif
+//        
+//        //setup local camera view
+//        localView.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)//mirror view to show correct posiotion on view
+//        self.localRenderer = localRenderer
+//        self.webRTCClient?.startCaptureLocalVideo(renderer: localRenderer)
+//        localRenderer.frame.origin = .zero //to fit to local view position
+//        localView.addSubview(localRenderer)
+//        localView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(switchCamera)))
+//
+//        //setup remote camera view
+//        self.webRTCClient?.renderRemoteVideo(remoteRenderer)
+//        remoteRenderer.frame.origin = .zero //to fit to local view position
+//        self.view.addSubview(remoteRenderer)
+//        view.sendSubviewToBack(remoteRenderer)
     }
     
     @objc func switchCamera(){

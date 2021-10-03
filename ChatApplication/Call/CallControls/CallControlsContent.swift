@@ -37,6 +37,7 @@ struct CallControlsContent: View {
                      remoteView
                         .ignoresSafeArea()
                         .frame(width: reader.size.width , height: reader.size.height)
+                        .background(Color.red)
                 }
                 
                 VStack(){
@@ -63,7 +64,7 @@ struct CallControlsContent: View {
                     
                     if callState.model.receiveCall != nil && callState.model.isCallStarted == false{
                         HStack(spacing:32){
-                            
+                            Spacer()
                             if callState.model.receiveCall?.type == .VIDEO_CALL{
                                 CallControlItem(iconSfSymbolName: "video.fill", subtitle: "Answer", color: .green){
                                     viewModel.answerCall(video: true, audio: true)
@@ -83,8 +84,8 @@ struct CallControlsContent: View {
                                     callState.model.setShowCallView(false)
                                 }
                             }
+                            Spacer()
                         }
-                        .padding(64)
                         .frame(width: reader.size.width, height: 72)
                     }else{
                         //call started
@@ -132,11 +133,8 @@ struct CallControlsContent: View {
                                 }
                             }
                         }
-                        .padding(4)
                         .frame(width: reader.size.width, height: 72)
-                        
                     }
-                    
                 }
                 .onAppear{
                     self.statusBarStyle.currentStyle = .lightContent
@@ -179,7 +177,7 @@ struct CallControlItem:View {
             isActive.toggle()
             action?()
         }, label: {
-            VStack{
+            VStack(spacing:4){
                 Circle()
                     .fill(color ?? .blue)
                     .shadow(color: .blue, radius: 20, x: 0, y: 0)
@@ -196,6 +194,8 @@ struct CallControlItem:View {
                     .foregroundColor(.white)
                     .fontWeight(.bold)
                     .font(.system(size:10 ))
+                    .shadow(color: .blue, radius: 1, x: 0, y: 0)
+                    .fixedSize()
             }
         })
     }
@@ -213,6 +213,7 @@ struct CallControlsView_Previews: PreviewProvider {
         CallControlsContent(viewModel:viewModel)
             .environmentObject(appState)
             .environmentObject(callState)
+            .previewDevice("iPhone 13")
             .onAppear(){
                 let participant = ParticipantRow_Previews.participant
                 let receiveCall = CreateCall(type: .VIDEO_CALL, creatorId: 0, creator: participant, threadId: 0, callId: 0, group: false)

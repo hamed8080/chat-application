@@ -30,32 +30,23 @@ class ThreadsViewModel:ObservableObject{
     func getThreads() {
         Chat.sharedInstance.getThreads(.init(count:model.count,offset: model.offset)) {[weak self] threads, uniqueId, pagination, error in
             if let threads = threads{
-                self?.model.setThreads(threads: threads)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
-            }
-        }cacheResponse: { [weak self] threads, uniqueId, pagination, error in
-            if let threads = threads{
-                self?.model.setThreads(threads: threads)
+                self?.model.appendThreads(threads: threads)
                 self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
             }
         }
+//        cacheResponse: { [weak self] threads, uniqueId, pagination, error in
+//            if let threads = threads{
+//                self?.model.setThreads(threads: threads)
+//                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
+//            }
+//        }
     }
     
     func loadMore(){
         if !model.hasNext() || isLoading{return}
         isLoading = true
         model.preparePaginiation()
-        Chat.sharedInstance.getThreads(.init(count:model.count,offset: model.offset)) {[weak self] threads, uniqueId, pagination, error in
-            if let threads = threads{
-                self?.model.appendThreads(threads: threads)
-                self?.isLoading = false
-            }
-        }cacheResponse: { [weak self] threads, uniqueId, pagination, error in
-            if let threads = threads{
-                self?.model.setThreads(threads: threads)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
-            }
-        }
+        getThreads()
     }
     
     func refresh() {
@@ -102,10 +93,21 @@ class ThreadsViewModel:ObservableObject{
         }
 	}
 	
+    func clearHistory(_ thread:Conversation){
+        guard let threadId = thread.id else {return}
+        Chat.sharedInstance.clearHistory(.init(threadId: threadId)) { threadId, uniqueId, error in
+            if let threadId = threadId{
+                print("thread history deleted with threadId:\(threadId)")
+            }
+        }
+    }
+    
     func deleteThread(_ thread:Conversation){
         guard let threadId = thread.id else {return}
-        Chat.sharedInstance.leaveThread(.init(threadId: threadId)) { removedThread, unqiuesId, error in
-            self.model.removeThread(thread)
+        Chat.sharedInstance.closeThread(.init(threadId: threadId)) { closedThreadId, uniqueId, error in
+            Chat.sharedInstance.leaveThread(.init(threadId: threadId)) { removedThread, unqiuesId, error in
+                self.model.removeThread(thread)
+            }
         }
 	}
 }

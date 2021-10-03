@@ -25,6 +25,9 @@ class ChatDelegateImplementation: ChatDelegates {
     
     func createChatObject(){
         if let config = Config.getConfig(.Sandbox){
+            if config.server == "Integeration"{
+                TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponse.Result(accessToken: config.debugToken, expiresIn: Int.max, idToken: nil, refreshToken: nil, scope: nil, tokenType: nil))
+            }
             let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
             print("token is: \(token ?? "")")
             Chat.sharedInstance.createChatObject(config: .init(socketAddress: config.socketAddresss,
@@ -36,7 +39,7 @@ class ChatDelegateImplementation: ChatDelegates {
                                                                enableCache: true,
                                                                msgTTL: 800000,//for integeration server need to be long time
                                                                reconnectOnClose: true,
-//                                                               showDebuggingLogLevel:.debug,
+//                                                               showDebuggingLogLevel:.verbose,
                                                                isDebuggingLogEnabled: true,
                                                                enableNotificationLogObserver: true
                                                                
@@ -74,6 +77,7 @@ class ChatDelegateImplementation: ChatDelegates {
 	func chatError(errorCode: Int, errorMessage: String, errorResult: Any?) {
 		if errorCode == 21  || errorCode == 401{
             TokenManager.shared.getNewTokenWithRefreshToken()
+            AppState.shared.connectionStatus = .UnAuthorized
 //            let st = UIStoryboard(name: "Main", bundle: nil)
 //            let vc = st.instantiateViewController(identifier: "UpdateTokenController")
 //            guard let rootVC = SceneDelegate.getRootViewController() else {return}

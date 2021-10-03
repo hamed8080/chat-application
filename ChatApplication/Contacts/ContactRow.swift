@@ -41,7 +41,7 @@ struct ContactRow: View {
                                 viewModel.toggleSelectedContact(contact ,isSelected)
                             }
                     }
-                    Avatar(url:contact.image ,userName: contact.firstName, fileMetaData: nil)
+                    Avatar(url:contact.image ?? contact.linkedUser?.image ,userName: contact.firstName?.uppercased(), fileMetaData: nil)
                     
                     VStack(alignment: .leading, spacing:8){
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
@@ -67,24 +67,26 @@ struct ContactRow: View {
                             )
                     }
                 })
-                .onTapGesture {
-                    withAnimation {
-                        showActionViews.toggle()
-                    }
-                }
-                
                 if showActionViews{
                     getActionsView()
                 }else{
                     EmptyView()
+                        .animation(.default)
                 }
             }
             .padding(16)
-            .animation(.default)
-            .background(Color.black.opacity(0.05))
+//            .animation(.default)
+            .background(Color.primary.opacity(0.08))
             .cornerRadius(16)
             
-        }.padding()
+        }
+//        .animation(.default)
+        .onTapGesture {
+            withAnimation {
+                showActionViews.toggle()
+            }
+        }
+        .padding()
     }
     
     
@@ -157,6 +159,7 @@ struct ContactRow_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ContactRow(contact: contact, isInEditMode: $isInEditMode,viewModel: ContactsViewModel())
+                .preferredColorScheme(.dark)
         }
     }
 }

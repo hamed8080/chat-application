@@ -17,17 +17,14 @@ class ThreadViewModel:ObservableObject{
     @Published
     private (set) var model = ThreadModel()
     
-    private (set) var thread:Conversation
+    private (set) var thread:Conversation?
     
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     
-    init(thread:Conversation) {
+    //when viewAppreaed this method called and now we can start to retreive thread message
+    func setThread(thread:Conversation){
         self.thread = thread
-        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
-            if self.model.messages.count == 0 && status == .CONNECTED{
-                self.getMessagesHistory()
-            }
-        }
+        getMessagesHistory()
     }
     
     func loadMore(){
@@ -38,7 +35,7 @@ class ThreadViewModel:ObservableObject{
     }
     
     func getMessagesHistory(){
-        guard let threadId = thread.id else{return}
+        guard let threadId = thread?.id else{return}
         Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count,offset: model.offset)) {[weak self] messages, uniqueId, pagination, error in
             if let messages = messages{
                 self?.model.appendMessages(messages: messages)
