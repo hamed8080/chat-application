@@ -23,6 +23,7 @@ struct CallStateModel {
     private (set) var turnOffVideoCallParticipants :[CallParticipant] = []
     private (set) var turnOnVideoCallParticipants  :[CallParticipant] = []
     private (set) var receiveCall                  :CreateCall?       = nil
+	private (set) var callSessionCreated            :CreateCall?       = nil
     private (set) var selectedContacts             :[Contact]         = []
     private (set) var isP2PCalling                 :Bool              = false
     private (set) var isVideoCall                  :Bool              = false
@@ -68,6 +69,10 @@ struct CallStateModel {
         setStartDate()
     }
     
+	mutating func setCallSessionCreated(_ createCall:CreateCall){
+		self.callSessionCreated = createCall
+	}
+	
     mutating func setTimerString(_ timerString:String?){
         self.timerCallString = timerString
     }
@@ -119,8 +124,9 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     var answeredWithAudio = false
 
 	private init() {
+		NotificationCenter.default.addObserver(self, selector: #selector(onCallSessionCreated(_:)), name: CALL_SESSION_CREATED_NAME_OBJECT, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(onReceiveCall(_:)), name: RECEIVE_CALL_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onRejectCall(_:)), name: REJECTED_CALL_NAME_OBJECT, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onCallCanceled(_:)), name: CANCELED_CALL_NAME_OBJECT, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onCallStarted(_:)), name: STARTED_CALL_NAME_OBJECT, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onCallEnd(_:)), name: END_CALL_NAME_OBJECT, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onMuteParticipants(_:)), name: MUTE_CALL_NAME_OBJECT, object: nil)
@@ -129,17 +135,25 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(onTurnVideoOffParticipants(_:)), name: TURN_OFF_VIDEO_CALL_NAME_OBJECT, object: nil)
 	}
 	
+	@objc func onCallSessionCreated(_ notification: NSNotification){
+		if let createCall = notification.object as? CreateCall{
+			model.setCallSessionCreated(createCall)
+		}
+	}
+	
 	@objc func onReceiveCall(_ notification: NSNotification){
 		if let createCall = notification.object as? CreateCall{
             model.setReceiveCall(createCall)
             model.setShowCallView(true)
 		}
 	}
-    
-    @objc func onRejectCall(_ notification: NSNotification){
+	
+	//maybe reject or canceled after a time out
+    @objc func onCallCanceled(_ notification: NSNotification){
         //don't remove showCallView == true leads to show callViewControls again in receiver of call who rejected call
         if let _ = notification.object as? Call, model.showCallView{
             model.setShowCallView(false)
+			resetCall()
         }
     }
     
@@ -151,7 +165,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
             
             //Vo - Voice and Vi- Video its hardcoded in all sdks such as:Android-Js,...
             let config =  WebRTCConfig(peerName           : startCall.chatDataDto.kurentoAddress,
-                                      iceServers          : ["turn:\(startCall.chatDataDto.turnAddress)"],//"stun:46.32.6.188:3478",
+                                      iceServers          : ["turn:\(startCall.chatDataDto.turnAddress)?transport=udp",
+															 "turn:\(startCall.chatDataDto.turnAddress)?transport=tcp"],//"stun:46.32.6.188:3478",
                                       topicVideoSend      : answeredWithVideo || model.isVideoCall ? "Vi-\(startCall.clientDTO.topicSend)" : nil,
                                       topicVideoReceive   : "Vi-\(startCall.clientDTO.topicReceive)",
                                       topicAudioSend      : "Vo-\(startCall.clientDTO.topicSend)",

@@ -79,7 +79,7 @@ struct CallControlsContent: View {
                             Spacer()
                             
                             CallControlItem(iconSfSymbolName: "phone.down.fill", subtitle: "Reject Call", color: .red){
-                                viewModel.rejectCall()
+                                viewModel.cancelCall()
                                 withAnimation{
                                     callState.model.setShowCallView(false)
                                 }

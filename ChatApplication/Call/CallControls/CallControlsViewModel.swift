@@ -81,12 +81,16 @@ class CallControlsViewModel:ObservableObject{
     }
     
     func endCall(){
-        // TODO: realease microphone and camera at the moument and dont need to wait and get response from server
-        if let callId = model.callId{
-            Chat.sharedInstance.endCall(.init(callId: callId)) { callId, uniqueId, error in
-                
-            }
-        }
+		if callState.model.isCallStarted == false {
+			cancelCall()
+		}else {
+			// TODO: realease microphone and camera at the moument and dont need to wait and get response from server
+			if let callId = model.callId{
+				Chat.sharedInstance.endCall(.init(callId: callId)) { callId, uniqueId, error in
+					
+				}
+			}
+		}
         model.endCall()
         CallState.shared.close()
     }
@@ -98,13 +102,17 @@ class CallControlsViewModel:ObservableObject{
             Chat.sharedInstance.acceptCall(.init(callId:receiveCall.callId, client: .init(mute: !audio , video: video)))
         }        
     }
-    
-    func rejectCall(){
-        let c = callState.model.receiveCall
-        guard let callId = c?.callId,let creatorId = c?.creatorId , let type = c?.type , let isGroup = c?.group else{return}
-        let call = Call(id:callId , creatorId: creatorId, type: type, isGroup: isGroup)
-        Chat.sharedInstance.rejectCall(.init(call: call))
-    }
+	
+	///You can use this method to reject or cancel a call not startrd yet.
+	func cancelCall(){
+		let callSessionCreated = callState.model.callSessionCreated ?? callState.model.receiveCall
+		guard let callId = callSessionCreated?.callId,
+			  let creatorId = callSessionCreated?.creatorId,
+			  let type = callSessionCreated?.type,
+			  let isGroup = callSessionCreated?.group else{return}
+		let call = Call(id:callId , creatorId: creatorId, type: type, isGroup: isGroup)
+		Chat.sharedInstance.cancelCall(.init(call: call))
+	}
     
     func toggleMute(){
         guard let currentUserId = Chat.sharedInstance.getCurrentUser()?.id , let callId = model.callId else{return}
