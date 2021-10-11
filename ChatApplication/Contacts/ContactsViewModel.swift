@@ -17,6 +17,12 @@ class ContactsViewModel:ObservableObject{
     @Published
     private (set) var model = ContactsModel()
     
+    @Published
+    public var isInEditMode                    = false
+    
+    @Published
+    public var navigateToAddOrEditContact      = false
+    
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     
     init() {

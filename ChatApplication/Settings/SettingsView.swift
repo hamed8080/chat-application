@@ -15,11 +15,8 @@ struct SettingsView:View {
     
     @EnvironmentObject
     var appState:AppState
-    
-    @State var title    :String  = "Settings"
-    
+        
     var body: some View{
-        PageWithNavigationBarView(title:$title, subtitle:$appState.connectionStatusString){
             ScrollView{
                 HStack(spacing:0){
                     VStack{
@@ -120,7 +117,7 @@ struct SettingsView:View {
                     .padding(.horizontal , 36)
                 }
             }
-        }
+            .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
         .onAppear{
             viewModel.startTokenTimer()
         }

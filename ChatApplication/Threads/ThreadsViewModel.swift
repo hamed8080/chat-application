@@ -17,6 +17,8 @@ class ThreadsViewModel:ObservableObject{
     @Published
     private (set) var model = ThreadsModel()
     
+    @Published var toggleThreadContactPicker = false
+    
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     
     init() {

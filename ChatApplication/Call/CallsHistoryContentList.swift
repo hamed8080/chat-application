@@ -16,12 +16,9 @@ struct CallsHistoryContentList: View {
     
     @State
     var navigateToGroupCallSelction = false
-    
-    @State var title    :String  = "Calls"
-    
+        
     var body: some View {
         GeometryReader{ reader in
-            PageWithNavigationBarView(title:$title, subtitle:$appState.connectionStatusString){
                 ZStack{
                     List {
                         ForEach(viewModel.model.calls , id:\.id) { call in
@@ -35,7 +32,9 @@ struct CallsHistoryContentList: View {
                         }.onDelete(perform: { indexSet in
                             print("on delete")
                         })
-                    }.listStyle(PlainListStyle())
+                    }
+                    .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
+                    .listStyle(PlainListStyle())
                     Button(action: {
                         navigateToGroupCallSelction.toggle()
                     }, label: {
@@ -61,7 +60,6 @@ struct CallsHistoryContentList: View {
                     EmptyView()
                 }
             }
-        }
     }
 }
 

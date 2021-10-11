@@ -24,9 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Create the SwiftUI view that provides the window contents.
         NotificationCenter.default.addObserver(self, selector: #selector(addLog), name: NSNotification.Name("log"), object: nil)
-        let contentView = HomeContentView(threadsViewModel:ThreadsViewModel(),
-                                          contactsViewModel: ContactsViewModel(),
-                                          callsHistoryViewModel: CallsHistoryViewModel())
+        let contentView = HomeContentView()
             .environmentObject(appState)
             .environmentObject(callState)
 

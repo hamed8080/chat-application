@@ -35,11 +35,12 @@ class WebRTCViewController: UIViewController, WebRTCClientDelegate{
     func getConfig()->WebRTCConfig {
         return WebRTCConfig(peerName:"KuretoAdmin2",
                                   iceServers: ["stun:46.32.6.188:3478","turn:46.32.6.188:3478"],
+                                  turnAddress: "46.32.6.188:3478",
                                   topicVideoSend: isClientA ? "Vi-hossein" : "Vi-masoud",
                                   topicVideoReceive: isClientA ? "Vi-masoud" : "Vi-hossein",
                                   topicAudioSend: isClientA ? "Au-hossein" : "Au-masoud",
                                   topicAudioReceive: isClientA ? "Au-masoud" : "Au-hossein",
-                                  brokerAddress: "10.56.16.53:9093",
+                                  brokerAddressWeb: "10.56.16.53:9093",
                                   dataChannel: false,
                                   customFrameCapturer: false,
                                   userName: "mkhorrami",

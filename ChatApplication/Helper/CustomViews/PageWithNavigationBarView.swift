@@ -128,7 +128,7 @@ struct PageWithNavigationBarView<Content:View>: View {
                 contentView
             }
             .navigationBarTitle("") //this must be empty
-            .navigationBarHidden(true)            
+            .navigationBarHidden(true)
         }
     }
 }

@@ -13,13 +13,8 @@ struct ThreadContentList:View {
     
     @EnvironmentObject var appState:AppState
     
-    @State var title    :String  = "Chats"
-    @State var subtitle :String  = ""
-    @State var toggleThreadContactPicker = false
-    
     var body: some View{
-        GeometryReader{ reader in
-            PageWithNavigationBarView(title:$title, subtitle:$appState.connectionStatusString,trailingItems: getTrailingItems()){
+            GeometryReader{ reader in
                 List {
                     ForEach(viewModel.model.threads , id:\.id) { thread in
                         ThreadRow(thread: thread,viewModel: viewModel)
@@ -32,28 +27,22 @@ struct ThreadContentList:View {
                         guard let thread = indexSet.map({ viewModel.model.threads[$0]}).first else {return}
                         viewModel.deleteThread(thread)
                     })
-                }.listStyle(PlainListStyle())
+                }
+                .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
+                .listStyle(PlainListStyle())
                 Spacer()
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
                 NavigationLink(destination: ThreadView(viewModel: ThreadViewModel()) ,isActive: $appState.showThread) {
                     EmptyView()
                 }
-            }
-            .sheet(isPresented: $toggleThreadContactPicker, onDismiss: nil, content: {
-                StartThreadContactPickerView(viewModel: .init())
-            })
-            .onAppear{
-                appState.selectedThread = nil
-            }
+                .sheet(isPresented: $viewModel.toggleThreadContactPicker, onDismiss: nil, content: {
+                    StartThreadContactPickerView(viewModel: .init())
+                })
+                .onAppear{
+                    appState.selectedThread = nil
+                }
+            .navigationBarTitle("Chats",displayMode: .inline)
         }
-    }
-    
-    func getTrailingItems()->[NavBarItem]{
-        return [NavBarButton(systemImageName: "square.and.pencil") {
-            withAnimation {
-                toggleThreadContactPicker.toggle()
-            }
-        }.getNavBarItem()]
     }
 }
 

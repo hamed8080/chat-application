@@ -60,6 +60,7 @@ struct ThreadRow: View {
 			.padding([.top , .bottom] , 4)
 		})
 		.onTapGesture {
+            appState.showThread = false
             appState.selectedThread = thread
 		}.onLongPressGesture {
 			showActionSheet.toggle()
@@ -82,7 +83,10 @@ struct ThreadRow: View {
                     }
 				}
 			])
-		}
+        }
+        .onLongPressGesture {
+            showActionSheet.toggle()
+        }
 	}
 }
 

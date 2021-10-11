@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import Alamofire
+import FanapPodChatSDK
 struct VoidCodable:Codable{
     
 }
@@ -44,6 +46,7 @@ class RestClient<D:Codable>{
     var onError              : OnRestClientError?                 = nil
     var onCompleted          : (()->())?                          = nil
     var task:URLSessionTask?                                      = nil
+    var enablePrint          :Bool                                = false
     /***************************************************/
     
     init() {
@@ -137,6 +140,11 @@ class RestClient<D:Codable>{
         return self
     }
     
+    func enablePrint(enable:Bool = false)->RestClient{
+        self.enablePrint =  enable
+        return self
+    }
+    
     /***************************************************/
     
     public func setAuthorization(value:String) {
@@ -148,8 +156,9 @@ class RestClient<D:Codable>{
         guard  url != nil else{print("url cant be null"); return}
         req?.setValue("Application/Json", forHTTPHeaderField: "Accept")
         req?.setValue(contentType, forHTTPHeaderField: "Content-Type")
-        
+        printRequest(req)
         task = URLSession(configuration: config).dataTask(with: req){ data,response,error in
+            self.printResponse(data,response,error)
             DispatchQueue.main.async {
                 self.onCompleted?()
             }
@@ -187,6 +196,54 @@ class RestClient<D:Codable>{
             return decoded
         }catch{
             return nil
+        }
+    }
+    
+    private func printRequest(_ urlRequest:URLRequest?){
+        if enablePrint , let urlRequest = urlRequest{
+            //header url data method
+            var log = "\n"
+            log += "================== Start Sending Request ==================\n\n"
+            log += "\(urlRequest.httpMethod?.uppercased() ?? "") to:\(urlRequest.url?.absoluteString ?? "")\n"
+            if let headersDic = try? req.allHTTPHeaderFields.asDictionary() {
+                log += "with Headers:\n\t\t"
+                headersDic.forEach{ (key,value) in
+                    log += "\(key):\(value)\n\t\t"
+                }
+                log += "\n"
+            }
+            if  let data = urlRequest.httpBody, let str = String(data:data, encoding:.utf8){
+                log += "with Body data:\n"
+                log += str + "\n"
+            }
+            log += "================== End Sending Request ==================\n"
+            print(log)
+            NotificationCenter.default.post(name: Notification.Name("log"),object: LogResult(json: log, receive: false))
+        }
+    }
+    
+    private func printResponse(_ data:Data?,_ response:URLResponse?,_ error:Error?){
+        if enablePrint{
+            //header url data method status code
+            var log = "\n"
+            log += "================== Start Getting Response ==================\n\n"
+            let  code = (response as? HTTPURLResponse)?.statusCode
+            log += "url:\(response?.url?.absoluteString ?? "")\n"
+            log += "Status Code:\(code ?? 0)\n"
+            if let headersDic = try? ((response as? HTTPURLResponse)?.allHeaderFields as? [String:String]).asDictionary() {
+                log += "with Headers:\n\t\t"
+                headersDic.forEach{ (key,value) in
+                    log += "\(key):\(value)\n\t\t"
+                }
+                log += "\n"
+            }
+            if  let data = data, let str = String(data:data, encoding:.utf8){
+                log += "with Body data:\n"
+                log += str + "\n"
+            }
+            log += "================== End Getting Response ==================\n"
+            print(log)
+            NotificationCenter.default.post(name: Notification.Name("log"),object: LogResult(json: log, receive: true))
         }
     }
     

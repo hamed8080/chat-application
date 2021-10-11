@@ -9,20 +9,21 @@ import SwiftUI
 
 struct HomeContentView: View {
     
+
     @StateObject
-    var threadsViewModel:ThreadsViewModel
+    var loginModel            = LoginViewModel()
     
     @StateObject
-    var loginModel = LoginViewModel()
+    var callsHistoryViewModel = CallsHistoryViewModel()
     
     @StateObject
-    var tokenManager = TokenManager.shared
+    var contactsViewModel     = ContactsViewModel()
     
     @StateObject
-    var contactsViewModel:ContactsViewModel
+    var threadsViewModel      = ThreadsViewModel()
     
     @StateObject
-    var callsHistoryViewModel:CallsHistoryViewModel
+    var tokenManager          = TokenManager.shared
     
     @EnvironmentObject
     var appState:AppState
@@ -34,84 +35,149 @@ struct HomeContentView: View {
     var statusBarStyle          :LocalStatusBarStyle
     
     @State
-    var seletedTabTag = 2
-    
-    var navigationBarTitle: String {
-        Tabs(rawValue: seletedTabTag)?.stringValue ?? ""
-    }
-    
+    var showCallView = false
+
     var body: some View {
         //        WebRTCView()
-//                WebRTCDirectSignalingView()
+        //                WebRTCDirectSignalingView()
         //        WebRTCViewLocalSignalingView()
         
         if tokenManager.isLoggedIn == false{
             LoginView(viewModel:loginModel)
         }else{
-
-            if callState.model.showCallView{
+            
+            NavigationView{
+                MasterView(callsHistoryViewModel:callsHistoryViewModel,
+                           contactsViewModel: contactsViewModel,
+                           threadsViewModel: threadsViewModel)
+                
+                    DetailView()
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .onReceive(appState.$dark, perform: { _ in
+                self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
+            })
+            .fullScreenCover(isPresented: $showCallView, onDismiss: nil, content: {
                 CallControlsContent(viewModel: CallControlsViewModel())
-                    .transition(.asymmetric(insertion: .scale.animation(.spring().speed(2)), removal: .move(edge: .trailing)))
-            }else{
-                NavigationView{
-                    TabView(selection: $seletedTabTag){
-
-                        ContactContentList(viewModel: contactsViewModel)
-                            .tabItem {
-                                Label("Contacts", systemImage: "person.fill")
-                            }.tag(1)
-
-                        ThreadContentList(viewModel: threadsViewModel)
-                            .tabItem {
-                                Label("Chats", systemImage: "bubble.left.and.bubble.right.fill")
-                            }.tag(2)
-
-                        CallsHistoryContentList(viewModel: callsHistoryViewModel)
-                            .tabItem {
-                                Label("Calls", systemImage: "phone")
-                            }.tag(3)
-
-                        SettingsView()
-                            .tabItem {
-                                Label("Settings", systemImage: "gear")
-                            }.tag(4)
-                    }
-                    .navigationBarTitle("")
-                    .navigationBarHidden(true)
-                }
-                .onReceive(appState.$dark, perform: { _ in
-                    self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
-                })
-                .onAppear{
-                    self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
-                }
-                .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
+                    .environmentObject(callState)
+            })
+            .onReceive(callState.$model , perform: { _ in
+                 showCallView = callState.model.showCallView
+            })
+            .onAppear{
+                self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
             }
         }
     }
+
 }
 
 
+struct MasterView:View{
+    
+    @State
+    var seletedTabTag = 2
+    
+    
+    @State var showDeleteButton = false
+    
+    private var callView      : CallsHistoryContentList
+    private var contactsView  : ContactContentList
+    private var settingssView : SettingsView
+    private var threadsView   : ThreadContentList
+    
+    
+    init(callsHistoryViewModel:CallsHistoryViewModel,
+         contactsViewModel:ContactsViewModel,
+         threadsViewModel:ThreadsViewModel){
+        callView      = CallsHistoryContentList(viewModel: callsHistoryViewModel)
+        contactsView  = ContactContentList(viewModel: contactsViewModel)
+        settingssView = SettingsView()
+        threadsView   = ThreadContentList(viewModel: threadsViewModel)
+    }
+    
+    var body: some View{
+        TabView(selection: $seletedTabTag){
+            
+            callView
+                .tabItem {
+                    Label("Calls", systemImage: "phone")
+                }.tag(3)
+            
+            contactsView
+                .tabItem {
+                    Label("Contacts", systemImage: "person.fill")
+                }.tag(1)
+            
+            threadsView
+                .tabItem {
+                    Label("Chats", systemImage: "bubble.left.and.bubble.right.fill")
+                }.tag(2)
+            
+            settingssView
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }.tag(4)
+            
+        }
+        .toolbar{
+            ToolbarItemGroup(placement:.navigationBarTrailing){
+                if seletedTabTag == Tabs.CONTACTS.rawValue{
+                    let plus = NavBarButton(systemImageName: "plus", action: {
+                        contactsView.viewModel.navigateToAddOrEditContact.toggle()
+                    })
+                    plus.getNavBarItem().view
+                }
+                
+                if seletedTabTag == Tabs.CHATS.rawValue{
+                    NavBarButton(systemImageName: "square.and.pencil") {
+                        withAnimation {
+                            threadsView.viewModel.toggleThreadContactPicker.toggle()
+                        }
+                    }.getNavBarItem().view
+                }
+            }
+
+            ToolbarItemGroup(placement:.navigationBarLeading){
+                if seletedTabTag == Tabs.CONTACTS.rawValue{
+                    let edit = NavBarButton(title: "Edit", action: {
+                        contactsView.viewModel.isInEditMode.toggle()
+                        seletedTabTag = seletedTabTag//to refresh this view and cause to trigger and show and hide delete button
+                        showDeleteButton.toggle()
+                    })
+                    edit.getNavBarItem().view
+                    
+                    if showDeleteButton,contactsView.viewModel.isInEditMode{
+                        NavBarButton(title: "Delete") {
+                            contactsView.viewModel.deleteSelectedItems()
+                        }.getNavBarItem().view
+                    }
+                }
+            }
+        }
+        .navigationViewStyle(.stack)
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(Text(Tabs(rawValue: seletedTabTag)?.stringValue ?? ""))
+    }
+}
+
+struct DetailView:View{
+    
+    var body: some View{
+        Text("salam")
+    }
+}
+
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let threadsViewModel = ThreadsViewModel()
-        let contactsViewModel = ContactsViewModel()
-        let callsHistoryViewModel = CallsHistoryViewModel()
         let appState = AppState.shared
         let callState = CallState.shared
-        HomeContentView(threadsViewModel:threadsViewModel,contactsViewModel:contactsViewModel,callsHistoryViewModel:callsHistoryViewModel)
+        HomeContentView()
             .environmentObject(appState)
             .environmentObject(callState)
             .onAppear(){
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
-                threadsViewModel.setupPreview()
             }
-    }
-}
-
-struct MyContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        MyContentView()
     }
 }
 
@@ -127,85 +193,6 @@ enum Tabs:Int{
         case .CHATS    : return "Chats"
         case .CALLS    : return "Calls"
         case .SETTINGS : return "Settings"
-        }
-    }
-}
-
-
-struct MyContentView: View {
-    @State private var tabSelection = 1
-    
-    var body: some View {
-        NavigationView {
-            TabView(selection: $tabSelection) {
-                FirstView()
-                    .tabItem {
-                        Text("1")
-                    }
-                    .tag(1)
-                SecondView()
-                    .tabItem {
-                        Text("2")
-                    }
-                    .tag(2)
-            }
-            .onAppear{             
-                if #available(iOS 15.0, *) {
-                    let appearance = UITabBarAppearance()
-                    appearance.backgroundColor = .white
-                    UITabBar.appearance().scrollEdgeAppearance = appearance
-                }
-            }
-//            .tabViewStyle(TabViewStyle())
-            // global, for all child views
-            .navigationBarTitle(Text(navigationBarTitle), displayMode: .inline)
-            //            .navigationBarHidden(navigationBarHidden)
-                        .navigationBarItems(leading: navigationBarLeadingItems, trailing: navigationBarTrailingItems)
-        }
-    }
-}
-
-
-struct FirstView: View {
-    var body: some View {
-        NavigationLink(destination: Text("Some detail link")) {
-            VStack{
-                Text("Go to...")
-                List(1...100,id:\.self){
-                    Text("row:\($0)")
-                }
-            }
-        }
-    }
-}
-
-struct SecondView: View {
-    var body: some View {
-        Text("We are in the SecondView")
-    }
-}
-
-
-private extension MyContentView {
-    var navigationBarTitle: String {
-        tabSelection == 1 ? "FirstView" : "SecondView"
-    }
-    
-    var navigationBarHidden: Bool {
-        tabSelection == 3
-    }
-    
-    @ViewBuilder
-    var navigationBarLeadingItems: some View {
-        if tabSelection == 1 {
-            Text("+")
-        }
-    }
-    
-    @ViewBuilder
-    var navigationBarTrailingItems: some View {
-        if tabSelection == 2 {
-            Text("-")
         }
     }
 }

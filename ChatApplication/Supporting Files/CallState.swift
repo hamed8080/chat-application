@@ -105,7 +105,6 @@ struct CallStateModel {
 class CallState:ObservableObject,WebRTCClientDelegate {
    
     public static  let shared        :CallState         = CallState()
-    private static var webrtcClient  :WebRTCClientNew?  = nil
     
     @Published
     var model          :CallStateModel    = CallStateModel()
@@ -143,8 +142,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
 	
 	@objc func onReceiveCall(_ notification: NSNotification){
 		if let createCall = notification.object as? CreateCall{
-            model.setReceiveCall(createCall)
             model.setShowCallView(true)
+            model.setReceiveCall(createCall)            
 		}
 	}
 	
@@ -167,34 +166,34 @@ class CallState:ObservableObject,WebRTCClientDelegate {
             let config =  WebRTCConfig(peerName           : startCall.chatDataDto.kurentoAddress,
                                       iceServers          : ["turn:\(startCall.chatDataDto.turnAddress)?transport=udp",
 															 "turn:\(startCall.chatDataDto.turnAddress)?transport=tcp"],//"stun:46.32.6.188:3478",
+                                      turnAddress         : startCall.chatDataDto.turnAddress,
                                       topicVideoSend      : answeredWithVideo || model.isVideoCall ? "Vi-\(startCall.clientDTO.topicSend)" : nil,
                                       topicVideoReceive   : "Vi-\(startCall.clientDTO.topicReceive)",
                                       topicAudioSend      : "Vo-\(startCall.clientDTO.topicSend)",
                                       topicAudioReceive   : "Vo-\(startCall.clientDTO.topicReceive)",
-                                      brokerAddress       : startCall.chatDataDto.brokerAddressWeb,
+                                      brokerAddressWeb    : startCall.chatDataDto.brokerAddressWeb,
                                       dataChannel         : false,
                                       customFrameCapturer : false,
                                       userName            : "mkhorrami",
                                       password            : "mkh_123456",
                                       videoConfig         : nil)
-            CallState.webrtcClient = WebRTCClientNew(config: config , delegate: self)
+            WebRTCClientNew.instance = WebRTCClientNew(config: config , delegate: self)
             if let renderer = localVideoRenderer {
-                CallState.webrtcClient?.startCaptureLocalVideo(renderer: renderer,fileName: model.isReceiveCall ? "webrtc_user_b.mp4" : "webrtc_user_a.mp4")
+                WebRTCClientNew.instance?.startCaptureLocalVideo(renderer: renderer,fileName: model.isReceiveCall ? "webrtc_user_b.mp4" : "webrtc_user_a.mp4")
             }
 
             if let renderer = remoteVideoRenderer {
-                CallState.webrtcClient?.renderRemoteVideo(renderer)
+                WebRTCClientNew.instance?.renderRemoteVideo(renderer)
             }
-            CallState.webrtcClient?.startSendKeyFrame()
+            WebRTCClientNew.instance?.startSendKeyFrame()
         }
     }
 
     
     @objc func onCallEnd(_ notification: NSNotification){
-        if let callId = notification.object as? Int , model.startCall?.callId == callId{
-            CallState.webrtcClient?.close()
-            resetCall()
-        }
+        model.setShowCallView(false)
+        WebRTCClientNew.instance?.clearResourceAndCloseConnection()
+        resetCall()
     }
     
     @objc func onMuteParticipants(_ notification: NSNotification){
@@ -222,12 +221,12 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     }
     
     func resetCall(){
-        localVideoRenderer      = nil
-        remoteVideoRenderer     = nil
+        localVideoRenderer       = nil
+        remoteVideoRenderer      = nil
         startCallTimer?.invalidate()
-        startCallTimer          = nil
-        model                   = CallStateModel()
-        CallState.webrtcClient  = nil
+        startCallTimer           = nil
+        model                    = CallStateModel()
+        WebRTCClientNew.instance = nil
     }
     
     func setLocalVideoRenderer(_ renderer:RTCVideoRenderer){
@@ -239,24 +238,24 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     }
     
     func setSpeaker(_ isOn:Bool){
-        CallState.webrtcClient?.setSpeaker(on: isOn)
+        WebRTCClientNew.instance?.setSpeaker(on: isOn)
     }
     
     func setMute(_ isMute:Bool){
-        CallState.webrtcClient?.setMute(isMute)
+        WebRTCClientNew.instance?.setMute(isMute)
     }
     
     func setCameraIsOn(_ isCameraOn:Bool){
-        CallState.webrtcClient?.setCameraIsOn(isCameraOn)
+        WebRTCClientNew.instance?.setCameraIsOn(isCameraOn)
     }
     
     func switchCamera(_ isFront:Bool){
         guard let localVideoRenderer = localVideoRenderer else{return}
-        CallState.webrtcClient?.switchCameraPosition(renderer: localVideoRenderer)
+        WebRTCClientNew.instance?.switchCameraPosition(renderer: localVideoRenderer)
     }
     
     func close(){
-        CallState.webrtcClient?.close()
+        WebRTCClientNew.instance?.clearResourceAndCloseConnection()
         resetCall()
     }
     

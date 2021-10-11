@@ -29,6 +29,8 @@ struct CallControlsContent: View {
     @State
     var remoteView  = RTCVideoReperesentable()
     
+    @Environment(\.presentationMode) var presentationMode
+    
     var body: some View {
         GeometryReader{ reader in
             ZStack{
@@ -147,9 +149,16 @@ struct CallControlsContent: View {
                 .background(getBackground())
             }
         }
+        .background(Color.white.ignoresSafeArea())
+        .preferredColorScheme(.dark)
         .onAppear{
             viewModel.startRequestCallIfNeeded()
         }
+        .onReceive(callState.$model , perform: { _ in
+            if callState.model.showCallView == false{
+                presentationMode.wrappedValue.dismiss()
+            }
+        })
     }
     
     @ViewBuilder

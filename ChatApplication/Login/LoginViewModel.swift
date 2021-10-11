@@ -26,6 +26,7 @@ class LoginViewModel: ObservableObject {
         client
             .setUrl(Routes.HANDSHAKE)
             .setMethod(.post)
+            .enablePrint(enable: true)
             .setParamsAsQueryString(req)
             .setOnError({ data, error in
                 print("error on login:\(error.debugDescription)")
@@ -42,7 +43,8 @@ class LoginViewModel: ObservableObject {
         let req = AuthorizeRequest(identity: identity, keyId: keyId)
         client
             .setUrl(Routes.AUTHORIZE)
-            .setMethod(.post)            
+            .setMethod(.post)
+            .enablePrint(enable: true)
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
             .setOnError({ data, error in
@@ -64,6 +66,7 @@ class LoginViewModel: ObservableObject {
         client
             .setUrl(Routes.VERIFY)
             .setMethod(.post)
+            .enablePrint(enable: true)
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
             .setOnError({ data, error in
@@ -87,6 +90,7 @@ class LoginViewModel: ObservableObject {
         client
             .setUrl(Routes.VERIFY)
             .setMethod(.post)
+            .enablePrint(enable: true)
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
             .setOnError({ data, error in
@@ -124,6 +128,7 @@ class TokenManager : ObservableObject{
         if let refreshToken = getSSOTokenFromUserDefaults()?.refreshToken{
             let client = RestClient<SSOTokenResponse>()
             client
+                .enablePrint(enable: true)
                 .setUrl(Routes.REFRESH_TOKEN + "?refreshToken=\(refreshToken)")
                 .setOnError({ data, error in
                     print("error on getNewTokenWithRefreshToken:\(error.debugDescription)")
@@ -150,6 +155,9 @@ class TokenManager : ObservableObject{
     }
     
     func saveSSOToken(ssoToken:SSOTokenResponse.Result){
+        let data = (try? JSONEncoder().encode(ssoToken)) ?? Data()
+        let str = String(data: data , encoding: .utf8)
+        print("save token:\n\(str ?? "")")
         refreshCreateTokenDate()
         startTimerToGetNewToken()
         if let encodedData = try? JSONEncoder().encode(ssoToken){
