@@ -73,4 +73,34 @@ class ResultViewController: UIViewController , UITableViewDelegate , UITableView
             return nil
         }
     }
+    
+    class func printCallLogsFile(){
+        if let appSupportDir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false){
+            let logFileDir = "WEBRTC-LOG"
+            let url = appSupportDir.appendingPathComponent(logFileDir)
+            let contentsOfDir = try? FileManager.default.contentsOfDirectory(atPath: url.path)
+            
+            DispatchQueue.global(qos: .background).async {
+                let df = DateFormatter()
+                df.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+                let dateString = df.string(from: Date())
+                FileManager.default.zipFile(urlPathToZip: url, zipName: "WEBRTC-Logs-\(dateString)") { zipFile in
+                    if let zipFile = zipFile{
+                        AppState.shared.callLogs = [zipFile]
+                    }
+                }
+            }
+            
+            contentsOfDir?.forEach({ file in
+                DispatchQueue.global(qos: .background).async {
+                    if let data = try? Data(contentsOf: url.appendingPathComponent(file)) , let string = String(data: data, encoding: .utf8){
+                        print("data of log file '\(file)' is:\n")
+                        print(string)
+                        let log = LogResult(json: string, receive: false)
+                        ResultViewController.addToLog(logResult: log)
+                    }
+                }
+            })
+        }
+    }
 }

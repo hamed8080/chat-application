@@ -15,6 +15,9 @@ class AppState: ObservableObject {
     @Published var dark:Bool = false
     
     @Published
+    var callLogs:[URL]? = nil
+    
+    @Published
     var connectionStatus:ConnectionStatus = .Connecting{
         didSet{
             setConnectionStatus(connectionStatus)

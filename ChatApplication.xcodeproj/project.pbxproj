@@ -74,6 +74,8 @@
 		AC7EBFF7266CAF3100984E81 /* ContactsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6C266CAD63009E4722 /* ContactsModel.swift */; };
 		AC826E3626F47A1F00551578 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC826E3526F47A1F00551578 /* LoginModel.swift */; };
 		AC90B25526FB838D00477E03 /* PageWithNavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90B25426FB838D00477E03 /* PageWithNavigationBarView.swift */; };
+		AC91591D2718390D00437517 /* FileManagerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC91591C2718390D00437517 /* FileManagerExtension.swift */; };
+		ACA6DA79271ABB2200286563 /* ActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA6DA78271ABB2200286563 /* ActivityViewControllerWrapper.swift */; };
 		ACAB96D227030F9A005FB9AA /* ShapeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */; };
 		ACAB96D427030FBE005FB9AA /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB96D327030FBE005FB9AA /* ViewExtension.swift */; };
 		ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC306AA2701DF8C0035CCB9 /* StartThreadContactPickerView.swift */; };
@@ -162,10 +164,12 @@
 		AC7B6D74266DE7820059782E /* LoadingViewAtBottomOfView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAtBottomOfView.swift; sourceTree = "<group>"; };
 		AC826E3526F47A1F00551578 /* LoginModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
 		AC90B25426FB838D00477E03 /* PageWithNavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageWithNavigationBarView.swift; sourceTree = "<group>"; };
+		AC91591C2718390D00437517 /* FileManagerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerExtension.swift; sourceTree = "<group>"; };
 		AC9DAC6C266CAD63009E4722 /* ContactsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsModel.swift; sourceTree = "<group>"; };
 		AC9DAC6D266CAD63009E4722 /* ContactsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewModel.swift; sourceTree = "<group>"; };
 		AC9DAC6E266CAD63009E4722 /* ContactRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRow.swift; sourceTree = "<group>"; };
 		AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactContentList.swift; sourceTree = "<group>"; };
+		ACA6DA78271ABB2200286563 /* ActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
 		ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeExtension.swift; sourceTree = "<group>"; };
 		ACAB96D327030FBE005FB9AA /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		ACC306AA2701DF8C0035CCB9 /* StartThreadContactPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartThreadContactPickerView.swift; sourceTree = "<group>"; };
@@ -344,6 +348,7 @@
 				AC56469F27006DF600DE9805 /* UINavigationontroller.swift */,
 				ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */,
 				ACAB96D327030FBE005FB9AA /* ViewExtension.swift */,
+				AC91591C2718390D00437517 /* FileManagerExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -359,6 +364,7 @@
 				AC48ED5926F6E98100AB1A5D /* RTCVideoReperesentable.swift */,
 				AC90B25426FB838D00477E03 /* PageWithNavigationBarView.swift */,
 				AC6D39E8270F1BEC004E1793 /* MultilineTextField.swift */,
+				ACA6DA78271ABB2200286563 /* ActivityViewControllerWrapper.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -668,6 +674,7 @@
 				AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */,
 				AC10007B26F46EC900C3AD67 /* LoginViewModel.swift in Sources */,
 				AC122EC2266B82A000C0630F /* ThreadContentList.swift in Sources */,
+				ACA6DA79271ABB2200286563 /* ActivityViewControllerWrapper.swift in Sources */,
 				ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */,
 				ACC306AD2701DFED0035CCB9 /* StartThreadContactPickerViewModel.swift in Sources */,
 				AC5646A027006DF600DE9805 /* UINavigationontroller.swift in Sources */,
@@ -697,6 +704,7 @@
 				AC7EBFF7266CAF3100984E81 /* ContactsModel.swift in Sources */,
 				AC48ED6026F6F9E300AB1A5D /* RestClient.swift in Sources */,
 				AC0889B02691E14500FD4552 /* CustomHostinViewController.swift in Sources */,
+				AC91591D2718390D00437517 /* FileManagerExtension.swift in Sources */,
 				AC0435FC26998D3700B1C87B /* ParticipantsModel.swift in Sources */,
 				AC6D532426F1AE8C00CBC059 /* MessageRow.swift in Sources */,
 				AC122EC4266B83A800C0630F /* SettingsView.swift in Sources */,

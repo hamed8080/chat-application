@@ -28,12 +28,10 @@ struct ThreadView:View {
                     print("on delete")
                 })
             }
-            .padding(EdgeInsets(top: 1, leading: 0, bottom: 1, trailing: 0))
             .background(
                 ZStack{
                     Image("chat_bg")
-                        .resizable()
-                        .zIndex(0)
+                        .resizable(resizingMode: .tile)
                         .opacity(0.25)
                     LinearGradient(gradient: Gradient(colors: [Color.black.opacity(0.9),
                                                                Color.blue.opacity(0.6)]),
@@ -41,6 +39,7 @@ struct ThreadView:View {
                                    endPoint: .bottom)
                 }
             )
+            .padding(EdgeInsets(top: 1, leading: 0, bottom: 1, trailing: 0))
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to:nil, from:nil, for:nil)
             }

@@ -36,6 +36,9 @@ struct HomeContentView: View {
     
     @State
     var showCallView = false
+    
+    @State
+    var shareCallLogs = false
 
     var body: some View {
         //        WebRTCView()
@@ -61,8 +64,22 @@ struct HomeContentView: View {
                 CallControlsContent(viewModel: CallControlsViewModel())
                     .environmentObject(callState)
             })
+            .sheet(isPresented: $shareCallLogs, onDismiss: {
+                if let zipFile =  appState.callLogs?.first{
+                    FileManager.default.deleteFile(urlPathToZip: zipFile)
+                }
+            }, content:{
+                if let zipUrl = appState.callLogs{
+                    ActivityViewControllerWrapper(activityItems: zipUrl)
+                }else{
+                    EmptyView()
+                }
+            })
+            .onReceive(appState.$callLogs , perform: { _ in
+                shareCallLogs = appState.callLogs != nil
+            })
             .onReceive(callState.$model , perform: { _ in
-                 showCallView = callState.model.showCallView
+                showCallView = callState.model.showCallView
             })
             .onAppear{
                 self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
