@@ -56,7 +56,7 @@ struct HomeContentView: View {
                 
                     DetailView()
             }
-            .navigationViewStyle(StackNavigationViewStyle())
+//            .navigationViewStyle(StackNavigationViewStyle())
             .onReceive(appState.$dark, perform: { _ in
                 self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
             })
@@ -91,6 +91,9 @@ struct HomeContentView: View {
 
 
 struct MasterView:View{
+    
+    @EnvironmentObject
+    var appState:AppState
     
     @State
     var seletedTabTag = 2
@@ -171,10 +174,20 @@ struct MasterView:View{
                     }
                 }
             }
+            
+            ToolbarItem(placement: .principal) {
+                VStack {
+                    Text(Tabs(rawValue: seletedTabTag)?.stringValue ?? "")
+                        .fixedSize()
+                        .font(.headline)
+                    Text(appState.connectionStatusString)
+                        .fixedSize()
+                        .font(.caption)
+                }
+            }
         }
         .navigationViewStyle(.stack)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle(Text(Tabs(rawValue: seletedTabTag)?.stringValue ?? ""))
     }
 }
 

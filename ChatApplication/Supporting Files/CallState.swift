@@ -11,7 +11,7 @@ import WebRTC
 
 
 struct CallStateModel {
-    
+    private (set) var uuid                         :UUID              = UUID()
     private (set) var startCall                    :StartCall?        = nil
     private (set) var showCallView                 :Bool              = false
     private (set) var connectionStatusString       :String            = ""
@@ -23,12 +23,14 @@ struct CallStateModel {
     private (set) var turnOffVideoCallParticipants :[CallParticipant] = []
     private (set) var turnOnVideoCallParticipants  :[CallParticipant] = []
     private (set) var receiveCall                  :CreateCall?       = nil
-	private (set) var callSessionCreated            :CreateCall?       = nil
+	private (set) var callSessionCreated           :CreateCall?       = nil
     private (set) var selectedContacts             :[Contact]         = []
     private (set) var isP2PCalling                 :Bool              = false
     private (set) var isVideoCall                  :Bool              = false
     private (set) var callThreadId                 :Int?              = nil
     private (set) var groupName                    :String?           = nil
+    private (set) var answerWithVideo              :Bool              = false
+    private (set) var answerWithMicEnable          :Bool              = false
     
     mutating func setReceiveCall(_ receiveCall:CreateCall){
         self.receiveCall = receiveCall
@@ -88,6 +90,11 @@ struct CallStateModel {
     mutating func setIsVideoCallRequest(_ isVideoCall:Bool){
         self.isVideoCall = isVideoCall
     }
+    
+    mutating func setAnswerWithVideo(answerWithVideo:Bool , micEnable:Bool){
+        self.answerWithVideo = answerWithVideo
+        self.answerWithMicEnable = micEnable
+    }
    
     var isReceiveCall:Bool{
         return receiveCall != nil
@@ -118,9 +125,6 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     func setConnectionStatus(_ status:ConnectionStatus){
         model.setConnectionState( status == .CONNECTED ? "" : String(describing: status) + " ...")
     }
-    
-    var answeredWithVideo = false
-    var answeredWithAudio = false
 
 	private init() {
 		NotificationCenter.default.addObserver(self, selector: #selector(onCallSessionCreated(_:)), name: CALL_SESSION_CREATED_NAME_OBJECT, object: nil)
@@ -143,7 +147,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
 	@objc func onReceiveCall(_ notification: NSNotification){
 		if let createCall = notification.object as? CreateCall{
             model.setShowCallView(true)
-            model.setReceiveCall(createCall)            
+            model.setReceiveCall(createCall)
+            AppDelegate.shared.providerDelegate?.reportIncomingCall(uuid: model.uuid, handle: model.titleOfCalling, hasVideo: model.isVideoCall, completion: nil)
 		}
 	}
 	
@@ -152,6 +157,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         //don't remove showCallView == true leads to show callViewControls again in receiver of call who rejected call
         if let _ = notification.object as? Call, model.showCallView{
             model.setShowCallView(false)
+            endCallKitCall()
 			resetCall()
         }
     }
@@ -167,7 +173,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
                                       iceServers          : ["turn:\(startCall.chatDataDto.turnAddress)?transport=udp",
 															 "turn:\(startCall.chatDataDto.turnAddress)?transport=tcp"],//"stun:46.32.6.188:3478",
                                       turnAddress         : startCall.chatDataDto.turnAddress,
-                                      topicVideoSend      : answeredWithVideo || model.isVideoCall ? "Vi-\(startCall.clientDTO.topicSend)" : nil,
+                                       topicVideoSend      : model.answerWithVideo || model.isVideoCall ? "Vi-\(startCall.clientDTO.topicSend)" : nil,
                                       topicVideoReceive   : "Vi-\(startCall.clientDTO.topicReceive)",
                                       topicAudioSend      : "Vo-\(startCall.clientDTO.topicSend)",
                                       topicAudioReceive   : "Vo-\(startCall.clientDTO.topicReceive)",
@@ -191,7 +197,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
 
     
     @objc func onCallEnd(_ notification: NSNotification){
-        ResultViewController.printCallLogsFile()
+        endCallKitCall()
+//        ResultViewController.printCallLogsFile()
         model.setShowCallView(false)
         WebRTCClientNew.instance?.clearResourceAndCloseConnection()
         resetCall()
@@ -267,6 +274,10 @@ class CallState:ObservableObject,WebRTCClientDelegate {
                 self?.model.setTimerString(self?.model.startCallDate?.getDurationTimerString())
             }
         }
+    }
+    
+    func endCallKitCall(){
+        AppDelegate.shared?.callMananger.endCall(model.uuid)
     }
 }
 

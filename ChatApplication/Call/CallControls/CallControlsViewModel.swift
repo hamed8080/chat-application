@@ -54,6 +54,9 @@ class CallControlsViewModel:ObservableObject{
                 startGroupCall(callState.model.selectedContacts)
             }
         }
+        let isVideoCall = callState.model.isVideoCall
+        let handle = callState.model.receiveCall?.creator.name ?? ""
+        AppDelegate.shared?.callMananger.startCall(handle, video: isVideoCall, uuid: callState.model.uuid)
     }
     
     private func startP2PCall(_ selectedContacts:[Contact]){
@@ -81,7 +84,8 @@ class CallControlsViewModel:ObservableObject{
     }
     
     func endCall(){
-		if callState.model.isCallStarted == false {
+        endCallKitCall()
+        if callState.model.isCallStarted == false {
 			cancelCall()
 		}else {
 			// TODO: realease microphone and camera at the moument and dont need to wait and get response from server
@@ -92,15 +96,12 @@ class CallControlsViewModel:ObservableObject{
 			}
 		}
         model.endCall()
-        CallState.shared.close()
+        CallState.shared.close()        
     }
     
     func answerCall(video:Bool , audio:Bool){
-        if let receiveCall = callState.model.receiveCall {
-            callState.answeredWithVideo  = video
-            callState.answeredWithAudio  = audio
-            Chat.sharedInstance.acceptCall(.init(callId:receiveCall.callId, client: .init(mute: !audio , video: video)))
-        }        
+        CallState.shared.model.setAnswerWithVideo(answerWithVideo: video, micEnable: audio)
+        AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
     }
 	
 	///You can use this method to reject or cancel a call not startrd yet.
@@ -112,7 +113,12 @@ class CallControlsViewModel:ObservableObject{
 			  let isGroup = callSessionCreated?.group else{return}
 		let call = Call(id:callId , creatorId: creatorId, type: type, isGroup: isGroup)
 		Chat.sharedInstance.cancelCall(.init(call: call))
+        endCallKitCall()
 	}
+    
+    func endCallKitCall(){
+        AppDelegate.shared?.callMananger.endCall(callState.model.uuid)
+    }
     
     func toggleMute(){
         guard let currentUserId = Chat.sharedInstance.getCurrentUser()?.id , let callId = model.callId else{return}

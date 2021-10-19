@@ -28,11 +28,11 @@ class ChatDelegateImplementation: ChatDelegates {
             if config.server == "Integeration"{
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponse.Result(accessToken: config.debugToken, expiresIn: Int.max, idToken: nil, refreshToken: nil, scope: nil, tokenType: nil))
             }
-            let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
+            let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken
             print("token is: \(token ?? "")")
             Chat.sharedInstance.createChatObject(config: .init(socketAddress: config.socketAddresss,
                                                                serverName: config.serverName,
-                                                               token: token ?? config.debugToken,
+                                                               token: token,
                                                                ssoHost: config.ssoHost,
                                                                platformHost: config.platformHost,
                                                                fileServer: config.fileServer,
