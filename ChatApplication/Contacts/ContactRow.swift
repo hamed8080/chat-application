@@ -23,9 +23,6 @@ struct ContactRow: View {
     @State
     public var showActionViews:Bool = false
     
-    @EnvironmentObject
-    var callState:CallState
-    
     var body: some View {
         VStack{
             VStack{
@@ -94,23 +91,6 @@ struct ContactRow: View {
             
             ActionButton(iconSfSymbolName: "message",taped:{
                 viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)])
-            })
-            
-            ActionButton(iconSfSymbolName: "video",height: 16,taped:{
-                callState.model.setIsVideoCallRequest(true)
-                callState.model.setIsP2PCalling(true)
-                callState.model.setSelectedContacts([contact])
-                withAnimation(.spring()){
-                    callState.model.setShowCallView(true)
-                }
-            })
-            
-            ActionButton(iconSfSymbolName: "phone", taped:{
-                callState.model.setIsP2PCalling(true)
-                callState.model.setSelectedContacts([contact])
-                withAnimation(.spring()){
-                    callState.model.setShowCallView(true)
-                }
             })
         }
     }

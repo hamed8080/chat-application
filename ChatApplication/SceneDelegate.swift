@@ -14,8 +14,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     @State var appState = AppState.shared
-    @State var callState = CallState.shared
-
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -26,7 +24,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(addLog), name: NSNotification.Name("log"), object: nil)
         let contentView = HomeContentView()
             .environmentObject(appState)
-            .environmentObject(callState)
 
         if #available(iOS 15.0, *) {
             let appearance = UITabBarAppearance()

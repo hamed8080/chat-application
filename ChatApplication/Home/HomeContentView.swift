@@ -14,9 +14,6 @@ struct HomeContentView: View {
     var loginModel            = LoginViewModel()
     
     @StateObject
-    var callsHistoryViewModel = CallsHistoryViewModel()
-    
-    @StateObject
     var contactsViewModel     = ContactsViewModel()
     
     @StateObject
@@ -28,9 +25,6 @@ struct HomeContentView: View {
     @EnvironmentObject
     var appState:AppState
     
-    @EnvironmentObject
-    var callState:CallState
-    
     @Environment(\.localStatusBarStyle)
     var statusBarStyle          :LocalStatusBarStyle
     
@@ -41,17 +35,13 @@ struct HomeContentView: View {
     var shareCallLogs = false
 
     var body: some View {
-        //        WebRTCView()
-        //                WebRTCDirectSignalingView()
-        //        WebRTCViewLocalSignalingView()
-        
         if tokenManager.isLoggedIn == false{
             LoginView(viewModel:loginModel)
         }else{
             
             NavigationView{
-                MasterView(callsHistoryViewModel:callsHistoryViewModel,
-                           contactsViewModel: contactsViewModel,
+                
+                MasterView(contactsViewModel: contactsViewModel,
                            threadsViewModel: threadsViewModel)
                 
                     DetailView()
@@ -59,27 +49,6 @@ struct HomeContentView: View {
             .navigationViewStyle(StackNavigationViewStyle())
             .onReceive(appState.$dark, perform: { _ in
                 self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
-            })
-            .fullScreenCover(isPresented: $showCallView, onDismiss: nil, content: {
-                CallControlsContent(viewModel: CallControlsViewModel())
-                    .environmentObject(callState)
-            })
-            .sheet(isPresented: $shareCallLogs, onDismiss: {
-                if let zipFile =  appState.callLogs?.first{
-                    FileManager.default.deleteFile(urlPathToZip: zipFile)
-                }
-            }, content:{
-                if let zipUrl = appState.callLogs{
-                    ActivityViewControllerWrapper(activityItems: zipUrl)
-                }else{
-                    EmptyView()
-                }
-            })
-            .onReceive(appState.$callLogs , perform: { _ in
-                shareCallLogs = appState.callLogs != nil
-            })
-            .onReceive(callState.$model , perform: { _ in
-                showCallView = callState.model.showCallView
             })
             .onAppear{
                 self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
@@ -98,16 +67,13 @@ struct MasterView:View{
     
     @State var showDeleteButton = false
     
-    private var callView      : CallsHistoryContentList
     private var contactsView  : ContactContentList
     private var settingssView : SettingsView
     private var threadsView   : ThreadContentList
     
     
-    init(callsHistoryViewModel:CallsHistoryViewModel,
-         contactsViewModel:ContactsViewModel,
+    init(contactsViewModel:ContactsViewModel,
          threadsViewModel:ThreadsViewModel){
-        callView      = CallsHistoryContentList(viewModel: callsHistoryViewModel)
         contactsView  = ContactContentList(viewModel: contactsViewModel)
         settingssView = SettingsView()
         threadsView   = ThreadContentList(viewModel: threadsViewModel)
@@ -115,11 +81,6 @@ struct MasterView:View{
     
     var body: some View{
         TabView(selection: $seletedTabTag){
-            
-            callView
-                .tabItem {
-                    Label("Calls", systemImage: "phone")
-                }.tag(3)
             
             contactsView
                 .tabItem {
@@ -188,10 +149,8 @@ struct DetailView:View{
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
-        let callState = CallState.shared
         HomeContentView()
             .environmentObject(appState)
-            .environmentObject(callState)
             .onAppear(){
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
             }

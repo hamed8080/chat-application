@@ -23,8 +23,6 @@ struct StartThreadContactRow: View {
     @State
     public var showActionViews:Bool = false
     
-    @EnvironmentObject
-    var callState:CallState
     
     var body: some View {
         VStack{
