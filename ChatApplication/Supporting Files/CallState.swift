@@ -25,9 +25,9 @@ struct CallStateModel {
     private (set) var receiveCall                  :CreateCall?       = nil
 	private (set) var callSessionCreated           :CreateCall?       = nil
     private (set) var selectedContacts             :[Contact]         = []
+    private (set) var thread                       :Conversation?     = nil
     private (set) var isP2PCalling                 :Bool              = false
     private (set) var isVideoCall                  :Bool              = false
-    private (set) var callThreadId                 :Int?              = nil
     private (set) var groupName                    :String?           = nil
     private (set) var answerWithVideo              :Bool              = false
     private (set) var answerWithMicEnable          :Bool              = false
@@ -87,6 +87,10 @@ struct CallStateModel {
         self.selectedContacts.append(contentsOf: selectedContacts)
     }
     
+    mutating func setSelectedThread(_ thread:Conversation?){
+        self.thread = thread
+    }
+    
     mutating func setIsVideoCallRequest(_ isVideoCall:Bool){
         self.isVideoCall = isVideoCall
     }
@@ -101,7 +105,9 @@ struct CallStateModel {
     }
     
     var titleOfCalling:String{
-        if isP2PCalling{
+        if let thread = thread{
+            return thread.title ?? ""
+        }else if isP2PCalling{
             return selectedContacts.first?.linkedUser?.username ?? "\(selectedContacts.first?.firstName ?? "") \(selectedContacts.first?.lastName ?? "")"
         }else{
             return groupName ?? "Group"
@@ -198,7 +204,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     
     @objc func onCallEnd(_ notification: NSNotification){
         endCallKitCall()
-//        ResultViewController.printCallLogsFile()
+        ResultViewController.printCallLogsFile()
         model.setShowCallView(false)
         WebRTCClientNew.instance?.clearResourceAndCloseConnection()
         resetCall()
@@ -264,7 +270,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     
     func close(){
         WebRTCClientNew.instance?.clearResourceAndCloseConnection()
-//        ResultViewController.printCallLogsFile()
+        ResultViewController.printCallLogsFile()
         resetCall()
     }
     

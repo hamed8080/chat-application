@@ -23,7 +23,7 @@ struct CallRow: View {
 		
 		Button(action: {}, label: {
 			HStack{
-                Avatar(url: call.partnerParticipant?.image, userName: call.partnerParticipant?.name , size: 48,textSize: 18)
+                Avatar(url: call.partnerParticipant?.image, userName: call.partnerParticipant?.name, style: .init(size: 48,textSize: 18))
                 VStack(alignment: .leading){
                     Text(call.partnerParticipant?.name ?? "")
                         .foregroundColor(.black)

@@ -44,16 +44,16 @@ struct HomeContentView: View {
         //        WebRTCView()
         //                WebRTCDirectSignalingView()
         //        WebRTCViewLocalSignalingView()
-        
+//      TestAsyncRefactor()
         if tokenManager.isLoggedIn == false{
             LoginView(viewModel:loginModel)
         }else{
-            
+
             NavigationView{
                 MasterView(callsHistoryViewModel:callsHistoryViewModel,
                            contactsViewModel: contactsViewModel,
                            threadsViewModel: threadsViewModel)
-                
+
                     DetailView()
             }
 //            .navigationViewStyle(StackNavigationViewStyle())

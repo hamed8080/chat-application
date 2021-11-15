@@ -15,7 +15,9 @@ struct ContactsModel {
     private (set) var totalCount                      = 0
     private (set) var contacts :[Contact]             = []
     private (set) var selectedContacts :[Contact]     = []
-        
+    private (set) var searchedContacts:[Contact]      = []
+    private (set) var showSearchedContacts            = false
+ 
     func hasNext()->Bool{
         return contacts.count < totalCount
     }
@@ -58,6 +60,17 @@ struct ContactsModel {
     mutating func removeToSelctedContacts(_ contact:Contact){
         guard let index = selectedContacts.firstIndex(of: contact) else {return}
         selectedContacts.remove(at: index)
+    }
+    
+    mutating func blockOrUnBlock(_ contact :Contact){
+        if let index = contacts.firstIndex(where: {$0.id == contact.id}){
+            contacts[index].blocked?.toggle()
+        }
+    }
+    
+    mutating func setSearchedContacts(_ contacts:[Contact]){
+        self.searchedContacts = contacts
+        self.showSearchedContacts = contacts.count > 0
     }
 }
 

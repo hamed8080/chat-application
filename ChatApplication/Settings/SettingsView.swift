@@ -39,11 +39,18 @@ struct SettingsView:View {
                             .overlay(
                                 Avatar(url: viewModel.model.currentUser?.image,
                                        userName: viewModel.model.currentUser?.username?.uppercased() ?? "",
-                                       size:128,
-                                       textSize: 64
-                                )
+                                       style: .init(size:128,textSize: 64)
+                                      )
                             )
-                        
+                            .gesture(
+                                DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                                    .onEnded({ value in
+                                        if value.translation.height != 0{
+                                            viewModel.switchUser(isNext: value.translation.height < 0)
+                                        }
+                                    })
+                            )
+                            
                         
                         VStack(spacing:12){
                             Text(viewModel.model.currentUser?.name ?? "")

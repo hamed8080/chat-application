@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PKPushRegistryDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        providerDelegate = ProviderDelegate(callManager: callMananger)        
+        providerDelegate = ProviderDelegate(callManager: callMananger)
         return true
     }
 

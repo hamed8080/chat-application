@@ -50,6 +50,7 @@
 		AC1D2CD22662016E00AA351A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1D2CC82662016D00AA351A /* AppDelegate.swift */; };
 		AC1D2CD32662016E00AA351A /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */; };
 		AC20FBA4266CC4B500187B47 /* DateEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20FBA3266CC4B500187B47 /* DateEX.swift */; };
+		AC21DA40273BF7D700DC86E6 /* StringEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC21DA3F273BF7D700DC86E6 /* StringEX.swift */; };
 		AC2D31C326EF75BC008FF43F /* webrtc_user_a.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */; };
 		AC2D31C426EF75BC008FF43F /* webrtc_user_b.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */; };
 		AC48ED5A26F6E98100AB1A5D /* RTCVideoReperesentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48ED5926F6E98100AB1A5D /* RTCVideoReperesentable.swift */; };
@@ -80,6 +81,7 @@
 		AC9BBFF3271AEAA900AA2532 /* CallItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9BBFF2271AEAA900AA2532 /* CallItem.swift */; };
 		ACA6DA79271ABB2200286563 /* ActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA6DA78271ABB2200286563 /* ActivityViewControllerWrapper.swift */; };
 		ACA6DA7C271ABDC100286563 /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA6DA7B271ABDC100286563 /* ProviderDelegate.swift */; };
+		ACA89499272678130014DDE9 /* TestAsyncRefactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA89498272678130014DDE9 /* TestAsyncRefactor.swift */; };
 		ACAB96D227030F9A005FB9AA /* ShapeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */; };
 		ACAB96D427030FBE005FB9AA /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB96D327030FBE005FB9AA /* ViewExtension.swift */; };
 		ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC306AA2701DF8C0035CCB9 /* StartThreadContactPickerView.swift */; };
@@ -94,6 +96,7 @@
 		ACE126CB269C500A0036B721 /* CallParticipantsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE126C8269C500A0036B721 /* CallParticipantsModel.swift */; };
 		ACE126CC269C500A0036B721 /* CallParticipantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE126C6269C500A0036B721 /* CallParticipantsViewModel.swift */; };
 		ACE126CD269C500A0036B721 /* CallParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE126C7269C500A0036B721 /* CallParticipantRow.swift */; };
+		ACE8B7942740F73C00C4444B /* ThreadDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE8B7932740F72900C4444B /* ThreadDetailView.swift */; };
 		ACF0CBF326C7F0DF0058D94D /* WebRTCDirectSignalingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF0CBF126C7F0DF0058D94D /* WebRTCDirectSignalingViewController.swift */; };
 		ACF0CBF426C7F0FB0058D94D /* WebRTCViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF0CBEC26C7F0960058D94D /* WebRTCViewController.swift */; };
 		ACF0CBF526C7F1060058D94D /* WebRTCDirectSignaling.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF0CBF226C7F0DF0058D94D /* WebRTCDirectSignaling.storyboard */; };
@@ -149,6 +152,7 @@
 		AC1D2CC82662016D00AA351A /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatDelegateImplementation.swift; sourceTree = "<group>"; };
 		AC20FBA3266CC4B500187B47 /* DateEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEX.swift; sourceTree = "<group>"; };
+		AC21DA3F273BF7D700DC86E6 /* StringEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringEX.swift; sourceTree = "<group>"; };
 		AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_a.mp4; sourceTree = "<group>"; };
 		AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_b.mp4; sourceTree = "<group>"; };
 		AC48ED5926F6E98100AB1A5D /* RTCVideoReperesentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTCVideoReperesentable.swift; sourceTree = "<group>"; };
@@ -178,6 +182,7 @@
 		AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactContentList.swift; sourceTree = "<group>"; };
 		ACA6DA78271ABB2200286563 /* ActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
 		ACA6DA7B271ABDC100286563 /* ProviderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
+		ACA89498272678130014DDE9 /* TestAsyncRefactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAsyncRefactor.swift; sourceTree = "<group>"; };
 		ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeExtension.swift; sourceTree = "<group>"; };
 		ACAB96D327030FBE005FB9AA /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		ACC306AA2701DF8C0035CCB9 /* StartThreadContactPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartThreadContactPickerView.swift; sourceTree = "<group>"; };
@@ -192,6 +197,7 @@
 		ACE126C7269C500A0036B721 /* CallParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallParticipantRow.swift; sourceTree = "<group>"; };
 		ACE126C8269C500A0036B721 /* CallParticipantsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallParticipantsModel.swift; sourceTree = "<group>"; };
 		ACE126C9269C500A0036B721 /* CallParticipantsContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallParticipantsContentList.swift; sourceTree = "<group>"; };
+		ACE8B7932740F72900C4444B /* ThreadDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailView.swift; sourceTree = "<group>"; };
 		ACF0CBEC26C7F0960058D94D /* WebRTCViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCViewController.swift; sourceTree = "<group>"; };
 		ACF0CBF126C7F0DF0058D94D /* WebRTCDirectSignalingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCDirectSignalingViewController.swift; sourceTree = "<group>"; };
 		ACF0CBF226C7F0DF0058D94D /* WebRTCDirectSignaling.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = WebRTCDirectSignaling.storyboard; sourceTree = "<group>"; };
@@ -331,6 +337,7 @@
 				AC1D2CBC2662016D00AA351A /* Helper */,
 				AC1D2CC32662016D00AA351A /* Threads */,
 				AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */,
+				ACA89498272678130014DDE9 /* TestAsyncRefactor.swift */,
 				AC1D2CC22662016D00AA351A /* SceneDelegate.swift */,
 				AC1D2CB52661FFAD00AA351A /* Info.plist */,
 				AC1D2CAF2661FFAD00AA351A /* Preview Content */,
@@ -367,6 +374,7 @@
 				ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */,
 				ACAB96D327030FBE005FB9AA /* ViewExtension.swift */,
 				AC91591C2718390D00437517 /* FileManagerExtension.swift */,
+				AC21DA3F273BF7D700DC86E6 /* StringEX.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -404,6 +412,7 @@
 		AC6D531E26F1AD9B00CBC059 /* Thread */ = {
 			isa = PBXGroup;
 			children = (
+				ACE8B7922740F71F00C4444B /* Detail */,
 				AC6D531F26F1ADA500CBC059 /* ThreadView.swift */,
 				AC6D532126F1ADF000CBC059 /* ThreadViewModel.swift */,
 				AC6D532326F1AE8C00CBC059 /* MessageRow.swift */,
@@ -523,6 +532,14 @@
 				ACE126C9269C500A0036B721 /* CallParticipantsContentList.swift */,
 			);
 			path = CallParticipants;
+			sourceTree = "<group>";
+		};
+		ACE8B7922740F71F00C4444B /* Detail */ = {
+			isa = PBXGroup;
+			children = (
+				ACE8B7932740F72900C4444B /* ThreadDetailView.swift */,
+			);
+			path = Detail;
 			sourceTree = "<group>";
 		};
 		ACF0CBEB26C7F0960058D94D /* WebRTCCallTest */ = {
@@ -721,6 +738,7 @@
 				AC48ED6326F7051F00AB1A5D /* AuthorizeRequest.swift in Sources */,
 				ACD6840E26F8BAC20093002C /* SettingModel.swift in Sources */,
 				AC1D2CCA2662016E00AA351A /* ImageLoader.swift in Sources */,
+				ACE8B7942740F73C00C4444B /* ThreadDetailView.swift in Sources */,
 				AC6EC04426C10304005FA969 /* WebRTCViewControllerLocalSignaling.swift in Sources */,
 				ACE126CD269C500A0036B721 /* CallParticipantRow.swift in Sources */,
 				AC48ED6526F7299F00AB1A5D /* VerifyRequest.swift in Sources */,
@@ -746,6 +764,7 @@
 				ACAB96D227030F9A005FB9AA /* ShapeExtension.swift in Sources */,
 				AC826E3626F47A1F00551578 /* LoginModel.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
+				ACA89499272678130014DDE9 /* TestAsyncRefactor.swift in Sources */,
 				AC7EBFF6266CAF2E00984E81 /* ContactsViewModel.swift in Sources */,
 				AC04360126998D5F00B1C87B /* ParticipantsContentList.swift in Sources */,
 				ACF0CBF326C7F0DF0058D94D /* WebRTCDirectSignalingViewController.swift in Sources */,
@@ -766,6 +785,7 @@
 				AC008F49268C8BA400B008FF /* CallControlsContent.swift in Sources */,
 				ACE126CB269C500A0036B721 /* CallParticipantsModel.swift in Sources */,
 				AC7B6D75266DE7820059782E /* LoadingViewAtBottomOfView.swift in Sources */,
+				AC21DA40273BF7D700DC86E6 /* StringEX.swift in Sources */,
 				AC20FBA4266CC4B500187B47 /* DateEX.swift in Sources */,
 				AC10007926F46B4100C3AD67 /* LoginView.swift in Sources */,
 				ACC3C5EF26F4633900AEE578 /* HandshakeResponse.swift in Sources */,

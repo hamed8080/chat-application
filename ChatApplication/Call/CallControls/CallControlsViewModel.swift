@@ -41,11 +41,10 @@ class CallControlsViewModel:ObservableObject{
             }
     }
     
-    
     func startRequestCallIfNeeded(){        
         //check if is not incoming call
         if !callState.model.isReceiveCall{
-            if let threadId = callState.model.callThreadId{
+            if let threadId = callState.model.thread?.id{
                 satrtCallWithThreadId(threadId)
             }
             else if callState.model.isP2PCalling{

@@ -31,13 +31,33 @@ class ContactsViewModel:ObservableObject{
                 self.getContacts()
             }
         }
+        getOfflineContacts()
     }
     
     func getContacts() {
         Chat.sharedInstance.getContacts(.init(count:model.count,offset: model.offset)) { [weak self] contacts, uniqueId, pagination, error in
             self?.model.setContacts(contacts: contacts, totalCount: pagination?.totalCount ?? 0)
-        } cacheResponse: { [weak self] contacts, uniqueId, pagination, error in
-            self?.model.setContacts(contacts: contacts, totalCount: pagination?.totalCount ?? 0)
+        }
+    }
+    
+    func getOfflineContacts() {
+        let req = ContactsRequest(count:model.count,offset: model.offset)
+        CacheFactory.get(useCache: true, cacheType: .GET_CASHED_CONTACTS(req)) { response in
+            let pagination  = Pagination(count: req.size, offset: req.offset, totalCount: CMContact.crud.getTotalCount())
+            let contacts = response.cacheResponse as? [Contact]
+            self.model.setContacts(contacts: contacts, totalCount: pagination.totalCount)
+        }
+    }
+    
+    func searchContact(_ searchContact:String){
+        if searchContact.count <= 0{
+            self.model.setSearchedContacts([])
+            return
+        }
+        Chat.sharedInstance.searchContacts(.init(query: searchContact)) { contacts, uniqueId, pagination, error in
+            if let contacts = contacts{
+                self.model.setSearchedContacts(contacts)                
+            }
         }
     }
     
@@ -106,4 +126,22 @@ class ContactsViewModel:ObservableObject{
         }
     }
     
+    
+    func blockOrUnBlock(_ contact:Contact){
+        if contact.blocked == false{
+            let req = NewBlockRequest(contactId: contact.id)
+            Chat.sharedInstance.blockContact(req) { blockedUser, uniqueId, error in
+                if let contact = blockedUser?.contact{
+                    self.model.blockOrUnBlock(contact)
+                }
+            }
+        }else {
+            let req = NewUnBlockRequest(contactId: contact.id)
+            Chat.sharedInstance.unBlockContact(req) { unblockedUser, uniqueId, error in
+                if let contact = unblockedUser?.contact{
+                    self.model.blockOrUnBlock(contact)
+                }
+            }
+        }
+    }
 }

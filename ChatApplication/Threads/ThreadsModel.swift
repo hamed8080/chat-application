@@ -10,10 +10,12 @@ import FanapPodChatSDK
 
 struct ThreadsModel {
     
-    private (set) var count                         = 15
-    private (set) var offset                        = 0
-    private (set) var totalCount                    = 0
-    private (set) var threads :[Conversation]       = []
+    private (set) var count                                     = 15
+    private (set) var offset                                    = 0
+    private (set) var totalCount                                = 0
+    private (set) var threads :[Conversation]                   = []
+    private (set) var isViewDisplaying                          = false
+    private (set) var threadsTyping:[SystemEventModel]          = []
     
     func hasNext()->Bool{
         return threads.count < totalCount
@@ -54,6 +56,30 @@ struct ThreadsModel {
         guard let index = threads.firstIndex(of: thread) else{return}
         threads.remove(at: index)
     }
+    
+    mutating func setViewAppear(appear:Bool){
+        isViewDisplaying = appear
+    }
+    
+    mutating func addNewMessageToThread(_ event:MessageEventModel){
+        if let index = threads.firstIndex(where: {$0.id == event.message?.conversation?.id}){
+            let thread = threads[index]
+            thread.unreadCount = (thread.unreadCount ?? 0) + 1
+            thread.lastMessageVO = event.message
+            thread.lastMessage   = event.message?.message
+        }
+    }
+    
+    mutating func addTypingThread(_ event:SystemEventModel){
+        threadsTyping.append(event)       
+    }
+    
+    mutating func removeTypingThread(_ event:SystemEventModel){
+        if let index = threadsTyping.firstIndex(where: { $0.threadId == event.threadId }){
+            threadsTyping.remove(at: index)
+        }
+    }
+    
 }
 
 extension ThreadsModel{

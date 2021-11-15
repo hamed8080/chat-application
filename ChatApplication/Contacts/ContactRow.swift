@@ -48,7 +48,7 @@ struct ContactRow: View {
                             .padding(.leading , 16)
                             .lineLimit(1)
                             .font(.headline)
-                        if let notSeenDuration = getDate(contact: contact){
+                        if let notSeenDuration = ContactRow.getDate(notSeenDuration: contact.notSeenDuration){
                             Text(notSeenDuration)
                                 .padding(.leading , 16)
                                 .font(.headline.weight(.medium))
@@ -112,11 +112,15 @@ struct ContactRow: View {
                     callState.model.setShowCallView(true)
                 }
             })
+            
+            ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue , taped:{
+                viewModel.blockOrUnBlock(contact)
+            })
         }
     }
     
-    func getDate(contact:Contact) -> String?{
-        if let notSeenDuration = contact.notSeenDuration{
+    static func getDate(notSeenDuration:Int?) -> String?{
+        if let notSeenDuration = notSeenDuration{
             let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(notSeenDuration)
             return Date(milliseconds:milisecondIntervalDate).timeAgoSinceDate()
         }else{
@@ -126,10 +130,39 @@ struct ContactRow: View {
 }
 
 
+struct SearchContactRow:View{
+    
+    var contact:Contact
+    
+    var body: some View{
+        HStack{
+            Avatar(url:contact.image ?? contact.linkedUser?.image ,userName: contact.firstName?.uppercased(), fileMetaData: nil, style: .init(size: 24, textSize: 12))
+            VStack(alignment: .leading, spacing:4){
+                Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
+                    .padding(.leading , 4)
+                    .lineLimit(1)
+                    .font(.headline)
+                if let notSeenDuration = ContactRow.getDate(notSeenDuration: contact.notSeenDuration){
+                    Text(notSeenDuration)
+                        .padding(.leading , 4)
+                        .font(.headline.weight(.medium))
+                        .foregroundColor(Color.gray)
+                }
+                
+                Rectangle()
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: .infinity, height: 1)
+            }
+        }
+    }
+}
+
+
 struct ActionButton: View{
     
     var iconSfSymbolName :String
     var height           :CGFloat      = 22
+    var iconColor        :Color = .blue
     var taped            :(()->Void)?
     
     var body: some View{
@@ -138,8 +171,9 @@ struct ActionButton: View{
         }, label: {
             Image(systemName: iconSfSymbolName)
                 .resizable()
+                .scaledToFit()
                 .frame(width: 24, height: height)
-                .foregroundColor(.blue)
+                .foregroundColor(iconColor)
         })
         .buttonStyle(BorderlessButtonStyle())//don't remove this line click happen in all veiws
         .padding(16)

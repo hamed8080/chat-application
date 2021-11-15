@@ -10,6 +10,12 @@ import SwiftUI
 struct ParticipantsContentList:View {
     
     var threadId:Int
+    var title = "Chats"
+    var style:StyleConfig = .init()
+    
+    struct StyleConfig{
+        var rowStyle = ParticipantRow.StyleConfig()
+    }
     
     @StateObject
     private var viewModel:ParticipantsViewModel = ParticipantsViewModel()
@@ -19,7 +25,7 @@ struct ParticipantsContentList:View {
             GeometryReader{ reader in
                 List {
                     ForEach(viewModel.model.participants , id:\.id) { participant in
-                        ParticipantRow(participant: participant,viewModel: viewModel)
+                        ParticipantRow(participant: participant,style: style.rowStyle)
                             .onAppear {
                                 if viewModel.model.participants.last == participant{
                                     viewModel.loadMore()
@@ -35,7 +41,7 @@ struct ParticipantsContentList:View {
                 viewModel.threadId = threadId
                 viewModel.getParticipantsIfConnected()
             }
-            .navigationBarTitle(Text("Chats"), displayMode: .inline)
+            .navigationBarTitle(Text(title), displayMode: .inline)
             .toolbar{
                 ToolbarItem(placement:.navigationBarLeading){
                     Text(AppState.shared.connectionStatusString)

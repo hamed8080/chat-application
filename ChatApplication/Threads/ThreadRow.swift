@@ -10,18 +10,18 @@ import FanapPodChatSDK
 
 struct ThreadRow: View {
 	
-	private (set) var thread:Conversation
+	var thread:Conversation
 	@State private (set) var showActionSheet:Bool = false
 	@State private (set) var showParticipants:Bool = false
-	private var viewModel:ThreadsViewModel
+	
+    @StateObject
+    var viewModel:ThreadsViewModel
     
     @EnvironmentObject
     var appState:AppState
     
-	init(thread: Conversation , viewModel:ThreadsViewModel) {
-		self.thread = thread
-		self.viewModel = viewModel
-	}
+    @State
+    var isTypingText:String? = nil
 	
 	var body: some View {
 		
@@ -33,9 +33,25 @@ struct ThreadRow: View {
 						.font(.headline)
 					if let message = thread.lastMessageVO?.message?.prefix(100){
 						Text(message)
-							.lineLimit(2)
+							.lineLimit(1)
 							.font(.subheadline)
 					}
+                    if viewModel.model.threadsTyping.contains(where: {$0.threadId == thread.id }){
+                        Text(isTypingText ?? "")
+                            .frame(width: 72, alignment: .leading)
+                            .lineLimit(1)
+                            .font(.subheadline.bold())
+                            .foregroundColor(Color.orange)
+                            .onAppear{
+                                "typing".isTypingAnimationWithText { startText in
+                                    self.isTypingText = startText
+                                } onChangeText: { text in
+                                    self.isTypingText = text
+                                } onEnd: {
+                                    self.isTypingText = nil
+                                }
+                            }
+                    }
 				}
 				Spacer()
 				if thread.pin == true{
