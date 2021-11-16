@@ -15,6 +15,10 @@ struct NavBarItem{
 struct NavBarButton{
     var title:String? = nil
     var systemImageName:String? = nil
+    var showAvatarImage = false
+    var avatarUrl:String? = nil
+    var avatarUserName:String? = nil
+    var avatarMetaData:String? = nil
     var isBold:Bool = false
     var action:()->()
     
@@ -28,7 +32,10 @@ struct NavBarButton{
                     if let systemImageName = systemImageName{
                         Image(systemName: systemImageName)
                     }
-                    if let title = title {
+                    
+                    if title == nil && showAvatarImage == true{
+                        Avatar(url: avatarUrl, userName: avatarUserName?.uppercased() ,fileMetaData:avatarMetaData, style: .init(size: 32 ,textSize: 16))
+                    }else if let title = title {
                         Text(title)
                             .fontWeight(isBold ? .bold : .medium)
                     }

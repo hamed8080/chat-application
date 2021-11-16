@@ -11,24 +11,26 @@ import FanapPodChatSDK
 struct ParticipantRow: View {
 	
 	private (set) var participant:Participant
-	private var viewModel:ParticipantsViewModel
+    var style:StyleConfig
 
-	init(participant: Participant , viewModel:ParticipantsViewModel) {
+    init(participant: Participant, style:StyleConfig = StyleConfig()) {
 		self.participant = participant
-		self.viewModel = viewModel
+        self.style = style
 	}
+    
+    struct StyleConfig{
+        var avatarConfig: Avatar.StyleConfig = Avatar.StyleConfig()
+        var textFont:Font = .subheadline
+    }
 	
 	var body: some View {
 		
 		Button(action: {}, label: {
 			HStack{
-				Avatar(url:participant.image ,userName: participant.username, fileMetaData: nil)
+                Avatar(url:participant.image ,userName: participant.username?.uppercased(), fileMetaData: nil, style: style.avatarConfig)
 				VStack(alignment: .leading, spacing:8){
 					Text(participant.name ?? "")
-						.font(.headline)
-					#if DEBUG
-						Text("participantId:\(participant.id ?? 0)")
-					#endif
+                        .font(style.textFont)
 				}
 				Spacer()
 			}
@@ -46,6 +48,6 @@ struct ParticipantRow_Previews: PreviewProvider {
 	}
 	
 	static var previews: some View {
-        ParticipantRow(participant: participant, viewModel: ParticipantsViewModel())
+        ParticipantRow(participant: participant)
 	}
 }

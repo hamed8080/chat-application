@@ -14,34 +14,38 @@ struct ThreadContentList:View {
     @EnvironmentObject var appState:AppState
     
     var body: some View{
-            GeometryReader{ reader in
-                List {
-                    ForEach(viewModel.model.threads , id:\.id) { thread in
-                        ThreadRow(thread: thread,viewModel: viewModel)
-                            .onAppear {
-                                if viewModel.model.threads.last == thread{
-                                    viewModel.loadMore()
-                                }
+        GeometryReader{ reader in
+            List {
+                ForEach(viewModel.model.threads , id:\.id) { thread in
+                    ThreadRow(thread: thread,viewModel: viewModel)
+                        .onAppear {
+                            if viewModel.model.threads.last == thread{
+                                viewModel.loadMore()
                             }
-                    }.onDelete(perform: { indexSet in
-                        guard let thread = indexSet.map({ viewModel.model.threads[$0]}).first else {return}
-                        viewModel.deleteThread(thread)
-                    })
-                }
-                .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
-                .listStyle(PlainListStyle())
-                Spacer()
-                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
-                NavigationLink(destination: ThreadView(viewModel: ThreadViewModel()) ,isActive: $appState.showThread) {
-                    EmptyView()
-                }
-                .sheet(isPresented: $viewModel.toggleThreadContactPicker, onDismiss: nil, content: {
-                    StartThreadContactPickerView(viewModel: .init())
+                        }
+                }.onDelete(perform: { indexSet in
+                    guard let thread = indexSet.map({ viewModel.model.threads[$0]}).first else {return}
+                    viewModel.deleteThread(thread)
                 })
-                .onAppear{
-                    appState.selectedThread = nil
-                }
+            }
+            .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
+            .listStyle(PlainListStyle())
+            Spacer()
+            LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
+            NavigationLink(destination: ThreadView(viewModel: ThreadViewModel()) ,isActive: $appState.showThread) {
+                EmptyView()
+            }
+            .sheet(isPresented: $viewModel.toggleThreadContactPicker, onDismiss: nil, content: {
+                StartThreadContactPickerView(viewModel: .init())
+            })
+            .onAppear{
+                appState.selectedThread = nil
+            }
             .navigationBarTitle("Chats",displayMode: .inline)
+        }.onAppear {
+            viewModel.setViewAppear(appear: true)
+        }.onDisappear {
+            viewModel.setViewAppear(appear: false)
         }
     }
 }

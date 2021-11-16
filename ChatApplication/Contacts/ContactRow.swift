@@ -45,7 +45,7 @@ struct ContactRow: View {
                             .padding(.leading , 16)
                             .lineLimit(1)
                             .font(.headline)
-                        if let notSeenDuration = getDate(contact: contact){
+                        if let notSeenDuration = ContactRow.getDate(notSeenDuration: contact.notSeenDuration){
                             Text(notSeenDuration)
                                 .padding(.leading , 16)
                                 .font(.headline.weight(.medium))
@@ -92,11 +92,15 @@ struct ContactRow: View {
             ActionButton(iconSfSymbolName: "message",taped:{
                 viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)])
             })
+            
+            ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue , taped:{
+                viewModel.blockOrUnBlock(contact)
+            })
         }
     }
     
-    func getDate(contact:Contact) -> String?{
-        if let notSeenDuration = contact.notSeenDuration{
+    static func getDate(notSeenDuration:Int?) -> String?{
+        if let notSeenDuration = notSeenDuration{
             let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(notSeenDuration)
             return Date(milliseconds:milisecondIntervalDate).timeAgoSinceDate()
         }else{
@@ -105,11 +109,11 @@ struct ContactRow: View {
     }
 }
 
-
 struct ActionButton: View{
     
     var iconSfSymbolName :String
     var height           :CGFloat      = 22
+    var iconColor        :Color = .blue
     var taped            :(()->Void)?
     
     var body: some View{
@@ -118,8 +122,9 @@ struct ActionButton: View{
         }, label: {
             Image(systemName: iconSfSymbolName)
                 .resizable()
+                .scaledToFit()
                 .frame(width: 24, height: height)
-                .foregroundColor(.blue)
+                .foregroundColor(iconColor)
         })
         .buttonStyle(BorderlessButtonStyle())//don't remove this line click happen in all veiws
         .padding(16)

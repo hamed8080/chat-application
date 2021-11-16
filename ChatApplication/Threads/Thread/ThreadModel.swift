@@ -14,6 +14,8 @@ struct ThreadModel {
     private (set) var offset                        = 0
     private (set) var totalCount                    = 0
     private (set) var messages :[Message]           = []
+    private (set) var isViewDisplaying              = false
+    private (set) var isTypingText:String?          = nil
     
     func hasNext()->Bool{
         return messages.count < totalCount
@@ -29,10 +31,17 @@ struct ThreadModel {
     
     mutating func setMessages(messages:[Message]){
         self.messages = messages
+        sort()
     }
     
     mutating func appendMessages(messages:[Message]){
         self.messages.append(contentsOf: messages)
+        sort()
+    }
+    
+    mutating func appendMessage(_ message:Message){
+        self.messages.append(message)
+        sort()
     }
     
     mutating func clear(){
@@ -53,6 +62,24 @@ struct ThreadModel {
     mutating func deleteMessage(_ message:Message){
         guard let index = messages.firstIndex(of: message) else{return}
         messages.remove(at: index)
+    }
+    
+    mutating func sort(){
+       messages = messages.sorted { m1, m2 in
+           if let t1 = m1.time , let t2 = m2.time{
+              return t1 < t2
+           }else{
+               return false
+           }
+        }
+    }
+    
+    mutating func setViewAppear(appear:Bool){
+        isViewDisplaying = appear
+    }
+    
+    mutating func setIsTypingText(isTypingText:String?){
+        self.isTypingText = isTypingText
     }
 }
 

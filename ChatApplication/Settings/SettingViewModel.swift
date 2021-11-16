@@ -25,4 +25,12 @@ class SettingViewModel: ObservableObject {
             }
         }
     }
+    
+    func switchUser(isNext: Bool){
+        if isNext {
+            
+        }else{
+            
+        }
+    }
 }

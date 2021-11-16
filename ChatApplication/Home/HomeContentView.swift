@@ -38,12 +38,12 @@ struct HomeContentView: View {
         if tokenManager.isLoggedIn == false{
             LoginView(viewModel:loginModel)
         }else{
-            
+
             NavigationView{
                 
                 MasterView(contactsViewModel: contactsViewModel,
                            threadsViewModel: threadsViewModel)
-                
+
                     DetailView()
             }
             .navigationViewStyle(StackNavigationViewStyle())

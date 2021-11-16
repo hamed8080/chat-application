@@ -16,20 +16,22 @@ struct Avatar :View{
     
     private (set) var url            :String?
     private (set) var userName       :String?
-    private (set) var size           :CGFloat
-    private (set) var textSize        :CGFloat
+    private (set) var style          :StyleConfig
     
     init(url          :String?,
          userName     :String?,
          fileMetaData :String? = nil,
-         size         :CGFloat = 64,
-         textSize     :CGFloat = 24
+         style        :StyleConfig = StyleConfig()
     ) {
         self.url      = url
         self.userName = userName
-        self.size     = size
-        self.textSize = textSize
-        imageLoader = ImageLoader(url: url , fileMetaData:fileMetaData)
+        self.style    = style
+        imageLoader   = ImageLoader(url: url , fileMetaData:fileMetaData)
+    }
+    
+    struct StyleConfig{
+        var size         :CGFloat = 64
+        var textSize     :CGFloat = 24
     }
     
     var body: some View{
@@ -37,17 +39,17 @@ struct Avatar :View{
             if url != nil{
                 Image(uiImage:imageLoader.image ?? self.image)
                     .resizable()
-                    .frame(width: size, height: size)
-                    .cornerRadius(size / 2)
+                    .frame(width: style.size, height: style.size)
+                    .cornerRadius(style.size / 2)
                     .scaledToFit()
             }else{
                 Text(String(userName?.first ?? "A" ))
                     .fontWeight(.heavy)
-                    .font(.system(size: textSize))
+                    .font(.system(size: style.textSize))
                     .foregroundColor(.white)
-                    .frame(width: size, height: size)
+                    .frame(width: style.size, height: style.size)
                     .background(Color.blue.opacity(0.4))
-                    .cornerRadius(size / 2)
+                    .cornerRadius(style.size / 2)
             }
         }
         .onReceive(imageLoader.didChange) { image in
