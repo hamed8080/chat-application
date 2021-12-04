@@ -15,7 +15,8 @@ struct ThreadModel {
     private (set) var totalCount                    = 0
     private (set) var messages :[Message]           = []
     private (set) var isViewDisplaying              = false
-    private (set) var isTypingText:String?          = nil
+    private (set) var signalMessageText:String?     = nil
+    private (set) var isRecording:Bool              = false
     
     func hasNext()->Bool{
         return messages.count < totalCount
@@ -78,8 +79,12 @@ struct ThreadModel {
         isViewDisplaying = appear
     }
     
-    mutating func setIsTypingText(isTypingText:String?){
-        self.isTypingText = isTypingText
+    mutating func setSignalMessage(text:String?){
+        self.signalMessageText = text
+    }
+    
+    mutating func toggleIsRecording(){
+        self.isRecording.toggle()
     }
 }
 
@@ -97,6 +102,9 @@ extension ThreadModel{
         let m3 = MessageRow_Previews.message
         m2.message = "Pod Group"
         m3.id = 3
-        appendMessages(messages: [m1 , m2, m3])
+        
+        let m4 = UploadFileMessage(uploadFileUrl: URL(string: "http://sandbox.podspace.ir:8080/nzh/drive/downloadFile?hash=MGTCI6EZFAU4HO3G")!, textMessage: "Test")
+        m4.messageType = MessageType.TEXT.rawValue
+        appendMessages(messages: [m1 , m2, m3, m4])
     }
 }

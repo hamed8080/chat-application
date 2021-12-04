@@ -12,12 +12,14 @@ struct LoadingView: View {
     let count                : UInt
     let width                : CGFloat
     let spacing              : CGFloat
+    let color                : Color
     
-    init(isAnimating:Binding<Bool>, count:UInt = 4, width:CGFloat = 3, spacing:CGFloat = 1) {
+    init(isAnimating:Binding<Bool>, count:UInt = 4, width:CGFloat = 3, spacing:CGFloat = 1, color:Color = .orange) {
         self.isAnimating = isAnimating
         self.count      = count
         self.width      = width
         self.spacing    = spacing
+        self.color      = color
     }
 
     var body: some View {
@@ -32,7 +34,7 @@ struct LoadingView: View {
                     )
             }
         }
-        .foregroundColor(.orange)
+        .foregroundColor(color)
         .aspectRatio(contentMode: .fit)
     }
 

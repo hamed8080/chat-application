@@ -8,6 +8,7 @@
 import Foundation
 import FanapPodChatSDK
 import Combine
+import AVFoundation
 
 class ThreadViewModel:ObservableObject{
     
@@ -20,6 +21,7 @@ class ThreadViewModel:ObservableObject{
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     private (set) var messageCancelable:AnyCancellable? = nil
     private (set) var systemMessageCancelable:AnyCancellable? = nil
+    private var typingTimerStarted = false
     
     init(){
         messageCancelable = NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
@@ -32,20 +34,32 @@ class ThreadViewModel:ObservableObject{
         systemMessageCancelable = NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
             .compactMap{$0.object as? SystemEventModel}
             .sink { systemMessageEvent in
-                if systemMessageEvent.type == .IS_TYPING && systemMessageEvent.threadId == self.thread?.id{
+                if systemMessageEvent.type == .IS_TYPING && systemMessageEvent.threadId == self.thread?.id , self.typingTimerStarted == false{
+                    self.typingTimerStarted = true
                     "typing".isTypingAnimationWithText { startText in
-                        self.model.setIsTypingText(isTypingText: startText)
-                    } onChangeText: { text in
-                        self.model.setIsTypingText(isTypingText: text)
+                        self.model.setSignalMessage(text: startText)
+                    } onChangeText: { text, timer in
+                        self.model.setSignalMessage(text: text)
                     } onEnd: {
-                        self.model.setIsTypingText(isTypingText: nil)
+                        self.typingTimerStarted = false
+                        self.model.setSignalMessage(text: nil)
                     }
+                }
+                if systemMessageEvent.type != .IS_TYPING{
+                    String().getSystemTypeString(type: systemMessageEvent.type)?.signalMessage(signal: systemMessageEvent.type, onStart: { startText in
+                        self.model.setSignalMessage(text: startText)
+                    }, onChangeText: { text, timer in
+                        self.model.setSignalMessage(text: text)
+                    }, onEnd: {
+                        self.model.setSignalMessage(text: nil)
+                    })
                 }
             }        
     }
     
     //when viewAppreaed this method called and now we can start to retreive thread message
     func setThread(thread:Conversation){
+        if self.thread != nil {return}//this mean it's setted before and view is reAppearing
         self.thread = thread
         getMessagesHistory()
     }
@@ -84,7 +98,6 @@ class ThreadViewModel:ObservableObject{
         model.setupPreview()
     }
     
-	
 	func pinUnpinMessage(_ message:Message){
 		guard let id = message.id else{return}
 		if message.pinned == false{
@@ -109,6 +122,15 @@ class ThreadViewModel:ObservableObject{
         }
 	}
     
+    func deleteMessageFromModel(_ message:Message){
+        self.model.deleteMessage(message)
+    }
+    
+    func clearCacheFile(message:Message){
+        if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash{
+            CacheFileManager.sharedInstance.deleteImageFromCache(fileHashCode: fileHashCode)
+        }
+    }
     
     func sendTextMessage(_ textMessage:String){
         guard let threadId = thread?.id else {return}
@@ -129,17 +151,12 @@ class ThreadViewModel:ObservableObject{
     func setViewAppear(appear:Bool){
         model.setViewAppear(appear: appear)
     }
-    
-    var typingTimer:Timer? = nil
-    
-    func sendIsTyping(){
-        if typingTimer == nil , let threadId = thread?.id{
+        
+    func textChanged(_ newValue:String){
+        if newValue.isEmpty == false, let threadId = thread?.id{
             Chat.sharedInstance.snedStartTyping(threadId: threadId)
-            typingTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false, block: { timer in
-                Chat.sharedInstance.sendStopTyping()
-                self.typingTimer = nil
-                timer.invalidate()
-            })
+        }else{
+            Chat.sharedInstance.sendStopTyping()
         }
     }
     
@@ -160,4 +177,103 @@ class ThreadViewModel:ObservableObject{
             }
         }
     }
+    
+    func sendSeenMessageIfNeeded(_ message:Message){
+        guard let messageId = message.id else{return}
+        if let lastMsgId = thread?.lastSeenMessageId , messageId > lastMsgId{
+            Chat.sharedInstance.seen(.init(messageId: messageId))
+            //update cache read count
+//            CacheFactory.write(cacheType: .THREADS([thread]))
+        }
+        
+    }
+    
+    func sendPhotos(uiImage:UIImage?, info:[AnyHashable:Any]?, item:ImageItem, textMessage:String = ""){
+        guard let image = uiImage, let threadId = thread?.id else{return}
+        let width = Int(image.size.width)
+        let height = Int(image.size.height)
+        let message = NewSendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .POD_SPACE_PICTURE)
+        let fileName = item.phAsset.originalFilename
+        let imageRequest = NewUploadImageRequest(data: image.jpegData(compressionQuality: 1.0) ?? Data(),
+                                                 hC: height,
+                                                 wC: width,
+                                                 fileName: fileName,
+                                                 mimeType: "image/jpg",
+                                                 userGroupHash: thread?.userGroupHash)
+        Chat.sharedInstance.sendFileMessage(textMessage:message, uploadFile: imageRequest){ uploadFileProgress ,error in
+            print(uploadFileProgress ?? error ?? "")
+        }onSent: { sentResponse, uniqueId, error in
+            print(sentResponse ?? "")
+        }onSeen: { seenResponse, uniqueId, error in
+            print(seenResponse ?? "")
+        }onDeliver: { deliverResponse, uniqueId, error in
+            print(deliverResponse ?? "")
+        }uploadUniqueIdResult:{ uploadUniqueId in
+            print(uploadUniqueId)
+        }messageUniqueIdResult:{ messageUniqueId in
+           print(messageUniqueId)
+        }
+    }
+    
+    ///add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
+    func sendFile(selectedFileUrl:URL, textMessage:String = ""){
+        model.appendMessage(UploadFileMessage(uploadFileUrl: selectedFileUrl, textMessage: textMessage))
+    }
+    
+    func toggleRecording(){
+        model.toggleIsRecording()
+        if model.isRecording{
+            startRecording()
+        }else{
+            stopRecording()
+        }
+    }
+    
+    var audioRecorder:AVAudioRecorder? = nil
+    func startRecording(){
+        sendSignal(.RECORD_VOICE)
+        guard let audioFilename = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("recording.m4a") else {return}
+        do {
+            let settings = [
+                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                AVSampleRateKey: 12000,
+                AVNumberOfChannelsKey: 1,
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+            ]
+            audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
+            audioRecorder?.record()
+        }catch{
+            stopRecording()
+        }
+    }
+    
+    func stopRecording(){
+        audioRecorder?.stop()
+        audioRecorder = nil
+        if let audioFilename = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("recording.m4a"),FileManager.default.fileExists(atPath: audioFilename.path){
+            sendFile(selectedFileUrl: audioFilename)
+        }
+    }
+    
+    func getPermissionForRecordAudio(){
+        do{
+            let recordingSession = AVAudioSession.sharedInstance()
+            try recordingSession.setCategory(.playAndRecord, mode: .default)
+            try recordingSession.setActive(true)
+            recordingSession.requestRecordPermission() { allowed in
+            }
+        }catch{
+            print("error to get recording permission")
+        }
+    }
+    
+    func sendSignal(_ signalMessage:SignalMessageType){
+        guard let threadId = thread?.id else{ return }
+        Chat.sharedInstance.newSendSignalMessage(req: .init(signalType: signalMessage , threadId:threadId))
+    }
+    
+    func playAudio(){
+        
+    }
 }
+ 

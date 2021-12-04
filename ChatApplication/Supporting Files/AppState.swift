@@ -12,6 +12,8 @@ class AppState: ObservableObject {
     
     static let shared = AppState()
     
+    var user:User? = nil
+    
     @Published var dark:Bool = false
     
     @Published
@@ -28,16 +30,7 @@ class AppState: ObservableObject {
     var connectionStatusString = ""
     
     @Published
-    var selectedThread:Conversation? = nil{
-        didSet{
-            if selectedThread != nil{
-                showThread = true
-            }
-        }
-    }
-    
-    @Published
-    var showThread = false
+    var selectedThread:Conversation? = nil
     
     func setConnectionStatus(_ status:ConnectionStatus){
         if status == .CONNECTED{

@@ -34,6 +34,8 @@ struct ThreadsModel {
     }
     
     mutating func appendThreads(threads:[Conversation]){
+        //remove older data to prevent duplicate on view
+        self.threads.removeAll(where: { cashedThread in threads.contains(where: {cashedThread.id == $0.id }) })
         self.threads.append(contentsOf: threads)
     }
     
@@ -52,6 +54,12 @@ struct ThreadsModel {
 		threads.first(where: {$0.id == thread.id})?.pin = false
 	}
     
+    mutating func muteUnMuteThread(_ threadId:Int?, isMute:Bool){
+        if let threadId = threadId , let index = threads.firstIndex(where: {$0.id == threadId}) {
+            threads[index].mute = isMute
+        }        
+    }
+    
     mutating func removeThread(_ thread:Conversation){
         guard let index = threads.firstIndex(of: thread) else{return}
         threads.remove(at: index)
@@ -64,14 +72,19 @@ struct ThreadsModel {
     mutating func addNewMessageToThread(_ event:MessageEventModel){
         if let index = threads.firstIndex(where: {$0.id == event.message?.conversation?.id}){
             let thread = threads[index]
-            thread.unreadCount = (thread.unreadCount ?? 0) + 1
+            thread.unreadCount = event.message?.conversation?.unreadCount ?? 1
             thread.lastMessageVO = event.message
             thread.lastMessage   = event.message?.message
         }
     }
     
-    mutating func addTypingThread(_ event:SystemEventModel){
-        threadsTyping.append(event)       
+    mutating func addTypingThread(_ event:SystemEventModel)->Bool{
+        if threadsTyping.contains(where: {$0.threadId == event.threadId}) == false{
+            threadsTyping.append(event)
+            return true
+        }else{
+            return false
+        }
     }
     
     mutating func removeTypingThread(_ event:SystemEventModel){

@@ -16,19 +16,15 @@ struct StartThreadContactRow: View {
     private var isSelected   = false
     
     @Binding
-    public var isInEditMode:Bool
+    public var isInMultiSelectMode:Bool
     
     public var viewModel:ContactsViewModel
-    
-    @State
-    public var showActionViews:Bool = false
-    
     
     var body: some View {
         VStack{
             VStack{
                 HStack(spacing: 0, content: {
-                    if isInEditMode{
+                    if isInMultiSelectMode{
                         Image(systemName: isSelected ? "checkmark.circle" : "circle")
                             .font(.title3)
                             .frame(width: 16, height: 16, alignment: .center)
@@ -73,11 +69,7 @@ struct StartThreadContactRow: View {
             }
             .animation(.default)
         }
-        .onTapGesture {
-            withAnimation {
-                showActionViews.toggle()
-            }
-        }
+        .contentShape(Rectangle())
     }
     
     
@@ -92,7 +84,7 @@ struct StartThreadContactRow: View {
 }
 
 struct StartThreadContactRow_Previews: PreviewProvider {
-    @State static var isInEditMode = true
+    @State static var isInMultiSelectMode = true
     static var contact:Contact{
         let contact = Contact(blocked: false, cellphoneNumber: "+98 9369161601", email: nil, firstName: "Hamed", hasUser: true, id: 0, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", lastName: "Hosseini", linkedUser: nil, notSeenDuration: 1622969881, timeStamp: nil, userId: nil)
         return contact
@@ -100,7 +92,7 @@ struct StartThreadContactRow_Previews: PreviewProvider {
     
     static var previews: some View {
         Group {
-            StartThreadContactRow(contact: contact, isInEditMode: $isInEditMode,viewModel: ContactsViewModel())
+            StartThreadContactRow(contact: contact, isInMultiSelectMode: $isInMultiSelectMode,viewModel: ContactsViewModel())
                 .preferredColorScheme(.dark)
         }
     }

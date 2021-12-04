@@ -21,12 +21,14 @@ struct Avatar :View{
     init(url          :String?,
          userName     :String?,
          fileMetaData :String? = nil,
-         style        :StyleConfig = StyleConfig()
+         style        :StyleConfig = StyleConfig(),
+         token        :String? = nil
+         
     ) {
         self.url      = url
         self.userName = userName
         self.style    = style
-        imageLoader   = ImageLoader(url: url , fileMetaData:fileMetaData)
+        imageLoader   = ImageLoader(url: url , fileMetaData:fileMetaData, token:token)
     }
     
     struct StyleConfig{

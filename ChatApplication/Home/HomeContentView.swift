@@ -9,7 +9,6 @@ import SwiftUI
 
 struct HomeContentView: View {
     
-
     @StateObject
     var loginModel            = LoginViewModel()
     
@@ -33,31 +32,40 @@ struct HomeContentView: View {
     
     @State
     var shareCallLogs = false
-
+    
+    @State
+    var showThreadView:Bool = false
+    
     var body: some View {
         if tokenManager.isLoggedIn == false{
             LoginView(viewModel:loginModel)
         }else{
-
+            
             NavigationView{
-                
-                MasterView(contactsViewModel: contactsViewModel,
-                           threadsViewModel: threadsViewModel)
-
-                    DetailView()
+                ZStack{
+                    MasterView(contactsViewModel: contactsViewModel,
+                               threadsViewModel: threadsViewModel)
+                    
+                    ///do not remove this navigation to any view swift will give you unexpected behavior
+                    NavigationLink(destination: ThreadView(viewModel: ThreadViewModel()) ,isActive: $showThreadView) {
+                        EmptyView()
+                    }
+                }
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .onReceive(appState.$dark, perform: { _ in
                 self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
+            })
+            .onReceive(appState.$selectedThread, perform: { selectedThread in
+                self.showThreadView = selectedThread != nil
             })
             .onAppear{
                 self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
             }
         }
     }
-
+    
 }
-
 
 struct MasterView:View{
     
@@ -136,13 +144,6 @@ struct MasterView:View{
         .navigationViewStyle(.stack)
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(Text(Tabs(rawValue: seletedTabTag)?.stringValue ?? ""))
-    }
-}
-
-struct DetailView:View{
-    
-    var body: some View{
-        Text("salam")
     }
 }
 

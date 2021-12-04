@@ -64,7 +64,6 @@ class ContactsViewModel:ObservableObject{
     func createThread(invitees:[Invitee]){
         Chat.sharedInstance.createThread(.init(invitees: invitees, title: "", type:.NORMAL)) { thread, uniqueId, error in
             if let thread = thread{
-                AppState.shared.showThread = false
                 AppState.shared.selectedThread = thread
             }
         }

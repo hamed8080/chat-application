@@ -28,9 +28,18 @@ struct ParticipantRow: View {
 		Button(action: {}, label: {
 			HStack{
                 Avatar(url:participant.image ,userName: participant.username?.uppercased(), fileMetaData: nil, style: style.avatarConfig)
-				VStack(alignment: .leading, spacing:8){
+                HStack(alignment: .center, spacing:8){
 					Text(participant.name ?? "")
                         .font(style.textFont)
+                    if participant.admin == true{
+                        Text("Admin")
+                            .padding(4)
+                            .foregroundColor(Color.blue)
+                            .font(style.textFont)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4).stroke(Color.blue)
+                            )
+                    }
 				}
 				Spacer()
 			}

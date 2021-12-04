@@ -2,11 +2,17 @@
 use_frameworks!
 platform :ios, '12.0'
 
-target 'ChatApplication' do
-
+def shared_pods
   pod 'FanapPodAsyncSDK', :path => '/Users/hamedhosseini/Desktop/WorkSpace/ios/Fanap/Fanap-Async-SDK'
   pod 'FanapPodChatSDK', :path => '/Users/hamedhosseini/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK'
-  
+end
+
+target 'ChatApplication' do
+  shared_pods
+end
+
+target 'MyWidgetExtension' do
+    shared_pods
 end
 
 #post_install do |installer|
