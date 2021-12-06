@@ -7,24 +7,15 @@ PODS:
     - Starscream (~> 3.0.5)
     - SwiftyBeaver
     - SwiftyJSON
-  - FanapPodChatSDK (0.10.0.0):
+  - FanapPodChatSDK (0.10.1.0):
     - Alamofire (~> 4.8.2)
-    - FanapPodAsyncSDK
-    - FanapPodChatSDK/FanapPodAsyncSDK (= 0.10.0.0)
+    - FanapPodAsyncSDK (~> 0.10.0.0)
     - Sentry (~> 4.3.1)
-  - FanapPodChatSDK/FanapPodAsyncSDK (0.10.0.0):
-    - Alamofire (~> 4.8.2)
-    - Each (~> 1.2)
-    - FanapPodAsyncSDK
-    - Sentry (~> 4.3.1)
-    - Starscream (~> 3.0.5)
-    - SwiftyBeaver
-    - SwiftyJSON
   - Sentry (4.3.4):
     - Sentry/Core (= 4.3.4)
   - Sentry/Core (4.3.4)
   - Starscream (3.0.6)
-  - SwiftyBeaver (1.9.3)
+  - SwiftyBeaver (1.9.5)
   - SwiftyJSON (5.0.1)
 
 DEPENDENCIES:
@@ -49,13 +40,13 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   Each: 53d089bc231f4a7221ed201bf23ac343c5c4d560
-  FanapPodAsyncSDK: 784d6fecf66f2119e517c8553ef0c6e54af27c60
-  FanapPodChatSDK: 305999b4735a040b2469d0c3fa513685d9de3902
+  FanapPodAsyncSDK: 77630e91e294d3c99ded58bf7aa58d413366c630
+  FanapPodChatSDK: 2e23efbf329e66ad9b80bd29cdb83e06496a850b
   Sentry: 26f0e6492b103e87434d1a5eea2d241a36f2c2a2
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
-  SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
+  SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
 
-PODFILE CHECKSUM: 380ac61d4aedcd3d468b3ccbe18486a6e552a446
+PODFILE CHECKSUM: 0b3e942d2caba636e4380cf17708bd51231e8590
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2
