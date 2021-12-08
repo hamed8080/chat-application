@@ -120,6 +120,10 @@ class ChatDelegateImplementation: NewChatDelegate {
         }
     }
     
+    func callError(error: CallError) {
+        print("call has error: \(error)")
+    }
+    
     func chatError(error: ChatError) {
         
     }
