@@ -37,7 +37,6 @@ struct ThreadDetailView:View {
                         
                         HStack{
                             Spacer()
-                            
                             ActionButton(iconSfSymbolName: "bell", iconColor: .blue , taped:{
                                 viewModel.muteUnMute()
                             })
@@ -108,8 +107,6 @@ struct ThreadDetailView:View {
     }
     
 }
-
-
 
 struct ThreadDetailView_Previews: PreviewProvider {
     static var previews: some View {

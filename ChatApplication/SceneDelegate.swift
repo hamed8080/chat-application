@@ -44,7 +44,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let _ = (scene as? UIWindowScene) else { return }
         ChatDelegateImplementation.sharedInstance.createChatObject()
     }
-    
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if URLContexts.first?.url.absoluteString.contains("Widget") == true,
+           let threadIdString = URLContexts.first?.url.absoluteString.replacingOccurrences(of: "Widget://link-", with: ""),
+           let threadId = Int(threadIdString),
+           let thread = CMConversation.crud.find(keyWithFromat: "id == %i", value: threadId)?.getCodable()
+        {
+                AppState.shared.selectedThread = thread
+        }
+    }
     
     @objc func addLog(notification: NSNotification){
         if let log = notification.object as? LogResult{

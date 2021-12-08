@@ -20,22 +20,35 @@ class ImageLoader : ObservableObject{
         return UIImage(data: data)
     }
     
-    init(url:String? , fileMetaData:String? = nil) {
+    init(url:String? , fileMetaData:String? = nil,token:String? = nil, forceToDownload:Bool = false) {
         let fileMetaDataModel = try? JSONDecoder().decode(FileMetaData.self, from: fileMetaData?.data(using: .utf8) ?? Data())
         let smallImageFileUrl = getPodspaceSmallImage(fileHash: fileMetaDataModel?.fileHash)
         guard let stringUrl = url , let url = URL(string: smallImageFileUrl ?? stringUrl) else {
             data = nil
             return
         }
-        let task = URLSession.shared.dataTask(with: url){[weak self] data,response ,error in
-            if let data = data{
-                DispatchQueue.main.async {
-                    self?.data = data
-                    self?.didChange.send(self?.image)
-                }
+        if forceToDownload == false, let cacheImageData = CacheFileManager.sharedInstance.getImageProfileCache(url: url.absoluteString, group: AppGroup.group){
+            self.data = cacheImageData
+            self.didChange.send(image)
+        }else{
+            var urlrequest = URLRequest(url: url)
+            
+            if let token = token {
+                urlrequest.addValue(token, forHTTPHeaderField: "_token_")
+                urlrequest.addValue("1", forHTTPHeaderField: "_token_issuer_")
             }
+            let task = URLSession.shared.dataTask(with: urlrequest){[weak self] data,response ,error in
+                if let data = data{
+                    DispatchQueue.main.async {
+                        self?.data = data
+                        self?.didChange.send(self?.image)
+                        CacheFileManager.sharedInstance.saveImageProfile(url: url.absoluteString, data: data, group: AppGroup.group)
+                    }
+                }
+                
+            }
+            task.resume()
         }
-        task.resume()
     }
     
     func getPodspaceSmallImage(fileHash:String?)->String?{

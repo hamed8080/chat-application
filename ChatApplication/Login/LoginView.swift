@@ -12,39 +12,57 @@ struct LoginView: View {
     @StateObject var viewModel            :LoginViewModel
     
     var body: some View {
-        VStack{
-            Text(viewModel.model.state?.rawValue ?? "")
-            if viewModel.model.isInVerifyState == false{
-                LoginContentView(viewModel: viewModel)
-            }else{
-                VerifyContentView(viewModel: viewModel)
+        ZStack{
+            Color.gray.opacity(0.2)
+                .edgesIgnoringSafeArea(.all)
+            VStack(spacing:12){
+                if viewModel.model.isInVerifyState == false{
+                    LoginContentView(viewModel: viewModel)
+                }else{
+                    VerifyContentView(viewModel: viewModel)
+                }
             }
+            .padding()
+            .padding()
         }
         .animation(.default)
-        .padding(16)
     }
-    
 }
 
 struct VerifyContentView:View{
+    
     @StateObject var viewModel:LoginViewModel
     
     var body: some View{
-        VStack(alignment:.trailing){
+        VStack(alignment:.center, spacing:16){
             HStack{
-                Button("< Back") {
+                Button {
                     viewModel.model.setIsInVerifyState(false)
+                } label: {
+                    Image(systemName: "chevron.backward.circle.fill")
                 }
-                .font(.headline.bold())
+                .foregroundColor(Color(named: "text_color_blue").opacity(0.8))
+                .font(.largeTitle.weight(.medium))
                 Spacer()
             }
+            .padding([.bottom], 48)
+            Image(uiImage: UIImage.appIcon!)
+                .resizable()
+                .frame(width: 72, height: 72)
+                .scaledToFit()
+                .cornerRadius(8)
+            Text("Enter Verication Code")
+                .font(.title.weight(.medium))
+                .foregroundColor(Color(named: "text_color_blue"))
             
-            Spacer()
-            
+            Text("Verification code sent to:")
+                .font(.subheadline.weight(.medium))
+                .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
+            + Text(" \(viewModel.model.phoneNumber)")
+                .font(.subheadline.weight(.bold))
             TextFieldLogin(title:"Enter Verification Code",textBinding: $viewModel.model.verifyCode){
-                 viewModel.verifyCode()
+                viewModel.verifyCode()
             }
-            
             Button("Verify".uppercased()) {
                 viewModel.verifyCode()
             }
@@ -57,7 +75,7 @@ struct VerifyContentView:View{
             Spacer()
         }
         .transition(.move(edge: .trailing))
-
+        
     }
 }
 
@@ -65,7 +83,20 @@ struct LoginContentView:View{
     @StateObject var viewModel:LoginViewModel
     
     var body: some View{
-        VStack(alignment:.trailing){
+        VStack(alignment:.center,spacing: 16){
+            Image(uiImage: UIImage.appIcon!)
+                .resizable()
+                .frame(width: 72, height: 72)
+                .scaledToFit()
+                .cornerRadius(8)
+            Text("Login")
+                .font(.title.weight(.medium))
+                .foregroundColor(Color(named: "text_color_blue"))
+            Text("Welcome to Fanap Chats")
+                .font(.headline.weight(.medium))
+                .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
+            Text(viewModel.model.state?.rawValue ?? "")
+            
             TextFieldLogin(title:"Phone number",textBinding: $viewModel.model.phoneNumber){
                 viewModel.model.isPhoneNumberValid()
             }
@@ -75,6 +106,11 @@ struct LoginContentView:View{
             }
             .buttonStyle(LoginButtonStyle())
             
+            Text("If you get in trouble with the login, contact the support team.")
+                .multilineTextAlignment(.center)
+                .font(.subheadline.weight(.medium))
+                .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
+            Spacer()
             if viewModel.model.isValidPhoneNumber == false{
                 Text("Please input correct phone number")
                     .foregroundColor(.red)
@@ -103,27 +139,32 @@ struct TextFieldLogin:View{
         .frame(minWidth: 100, minHeight: 48, alignment: .center)
         .keyboardType(keyboardType)
         .padding(.init(top: 0, leading: 8, bottom: 0, trailing: 8))
-        .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.black.opacity(0.2), style: StrokeStyle(lineWidth:1)))
+        .frame(minHeight:56)
+        .background(Color.white.cornerRadius(8))
     }
 }
 
 struct LoginButtonStyle:ButtonStyle{
     
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .frame(minWidth: 100, minHeight: 48, alignment: .center)
-            .foregroundColor(Color.white)
-            .background(Color.blue)
-            .cornerRadius(16)
+        GeometryReader{ reader in
+            configuration.label
+                .frame(minWidth: reader.size.width, minHeight: 56, alignment: .center)
+                .foregroundColor(Color.white)
+                .background(Color(named: "text_color_blue"))
+                .cornerRadius(8)
+                .font(.subheadline.weight(.black))
+                .shadow(radius: 8)
+        }.frame(maxHeight: 56, alignment: .center)
     }
 }
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = LoginViewModel()
         LoginView(viewModel: vm).onAppear{
-//            Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
-//                vm.model.setIsInVerifyState(true)
-//            }
+            //            Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
+            //                vm.model.setIsInVerifyState(true)
+            //            }
             vm.model.setIsInVerifyState(true)
         }
     }

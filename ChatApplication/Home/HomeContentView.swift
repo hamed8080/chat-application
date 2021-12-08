@@ -9,7 +9,6 @@ import SwiftUI
 
 struct HomeContentView: View {
     
-
     @StateObject
     var loginModel            = LoginViewModel()
     
@@ -39,7 +38,11 @@ struct HomeContentView: View {
     
     @State
     var shareCallLogs = false
-
+    
+    @State
+    var showThreadView:Bool = false
+    
+    
     var body: some View {
         //        WebRTCView()
         //                WebRTCDirectSignalingView()
@@ -50,15 +53,23 @@ struct HomeContentView: View {
         }else{
 
             NavigationView{
-                MasterView(callsHistoryViewModel:callsHistoryViewModel,
-                           contactsViewModel: contactsViewModel,
-                           threadsViewModel: threadsViewModel)
-
-                    DetailView()
+                ZStack{
+                    MasterView(callsHistoryViewModel:callsHistoryViewModel,
+                               contactsViewModel: contactsViewModel,
+                               threadsViewModel: threadsViewModel)
+                    
+                    ///do not remove this navigation to any view swift will give you unexpected behavior
+                    NavigationLink(destination: ThreadView(viewModel: ThreadViewModel()) ,isActive: $showThreadView) {
+                        EmptyView()
+                    }
+                }
             }
 //            .navigationViewStyle(StackNavigationViewStyle())
             .onReceive(appState.$dark, perform: { _ in
                 self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
+            })
+            .onReceive(appState.$selectedThread, perform: { selectedThread in
+                self.showThreadView = selectedThread != nil
             })
             .fullScreenCover(isPresented: $showCallView, onDismiss: nil, content: {
                 CallControlsContent(viewModel: CallControlsViewModel())
@@ -76,19 +87,22 @@ struct HomeContentView: View {
                 }
             })
             .onReceive(appState.$callLogs , perform: { _ in
-                shareCallLogs = appState.callLogs != nil
+                withAnimation {
+                    shareCallLogs = appState.callLogs != nil
+                }
             })
             .onReceive(callState.$model , perform: { _ in
-                showCallView = callState.model.showCallView
+                withAnimation {
+                    showCallView = callState.model.showCallView
+                }
             })
             .onAppear{
                 self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
             }
         }
     }
-
+    
 }
-
 
 struct MasterView:View{
     
@@ -191,20 +205,11 @@ struct MasterView:View{
     }
 }
 
-struct DetailView:View{
-    
-    var body: some View{
-        Text("salam")
-    }
-}
-
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
-        let callState = CallState.shared
         HomeContentView()
             .environmentObject(appState)
-            .environmentObject(callState)
             .onAppear(){
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
             }

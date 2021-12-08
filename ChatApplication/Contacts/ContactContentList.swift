@@ -32,8 +32,8 @@ struct ContactContentList:View {
                         .foregroundColor(.gray)
                         .noSeparators()
                     ForEach(viewModel.model.searchedContacts, id:\.self){ contact in
-                        SearchContactRow(contact: contact)
-                            .noSeparators()                        
+                        SearchContactRow(contact: contact, viewModel: viewModel)
+                            .noSeparators()
                     }
                 }
                 

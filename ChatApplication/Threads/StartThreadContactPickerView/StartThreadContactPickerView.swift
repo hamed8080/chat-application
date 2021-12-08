@@ -6,6 +6,15 @@
 //
 
 import SwiftUI
+import FanapPodChatSDK
+
+struct StartThreadResultModel{
+    var selectedContacts :[Contact] = []
+    
+    var type             :ThreadTypes = .NORMAL
+    
+    var title            :String = ""
+}
 
 struct StartThreadContactPickerView:View {
     
@@ -19,60 +28,101 @@ struct StartThreadContactPickerView:View {
     
     @State var title    :String  = "New Message"
     @State var subtitle :String  = ""
-    @State var isInGroupMode = false
+    @State var isInMultiSelectMode = false
+    
+    var onCompletedConfigCreateThread:(StartThreadResultModel)->()
+    
+    @State
+    var startThreadModel: StartThreadResultModel = .init()
+    
+    @State
+    var showGroupTitleView:Bool = false
+    
+    @State var showEnterGroupNameError:Bool = false
+    
+    @State var groupTitle:String = ""
     
     var body: some View{
+        
         GeometryReader{ reader in
-            PageWithNavigationBarView(title:$title, subtitle:$appState.connectionStatusString,trailingItems: getTrailingItems()){
+            PageWithNavigationBarView(title:$title, subtitle:$appState.connectionStatusString,trailingItems: getTrailingItems(), leadingItems: getLeadingItems()){
                 VStack(alignment:.leading,spacing: 0){
-                  
+                   
                     
-                    StartThreadButton(name: "person.2", title: "New Group", color: .blue){
-                        isInGroupMode.toggle()
-                    }
-                    
-                    StartThreadButton(name: "megaphone", title: "New Channel", color: .blue){
+                    if showGroupTitleView{
+                        VStack{
+                            MultilineTextField("Enter group name", text: $groupTitle, backgroundColor:Color.gray.opacity(0.2))
+                                .cornerRadius(8)
+                                .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(showEnterGroupNameError ? Color.red : Color.clear, lineWidth: 1)
+                                    )
+                                
+                        }
+                        .padding([.leading, .trailing,.top], 16)
+                    }else{
+                        StartThreadButton(name: "person.2", title: "New Group", color: .blue){
+                            isInMultiSelectMode.toggle()
+                            startThreadModel.type = .OWNER_GROUP
+                        }
                         
-                    }
-                    
-                    List {
-                        ForEach(contactsVM.model.contacts , id:\.id) { contact in
-                            
-                            StartThreadContactRow(contact: contact, isInEditMode: $isInGroupMode, viewModel: contactsVM)
-                                .onAppear {
-                                    if contactsVM.model.contacts.last == contact{
-                                        contactsVM.loadMore()
+                        StartThreadButton(name: "megaphone", title: "New Channel", color: .blue){
+                            isInMultiSelectMode.toggle()
+                            startThreadModel.type = .CHANNEL
+                        }
+                        List {
+                            ForEach(contactsVM.model.contacts , id:\.id) { contact in
+                                
+                                StartThreadContactRow(contact: contact, isInMultiSelectMode: $isInMultiSelectMode, viewModel: contactsVM)
+                                    .onTapGesture {
+                                        if isInMultiSelectMode == false{
+                                            onCompletedConfigCreateThread(.init(selectedContacts: [contact], type: .NORMAL, title: ""))
+                                        }
                                     }
-                                }
-                        }.onDelete(perform: { indexSet in
-    //                        guard let thread = indexSet.map({ viewModel.model.threads[$0]}).first else {return}
-    //                        viewModel.deleteThread(thread)
-                        })
+                                    .onAppear {
+                                        if contactsVM.model.contacts.last == contact{
+                                            contactsVM.loadMore()
+                                        }
+                                    }
+                            }.onDelete(perform: { indexSet in
+                                //                        guard let thread = indexSet.map({ viewModel.model.threads[$0]}).first else {return}
+                                //                        viewModel.deleteThread(thread)
+                            })
+                        }
+                        .listStyle(PlainListStyle())
                     }
-                    .listStyle(PlainListStyle())
                 }
                 .padding(0)
-               
-                
                 Spacer()
-                
-                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
-                
-                NavigationLink(destination: ThreadView(viewModel: ThreadViewModel()) ,isActive: $appState.showThread) {
-                    EmptyView()
-                }
-            }
-            .onAppear{
-                appState.selectedThread = nil
             }
         }
     }
     
-    func getTrailingItems()->[NavBarItem]{
-        if isInGroupMode{
-            return [NavBarButton(title: "Next" , isBold: true) {
+    func getLeadingItems()->[NavBarItem]{
+        if showGroupTitleView{
+            return [NavBarButton(title: showGroupTitleView == true ? "Back" : "" , isBold: true) {
                 withAnimation {
-                    
+                    showGroupTitleView = false
+                }
+            }.getNavBarItem()]
+        }else{
+            return []
+        }
+    }
+    
+    func getTrailingItems()->[NavBarItem]{
+        if isInMultiSelectMode{
+            return [NavBarButton(title: showGroupTitleView == false ? "Next" :"Create" , isBold: true) {
+                withAnimation {
+                    if showGroupTitleView == true{
+                        if groupTitle.isEmpty{
+                            showEnterGroupNameError = true
+                        }else{
+                            onCompletedConfigCreateThread(.init(selectedContacts: contactsVM.model.selectedContacts, type: startThreadModel.type , title: groupTitle))
+                        }
+                    }else{
+                        showGroupTitleView.toggle()
+                    }
                 }
             }.getNavBarItem()]
         }else{
@@ -111,7 +161,8 @@ struct StartThreadContactPickerView_Previews: PreviewProvider {
         let appState = AppState.shared
         let vm = StartThreadContactPickerViewModel()
         let contactVM = ContactsViewModel()
-        StartThreadContactPickerView(viewModel: vm,contactsVM: contactVM)
+        StartThreadContactPickerView(viewModel: vm,contactsVM: contactVM, onCompletedConfigCreateThread: { model in
+        })
             .onAppear(){
                 vm.setupPreview()
                 contactVM.setupPreview()

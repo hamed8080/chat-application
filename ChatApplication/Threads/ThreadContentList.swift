@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FanapPodChatSDK
 
 struct ThreadContentList:View {
     
@@ -13,9 +14,19 @@ struct ThreadContentList:View {
     
     @EnvironmentObject var appState:AppState
     
+    @State
+    var searechInsideThread:String = ""
+    
     var body: some View{
         GeometryReader{ reader in
             List {
+                MultilineTextField("Search ...",text: $searechInsideThread,backgroundColor:Color.gray.opacity(0.2))
+                    .cornerRadius(16)
+                    .noSeparators()
+                    .onChange(of: searechInsideThread) { newValue in
+                        viewModel.searchInsideAllThreads(text: searechInsideThread)
+                    }
+                
                 ForEach(viewModel.model.threads , id:\.id) { thread in
                     ThreadRow(thread: thread,viewModel: viewModel)
                         .onAppear {
@@ -31,22 +42,22 @@ struct ThreadContentList:View {
             .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
             .listStyle(PlainListStyle())
             Spacer()
+            LoadingViewAtCenterOfView(isLoading:viewModel.centerIsLoading ,reader:reader)
             LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
-            NavigationLink(destination: ThreadView(viewModel: ThreadViewModel()) ,isActive: $appState.showThread) {
-                EmptyView()
+                .navigationBarTitle("Chats",displayMode: .inline)
+        }
+        .sheet(isPresented: $viewModel.toggleThreadContactPicker, onDismiss: nil, content: {
+            StartThreadContactPickerView(viewModel: .init()) { model in
+                viewModel.createThread(model)
+                viewModel.toggleThreadContactPicker.toggle()
             }
-            .sheet(isPresented: $viewModel.toggleThreadContactPicker, onDismiss: nil, content: {
-                StartThreadContactPickerView(viewModel: .init())
-            })
-            .onAppear{
-                appState.selectedThread = nil
-            }
-            .navigationBarTitle("Chats",displayMode: .inline)
-        }.onAppear {
+        })
+        .onAppear {
             viewModel.setViewAppear(appear: true)
         }.onDisappear {
             viewModel.setViewAppear(appear: false)
         }
+        
     }
 }
 

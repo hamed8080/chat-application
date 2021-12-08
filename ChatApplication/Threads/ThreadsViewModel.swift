@@ -8,6 +8,7 @@
 import Foundation
 import FanapPodChatSDK
 import Combine
+import SwiftUI
 
 class ThreadsViewModel:ObservableObject{
     
@@ -15,17 +16,23 @@ class ThreadsViewModel:ObservableObject{
     var isLoading = false
     
     @Published
+    var centerIsLoading = false
+    
+    @Published
     private (set) var model = ThreadsModel()
     
     @Published var toggleThreadContactPicker = false
     
+    @AppStorage("Threads", store: UserDefaults.group) var threadsData:Data?
+    
     private (set) var connectionStatusCancelable    : AnyCancellable? = nil
     private (set) var messageCancelable             : AnyCancellable? = nil
     private (set) var systemMessageCancelable       : AnyCancellable? = nil
+    private (set) var isFirstTimeConnectedRequestSuccess = false
     
     init() {
         connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
-            if self.model.threads.count == 0 && status == .CONNECTED{
+            if self.isFirstTimeConnectedRequestSuccess == false && status == .CONNECTED{
                 self.getThreads()
             }
         }
@@ -40,13 +47,7 @@ class ThreadsViewModel:ObservableObject{
         systemMessageCancelable = NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
             .compactMap{$0.object as? SystemEventModel}
             .sink { systemMessageEvent in
-                if systemMessageEvent.type == .IS_TYPING{
-                    self.model.addTypingThread(systemMessageEvent)
-                    Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { timer in
-                        self.model.removeTypingThread(systemMessageEvent)
-                        timer.invalidate()
-                    }
-                }
+                self.startTyping(systemMessageEvent)
             }
         
         getOfflineThreads()
@@ -55,9 +56,14 @@ class ThreadsViewModel:ObservableObject{
     func getThreads() {
         Chat.sharedInstance.getThreads(.init(count:model.count,offset: model.offset)) {[weak self] threads, uniqueId, pagination, error in
             if let threads = threads{
+                self?.isFirstTimeConnectedRequestSuccess = true
                 self?.model.appendThreads(threads: threads)
                 self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
+                if let data = try? JSONEncoder().encode(threads){
+                    self?.threadsData = data
+                }
             }
+            self?.isLoading = false
         }
     }
     
@@ -91,8 +97,7 @@ class ThreadsViewModel:ObservableObject{
     func setupPreview(){
         model.setupPreview()
     }
-    
-    
+
     func pinUnpinThread(_ thread:Conversation){
         guard let id = thread.id else{return}
         if thread.pin == false{
@@ -114,11 +119,11 @@ class ThreadsViewModel:ObservableObject{
         guard let threadId = thread.id else {return}
         if thread.mute == false{
             Chat.sharedInstance.muteThread(.init(threadId: threadId)) { threadId, uniqueId, error in
-                
+                self.model.muteUnMuteThread(threadId, isMute: true)
             }
         }else{
             Chat.sharedInstance.unmuteThread(.init(threadId: threadId)) { threadId, uniqueId, error in
-                
+                self.model.muteUnMuteThread(threadId, isMute: false)
             }
         }
     }
@@ -143,6 +148,39 @@ class ThreadsViewModel:ObservableObject{
     
     func setViewAppear(appear:Bool){
         model.setViewAppear(appear: appear)
+    }
+    
+    var lastIsTypingTime = Date()
+    func startTyping(_ systemMessageEvent:SystemEventModel) {
+        if systemMessageEvent.type == .IS_TYPING, model.addTypingThread(systemMessageEvent){
+            lastIsTypingTime = Date()
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+              if self.lastIsTypingTime.advanced(by: 1) < Date(){
+                    self.model.removeTypingThread(systemMessageEvent)
+                    timer.invalidate()
+                }
+            }
+        }else{
+            lastIsTypingTime = Date()
+        }
+    }
+    
+    func createThread(_ model:StartThreadResultModel){
+        centerIsLoading = true
+        let invitees = model.selectedContacts.compactMap { contact in
+            Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)
+        }
+        Chat.sharedInstance.createThread(.init(invitees: invitees, title: model.title, type:model.type)) { thread, uniqueId, error in
+            if let thread = thread{
+                AppState.shared.selectedThread = thread
+            }
+            self.centerIsLoading = false
+        }
+    }
+    
+    func searchInsideAllThreads(text:String){
+        //not implemented yet
+//        Chat.sharedInstance.
     }
     
 }

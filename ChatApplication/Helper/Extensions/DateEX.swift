@@ -71,5 +71,13 @@ extension Date {
         formatter.timeStyle = .short
         return formatter.string(from: self)
     }
+
+    
+    func getTime()->String{
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        return formatter.string(from: self)
+    }
     
 }

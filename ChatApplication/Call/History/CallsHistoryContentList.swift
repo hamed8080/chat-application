@@ -63,7 +63,7 @@ struct CallsHistoryContentList: View {
     }
 }
 
-struct CallsHistoryView_Previews: PreviewProvider {
+struct CallsHistoryContentList_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = CallsHistoryViewModel()
         CallsHistoryContentList(viewModel:viewModel)

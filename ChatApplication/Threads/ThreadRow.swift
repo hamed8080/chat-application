@@ -24,13 +24,23 @@ struct ThreadRow: View {
     var isTypingText:String? = nil
 	
 	var body: some View {
-		
+		let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
 		Button(action: {}, label: {
 			HStack{
-                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata)
+                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata,token: token)
 				VStack(alignment: .leading, spacing:8){
-					Text(thread.title ?? "")
-						.font(.headline)
+                    HStack{
+                        Text(thread.title ?? "")
+                            .font(.headline)
+                        if thread.mute == true{
+                            Image(systemName: "speaker.slash.fill")
+                                .resizable()
+                                .frame(width: 12, height: 12)
+                                .scaledToFit()
+                                .foregroundColor(Color.gray)
+                        }
+                    }
+					
 					if let message = thread.lastMessageVO?.message?.prefix(100){
 						Text(message)
 							.lineLimit(1)
@@ -43,12 +53,18 @@ struct ThreadRow: View {
                             .font(.subheadline.bold())
                             .foregroundColor(Color.orange)
                             .onAppear{
-                                "typing".isTypingAnimationWithText { startText in
-                                    self.isTypingText = startText
-                                } onChangeText: { text in
-                                    self.isTypingText = text
-                                } onEnd: {
-                                    self.isTypingText = nil
+                                withAnimation {
+                                    "typing".isTypingAnimationWithText { startText in
+                                        self.isTypingText = startText
+                                    } onChangeText: { text, timer in
+                                        if viewModel.model.threadsTyping.contains(where: {$0.threadId == thread.id }) == true{
+                                            self.isTypingText = text
+                                        }else{
+                                            timer.invalidate()
+                                        }
+                                    } onEnd: {
+                                        self.isTypingText = nil
+                                    }
                                 }
                             }
                     }
@@ -75,8 +91,8 @@ struct ThreadRow: View {
 			.padding([.leading , .trailing] , 8)
 			.padding([.top , .bottom] , 4)
 		})
+        .animation(.default)
 		.onTapGesture {
-            appState.showThread = false
             appState.selectedThread = thread
 		}.onLongPressGesture {
 			showActionSheet.toggle()
