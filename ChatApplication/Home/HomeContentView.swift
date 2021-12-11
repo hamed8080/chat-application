@@ -208,8 +208,10 @@ struct MasterView:View{
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
+        let callState = CallState.shared
         HomeContentView()
             .environmentObject(appState)
+            .environmentObject(callState)
             .onAppear(){
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
             }

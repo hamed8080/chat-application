@@ -67,9 +67,10 @@ struct CallsHistoryContentList_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = CallsHistoryViewModel()
         CallsHistoryContentList(viewModel:viewModel)
+            .environmentObject(AppState.shared)
+            .environmentObject(CallState.shared)
             .onAppear(){
                 viewModel.setupPreview()
             }
-            .environmentObject(AppState.shared)
     }
 }
