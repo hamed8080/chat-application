@@ -96,37 +96,31 @@ struct ThreadRow: View {
             appState.selectedThread = thread
 		}.onLongPressGesture {
 			showActionSheet.toggle()
-		}
-		.actionSheet(isPresented: $showActionSheet){
-			ActionSheet(title: Text("Manage Thread"), message: Text("you can mange thread here"), buttons: [
-				.cancel(Text("Cancel").foregroundColor(Color.red)),
-							.default(Text((thread.pin ?? false) ? "UnPin" : "Pin")){
-					viewModel.pinUnpinThread(thread)
-				},
-				.default(Text( (thread.mute ?? false) ? "Unmute" : "Mute" )){
-					viewModel.muteUnMuteThread(thread)
-				},
-                .default(Text("Clear History")){
-                    viewModel.clearHistory(thread)
-                },
-				.default(Text("Delete")){
-                    withAnimation {
-                        viewModel.deleteThread(thread)
-                    }
-				}
-			])
-        }
-        .onLongPressGesture {
-            showActionSheet.toggle()
-        }
-	}
+        }.compatibleConfirmationDialog($showActionSheet,message: "you can mange thread here", title: "Manage Thread", [
+            .init(title: (thread.pin ?? false) ? "UnPin" : "Pin", action: {
+                viewModel.pinUnpinThread(thread)
+            }),
+            .init(title: "Clear History", action: {
+                viewModel.clearHistory(thread)
+            }),
+            .init(title: (thread.mute ?? false) ? "Unmute" : "Mute", action: {
+                viewModel.muteUnMuteThread(thread)
+            }),
+            .init(title: "Spam", action: {
+                viewModel.spamPVThread(thread)
+            }),
+            .init(title: "Delete", action: {
+                viewModel.deleteThread(thread)
+            }),
+        ])
+    }
 }
 
 struct ThreadRow_Previews: PreviewProvider {
 	static var thread:Conversation{
         
-		let lastMessageVO = Message(threadId: nil, deletable: nil, delivered: nil, editable: nil, edited: nil, id: nil, mentioned: nil, message: "Hi hamed how are you? are you ok? and what are you ding now. And i was thinking you are sad for my behavoi last night.", messageType: nil, metadata: nil, ownerId: nil, pinned: nil, previousId: nil, seen: nil, systemMetadata: nil, time: nil, timeNanos: nil, uniqueId: nil, conversation: nil, forwardInfo: nil, participant: nil, replyInfo: nil)
-		let thread = Conversation(admin: false, canEditInfo: true, canSpam: true, closedThread: false, description: "des", group: true, id: 123, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", joinDate: nil, lastMessage: nil, lastParticipantImage: nil, lastParticipantName: nil, lastSeenMessageId: nil, lastSeenMessageNanos: nil, lastSeenMessageTime: nil, mentioned: nil, metadata: nil, mute: nil, participantCount: nil, partner: nil, partnerLastDeliveredMessageId: nil, partnerLastDeliveredMessageNanos: nil, partnerLastDeliveredMessageTime: nil, partnerLastSeenMessageId: nil, partnerLastSeenMessageNanos: nil, partnerLastSeenMessageTime: nil, pin: false, time: nil, title: "Hamed Hosseini", type: nil, unreadCount: 3000, uniqueName: nil, userGroupHash: nil, inviter: nil, lastMessageVO: lastMessageVO, participants: nil, pinMessage: nil)
+		let lastMessageVO = Message(message: "Hi hamed how are you? are you ok? and what are you ding now. And i was thinking you are sad for my behavoi last night.")
+		let thread = Conversation(description: "description", id: 123, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", pin: false, title: "Hamed Hosseini",lastMessageVO: lastMessageVO)
 		return thread
 	}
 	

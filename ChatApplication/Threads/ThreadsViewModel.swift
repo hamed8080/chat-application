@@ -137,6 +137,12 @@ class ThreadsViewModel:ObservableObject{
         }
     }
     
+    func spamPVThread(_ thread:Conversation){
+        guard let threadId = thread.id else {return}
+        Chat.sharedInstance.spamPvThread(SpamThreadRequest(threadId: threadId)) { blockedUser, uniqueId, error in
+        }
+    }
+    
     func deleteThread(_ thread:Conversation){
         guard let threadId = thread.id else {return}
         Chat.sharedInstance.closeThread(.init(threadId: threadId)) { closedThreadId, uniqueId, error in

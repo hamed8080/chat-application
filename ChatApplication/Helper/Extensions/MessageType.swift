@@ -62,4 +62,14 @@ extension Message{
             return "paperclip.circle.fill"
         }
     }
+    
+    var isFileType:Bool{
+        let type = MessageType(rawValue: messageType ?? 0)
+        switch type {
+        case .VOICE,.PICTURE,.VIDEO,.SOUND,.FILE,.POD_SPACE_FILE,.POD_SPACE_PICTURE,.POD_SPACE_SOUND,.POD_SPACE_VOICE:
+            return true
+        default:
+            return false
+        }
+    }
 }

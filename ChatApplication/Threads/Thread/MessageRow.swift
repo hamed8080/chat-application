@@ -81,42 +81,41 @@ struct TextMessageType:View{
                 Spacer()
             }
             Button(action: {}, label: {
-                HStack{
-                    VStack(alignment: .leading, spacing:8){
-                        if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
-                            DownloadFileView(message: message)
-                                .frame(width: 128, height: 128)
+                VStack(spacing:8){
+                    if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
+                        DownloadFileView(message: message)
+                            .frame(width: 128, height: 128)
+                    }
+                    Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
+                        .multilineTextAlignment(.trailing)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(.black)
+                    HStack{
+                        if let fileSize = message.metaData?.file?.size, let size = Int(fileSize){
+                            Text(size.toSizeString)
+                                .multilineTextAlignment(.leading)
+                                .font(.subheadline)
+                                .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                            Spacer()
+                        }
+                        if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
+                            Spacer()
+                            Text("\(date.getTime())")
+                                .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                                .font(.caption2.weight(.light))
                         }
                         
-                        Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
-                            .multilineTextAlignment(.trailing)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundColor(.black)
-                        
-                        HStack{
-                            if let fileSize = message.metaData?.file?.size, let size = Int(fileSize){
-                                Text(size.toSizeString)
-                                    .multilineTextAlignment(.leading)
-                                    .font(.subheadline)
-                                    .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                            }
-                            if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
-                                Text("\(date.getTime())")
-                                    .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                                    .font(.caption2.weight(.light))
-                            }
-                            
-                            if isMe{
-                                Image(uiImage: UIImage(named:  message.seen == true ? "double_checkmark" : "single_chekmark")!)
-                                    .resizable()
-                                    .frame(width: 14, height: 14)
-                                    .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                                    .font(.caption2.weight(.light))
-                            }
+                        if isMe{
+                            Image(uiImage: UIImage(named:  message.seen == true ? "double_checkmark" : "single_chekmark")!)
+                                .resizable()
+                                .frame(width: 14, height: 14)
+                                .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                                .font(.caption2.weight(.light))
                         }
                     }
                 }
-                .frame(minWidth: 72, minHeight: 48, alignment: .center)
+                .fixedSize()
+                .frame(minWidth: 72, minHeight: 48, alignment: .leading)
                 .contentShape(Rectangle())
                 .padding(8)
                 .background(isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named:"chat_sender")!))
@@ -129,29 +128,32 @@ struct TextMessageType:View{
                     print("long press triggred")
                     showActionSheet.toggle()
                 }
-                .actionSheet(isPresented: $showActionSheet){
-                    ActionSheet(title: Text("Manage Thread"), message: Text("you can mange thread here"), buttons: [
-                        .cancel(Text("Cancel").foregroundColor(Color.red)),
-                        .default(Text("Delete file from cache")){
-                            viewModel.clearCacheFile(message: message)
-                        },.default(Text((message.pinned ?? false) ? "UnPin" : "Pin")){
-                            viewModel.pinUnpinMessage(message)
-                        },
-                        .default(Text("Delete")){
-                            withAnimation {
-                                viewModel.deleteMessage(message)
-                            }
-                        }
-                    ])
-                }
-            
+                .compatibleConfirmationDialog($showActionSheet, message: "Manage this message", title: "Manage Message", getActionDialogButtons())
             if !isMe{
                 Spacer()
             }
         }
     }
+    
+    func getActionDialogButtons()->[DialogButton]{
+        var buttons:[DialogButton] = []
+        if message.isFileType == true{
+            buttons.append(.init(title: "Delete file from cache", action: {
+                viewModel.clearCacheFile(message: message)
+            }))
+        }
+        buttons.append(.init(title: (message.pinned ?? false) ? "UnPin" : "Pin", action: {
+            viewModel.pinUnpinMessage(message)
+        }))
+        
+        buttons.append(.init(title: "Delete", action: {
+            withAnimation {
+                viewModel.deleteMessage(message)
+            }
+        }))
+        return buttons
+    }
 }
-
 
 struct UploadMessageType:View{
     var viewModel:ThreadViewModel
@@ -186,10 +188,13 @@ struct MessageRow_Previews: PreviewProvider {
     }
     
     static var downloadMessage:Message{
+        let metaData = FileMetaData(file: .init(fileExtension: ".pdf", link: "", mimeType: "", name: "Test File Name", originalName: "tes", size: 8240000))
+        let metaDataString = String(data: (try! JSONEncoder().encode(metaData)), encoding: .utf8)
         return Message(threadId: 0,
                        id: 12,
                        message: "Hello",
                        messageType: MessageType.FILE.rawValue,
+                       metadata: metaDataString,
                        time: 1636807773
         )
     }

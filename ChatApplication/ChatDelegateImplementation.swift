@@ -61,11 +61,6 @@ class ChatDelegateImplementation: NewChatDelegate {
 		if errorCode == 21  || errorCode == 401{
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .UnAuthorized
-//            let st = UIStoryboard(name: "Main", bundle: nil)
-//            let vc = st.instantiateViewController(identifier: "UpdateTokenController")
-//            guard let rootVC = SceneDelegate.getRootViewController() else {return}
-//            rootVC.presentedViewController?.dismiss(animated: true)
-//            rootVC.present(vc, animated: true)
 		}
 	}
 	
