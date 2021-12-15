@@ -19,29 +19,37 @@ struct AddOrEditContactView: View {
     
     var body: some View{
         GeometryReader{ reader in
-            PageWithNavigationBarView(title:$title,showbackButton:true){
-                VStack{
-                    TextFieldLogin(title:"type contact",textBinding: $contactValue,keyboardType: .alphabet)
-                    TextFieldLogin(title:"first name",textBinding: $firstName,keyboardType: .alphabet)
-                    TextFieldLogin(title:"last name",textBinding: $lastName, keyboardType: .alphabet)
-                    
-                    Button(action: {
-                        let isPhone = validatePhone(value: contactValue)
-                        let req:NewAddContactRequest = isPhone ?
-                            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: nil, uniqueId: nil) :
-                            .init(email:nil,firstName:firstName,lastName: lastName, ownerId: nil, username: contactValue, typeCode: nil, uniqueId: nil)
-                        Chat.sharedInstance.addContact(req) { contacts, uniqueId, error in
-                            self.presentationMode.wrappedValue.dismiss()
-                        }
-                    }, label: {
-                        Text("Submit")
-                    })
-                    .buttonStyle(LoginButtonStyle())
+            VStack(spacing:24){
+                CustomNavigationBar(title:"Add contact",showDivider: false){
+                    presentationMode.wrappedValue.dismiss()
                 }
-                .navigationViewStyle(StackNavigationViewStyle())
-                .padding(16)
+                .padding(.bottom , 24)
+                PrimaryTextField(title:"type contact",textBinding: $contactValue,keyboardType: .alphabet)
+                PrimaryTextField(title:"first name",textBinding: $firstName,keyboardType: .alphabet)
+                PrimaryTextField(title:"last name",textBinding: $lastName, keyboardType: .alphabet)
+                
+                Button(action: {
+                    let isPhone = validatePhone(value: contactValue)
+                    let req:NewAddContactRequest = isPhone ?
+                        .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: nil, uniqueId: nil) :
+                        .init(email:nil,firstName:firstName,lastName: lastName, ownerId: nil, username: contactValue, typeCode: nil, uniqueId: nil)
+                    Chat.sharedInstance.addContact(req) { contacts, uniqueId, error in
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
+                }, label: {
+                    Text("Submit")
+                })
+                    .buttonStyle(PrimaryButtonStyle())
             }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .padding()
+            .padding()
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        .background(Color.gray.opacity(0.2)
+                        .edgesIgnoringSafeArea(.all)
+        )
         
     }
     

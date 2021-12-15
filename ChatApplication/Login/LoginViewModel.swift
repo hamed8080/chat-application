@@ -191,6 +191,7 @@ class TokenManager : ObservableObject{
     
     func clearToken(){
         UserDefaults.standard.removeObject(forKey: TokenManager.SSO_TOKEN_KEY)
+        UserDefaults.standard.removeObject(forKey: TokenManager.SSO_TOKEN_CREATE_DATE)
         UserDefaults.standard.synchronize()
         setIsLoggedIn(isLoggedIn: false)
     }

@@ -87,7 +87,6 @@ struct ThreadView:View {
                 }
             }
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
-            .navigationBarTitle(Text(viewModel.thread?.title ?? ""), displayMode: .inline)
             .toolbar{
                 
                 ToolbarItemGroup(placement:.navigationBarTrailing){

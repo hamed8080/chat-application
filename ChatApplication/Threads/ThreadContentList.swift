@@ -19,32 +19,39 @@ struct ThreadContentList:View {
     
     var body: some View{
         GeometryReader{ reader in
-            List {
-                MultilineTextField("Search ...",text: $searechInsideThread,backgroundColor:Color.gray.opacity(0.2))
-                    .cornerRadius(16)
-                    .noSeparators()
-                    .onChange(of: searechInsideThread) { newValue in
-                        viewModel.searchInsideAllThreads(text: searechInsideThread)
-                    }
-                
-                ForEach(viewModel.model.threads , id:\.id) { thread in
-                    ThreadRow(thread: thread,viewModel: viewModel)
-                        .onAppear {
-                            if viewModel.model.threads.last == thread{
-                                viewModel.loadMore()
-                            }
+            VStack(spacing:0){
+                CustomNavigationBar(title: "Chats",
+                                    leadingActions: [
+                                        .init(systemImageName: "plus",font: .headline){
+                                            viewModel.toggleThreadContactPicker.toggle()
+                                        }
+                                    ]
+                )
+                List {
+                    MultilineTextField("Search ...",text: $searechInsideThread,backgroundColor:Color.gray.opacity(0.2))
+                        .cornerRadius(16)
+                        .noSeparators()
+                        .onChange(of: searechInsideThread) { newValue in
+                            viewModel.searchInsideAllThreads(text: searechInsideThread)
                         }
-                }.onDelete(perform: { indexSet in
-                    guard let thread = indexSet.map({ viewModel.model.threads[$0]}).first else {return}
-                    viewModel.deleteThread(thread)
-                })
+                    
+                    ForEach(viewModel.model.threads , id:\.id) { thread in
+                        ThreadRow(thread: thread,viewModel: viewModel)
+                            .onAppear {
+                                if viewModel.model.threads.last == thread{
+                                    viewModel.loadMore()
+                                }
+                            }
+                    }.onDelete(perform: { indexSet in
+                        guard let thread = indexSet.map({ viewModel.model.threads[$0]}).first else {return}
+                        viewModel.deleteThread(thread)
+                    })
+                }
+                .listStyle(PlainListStyle())
+                Spacer()
+                LoadingViewAtCenterOfView(isLoading:viewModel.centerIsLoading ,reader:reader)
+                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
             }
-            .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
-            .listStyle(PlainListStyle())
-            Spacer()
-            LoadingViewAtCenterOfView(isLoading:viewModel.centerIsLoading ,reader:reader)
-            LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
-                .navigationBarTitle("Chats",displayMode: .inline)
         }
         .sheet(isPresented: $viewModel.toggleThreadContactPicker, onDismiss: nil, content: {
             StartThreadContactPickerView(viewModel: .init()) { model in
@@ -57,7 +64,6 @@ struct ThreadContentList:View {
         }.onDisappear {
             viewModel.setViewAppear(appear: false)
         }
-        
     }
 }
 

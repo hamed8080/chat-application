@@ -57,6 +57,7 @@ struct HomeContentView: View {
                     MasterView(callsHistoryViewModel:callsHistoryViewModel,
                                contactsViewModel: contactsViewModel,
                                threadsViewModel: threadsViewModel)
+                      
                     
                     ///do not remove this navigation to any view swift will give you unexpected behavior
                     NavigationLink(destination: ThreadView(viewModel: ThreadViewModel()) ,isActive: $showThreadView) {
@@ -64,7 +65,7 @@ struct HomeContentView: View {
                     }
                 }
             }
-//            .navigationViewStyle(StackNavigationViewStyle())
+            .navigationViewStyle(.stack)//dont remove this line in ipad tabs will be hidden
             .onReceive(appState.$dark, perform: { _ in
                 self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
             })
@@ -152,56 +153,7 @@ struct MasterView:View{
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }.tag(4)
-            
         }
-        .toolbar{
-            ToolbarItemGroup(placement:.navigationBarTrailing){
-                if seletedTabTag == Tabs.CONTACTS.rawValue{
-                    let plus = NavBarButton(systemImageName: "plus", action: {
-                        contactsView.viewModel.navigateToAddOrEditContact.toggle()
-                    })
-                    plus.getNavBarItem().view
-                }
-                
-                if seletedTabTag == Tabs.CHATS.rawValue{
-                    NavBarButton(systemImageName: "square.and.pencil") {
-                        withAnimation {
-                            threadsView.viewModel.toggleThreadContactPicker.toggle()
-                        }
-                    }.getNavBarItem().view
-                }
-            }
-
-            ToolbarItemGroup(placement:.navigationBarLeading){
-                if seletedTabTag == Tabs.CONTACTS.rawValue{
-                    let edit = NavBarButton(title: "Edit", action: {
-                        contactsView.viewModel.isInEditMode.toggle()
-                        seletedTabTag = seletedTabTag//to refresh this view and cause to trigger and show and hide delete button
-                        showDeleteButton.toggle()
-                    })
-                    edit.getNavBarItem().view
-                    
-                    if showDeleteButton,contactsView.viewModel.isInEditMode{
-                        NavBarButton(title: "Delete") {
-                            contactsView.viewModel.deleteSelectedItems()
-                        }.getNavBarItem().view
-                    }
-                }
-            }
-            
-            ToolbarItem(placement: .principal) {
-                VStack {
-                    Text(Tabs(rawValue: seletedTabTag)?.stringValue ?? "")
-                        .fixedSize()
-                        .font(.headline)
-                    Text(appState.connectionStatusString)
-                        .fixedSize()
-                        .font(.caption)
-                }
-            }
-        }
-        .navigationViewStyle(.stack)
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -215,21 +167,5 @@ struct HomeView_Previews: PreviewProvider {
             .onAppear(){
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
             }
-    }
-}
-
-enum Tabs:Int{
-    case CONTACTS = 1
-    case CHATS    = 2
-    case CALLS    = 3
-    case SETTINGS = 4
-    
-    var stringValue:String{
-        switch self {
-        case .CONTACTS : return "Contacts"
-        case .CHATS    : return "Chats"
-        case .CALLS    : return "Calls"
-        case .SETTINGS : return "Settings"
-        }
     }
 }

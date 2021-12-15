@@ -10,28 +10,30 @@ import FanapPodChatSDK
 
 struct SettingsView:View {
     
-    @State var showLogs:Bool    = false
     @StateObject var viewModel  = SettingViewModel()
     
     @EnvironmentObject
     var appState:AppState
-        
+    
     var body: some View{
-            ScrollView{
-                HStack(spacing:0){
-                    VStack{
-                        HStack{
-                            Spacer()
-                            Button(action: {
-                                
-                            }, label: {
-                                Image(systemName:"square.and.pencil")
-                                    .font(.title)
-                            })
-                        }
-                        .padding(.top)
-                        .padding(.bottom , 25)
-                        
+        VStack(spacing:0){
+            CustomNavigationBar(title: "Settings")
+            List{
+                Section{
+                    HStack{
+                        Spacer()
+                        Button(action: {
+                            
+                        }, label: {
+                            Image(systemName:"square.and.pencil")
+                                .font(.title)
+                        })
+                            .buttonStyle(DeepButtonStyle())
+                    }
+                    .padding(.top)
+                    .padding(.bottom , 25)
+                    HStack{
+                        Spacer()
                         Circle()
                             .fill(Color.gray.opacity(0.08))
                             .frame(width: 128, height: 128)
@@ -50,85 +52,90 @@ struct SettingsView:View {
                                         }
                                     })
                             )
-                            
-                        
+                        Spacer()
+                    }
+                    .noSeparators()
+                    
+                    HStack{
+                        Spacer()
                         VStack(spacing:12){
                             Text(viewModel.model.currentUser?.name ?? "")
                                 .font(.title.bold())
+                            
                             Text(viewModel.model.currentUser?.cellphoneNumber ?? "")
                                 .font(.subheadline)
                         }
-                        .padding(.top , 25)
-                        
-                        HStack{
-                            Image(systemName:"moon.fill")
-                                .font(.body)
-                            Text("Dark Mode")
-                                .font(.body)
-                            
-                            Spacer()
-                            
-                            Button(action: {
-                                withAnimation {
-                                    appState.dark.toggle()
-                                    UIApplication.shared.windows.first?.rootViewController?.view.overrideUserInterfaceStyle = appState.dark ? .dark : .light
-                                    UIApplication.shared.windows.first?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
-                                }
-                            }, label: {
-                                Image("on")
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .foregroundColor(appState.dark ? .white : .black)
-                                    .frame(width: 48, height: 42, alignment: .center)
-                                    .scaledToFit()
-                                    .rotationEffect(.init(degrees: appState.dark ? 180 : 0))
-                            })
-                        }
-                        .padding(.top , 25)
-                        
-                        Group{
-                            GroupItemInSlideMenu(name: "gear", title: "Setting", color: .blue,destinationView:EmptyView())
-                            Divider()
-                            GroupItemInSlideMenu<EmptyView>(name: "phone", title: "Calls", color: .green,destinationView:EmptyView())
-                            GroupItemInSlideMenu<EmptyView>(name: "bookmark", title: "Saved Messages", color: Color.purple , destinationView:EmptyView())
-                            GroupItemInSlideMenu<ResultView>(name: "note.text", title: "Logs", color: Color.yellow , destinationView:ResultView())
-                            
-                            Button(action: {
-                                Chat.sharedInstance.newlogOut()
-                                CacheFactory.write(cacheType: .DELETE_ALL_CACHE_DATA)
-                                TokenManager.shared.clearToken()
-                            }, label: {
-                                HStack{
-                                    Image(systemName:"arrow.backward.circle")
-                                        .font(.body)
-                                        .foregroundColor(.red)
-                                    Text("Logout")
-                                    Spacer()
-                                }.padding([.top , .bottom] , 12)
-                            })
-                            #if DEBUG
-                            HStack{
-                                Image(systemName: "key.fill")
-                                    .foregroundColor(Color.yellow)
-                                    .frame(width: 24, height: 24)
-                                Text("Token expire in: \(viewModel.secondToExpire)")
-                                    .foregroundColor(Color.gray)
-                                Spacer()
-                            }
-                            #endif
-                        }
                         Spacer()
-                        NavigationLink(destination: ResultView(),isActive: $showLogs){}.hidden()
                     }
-                    .foregroundColor(.primary)
-                    .padding(.horizontal , 36)
+                    .padding([.top,.bottom] , 25)
+                    .noSeparators()
                 }
+                
+                Section(footer: Text("Global theme of the app to Dark or Light").lineLimit(2)){
+                    HStack{
+                        Image(systemName:"moon.fill")
+                        Text("Dark Mode")
+                        Spacer()
+                        Button(action: {
+                            withAnimation {
+                                appState.dark.toggle()
+                                UIApplication.shared.windows.first?.rootViewController?.view.overrideUserInterfaceStyle = appState.dark ? .dark : .light
+                                UIApplication.shared.windows.first?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
+                            }
+                        }, label: {
+                            Image("on")
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(appState.dark ? .white : .black)
+                                .frame(width: 48, height: 42, alignment: .center)
+                                .scaledToFit()
+                                .rotationEffect(.init(degrees: appState.dark ? 180 : 0))
+                        })
+                    }
+                }
+                
+                Section(header:Text("Manage Calls")){
+                    Group{
+                        GroupItemInSlideMenu<EmptyView>(name: "gear", title: "Setting", color: .blue,destinationView:EmptyView())
+                        GroupItemInSlideMenu<EmptyView>(name: "phone", title: "Calls", color: .green,destinationView:EmptyView())
+                        GroupItemInSlideMenu<EmptyView>(name: "bookmark", title: "Saved Messages", color: Color.purple , destinationView:EmptyView())
+                        GroupItemInSlideMenu<ResultView>(name: "note.text", title: "Logs", color: Color.yellow , destinationView:ResultView())
+                        
+                        Button(action: {
+                            Chat.sharedInstance.newlogOut()
+                            CacheFactory.write(cacheType: .DELETE_ALL_CACHE_DATA)
+                            TokenManager.shared.clearToken()
+                        }, label: {
+                            HStack{
+                                Image(systemName:"arrow.backward.circle")
+                                    .foregroundColor(.red)
+                                    .font(.body.weight(.bold))
+                                Text("Logout")
+                                    .fontWeight(.bold)
+                                    .foregroundColor(Color.red)
+                                Spacer()
+                            }.padding([.top , .bottom] , 12)
+                        })
+#if DEBUG
+                        HStack{
+                            Image(systemName: "key.fill")
+                                .foregroundColor(Color.yellow)
+                                .frame(width: 24, height: 24)
+                            Text("Token expire in: \(viewModel.secondToExpire)")
+                                .foregroundColor(Color.gray)
+                            Spacer()
+                        }
+#endif
+                    }
+                }
+                .noSeparators()
             }
-            .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
-        .onAppear{
-            viewModel.startTokenTimer()
+            .onAppear{
+                viewModel.startTokenTimer()
+            }
         }
     }
+    
 }
 
 struct GroupItemInSlideMenu<DestinationView:View>:View {
@@ -137,27 +144,20 @@ struct GroupItemInSlideMenu<DestinationView:View>:View {
     var title:String
     var color:Color
     var destinationView:DestinationView? = nil
-    var action: (()->Void)?
     
     @State var isActive = false
     
     var body: some View{
-        NavigationLink(destination: destinationView,isActive: $isActive){
-            
-            Button(action: {
-                isActive.toggle()
-                action?()
-            }, label: {
-                HStack{
-                    Image(systemName:name)
-                        .font(.body)
-                        .foregroundColor(color)
-                    Text(title)
-                        .font(.body)
-                    Spacer()
-                }.padding([.top , .bottom] , 12)
-            })
+        NavigationLink(destination: destinationView){
+            HStack{
+                Image(systemName:name)
+                    .font(.body)
+                    .foregroundColor(color)
+                Text(title)
+                    .font(.body)
+            }.padding([.top , .bottom] , 12)
         }
+        .buttonStyle(.plain)
     }
 }
 
