@@ -59,7 +59,14 @@ struct ThreadContentList:View {
                 viewModel.toggleThreadContactPicker.toggle()
             }
         })
+        .gesture(
+            DragGesture(minimumDistance: 5, coordinateSpace: .global)
+                .onChanged({ value in
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to:nil, from:nil, for:nil)
+                })
+        )
         .onAppear {
+            UINavigationBar.changeAppearance(clear: false)
             viewModel.setViewAppear(appear: true)
         }.onDisappear {
             viewModel.setViewAppear(appear: false)

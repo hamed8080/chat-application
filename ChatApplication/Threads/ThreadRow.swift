@@ -96,23 +96,38 @@ struct ThreadRow: View {
             appState.selectedThread = thread
 		}.onLongPressGesture {
 			showActionSheet.toggle()
-        }.compatibleConfirmationDialog($showActionSheet,message: "you can mange thread here", title: "Manage Thread", [
-            .init(title: (thread.pin ?? false) ? "UnPin" : "Pin", action: {
+        }
+        .contextMenu{
+            Button {
                 viewModel.pinUnpinThread(thread)
-            }),
-            .init(title: "Clear History", action: {
+            } label: {
+                Label((thread.pin ?? false) ? "UnPin" : "Pin", systemImage: "pin")
+            }
+            
+            Button {
                 viewModel.clearHistory(thread)
-            }),
-            .init(title: (thread.mute ?? false) ? "Unmute" : "Mute", action: {
+            } label: {
+                Label("Clear History", systemImage: "clock")
+            }
+            
+            Button {
                 viewModel.muteUnMuteThread(thread)
-            }),
-            .init(title: "Spam", action: {
+            } label: {
+                Label((thread.mute ?? false) ? "Unmute" : "Mute", systemImage: "speaker.slash")
+            }
+            
+            Button {
                 viewModel.spamPVThread(thread)
-            }),
-            .init(title: "Delete", action: {
+            } label: {
+                Label("Spam", systemImage: "ladybug")
+            }
+            
+            Button {
                 viewModel.deleteThread(thread)
-            }),
-        ])
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
     }
 }
 

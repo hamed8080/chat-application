@@ -80,78 +80,93 @@ struct TextMessageType:View{
             if isMe {
                 Spacer()
             }
-            Button(action: {}, label: {
-                VStack(spacing:8){
-                    if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
-                        DownloadFileView(message: message)
-                            .frame(width: 128, height: 128)
+            VStack(spacing:8){
+                if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
+                    DownloadFileView(message: message)
+                        .frame(width: 128, height: 128)
+                }
+                Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
+                    .multilineTextAlignment(.trailing)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundColor(.black)
+                HStack{
+                    if let fileSize = message.metaData?.file?.size, let size = Int(fileSize){
+                        Text(size.toSizeString)
+                            .multilineTextAlignment(.leading)
+                            .font(.subheadline)
+                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        Spacer()
                     }
-                    Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
-                        .multilineTextAlignment(.trailing)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundColor(.black)
-                    HStack{
-                        if let fileSize = message.metaData?.file?.size, let size = Int(fileSize){
-                            Text(size.toSizeString)
-                                .multilineTextAlignment(.leading)
-                                .font(.subheadline)
-                                .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                            Spacer()
-                        }
-                        if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
-                            Spacer()
-                            Text("\(date.getTime())")
-                                .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                                .font(.caption2.weight(.light))
-                        }
-                        
-                        if isMe{
-                            Image(uiImage: UIImage(named:  message.seen == true ? "double_checkmark" : "single_chekmark")!)
-                                .resizable()
-                                .frame(width: 14, height: 14)
-                                .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                                .font(.caption2.weight(.light))
-                        }
+                    if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
+                        Spacer()
+                        Text("\(date.getTime())")
+                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                            .font(.caption2.weight(.light))
+                    }
+                    
+                    if isMe{
+                        Image(uiImage: UIImage(named:  message.seen == true ? "double_checkmark" : "single_chekmark")!)
+                            .resizable()
+                            .frame(width: 14, height: 14)
+                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                            .font(.caption2.weight(.light))
                     }
                 }
-                .fixedSize()
-                .frame(minWidth: 72, minHeight: 48, alignment: .leading)
-                .contentShape(Rectangle())
-                .padding(8)
-                .background(isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named:"chat_sender")!))
-                .cornerRadius(12)
                 
-            })
-                .onTapGesture {
-                    print("on tap gesture")
-                }.onLongPressGesture {
-                    print("long press triggred")
-                    showActionSheet.toggle()
+
+            }
+            .fixedSize()
+            .frame(minWidth: 72, minHeight: 48, alignment: .leading)
+            .contentShape(Rectangle())
+            .padding(8)
+            .background(isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named:"chat_sender")!))
+            .cornerRadius(12)
+            .onTapGesture {
+                print("on tap gesture")
+            }.onLongPressGesture {
+                print("long press triggred")
+                showActionSheet.toggle()
+            }
+        
+            .contextMenu{
+                
+                if message.isFileType == true{
+                    Button {
+                        viewModel.clearCacheFile(message: message)
+                    } label: {
+                        Label("Delete file from cache", systemImage: "cylinder.split.1x2")
+                    }
                 }
-                .compatibleConfirmationDialog($showActionSheet, message: "Manage this message", title: "Manage Message", getActionDialogButtons())
+
+                Button {
+                    viewModel.pinUnpinMessage(message)
+                } label: {
+                    Label((message.pinned ?? false) ? "UnPin" : "Pin", systemImage: "pin")
+                }
+ 
+                if #available(iOS 15.0, *) {
+                    Button (role:.destructive){
+                        withAnimation {
+                            viewModel.deleteMessage(message)
+                        }
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                } else {
+                    Button {
+                        withAnimation {
+                            viewModel.deleteMessage(message)
+                        }
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+            }
+            
             if !isMe{
                 Spacer()
             }
         }
-    }
-    
-    func getActionDialogButtons()->[DialogButton]{
-        var buttons:[DialogButton] = []
-        if message.isFileType == true{
-            buttons.append(.init(title: "Delete file from cache", action: {
-                viewModel.clearCacheFile(message: message)
-            }))
-        }
-        buttons.append(.init(title: (message.pinned ?? false) ? "UnPin" : "Pin", action: {
-            viewModel.pinUnpinMessage(message)
-        }))
-        
-        buttons.append(.init(title: "Delete", action: {
-            withAnimation {
-                viewModel.deleteMessage(message)
-            }
-        }))
-        return buttons
     }
 }
 
@@ -206,7 +221,7 @@ struct MessageRow_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        VStack{
+        List{
             MessageRow(message: message,viewModel: ThreadViewModel(),isMeForPreView: false)
             MessageRow(message: message,viewModel: ThreadViewModel(),isMeForPreView: true)
             MessageRow(message: downloadMessage, viewModel: ThreadViewModel(),isMeForPreView: true)

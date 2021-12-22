@@ -77,6 +77,7 @@
 		AC7EBFF6266CAF2E00984E81 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6D266CAD63009E4722 /* ContactsViewModel.swift */; };
 		AC7EBFF7266CAF3100984E81 /* ContactsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6C266CAD63009E4722 /* ContactsModel.swift */; };
 		AC826E3626F47A1F00551578 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC826E3526F47A1F00551578 /* LoginModel.swift */; };
+		AC8FF3F9276F579A001A6584 /* UINavigationBarEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8FF3F8276F579A001A6584 /* UINavigationBarEX.swift */; };
 		AC90B25526FB838D00477E03 /* PageWithNavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90B25426FB838D00477E03 /* PageWithNavigationBarView.swift */; };
 		AC91591D2718390D00437517 /* FileManagerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC91591C2718390D00437517 /* FileManagerExtension.swift */; };
 		AC924CA7274A3D1500E33BD1 /* LoadingViewAtCenterOfView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC924CA6274A3D1500E33BD1 /* LoadingViewAtCenterOfView.swift */; };
@@ -209,6 +210,7 @@
 		AC6D532526F1AF4400CBC059 /* ThreadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadModel.swift; sourceTree = "<group>"; };
 		AC7B6D74266DE7820059782E /* LoadingViewAtBottomOfView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAtBottomOfView.swift; sourceTree = "<group>"; };
 		AC826E3526F47A1F00551578 /* LoginModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
+		AC8FF3F8276F579A001A6584 /* UINavigationBarEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationBarEX.swift; sourceTree = "<group>"; };
 		AC90B25426FB838D00477E03 /* PageWithNavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageWithNavigationBarView.swift; sourceTree = "<group>"; };
 		AC91591C2718390D00437517 /* FileManagerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerExtension.swift; sourceTree = "<group>"; };
 		AC924CA6274A3D1500E33BD1 /* LoadingViewAtCenterOfView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAtCenterOfView.swift; sourceTree = "<group>"; };
@@ -396,6 +398,7 @@
 				AC5411E3275631A90018C78D /* ColorEx.swift */,
 				AC5411E527563A440018C78D /* UIImageEX.swift */,
 				ACADE27C275788EB00DD40B4 /* MessageType.swift */,
+				AC8FF3F8276F579A001A6584 /* UINavigationBarEX.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -845,6 +848,7 @@
 				AC10007126F4655E00C3AD67 /* AuthorizeResponse.swift in Sources */,
 				AC48ED6126F6FD3A00AB1A5D /* HandshakeRequest.swift in Sources */,
 				AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */,
+				AC8FF3F9276F579A001A6584 /* UINavigationBarEX.swift in Sources */,
 				AC7B6D75266DE7820059782E /* LoadingViewAtBottomOfView.swift in Sources */,
 				AC21DA40273BF7D700DC86E6 /* StringEX.swift in Sources */,
 				AC20FBA4266CC4B500187B47 /* DateEX.swift in Sources */,
