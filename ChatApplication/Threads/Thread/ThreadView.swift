@@ -18,6 +18,9 @@ struct ThreadView:View {
     @State
     var showAttachmentDialog: Bool = false
     
+    @EnvironmentObject
+    var appState:AppState
+    
     var body: some View{
         ZStack{
             VStack{
@@ -40,7 +43,9 @@ struct ThreadView:View {
                                 ZStack{
                                     Image("chat_bg")
                                         .resizable(resizingMode: .tile)
+                                        .renderingMode(.template)
                                         .opacity(0.25)
+                                        .colorMultiply( appState.dark ? Color.white : Color.black)
                                     LinearGradient(gradient: Gradient(colors: [Color.black.opacity(0.9),
                                                                                Color.blue.opacity(0.6)]),
                                                    startPoint: .top,
@@ -204,7 +209,9 @@ struct ThreadView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = ThreadViewModel()
         ThreadView(viewModel: vm,showAttachmentDialog: false)
+            .preferredColorScheme(.dark)
             .previewDevice("iPhone 13 Pro Max")
+            .environmentObject(AppState.shared)
             .onAppear(){
                 vm.setupPreview()
                 vm.toggleRecording()

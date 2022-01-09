@@ -25,6 +25,9 @@ class ThreadsViewModel:ObservableObject{
     
     @AppStorage("Threads", store: UserDefaults.group) var threadsData:Data?
     
+    @Published
+    var showAddParticipants = false
+    
     private (set) var connectionStatusCancelable    : AnyCancellable? = nil
     private (set) var messageCancelable             : AnyCancellable? = nil
     private (set) var systemMessageCancelable       : AnyCancellable? = nil
@@ -187,6 +190,30 @@ class ThreadsViewModel:ObservableObject{
     func searchInsideAllThreads(text:String){
         //not implemented yet
 //        Chat.sharedInstance.
+    }
+    
+    var selectedThraed:Conversation?
+    func showAddParticipants(_ thread:Conversation){
+        self.selectedThraed = thread
+        showAddParticipants.toggle()
+    }
+    
+    func addParticipantsToThread(_ contacts:[Contact] ){
+        centerIsLoading = true
+        guard let threadId = selectedThraed?.id else {
+            return
+        }
+
+        let participants = contacts.compactMap { contact in
+            AddParticipantRequest(coreUserId: contact.id ?? 0, threadId: threadId)
+        }
+        
+        Chat.sharedInstance.addParticipants(participants) { thread, uniqueId, error in
+            if let thread = thread{
+                AppState.shared.selectedThread = thread
+            }
+            self.centerIsLoading = false
+        }
     }
     
 }

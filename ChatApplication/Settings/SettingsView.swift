@@ -76,21 +76,14 @@ struct SettingsView:View {
                         Image(systemName:"moon.fill")
                         Text("Dark Mode")
                         Spacer()
-                        Button(action: {
-                            withAnimation {
-                                appState.dark.toggle()
-                                UIApplication.shared.windows.first?.rootViewController?.view.overrideUserInterfaceStyle = appState.dark ? .dark : .light
-                                UIApplication.shared.windows.first?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
-                            }
-                        }, label: {
-                            Image("on")
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundColor(appState.dark ? .white : .black)
-                                .frame(width: 48, height: 42, alignment: .center)
-                                .scaledToFit()
-                                .rotationEffect(.init(degrees: appState.dark ? 180 : 0))
-                        })
+                        Toggle(isOn: $appState.dark) {
+                            Text("")
+                        }
+                        .toggleStyle(PrimaryToggleStyle())
+                        .onReceive(appState.$dark) { valuese in
+                            UIApplication.shared.windows.first?.rootViewController?.view.overrideUserInterfaceStyle = appState.dark ? .dark : .light
+                            UIApplication.shared.windows.first?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
+                        }
                     }
                 }
                 
@@ -99,7 +92,7 @@ struct SettingsView:View {
                         GroupItemInSlideMenu<EmptyView>(name: "gear", title: "Setting", color: .blue,destinationView:EmptyView())
                         GroupItemInSlideMenu<EmptyView>(name: "phone", title: "Calls", color: .green,destinationView:EmptyView())
                         GroupItemInSlideMenu<EmptyView>(name: "bookmark", title: "Saved Messages", color: Color.purple , destinationView:EmptyView())
-                        GroupItemInSlideMenu<ResultView>(name: "note.text", title: "Logs", color: Color.yellow , destinationView:ResultView())
+                        GroupItemInSlideMenu<AnyView>(name: "note.text", title: "Logs", color: Color.yellow , destinationView:AnyView(resultViewWithIgnoreSafeArea()))
                         
                         Button(action: {
                             Chat.sharedInstance.newlogOut()
@@ -136,6 +129,9 @@ struct SettingsView:View {
         }
     }
     
+    @ViewBuilder func resultViewWithIgnoreSafeArea()->some View{
+       ResultView().ignoresSafeArea()
+    }
 }
 
 struct GroupItemInSlideMenu<DestinationView:View>:View {

@@ -26,11 +26,11 @@ struct CustomNavigationBar: View {
                             backButtonAction()
                         }
                     }
-                    ForEach(trailingActions, id:\.id){ item in
+                    ForEach(leadingActions, id:\.id){ item in
                         item
                     }
                     Spacer()
-                    ForEach(leadingActions, id:\.id){ item in
+                    ForEach(trailingActions, id:\.id){ item in
                         item
                     }
                 }
@@ -62,7 +62,7 @@ struct CustomNavigationBar: View {
             }
         }
         .padding(0)
-        .animation(.easeInOut)
+        .animation(.none)
     }
 }
 
@@ -115,6 +115,7 @@ struct NavigationItemButton:View{
                 .frame(width: 48, height: 48)
                 .navigationBarTitle("", displayMode: .inline)
                 .navigationBarHidden(true)
+                .animation(.none)
             }
         }
     }

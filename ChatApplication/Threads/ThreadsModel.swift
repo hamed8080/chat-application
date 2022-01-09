@@ -31,6 +31,8 @@ struct ThreadsModel {
     
     mutating func setThreads(threads:[Conversation]){
         self.threads = threads
+        self.threads.sort(by: {$0.time ?? 0 > $1.time ?? 0})
+        self.threads.sort(by: {$0.pin == true && $1.pin == false})        
     }
     
     mutating func appendThreads(threads:[Conversation]){

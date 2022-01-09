@@ -21,7 +21,7 @@ struct ThreadContentList:View {
         GeometryReader{ reader in
             VStack(spacing:0){
                 CustomNavigationBar(title: "Chats",
-                                    leadingActions: [
+                                    trailingActions: [
                                         .init(systemImageName: "plus",font: .headline){
                                             viewModel.toggleThreadContactPicker.toggle()
                                         }
@@ -53,6 +53,12 @@ struct ThreadContentList:View {
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
             }
         }
+        .sheet(isPresented: $viewModel.showAddParticipants, onDismiss: nil, content: {
+            AddParticipantsToThreadView(viewModel: .init()) { contacts in
+                viewModel.addParticipantsToThread(contacts)
+                viewModel.showAddParticipants.toggle()
+            }
+        })
         .sheet(isPresented: $viewModel.toggleThreadContactPicker, onDismiss: nil, content: {
             StartThreadContactPickerView(viewModel: .init()) { model in
                 viewModel.createThread(model)

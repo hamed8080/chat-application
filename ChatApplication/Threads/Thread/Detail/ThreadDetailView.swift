@@ -74,7 +74,6 @@ struct ThreadDetailView:View {
                 .listStyle(PlainListStyle())
             }
         }
-        .ignoresSafeArea()
         .navigationViewStyle(.stack)
         .onAppear{
             participantsVM.threadId = thread?.id ?? 0

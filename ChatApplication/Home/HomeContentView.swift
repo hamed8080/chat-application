@@ -46,6 +46,8 @@ struct HomeContentView: View {
                         EmptyView()
                     }
                 }
+                .navigationBarTitle("")
+                .navigationBarHidden(true)
             }
             .navigationViewStyle(.stack)//dont remove this line in ipad tabs will be hidden
             .onReceive(appState.$dark, perform: { _ in

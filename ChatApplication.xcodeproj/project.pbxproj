@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */; };
+		05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */; };
+		05FE518927899554004F44B5 /* AddParticipantsToViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */; };
 		0BA2FE3B1809DB20412FD55E /* Pods_ChatApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F7DD945EEAC5CFDE0C688FC /* Pods_ChatApplication.framework */; };
 		14A8489843E49721698AB9DD /* Pods_MyWidgetExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0703C3D3AE7BBA360A74A78B /* Pods_MyWidgetExtension.framework */; };
 		AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F3B268C4FA500B008FF /* HomeContentView.swift */; };
@@ -140,6 +143,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryToggleStyle.swift; sourceTree = "<group>"; };
+		05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToViewModel.swift; sourceTree = "<group>"; };
+		05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToThreadView.swift; sourceTree = "<group>"; };
 		0703C3D3AE7BBA360A74A78B /* Pods_MyWidgetExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyWidgetExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4456B7A264ACE718F903CCD4 /* Pods-ChatApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApplication.release.xcconfig"; path = "Target Support Files/Pods-ChatApplication/Pods-ChatApplication.release.xcconfig"; sourceTree = "<group>"; };
 		4F7DD945EEAC5CFDE0C688FC /* Pods_ChatApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -274,6 +280,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		05CE5B4B2785716C004336F5 /* AddParticipantsToThreadView */ = {
+			isa = PBXGroup;
+			children = (
+				05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */,
+				05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */,
+			);
+			path = AddParticipantsToThreadView;
+			sourceTree = "<group>";
+		};
 		AC0435F926998CF300B1C87B /* Participants */ = {
 			isa = PBXGroup;
 			children = (
@@ -430,6 +445,7 @@
 		AC1D2CC32662016D00AA351A /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				05CE5B4B2785716C004336F5 /* AddParticipantsToThreadView */,
 				ACC306A92701DF850035CCB9 /* StartThreadContactPickerView */,
 				AC6D531E26F1AD9B00CBC059 /* Thread */,
 				AC0435F926998CF300B1C87B /* Participants */,
@@ -555,6 +571,7 @@
 			children = (
 				ACC4C1922765C342008940CD /* ViewEX.swift */,
 				ACFADE8327675DA5007C555F /* DeepButtonStyle.swift */,
+				05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */,
 				ACFADE7F27675BB6007C555F /* PrimaryButtonStyle.swift */,
 			);
 			path = Modifires;
@@ -805,6 +822,7 @@
 				AC0889AC2691D47E00FD4552 /* AppState.swift in Sources */,
 				AC1D2CD22662016E00AA351A /* AppDelegate.swift in Sources */,
 				AC1D2CD32662016E00AA351A /* ChatDelegateImplementation.swift in Sources */,
+				05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */,
 				AC48ED6326F7051F00AB1A5D /* AuthorizeRequest.swift in Sources */,
 				ACD6840E26F8BAC20093002C /* SettingModel.swift in Sources */,
 				AC2E4747274B58880073E8E4 /* UserDefaultsEX.swift in Sources */,
@@ -820,6 +838,7 @@
 				ACC306B12701E6350035CCB9 /* StartThreadContactRow.swift in Sources */,
 				AC7EBFF7266CAF3100984E81 /* ContactsModel.swift in Sources */,
 				AC48ED6026F6F9E300AB1A5D /* RestClient.swift in Sources */,
+				05FE518927899554004F44B5 /* AddParticipantsToViewModel.swift in Sources */,
 				AC0889B02691E14500FD4552 /* CustomHostinViewController.swift in Sources */,
 				AC91591D2718390D00437517 /* FileManagerExtension.swift in Sources */,
 				AC0435FC26998D3700B1C87B /* ParticipantsModel.swift in Sources */,
@@ -857,6 +876,7 @@
 				ACC3C5EF26F4633900AEE578 /* HandshakeResponse.swift in Sources */,
 				AC924CA7274A3D1500E33BD1 /* LoadingViewAtCenterOfView.swift in Sources */,
 				AC53261C2751F227003685E3 /* CircularProgressView.swift in Sources */,
+				05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */,
 				AC6D532226F1ADF000CBC059 /* ThreadViewModel.swift in Sources */,
 				ACD6840C26F8BA740093002C /* SettingViewModel.swift in Sources */,
 				ACADE27F2757AD7B00DD40B4 /* RecordAudioBackground.swift in Sources */,
