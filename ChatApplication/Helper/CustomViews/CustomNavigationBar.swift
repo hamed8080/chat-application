@@ -62,7 +62,7 @@ struct CustomNavigationBar: View {
             }
         }
         .padding(0)
-        .animation(.none)
+        .customAnimation(.none)
     }
 }
 
@@ -115,7 +115,7 @@ struct NavigationItemButton:View{
                 .frame(width: 48, height: 48)
                 .navigationBarTitle("", displayMode: .inline)
                 .navigationBarHidden(true)
-                .animation(.none)
+                .customAnimation(.none)
             }
         }
     }

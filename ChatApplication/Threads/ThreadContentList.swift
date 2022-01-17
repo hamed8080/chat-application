@@ -59,6 +59,12 @@ struct ThreadContentList:View {
                 viewModel.showAddParticipants.toggle()
             }
         })
+        .sheet(isPresented: $viewModel.showAddToTags, onDismiss: nil, content: {
+            AddThreadToTagsView(viewModel: viewModel.tagViewModel) { tag in
+                viewModel.threadAddedToTag(tag)
+                viewModel.showAddToTags.toggle()
+            }
+        })
         .sheet(isPresented: $viewModel.toggleThreadContactPicker, onDismiss: nil, content: {
             StartThreadContactPickerView(viewModel: .init()) { model in
                 viewModel.createThread(model)

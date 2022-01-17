@@ -31,7 +31,7 @@ struct AttachmentDialog : View {
             )
             .edgesIgnoringSafeArea(.bottom)
         }
-        .animation(.default)
+        .customAnimation(.default)
     }
 }
 

@@ -71,7 +71,7 @@ struct ContactContentList:View {
                                     viewModel.loadMore()
                                 }
                             }
-                            .animation(.default)
+                            .customAnimation(.default)
                     }
                     .onDelete(perform:viewModel.delete)
                     .padding(0)

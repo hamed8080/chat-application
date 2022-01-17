@@ -28,7 +28,7 @@ struct PrimaryToggleStyle:ToggleStyle{
                                 .foregroundColor(configuration.isOn ? .green : .gray)
                         )
                         .offset(x: configuration.isOn ? 11 : -11, y: 0)
-                        .animation(Animation.linear(duration: 0.1))
+                        .customAnimation(Animation.linear(duration: 0.1))
                     
                 ).cornerRadius(20)
                 .onTapGesture { configuration.isOn.toggle() }

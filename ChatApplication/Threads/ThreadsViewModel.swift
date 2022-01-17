@@ -28,10 +28,15 @@ class ThreadsViewModel:ObservableObject{
     @Published
     var showAddParticipants = false
     
+    @Published
+    var showAddToTags       = false
+    
     private (set) var connectionStatusCancelable    : AnyCancellable? = nil
     private (set) var messageCancelable             : AnyCancellable? = nil
     private (set) var systemMessageCancelable       : AnyCancellable? = nil
     private (set) var isFirstTimeConnectedRequestSuccess = false
+    
+    private (set) var tagViewModel = TagsViewModel()
     
     init() {
         connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
@@ -213,6 +218,20 @@ class ThreadsViewModel:ObservableObject{
                 AppState.shared.selectedThread = thread
             }
             self.centerIsLoading = false
+        }
+    }
+    
+    func showAddThreadToTag(_ thread:Conversation){
+        self.selectedThraed = thread
+        showAddToTags.toggle()
+    }
+    
+    func threadAddedToTag(_ tag:Tag){
+        if let selectedThraed = selectedThraed {
+            isLoading = true
+            tagViewModel.addThreadToTag(tag: tag, thread: selectedThraed){ tagParticipants, success in
+                self.isLoading = false
+            }
         }
     }
     

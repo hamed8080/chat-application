@@ -68,7 +68,7 @@ struct ContactRow: View {
                     getActionsView()
                 }else{
                     EmptyView()
-                        .animation(.default)
+                        .customAnimation(.default)
                 }
             }
             .padding(SwiftUI.EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))

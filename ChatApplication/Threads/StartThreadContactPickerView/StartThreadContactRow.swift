@@ -67,7 +67,7 @@ struct StartThreadContactRow: View {
                     }
                 })
             }
-            .animation(.default)
+            .customAnimation(.default)
         }
         .contentShape(Rectangle())
     }

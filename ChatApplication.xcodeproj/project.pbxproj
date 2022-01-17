@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		052D57362795323C0075BF8F /* ManageTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D57352795323C0075BF8F /* ManageTagView.swift */; };
+		052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D5737279539840075BF8F /* TagParticipantRow.swift */; };
+		05384A7F2792995F00D85A92 /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A7D2792993500D85A92 /* TagsViewModel.swift */; };
+		05384A802792996200D85A92 /* TagsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A7E2792993900D85A92 /* TagsModel.swift */; };
+		05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */; };
+		05384A842792A10100D85A92 /* TagRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A832792A10100D85A92 /* TagRow.swift */; };
+		05384A862792CE5E00D85A92 /* CustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A852792CE5E00D85A92 /* CustomDialog.swift */; };
+		05384A8A2792F3FC00D85A92 /* KeyboardResponsiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */; };
+		05384A8C2792FB5000D85A92 /* PrimaryCustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A8B2792FB3200D85A92 /* PrimaryCustomDialog.swift */; };
 		05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */; };
 		05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */; };
 		05FE518927899554004F44B5 /* AddParticipantsToViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */; };
@@ -143,6 +152,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		052D57352795323C0075BF8F /* ManageTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagView.swift; sourceTree = "<group>"; };
+		052D5737279539840075BF8F /* TagParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagParticipantRow.swift; sourceTree = "<group>"; };
+		05384A7D2792993500D85A92 /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
+		05384A7E2792993900D85A92 /* TagsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsModel.swift; sourceTree = "<group>"; };
+		05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddThreadToTagsView.swift; sourceTree = "<group>"; };
+		05384A832792A10100D85A92 /* TagRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRow.swift; sourceTree = "<group>"; };
+		05384A852792CE5E00D85A92 /* CustomDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialog.swift; sourceTree = "<group>"; };
+		05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardResponsiveModifier.swift; sourceTree = "<group>"; };
+		05384A8B2792FB3200D85A92 /* PrimaryCustomDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryCustomDialog.swift; sourceTree = "<group>"; };
 		05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryToggleStyle.swift; sourceTree = "<group>"; };
 		05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToViewModel.swift; sourceTree = "<group>"; };
 		05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToThreadView.swift; sourceTree = "<group>"; };
@@ -280,6 +298,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		05384A7C2792992C00D85A92 /* Tag */ = {
+			isa = PBXGroup;
+			children = (
+				05384A7D2792993500D85A92 /* TagsViewModel.swift */,
+				05384A7E2792993900D85A92 /* TagsModel.swift */,
+				05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */,
+				052D57352795323C0075BF8F /* ManageTagView.swift */,
+				052D5737279539840075BF8F /* TagParticipantRow.swift */,
+				05384A832792A10100D85A92 /* TagRow.swift */,
+			);
+			path = Tag;
+			sourceTree = "<group>";
+		};
 		05CE5B4B2785716C004336F5 /* AddParticipantsToThreadView */ = {
 			isa = PBXGroup;
 			children = (
@@ -438,6 +469,8 @@
 				ACADE27E2757AD7B00DD40B4 /* RecordAudioBackground.swift */,
 				ACFADE7D27674DDF007C555F /* CustomNavigationBar.swift */,
 				ACFADE8127675C29007C555F /* PrimaryTextField.swift */,
+				05384A8B2792FB3200D85A92 /* PrimaryCustomDialog.swift */,
+				05384A852792CE5E00D85A92 /* CustomDialog.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -445,6 +478,7 @@
 		AC1D2CC32662016D00AA351A /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				05384A7C2792992C00D85A92 /* Tag */,
 				05CE5B4B2785716C004336F5 /* AddParticipantsToThreadView */,
 				ACC306A92701DF850035CCB9 /* StartThreadContactPickerView */,
 				AC6D531E26F1AD9B00CBC059 /* Thread */,
@@ -573,6 +607,7 @@
 				ACFADE8327675DA5007C555F /* DeepButtonStyle.swift */,
 				05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */,
 				ACFADE7F27675BB6007C555F /* PrimaryButtonStyle.swift */,
+				05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */,
 			);
 			path = Modifires;
 			sourceTree = "<group>";
@@ -799,10 +834,13 @@
 				ACF82E0F275230C3000330DB /* UploadFileMessage.swift in Sources */,
 				AC6291972750A91800190975 /* DocumentPicker.swift in Sources */,
 				AC6D532626F1AF4400CBC059 /* ThreadModel.swift in Sources */,
+				05384A8C2792FB5000D85A92 /* PrimaryCustomDialog.swift in Sources */,
 				AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */,
+				05384A802792996200D85A92 /* TagsModel.swift in Sources */,
 				ACFADE8227675C29007C555F /* PrimaryTextField.swift in Sources */,
 				AC10007B26F46EC900C3AD67 /* LoginViewModel.swift in Sources */,
 				AC3AB626274292F3006C3F85 /* ThreadDetailView.swift in Sources */,
+				05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */,
 				AC23695627439478008195D7 /* SearchContactRow.swift in Sources */,
 				ACC4C1932765C342008940CD /* ViewEX.swift in Sources */,
 				AC122EC2266B82A000C0630F /* ThreadContentList.swift in Sources */,
@@ -849,6 +887,7 @@
 				ACEAEDD7274CFA1100EC8252 /* AttachmentDialog.swift in Sources */,
 				AC5411E4275631A90018C78D /* ColorEx.swift in Sources */,
 				AC0B1D652690721000C6917A /* LogCell.swift in Sources */,
+				05384A7F2792995F00D85A92 /* TagsViewModel.swift in Sources */,
 				ACFADE7E27674DDF007C555F /* CustomNavigationBar.swift in Sources */,
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
 				ACAB96D227030F9A005FB9AA /* ShapeExtension.swift in Sources */,
@@ -862,15 +901,19 @@
 				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
 				AC0435FD26998D3E00B1C87B /* ParticipantsViewModel.swift in Sources */,
 				AC1D2CCE2662016E00AA351A /* ThreadsModel.swift in Sources */,
+				052D57362795323C0075BF8F /* ManageTagView.swift in Sources */,
 				AC48ED5E26F6F6AE00AB1A5D /* Routes.swift in Sources */,
 				AC085F3E2692EC71001492B2 /* Config.swift in Sources */,
 				AC10007126F4655E00C3AD67 /* AuthorizeResponse.swift in Sources */,
+				05384A842792A10100D85A92 /* TagRow.swift in Sources */,
 				AC48ED6126F6FD3A00AB1A5D /* HandshakeRequest.swift in Sources */,
 				AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */,
 				AC8FF3F9276F579A001A6584 /* UINavigationBarEX.swift in Sources */,
+				05384A8A2792F3FC00D85A92 /* KeyboardResponsiveModifier.swift in Sources */,
 				AC7B6D75266DE7820059782E /* LoadingViewAtBottomOfView.swift in Sources */,
 				AC21DA40273BF7D700DC86E6 /* StringEX.swift in Sources */,
 				AC20FBA4266CC4B500187B47 /* DateEX.swift in Sources */,
+				052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */,
 				AC10007926F46B4100C3AD67 /* LoginView.swift in Sources */,
 				AC924CB9274A6D7300E33BD1 /* MyWidget.intentdefinition in Sources */,
 				ACC3C5EF26F4633900AEE578 /* HandshakeResponse.swift in Sources */,
@@ -880,6 +923,7 @@
 				AC6D532226F1ADF000CBC059 /* ThreadViewModel.swift in Sources */,
 				ACD6840C26F8BA740093002C /* SettingViewModel.swift in Sources */,
 				ACADE27F2757AD7B00DD40B4 /* RecordAudioBackground.swift in Sources */,
+				05384A862792CE5E00D85A92 /* CustomDialog.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1049,7 +1093,7 @@
 				ENABLE_BITCODE = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = ChatApplication/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1078,7 +1122,7 @@
 				ENABLE_BITCODE = YES;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = ChatApplication/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

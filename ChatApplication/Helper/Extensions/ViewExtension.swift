@@ -11,4 +11,9 @@ extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape( RoundedCorner(radius: radius, corners: corners) )
     }
+    
+    @ViewBuilder
+    func customAnimation(_ animation: Animation?)->some View{
+        self.animation(animation, value: UUID())
+    }
 }

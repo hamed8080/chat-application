@@ -11,7 +11,6 @@ import FanapPodChatSDK
 struct ThreadRow: View {
 	
 	var thread:Conversation
-	@State private (set) var showActionSheet:Bool = false
 	@State private (set) var showParticipants:Bool = false
 	
     @StateObject
@@ -91,12 +90,10 @@ struct ThreadRow: View {
 			.padding([.leading , .trailing] , 8)
 			.padding([.top , .bottom] , 4)
 		})
-        .animation(.default)
+        .customAnimation(.default)
 		.onTapGesture {
             appState.selectedThread = thread
-		}.onLongPressGesture {
-			showActionSheet.toggle()
-        }
+		}
         .contextMenu{
             Button {
                 viewModel.pinUnpinThread(thread)
@@ -114,6 +111,12 @@ struct ThreadRow: View {
                 viewModel.muteUnMuteThread(thread)
             } label: {
                 Label((thread.mute ?? false) ? "Unmute" : "Mute", systemImage: "speaker.slash")
+            }
+            
+            Button {
+                viewModel.showAddThreadToTag(thread)
+            } label: {
+                Label("Add To Folder", systemImage: "folder.badge.plus")
             }
             
             Button {

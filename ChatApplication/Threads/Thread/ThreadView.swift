@@ -122,7 +122,7 @@ struct ThreadView:View {
                 }
             }
             .navigationViewStyle(.stack)
-            .animation(.default)
+            .customAnimation(.default)
             AttachmentDialog(showAttachmentDialog: $showAttachmentDialog,viewModel: ActionSheetViewModel(threadViewModel: viewModel))
         }
         .onAppear{
