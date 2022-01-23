@@ -21,7 +21,6 @@ struct AttachmentDialog : View {
             VStack{
                 Spacer()
                 CustomActionSheetView(viewModel: viewModel, showAttachmentDialog: $showAttachmentDialog)
-                    .frame(width: UIScreen.main.bounds.width)
                     .offset(y: showAttachmentDialog ? 0 : UIScreen.main.bounds.height)
             }
             .background((showAttachmentDialog ? Color.gray.opacity(0.3).ignoresSafeArea() : Color.clear.ignoresSafeArea())
@@ -32,7 +31,7 @@ struct AttachmentDialog : View {
             )
             .edgesIgnoringSafeArea(.bottom)
         }
-        .animation(.default)
+        .customAnimation(.default)
     }
 }
 
@@ -139,7 +138,6 @@ struct CustomActionSheetView:View{
         })
             .padding(.top ,24)
             .padding(.bottom , (UIApplication.shared.windows.last?.safeAreaInsets.bottom)! + 10)
-            .frame(width: UIScreen.main.bounds.width)
             .background(Color.white.ignoresSafeArea())
             .cornerRadius(16)
     }

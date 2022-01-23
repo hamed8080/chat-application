@@ -25,7 +25,7 @@ struct LoginView: View {
             .padding()
             .padding()
         }
-        .animation(.default)
+        .customAnimation(.default)
     }
 }
 

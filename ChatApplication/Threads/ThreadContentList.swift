@@ -21,7 +21,7 @@ struct ThreadContentList:View {
         GeometryReader{ reader in
             VStack(spacing:0){
                 CustomNavigationBar(title: "Chats",
-                                    leadingActions: [
+                                    trailingActions: [
                                         .init(systemImageName: "plus",font: .headline){
                                             viewModel.toggleThreadContactPicker.toggle()
                                         }
@@ -53,13 +53,32 @@ struct ThreadContentList:View {
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
             }
         }
+        .sheet(isPresented: $viewModel.showAddParticipants, onDismiss: nil, content: {
+            AddParticipantsToThreadView(viewModel: .init()) { contacts in
+                viewModel.addParticipantsToThread(contacts)
+                viewModel.showAddParticipants.toggle()
+            }
+        })
+        .sheet(isPresented: $viewModel.showAddToTags, onDismiss: nil, content: {
+            AddThreadToTagsView(viewModel: viewModel.tagViewModel) { tag in
+                viewModel.threadAddedToTag(tag)
+                viewModel.showAddToTags.toggle()
+            }
+        })
         .sheet(isPresented: $viewModel.toggleThreadContactPicker, onDismiss: nil, content: {
             StartThreadContactPickerView(viewModel: .init()) { model in
                 viewModel.createThread(model)
                 viewModel.toggleThreadContactPicker.toggle()
             }
         })
+        .gesture(
+            DragGesture(minimumDistance: 5, coordinateSpace: .global)
+                .onChanged({ value in
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to:nil, from:nil, for:nil)
+                })
+        )
         .onAppear {
+            UINavigationBar.changeAppearance(clear: false)
             viewModel.setViewAppear(appear: true)
         }.onDisappear {
             viewModel.setViewAppear(appear: false)

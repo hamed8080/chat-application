@@ -11,7 +11,6 @@ import FanapPodChatSDK
 struct ThreadRow: View {
 	
 	var thread:Conversation
-	@State private (set) var showActionSheet:Bool = false
 	@State private (set) var showParticipants:Bool = false
 	
     @StateObject
@@ -91,28 +90,54 @@ struct ThreadRow: View {
 			.padding([.leading , .trailing] , 8)
 			.padding([.top , .bottom] , 4)
 		})
-        .animation(.default)
+        .customAnimation(.default)
 		.onTapGesture {
             appState.selectedThread = thread
-		}.onLongPressGesture {
-			showActionSheet.toggle()
-        }.compatibleConfirmationDialog($showActionSheet,message: "you can mange thread here", title: "Manage Thread", [
-            .init(title: (thread.pin ?? false) ? "UnPin" : "Pin", action: {
+		}
+        .contextMenu{
+            Button {
                 viewModel.pinUnpinThread(thread)
-            }),
-            .init(title: "Clear History", action: {
+            } label: {
+                Label((thread.pin ?? false) ? "UnPin" : "Pin", systemImage: "pin")
+            }
+            
+            Button {
                 viewModel.clearHistory(thread)
-            }),
-            .init(title: (thread.mute ?? false) ? "Unmute" : "Mute", action: {
+            } label: {
+                Label("Clear History", systemImage: "clock")
+            }
+            
+            Button {
                 viewModel.muteUnMuteThread(thread)
-            }),
-            .init(title: "Spam", action: {
+            } label: {
+                Label((thread.mute ?? false) ? "Unmute" : "Mute", systemImage: "speaker.slash")
+            }
+            
+            Button {
+                viewModel.showAddThreadToTag(thread)
+            } label: {
+                Label("Add To Folder", systemImage: "folder.badge.plus")
+            }
+            
+            Button {
                 viewModel.spamPVThread(thread)
-            }),
-            .init(title: "Delete", action: {
+            } label: {
+                Label("Spam", systemImage: "ladybug")
+            }
+            
+            Button {
                 viewModel.deleteThread(thread)
-            }),
-        ])
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+            if let typeInt = thread.type , let type = ThreadTypes(rawValue: typeInt){
+                Button {
+                    viewModel.showAddParticipants(thread)
+                } label: {
+                    Label("Invite", systemImage: "person.crop.circle.badge.plus")
+                }
+            }
+        }
     }
 }
 
@@ -120,7 +145,7 @@ struct ThreadRow_Previews: PreviewProvider {
 	static var thread:Conversation{
         
 		let lastMessageVO = Message(message: "Hi hamed how are you? are you ok? and what are you ding now. And i was thinking you are sad for my behavoi last night.")
-		let thread = Conversation(description: "description", id: 123, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", pin: false, title: "Hamed Hosseini",lastMessageVO: lastMessageVO)
+        let thread = Conversation(description: "description", id: 123, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", pin: false, title: "Hamed Hosseini", type: ThreadTypes.PUBLIC_GROUP.rawValue, lastMessageVO: lastMessageVO)
 		return thread
 	}
 	

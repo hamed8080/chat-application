@@ -25,9 +25,11 @@ class ContactsViewModel:ObservableObject{
     
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     
+    private (set) var isFirstTimeConnectedRequestSuccess = false
+    
     init() {
         connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
-            if self.model.contacts.count == 0 && status == .CONNECTED{
+            if self.isFirstTimeConnectedRequestSuccess == false  && status == .CONNECTED{
                 self.getContacts()
             }
         }
@@ -36,7 +38,10 @@ class ContactsViewModel:ObservableObject{
     
     func getContacts() {
         Chat.sharedInstance.getContacts(.init(count:model.count,offset: model.offset)) { [weak self] contacts, uniqueId, pagination, error in
-            self?.model.setContacts(contacts: contacts, totalCount: pagination?.totalCount ?? 0)
+            if let contacts = contacts{
+                self?.isFirstTimeConnectedRequestSuccess = true
+                self?.model.setContacts(contacts: contacts, totalCount: pagination?.totalCount ?? 0)
+            }
         }
     }
     

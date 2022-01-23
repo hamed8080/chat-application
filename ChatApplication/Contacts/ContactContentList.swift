@@ -27,6 +27,11 @@ struct ContactContentList:View {
             VStack(spacing:0){
                 CustomNavigationBar(title:"contacts",
                                     trailingActions: [
+                                        .init(systemImageName: "plus.circle.fill"){
+                                            viewModel.navigateToAddOrEditContact.toggle()
+                                        }
+                                    ],
+                                    leadingActions: [
                                         .init(systemImageName: "pencil.circle.fill"){
                                             enableDeleteButton.toggle()
                                             viewModel.isInEditMode.toggle()
@@ -36,11 +41,6 @@ struct ContactContentList:View {
                                               isEnabled: enableDeleteButton)
                                         {
                                             viewModel.deleteSelectedItems()
-                                        }
-                                    ],
-                                    leadingActions: [
-                                        .init(systemImageName: "plus.circle.fill"){
-                                            viewModel.navigateToAddOrEditContact.toggle()
                                         }
                                     ]
                 )
@@ -71,7 +71,7 @@ struct ContactContentList:View {
                                     viewModel.loadMore()
                                 }
                             }
-                            .animation(.default)
+                            .customAnimation(.default)
                     }
                     .onDelete(perform:viewModel.delete)
                     .padding(0)

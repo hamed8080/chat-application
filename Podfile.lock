@@ -28,8 +28,8 @@ PODS:
   - SwiftyJSON (5.0.1)
 
 DEPENDENCIES:
-  - FanapPodAsyncSDK (from `/Users/hamedhosseini/Desktop/WorkSpace/ios/Fanap/Fanap-Async-SDK`)
-  - FanapPodChatSDK (from `/Users/hamedhosseini/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK`)
+  - FanapPodAsyncSDK (from `/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Async-SDK`)
+  - FanapPodChatSDK (from `/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK`)
 
 SPEC REPOS:
   trunk:
@@ -42,9 +42,9 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   FanapPodAsyncSDK:
-    :path: "/Users/hamedhosseini/Desktop/WorkSpace/ios/Fanap/Fanap-Async-SDK"
+    :path: "/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Async-SDK"
   FanapPodChatSDK:
-    :path: "/Users/hamedhosseini/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK"
+    :path: "/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK"
 
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
@@ -56,6 +56,6 @@ SPEC CHECKSUMS:
   SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
 
-PODFILE CHECKSUM: d42d4c9232143be9d4f9cabecc547db1c055c4f3
+PODFILE CHECKSUM: b875fa80fceb1a2eadc6ed61910717fc04849ec7
 
 COCOAPODS: 1.11.2

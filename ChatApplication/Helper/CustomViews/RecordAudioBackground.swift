@@ -24,7 +24,7 @@ struct RecordAudioBackground: View {
                     createRectangle(index: item - 1)
                 }
             }
-            .animation(
+            .customAnimation(
                     .easeInOut(duration: 0.5)
                     .speed(0.099)
                     .repeatForever(autoreverses: true)

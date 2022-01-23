@@ -61,11 +61,11 @@ struct TestAsyncRefactor: View , NewAsyncDelegate {
     }
     
     func getProfile(){
-        let chatMessage = NewSendChatMessageVO(type:  23,
-                                               token:           "cf5ce101e60f4a5c891e94a1adbb31a6" ?? "",
-                                            content:            nil,
-                                            typeCode:           "default",
-                                               uniqueId:           UUID().uuidString)
+        let chatMessage = NewSendChatMessageVO(type:      23,
+                                               token:     TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? "",
+                                               content:   nil,
+                                               typeCode:  "default",
+                                               uniqueId:  UUID().uuidString)
 
         guard let chatMessageContent = chatMessage.convertCodableToString() else{return}
         let asyncMessage = NewSendAsyncMessageVO(content:     chatMessageContent,
