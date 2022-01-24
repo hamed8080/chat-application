@@ -24,6 +24,9 @@ struct CallControlsContent: View {
     var showCallParticipants:Bool = false
     
     @State
+    var showDetailPanel:Bool = false
+    
+    @State
     var localView   = RTCVideoReperesentable()
     
     @State
@@ -31,10 +34,14 @@ struct CallControlsContent: View {
     
     @Environment(\.presentationMode) var presentationMode
     
+    private let recoringIndicatorAnimation = Animation.easeInOut(duration: 1).repeatForever()
+   
+    @State
+    var showRecordingIndicator: Bool = false
+
     var body: some View {
         GeometryReader{ reader in
             ZStack{
-                
                 if callState.model.isCallStarted  && callState.model.isVideoCall{
                      remoteView
                         .ignoresSafeArea()
@@ -106,7 +113,13 @@ struct CallControlsContent: View {
                             .frame(height: 168)
                         }
                         
-                        HStack(spacing:22){
+                        HStack(spacing:12){
+                            
+                            CallControlItem(iconSfSymbolName: "ellipsis", subtitle: "More", color: .gray){
+                                withAnimation {
+                                    showDetailPanel.toggle()
+                                }
+                            }
                             
                             CallControlItem(iconSfSymbolName: viewModel.model.isMute ? "mic.slash.fill" : "mic.fill"  , subtitle: "Mute", color: viewModel.model.isMute ? .gray : .green){
                                 viewModel.toggleMute()
@@ -119,14 +132,6 @@ struct CallControlsContent: View {
                             CallControlItem(iconSfSymbolName: viewModel.model.isSpeakerOn ? "speaker.wave.2.fill" : "speaker.slash.fill", subtitle: "Speaker", color: viewModel.model.isSpeakerOn ? .green : .gray){
                                 viewModel.toggleSpeaker()
                             }
-                            
-                            CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray){
-                                withAnimation {
-                                    showCallParticipants.toggle()
-                                }
-                            }.sheet(isPresented: $showCallParticipants, content: {
-                                CallParticipantsContentList(callId: callState.model.startCall?.callId ?? 0)
-                            })
                             
                             CallControlItem(iconSfSymbolName: "phone.down.fill", subtitle: "End Call", color: .red){
                                 viewModel.endCall()
@@ -147,12 +152,29 @@ struct CallControlsContent: View {
                     self.statusBarStyle.currentStyle = .default
                 }
                 .background(getBackground())
+                
+                if showDetailPanel{
+                    getMoreCallControlsView()
+                }
+                
+                if callState.model.isRecording{
+                    Image(systemName: "record.circle")
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(Color.red)
+                        .position(x: 32, y: 24)
+                        .opacity(showRecordingIndicator ? 1 : 0)
+                }
             }
         }
         .background(Color.white.ignoresSafeArea())
         .preferredColorScheme(.dark)
+        .customAnimation(.default)
         .onAppear{
             viewModel.startRequestCallIfNeeded()
+            withAnimation(recoringIndicatorAnimation){
+                showRecordingIndicator.toggle()
+            }
         }
         .onReceive(callState.$model , perform: { _ in
             if callState.model.showCallView == false{
@@ -169,6 +191,46 @@ struct CallControlsContent: View {
             LinearGradient(gradient: Gradient(colors: [Color.black.opacity(0.9), Color.blue.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea(.all)
         }
+    }
+    
+    @ViewBuilder
+    func getMoreCallControlsView()->some View{
+        SheetDialog(showAttachmentDialog: $showDetailPanel) {
+            HStack{
+                if callState.model.isVideoCall{
+                    CallControlItem(iconSfSymbolName: "record.circle", subtitle: "Record", color: .red){
+                        if callState.model.isRecording{
+                            viewModel.stopRecording()
+                        }else{
+                            viewModel.startRecording()
+                        }
+                    }
+                }
+                
+                if callState.model.isRecording{
+                    Spacer()
+                    Text(callState.model.recordingTimerString ?? "")
+                        .foregroundColor(.white)
+                        .fontWeight(.medium)
+                        .padding(8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5)
+                                .fill(.thinMaterial)
+                        )
+                }
+            }
+            
+            CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray){
+                withAnimation {
+                    showCallParticipants.toggle()
+                }
+            }.sheet(isPresented: $showCallParticipants, content: {
+                CallParticipantsContentList(callId: callState.model.startCall?.callId ?? 0)
+            })
+        }
+        .layoutPriority(2)
+        .frame(height:UIScreen.main.bounds.height)
+        .ignoresSafeArea()
     }
 }
 
@@ -210,7 +272,6 @@ struct CallControlItem:View {
     }
 }
 
-
 struct CallControlsView_Previews: PreviewProvider {
     
     static var previews: some View {
@@ -227,12 +288,15 @@ struct CallControlsView_Previews: PreviewProvider {
                 let participant = ParticipantRow_Previews.participant
                 let receiveCall = CreateCall(type: .VIDEO_CALL, creatorId: 0, creator: participant, threadId: 0, callId: 0, group: false)
                 callState.model.setReceiveCall(receiveCall)
-                
-//                let clientDto   = ClientDTO(clientId: "", topicReceive: "", topicSend: "", brokerAddress: "", desc: "", sendKey: "", video: true, mute: false)
-//                let chatDataDto = ChatDataDTO(sendMetaData: "", screenShare: "", reciveMetaData: "", turnAddress: "", brokerAddress: "", brokerAddressWeb: "", kurentoAddress: "")
-//                let startedCall = StartCall(certificateFile: "", clientDTO: clientDto, chatDataDto: chatDataDto, callName: nil, callImage: nil)
-//                callState.model.setStartedCall(startedCall)
-//                viewModel.setupPreview()
+
+                let clientDto   = ClientDTO(clientId: "", topicReceive: "", topicSend: "",userId: 0, desc: "", sendKey: "", video: true, mute: false)
+                let chatDataDto = ChatDataDTO(sendMetaData: "", screenShare: "", reciveMetaData: "", turnAddress: "", brokerAddressWeb: "", kurentoAddress: "")
+                let startedCall = StartCall(certificateFile: "", clientDTO: clientDto, chatDataDto: chatDataDto, callName: nil, callImage: nil)
+                callState.model.setStartedCall(startedCall)
+                callState.model.setIsRecording(isRecording: true)
+                callState.model.setStartRecordingDate()
+                callState.startRecordingTimer()
+                viewModel.setupPreview()
             }
         
     }

@@ -16,9 +16,11 @@ struct CallsHistoryContentList: View {
     
     @State
     var navigateToGroupCallSelction = false
-        
+    
     var body: some View {
         GeometryReader{ reader in
+            VStack(spacing:0){
+                CustomNavigationBar(title: "Calls")
                 ZStack{
                     List {
                         ForEach(viewModel.model.calls , id:\.id) { call in
@@ -49,17 +51,17 @@ struct CallsHistoryContentList: View {
                             )
                         
                     })
-                    .frame(width: 64, height: 64)
-                    .position(x: reader.size.width - 48, y: reader.size.height - (reader.safeAreaInsets.bottom  + 24))
+                        .frame(width: 64, height: 64)
+                        .position(x: reader.size.width - 48, y: reader.size.height - (reader.safeAreaInsets.bottom  + 24))
                 }
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
-                
-                NavigationLink(
-                    destination: GroupCallSelectionContentList(viewModel: viewModel),
-                    isActive: $navigateToGroupCallSelction){
+            }
+            NavigationLink(
+                destination: GroupCallSelectionContentList(viewModel: viewModel),
+                isActive: $navigateToGroupCallSelction){
                     EmptyView()
                 }
-            }
+        }
     }
 }
 

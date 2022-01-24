@@ -160,4 +160,25 @@ class CallControlsViewModel:ObservableObject{
         model.toggleIsFront()
         CallState.shared.switchCamera(model.isFrontCamera)
     }
+    
+    func startRecording(){
+        guard let callId = model.callId else{return}
+        Chat.sharedInstance.startRecording(.init(callId: callId)) { [weak self] participant, uniqueId, error in
+            if let _ = participant, let self = self{
+                self.callState.model.setIsRecording(isRecording: true)
+                self.callState.model.setStartRecordingDate()
+                self.callState.startRecordingTimer()
+            }
+        }
+    }
+    
+    func stopRecording(){
+        guard let callId = model.callId else{return}
+        Chat.sharedInstance.stopRecording(.init(callId: callId)) { [weak self] participant, uniqueId, error in
+            if let _ = participant, let self = self{
+                self.callState.model.setIsRecording(isRecording: false)
+                self.callState.model.setStopRecordingDate()
+            }
+        }
+    }
 }

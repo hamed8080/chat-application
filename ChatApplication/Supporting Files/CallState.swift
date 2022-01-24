@@ -16,7 +16,9 @@ struct CallStateModel {
     private (set) var showCallView                 :Bool              = false
     private (set) var connectionStatusString       :String            = ""
     private (set) var startCallDate                :Date?             = nil
+    private (set) var startRecodrdingDate          :Date?             = nil
     private (set) var timerCallString              :String?           = nil
+    private (set) var recordingTimerString         :String?           = nil
     private (set) var isCallStarted                :Bool              = false
     private (set) var mutedCallParticipants        :[CallParticipant] = []
     private (set) var unmutedCallParticipants      :[CallParticipant] = []
@@ -31,6 +33,8 @@ struct CallStateModel {
     private (set) var groupName                    :String?           = nil
     private (set) var answerWithVideo              :Bool              = false
     private (set) var answerWithMicEnable          :Bool              = false
+    private (set) var isRecording                  :Bool              = false
+    
     
     mutating func setReceiveCall(_ receiveCall:CreateCall){
         self.receiveCall = receiveCall
@@ -65,6 +69,14 @@ struct CallStateModel {
         self.startCallDate = Date()
     }
     
+    mutating func setStartRecordingDate(){
+        self.startRecodrdingDate = Date()
+    }
+    
+    mutating func setStopRecordingDate(){
+        self.startRecodrdingDate = nil
+    }
+    
     mutating func setStartedCall(_ startCall:StartCall){
         self.startCall = startCall
         isCallStarted = true
@@ -77,6 +89,10 @@ struct CallStateModel {
 	
     mutating func setTimerString(_ timerString:String?){
         self.timerCallString = timerString
+    }
+    
+    mutating func setRecordingTimerString(_ recordingTimerString:String?){
+        self.recordingTimerString = recordingTimerString
     }
     
     mutating func setIsP2PCalling(_ isP2PCalling:Bool){
@@ -113,6 +129,10 @@ struct CallStateModel {
             return groupName ?? "Group"
         }
     }
+    
+    mutating func setIsRecording(isRecording:Bool){
+        self.isRecording = isRecording
+    }
 }
 
 class CallState:ObservableObject,WebRTCClientDelegate {
@@ -123,7 +143,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     var model          :CallStateModel    = CallStateModel()
     
     private (set) var startCallTimer :Timer?            = nil
-
+    private (set) var recordingTimer :Timer?            = nil
+    
     
     var localVideoRenderer  :RTCVideoRenderer? = nil
     var remoteVideoRenderer :RTCVideoRenderer? = nil
@@ -284,6 +305,14 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     
     func endCallKitCall(){
         AppDelegate.shared?.callMananger.endCall(model.uuid)
+    }
+    
+    func startRecordingTimer(){
+        recordingTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+            DispatchQueue.main.async {
+                self?.model.setRecordingTimerString(self?.model.startRecodrdingDate?.getDurationTimerString())
+            }
+        }
     }
 }
 
