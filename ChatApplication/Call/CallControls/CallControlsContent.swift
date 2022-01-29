@@ -164,6 +164,10 @@ struct CallControlsContent: View {
                         .foregroundColor(Color.red)
                         .position(x: 32, y: 24)
                         .opacity(showRecordingIndicator ? 1 : 0)
+                        .customAnimation(self.recoringIndicatorAnimation)
+                        .onAppear{
+                            showRecordingIndicator.toggle()
+                        }
                 }
             }
         }
@@ -172,9 +176,6 @@ struct CallControlsContent: View {
         .customAnimation(.default)
         .onAppear{
             viewModel.startRequestCallIfNeeded()
-            withAnimation(recoringIndicatorAnimation){
-                showRecordingIndicator.toggle()
-            }
         }
         .onReceive(callState.$model , perform: { _ in
             if callState.model.showCallView == false{
@@ -218,7 +219,7 @@ struct CallControlsContent: View {
                                 .fill(.thinMaterial)
                         )
                 }
-            }
+            }.padding()
             
             CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray){
                 withAnimation {
@@ -285,6 +286,7 @@ struct CallControlsView_Previews: PreviewProvider {
             .environmentObject(callState)
             .previewDevice("iPhone 13")
             .onAppear(){
+                
                 let participant = ParticipantRow_Previews.participant
                 let receiveCall = CreateCall(type: .VIDEO_CALL, creatorId: 0, creator: participant, threadId: 0, callId: 0, group: false)
                 callState.model.setReceiveCall(receiveCall)
@@ -292,7 +294,8 @@ struct CallControlsView_Previews: PreviewProvider {
                 let clientDto   = ClientDTO(clientId: "", topicReceive: "", topicSend: "",userId: 0, desc: "", sendKey: "", video: true, mute: false)
                 let chatDataDto = ChatDataDTO(sendMetaData: "", screenShare: "", reciveMetaData: "", turnAddress: "", brokerAddressWeb: "", kurentoAddress: "")
                 let startedCall = StartCall(certificateFile: "", clientDTO: clientDto, chatDataDto: chatDataDto, callName: nil, callImage: nil)
-                callState.model.setStartedCall(startedCall)
+                
+                callState.onCallStarted(NSNotification(name: STARTED_CALL_NAME_OBJECT, object: startedCall))
                 callState.model.setIsRecording(isRecording: true)
                 callState.model.setStartRecordingDate()
                 callState.startRecordingTimer()
