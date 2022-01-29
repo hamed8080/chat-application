@@ -66,9 +66,9 @@ class CallControlsViewModel:ObservableObject{
         Chat.sharedInstance.requestCall(.init(client:sendClient,invitees: invitees, type: callState.model.isVideoCall ? .VIDEO_CALL : .VOICE_CALL),initCreateCall(createCall:uniqueId:error:))
     }
     
-    private func startGroupCall(_ selectedContacts:[Contact]){
+    private func startGroupCall(_ selectedContacts:[Contact],callDetail: CreateCallThreadRequest? = nil){
         let invitees = selectedContacts.map{Invitee(id: "\($0.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)}
-        Chat.sharedInstance.requestGroupCall(.init(client:SendClient(),invitees: invitees, type: .VOICE_CALL),initCreateCall(createCall:uniqueId:error:))
+        Chat.sharedInstance.requestGroupCall(.init(client:SendClient(),invitees: invitees, type: .VOICE_CALL, createCallThreadRequest: callDetail),initCreateCall(createCall:uniqueId:error:))
     }
     
     private func satrtCallWithThreadId(_ threadId:Int){
