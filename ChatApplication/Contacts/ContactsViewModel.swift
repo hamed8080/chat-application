@@ -101,18 +101,17 @@ class ContactsViewModel:ObservableObject{
     
     func delete(indexSet:IndexSet){
         let contacts = model.contacts.enumerated().filter{indexSet.contains($0.offset)}.map{$0.element}
+        batchDelete(contacts)
         contacts.forEach { contact in
-            delete(contact)
             model.reomve(contact)
         }
     }
     
-    func delete(_ contact:Contact){
-        if let contactId = contact.id{
-            Chat.sharedInstance.removeContact(.init(contactId: contactId)) { deleted, uniqueId, error in
-                if error != nil{
-                    self.model.appendContacts(contacts: [contact])
-                }
+    func batchDelete(_ contacts:[Contact]){
+        let contactIds = contacts.compactMap{$0.id}
+        Chat.sharedInstance.removeContact(.init(contactIds: contactIds)) { deleted, uniqueId, error in
+            if error != nil{
+                self.model.appendContacts(contacts: contacts)
             }
         }
     }
@@ -127,12 +126,11 @@ class ContactsViewModel:ObservableObject{
     
     
     func deleteSelectedItems(){
+        batchDelete(model.selectedContacts)
         model.selectedContacts.forEach { contact in
             model.reomve(contact)
-            delete(contact)
         }
     }
-    
     
     func blockOrUnBlock(_ contact:Contact){
         if contact.blocked == false{
