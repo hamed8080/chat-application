@@ -1,7 +1,7 @@
 PODS:
   - Alamofire (4.8.2)
   - Each (1.2.0)
-  - FanapPodAsyncSDK (0.10.0.0):
+  - FanapPodAsyncSDK (0.10.0.1):
     - Each (~> 1.2)
     - Sentry (~> 4.3.1)
     - Starscream (~> 3.0.5)
@@ -49,7 +49,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   Each: 53d089bc231f4a7221ed201bf23ac343c5c4d560
-  FanapPodAsyncSDK: 77630e91e294d3c99ded58bf7aa58d413366c630
+  FanapPodAsyncSDK: e565afaa1411a25d2af75a34f921163d9cbc8386
   FanapPodChatSDK: bc8a92305afd6a9b26401ffe236553e25935b096
   Sentry: 26f0e6492b103e87434d1a5eea2d241a36f2c2a2
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5

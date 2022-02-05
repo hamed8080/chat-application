@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		052C8B8927AE6C0A00C3BB2E /* CallDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052C8B8827AE6C0A00C3BB2E /* CallDetails.swift */; };
+		052C8B8C27AE6C8500C3BB2E /* CallDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052C8B8B27AE6C8500C3BB2E /* CallDetailModel.swift */; };
+		052C8B8E27AE6C9D00C3BB2E /* CallDetailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052C8B8D27AE6C9D00C3BB2E /* CallDetailRow.swift */; };
+		052C8B9027AE6CEA00C3BB2E /* CallDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052C8B8F27AE6CEA00C3BB2E /* CallDetailViewModel.swift */; };
 		052D57362795323C0075BF8F /* ManageTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D57352795323C0075BF8F /* ManageTagView.swift */; };
 		052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D5737279539840075BF8F /* TagParticipantRow.swift */; };
 		0531EE2F279EB1520045B0EC /* SheetDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0531EE2E279EB1520045B0EC /* SheetDialog.swift */; };
@@ -178,6 +182,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		052C8B8827AE6C0A00C3BB2E /* CallDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDetails.swift; sourceTree = "<group>"; };
+		052C8B8B27AE6C8500C3BB2E /* CallDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDetailModel.swift; sourceTree = "<group>"; };
+		052C8B8D27AE6C9D00C3BB2E /* CallDetailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDetailRow.swift; sourceTree = "<group>"; };
+		052C8B8F27AE6CEA00C3BB2E /* CallDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDetailViewModel.swift; sourceTree = "<group>"; };
 		052D57352795323C0075BF8F /* ManageTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagView.swift; sourceTree = "<group>"; };
 		052D5737279539840075BF8F /* TagParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagParticipantRow.swift; sourceTree = "<group>"; };
 		0531EE2E279EB1520045B0EC /* SheetDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetDialog.swift; sourceTree = "<group>"; };
@@ -355,6 +363,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		052C8B8A27AE6C7800C3BB2E /* Detail */ = {
+			isa = PBXGroup;
+			children = (
+				052C8B8827AE6C0A00C3BB2E /* CallDetails.swift */,
+				052C8B8B27AE6C8500C3BB2E /* CallDetailModel.swift */,
+				052C8B8D27AE6C9D00C3BB2E /* CallDetailRow.swift */,
+				052C8B8F27AE6CEA00C3BB2E /* CallDetailViewModel.swift */,
+			);
+			path = Detail;
+			sourceTree = "<group>";
+		};
 		05384A7C2792992C00D85A92 /* Tag */ = {
 			isa = PBXGroup;
 			children = (
@@ -687,6 +706,7 @@
 		AC9891FB275E3D48007973F7 /* History */ = {
 			isa = PBXGroup;
 			children = (
+				052C8B8A27AE6C7800C3BB2E /* Detail */,
 				AC9891FC275E3D48007973F7 /* CallsHistoryContentList.swift */,
 				AC9891FD275E3D48007973F7 /* CallRow.swift */,
 				AC9891FE275E3D48007973F7 /* CallsHistoryModel.swift */,
@@ -1024,6 +1044,7 @@
 				AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */,
 				05384A802792996200D85A92 /* TagsModel.swift in Sources */,
 				ACFADE8227675C29007C555F /* PrimaryTextField.swift in Sources */,
+				052C8B8C27AE6C8500C3BB2E /* CallDetailModel.swift in Sources */,
 				AC10007B26F46EC900C3AD67 /* LoginViewModel.swift in Sources */,
 				AC3AB626274292F3006C3F85 /* ThreadDetailView.swift in Sources */,
 				05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */,
@@ -1084,6 +1105,7 @@
 				ACFADE7E27674DDF007C555F /* CustomNavigationBar.swift in Sources */,
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
 				ACAB96D227030F9A005FB9AA /* ShapeExtension.swift in Sources */,
+				052C8B9027AE6CEA00C3BB2E /* CallDetailViewModel.swift in Sources */,
 				AC826E3626F47A1F00551578 /* LoginModel.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
 				ACA89499272678130014DDE9 /* TestAsyncRefactor.swift in Sources */,
@@ -1093,6 +1115,7 @@
 				AC04360126998D5F00B1C87B /* ParticipantsContentList.swift in Sources */,
 				AC5E388926F5B3D70016EFAA /* ListModifier.swift in Sources */,
 				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
+				052C8B8927AE6C0A00C3BB2E /* CallDetails.swift in Sources */,
 				AC98920B275E3D48007973F7 /* CallControlsModel.swift in Sources */,
 				AC98921B275E3F66007973F7 /* CallState.swift in Sources */,
 				AC0435FD26998D3E00B1C87B /* ParticipantsViewModel.swift in Sources */,
@@ -1116,6 +1139,7 @@
 				052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */,
 				AC10007926F46B4100C3AD67 /* LoginView.swift in Sources */,
 				AC924CB9274A6D7300E33BD1 /* MyWidget.intentdefinition in Sources */,
+				052C8B8E27AE6C9D00C3BB2E /* CallDetailRow.swift in Sources */,
 				ACC3C5EF26F4633900AEE578 /* HandshakeResponse.swift in Sources */,
 				AC924CA7274A3D1500E33BD1 /* LoadingViewAtCenterOfView.swift in Sources */,
 				AC989208275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift in Sources */,

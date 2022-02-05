@@ -24,16 +24,16 @@ struct CallsHistoryContentList: View {
                 ZStack{
                     List {
                         ForEach(viewModel.model.calls , id:\.id) { call in
-                            CallRow(call: call,viewModel: viewModel)
-                                .frame(minHeight:64)
-                                .onAppear {
-                                    if viewModel.model.calls.last == call{
-                                        viewModel.loadMore()
+                            NavigationLink(destination: CallDetails(viewModel: .init(call: call))){
+                                CallRow(call: call,viewModel: viewModel)
+                                    .frame(minHeight:64)
+                                    .onAppear {
+                                        if viewModel.model.calls.last == call{
+                                            viewModel.loadMore()
+                                        }
                                     }
-                                }
-                        }.onDelete(perform: { indexSet in
-                            print("on delete")
-                        })
+                            }
+                        }
                     }
                     .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
                     .listStyle(PlainListStyle())
