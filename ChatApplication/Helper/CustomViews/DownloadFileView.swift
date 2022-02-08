@@ -19,6 +19,9 @@ struct DownloadFileView :View{
     private var isImage              : Bool    = false
     private var message              : Message?
     
+    @State
+    var shareDownloadedFile          : Bool    = false
+    
     init(message:Message, placeHolder:UIImage? = nil, state:DownloadFileState? = nil) {
         self.message = message
         let messageType = MessageType(rawValue: message.messageType ?? 0)
@@ -53,6 +56,9 @@ struct DownloadFileView :View{
                                 .foregroundColor(Color(named: "text_color_blue").opacity(0.8))
                                 .scaledToFit()
                                 .frame(width: 64, height: 64)
+                                .onTapGesture {
+                                    shareDownloadedFile.toggle()
+                                }
                         }
                     case .DOWNLOADING, .STARTED:
                         CircularProgressView(percent: $percent)
@@ -89,7 +95,7 @@ struct DownloadFileView :View{
                     }
                 }
             }
-            .frame(maxWidth:.infinity, maxHeight: .infinity)            
+            .frame(maxWidth:.infinity, maxHeight: .infinity)
             .onReceive(downloadFile.$data) { data in
                 self.data = data ?? Data()
             }
@@ -105,6 +111,13 @@ struct DownloadFileView :View{
             }.onAppear {
                 downloadFile.getImageIfExistInCache()
             }
+            .sheet(isPresented: $shareDownloadedFile, content:{
+                if let fileUrl = downloadFile.fileUrl{
+                    ActivityViewControllerWrapper(activityItems: [fileUrl])
+                }else{
+                    EmptyView()
+                }
+            })
         }
     }
 }
@@ -227,6 +240,10 @@ class DownloadFile: ObservableObject{
         Chat.sharedInstance.manageDownload(uniqueId: downloadUniqueId, action: .resume, isImage: true){ statusString, susccessAction in
             self.state = .DOWNLOADING
         }
+    }
+    
+    var fileUrl:URL?{
+        return CacheFileManager.sharedInstance.getFileUrl(fileHashCode)
     }
 }
 
