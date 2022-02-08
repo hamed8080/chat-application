@@ -45,10 +45,10 @@ struct ThreadDetailView:View {
                                 viewModel.searchInsideThreadMessages("")
                             })
                             
-                            if let type = thread?.type, ThreadTypes(rawValue: type) == .NORMAL{
+                            if let type = thread?.type{
                                 ActionButton(iconSfSymbolName: "video",height: 16,taped:{
                                     callState.model.setIsVideoCallRequest(true)
-                                    callState.model.setIsP2PCalling(true)
+                                    callState.model.setIsP2PCalling(ThreadTypes(rawValue: type) == .NORMAL ? true : false)
                                     callState.model.setSelectedThread(thread)
                                     withAnimation(.spring()){
                                         callState.model.setShowCallView(true)
@@ -56,7 +56,7 @@ struct ThreadDetailView:View {
                                 })
                                 
                                 ActionButton(iconSfSymbolName: "phone", taped:{
-                                    callState.model.setIsP2PCalling(true)
+                                    callState.model.setIsP2PCalling(ThreadTypes(rawValue: type) == .NORMAL ? true : false)
                                     callState.model.setSelectedThread(thread)
                                     withAnimation(.spring()){
                                         callState.model.setShowCallView(true)

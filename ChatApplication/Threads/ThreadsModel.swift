@@ -16,6 +16,7 @@ struct ThreadsModel {
     private (set) var threads :[Conversation]                   = []
     private (set) var isViewDisplaying                          = false
     private (set) var threadsTyping:[SystemEventModel]          = []
+    private (set) var callsToJoin:[Call]                        = []
     
     func hasNext()->Bool{
         return threads.count < totalCount
@@ -93,6 +94,10 @@ struct ThreadsModel {
         if let index = threadsTyping.firstIndex(where: { $0.threadId == event.threadId }){
             threadsTyping.remove(at: index)
         }
+    }
+    
+    mutating func addActiveCalls(_ calls:[Call]){
+        callsToJoin.append(contentsOf: calls)
     }
     
 }

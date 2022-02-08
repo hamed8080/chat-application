@@ -70,6 +70,8 @@ class ThreadsViewModel:ObservableObject{
                 if let data = try? JSONEncoder().encode(threads){
                     self?.threadsData = data
                 }
+                let threadIds = threads.compactMap{$0.id}
+                self?.getActiveCallsListToJoin(threadIds)
             }
             self?.isLoading = false
         }
@@ -233,6 +235,24 @@ class ThreadsViewModel:ObservableObject{
                 self.isLoading = false
             }
         }
+    }
+    
+    func getActiveCallsListToJoin(_ threadIds:[Int]){
+        Chat.sharedInstance.getCallsToJoin(.init(threadIds: threadIds)) { calls, uniqueId, error in
+            if let calls = calls{
+                self.model.addActiveCalls(calls)
+            }
+        }
+    }
+    
+    func joinToCall(_ call:Call){
+        let callState = CallState.shared
+        Chat.sharedInstance.acceptCall(.init(callId:call.id, client: .init(mute: false , video: false)))
+        withAnimation(.spring()){
+            callState.model.setShowCallView(true)
+        }
+        CallState.shared.model.setAnswerWithVideo(answerWithVideo: false, micEnable: false)
+        AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
     }
     
 }

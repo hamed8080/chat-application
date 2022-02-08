@@ -44,8 +44,8 @@ class CallControlsViewModel:ObservableObject{
     func startRequestCallIfNeeded(){        
         //check if is not incoming call
         if !callState.model.isReceiveCall{
-            if let threadId = callState.model.thread?.id{
-                satrtCallWithThreadId(threadId)
+            if let thread = callState.model.thread{
+                satrtCallWithThreadId(thread)
             }
             else if callState.model.isP2PCalling{
                 startP2PCall(callState.model.selectedContacts)
@@ -71,8 +71,12 @@ class CallControlsViewModel:ObservableObject{
         Chat.sharedInstance.requestGroupCall(.init(client:SendClient(),invitees: invitees, type: .VOICE_CALL, createCallThreadRequest: callDetail),initCreateCall(createCall:uniqueId:error:))
     }
     
-    private func satrtCallWithThreadId(_ threadId:Int){
-        Chat.sharedInstance.requestCall(.init(client:SendClient(),threadId: threadId, type: .VOICE_CALL),initCreateCall(createCall:uniqueId:error:))
+    private func satrtCallWithThreadId(_ thread:Conversation){
+        if let type = thread.type, ThreadTypes(rawValue: type) == .NORMAL , let threadId = thread.id{
+            Chat.sharedInstance.requestCall(.init(client:SendClient(),threadId: threadId, type: .VOICE_CALL),initCreateCall(createCall:uniqueId:error:))
+        }else if let threadId = thread.id{
+            Chat.sharedInstance.requestGroupCall(.init(client:SendClient(),threadId: threadId, type: .VOICE_CALL),initCreateCall(createCall:uniqueId:error:))
+        }
     }
     
     //Create call don't mean the call realy started. CallStarted Event is real one when a call realy accepted by at least one participant.
