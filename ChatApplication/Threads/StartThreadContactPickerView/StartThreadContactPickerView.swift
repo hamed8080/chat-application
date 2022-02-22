@@ -63,7 +63,7 @@ struct StartThreadContactPickerView:View {
                     }else{
                         StartThreadButton(name: "person.2", title: "New Group", color: .blue){
                             isInMultiSelectMode.toggle()
-                            startThreadModel.type = .OWNER_GROUP
+                            startThreadModel.type = .CHANNEL_GROUP
                         }
                         
                         StartThreadButton(name: "megaphone", title: "New Channel", color: .blue){
