@@ -7,7 +7,7 @@ PODS:
     - Starscream (~> 3.0.5)
     - SwiftyBeaver
     - SwiftyJSON
-  - FanapPodChatSDK (0.10.1.0):
+  - FanapPodChatSDK (0.10.2.1):
     - Alamofire (~> 4.8.2)
     - FanapPodAsyncSDK
     - FanapPodChatSDK/FanapPodAsyncSDK (= 0.10.1.0)

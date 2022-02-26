@@ -93,5 +93,7 @@
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Send photos and vidoes through Chats</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app access to your contacts to sync with application.</string>
 </dict>
 </plist>
