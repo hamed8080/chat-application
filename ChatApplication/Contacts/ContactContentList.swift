@@ -45,6 +45,19 @@ struct ContactContentList:View {
                                     ]
                 )
                 List{
+                    if viewModel.model.totalCount > 0 {
+                        HStack(spacing:4){
+                            Spacer()
+                            Text("Total contacts:".uppercased())
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                            Text("\(viewModel.model.totalCount)")
+                                .fontWeight(.bold)
+                            Spacer()
+                        }
+                        .noSeparators()
+                    }
+                    
                     MultilineTextField("Search contact ...",text: $searchedContact,backgroundColor:Color.gray.opacity(0.2))
                         .cornerRadius(16)
                         .noSeparators()

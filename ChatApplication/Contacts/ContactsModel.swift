@@ -91,6 +91,6 @@ extension ContactsModel{
         t2.firstName = "Pod Group"
         t3.id = 3
         let contacts = [t1 , t2, t3] + [t1 , t2, t3] + [t1 , t2, t3] +  [t1 , t2, t3]
-        appendContacts(contacts: contacts)
+        setContacts(contacts: contacts, totalCount: 500)
     }
 }
