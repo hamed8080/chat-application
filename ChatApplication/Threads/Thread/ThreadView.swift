@@ -27,7 +27,7 @@ struct ThreadView:View {
                 GeometryReader{ reader in
                     ScrollViewReader{ scrollView in
                         ZStack{
-                            List(viewModel.model.messages , id:\.id) { message in
+                            List(viewModel.model.messages , id:\.uniqueId) { message in
                                 
                                 MessageRow(message: message,viewModel: viewModel)
                                     .onAppear {
@@ -56,16 +56,16 @@ struct ThreadView:View {
                             .listStyle(PlainListStyle())
                             .onChange(of: viewModel.model.messages) { newValue in
                                 withAnimation {
-                                    if let index = viewModel.model.messages.firstIndex(where: {$0.id == viewModel.model.messages.last?.id}){
-                                        scrollView.scrollTo(viewModel.model.messages[index].id, anchor: .top)
+                                    if let index = viewModel.model.messages.firstIndex(where: {$0.uniqueId == viewModel.model.messages.last?.uniqueId}){
+                                        scrollView.scrollTo(viewModel.model.messages[index].uniqueId, anchor: .top)
                                     }
                                 }
                             }
                             
                             Button {
                                 withAnimation {
-                                    if let index = viewModel.model.messages.firstIndex(where: {$0.id == viewModel.model.messages.last?.id}){
-                                        scrollView.scrollTo(viewModel.model.messages[index].id, anchor: .top)
+                                    if let index = viewModel.model.messages.firstIndex(where: {$0.uniqueId == viewModel.model.messages.last?.uniqueId}){
+                                        scrollView.scrollTo(viewModel.model.messages[index].uniqueId, anchor: .top)
                                     }
                                 }
                             } label: {
@@ -86,7 +86,7 @@ struct ThreadView:View {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to:nil, from:nil, for:nil)
                 }
                 
-                SendContainer(message: "", viewModel: viewModel,showAttachmentDialog: $showAttachmentDialog)
+                SendContainer(message: $viewModel.textMessage, viewModel: viewModel,showAttachmentDialog: $showAttachmentDialog)
                 NavigationLink(destination: ThreadDetailView(viewModel: viewModel) , isActive: $showThreadDetailButton){
                     EmptyView()
                 }
@@ -139,7 +139,7 @@ struct ThreadView:View {
 
 struct SendContainer:View{
     
-    @State
+    @Binding
     var message:String
     
     @StateObject var viewModel:ThreadViewModel

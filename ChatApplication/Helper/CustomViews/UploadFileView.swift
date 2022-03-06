@@ -24,6 +24,7 @@ struct UploadFileView :View{
     init(message:UploadFileMessage,viewModel:ThreadViewModel,state:UploadFileState? = nil) {
         self.viewModel = viewModel
         self.message = message
+        self.message.message = viewModel.textMessage
         uploadFile = UploadFile(thread: viewModel.thread, fileUrl: message.uploadFileUrl, textMessage: message.message ?? "")
         uploadFile.startUpload()
         //only for preveiw

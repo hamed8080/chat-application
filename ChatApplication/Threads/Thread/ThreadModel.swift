@@ -36,8 +36,19 @@ struct ThreadModel {
     }
     
     mutating func appendMessages(messages:[Message]){
-        self.messages.append(contentsOf: messages)
+        self.messages.append(contentsOf: filterNewMessagesToAppend(serverMessages: messages))
         sort()
+    }
+    
+    /// Filter only new messages prevent conflict with cache messages
+    mutating func filterNewMessagesToAppend(serverMessages:[Message])->[Message]{
+        let ids = self.messages.map{$0.id}
+        let newMessages = serverMessages.filter { message in
+            !ids.contains { id in
+                return id == message.id
+            }
+        }
+        return newMessages
     }
     
     mutating func appendMessage(_ message:Message){

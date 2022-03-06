@@ -17,6 +17,10 @@ class ThreadViewModel:ObservableObject{
     
     @Published
     private (set) var model = ThreadModel()
+    
+    @Published
+    var textMessage:String = ""
+    
     private (set) var thread:Conversation?
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     private (set) var messageCancelable:AnyCancellable? = nil
