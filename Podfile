@@ -3,7 +3,7 @@ use_frameworks!
 platform :ios, '12.0'
 
 def shared_pods
-#  pod 'FanapPodChatSDK'
+#  pod 'FanapPodChatSDK', '0.10.3.0'
   pod 'FanapPodAsyncSDK', :path => '/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Async-SDK'
   pod 'FanapPodChatSDK', :path => '/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK'
 end

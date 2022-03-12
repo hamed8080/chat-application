@@ -13,6 +13,8 @@ struct CustomDialog<DialogContent:View>: ViewModifier {
     private var isShowing:Bool
     private var dialogContent:DialogContent
     
+    @Environment(\.colorScheme) var colorScheme
+    
     init(isShowing:Binding<Bool>, @ViewBuilder dialogContent:@escaping ()->DialogContent ){
         self._isShowing = isShowing
         self.dialogContent = dialogContent()
@@ -24,6 +26,7 @@ struct CustomDialog<DialogContent:View>: ViewModifier {
             if isShowing {
                 // the semi-transparent overlay
                 Rectangle().foregroundColor(Color.black.opacity(0.6))
+                    .ignoresSafeArea()
                     .transition(.opacity)
                     .customAnimation(.easeInOut)
                 // the dialog content is in a ZStack to pad it from the edges
@@ -33,14 +36,14 @@ struct CustomDialog<DialogContent:View>: ViewModifier {
                         .frame(width: UIScreen.main.bounds.size.width - 64, height: .infinity)
                         .background(
                             RoundedRectangle(cornerRadius: 24)
-                                .foregroundColor(.white))
+                                .foregroundColor(Color(named: "background"))
+                        )
                 }
                 .transition(.scale)
                 .padding(40)
             }
         }
         .customAnimation(.spring(response: 0.5, dampingFraction: isShowing ? 0.6 : 1 , blendDuration: isShowing ? 1 : 0.2).speed(isShowing ? 1 : 3))
-        .ignoresSafeArea()
     }
 }
 
@@ -49,6 +52,7 @@ struct CustomDialog_Previews: PreviewProvider {
         ZStack{
             
         }
+        .preferredColorScheme(.dark)
         .customDialog(isShowing: .constant(true)){
             VStack{
                 Text("Hello".uppercased())

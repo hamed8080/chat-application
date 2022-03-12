@@ -29,7 +29,7 @@ struct ThreadContentList:View {
                 )
                 List {
                     MultilineTextField("Search ...",text: $searechInsideThread,backgroundColor:Color.gray.opacity(0.2))
-                        .cornerRadius(16)
+                        .cornerRadius(8)
                         .noSeparators()
                         .onChange(of: searechInsideThread) { newValue in
                             viewModel.searchInsideAllThreads(text: searechInsideThread)
@@ -48,7 +48,6 @@ struct ThreadContentList:View {
                     })
                 }
                 .listStyle(PlainListStyle())
-                Spacer()
                 LoadingViewAtCenterOfView(isLoading:viewModel.centerIsLoading ,reader:reader)
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
             }

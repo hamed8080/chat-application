@@ -26,7 +26,7 @@ struct ThreadRow: View {
 		let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
 		Button(action: {}, label: {
 			HStack{
-                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata,token: token)
+                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata, imageSize: .MEDIUM , token: token)
 				VStack(alignment: .leading, spacing:8){
                     HStack{
                         Text(thread.title ?? "")
@@ -125,7 +125,7 @@ struct ThreadRow: View {
                 Label("Spam", systemImage: "ladybug")
             }
             
-            Button {
+            Button(role:.destructive) {
                 viewModel.deleteThread(thread)
             } label: {
                 Label("Delete", systemImage: "trash")

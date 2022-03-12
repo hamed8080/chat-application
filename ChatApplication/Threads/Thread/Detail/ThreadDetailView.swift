@@ -7,26 +7,54 @@
 
 import SwiftUI
 import FanapPodChatSDK
+import Photos
 
 struct ThreadDetailView:View {
     
-    @StateObject var viewModel:ThreadViewModel
-    
     @StateObject
-    private var participantsVM:ParticipantsViewModel = ParticipantsViewModel()
+    var viewModel:ThreadViewModel
+    
+    @State
+    var threadTitle:String = ""
+    
+    @State
+    var threadDescription:String = ""
+    
+    @State
+    var isInEditMode = false
+    
+    @State
+    var showImagePicker:Bool = false
+    
+    @State private var image: UIImage?
+    @State private var assetResource: [PHAssetResource]?
     
     var body: some View{
         
-        let thread = viewModel.thread
+        let thread = viewModel.model.thread
         
         GeometryReader{ reader in
             VStack{
                 List{
                     VStack{
                         Avatar(url: thread?.image, userName: thread?.title?.uppercased() ,fileMetaData:thread?.metadata,style: .init(size: 128 ,textSize: 48))
-                        Text(thread?.title ?? "")
-                            .font(.headline.bold())
-                        if let lastSeen =  ContactRow.getDate(notSeenDuration: thread?.participants?.first?.notSeenDuration){
+                            .onTapGesture {
+                                if isInEditMode{
+                                    showImagePicker = true
+                                }
+                            }
+                        
+                        PrimaryTextField(title:"Title", textBinding: $threadTitle, keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.08))
+                        .disabled(!isInEditMode)
+                        .multilineTextAlignment(.center)
+                        .font(.headline.bold())
+                        
+                        PrimaryTextField(title:"Description", textBinding: $threadDescription, keyboardType: .alphabet,backgroundColor: Color.primary.opacity(0.08))
+                        .disabled(!isInEditMode)
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                        
+                        if let lastSeen = ContactRow.getDate(notSeenDuration: thread?.participants?.first?.notSeenDuration){
                             Text(lastSeen)
                                 .font(.subheadline)
                                 .foregroundColor(.gray.opacity(0.8))
@@ -53,43 +81,65 @@ struct ThreadDetailView:View {
                         .cornerRadius(16)
                     }
                     .noSeparators()
-                    
-                    if let type = thread?.type, ThreadTypes(rawValue: type) != .NORMAL{
-                        Section(content: {
-                            ForEach(participantsVM.model.participants , id:\.id) { participant in
-                                ParticipantRow(participant: participant, style: .init(avatarConfig: .init(size: 32, textSize: 16), textFont: .headline))
-                                    .onAppear {
-                                        if participantsVM.model.participants.last == participant{
-                                            participantsVM.loadMore()
-                                        }
-                                    }
-                            }
-                        }, header: {
-                            Text("Members")
-                                .font(.headline.bold())
-                                .foregroundColor(Color.primary)
-                        })
+                    if let thread = viewModel.model.thread{
+                        Section{
+                            TabViewsContainer(thread:thread,selectedTabIndex: 0)
+                                .ignoresSafeArea(.all,edges: [.bottom])
+                                .frame(minHeight:reader.size.height + reader.safeAreaInsets.bottom)
+                                .noSeparators()
+                                .listRowInsets(.init())
+                        }
                     }
                 }
-                .listStyle(PlainListStyle())
+                .ignoresSafeArea(.all,edges: [.bottom])
+                .listStyle(.plain)
+            }
+        }
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(sourceType: .photoLibrary) { image, assestResources in
+                self.image = image
+                self.assetResource = assestResources
             }
         }
         .navigationViewStyle(.stack)
         .onAppear{
-            participantsVM.threadId = thread?.id ?? 0
-            participantsVM.getParticipantsIfConnected()
-            if let thread = AppState.shared.selectedThread{
-                viewModel.setThread(thread: thread)
+            threadTitle = viewModel.model.thread?.title ?? ""
+            threadDescription = viewModel.model.thread?.description ?? ""
+        }
+        .toolbar{
+            ToolbarItem(placement: .navigationBarTrailing) {
+                VStack (alignment:.center){
+                    Button {
+                        if isInEditMode{
+                            //submited
+                            viewModel.updateThreadInfo(threadTitle, threadDescription, image: image, assetResources: assetResource)
+                        }
+                        isInEditMode.toggle()
+                    } label: {
+                        Text(isInEditMode ? "Done" : "Edit")
+                    }
+                }
             }
         }
+        .customAnimation(.default)
     }
     
 }
 
 struct ThreadDetailView_Previews: PreviewProvider {
+
+    static var vm:ThreadViewModel{
+        
+        let thread = ThreadRow_Previews.thread
+        let vm = ThreadViewModel(thread: thread)
+        thread.title = "Test Thread title"
+        thread.description = "Test Thread Description with slightly long text"
+        return vm
+    }
+    
     static var previews: some View {
-        let vm = ThreadViewModel()
         ThreadDetailView(viewModel: vm)
+            .preferredColorScheme(.light)
             .environmentObject(AppState.shared)
             .previewDevice("iPhone 13 Pro Max")
             .onAppear(){

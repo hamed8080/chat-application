@@ -71,6 +71,7 @@ struct ContactRow: View {
                         .customAnimation(.default)
                 }
             }
+            .modifier(AnimatingCellHeight(height: self.showActionViews ? 148 : 64))
             .padding(SwiftUI.EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
             .background(Color.primary.opacity(0.08))
             .cornerRadius(16)

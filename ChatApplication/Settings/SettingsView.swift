@@ -71,22 +71,6 @@ struct SettingsView:View {
                     .noSeparators()
                 }
                 
-                Section(footer: Text("Global theme of the app to Dark or Light").lineLimit(2)){
-                    HStack{
-                        Image(systemName:"moon.fill")
-                        Text("Dark Mode")
-                        Spacer()
-                        Toggle(isOn: $appState.dark) {
-                            Text("")
-                        }
-                        .toggleStyle(PrimaryToggleStyle())
-                        .onReceive(appState.$dark) { valuese in
-                            UIApplication.shared.windows.first?.rootViewController?.view.overrideUserInterfaceStyle = appState.dark ? .dark : .light
-                            UIApplication.shared.windows.first?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
-                        }
-                    }
-                }
-                
                 Section(header:Text("Manage Calls")){
                     Group{
                         GroupItemInSlideMenu<EmptyView>(name: "gear", title: "Setting", color: .blue,destinationView:EmptyView())

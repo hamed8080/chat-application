@@ -11,6 +11,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
     typealias UIViewType = UITextView
 
     @Binding var text: String
+    var textColor: Color
     @Binding var calculatedHeight: CGFloat
     var onDone: (() -> Void)?
 
@@ -24,6 +25,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         textField.isUserInteractionEnabled = true
         textField.isScrollEnabled = false
         textField.backgroundColor = UIColor.clear
+        textField.textColor = UIColor(cgColor: textColor.cgColor!)
         if nil != onDone {
             textField.returnKeyType = .done
         }
@@ -84,6 +86,8 @@ struct MultilineTextField: View {
     private var placeholder: String
     private var onDone: (() -> Void)?
     var backgroundColor:Color  = .white
+    var textColor:Color?  = nil
+    @Environment(\.colorScheme) var colorScheme
 
     @Binding private var text: String
     private var internalText: Binding<String> {
@@ -96,16 +100,25 @@ struct MultilineTextField: View {
     @State private var dynamicHeight: CGFloat = 64
     @State private var showingPlaceholder = false
 
-    init (_ placeholder: String = "", text: Binding<String>, backgroundColor:Color = .white, onCommit: (() -> Void)? = nil , onDone: (() -> Void)? = nil ) {
+    init (_ placeholder: String = "",
+          text: Binding<String>,
+          textColor:Color? = nil,
+          backgroundColor:Color = .white,
+          onCommit: (() -> Void)? = nil,
+          onDone: (() -> Void)? = nil ) {
         self.placeholder = placeholder
         self.onDone = onDone
+        self.textColor = textColor
         self._text = text
         self.backgroundColor = backgroundColor
         self._showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
 
     var body: some View {
-        UITextViewWrapper(text: self.internalText, calculatedHeight: $dynamicHeight, onDone:onDone )
+        UITextViewWrapper(text: self.internalText,
+                          textColor: textColor ?? (colorScheme == .dark ? Color.white : Color.black),
+                          calculatedHeight: $dynamicHeight,
+                          onDone:onDone)
             .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
             .background(placeholderView, alignment: .topLeading)
             .background(backgroundColor)
@@ -140,6 +153,7 @@ struct MultilineTextField_Previews: PreviewProvider {
             Text("Something static here...")
             Spacer()
         }
+//        .preferredColorScheme(.dark)
         .padding()
     }
 }

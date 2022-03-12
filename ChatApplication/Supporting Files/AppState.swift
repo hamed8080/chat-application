@@ -14,8 +14,6 @@ class AppState: ObservableObject {
     
     var user:User? = nil
     
-    @Published var dark:Bool = false
-    
     @Published
     var callLogs:[URL]? = nil
     

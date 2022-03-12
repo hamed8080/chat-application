@@ -183,7 +183,7 @@ class DownloadFile: ObservableObject{
     }
     
     func downloadImage(){
-        let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true  , isThumbnail: false , size: 2)
+        let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true  , isThumbnail: false , size: .ACTUAL)
         Chat.sharedInstance.getImage(req: req) { downloadProgress in
             self.didChangeProgress.send(Double(downloadProgress.percent))
         } completion: { data, fileModel, error in
@@ -205,7 +205,7 @@ class DownloadFile: ObservableObject{
     }
     
     func getImageIfExistInCache(isThumbnail:Bool = true){
-        let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: false  , isThumbnail: false , size: 2)
+        let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: false  , isThumbnail: false , size: .ACTUAL)
         Chat.sharedInstance.getImage(req: req) { downloadProgress in
         } completion: { data, fileModel, error in
         } cacheResponse: { data, fileModel, error in

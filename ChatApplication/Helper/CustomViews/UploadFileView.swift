@@ -25,7 +25,7 @@ struct UploadFileView :View{
         self.viewModel = viewModel
         self.message = message
         self.message.message = viewModel.textMessage
-        uploadFile = UploadFile(thread: viewModel.thread, fileUrl: message.uploadFileUrl, textMessage: message.message ?? "")
+        uploadFile = UploadFile(thread: viewModel.model.thread, fileUrl: message.uploadFileUrl, textMessage: message.message ?? "")
         uploadFile.startUpload()
         //only for preveiw
         if let state = state{
@@ -147,7 +147,7 @@ struct UploadFileView_Previews: PreviewProvider {
     
     static var previews: some View {
         UploadFileView(message: UploadFileMessage(uploadFileUrl: URL(string: "http://www.google.com")!),
-                       viewModel: ThreadViewModel(), state: .UPLOADING)
+                       viewModel: ThreadViewModel(thread: ThreadRow_Previews.thread), state: .UPLOADING)
             .background(Color.black.ignoresSafeArea())
     }
 }
