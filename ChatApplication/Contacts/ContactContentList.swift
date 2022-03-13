@@ -22,6 +22,9 @@ struct ContactContentList:View {
     @State
     var enableDeleteButton = false
     
+    @State
+    var isKeyboardShown:Bool = false
+    
     var body: some View{
         GeometryReader{ reader in
             VStack(spacing:0){
@@ -89,12 +92,7 @@ struct ContactContentList:View {
                     .onDelete(perform:viewModel.delete)
                     .padding(0)
                 }
-                .gesture(
-                    DragGesture(minimumDistance: 5, coordinateSpace: .global)
-                        .onChanged({ value in
-                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to:nil, from:nil, for:nil)
-                        })
-                )
+                .manageKeyboardForList(isKeyboardShown: $isKeyboardShown)
 //                .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
                 .listStyle(PlainListStyle())
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)

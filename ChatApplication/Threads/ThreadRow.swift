@@ -91,9 +91,6 @@ struct ThreadRow: View {
 			.padding([.top , .bottom] , 4)
 		})
         .customAnimation(.default)
-		.onTapGesture {
-            appState.selectedThread = thread
-		}
         .contextMenu{
             Button {
                 viewModel.pinUnpinThread(thread)
