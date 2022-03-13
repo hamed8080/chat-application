@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FanapPodChatSDK
 struct Avatar :View{
     
     @ObservedObject
@@ -21,6 +22,7 @@ struct Avatar :View{
     init(url          :String?,
          userName     :String?,
          fileMetaData :String? = nil,
+         imageSize    :ImageSize = .SMALL,
          style        :StyleConfig = StyleConfig(),
          token        :String? = nil,
          forceToDownload:Bool = false
@@ -28,10 +30,11 @@ struct Avatar :View{
         self.url      = url
         self.userName = userName
         self.style    = style
-        imageLoader   = ImageLoader(url: url , fileMetaData:fileMetaData, token:token, forceToDownload: forceToDownload)
+        imageLoader   = ImageLoader(url: url , fileMetaData:fileMetaData,size: imageSize, token:token)
     }
     
     struct StyleConfig{
+        var cornerRadius :CGFloat = 2
         var size         :CGFloat = 64
         var textSize     :CGFloat = 24
     }
@@ -42,7 +45,7 @@ struct Avatar :View{
                 Image(uiImage:imageLoader.image ?? self.image)
                     .resizable()
                     .frame(width: style.size, height: style.size)
-                    .cornerRadius(style.size / 2)
+                    .cornerRadius(style.size / style.cornerRadius)
                     .scaledToFit()
             }else{
                 Text(String(userName?.first ?? "A" ))
@@ -51,7 +54,7 @@ struct Avatar :View{
                     .foregroundColor(.white)
                     .frame(width: style.size, height: style.size)
                     .background(Color.blue.opacity(0.4))
-                    .cornerRadius(style.size / 2)
+                    .cornerRadius(style.size / style.cornerRadius)
             }
         }
         .onReceive(imageLoader.didChange) { image in

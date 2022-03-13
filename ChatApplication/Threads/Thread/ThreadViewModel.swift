@@ -9,6 +9,7 @@ import Foundation
 import FanapPodChatSDK
 import Combine
 import AVFoundation
+import Photos
 
 class ThreadViewModel:ObservableObject{
     
@@ -17,13 +18,20 @@ class ThreadViewModel:ObservableObject{
     
     @Published
     private (set) var model = ThreadModel()
-    private (set) var thread:Conversation?
+    
+    @Published
+    var textMessage:String = ""
+    
+    var readOnly = false
+
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     private (set) var messageCancelable:AnyCancellable? = nil
     private (set) var systemMessageCancelable:AnyCancellable? = nil
     private var typingTimerStarted = false
     
-    init(){
+    init(thread:Conversation, readOnly:Bool = false){
+        self.readOnly = readOnly
+        model.setThread(thread)
         messageCancelable = NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
             .compactMap{$0.object as? MessageEventModel}
             .sink { messageEvent in
@@ -34,7 +42,7 @@ class ThreadViewModel:ObservableObject{
         systemMessageCancelable = NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
             .compactMap{$0.object as? SystemEventModel}
             .sink { systemMessageEvent in
-                if systemMessageEvent.type == .IS_TYPING && systemMessageEvent.threadId == self.thread?.id , self.typingTimerStarted == false{
+                if systemMessageEvent.type == .IS_TYPING && systemMessageEvent.threadId == self.model.thread?.id , self.typingTimerStarted == false{
                     self.typingTimerStarted = true
                     "typing".isTypingAnimationWithText { startText in
                         self.model.setSignalMessage(text: startText)
@@ -57,13 +65,6 @@ class ThreadViewModel:ObservableObject{
             }        
     }
     
-    //when viewAppreaed this method called and now we can start to retreive thread message
-    func setThread(thread:Conversation){
-        if self.thread != nil {return}//this mean it's setted before and view is reAppearing
-        self.thread = thread
-        getMessagesHistory()
-    }
-    
     func loadMore(){
         if !model.hasNext() || isLoading{return}
         isLoading = true
@@ -72,8 +73,8 @@ class ThreadViewModel:ObservableObject{
     }
     
     func getMessagesHistory(){
-        guard let threadId = thread?.id else{return}
-        Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count,offset: model.offset)) {[weak self] messages, uniqueId, pagination, error in
+        guard let threadId = model.thread?.id else{return}
+        Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count,offset: model.offset, readOnly: readOnly)) {[weak self] messages, uniqueId, pagination, error in
             if let messages = messages{
                 self?.model.appendMessages(messages: messages)
                 self?.isLoading = false
@@ -132,8 +133,50 @@ class ThreadViewModel:ObservableObject{
         }
     }
     
+    /// It triggers when send button tapped
     func sendTextMessage(_ textMessage:String){
-        guard let threadId = thread?.id else {return}
+        if let replyMessage = model.replyMessage, let replyMessageId = replyMessage.id {
+            sendReplyMessage(replyMessageId, textMessage)
+        }else if model.editMessage != nil{
+            sendEditMessage(textMessage)
+        } else{
+           sendNormalMessage(textMessage)
+        }
+        setIsInEditMode(false)//close edit mode in ui
+    }
+    
+    func sendReplyMessage(_ replyMessageId:Int, _ textMessage:String){
+        guard let threadId = model.thread?.id else {return}
+        let req = NewReplyMessageRequest(threadId: threadId,
+                                         repliedTo: replyMessageId,
+                                         textMessage:textMessage,
+                                         messageType: .TEXT)
+        Chat.sharedInstance.replyMessage(req) { uinqueId in
+            
+        } onSent: { response, uniqueId, error in
+            
+        } onSeen: { response, uniqueId, error in
+            
+        } onDeliver: { response, uniqueId, error in
+            
+        }
+    }
+    
+    func sendEditMessage(_ textMessage:String){
+        guard let threadId = model.thread?.id , let editMessage = model.editMessage , let messageId = editMessage.id else {return}
+        let req = NewEditMessageRequest(threadId: threadId,
+                                        messageType: .TEXT,
+                                        messageId: messageId,
+                                        textMessage: textMessage)
+        Chat.sharedInstance.editMessage(req) { editedMessage, uniqueId, error in
+            if let editedMessage = editedMessage{
+                self.model.messageEdited(editedMessage)
+            }
+        }
+    }
+    
+    func sendNormalMessage(_ textMessage:String){
+        guard let threadId = model.thread?.id else {return}
         let req = NewSendTextMessageRequest(threadId: threadId,
                                             textMessage: textMessage,
                                             messageType: .TEXT)
@@ -148,12 +191,28 @@ class ThreadViewModel:ObservableObject{
         }
     }
     
+    func sendForwardMessage(_ destinationThread:Conversation){
+        guard let destinationThreadId = destinationThread.id else {return}
+        let messageIds = model.selectedMessages.compactMap{$0.id}
+        let req = NewForwardMessageRequest(threadId: destinationThreadId, messageIds: messageIds)
+        Chat.sharedInstance.forwardMessages(req) { sentResponse, uniqueId, error in
+            
+        } onSeen: { seenResponse, uniqueId, error in
+            
+        } onDeliver: { deliverResponse, uniqueId, error in
+            
+        } uniqueIdsResult: { uniqueIds in
+            
+        }
+        setIsInEditMode(false)//close edit mode in ui
+    }
+    
     func setViewAppear(appear:Bool){
         model.setViewAppear(appear: appear)
     }
         
     func textChanged(_ newValue:String){
-        if newValue.isEmpty == false, let threadId = thread?.id{
+        if newValue.isEmpty == false, let threadId = model.thread?.id{
             Chat.sharedInstance.snedStartTyping(threadId: threadId)
         }else{
             Chat.sharedInstance.sendStopTyping()
@@ -166,8 +225,8 @@ class ThreadViewModel:ObservableObject{
     }
     
     func muteUnMute(){
-        guard let threadId = thread?.id else {return}
-        if thread?.mute == false{
+        guard let threadId = model.thread?.id else {return}
+        if model.thread?.mute == false{
             Chat.sharedInstance.muteThread(.init(threadId: threadId)) { threadId, uniqueId, error in
                 
             }
@@ -180,7 +239,7 @@ class ThreadViewModel:ObservableObject{
     
     func sendSeenMessageIfNeeded(_ message:Message){
         guard let messageId = message.id else{return}
-        if let lastMsgId = thread?.lastSeenMessageId , messageId > lastMsgId{
+        if let lastMsgId = model.thread?.lastSeenMessageId , messageId > lastMsgId{
             Chat.sharedInstance.seen(.init(messageId: messageId))
             //update cache read count
 //            CacheFactory.write(cacheType: .THREADS([thread]))
@@ -189,7 +248,7 @@ class ThreadViewModel:ObservableObject{
     }
     
     func sendPhotos(uiImage:UIImage?, info:[AnyHashable:Any]?, item:ImageItem, textMessage:String = ""){
-        guard let image = uiImage, let threadId = thread?.id else{return}
+        guard let image = uiImage, let threadId = model.thread?.id else{return}
         let width = Int(image.size.width)
         let height = Int(image.size.height)
         let message = NewSendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .POD_SPACE_PICTURE)
@@ -199,7 +258,7 @@ class ThreadViewModel:ObservableObject{
                                                  wC: width,
                                                  fileName: fileName,
                                                  mimeType: "image/jpg",
-                                                 userGroupHash: thread?.userGroupHash)
+                                                 userGroupHash: model.thread?.userGroupHash)
         Chat.sharedInstance.sendFileMessage(textMessage:message, uploadFile: imageRequest){ uploadFileProgress ,error in
             print(uploadFileProgress ?? error ?? "")
         }onSent: { sentResponse, uniqueId, error in
@@ -268,12 +327,79 @@ class ThreadViewModel:ObservableObject{
     }
     
     func sendSignal(_ signalMessage:SignalMessageType){
-        guard let threadId = thread?.id else{ return }
+        guard let threadId = model.thread?.id else{ return }
         Chat.sharedInstance.newSendSignalMessage(req: .init(signalType: signalMessage , threadId:threadId))
     }
     
     func playAudio(){
         
+    }
+    
+    func setReplyMessage(_ message:Message?){
+        model.setReplyMessage(message)
+    }
+    
+    func setForwardMessage(_ message:Message?){
+        model.setForwardMessage(message)
+    }
+    
+    func toggleSelectedMessage(_ message:Message, _ isSelected:Bool){
+        if isSelected{
+            model.appendSelectedMessage(message)
+        }else{
+            model.removeSelectedMessage(message)
+        }
+    }
+    
+    func deleteSelectedMessages(){
+        guard let threadId = model.thread?.id else{return}
+        let messageIds = model.selectedMessages.compactMap{$0.id}
+        let req = BatchDeleteMessageRequest(threadId:threadId, messageIds:messageIds, deleteForAll:true)
+        Chat.sharedInstance.deleteMultipleMessages(req) { deletedMessage, uniqueId, error in
+            
+        }
+    }
+
+    func setIsInEditMode(_ isInEditMode:Bool){
+        model.setIsInEditMode(isInEditMode)
+        if isInEditMode == false{
+            textMessage = ""
+        }
+    }
+    
+    func setEditMessage(_ message:Message){
+        model.setEditMessage(message)
+    }
+    
+    func setMessageEdited(_ message:Message){
+        model.messageEdited(message)
+    }
+    
+    func updateThreadInfo(_ title:String, _ description:String, image:UIImage?, assetResources:[PHAssetResource]?){
+        guard let thread = model.thread, let threadId = thread.id else{return}
+        var imageRequest:NewUploadImageRequest? = nil
+        if let image = image{
+            let width = Int(image.size.width)
+            let height = Int(image.size.height)
+            imageRequest = NewUploadImageRequest(data: image.pngData() ?? Data(),
+                                                 hC: height,
+                                                 wC: width,
+                                                 fileExtension: "png",
+                                                 fileName: assetResources?.first?.originalFilename,
+                                                 mimeType: "image/png",
+                                                 originalName: assetResources?.first?.originalFilename,
+                                                 isPublic: true
+            )
+        }
+        
+        let req = NewUpdateThreadInfoRequest(description: description, threadId: threadId, threadImage: imageRequest, title: title)
+        Chat.sharedInstance.updateThreadInfo(req) { uniqueId in
+            
+        } uploadProgress: { progress, error in
+            
+        } completion: { conversation, uniqueId, error in
+            var i = 0
+        }
     }
 }
  

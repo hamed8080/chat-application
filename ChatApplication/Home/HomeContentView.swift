@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FanapPodChatSDK
 
 struct HomeContentView: View {
     
@@ -42,6 +43,10 @@ struct HomeContentView: View {
     @State
     var showThreadView:Bool = false
     
+    @Environment(\.colorScheme) var colorScheme
+    
+    @State
+    var selectedThread:Conversation? = nil
     
     var body: some View {
         //        WebRTCView()
@@ -60,18 +65,18 @@ struct HomeContentView: View {
                       
                     
                     ///do not remove this navigation to any view swift will give you unexpected behavior
-                    NavigationLink(destination: ThreadView(viewModel: ThreadViewModel()) ,isActive: $showThreadView) {
-                        EmptyView()
+                    if let selectedThread = selectedThread{
+                        NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread:selectedThread)) ,isActive: $showThreadView) {
+                            EmptyView()
+                        }
                     }
                 }
                 .navigationBarTitle("")
                 .navigationBarHidden(true)
             }
             .navigationViewStyle(.stack)//dont remove this line in ipad tabs will be hidden
-            .onReceive(appState.$dark, perform: { _ in
-                self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
-            })
             .onReceive(appState.$selectedThread, perform: { selectedThread in
+                self.selectedThread = selectedThread
                 self.showThreadView = selectedThread != nil
             })
             .fullScreenCover(isPresented: $showCallView, onDismiss: nil, content: {
@@ -100,7 +105,7 @@ struct HomeContentView: View {
                 }
             })
             .onAppear{
-                self.statusBarStyle.currentStyle = appState.dark ? .lightContent : .darkContent
+                self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }
         }
     }

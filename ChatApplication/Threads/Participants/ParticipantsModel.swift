@@ -53,10 +53,13 @@ extension ParticipantsModel{
         let t2 = ParticipantRow_Previews.participant
         t2.name = "Masoud Amjadi"
         t2.id = 2
+        t2.admin = false
         
         let t3 = ParticipantRow_Previews.participant
         t2.name = "Pooria Pahlevani"
         t3.id = 3
-        appendParticipants(participants: [t1 , t2, t3])
+        t3.admin = false
+        
+        appendParticipants(participants: [t1 , t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3])
     }
 }

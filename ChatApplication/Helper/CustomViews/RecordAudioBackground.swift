@@ -57,7 +57,7 @@ struct RecordAudioBackground: View {
 
 struct RecordAudioBackground_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = ThreadViewModel()
+        let vm = ThreadViewModel(thread: ThreadRow_Previews.thread)
         RecordAudioBackground(viewModel: vm, scale: 2)
             .frame(width: 128, height: 128)
             .onAppear {

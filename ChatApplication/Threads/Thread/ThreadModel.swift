@@ -17,6 +17,12 @@ struct ThreadModel {
     private (set) var isViewDisplaying              = false
     private (set) var signalMessageText:String?     = nil
     private (set) var isRecording:Bool              = false
+    private (set) var replyMessage:Message?         = nil
+    private (set) var forwardMessage:Message?       = nil
+    private (set) var isInEditMode:Bool             = false
+    private (set) var selectedMessages:[Message]    = []
+    private (set) var editMessage:Message?          = nil
+    private (set) var thread:Conversation?          = nil
     
     func hasNext()->Bool{
         return messages.count < totalCount
@@ -36,8 +42,19 @@ struct ThreadModel {
     }
     
     mutating func appendMessages(messages:[Message]){
-        self.messages.append(contentsOf: messages)
+        self.messages.append(contentsOf: filterNewMessagesToAppend(serverMessages: messages))
         sort()
+    }
+    
+    /// Filter only new messages prevent conflict with cache messages
+    mutating func filterNewMessagesToAppend(serverMessages:[Message])->[Message]{
+        let ids = self.messages.map{$0.id}
+        let newMessages = serverMessages.filter { message in
+            !ids.contains { id in
+                return id == message.id
+            }
+        }
+        return newMessages
     }
     
     mutating func appendMessage(_ message:Message){
@@ -85,6 +102,40 @@ struct ThreadModel {
     
     mutating func toggleIsRecording(){
         self.isRecording.toggle()
+    }
+    
+    mutating func setReplyMessage(_ message:Message?){
+        replyMessage = message
+    }
+    
+    mutating func setForwardMessage(_ message:Message?){
+        isInEditMode = message != nil
+        forwardMessage = message
+    }
+    
+    mutating func setIsInEditMode(_ isInEditMode:Bool){
+        self.isInEditMode = isInEditMode
+    }
+    
+    mutating func appendSelectedMessage(_ message:Message){
+        selectedMessages.append(message)
+    }
+    
+    mutating func removeSelectedMessage(_ message:Message){
+        guard let index = selectedMessages.firstIndex(of: message) else{return}
+        selectedMessages.remove(at: index)
+    }
+    
+    mutating func setEditMessage(_ message:Message){
+        self.editMessage = message
+    }
+    
+    mutating func messageEdited(_ message:Message){
+        messages.first(where: {$0.id == message.id})?.message = message.message
+    }
+    
+    mutating func setThread(_ thread:Conversation?){
+        self.thread = thread
     }
 }
 

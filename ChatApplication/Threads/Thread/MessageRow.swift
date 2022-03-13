@@ -15,22 +15,41 @@ struct MessageRow: View{
     @State private (set) var showParticipants:Bool = false
     private var viewModel:ThreadViewModel
     private var isMe:Bool
-        
     
-    init(message: Message, viewModel:ThreadViewModel,isMeForPreView:Bool? = nil) {
+    @Binding
+    var isInEditMode:Bool
+    
+    @State
+    private var isSelected   = false
+    
+    init(message: Message, viewModel:ThreadViewModel,isInEditMode: Binding<Bool>,isMeForPreView:Bool? = nil) {
         self.message = message
         self.viewModel = viewModel
+        self._isInEditMode = isInEditMode
         self.isMe = isMeForPreView ?? (message.ownerId == (Chat.sharedInstance.getCurrentUser()?.id ?? AppState.shared.user?.id))
     }
     
     var body: some View {
-        if let type = MessageType(rawValue: message.messageType ?? 0){
-            if let message = message as? UploadFileMessage{
-                UploadMessageType(viewModel: viewModel, message: message)
-            }else if type == .TEXT || type == .PICTURE || type == .POD_SPACE_PICTURE || type == .FILE || type == .POD_SPACE_FILE {
-                TextMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
-            }else if type == .END_CALL || type == .START_CALL{
-                CallMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
+        HStack{
+            if isInEditMode{
+                Image(systemName: isSelected ? "checkmark.circle" : "circle")
+                    .font(.title)
+                    .frame(width: 22, height: 22, alignment: .center)
+                    .foregroundColor(Color.blue)
+                    .padding(24)
+                    .onTapGesture {
+                        isSelected.toggle()
+                        viewModel.toggleSelectedMessage(message ,isSelected)
+                    }
+            }
+            if let type = MessageType(rawValue: message.messageType ?? 0){
+                if let message = message as? UploadFileMessage{
+                    UploadMessageType(viewModel: viewModel, message: message)
+                }else if type == .TEXT || type == .PICTURE || type == .POD_SPACE_PICTURE || type == .FILE || type == .POD_SPACE_FILE {
+                    TextMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
+                }else if type == .END_CALL || type == .START_CALL{
+                    CallMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
+                }
             }
         }
     }
@@ -84,6 +103,11 @@ struct TextMessageType:View{
                     DownloadFileView(message: message)
                         .frame(width: 128, height: 128)
                 }
+                
+                if let forwardInfo = message.forwardInfo{
+                    ForwardMessageRow(forwardInfo: forwardInfo)
+                }
+                
                 Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
                     .multilineTextAlignment(.trailing)
                     .font(.subheadline.weight(.medium))
@@ -129,6 +153,30 @@ struct TextMessageType:View{
         
             .contextMenu{
                 
+                Button (){
+                    withAnimation {
+                        viewModel.setReplyMessage(message)
+                    }
+                } label: {
+                    Label("Reply", systemImage: "arrowshape.turn.up.left")
+                }
+                
+                Button (){
+                    withAnimation {
+                        viewModel.setForwardMessage(message)                        
+                    }
+                } label: {
+                    Label("forward", systemImage: "arrowshape.turn.up.forward")
+                }
+                
+                Button (){
+                    withAnimation {
+                        viewModel.setEditMessage(message)
+                    }
+                } label: {
+                    Label("Edit", systemImage: "pencil.circle")
+                }
+                
                 if message.isFileType == true{
                     Button {
                         viewModel.clearCacheFile(message: message)
@@ -143,27 +191,58 @@ struct TextMessageType:View{
                     Label((message.pinned ?? false) ? "UnPin" : "Pin", systemImage: "pin")
                 }
  
-                if #available(iOS 15.0, *) {
-                    Button (role:.destructive){
-                        withAnimation {
-                            viewModel.deleteMessage(message)
-                        }
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+                Button{
+                    withAnimation {
+                        viewModel.setIsInEditMode(true)
                     }
-                } else {
-                    Button {
-                        withAnimation {
-                            viewModel.deleteMessage(message)
-                        }
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+                } label: {
+                    Label("Select", systemImage: "checkmark.circle")
+                }
+                
+                Button (role:.destructive){
+                    withAnimation {
+                        viewModel.deleteMessage(message)
                     }
+                } label: {
+                    Label("Delete", systemImage: "trash")
                 }
             }
             
             if !isMe{
                 Spacer()
+            }
+        }
+    }
+}
+
+struct ForwardMessageRow:View{
+    
+    var forwardInfo:ForwardInfo
+    
+    @State
+    var showReadOnlyThreadView : Bool         = false
+    
+    var body: some View{
+        
+        VStack(spacing:0){
+            HStack{
+                Text(forwardInfo.participant?.name ?? "")
+                    .italic()
+                    .font(.footnote)
+                    .foregroundColor(Color.gray)
+                Image(systemName: "arrowshape.turn.up.right")
+                    .foregroundColor(Color.blue)
+            }
+            .frame(minHeight:20)
+            Rectangle()
+                .fill(Color.gray.opacity(0.2))
+                .frame(height:1)
+        }.onTapGesture {
+            showReadOnlyThreadView = true
+        }
+        if let forwardThread = forwardInfo.conversation{
+            NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: forwardThread, readOnly: true)), isActive: $showReadOnlyThreadView){
+                EmptyView()
             }
         }
     }
@@ -201,6 +280,18 @@ struct MessageRow_Previews: PreviewProvider {
         return message
     }
     
+    static var forwardedMessage:Message{
+        let ms = Message(threadId: 0,
+                         id: 12,
+                         message: "Hello",
+                         messageType: 1,
+                         seen: false,
+                         time: 1636807773,
+                         forwardInfo: ForwardInfo(conversation: ThreadRow_Previews.thread, participant: ParticipantRow_Previews.participant)
+        )
+        return ms
+    }
+    
     static var downloadMessage:Message{
         let metaData = FileMetaData(file: .init(fileExtension: ".pdf", link: "", mimeType: "", name: "Test File Name", originalName: "tes", size: 8240000))
         let metaDataString = String(data: (try! JSONEncoder().encode(metaData)), encoding: .utf8)
@@ -221,11 +312,13 @@ struct MessageRow_Previews: PreviewProvider {
     
     static var previews: some View {
         List{
-            MessageRow(message: message,viewModel: ThreadViewModel(),isMeForPreView: false)
-            MessageRow(message: message,viewModel: ThreadViewModel(),isMeForPreView: true)
-            MessageRow(message: downloadMessage, viewModel: ThreadViewModel(),isMeForPreView: true)
-            MessageRow(message: uploadMessage, viewModel: ThreadViewModel())
+            let thread = ThreadRow_Previews.thread
+            MessageRow(message: message,viewModel:ThreadViewModel(thread: thread) , isInEditMode: .constant(true),isMeForPreView: false)
+            MessageRow(message: forwardedMessage,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: false)
+            MessageRow(message: message,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
+            MessageRow(message: downloadMessage, viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
+            MessageRow(message: uploadMessage, viewModel: ThreadViewModel(thread: thread), isInEditMode: .constant(true))
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
 }

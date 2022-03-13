@@ -20,24 +20,22 @@ class ImageLoader : ObservableObject{
         return UIImage(data: data)
     }
     
-    init(url:String? , fileMetaData:String? = nil,token:String? = nil, forceToDownload:Bool = false) {
-        let fileMetaDataModel = try? JSONDecoder().decode(FileMetaData.self, from: fileMetaData?.data(using: .utf8) ?? Data())
-        let smallImageFileUrl = getPodspaceSmallImage(fileHash: fileMetaDataModel?.fileHash)
-        guard let stringUrl = url , let url = URL(string: smallImageFileUrl ?? stringUrl) else {
-            data = nil
-            return
-        }
-        if forceToDownload == false, let cacheImageData = CacheFileManager.sharedInstance.getImageProfileCache(url: url.absoluteString, group: AppGroup.group){
-            self.data = cacheImageData
-            self.didChange.send(image)
-        }else{
-            var urlrequest = URLRequest(url: url)
-            
-            if let token = token {
-                urlrequest.addValue(token, forHTTPHeaderField: "_token_")
-                urlrequest.addValue("1", forHTTPHeaderField: "_token_issuer_")
+    init(url:String? , fileMetaData:String?, size:ImageSize? = nil,token:String? = nil) {
+        
+        if let fileMetaData = fileMetaData,
+           let fileMetaDataModel = try? JSONDecoder().decode(FileMetaData.self, from: fileMetaData.data(using: .utf8) ?? Data()),
+           let hashCode = fileMetaDataModel.fileHash{
+            Chat.sharedInstance.getImage(req: .init(hashCode:hashCode, size: size ?? .SMALL)) { progress in
+                
+            } completion: { data, imageModel, error in
+                self.data = data
+                self.didChange.send(self.image)
+            } cacheResponse: { data, imageModel, error in
+                self.data = data
+                self.didChange.send(self.image)
             }
-            let task = URLSession.shared.dataTask(with: urlrequest){[weak self] data,response ,error in
+        }else if let urlString = url, let url = URL(string:urlString) {
+            let task = URLSession.shared.dataTask(with: URLRequest(url: url)){[weak self] data,response ,error in
                 if let data = data{
                     DispatchQueue.main.async {
                         self?.data = data
@@ -49,11 +47,5 @@ class ImageLoader : ObservableObject{
             }
             task.resume()
         }
-    }
-    
-    func getPodspaceSmallImage(fileHash:String?)->String?{
-        guard let fileHash = fileHash else {return nil}
-        let smallImageFileUrl = "https://podspace.pod.ir/api/images/\(fileHash)?size=SMALL"
-        return smallImageFileUrl
     }
 }

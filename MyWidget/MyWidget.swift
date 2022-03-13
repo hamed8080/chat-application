@@ -86,7 +86,7 @@ struct MyWidgetEntryView : View {
     var smallView: some View{
         if let thread = entry.threads.first{
             VStack{
-                Avatar(url: thread.image, userName: thread.title?.uppercased(),fileMetaData: thread.metadata)
+                Avatar(url: thread.image, userName: thread.title?.uppercased(),fileMetaData: thread.metadata, imageSize: .SMALL)
                 Text(thread.title ?? "")
                     .font(.subheadline)
             }.widgetURL(URL(string: "Widget://link-\(thread.id ?? 0 )")!)
@@ -134,7 +134,7 @@ struct MyWidgetEntryView : View {
     @ViewBuilder
     func item(thread:Conversation)-> some View{
         Link(destination: URL(string: "Widget://link-\(thread.id ?? 0 )")!) {
-            Avatar(url: thread.image, userName: thread.title?.uppercased(),fileMetaData: thread.metadata)
+            Avatar(url: thread.image, userName: thread.title?.uppercased(),fileMetaData: thread.metadata, imageSize: .MEDIUM)
         }
     }
 }

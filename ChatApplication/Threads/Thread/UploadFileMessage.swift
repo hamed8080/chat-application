@@ -31,7 +31,7 @@ class UploadFileMessage:Message{
                    systemMetadata: nil,
                    time: nil,
                    timeNanos: nil,
-                   uniqueId: nil,
+                   uniqueId: UUID().uuidString, // to draw unique row in swiftui it needed to fill this value. do not use id cause id is nil cannot be drawn row after two upload
                    conversation: nil,
                    forwardInfo: nil,
                    participant: nil,

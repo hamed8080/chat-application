@@ -21,6 +21,8 @@ struct PrimaryCustomDialog: View {
     var onSubmit        :((String)->())?   = nil
     var onClose         :(()->())?         = nil
     
+    @Environment(\.colorScheme) var colorScheme
+    
     var body: some View{
         VStack(spacing:2){
             if let systemImageName = systemImageName {
@@ -29,7 +31,7 @@ struct PrimaryCustomDialog: View {
                     .scaledToFit()
                     .frame(maxWidth:72)
                     .padding()
-                    .foregroundColor(Color.gray)
+                    .foregroundColor(colorScheme == .dark ? Color.gray : Color.gray )
             }
             
             Text(title)
@@ -58,8 +60,8 @@ struct PrimaryCustomDialog: View {
             Button(submitTitle){
                 onSubmit?(textBinding?.wrappedValue ?? "")
                 hideDialog.toggle()
-            }.buttonStyle(PrimaryButtonStyle(bgColor:Color.pink.opacity(0.25),
-                                             textColor: Color.black.opacity(0.5),
+            }.buttonStyle(PrimaryButtonStyle(bgColor:Color.pink.opacity(colorScheme == .dark ? 0.9 : 0.25),
+                                             textColor: Color.primary.opacity(0.8),
                                              minHeight: 48,
                                              cornerRadius: 12))
             
@@ -68,8 +70,8 @@ struct PrimaryCustomDialog: View {
                     hideDialog.toggle()
                     onClose?()
                 }
-            }.buttonStyle(PrimaryButtonStyle(bgColor:Color.black.opacity(0.1),
-                                             textColor: Color.black.opacity(0.5),
+            }.buttonStyle(PrimaryButtonStyle(bgColor:colorScheme == .dark ? Color.primary.opacity(0.3) : Color.black.opacity(0.1),
+                                             textColor: colorScheme == .dark ? Color.white : Color.black.opacity(0.5),
                                              minHeight:48,
                                              cornerRadius: 12))
         }
@@ -78,6 +80,11 @@ struct PrimaryCustomDialog: View {
 
 struct PrimaryCustomDialog_Previews: PreviewProvider {
     static var previews: some View {
-        PrimaryCustomDialog(title: "Title", hideDialog: .constant(false))
+        PrimaryCustomDialog(title: "Title",
+                            message: "Message",
+                            systemImageName: "trash.fill",
+                            textBinding: .constant("Text"),
+                            hideDialog: .constant(false))
+            .preferredColorScheme(.dark)
     }
 }
