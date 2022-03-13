@@ -17,6 +17,9 @@ struct ThreadContentList:View {
     @State
     var searechInsideThread:String = ""
     
+    @State
+    var isKeyboardShown = false
+    
     var body: some View{
         GeometryReader{ reader in
             VStack(spacing:0){
@@ -28,12 +31,17 @@ struct ThreadContentList:View {
                                     ]
                 )
                 List {
-                    MultilineTextField("Search ...",text: $searechInsideThread,backgroundColor:Color.gray.opacity(0.2))
-                        .cornerRadius(8)
-                        .noSeparators()
-                        .onChange(of: searechInsideThread) { newValue in
-                            viewModel.searchInsideAllThreads(text: searechInsideThread)
-                        }
+                    MultilineTextField("Search ...",
+                                       text: $searechInsideThread,
+                                       backgroundColor:Color.gray.opacity(0.2),
+                                       keyboardReturnType: .search){ text in
+                        isKeyboardShown = false
+                    }
+                    .cornerRadius(8)
+                    .noSeparators()
+                    .onChange(of: searechInsideThread) { newValue in
+                        viewModel.searchInsideAllThreads(text: searechInsideThread)
+                    }
                     
                     ForEach(viewModel.model.threads , id:\.id) { thread in
                         ThreadRow(thread: thread,viewModel: viewModel)
@@ -42,10 +50,26 @@ struct ThreadContentList:View {
                                     viewModel.loadMore()
                                 }
                             }
-                    }.onDelete(perform: { indexSet in
-                        guard let thread = indexSet.map({ viewModel.model.threads[$0]}).first else {return}
-                        viewModel.deleteThread(thread)
-                    })
+                            .onTapGesture {
+                                if isKeyboardShown == false{
+                                    //navigate to thread only keyboard is not showing
+                                    withAnimation {
+                                        print("Go to thread ")
+                                        appState.selectedThread = thread
+                                    }
+                                }else{
+                                    //hide keyboard and prevent action to navigate to thread
+                                    isKeyboardShown = false
+                                }
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    viewModel.deleteThread(thread)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                    }
                 }
                 .listStyle(PlainListStyle())
                 LoadingViewAtCenterOfView(isLoading:viewModel.centerIsLoading ,reader:reader)
@@ -70,12 +94,7 @@ struct ThreadContentList:View {
                 viewModel.toggleThreadContactPicker.toggle()
             }
         })
-        .gesture(
-            DragGesture(minimumDistance: 5, coordinateSpace: .global)
-                .onChanged({ value in
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to:nil, from:nil, for:nil)
-                })
-        )
+        .manageKeyboardForList(isKeyboardShown: $isKeyboardShown)
         .onAppear {
             UINavigationBar.changeAppearance(clear: false)
             viewModel.setViewAppear(appear: true)

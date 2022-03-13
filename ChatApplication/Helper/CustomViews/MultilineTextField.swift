@@ -13,7 +13,8 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
     @Binding var text: String
     var textColor: Color
     @Binding var calculatedHeight: CGFloat
-    var onDone: (() -> Void)?
+    var keyboardReturnType:UIReturnKeyType = .done
+    var onDone: ((String?) -> Void)?
 
     func makeUIView(context: UIViewRepresentableContext<UITextViewWrapper>) -> UITextView {
         let textField = UITextView()
@@ -26,9 +27,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         textField.isScrollEnabled = false
         textField.backgroundColor = UIColor.clear
         textField.textColor = UIColor(cgColor: textColor.cgColor!)
-        if nil != onDone {
-            textField.returnKeyType = .done
-        }
+        textField.returnKeyType = keyboardReturnType
         textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textField
     }
@@ -56,9 +55,9 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
     final class Coordinator: NSObject, UITextViewDelegate {
         var text: Binding<String>
         var calculatedHeight: Binding<CGFloat>
-        var onDone: (() -> Void)?
+        var onDone: ((String?) -> Void)?
 
-        init(text: Binding<String>, height: Binding<CGFloat>, onDone: (() -> Void)? = nil) {
+        init(text: Binding<String>, height: Binding<CGFloat>, onDone: ((String?) -> Void)? = nil) {
             self.text = text
             self.calculatedHeight = height
             self.onDone = onDone
@@ -72,7 +71,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
             if let onDone = self.onDone, text == "\n" {
                 textView.resignFirstResponder()
-                onDone()
+                onDone(textView.text)
                 return false
             }
             return true
@@ -84,11 +83,12 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
 struct MultilineTextField: View {
 
     private var placeholder: String
-    private var onDone: (() -> Void)?
+    private var onDone: ((String?) -> Void)?
     var backgroundColor:Color  = .white
     var textColor:Color?  = nil
     @Environment(\.colorScheme) var colorScheme
-
+    var keyboardReturnType:UIReturnKeyType = .done
+    
     @Binding private var text: String
     private var internalText: Binding<String> {
         Binding<String>(get: { self.text } ) {
@@ -104,13 +104,14 @@ struct MultilineTextField: View {
           text: Binding<String>,
           textColor:Color? = nil,
           backgroundColor:Color = .white,
-          onCommit: (() -> Void)? = nil,
-          onDone: (() -> Void)? = nil ) {
+          keyboardReturnType:UIReturnKeyType = .done,
+          onDone: ((String?) -> Void)? = nil ) {
         self.placeholder = placeholder
         self.onDone = onDone
         self.textColor = textColor
         self._text = text
         self.backgroundColor = backgroundColor
+        self.keyboardReturnType = keyboardReturnType
         self._showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
 
@@ -118,6 +119,7 @@ struct MultilineTextField: View {
         UITextViewWrapper(text: self.internalText,
                           textColor: textColor ?? (colorScheme == .dark ? Color.white : Color.black),
                           calculatedHeight: $dynamicHeight,
+                          keyboardReturnType: keyboardReturnType,
                           onDone:onDone)
             .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
             .background(placeholderView, alignment: .topLeading)
@@ -146,7 +148,7 @@ struct MultilineTextField_Previews: PreviewProvider {
     static var previews: some View {
         VStack(alignment: .leading) {
             Text("Description:")
-            MultilineTextField("Enter some text here", text: testBinding, onCommit: {
+            MultilineTextField("Enter some text here", text: testBinding, keyboardReturnType: .search, onDone: { value in
                 print("Final text: \(test)")
             })
                 .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.black))
