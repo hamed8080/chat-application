@@ -34,6 +34,7 @@ struct CallStateModel {
     private (set) var answerWithVideo              :Bool              = false
     private (set) var answerWithMicEnable          :Bool              = false
     private (set) var isRecording                  :Bool              = false
+    private (set) var callRecorder                 :Participant?      = nil
     
     
     mutating func setReceiveCall(_ receiveCall:CreateCall){
@@ -133,6 +134,16 @@ struct CallStateModel {
     mutating func setIsRecording(isRecording:Bool){
         self.isRecording = isRecording
     }
+    
+    mutating func setStartRecording(participant:Participant){
+        setIsRecording(isRecording: true)
+        self.callRecorder = participant
+    }
+    
+    mutating func setStopRecording(participant:Participant){
+        setIsRecording(isRecording: false)
+        self.callRecorder = nil
+    }
 }
 
 class CallState:ObservableObject,WebRTCClientDelegate {
@@ -163,6 +174,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(onUNMuteParticipants(_:)), name: UNMUTE_CALL_NAME_OBJECT, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onTurnVideoOnParticipants(_:)), name: TURN_ON_VIDEO_CALL_NAME_OBJECT, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onTurnVideoOffParticipants(_:)), name: TURN_OFF_VIDEO_CALL_NAME_OBJECT, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onCallStartRecording(_:)), name: START_CALL_RECORDING_NAME_OBJECT, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onCallStopRecording(_:)), name: STOP_CALL_RECORDING_NAME_OBJECT, object: nil)
 	}
 	
 	@objc func onCallSessionCreated(_ notification: NSNotification){
@@ -252,6 +265,18 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     @objc func onTurnVideoOffParticipants(_ notification: NSNotification){
         if let callParticipants = notification.object as? [CallParticipant]{
             model.addTurnOffCallParticipant(callParticipants)
+        }
+    }
+    
+    @objc func onCallStartRecording(_ notification: NSNotification){
+        if let recorder = notification.object as? Participant{
+            model.setStartRecording(participant: recorder)
+        }
+    }
+    
+    @objc func onCallStopRecording(_ notification: NSNotification){
+        if let recorder = notification.object as? Participant{
+            model.setStopRecording(participant: recorder)
         }
     }
     

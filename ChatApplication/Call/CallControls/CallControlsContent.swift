@@ -38,6 +38,9 @@ struct CallControlsContent: View {
    
     @State
     var showRecordingIndicator: Bool = false
+    
+    @State
+    var showBarEvents = false
 
     var body: some View {
         GeometryReader{ reader in
@@ -177,6 +180,9 @@ struct CallControlsContent: View {
         .onAppear{
             viewModel.startRequestCallIfNeeded()
         }
+        .onChange(of: callState.model.callRecorder, perform: { participant in
+            print("call recorder start \(participant?.name ?? "")")
+        })
         .onReceive(callState.$model , perform: { _ in
             if callState.model.showCallView == false{
                 presentationMode.wrappedValue.dismiss()
@@ -198,13 +204,11 @@ struct CallControlsContent: View {
     func getMoreCallControlsView()->some View{
         SheetDialog(showAttachmentDialog: $showDetailPanel) {
             HStack{
-                if callState.model.isVideoCall{
-                    CallControlItem(iconSfSymbolName: "record.circle", subtitle: "Record", color: .red){
-                        if callState.model.isRecording{
-                            viewModel.stopRecording()
-                        }else{
-                            viewModel.startRecording()
-                        }
+                CallControlItem(iconSfSymbolName: "record.circle", subtitle: "Record", color: .red){
+                    if callState.model.isRecording{
+                        viewModel.stopRecording()
+                    }else{
+                        viewModel.startRecording()
                     }
                 }
                 
@@ -281,7 +285,7 @@ struct CallControlsView_Previews: PreviewProvider {
         let appState = AppState.shared
         let callState = CallState.shared
         
-        CallControlsContent(viewModel:viewModel)
+        CallControlsContent(viewModel:viewModel, showBarEvents: true)
             .environmentObject(appState)
             .environmentObject(callState)
             .previewDevice("iPhone 13")
