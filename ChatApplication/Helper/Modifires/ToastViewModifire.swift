@@ -31,7 +31,7 @@ struct TopNotifyViewModifire:ViewModifier{
             content
                 .animation(.easeInOut, value: isShowing)
                 .blur(radius: isShowing ? 5 : 0 )
-            if true {
+            if isShowing {
                 Rectangle()
                     .foregroundColor(Color.black.opacity(0.6))
                     .ignoresSafeArea()
