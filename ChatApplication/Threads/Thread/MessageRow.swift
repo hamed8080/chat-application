@@ -164,7 +164,7 @@ struct TextMessageType:View{
                 
                 Button (){
                     withAnimation {
-                        viewModel.setForwardMessage(message)                        
+                        viewModel.setForwardMessage(message)
                     }
                 } label: {
                     Label("forward", systemImage: "arrowshape.turn.up.forward")
@@ -258,7 +258,13 @@ struct UploadMessageType:View{
         HStack(alignment: .top){
             Spacer()
             HStack{
-                UploadFileView(message:message, viewModel: viewModel,state: .UPLOADING)
+                UploadFileView(uploadFile:UploadFile(thread: viewModel.model.thread,
+                                                     fileUrl: message.uploadFileUrl,
+                                                     textMessage: message.message ?? ""
+                                                    ),
+                               viewModel: viewModel,
+                               message: UploadFileMessage(uploadFileUrl: message.uploadFileUrl)
+                )
                     .frame(width: 148, height: 148)
             }
             .contentShape(Rectangle())
