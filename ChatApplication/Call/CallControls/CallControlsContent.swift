@@ -40,7 +40,7 @@ struct CallControlsContent: View {
     var showRecordingIndicator: Bool = false
     
     @State
-    var showBarEvents = false
+    var showToast = false
 
     var body: some View {
         GeometryReader{ reader in
@@ -181,8 +181,15 @@ struct CallControlsContent: View {
             viewModel.startRequestCallIfNeeded()
         }
         .onChange(of: callState.model.callRecorder, perform: { participant in
-            print("call recorder start \(participant?.name ?? "")")
+            if callState.model.callRecorder != nil{
+                showToast = true
+            }
         })
+        .toast(isShowing: $showToast,
+               title: "Recording the call started",
+               message: "\(callState.model.callRecorder?.name ?? "")is recording the call",
+               image: Image(systemName: "record.circle")
+        )
         .onReceive(callState.$model , perform: { _ in
             if callState.model.showCallView == false{
                 presentationMode.wrappedValue.dismiss()
@@ -285,7 +292,7 @@ struct CallControlsView_Previews: PreviewProvider {
         let appState = AppState.shared
         let callState = CallState.shared
         
-        CallControlsContent(viewModel:viewModel, showBarEvents: true)
+        CallControlsContent(viewModel:viewModel, showToast: true)
             .environmentObject(appState)
             .environmentObject(callState)
             .previewDevice("iPhone 13")
