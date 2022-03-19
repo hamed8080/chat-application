@@ -18,24 +18,12 @@ struct UploadFileView :View{
     @State
     var percent:Double = 0
     
-    private let viewModel:ThreadViewModel
-    private let message:UploadFileMessage
-    
-    init(message:UploadFileMessage,viewModel:ThreadViewModel,state:UploadFileState? = nil) {
-        self.viewModel = viewModel
-        self.message = message
-        self.message.message = viewModel.textMessage
-        uploadFile = UploadFile(thread: viewModel.model.thread, fileUrl: message.uploadFileUrl, textMessage: message.message ?? "")
-        uploadFile.startUpload()
-        //only for preveiw
-        if let state = state{
-            uploadFile.state = state
-        }
-    }
+    let viewModel:ThreadViewModel
+    let message:UploadFileMessage
     
     @ViewBuilder
     var body: some View{
-        GeometryReader{ reader in            
+        GeometryReader{ reader in
             ZStack(alignment:.center){
                 switch uploadFile.state{
                 case .UPLOADING,.STARTED:
@@ -59,6 +47,9 @@ struct UploadFileView :View{
                     EmptyView()
                 }
             }
+            .onAppear(perform: {
+                uploadFile.startUpload()
+            })
             .onReceive(uploadFile.$state, perform: { state in
                 if state == .COMPLETED{
                     viewModel.deleteMessageFromModel(message)
@@ -101,7 +92,7 @@ class UploadFile: ObservableObject{
     }
     
     func startUpload(){
-        state = .STARTED        
+        state = .STARTED
         guard let threadId = thread?.id, let data = try? Data(contentsOf: fileUrl) else {return}
         let message = NewSendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .POD_SPACE_FILE)
         
@@ -146,8 +137,13 @@ class UploadFile: ObservableObject{
 struct UploadFileView_Previews: PreviewProvider {
     
     static var previews: some View {
-        UploadFileView(message: UploadFileMessage(uploadFileUrl: URL(string: "http://www.google.com")!),
-                       viewModel: ThreadViewModel(thread: ThreadRow_Previews.thread), state: .UPLOADING)
+        let viewModel = ThreadViewModel(thread: ThreadRow_Previews.thread)
+        let fileUrl = URL(string: "http://www.google.com")!
+        let uploadFile = UploadFile(thread: ThreadRow_Previews.thread, fileUrl: fileUrl)
+        UploadFileView(uploadFile: uploadFile,
+                       viewModel: viewModel,
+                       message: UploadFileMessage(uploadFileUrl: fileUrl)
+        )
             .background(Color.black.ignoresSafeArea())
     }
 }
