@@ -28,7 +28,7 @@ struct SettingsView:View {
                             Image(systemName:"square.and.pencil")
                                 .font(.title)
                         })
-                            .buttonStyle(DeepButtonStyle())
+                        .buttonStyle(DeepButtonStyle(backgroundColor:Color.clear))
                     }
                     .padding(.top)
                     .padding(.bottom , 25)

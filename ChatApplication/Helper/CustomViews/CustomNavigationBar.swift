@@ -109,7 +109,7 @@ struct NavigationItemButton:View{
                     Image(systemName: systemImageName ?? "")
                         .font(font)
                 }
-                .buttonStyle(DeepButtonStyle(shadow: 2))
+                .buttonStyle(DeepButtonStyle(backgroundColor:.clear, shadow: 2))
                 .foregroundColor(isEnabled ? foregroundColor : foregroundColor.opacity(0.5))
                 .font(.largeTitle.weight(.light))
                 .frame(width: 48, height: 48)
