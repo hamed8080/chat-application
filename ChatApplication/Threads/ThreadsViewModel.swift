@@ -212,7 +212,7 @@ class ThreadsViewModel:ObservableObject{
         }
 
         let participants = contacts.compactMap { contact in
-            AddParticipantRequest(coreUserId: contact.id ?? 0, threadId: threadId)
+            AddParticipantRequest(userName: contact.linkedUser?.username ?? "", threadId: threadId)
         }
         
         Chat.sharedInstance.addParticipants(participants) { thread, uniqueId, error in

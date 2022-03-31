@@ -52,7 +52,7 @@ struct ParticipantRow: View {
 
 struct ParticipantRow_Previews: PreviewProvider {
 	static var participant:Participant{
-		let participant = Participant(admin: true, auditor: nil, blocked: false, cellphoneNumber: "+989369161601", contactFirstName: "Hamed", contactId: nil, contactName: "Hamed", contactLastName: "Hosseini", coreUserId: nil, email: nil, firstName: "Hamed", id: 123, image: nil, keyId: nil, lastName: "Hosseini", myFriend: true, name: "Hamed", notSeenDuration: 0, online: true, receiveEnable: true, roles: nil, sendEnable: true, username: "hamed8080", chatProfileVO: nil)
+		let participant = Participant(admin: true, cellphoneNumber: "+989369161601", contactFirstName: "Hamed", contactName: "Hamed", contactLastName: "Hosseini", firstName: "Hamed", id: 123, lastName: "Hosseini", name: "Hamed", username: "hamed8080")
 		return participant
 	}
 	
