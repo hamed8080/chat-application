@@ -37,22 +37,28 @@ struct CallsHistoryContentList: View {
                     }
                     .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
                     .listStyle(PlainListStyle())
-                    Button(action: {
-                        navigateToGroupCallSelction.toggle()
-                    }, label: {
-                        Circle()
-                            .fill(Color.blue)
-                            .shadow(color: .blue, radius: 20, x: 0, y: 0)
-                            .overlay(
-                                Image(systemName:"person.3.fill")
+                    VStack{
+                        Spacer()
+                        HStack{
+                            Spacer()
+                            Button {
+                                navigateToGroupCallSelction.toggle()
+                            } label: {
+                                Image(systemName:"video.fill")
                                     .scaledToFit()
                                     .foregroundColor(.white)
-                                    .padding(16)
+                            }
+                            .buttonStyle(
+                                DeepButtonStyle(
+                                    frame: .init(width: 52, height: 52),
+                                    backgroundColor: Color(named: "text_color_blue"),
+                                    shadow: 2,
+                                    cornerRadius: 48
+                                )
                             )
-                        
-                    })
-                        .frame(width: 64, height: 64)
-                        .position(x: reader.size.width - 48, y: reader.size.height - (reader.safeAreaInsets.bottom  + 24))
+                        }
+                        .padding([.trailing, .bottom], 8)
+                    }
                 }
                 LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
             }

@@ -56,7 +56,7 @@ struct CallParticipantRow: View {
 struct CallParticipantRow_Previews: PreviewProvider {
 	static var callParticipant:CallParticipant{
         let participant = ParticipantRow_Previews.participant
-        let callParticipant = CallParticipant(joinTime: 0, leaveTime: 0, userId: 0, sendTopic: "", receiveTopic: "", active: true, callStatus: .ACCEPTED,mute: true,video: false,participant: participant)
+        let callParticipant = CallParticipant(sendTopic: "Test",participant: participant)
 		return callParticipant
 	}
 	

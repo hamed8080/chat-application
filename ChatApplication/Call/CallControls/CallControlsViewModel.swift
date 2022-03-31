@@ -35,8 +35,6 @@ class CallControlsViewModel:ObservableObject{
                 //NOTICE: sink in init for firsttime is nil
                 if let callId = startCall.callId {
                     self.model.setCallId(callId)
-                    self.model.setMute(startCall.clientDTO.mute)
-                    self.model.setCameraOn(startCall.clientDTO.video)
                 }
             }
     }
@@ -68,14 +66,22 @@ class CallControlsViewModel:ObservableObject{
     
     private func startGroupCall(_ selectedContacts:[Contact],callDetail: CreateCallThreadRequest? = nil){
         let invitees = selectedContacts.map{Invitee(id: "\($0.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)}
-        Chat.sharedInstance.requestGroupCall(.init(client:SendClient(),invitees: invitees, type: .VOICE_CALL, createCallThreadRequest: callDetail),initCreateCall(createCall:uniqueId:error:))
+        let callType:CallType = callState.model.isVideoCall ? .VIDEO_CALL : .VOICE_CALL
+        let client = SendClient(mute: true, video: callType == .VIDEO_CALL)
+        model.setMute(client.mute)
+        model.setCameraOn(client.video)
+        Chat.sharedInstance.requestGroupCall(.init(client:client,invitees: invitees, type: callType, createCallThreadRequest: callDetail),initCreateCall(createCall:uniqueId:error:))
     }
     
     private func satrtCallWithThreadId(_ thread:Conversation){
+        let callType:CallType = callState.model.isVideoCall ? .VIDEO_CALL : .VOICE_CALL
+        let client = SendClient(mute: true, video: callType == .VIDEO_CALL)
+        model.setMute(client.mute)
+        model.setCameraOn(client.video)
         if let type = thread.type, ThreadTypes(rawValue: type) == .NORMAL , let threadId = thread.id{
-            Chat.sharedInstance.requestCall(.init(client:SendClient(),threadId: threadId, type: .VOICE_CALL),initCreateCall(createCall:uniqueId:error:))
+            Chat.sharedInstance.requestCall(.init(client:client,threadId: threadId, type: callType),initCreateCall(createCall:uniqueId:error:))
         }else if let threadId = thread.id{
-            Chat.sharedInstance.requestGroupCall(.init(client:SendClient(),threadId: threadId, type: .VOICE_CALL),initCreateCall(createCall:uniqueId:error:))
+            Chat.sharedInstance.requestGroupCall(.init(client:client,threadId: threadId, type: callType),initCreateCall(createCall:uniqueId:error:))
         }
     }
     
@@ -99,11 +105,13 @@ class CallControlsViewModel:ObservableObject{
 			}
 		}
         model.endCall()
-        CallState.shared.close()        
+        callState.close()
     }
     
     func answerCall(video:Bool , audio:Bool){
-        CallState.shared.model.setAnswerWithVideo(answerWithVideo: video, micEnable: audio)
+        model.setCameraOn(video)
+        model.setMute(!audio)
+        callState.model.setAnswerWithVideo(answerWithVideo: video, micEnable: audio)
         AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
     }
 	
@@ -135,7 +143,7 @@ class CallControlsViewModel:ObservableObject{
             }
         }
         model.setMute(!model.isMute)
-        CallState.shared.setMute(model.isMute)
+        callState.setMute(model.isMute)
     }
     
     func toggleVideo(){
@@ -148,12 +156,12 @@ class CallControlsViewModel:ObservableObject{
             Chat.sharedInstance.turnOffVideoCall(.init(callId: callId)) { participants, uniqueId, error in
             }
         }
-        CallState.shared.setCameraIsOn(model.isVideoOn)
+        callState.setCameraIsOn(model.isVideoOn)
     }
     
     func toggleSpeaker(){
         model.setSpeaker(!model.isSpeakerOn)
-        CallState.shared.setSpeaker(model.isSpeakerOn)
+        callState.setSpeaker(model.isSpeakerOn)
     }
     
     func setupPreview(){
@@ -162,7 +170,7 @@ class CallControlsViewModel:ObservableObject{
     
     func switchCamera(){
         model.toggleIsFront()
-        CallState.shared.switchCamera(model.isFrontCamera)
+        callState.switchCamera(model.isFrontCamera)
     }
     
     func startRecording(){

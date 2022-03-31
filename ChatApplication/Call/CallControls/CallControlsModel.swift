@@ -16,10 +16,6 @@ struct CallControlsModel {
     private (set) var isSpeakerOn:Bool              = false
     private (set) var isFrontCamera:Bool            = true
     
-    mutating func clear(){
- 
-    }
-    
     mutating func setSpeaker(_ state:Bool){
         isSpeakerOn = state
     }
@@ -49,9 +45,9 @@ struct CallControlsModel {
     }
     
     mutating func endCall(){
-        callId = nil
-        isMute = true
-        isMute = false
+        callId    = nil
+        isVideoOn = false
+        isMute    = false
     }
 
 }

@@ -26,35 +26,35 @@ struct CallControlsContent: View {
     @State
     var showDetailPanel:Bool = false
     
-    @State
-    var localView   = RTCVideoReperesentable()
-    
-    @State
-    var remoteView  = RTCVideoReperesentable()
-    
     @Environment(\.presentationMode) var presentationMode
     
     private let recoringIndicatorAnimation = Animation.easeInOut(duration: 1).repeatForever()
-   
+    
     @State
     var showRecordingIndicator: Bool = false
     
     @State
     var showToast = false
-
+    
+    var gridColumns:[GridItem]{
+        let videoCount = callState.model.usersRTC.filter{$0.isVideo}.count
+        return Array(repeating: GridItem(.flexible(), spacing: 1), count: videoCount <= 2 ? 1 : 2)
+    }
+    
     var body: some View {
         GeometryReader{ reader in
             ZStack{
-                if callState.model.isCallStarted  && callState.model.isVideoCall{
-                     remoteView
-                        .ignoresSafeArea()
-                        .frame(width: reader.size.width , height: reader.size.height)
-                        .background(Color.red)
+                if callState.model.isCallStarted && callState.model.isVideoCall{
+                    ScrollView(showsIndicators: false){
+                        LazyVGrid(columns: gridColumns,spacing: 1){
+                            ForEach(callState.model.usersRTC.filter{$0.isVideo}, id:\.self){ callUser in
+                                callUserView(callUser)
+                            }
+                        }
+                    }
                 }
                 
                 VStack(){
-                    Text("")
-                        .padding(.bottom , 48)
                     
                     Text(callState.model.receiveCall?.creator.name?.uppercased() ?? callState.model.titleOfCalling.uppercased())
                         .foregroundColor(.white)
@@ -73,83 +73,19 @@ struct CallControlsContent: View {
                     }
                     
                     Spacer()
-                    
-                    if callState.model.receiveCall != nil && callState.model.isCallStarted == false{
-                        HStack(spacing:32){
-                            Spacer()
-                            if callState.model.receiveCall?.type == .VIDEO_CALL{
-                                CallControlItem(iconSfSymbolName: "video.fill", subtitle: "Answer", color: .green){
-                                    viewModel.answerCall(video: true, audio: true)
-                                }
-                                Spacer()
-                            }
-                            
-                            CallControlItem(iconSfSymbolName: "phone.fill", subtitle: "Answer", color: .green){
-                                viewModel.answerCall(video: false, audio: true)
-                            }
-                            
-                            Spacer()
-                            
-                            CallControlItem(iconSfSymbolName: "phone.down.fill", subtitle: "Reject Call", color: .red){
-                                viewModel.cancelCall()
-                                withAnimation{
-                                    callState.model.setShowCallView(false)
-                                }
-                            }
-                            Spacer()
+                                        
+                    HStack{
+                        Spacer()
+                        if callState.model.receiveCall != nil && callState.model.isCallStarted == false{
+                            receiveCallActions
+                        }else{
+                            callStartedActions
                         }
-                        .frame(width: reader.size.width, height: 72)
-                    }else{
-                        //call started
-                        if callState.model.isVideoCall {
-                            HStack(){
-                                localView
-                                    .cornerRadius(12, antialiased: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
-                                    .frame(width: reader.size.width / 2 , height: 168)
-                                    .onTapGesture {
-                                        viewModel.switchCamera()
-                                    }
-                                    
-                                Spacer()
-                            }
-                            .padding(.init(top: 0, leading: 8, bottom: 0, trailing: 0))
-                            .frame(height: 168)
-                        }
-                        
-                        HStack(spacing:12){
-                            
-                            CallControlItem(iconSfSymbolName: "ellipsis", subtitle: "More", color: .gray){
-                                withAnimation {
-                                    showDetailPanel.toggle()
-                                }
-                            }
-                            
-                            CallControlItem(iconSfSymbolName: viewModel.model.isMute ? "mic.slash.fill" : "mic.fill"  , subtitle: "Mute", color: viewModel.model.isMute ? .gray : .green){
-                                viewModel.toggleMute()
-                            }
-                            
-                            CallControlItem(iconSfSymbolName: viewModel.model.isVideoOn ? "video.fill" : "video.slash.fill", subtitle: "Video", color: viewModel.model.isVideoOn ? .green : .gray){
-                                viewModel.toggleVideo()
-                            }
-                            
-                            CallControlItem(iconSfSymbolName: viewModel.model.isSpeakerOn ? "speaker.wave.2.fill" : "speaker.slash.fill", subtitle: "Speaker", color: viewModel.model.isSpeakerOn ? .green : .gray){
-                                viewModel.toggleSpeaker()
-                            }
-                            
-                            CallControlItem(iconSfSymbolName: "phone.down.fill", subtitle: "End Call", color: .red){
-                                viewModel.endCall()
-                                withAnimation{
-                                    callState.model.setShowCallView(false)
-                                }
-                            }
-                        }
-                        .frame(width: reader.size.width, height: 72)
+                        Spacer()
                     }
                 }
                 .onAppear{
                     self.statusBarStyle.currentStyle = .lightContent
-                    callState.setLocalVideoRenderer(localView.renderer)
-                    callState.setRemoteVideoRenderer(remoteView.renderer)
                 }
                 .onDisappear{
                     self.statusBarStyle.currentStyle = .default
@@ -160,22 +96,10 @@ struct CallControlsContent: View {
                     getMoreCallControlsView()
                 }
                 
-                if callState.model.isRecording{
-                    Image(systemName: "record.circle")
-                        .resizable()
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(Color.red)
-                        .position(x: 32, y: 24)
-                        .opacity(showRecordingIndicator ? 1 : 0)
-                        .customAnimation(self.recoringIndicatorAnimation)
-                        .onAppear{
-                            showRecordingIndicator.toggle()
-                        }
-                }
+                recordingDot
             }
         }
         .background(Color.white.ignoresSafeArea())
-        .preferredColorScheme(.dark)
         .customAnimation(.default)
         .onAppear{
             viewModel.startRequestCallIfNeeded()
@@ -195,6 +119,22 @@ struct CallControlsContent: View {
                 presentationMode.wrappedValue.dismiss()
             }
         })
+    }
+    
+    @ViewBuilder
+    var recordingDot: some View{
+        if callState.model.isRecording{
+            Image(systemName: "record.circle")
+                .resizable()
+                .frame(width: 16, height: 16)
+                .foregroundColor(Color.red)
+                .position(x: 32, y: 24)
+                .opacity(showRecordingIndicator ? 1 : 0)
+                .customAnimation(self.recoringIndicatorAnimation)
+                .onAppear{
+                    showRecordingIndicator.toggle()
+                }
+        }
     }
     
     @ViewBuilder
@@ -244,6 +184,106 @@ struct CallControlsContent: View {
         .frame(height:UIScreen.main.bounds.height)
         .ignoresSafeArea()
     }
+    
+    @ViewBuilder
+    func callUserView(_ userRTC:UserRCT) -> some View{
+        if userRTC.isVideo == true, let rendererView = userRTC.renderer as? UIView {
+            ZStack{
+                if userRTC.videoTrack?.isEnabled == false{
+                    Image(systemName: "pause.rectangle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 64, height: 64)
+                        .foregroundColor(Color.white)
+                }else{
+                    RTCVideoReperesentable(renderer: rendererView)
+                }
+                
+                HStack{
+                    VStack{
+                        Spacer()
+                        HStack{
+                            Spacer()
+                            Image(systemName: userRTC.callParticipant?.mute ?? true ? "mic.slash.fill" : "mic.fill")
+                                .foregroundColor(Color.white)
+                            Text(userRTC.callParticipant?.participant?.name ?? userRTC.callParticipant?.participant?.username ?? "")
+                                .foregroundColor(Color.white)
+                                .opacity(0.7)
+                            Spacer()
+                        }
+                        .fixedSize()
+                        .padding(4)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(4)
+                    }
+                    Spacer()
+                }
+                .padding()
+            }
+            .frame(height: callState.model.usersRTC.filter{$0.isVideo}.count <= 2 ? UIScreen.main.bounds.height / 2 : 150)
+            .background(Color.primary.opacity(0.7))
+        }
+    }
+    
+    @ViewBuilder
+    var receiveCallActions:some View{
+        HStack{
+            Spacer()
+            if callState.model.receiveCall?.type == .VIDEO_CALL{
+                CallControlItem(iconSfSymbolName: "video.fill", subtitle: "Answer", color: .green){
+                    viewModel.answerCall(video: true, audio: true)
+                }
+            }
+            
+            Spacer()
+            
+            CallControlItem(iconSfSymbolName: "phone.fill", subtitle: "Answer", color: .green){
+                viewModel.answerCall(video: false, audio: true)
+            }
+            
+            Spacer()
+            
+            CallControlItem(iconSfSymbolName: "phone.down.fill", subtitle: "Reject Call", color: .red){
+                viewModel.cancelCall()
+                withAnimation{
+                    callState.model.setShowCallView(false)
+                }
+            }
+            
+            Spacer()
+        }
+    }
+    
+    @ViewBuilder
+    var callStartedActions:some View{
+        HStack(spacing:16){
+            CallControlItem(iconSfSymbolName: "ellipsis", subtitle: "More", color: .gray){
+                withAnimation {
+                    showDetailPanel.toggle()
+                }
+            }
+            
+            CallControlItem(iconSfSymbolName: viewModel.model.isMute ? "mic.slash.fill" : "mic.fill"  , subtitle: "Mute", color: viewModel.model.isMute ? .gray : .green){
+                viewModel.toggleMute()
+            }
+            
+            CallControlItem(iconSfSymbolName: viewModel.model.isVideoOn ? "video.fill" : "video.slash.fill", subtitle: "Video", color: viewModel.model.isVideoOn ? .green : .gray){
+                viewModel.toggleVideo()
+            }
+            
+            
+            CallControlItem(iconSfSymbolName: viewModel.model.isSpeakerOn ? "speaker.wave.2.fill" : "speaker.slash.fill", subtitle: "Speaker", color: viewModel.model.isSpeakerOn ? .green : .gray){
+                viewModel.toggleSpeaker()
+            }
+            
+            CallControlItem(iconSfSymbolName: "phone.down.fill", subtitle: "End Call", color: .red){
+                viewModel.endCall()
+                withAnimation{
+                    callState.model.setShowCallView(false)
+                }
+            }
+        }
+    }
 }
 
 struct CallControlItem:View {
@@ -292,7 +332,7 @@ struct CallControlsView_Previews: PreviewProvider {
         let appState = AppState.shared
         let callState = CallState.shared
         
-        CallControlsContent(viewModel:viewModel, showToast: true)
+        CallControlsContent(viewModel:viewModel, showToast: false)
             .environmentObject(appState)
             .environmentObject(callState)
             .previewDevice("iPhone 13")
@@ -300,18 +340,32 @@ struct CallControlsView_Previews: PreviewProvider {
                 
                 let participant = ParticipantRow_Previews.participant
                 let receiveCall = CreateCall(type: .VIDEO_CALL, creatorId: 0, creator: participant, threadId: 0, callId: 0, group: false)
+                fakeParticipant(count: 4).forEach { callParticipant in
+                    callState.addCallParicipant(callParticipant)
+                }
                 callState.model.setReceiveCall(receiveCall)
-
+                
                 let clientDto   = ClientDTO(clientId: "", topicReceive: "", topicSend: "",userId: 0, desc: "", sendKey: "", video: true, mute: false)
                 let chatDataDto = ChatDataDTO(sendMetaData: "", screenShare: "", reciveMetaData: "", turnAddress: "", brokerAddressWeb: "", kurentoAddress: "")
                 let startedCall = StartCall(certificateFile: "", clientDTO: clientDto, chatDataDto: chatDataDto, callName: nil, callImage: nil)
                 
                 callState.onCallStarted(NSNotification(name: STARTED_CALL_NAME_OBJECT, object: startedCall))
-                callState.model.setIsRecording(isRecording: true)
+                callState.model.setIsRecording(isRecording: false)
                 callState.model.setStartRecordingDate()
                 callState.startRecordingTimer()
                 viewModel.setupPreview()
             }
         
     }
+    
+    static func fakeParticipant(count:Int)->[CallParticipant]{
+        var participants:[CallParticipant] = []
+        let participant = ParticipantRow_Previews.participant
+        for i in (1...count){
+            participant.name = "Name\(i)"
+            participants.append(CallParticipant(sendTopic: "TestTopic\(i)", participant:participant))
+        }
+        return participants
+    }
+    
 }

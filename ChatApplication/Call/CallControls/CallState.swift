@@ -1,5 +1,5 @@
 //
-//  AppState.swift
+//  CallState.swift
 //  ChatApplication
 //
 //  Created by Hamed Hosseini on 7/4/21.
@@ -20,10 +20,7 @@ struct CallStateModel {
     private (set) var timerCallString              :String?           = nil
     private (set) var recordingTimerString         :String?           = nil
     private (set) var isCallStarted                :Bool              = false
-    private (set) var mutedCallParticipants        :[CallParticipant] = []
-    private (set) var unmutedCallParticipants      :[CallParticipant] = []
-    private (set) var turnOffVideoCallParticipants :[CallParticipant] = []
-    private (set) var turnOnVideoCallParticipants  :[CallParticipant] = []
+    private (set) var usersRTC                     :[UserRCT]         = []
     private (set) var receiveCall                  :CreateCall?       = nil
 	private (set) var callSessionCreated           :CreateCall?       = nil
     private (set) var selectedContacts             :[Contact]         = []
@@ -35,7 +32,6 @@ struct CallStateModel {
     private (set) var answerWithMicEnable          :Bool              = false
     private (set) var isRecording                  :Bool              = false
     private (set) var callRecorder                 :Participant?      = nil
-    
     
     mutating func setReceiveCall(_ receiveCall:CreateCall){
         self.receiveCall = receiveCall
@@ -50,20 +46,22 @@ struct CallStateModel {
         self.connectionStatusString = stateString
     }
     
-    mutating func addTurnOnCallParticipant(_ participants :[CallParticipant]){
-        self.turnOnVideoCallParticipants.append(contentsOf: participants)
+    mutating func addUserRTC(_ userRTC :UserRCT){
+        if usersRTC.first(where: {$0.topic == userRTC.topic}) != nil{
+            replaceUserRTC(userRTC)
+        }else{
+            self.usersRTC.append(userRTC)
+        }
     }
     
-    mutating func addTurnOffCallParticipant(_ participants :[CallParticipant]){
-        self.turnOffVideoCallParticipants.append(contentsOf: participants)
+    mutating func removeUserRTC(_ userRTC :UserRCT){
+        usersRTC.removeAll(where: {$0.topic == userRTC.topic})
     }
     
-    mutating func addMuteCallParticipant(_ participants :[CallParticipant]){
-        self.mutedCallParticipants.append(contentsOf: participants)
-    }
-    
-    mutating func addUnMuteCallParticipant(_ participants :[CallParticipant]){
-        self.unmutedCallParticipants.append(contentsOf: participants)
+    mutating func replaceUserRTC(_ userRTC:UserRCT){
+        if let index = usersRTC.firstIndex(where: {$0.topic == userRTC.topic}){
+            usersRTC[index] = userRTC
+        }
     }
     
     mutating func setStartDate(){
@@ -144,6 +142,48 @@ struct CallStateModel {
         setIsRecording(isRecording: false)
         self.callRecorder = nil
     }
+    
+    mutating func muteParticipants(_ callParticipants:[CallParticipant]){
+        callParticipants.forEach { callParticipant in
+            if let index = usersRTC.firstIndex(where: {$0.callParticipant?.participant?.id == callParticipant.participant?.id}){
+                usersRTC[index].callParticipant?.mute = true
+            }
+        }
+    }
+    
+    mutating func unmuteParticipants(_ callParticipants:[CallParticipant]){
+        callParticipants.forEach { callParticipant in
+            if let index = usersRTC.firstIndex(where: {$0.callParticipant?.participant?.id == callParticipant.participant?.id}){
+                usersRTC[index].callParticipant?.mute = false
+            }
+        }
+    }
+    
+    mutating func turnOnVideoParticipants(_ callParticipants:[CallParticipant]){
+        callParticipants.forEach { callParticipant in
+            if let index = usersRTC.firstIndex(where: {$0.callParticipant?.participant?.id == callParticipant.participant?.id}){
+                usersRTC[index].videoTrack?.isEnabled = true
+            }
+        }
+    }
+    
+    mutating func turnOffVideoParticipants(_ callParticipants:[CallParticipant]){
+        callParticipants.forEach { callParticipant in
+            if let index = usersRTC.firstIndex(where: {$0.callParticipant?.participant?.id == callParticipant.participant?.id}){
+                usersRTC[index].videoTrack?.isEnabled = false
+            }
+        }
+    }
+    
+    mutating func updateCallParticipants(_ participants:[CallParticipant]?){
+        participants?.forEach({ callParticipant in
+            usersRTC.filter{ $0.rawTopicName == callParticipant.sendTopic}.forEach{ user in
+                let index = usersRTC.firstIndex(of: user)!
+                usersRTC[index].callParticipant = callParticipant
+            }
+        })
+    }
+
 }
 
 class CallState:ObservableObject,WebRTCClientDelegate {
@@ -155,10 +195,6 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     
     private (set) var startCallTimer :Timer?            = nil
     private (set) var recordingTimer :Timer?            = nil
-    
-    
-    var localVideoRenderer  :RTCVideoRenderer? = nil
-    var remoteVideoRenderer :RTCVideoRenderer? = nil
     
     func setConnectionStatus(_ status:ConnectionStatus){
         model.setConnectionState( status == .CONNECTED ? "" : String(describing: status) + " ...")
@@ -176,6 +212,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(onTurnVideoOffParticipants(_:)), name: TURN_OFF_VIDEO_CALL_NAME_OBJECT, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onCallStartRecording(_:)), name: START_CALL_RECORDING_NAME_OBJECT, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onCallStopRecording(_:)), name: STOP_CALL_RECORDING_NAME_OBJECT, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onCallParticipantJoined(_:)), name: CALL_PARTICIPANT_JOINED_NAME_OBJECT, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onCallParticipantLeft(_:)), name: CALL_PARTICIPANT_LEFT_NAME_OBJECT, object: nil)
 	}
 	
 	@objc func onCallSessionCreated(_ notification: NSNotification){
@@ -208,63 +246,55 @@ class CallState:ObservableObject,WebRTCClientDelegate {
             model.setStartedCall(startCall)
             startTimer()
             
-            //Vo - Voice and Vi- Video its hardcoded in all sdks such as:Android-Js,...
-            let config =  WebRTCConfig(peerName           : startCall.chatDataDto.kurentoAddress,
-                                      iceServers          : ["turn:\(startCall.chatDataDto.turnAddress)?transport=udp",
-															 "turn:\(startCall.chatDataDto.turnAddress)?transport=tcp"],//"stun:46.32.6.188:3478",
-                                      turnAddress         : startCall.chatDataDto.turnAddress,
-                                       topicVideoSend      : model.answerWithVideo || model.isVideoCall ? "Vi-\(startCall.clientDTO.topicSend)" : nil,
-                                      topicVideoReceive   : "Vi-\(startCall.clientDTO.topicReceive)",
-                                      topicAudioSend      : "Vo-\(startCall.clientDTO.topicSend)",
-                                      topicAudioReceive   : "Vo-\(startCall.clientDTO.topicReceive)",
-                                      brokerAddressWeb    : startCall.chatDataDto.brokerAddressWeb,
-                                      dataChannel         : false,
-                                      customFrameCapturer : false,
-                                      userName            : "mkhorrami",
-                                      password            : "mkh_123456",
-                                      videoConfig         : nil)
+            let config = WebRTCConfig(startCall: startCall, isSendVideoEnabled: model.answerWithVideo || model.isVideoCall)
             WebRTCClientNew.instance = WebRTCClientNew(config: config , delegate: self)
-            if let renderer = localVideoRenderer {
-                WebRTCClientNew.instance?.startCaptureLocalVideo(renderer: renderer,fileName: model.isReceiveCall ? "webrtc_user_b.mp4" : "webrtc_user_a.mp4")
-            }
-
-            if let renderer = remoteVideoRenderer {
-                WebRTCClientNew.instance?.renderRemoteVideo(renderer)
-            }
-            WebRTCClientNew.instance?.startSendKeyFrame()
+            addCallParicipant(CallParticipant(sendTopic: config.topicSend ?? "", participant: .init(name:"ME")), direction:.SEND)
+            addCallParicipant(CallParticipant(sendTopic: config.topicReceive ?? ""))
+            WebRTCClientNew.instance?.usersRTC.forEach({ userRTC in
+                model.addUserRTC(userRTC)
+            })
+            WebRTCClientNew.instance?.createSession()
+            fetchCallParticipants(startCall)
         }
     }
 
+    func fetchCallParticipants(_ startCall:StartCall) {
+        guard let callId = startCall.callId else{return}
+        Chat.sharedInstance.activeCallParticipants(.init(callId: callId)) { callParticipants, uniqueId, error in
+            self.model.updateCallParticipants(callParticipants)
+            WebRTCClientNew.instance?.updateCallParticipant(callParticipants: callParticipants)
+        }
+    }
     
     @objc func onCallEnd(_ notification: NSNotification){
-        endCallKitCall()
-        ResultViewController.printCallLogsFile()
+        endCallKitCall()        
         model.setShowCallView(false)
+        ResultViewController.printCallLogsFile()
         WebRTCClientNew.instance?.clearResourceAndCloseConnection()
         resetCall()
     }
     
     @objc func onMuteParticipants(_ notification: NSNotification){
         if let callParticipants = notification.object as? [CallParticipant]{
-            model.addMuteCallParticipant(callParticipants)
+            model.muteParticipants(callParticipants)
         }
     }
     
     @objc func onUNMuteParticipants(_ notification: NSNotification){
         if let callParticipants = notification.object as? [CallParticipant]{
-            model.addUnMuteCallParticipant(callParticipants)
+            model.unmuteParticipants(callParticipants)
         }
     }
     
     @objc func onTurnVideoOnParticipants(_ notification: NSNotification){
         if let callParticipants = notification.object as? [CallParticipant]{
-            model.addTurnOnCallParticipant(callParticipants)
+            model.turnOnVideoParticipants(callParticipants)
         }
     }
     
     @objc func onTurnVideoOffParticipants(_ notification: NSNotification){
         if let callParticipants = notification.object as? [CallParticipant]{
-            model.addTurnOffCallParticipant(callParticipants)
+            model.turnOffVideoParticipants(callParticipants)
         }
     }
     
@@ -280,21 +310,25 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         }
     }
     
+    /// Setup UI and WEBRCT for new participant joined to the call
+    @objc func onCallParticipantJoined(_ notification: NSNotification){
+        (notification.object as? [CallParticipant])?.forEach { callParticipant in
+            addCallParicipant(callParticipant)
+        }
+    }
+    
+    /// Setup UI and WEBRCT for new participant joined to the call
+    @objc func onCallParticipantLeft(_ notification: NSNotification){
+        (notification.object as? [CallParticipant])?.forEach { callParticipant in
+            removeCallParticipant(callParticipant)
+        }
+    }
+    
     func resetCall(){
-        localVideoRenderer       = nil
-        remoteVideoRenderer      = nil
         startCallTimer?.invalidate()
         startCallTimer           = nil
         model                    = CallStateModel()
         WebRTCClientNew.instance = nil
-    }
-    
-    func setLocalVideoRenderer(_ renderer:RTCVideoRenderer){
-        localVideoRenderer  = renderer
-    }
-    
-    func setRemoteVideoRenderer(_ renderer:RTCVideoRenderer){
-        remoteVideoRenderer  = renderer
     }
     
     func setSpeaker(_ isOn:Bool){
@@ -310,8 +344,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     }
     
     func switchCamera(_ isFront:Bool){
-        guard let localVideoRenderer = localVideoRenderer else{return}
-        WebRTCClientNew.instance?.switchCameraPosition(renderer: localVideoRenderer)
+//        guard let localVideoRenderer = localVideoRenderer else{return}
+//        GroupWebRTCClientNew.instance?.switchCameraPosition(renderer: localVideoRenderer)
     }
     
     func close(){
@@ -338,6 +372,25 @@ class CallState:ObservableObject,WebRTCClientDelegate {
                 self?.model.setRecordingTimerString(self?.model.startRecodrdingDate?.getDurationTimerString())
             }
         }
+    }
+    
+    func addCallParicipant(_ callParticipant:CallParticipant, direction:RTCDirection = .RECEIVE){
+        WebRTCClientNew.instance?.addCallParticipant(callParticipant, direction: direction)
+        let addedTopics = WebRTCClientNew.instance?.usersRTC.filter{$0.topic == topics(callParticipant).topicVideo || $0.topic == topics(callParticipant).topicAudio}
+        addedTopics?.forEach({ userRTC in
+            model.addUserRTC(userRTC)
+        })
+    }
+    
+    func removeCallParticipant(_ callParticipant:CallParticipant){
+        WebRTCClientNew.instance?.removeCallParticipant(callParticipant)
+        model.usersRTC.filter{$0.topic == topics(callParticipant).topicVideo || $0.topic == topics(callParticipant).topicAudio }.forEach { userRTC in
+            model.removeUserRTC(userRTC)
+        }
+    }
+
+    private func topics(_ callParticipant:CallParticipant)->(topicVideo:String,topicAudio:String){
+        return ("Vi-\(callParticipant.sendTopic)","Vo-\(callParticipant.sendTopic)")
     }
 }
 

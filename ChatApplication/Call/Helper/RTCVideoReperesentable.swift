@@ -10,19 +10,19 @@ import WebRTC
 
 struct RTCVideoReperesentable:UIViewRepresentable {
     
-    #if arch(arm64)
-        // Using metal (arm64 only)
-    let renderer = RTCMTLVideoView(frame: .zero)
-    #else
-        // Using OpenGLES for the rest
-    let renderer = RTCEAGLVideoView(frame: .zero)
-    #endif
+    let renderer:UIView
+    
+    init(renderer:UIView){
+        self.renderer = renderer
+    }
     
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
         
         #if arch(arm64)
-        renderer.videoContentMode = .scaleAspectFill
+        (renderer as! RTCMTLVideoView).videoContentMode = .scaleAspectFit
+        #else
+        (renderer as! RTCEAGLVideoView).videoContentMode = .scaleAspectFit
         #endif
         
         renderer.frame = view.frame

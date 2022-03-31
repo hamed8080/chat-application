@@ -23,8 +23,7 @@ struct ContactRow: View {
     @State
     public var showActionViews:Bool = false
     
-    @EnvironmentObject
-    var callState:CallState
+    var callState:CallState = CallState.shared
     
     var body: some View {
         VStack{

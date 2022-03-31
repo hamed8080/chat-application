@@ -36,10 +36,8 @@ class WebRTCViewController: UIViewController, WebRTCClientDelegate{
         return WebRTCConfig(peerName:"KuretoAdmin2",
                                   iceServers: ["stun:46.32.6.188:3478","turn:46.32.6.188:3478"],
                                   turnAddress: "46.32.6.188:3478",
-                                  topicVideoSend: isClientA ? "Vi-hossein" : "Vi-masoud",
-                                  topicVideoReceive: isClientA ? "Vi-masoud" : "Vi-hossein",
-                                  topicAudioSend: isClientA ? "Au-hossein" : "Au-masoud",
-                                  topicAudioReceive: isClientA ? "Au-masoud" : "Au-hossein",
+                                  topicSend: isClientA ? "Vi-hossein" : "Vi-masoud",
+                                  topicReceive: isClientA ? "Vi-masoud" : "Vi-hossein",
                                   brokerAddressWeb: "10.56.16.53:9093",
                                   dataChannel: false,
                                   customFrameCapturer: false,
@@ -86,7 +84,7 @@ class WebRTCViewController: UIViewController, WebRTCClientDelegate{
         localView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(switchCamera)))
 
         //setup remote camera view
-        self.webRTCClient?.renderRemoteVideo(remoteRenderer)
+//        self.webRTCClient?.renderRemoteVideo(remoteRenderer)
         remoteRenderer.frame.origin = .zero //to fit to local view position
         self.view.addSubview(remoteRenderer)
         view.sendSubviewToBack(remoteRenderer)
@@ -110,23 +108,23 @@ class WebRTCViewController: UIViewController, WebRTCClientDelegate{
     }
     
     @IBAction func offerVideoTaped(_ senderf:UIButton){
-        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicVideoSend!,onSuccess: { sdp in
-            self.webRTCClient?.sendOfferToPeer(sdp ,topic: self.getConfig().topicVideoSend! ,mediaType: .VIDEO)
-        })
-        
-        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicVideoReceive! ,onSuccess: { sdp in
-            self.webRTCClient?.sendOfferToPeer(sdp , topic: self.getConfig().topicVideoReceive!,mediaType: .VIDEO)
-        })
+//        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicVideoSend!,onSuccess: { sdp in
+//            self.webRTCClient?.sendOfferToPeer(sdp ,topic: self.getConfig().topicVideoSend! ,mediaType: .VIDEO)
+//        })
+//
+//        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicVideoReceive! ,onSuccess: { sdp in
+//            self.webRTCClient?.sendOfferToPeer(sdp , topic: self.getConfig().topicVideoReceive!,mediaType: .VIDEO)
+//        })
     }
     
     @IBAction func offerAudioTaped(_ senderf:UIButton){
-        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicAudioSend!,onSuccess: { sdp in
-            self.webRTCClient?.sendOfferToPeer(sdp , topic: self.getConfig().topicAudioSend! ,mediaType: .AUDIO)
-        })
-        
-        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicAudioReceive! ,onSuccess: { sdp in
-            self.webRTCClient?.sendOfferToPeer(sdp , topic: self.getConfig().topicAudioReceive!,mediaType: .AUDIO)
-        })
+//        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicAudioSend!,onSuccess: { sdp in
+//            self.webRTCClient?.sendOfferToPeer(sdp , topic: self.getConfig().topicAudioSend! ,mediaType: .AUDIO)
+//        })
+//
+//        webRTCClient?.getLocalSDPWithOffer(topic:getConfig().topicAudioReceive! ,onSuccess: { sdp in
+//            self.webRTCClient?.sendOfferToPeer(sdp , topic: self.getConfig().topicAudioReceive!,mediaType: .AUDIO)
+//        })
     }
     
     @IBAction func speakerOnTaped(){

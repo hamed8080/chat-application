@@ -45,7 +45,7 @@ class ChatDelegateImplementation: NewChatDelegate {
                                                                reconnectOnClose: true,
 //                                                               showDebuggingLogLevel:.verbose,
                                                                isDebuggingLogEnabled: true,
-                                                               isDebuggingAsyncEnable: true,
+                                                               isDebuggingAsyncEnable: false,
                                                                enableNotificationLogObserver: true,
                                                                useNewSDK:true,
                                                                callTimeout: 20
