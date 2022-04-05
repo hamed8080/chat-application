@@ -78,7 +78,7 @@ class WebRTCViewController: UIViewController, WebRTCClientDelegate{
         //setup local camera view
         localView.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)//mirror view to show correct posiotion on view
         self.localRenderer = localRenderer
-        self.webRTCClient?.startCaptureLocalVideo(renderer: localRenderer,fileName: "")
+        self.webRTCClient?.startCaptureLocalVideo(renderer: localRenderer)
         localRenderer.frame.origin = .zero //to fit to local view position
         localView.addSubview(localRenderer)
         localView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(switchCamera)))
@@ -128,11 +128,11 @@ class WebRTCViewController: UIViewController, WebRTCClientDelegate{
     }
     
     @IBAction func speakerOnTaped(){
-        webRTCClient?.setSpeaker(on: true)
+//        webRTCClient?.setSpeaker(on: true)
     }
     
     @IBAction func speakerOffTaped(){
-        webRTCClient?.setSpeaker(on: false)
+//        webRTCClient?.setSpeaker(on: false)
     }
     
     @IBAction func answerTaped(_ senderf:UIButton){

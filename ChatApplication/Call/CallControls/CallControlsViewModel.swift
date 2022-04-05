@@ -15,10 +15,10 @@ class CallControlsViewModel:ObservableObject{
     var isLoading = false
     
     let appState = AppState.shared
+    
     let callState = CallState.shared
     
-    @Published
-    private (set) var model = CallControlsModel()
+    private (set) var callId :Int? = nil
     
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     private (set) var startCallCancelable:AnyCancellable? = nil
@@ -34,14 +34,14 @@ class CallControlsViewModel:ObservableObject{
             .sink { startCall in
                 //NOTICE: sink in init for firsttime is nil
                 if let callId = startCall.callId {
-                    self.model.setCallId(callId)
+                    self.callId = callId
                 }
             }
     }
     
-    func startRequestCallIfNeeded(){        
+    func startRequestCallIfNeeded(){
         //check if is not incoming call
-        if !callState.model.isReceiveCall{
+        if !callState.model.isReceiveCall && !callState.model.isJoinCall{
             if let thread = callState.model.thread{
                 satrtCallWithThreadId(thread)
             }
@@ -59,8 +59,6 @@ class CallControlsViewModel:ObservableObject{
     private func startP2PCall(_ selectedContacts:[Contact]){
         let invitees = selectedContacts.map{Invitee(id: "\($0.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)}
         let sendClient = SendClient(mute: false, video:  callState.model.isVideoCall)
-        model.setMute(sendClient.mute)
-        model.setCameraOn(sendClient.video)
         Chat.sharedInstance.requestCall(.init(client:sendClient,invitees: invitees, type: callState.model.isVideoCall ? .VIDEO_CALL : .VOICE_CALL),initCreateCall(createCall:uniqueId:error:))
     }
     
@@ -68,16 +66,12 @@ class CallControlsViewModel:ObservableObject{
         let invitees = selectedContacts.map{Invitee(id: "\($0.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)}
         let callType:CallType = callState.model.isVideoCall ? .VIDEO_CALL : .VOICE_CALL
         let client = SendClient(mute: true, video: callType == .VIDEO_CALL)
-        model.setMute(client.mute)
-        model.setCameraOn(client.video)
         Chat.sharedInstance.requestGroupCall(.init(client:client,invitees: invitees, type: callType, createCallThreadRequest: callDetail),initCreateCall(createCall:uniqueId:error:))
     }
     
     private func satrtCallWithThreadId(_ thread:Conversation){
         let callType:CallType = callState.model.isVideoCall ? .VIDEO_CALL : .VOICE_CALL
         let client = SendClient(mute: true, video: callType == .VIDEO_CALL)
-        model.setMute(client.mute)
-        model.setCameraOn(client.video)
         if let type = thread.type, ThreadTypes(rawValue: type) == .NORMAL , let threadId = thread.id{
             Chat.sharedInstance.requestCall(.init(client:client,threadId: threadId, type: callType),initCreateCall(createCall:uniqueId:error:))
         }else if let threadId = thread.id{
@@ -88,7 +82,7 @@ class CallControlsViewModel:ObservableObject{
     //Create call don't mean the call realy started. CallStarted Event is real one when a call realy accepted by at least one participant.
     private func initCreateCall(createCall:CreateCall? , uniqueId:String? , error:ChatError?) {
         if let createCall = createCall{
-            self.model.setCallId(createCall.callId)
+            self.callId = createCall.callId
         }
     }
     
@@ -98,19 +92,16 @@ class CallControlsViewModel:ObservableObject{
 			cancelCall()
 		}else {
 			// TODO: realease microphone and camera at the moument and dont need to wait and get response from server
-			if let callId = model.callId{
+			if let callId = callId{
 				Chat.sharedInstance.endCall(.init(callId: callId)) { callId, uniqueId, error in
 					
 				}
 			}
 		}
-        model.endCall()
         callState.close()
     }
     
-    func answerCall(video:Bool , audio:Bool){
-        model.setCameraOn(video)
-        model.setMute(!audio)
+    func answerCall(video:Bool, audio:Bool){
         callState.model.setAnswerWithVideo(answerWithVideo: video, micEnable: audio)
         AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
     }
@@ -131,50 +122,27 @@ class CallControlsViewModel:ObservableObject{
         AppDelegate.shared?.callMananger.endCall(callState.model.uuid)
     }
     
-    func toggleMute(){
-        guard let currentUserId = Chat.sharedInstance.getCurrentUser()?.id , let callId = model.callId else{return}
-        if model.isMute{
-            Chat.sharedInstance.unmuteCall(.init(callId: callId, userIds: [currentUserId])) { participants, uniqueId, error in
-                
-            }
-        }else{
-            Chat.sharedInstance.muteCall(.init(callId: callId, userIds: [currentUserId])) { participants, uniqueId, error in
-                
-            }
-        }
-        model.setMute(!model.isMute)
-        callState.setMute(model.isMute)
+    func toggleMic(){                
+        callState.toggleMute()
     }
     
     func toggleVideo(){
-        guard let callId = model.callId else{return}
-        model.setIsVideoOn(!model.isVideoOn)
-        if model.isVideoOn{
-            Chat.sharedInstance.turnOnVideoCall(.init(callId: callId)) { participants, uniqueId, error in
-            }
-        }else{
-            Chat.sharedInstance.turnOffVideoCall(.init(callId: callId)) { participants, uniqueId, error in
-            }
-        }
-        callState.setCameraIsOn(model.isVideoOn)
+        callState.toggleCamera()
     }
     
     func toggleSpeaker(){
-        model.setSpeaker(!model.isSpeakerOn)
-        callState.setSpeaker(model.isSpeakerOn)
+        callState.toggleSpeaker()
     }
     
     func setupPreview(){
-        model.setupPreview()
     }
     
     func switchCamera(){
-        model.toggleIsFront()
-        callState.switchCamera(model.isFrontCamera)
+        callState.switchCamera(callState.model.isFrontCamera)
     }
     
     func startRecording(){
-        guard let callId = model.callId else{return}
+        guard let callId = callId else{return}
         Chat.sharedInstance.startRecording(.init(callId: callId)) { [weak self] participant, uniqueId, error in
             if let _ = participant, let self = self{
                 self.callState.model.setIsRecording(isRecording: true)
@@ -185,7 +153,7 @@ class CallControlsViewModel:ObservableObject{
     }
     
     func stopRecording(){
-        guard let callId = model.callId else{return}
+        guard let callId = callId else{return}
         Chat.sharedInstance.stopRecording(.init(callId: callId)) { [weak self] participant, uniqueId, error in
             if let _ = participant, let self = self{
                 self.callState.model.setIsRecording(isRecording: false)

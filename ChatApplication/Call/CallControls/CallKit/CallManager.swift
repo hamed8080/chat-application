@@ -7,6 +7,7 @@
 
 import Foundation
 import CallKit
+import FanapPodChatSDK
 
 class CallManager : NSObject, ObservableObject{
     
@@ -59,10 +60,18 @@ class CallManager : NSObject, ObservableObject{
     }
     
     func callAnsweredFromCusomUI(){
-        let uuid = CallState.shared.model.uuid
-        let answerAction = CXAnswerCallAction(call: uuid)
-        let transaction  = CXTransaction(action: answerAction)
-        requestTransaction(transaction)        
+        if TARGET_OS_SIMULATOR != 0{
+            // Trigger the call to be answered via the underlying network service.
+            let callState = CallState.shared
+            if let receiveCall = callState.model.receiveCall {
+                Chat.sharedInstance.acceptCall(.init(callId:receiveCall.callId, client: .init(mute: !callState.model.answerWithMicEnable , video: callState.model.answerWithVideo)))
+            }
+        }else{
+            let uuid = CallState.shared.model.uuid
+            let answerAction = CXAnswerCallAction(call: uuid)
+            let transaction  = CXTransaction(action: answerAction)
+            requestTransaction(transaction)
+        }
     }
     
     private func requestTransaction(_ transaction:CXTransaction){

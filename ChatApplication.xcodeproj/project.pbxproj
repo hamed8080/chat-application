@@ -133,7 +133,6 @@
 		AC989208275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891EA275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift */; };
 		AC989209275E3D48007973F7 /* WebRTCViewControllerLocalSignaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891EC275E3D48007973F7 /* WebRTCViewControllerLocalSignaling.swift */; };
 		AC98920A275E3D48007973F7 /* WebRTCLocalSignaling.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC9891ED275E3D48007973F7 /* WebRTCLocalSignaling.storyboard */; };
-		AC98920B275E3D48007973F7 /* CallControlsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891EF275E3D48007973F7 /* CallControlsModel.swift */; };
 		AC98920C275E3D48007973F7 /* CallParticipantsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891F1275E3D48007973F7 /* CallParticipantsModel.swift */; };
 		AC98920D275E3D48007973F7 /* CallParticipantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891F2275E3D48007973F7 /* CallParticipantsViewModel.swift */; };
 		AC98920E275E3D48007973F7 /* CallParticipantsContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891F3275E3D48007973F7 /* CallParticipantsContentList.swift */; };
@@ -322,7 +321,6 @@
 		AC9891EA275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRTCDirectSignalingViewController.swift; sourceTree = "<group>"; };
 		AC9891EC275E3D48007973F7 /* WebRTCViewControllerLocalSignaling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRTCViewControllerLocalSignaling.swift; sourceTree = "<group>"; };
 		AC9891ED275E3D48007973F7 /* WebRTCLocalSignaling.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = WebRTCLocalSignaling.storyboard; sourceTree = "<group>"; };
-		AC9891EF275E3D48007973F7 /* CallControlsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallControlsModel.swift; sourceTree = "<group>"; };
 		AC9891F1275E3D48007973F7 /* CallParticipantsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallParticipantsModel.swift; sourceTree = "<group>"; };
 		AC9891F2275E3D48007973F7 /* CallParticipantsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallParticipantsViewModel.swift; sourceTree = "<group>"; };
 		AC9891F3275E3D48007973F7 /* CallParticipantsContentList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallParticipantsContentList.swift; sourceTree = "<group>"; };
@@ -730,7 +728,6 @@
 				AC9891F0275E3D48007973F7 /* CallParticipants */,
 				AC9891F5275E3D48007973F7 /* CallKit */,
 				050E520F27EF275C009F52D3 /* CallControlsContent.swift */,
-				AC9891EF275E3D48007973F7 /* CallControlsModel.swift */,
 				05743ACE27F029590061C901 /* CallControlsViewModel.swift */,
 				05743AD227F02FA70061C901 /* CallState.swift */,
 			);
@@ -1186,7 +1183,6 @@
 				AC5E388926F5B3D70016EFAA /* ListModifier.swift in Sources */,
 				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
 				052C8B8927AE6C0A00C3BB2E /* CallDetails.swift in Sources */,
-				AC98920B275E3D48007973F7 /* CallControlsModel.swift in Sources */,
 				AC0435FD26998D3E00B1C87B /* ParticipantsViewModel.swift in Sources */,
 				AC1D2CCE2662016E00AA351A /* ThreadsModel.swift in Sources */,
 				052D57362795323C0075BF8F /* ManageTagView.swift in Sources */,

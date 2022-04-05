@@ -18,12 +18,11 @@ struct RTCVideoReperesentable:UIViewRepresentable {
     
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
-        
-        #if arch(arm64)
-        (renderer as! RTCMTLVideoView).videoContentMode = .scaleAspectFit
-        #else
-        (renderer as! RTCEAGLVideoView).videoContentMode = .scaleAspectFit
-        #endif
+        if TARGET_OS_SIMULATOR != 0{
+            //its simulator
+        }else{
+            (renderer as! RTCMTLVideoView).videoContentMode = .scaleAspectFill
+        }
         
         renderer.frame = view.frame
         renderer.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)//mirror view to show correct

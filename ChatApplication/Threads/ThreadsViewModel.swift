@@ -249,6 +249,7 @@ class ThreadsViewModel:ObservableObject{
         let callState = CallState.shared
         Chat.sharedInstance.acceptCall(.init(callId:call.id, client: .init(mute: false , video: false)))
         withAnimation(.spring()){
+            callState.model.setIsJoinCall(true)
             callState.model.setShowCallView(true)
         }
         CallState.shared.model.setAnswerWithVideo(answerWithVideo: false, micEnable: false)
