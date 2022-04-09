@@ -272,8 +272,9 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         if let startCall = notification.object as? StartCall{
             model.setStartedCall(startCall)
             startTimer()
-            
-            let config = WebRTCConfig(startCall: startCall, isSendVideoEnabled: model.answerWithVideo || model.isVideoCall)
+            ///simulator File name
+            let smFileName = TARGET_OS_SIMULATOR != 0 ? "webrtc_user_a.mp4" : nil
+            let config = WebRTCConfig(startCall: startCall, isSendVideoEnabled: model.answerWithVideo || model.isVideoCall,fileName: smFileName)
             WebRTCClientNew.instance = WebRTCClientNew(config: config , delegate: self)
             addCallParicipant(.init(sendTopic: config.topicSend ?? "",
                                               mute: startCall.clientDTO.mute,

@@ -41,33 +41,38 @@ struct CallControlsContent: View {
         return Array(repeating: GridItem(.flexible(), spacing: 16), count: videoCount <= 2 ? 1 : 2)
     }
     
-    let phoneCellHieght:CGFloat = 150
+    var defaultCellHieght:CGFloat{
+        let isMoreThanTwoParticipant = callState.model.usersRTC.filter{$0.isVideoTopic}.count > 2
+        let ipadHieghtForTwoParticipant = (UIScreen.main.bounds.height / 2) - 32
+        return isIpad ? isMoreThanTwoParticipant ? 350 : ipadHieghtForTwoParticipant : 150
+    }
+    
+    @State
+    var activeLargeCall:UserRCT? = nil
+    var activeLargeRenderer = RTCMTLVideoView(frame: .zero)
+    
+    @State private var location: CGPoint = CGPoint(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height  - 164)
+    
+    var simpleDrag: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                self.location = value.location
+            }
+    }
+    
+    @Namespace private var ns
     
     var body: some View {
         GeometryReader{ reader in
             ZStack{
+                
+                if let activeLargeCall = activeLargeCall {
+                    centerCallView(activeLargeCall)
+                }
+                
                 if callState.model.isCallStarted{
-                    ScrollView(isIpad ? .vertical : .horizontal, showsIndicators: false){
-                        if isIpad{
-                            LazyVGrid(columns: gridColumns,spacing: 16){
-                                ForEach(callState.model.usersRTC.filter{$0.isVideoTopic}, id:\.self){ callUser in
-                                    callUserView(callUser)
-                                }
-                            }
-                            .padding([.leading,.trailing], 12)
-                        }else{
-                            VStack{
-                                Spacer()
-                                LazyHGrid(rows: [GridItem(.flexible(), spacing: 0)],spacing: 16){
-                                    ForEach(callState.model.usersRTC.filter{$0.isVideoTopic}, id:\.self){ callUser in
-                                        callUserView(callUser)
-                                    }
-                                }
-                                .frame(height:phoneCellHieght)
-                                .offset(y: -148)
-                            }
-                            .padding([.leading, .trailing],12)
-                        }
+                    if isIpad{
+                        listLargeIpadParticipants
                     }
                 }
                 
@@ -78,7 +83,18 @@ struct CallControlsContent: View {
                         if callState.model.receiveCall != nil && callState.model.isCallStarted == false{
                             receiveCallActions
                         }else{
-                            callStartedActions
+                            VStack{
+                                if isIpad{
+                                    callStartedActions
+                                    .position(location)
+                                    .gesture(
+                                        simpleDrag.simultaneously(with: simpleDrag)
+                                    )
+                                }else{
+                                    listSmallCallParticipants
+                                    callStartedActions
+                                }
+                            }
                         }
                         Spacer()
                     }
@@ -173,6 +189,69 @@ struct CallControlsContent: View {
     }
     
     @ViewBuilder
+    var listLargeIpadParticipants:some View{
+        ScrollView{
+            LazyVGrid(columns: gridColumns,spacing: 16){
+                ForEach(callState.model.usersRTC.filter{$0.isVideoTopic}, id:\.self){ userRTC in
+                    callUserView(userRTC)
+                }
+            }
+            .padding([.leading,.trailing], 12)
+        }
+    }
+    
+    @ViewBuilder
+    var listSmallCallParticipants:some View{
+        ScrollView(.horizontal){
+            LazyHGrid(rows: [GridItem(.flexible(), spacing: 0)],spacing: 16){
+                ForEach(callState.model.usersRTC.filter{$0.isVideoTopic}, id:\.self){ userRTC in
+                    callUserView(userRTC)
+                        .onTapGesture {
+                            activeLargeCall = userRTC
+                        }
+                }
+            }
+        }
+        .frame(height:defaultCellHieght + 25) // +25 for when a user start talking showing frame
+    }
+    
+    @ViewBuilder
+    func centerCallView(_ userRTC:UserRCT) -> some View {
+        if userRTC.videoTrack?.isEnabled == true{
+            RTCVideoReperesentable(renderer: activeLargeRenderer)
+                .ignoresSafeArea()
+                .onAppear {
+                    userRTC.videoTrack?.add(activeLargeRenderer)
+                }
+            
+            VStack(alignment:.leading, spacing: 0){
+                HStack{
+                    Spacer()
+                    Button {
+                        userRTC.videoTrack?.remove(activeLargeRenderer)
+                        self.activeLargeCall = nil
+                    } label: {
+                        Image(systemName: "xmark.circle")
+                            .resizable()
+                            .foregroundColor(.primary)
+                    }
+                    .frame(width: 36, height: 36)
+                }
+                .padding()
+                Spacer()
+            }
+        }else{
+            //only audio
+            Avatar(
+                url: userRTC.callParticipant?.participant?.image,
+                userName: userRTC.callParticipant?.participant?.username?.uppercased(),
+                style: .init(cornerRadius: isIpad ? 64 : 32, size: isIpad ? 128 : 64, textSize: isIpad ? 48 : 24)
+            )
+            .cornerRadius(isIpad ? 64 : 32)
+        }
+    }
+    
+    @ViewBuilder
     func callUserView(_ userRTC:UserRCT) -> some View{
         if userRTC.isVideoTopic == true, let rendererView = userRTC.renderer as? UIView {
             ZStack{
@@ -224,7 +303,7 @@ struct CallControlsContent: View {
                 .padding()
             }
             .customAnimation(.easeInOut)
-            .frame(height: callState.model.usersRTC.filter{$0.isVideoTopic}.count <= 2 ? UIScreen.main.bounds.height / 2 : self.isIpad ? 350 : phoneCellHieght)
+            .frame(height: defaultCellHieght)
             .background(Color(named: "call_item_background").opacity(0.7))
             .border(Color(named: "border_speaking"), width: userRTC.isSpeaking ? 3 : 0)
             .cornerRadius(8)
@@ -328,10 +407,6 @@ struct CallControlsContent: View {
         .background(controlBackground)
         .cornerRadius(isIpad ? 16 : 0)
     }
-
-    private func textLimt(text:String)->String{
-        return String(text.prefix(isIpad ? (text.count < 30 ? text.count : 30) : 15))
-    }
     
     @ViewBuilder
     var controlBackground: some View{
@@ -342,6 +417,10 @@ struct CallControlsContent: View {
         }else{
             Color.clear
         }
+    }
+    
+    private func textLimt(text:String)->String{
+        return String(text.prefix(isIpad ? (text.count < 30 ? text.count : 30) : 15))
     }
 }
 
