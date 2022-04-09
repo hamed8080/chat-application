@@ -26,8 +26,10 @@ struct MemberView: View {
                     }
             }
         }.onAppear {
-            viewModel.threadId = thread.id ?? -1
-            viewModel.getParticipantsIfConnected()
+            if viewModel.model.totalCount <= 0{
+                viewModel.threadId = thread.id ?? -1
+                viewModel.getParticipantsIfConnected()
+            }
         }
     }
 }

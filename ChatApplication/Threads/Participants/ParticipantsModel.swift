@@ -32,6 +32,8 @@ struct ParticipantsModel {
     }
     
     mutating func appendParticipants(participants:[Participant]){
+        //remove older data to prevent duplicate on view
+        self.participants.removeAll(where: { participant in participants.contains(where: {participant.id == $0.id }) })
         self.participants.append(contentsOf: participants)
     }
     
