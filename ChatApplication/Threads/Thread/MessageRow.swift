@@ -99,7 +99,7 @@ struct TextMessageType:View{
             if isMe {
                 Spacer()
             }
-            VStack(spacing:8){
+            VStack(alignment: isMe ? .trailing : .leading, spacing:8){
                 if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
                     DownloadFileView(message: message)
                         .frame(width: 128, height: 128)
@@ -110,7 +110,7 @@ struct TextMessageType:View{
                 }
                 
                 Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
-                    .multilineTextAlignment(.trailing)
+                    .multilineTextAlignment(isMe ? .trailing : .leading)
                     .font(.subheadline.weight(.medium))
                     .foregroundColor(.black)
                 HStack{
@@ -119,15 +119,13 @@ struct TextMessageType:View{
                             .multilineTextAlignment(.leading)
                             .font(.subheadline)
                             .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                        Spacer()
                     }
                     if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
-                        Spacer()
                         Text("\(date.getTime())")
                             .foregroundColor(Color(named: "dark_green").opacity(0.8))
                             .font(.caption2.weight(.light))
                     }
-                    
+
                     if isMe{
                         Image(uiImage: UIImage(named:  message.seen == true ? "double_checkmark" : "single_chekmark")!)
                             .resizable()
@@ -139,7 +137,6 @@ struct TextMessageType:View{
                 
 
             }
-            .fixedSize()
             .frame(minWidth: 72, minHeight: 48, alignment: .leading)
             .contentShape(Rectangle())
             .padding(8)
@@ -224,20 +221,24 @@ struct ForwardMessageRow:View{
     var showReadOnlyThreadView : Bool         = false
     
     var body: some View{
-        
-        VStack(spacing:0){
+        VStack(alignment: .leading, spacing:0){
             HStack{
-                Text(forwardInfo.participant?.name ?? "")
-                    .italic()
-                    .font(.footnote)
-                    .foregroundColor(Color.gray)
+                if let name = forwardInfo.participant?.name{
+                    Text(name)
+                        .italic()
+                        .font(.footnote)
+                        .foregroundColor(Color.gray)
+                }
+               
                 Image(systemName: "arrowshape.turn.up.right")
                     .foregroundColor(Color.blue)
             }
             .frame(minHeight:20)
             Rectangle()
                 .fill(Color.gray.opacity(0.2))
+                .frame(width: 82)
                 .frame(height:1)
+                .padding([.top], 4)
         }.onTapGesture {
             showReadOnlyThreadView = true
         }
@@ -245,6 +246,8 @@ struct ForwardMessageRow:View{
             NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: forwardThread, readOnly: true)), isActive: $showReadOnlyThreadView){
                 EmptyView()
             }
+            .frame(width:0)
+            .hidden()
         }
     }
 }
