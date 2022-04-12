@@ -85,14 +85,9 @@ struct StartThreadContactRow: View {
 
 struct StartThreadContactRow_Previews: PreviewProvider {
     @State static var isInMultiSelectMode = true
-    static var contact:Contact{
-        let contact = Contact(blocked: false, cellphoneNumber: "+98 9369161601", email: nil, firstName: "Hamed", hasUser: true, id: 0, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", lastName: "Hosseini", linkedUser: nil, notSeenDuration: 1622969881, timeStamp: nil, userId: nil)
-        return contact
-    }
-    
     static var previews: some View {
         Group {
-            StartThreadContactRow(contact: contact, isInMultiSelectMode: $isInMultiSelectMode,viewModel: ContactsViewModel())
+            StartThreadContactRow(contact: MockData.contact, isInMultiSelectMode: $isInMultiSelectMode,viewModel: ContactsViewModel())
                 .preferredColorScheme(.dark)
         }
     }

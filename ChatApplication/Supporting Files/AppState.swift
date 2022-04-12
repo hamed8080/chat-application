@@ -40,4 +40,11 @@ class AppState: ObservableObject {
     
 	private init() {}
     
+    //get cahe user from databse for working fast with something like showing message rows
+    func setCachedUser(){
+        CacheFactory.get(useCache: true, cacheType: .USER_INFO) { response in
+            self.user = response.cacheResponse as? User
+        }
+    }
+    
 }

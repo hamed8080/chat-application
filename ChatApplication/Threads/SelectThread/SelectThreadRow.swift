@@ -33,6 +33,6 @@ struct SelectThreadRow: View {
 
 struct SelectThreadRow_Previews: PreviewProvider {
 	static var previews: some View {
-        SelectThreadRow(thread: ThreadRow_Previews.thread)
+        SelectThreadRow(thread: MockData.thread)
 	}
 }

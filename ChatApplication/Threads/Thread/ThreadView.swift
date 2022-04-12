@@ -309,7 +309,7 @@ struct SendContainer:View{
 struct ThreadView_Previews: PreviewProvider {
     
     static var previews: some View {
-        let vm = ThreadViewModel(thread: ThreadRow_Previews.thread)
+        let vm = ThreadViewModel(thread: MockData.thread)
         ThreadView(viewModel: vm,showAttachmentDialog: false)
             .preferredColorScheme(.dark)
             .previewDevice("iPhone 13 Pro Max")

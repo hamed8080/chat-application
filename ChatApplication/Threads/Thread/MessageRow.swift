@@ -26,7 +26,8 @@ struct MessageRow: View{
         self.message = message
         self.viewModel = viewModel
         self._isInEditMode = isInEditMode
-        self.isMe = isMeForPreView ?? (message.ownerId == (Chat.sharedInstance.getCurrentUser()?.id ?? AppState.shared.user?.id))
+        let cachedUserId = AppState.shared.user?.id
+        self.isMe = isMeForPreView ?? (message.ownerId == (cachedUserId ?? Chat.sharedInstance.getCurrentUser()?.id ?? AppState.shared.user?.id))
     }
     
     var body: some View {
@@ -46,7 +47,11 @@ struct MessageRow: View{
                 if let message = message as? UploadFileMessage{
                     UploadMessageType(viewModel: viewModel, message: message)
                 }else if type == .TEXT || type == .PICTURE || type == .POD_SPACE_PICTURE || type == .FILE || type == .POD_SPACE_FILE {
+                    if isMe{
+                        Spacer()
+                    }
                     TextMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
+                                .frame(minWidth: 72, maxWidth: 420, minHeight: 48, alignment: .leading)
                 }else if type == .END_CALL || type == .START_CALL{
                     CallMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
                 }
@@ -99,19 +104,19 @@ struct TextMessageType:View{
             if isMe {
                 Spacer()
             }
-            VStack(alignment: isMe ? .trailing : .leading, spacing:8){
+            VStack{
                 if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
                     DownloadFileView(message: message)
-                        .frame(width: 128, height: 128)
+                        .frame(minHeight:128)
                 }
                 
                 if let forwardInfo = message.forwardInfo{
                     ForwardMessageRow(forwardInfo: forwardInfo)
                 }
-                
+                //TODO: TEXT must be alignment and image muset be fit
                 Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
-                    .multilineTextAlignment(isMe ? .trailing : .leading)
-                    .font(.subheadline.weight(.medium))
+                    .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
+                    .font(.body)
                     .foregroundColor(.black)
                 HStack{
                     if let fileSize = message.metaData?.file?.size, let size = Int(fileSize){
@@ -119,6 +124,7 @@ struct TextMessageType:View{
                             .multilineTextAlignment(.leading)
                             .font(.subheadline)
                             .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        Spacer()
                     }
                     if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
                         Text("\(date.getTime())")
@@ -134,10 +140,7 @@ struct TextMessageType:View{
                             .font(.caption2.weight(.light))
                     }
                 }
-                
-
             }
-            .frame(minWidth: 72, minHeight: 48, alignment: .leading)
             .contentShape(Rectangle())
             .padding(8)
             .background(isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named:"chat_sender")!))
@@ -280,55 +283,20 @@ struct UploadMessageType:View{
 
 
 struct MessageRow_Previews: PreviewProvider {
-    static var message:Message{
-        let message = Message(threadId: 0,
-                              id: 12,
-                              message: "Hello",
-                              messageType: 1,
-                              seen: false,
-                              time: 1636807773)
-        return message
-    }
     
-    static var forwardedMessage:Message{
-        let ms = Message(threadId: 0,
-                         id: 12,
-                         message: "Hello",
-                         messageType: 1,
-                         seen: false,
-                         time: 1636807773,
-                         forwardInfo: ForwardInfo(conversation: ThreadRow_Previews.thread, participant: ParticipantRow_Previews.participant)
-        )
-        return ms
-    }
-    
-    static var downloadMessage:Message{
-        let metaData = FileMetaData(file: .init(fileExtension: ".pdf", link: "", mimeType: "", name: "Test File Name", originalName: "tes", size: 8240000))
-        let metaDataString = String(data: (try! JSONEncoder().encode(metaData)), encoding: .utf8)
-        return Message(threadId: 0,
-                       id: 12,
-                       message: "Hello",
-                       messageType: MessageType.FILE.rawValue,
-                       metadata: metaDataString,
-                       time: 1636807773
-        )
-    }
-    
-    static var uploadMessage:UploadFileMessage{
-        let msg = UploadFileMessage(uploadFileUrl: URL(string: "http://www.google.com")!, textMessage: "Test")
-        msg.message = "Film.mp4"
-        return msg
-    }
     
     static var previews: some View {
         List{
-            let thread = ThreadRow_Previews.thread
-            MessageRow(message: message,viewModel:ThreadViewModel(thread: thread) , isInEditMode: .constant(true),isMeForPreView: false)
-            MessageRow(message: forwardedMessage,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: false)
-            MessageRow(message: message,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
-            MessageRow(message: downloadMessage, viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
-            MessageRow(message: uploadMessage, viewModel: ThreadViewModel(thread: thread), isInEditMode: .constant(true))
+            let thread = MockData.thread
+            MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread) , isInEditMode: .constant(true),isMeForPreView: false)
+            MessageRow(message: MockData.forwardedMessage,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: false)
+            MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
+            MessageRow(message: MockData.downloadMessageSmallText, viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
+            MessageRow(message: MockData.downloadMessageLongText, viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
+            MessageRow(message: MockData.downloadPersianMessageLongText, viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
+            MessageRow(message: MockData.uploadMessage, viewModel: ThreadViewModel(thread: thread), isInEditMode: .constant(true))
         }
+        .previewDevice("iPad Pro (12.9-inch) (5th generation)")
         .preferredColorScheme(.light)
         
     }

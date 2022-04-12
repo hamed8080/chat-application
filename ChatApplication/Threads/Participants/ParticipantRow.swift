@@ -64,14 +64,8 @@ struct ParticipantRow: View {
 }
 
 struct ParticipantRow_Previews: PreviewProvider {
-    static var participant:Participant{
-        let participant = Participant(admin: true, cellphoneNumber: "+989369161601", contactFirstName: "Hamed", contactName: "Hamed", contactLastName: "Hosseini", firstName: "Hamed", id: 123, lastName: "Hosseini", name: "Hamed", online: true, username: "hamed8080")
-        return participant
-    }
     
     static var previews: some View {
-        ParticipantRow(participant: participant)
-            
-        
+        ParticipantRow(participant: MockData.participant)
     }
 }

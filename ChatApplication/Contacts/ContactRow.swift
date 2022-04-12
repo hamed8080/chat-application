@@ -134,14 +134,10 @@ struct ActionButton: View{
 
 struct ContactRow_Previews: PreviewProvider {
     @State static var isInEditMode = false
-    static var contact:Contact{
-        let contact = Contact(blocked: false, cellphoneNumber: "+98 9369161601", email: nil, firstName: "Hamed", hasUser: true, id: 0, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", lastName: "Hosseini", linkedUser: nil, notSeenDuration: 1622969881, timeStamp: nil, userId: nil)
-        return contact
-    }
     
     static var previews: some View {
         Group {
-            ContactRow(contact: contact, isInEditMode: $isInEditMode,viewModel: ContactsViewModel())
+            ContactRow(contact: MockData.contact, isInEditMode: $isInEditMode,viewModel: ContactsViewModel())
                 .preferredColorScheme(.dark)
         }
     }

@@ -7,6 +7,8 @@
 
 import Foundation
 import FanapPodChatSDK
+import NaturalLanguage
+
 extension String{
     
     func isTypingAnimationWithText(onStart:@escaping (String)->(),onChangeText:@escaping (String,Timer)->(),onEnd:@escaping ()->()){
@@ -68,5 +70,12 @@ extension String{
         case .SERVER_TIME:
             return nil
         }
+    }
+    
+    var isEnglishString:Bool {
+        let languageRecognizer = NLLanguageRecognizer()
+        languageRecognizer.processString(self)
+        guard let code = languageRecognizer.dominantLanguage?.rawValue else{return true}
+        return Locale.current.localizedString(forIdentifier: code) == "English"
     }
 }

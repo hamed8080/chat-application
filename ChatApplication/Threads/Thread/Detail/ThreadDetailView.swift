@@ -132,7 +132,7 @@ struct ThreadDetailView_Previews: PreviewProvider {
 
     static var vm:ThreadViewModel{
         
-        let thread = ThreadRow_Previews.thread
+        let thread = MockData.thread
         let vm = ThreadViewModel(thread: thread)
         thread.title = "Test Thread title"
         thread.description = "Test Thread Description with slightly long text"

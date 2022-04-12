@@ -158,6 +158,6 @@ struct AttachmentModel {
 
 struct MediaView_Previews: PreviewProvider {
     static var previews: some View {
-        MediaView(thread: ThreadRow_Previews.thread)
+        MediaView(thread: MockData.thread)
     }
 }

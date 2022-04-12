@@ -137,9 +137,9 @@ class UploadFile: ObservableObject{
 struct UploadFileView_Previews: PreviewProvider {
     
     static var previews: some View {
-        let viewModel = ThreadViewModel(thread: ThreadRow_Previews.thread)
+        let viewModel = ThreadViewModel(thread: MockData.thread)
         let fileUrl = URL(string: "http://www.google.com")!
-        let uploadFile = UploadFile(thread: ThreadRow_Previews.thread, fileUrl: fileUrl)
+        let uploadFile = UploadFile(thread: MockData.thread, fileUrl: fileUrl)
         UploadFileView(uploadFile: uploadFile,
                        viewModel: viewModel,
                        message: UploadFileMessage(uploadFileUrl: fileUrl)

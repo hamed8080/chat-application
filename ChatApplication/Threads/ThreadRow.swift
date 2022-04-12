@@ -139,14 +139,8 @@ struct ThreadRow: View {
 }
 
 struct ThreadRow_Previews: PreviewProvider {
-	static var thread:Conversation{
-        
-		let lastMessageVO = Message(message: "Hi hamed how are you? are you ok? and what are you ding now. And i was thinking you are sad for my behavoi last night.")
-        let thread = Conversation(description: "description", id: 123, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", pin: false, title: "Hamed Hosseini", type: ThreadTypes.PUBLIC_GROUP.rawValue, lastMessageVO: lastMessageVO)
-		return thread
-	}
 	
 	static var previews: some View {
-		ThreadRow(thread: thread,viewModel: ThreadsViewModel())
+        ThreadRow(thread: MockData.thread,viewModel: ThreadsViewModel())
 	}
 }

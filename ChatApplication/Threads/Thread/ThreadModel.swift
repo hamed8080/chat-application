@@ -142,20 +142,8 @@ struct ThreadModel {
 extension ThreadModel{
     
     mutating func setupPreview(){
-        let m1 = MessageRow_Previews.message
-        m1.message = "Hamed Hosseini"
-        m1.id = 1
-        
-        let m2 = MessageRow_Previews.message
-        m2.message = "Masoud Amjadi"
-        m2.id = 2
-        
-        let m3 = MessageRow_Previews.message
-        m2.message = "Pod Group"
-        m3.id = 3
-        
         let m4 = UploadFileMessage(uploadFileUrl: URL(string: "http://sandbox.podspace.ir:8080/nzh/drive/downloadFile?hash=MGTCI6EZFAU4HO3G")!, textMessage: "Test")
         m4.messageType = MessageType.TEXT.rawValue
-        appendMessages(messages: [m1 , m2, m3, m4])
+        appendMessages(messages: MockData.generateMessages())
     }
 }

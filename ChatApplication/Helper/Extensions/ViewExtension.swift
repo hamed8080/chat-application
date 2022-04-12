@@ -16,4 +16,10 @@ extension View {
     func customAnimation(_ animation: Animation?)->some View{
         self.animation(animation, value: UUID())
     }
+    
+    
+    var isIpad:Bool{
+        return UIDevice.current.userInterfaceIdiom == .pad
+    }
+
 }

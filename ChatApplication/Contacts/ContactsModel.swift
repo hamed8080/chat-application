@@ -77,20 +77,6 @@ struct ContactsModel {
 extension ContactsModel{
     
     mutating func setupPreview(){
-        let t1 = ContactRow_Previews.contact
-        t1.firstName = "Hamed"
-        t1.lastName  =  "Hosseini23232"
-        t1.id = 1
-        
-        let t2 = ContactRow_Previews.contact
-        t2.firstName = "Masoud"
-        t2.lastName = "Amjadi"
-        t2.id = 2
-        
-        let t3 = ContactRow_Previews.contact
-        t2.firstName = "Pod Group"
-        t3.id = 3
-        let contacts = [t1 , t2, t3] + [t1 , t2, t3] + [t1 , t2, t3] +  [t1 , t2, t3]
-        setContacts(contacts: contacts, totalCount: 500)
+        setContacts(contacts: MockData.generateContacts(), totalCount: 500)
     }
 }

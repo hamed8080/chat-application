@@ -19,6 +19,6 @@ struct MusicView: View {
 
 struct MusicView_Previews: PreviewProvider {
     static var previews: some View {
-        MusicView(thread: ThreadRow_Previews.thread)
+        MusicView(thread: MockData.thread)
     }
 }

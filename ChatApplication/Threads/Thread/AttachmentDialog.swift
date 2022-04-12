@@ -149,7 +149,7 @@ struct AttachmentDialog_Previews: PreviewProvider {
     static var previews: some View {
         
         AttachmentDialog(showAttachmentDialog: .constant(true),
-                         viewModel: ActionSheetViewModel(threadViewModel: ThreadViewModel(thread: ThreadRow_Previews.thread)))
+                         viewModel: ActionSheetViewModel(threadViewModel: ThreadViewModel(thread: MockData.thread)))
     }
 }
 

@@ -109,7 +109,7 @@ struct ManageTagView_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
         let vm = TagsViewModel()
-        ManageTagView(tag:TagRow_Previews.tag, viewModel: vm, onCompleted: { model in
+        ManageTagView(tag:MockData.tag, viewModel: vm, onCompleted: { model in
         })
             .onAppear(){
                 vm.setupPreview()

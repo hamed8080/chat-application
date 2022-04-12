@@ -37,7 +37,7 @@ struct MemberView: View {
 struct MemberView_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = ParticipantsViewModel()
-        MemberView(thread: ThreadRow_Previews.thread, viewModel: viewModel)
+        MemberView(thread: MockData.thread, viewModel: viewModel)
             .onAppear {
                 viewModel.setupPreview()
             }

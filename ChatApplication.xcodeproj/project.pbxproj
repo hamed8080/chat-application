@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0506366E2801A8740080DF00 /* EnvironmentEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0506366D2801A8740080DF00 /* EnvironmentEX.swift */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
 		052D57362795323C0075BF8F /* ManageTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D57352795323C0075BF8F /* ManageTagView.swift */; };
@@ -29,6 +30,10 @@
 		055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A527D602CD0098D585 /* TabViewsContainer.swift */; };
 		055EFCEE27C0BFA2006E0ABC /* AnimatingCellHeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055EFCED27C0BFA2006E0ABC /* AnimatingCellHeight.swift */; };
 		0562B23327DE0ABD00CAE761 /* ManageKeyboardForList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0562B23227DE0ABD00CAE761 /* ManageKeyboardForList.swift */; };
+		057977B52805449D00FE5EA4 /* MockDatas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057977B42805449D00FE5EA4 /* MockDatas.swift */; };
+		057977B72805548000FE5EA4 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057977B62805548000FE5EA4 /* UIColor.swift */; };
+		057977B82805551F00FE5EA4 /* ColorEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5411E3275631A90018C78D /* ColorEx.swift */; };
+		057977B92805552E00FE5EA4 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057977B62805548000FE5EA4 /* UIColor.swift */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
 		05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */; };
 		05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */; };
@@ -167,6 +172,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0506366D2801A8740080DF00 /* EnvironmentEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentEX.swift; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
 		052D57352795323C0075BF8F /* ManageTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagView.swift; sourceTree = "<group>"; };
@@ -189,6 +195,8 @@
 		055B26A527D602CD0098D585 /* TabViewsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewsContainer.swift; sourceTree = "<group>"; };
 		055EFCED27C0BFA2006E0ABC /* AnimatingCellHeight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatingCellHeight.swift; sourceTree = "<group>"; };
 		0562B23227DE0ABD00CAE761 /* ManageKeyboardForList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageKeyboardForList.swift; sourceTree = "<group>"; };
+		057977B42805449D00FE5EA4 /* MockDatas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDatas.swift; sourceTree = "<group>"; };
+		057977B62805548000FE5EA4 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifire.swift; sourceTree = "<group>"; };
 		05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryToggleStyle.swift; sourceTree = "<group>"; };
 		05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToViewModel.swift; sourceTree = "<group>"; };
@@ -476,6 +484,7 @@
 				AC1D2CBE2662016D00AA351A /* CustomViews */,
 				AC48ED5D26F6F6AD00AB1A5D /* Routes.swift */,
 				AC48ED5F26F6F9E300AB1A5D /* RestClient.swift */,
+				057977B42805449D00FE5EA4 /* MockDatas.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -499,6 +508,8 @@
 				AC5411E527563A440018C78D /* UIImageEX.swift */,
 				ACADE27C275788EB00DD40B4 /* MessageType.swift */,
 				AC8FF3F8276F579A001A6584 /* UINavigationBarEX.swift */,
+				0506366D2801A8740080DF00 /* EnvironmentEX.swift */,
+				057977B62805548000FE5EA4 /* UIColor.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -908,6 +919,7 @@
 				AC23695627439478008195D7 /* SearchContactRow.swift in Sources */,
 				ACC4C1932765C342008940CD /* ViewEX.swift in Sources */,
 				AC122EC2266B82A000C0630F /* ThreadContentList.swift in Sources */,
+				057977B72805548000FE5EA4 /* UIColor.swift in Sources */,
 				ACA6DA79271ABB2200286563 /* ActivityViewControllerWrapper.swift in Sources */,
 				05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */,
 				ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */,
@@ -926,6 +938,7 @@
 				AC1D2CD12662016E00AA351A /* ThreadRow.swift in Sources */,
 				AC0889AC2691D47E00FD4552 /* AppState.swift in Sources */,
 				AC1D2CD22662016E00AA351A /* AppDelegate.swift in Sources */,
+				0506366E2801A8740080DF00 /* EnvironmentEX.swift in Sources */,
 				AC1D2CD32662016E00AA351A /* ChatDelegateImplementation.swift in Sources */,
 				055EFCEE27C0BFA2006E0ABC /* AnimatingCellHeight.swift in Sources */,
 				05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */,
@@ -938,6 +951,7 @@
 				AC0FE1372755047A00C7A8DB /* IntEX.swift in Sources */,
 				AC1D2CCC2662016E00AA351A /* LoadingView.swift in Sources */,
 				ACAB96D427030FBE005FB9AA /* ViewExtension.swift in Sources */,
+				057977B52805449D00FE5EA4 /* MockDatas.swift in Sources */,
 				ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */,
 				ACEAEDD5274CF87600EC8252 /* ActionSheetViewModel.swift in Sources */,
 				AC94B09A274E0BC200199B35 /* PHAssetEX.swift in Sources */,
@@ -1008,9 +1022,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC2E4748274B58EB0073E8E4 /* UserDefaultsEX.swift in Sources */,
+				057977B82805551F00FE5EA4 /* ColorEx.swift in Sources */,
 				AC2E474B274B6FB70073E8E4 /* AppGroup.swift in Sources */,
 				AC924CC3274A806300E33BD1 /* Avatar.swift in Sources */,
 				AC924CB8274A6D7300E33BD1 /* MyWidget.intentdefinition in Sources */,
+				057977B92805552E00FE5EA4 /* UIColor.swift in Sources */,
 				AC924CC4274A80CC00E33BD1 /* ImageLoader.swift in Sources */,
 				AC924CB3274A6D7200E33BD1 /* MyWidget.swift in Sources */,
 			);

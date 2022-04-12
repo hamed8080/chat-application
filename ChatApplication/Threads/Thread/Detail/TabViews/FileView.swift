@@ -19,6 +19,6 @@ struct FileView: View {
 
 struct FileView_Previews: PreviewProvider {
     static var previews: some View {
-        FileView(thread: ThreadRow_Previews.thread)
+        FileView(thread: MockData.thread)
     }
 }

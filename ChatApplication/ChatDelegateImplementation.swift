@@ -50,6 +50,7 @@ class ChatDelegateImplementation: NewChatDelegate {
                                                                useNewSDK:true
             ))
             Chat.sharedInstance.delegate = self
+            AppState.shared.setCachedUser()
         }
     }
 	

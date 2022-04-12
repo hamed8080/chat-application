@@ -40,26 +40,42 @@ struct Avatar :View{
     }
     
     var body: some View{
-        HStack(alignment:.center){
-            if url != nil{
-                Image(uiImage:imageLoader.image ?? self.image)
-                    .resizable()
-                    .frame(width: style.size, height: style.size)
-                    .cornerRadius(style.size / style.cornerRadius)
-                    .scaledToFit()
-            }else{
-                Text(String(userName?.first ?? "A" ))
-                    .fontWeight(.heavy)
-                    .font(.system(size: style.textSize))
-                    .foregroundColor(.white)
-                    .frame(width: style.size, height: style.size)
-                    .background(Color.blue.opacity(0.4))
-                    .cornerRadius(style.size / style.cornerRadius)
+        if isPreview{
+            Image("avatar\(Int.random(in: 1...12))")
+                .resizable()
+                .frame(width: style.size, height: style.size)
+                .cornerRadius(style.size / style.cornerRadius)
+                .scaledToFit()
+        }else{
+            HStack(alignment:.center){
+                if url != nil{
+                    Image(uiImage:imageLoader.image ?? self.image)
+                        .resizable()
+                        .frame(width: style.size, height: style.size)
+                        .cornerRadius(style.size / style.cornerRadius)
+                        .scaledToFit()
+                }else{
+                    Text(String(userName?.first ?? "A" ))
+                        .fontWeight(.heavy)
+                        .font(.system(size: style.textSize))
+                        .foregroundColor(.white)
+                        .frame(width: style.size, height: style.size)
+                        .background(Color.blue.opacity(0.4))
+                        .cornerRadius(style.size / style.cornerRadius)
+                }
+            }
+            .onReceive(imageLoader.didChange) { image in
+                self.image = image ?? UIImage()
             }
         }
-        .onReceive(imageLoader.didChange) { image in
-            self.image = image ?? UIImage()
-        }
+    }
+    
+    var isPreview:Bool{
+        #if DEBUG
+        return ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+        #else
+        return false
+        #endif
     }
 }
 
