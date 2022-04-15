@@ -38,7 +38,7 @@ struct ContactRow: View {
                                 viewModel.toggleSelectedContact(contact ,isSelected)
                             }
                     }
-                    Avatar(url:contact.image ?? contact.linkedUser?.image ,userName: contact.firstName?.uppercased(), fileMetaData: nil)
+                    Avatar(url:contact.image ?? contact.linkedUser?.image ,userName: contact.firstName?.uppercased(), fileMetaData: nil, previewImageName: contact.image ?? "avatar")
                     
                     VStack(alignment: .leading, spacing:8){
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")

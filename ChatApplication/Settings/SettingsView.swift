@@ -17,21 +17,8 @@ struct SettingsView:View {
     
     var body: some View{
         VStack(spacing:0){
-            CustomNavigationBar(title: "Settings")
             List{
                 Section{
-                    HStack{
-                        Spacer()
-                        Button(action: {
-                            
-                        }, label: {
-                            Image(systemName:"square.and.pencil")
-                                .font(.title)
-                        })
-                        .buttonStyle(DeepButtonStyle(backgroundColor:Color.clear))
-                    }
-                    .padding(.top)
-                    .padding(.bottom , 25)
                     HStack{
                         Spacer()
                         Circle()
@@ -70,6 +57,7 @@ struct SettingsView:View {
                     .padding([.top,.bottom] , 25)
                     .noSeparators()
                 }
+                .padding()
                 
                 Section(header:Text("Manage Calls")){
                     Group{
@@ -111,6 +99,29 @@ struct SettingsView:View {
                 viewModel.startTokenTimer()
             }
         }
+        .toolbar{
+            ToolbarItemGroup{
+                Button {
+                    //TODO: - Must be added after server fix the problem
+                } label: {
+                    Label {
+                        Text("Edit")
+                    } icon: {
+                        Image(systemName: "square.and.pencil")
+                            .font(.body.bold())
+                    }
+                }
+            }
+            
+            ToolbarItem(placement: .principal) {
+                if viewModel.connectionStatus != .CONNECTED{
+                    Text("\(viewModel.connectionStatus.stringValue) ...")
+                        .foregroundColor(Color(named: "text_color_blue"))
+                        .font(.subheadline.bold())
+                }
+            }
+        }
+        .navigationTitle(Text("Settings"))
     }
     
     @ViewBuilder func resultViewWithIgnoreSafeArea()->some View{

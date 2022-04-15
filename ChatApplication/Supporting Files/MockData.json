@@ -1,0 +1,574 @@
+{
+    "threads":[
+        {
+            "id":0,
+            "title":"Saved Messages",
+            "image":"saveAvatar",
+            "description":"Save your messaes here",
+            "lastMessage":"New Music of Dula lipa hit again!"
+        },
+        {
+            "id":1,
+            "title":"Social Group",
+            "image":"socailAvatar",
+            "description":"Social chat disscussion",
+            "lastMessage":"Last time to release the application!"
+        },
+        {
+            "id":2,
+            "title":"Sport",
+            "image":"sportAvatar",
+            "description":"Health is important",
+            "lastMessage":"Every day jump 30 times."
+        },
+        {
+            "id":3,
+            "title":"News Channel",
+            "image":"newsAvatar",
+            "description":"Find news as soon as possible",
+            "lastMessage":"Apple introduced new iPhone's with best camera"
+        },
+        {
+            "id":4,
+            "title":"Hamed Hosseini",
+            "image":"avatar4",
+            "description":"A man's treasure is another man's poison.",
+            "lastMessage":"Hello"
+        },
+        {
+            "id":5,
+            "title":"Bill Joshua",
+            "image":"avatar5",
+            "description":null,
+            "lastMessage":"Let me think of it"
+        },
+        {
+            "id":6,
+            "title":"Adrain Ping",
+            "image":"avatar6",
+            "description":null,
+            "lastMessage":"tell jashua to fix that"
+        },
+        {
+            "id":7,
+            "title":"Test Channel",
+            "image":"avatar7",
+            "description":"Test the latest bug free product!",
+            "lastMessage":"New release arrives at 10pm"
+        },
+        {
+            "id":8,
+            "title":"Apple Watch group",
+            "image":"appleWatchAvatar",
+            "description":"Find latest news about apple watch",
+            "lastMessage":"Apple watch series 5 got new update"
+        },
+        {
+            "id":9,
+            "title":"Manager",
+            "image":"avatar9",
+            "description":"Be success!",
+            "lastMessage":"UI need to be refactor again"
+        },
+        {
+            "id":10,
+            "title":"HR-Resource Manager",
+            "image":"avatar10",
+            "description":"Finding eager people to contribute",
+            "lastMessage":"I'll sent you application requests"
+        },
+        {
+            "id":11,
+            "title":"تکنولوژی",
+            "image":"technologyAvatar",
+            "description":"تکنولوژی",
+            "lastMessage":"مایکروسافت نسخه جدید ویندوز را ارائه کرد"
+        },
+        {
+            "id":12,
+            "title":"گروه برنامه نویسی",
+            "image":"avatar12",
+            "description":"Cutting edge technologies daily",
+            "lastMessage":"Xcode جدید با باگ های فروان منتشر شد"
+        },
+        {
+            "id":13,
+            "title":"QC-TEAM",
+            "image":"qcAvatar",
+            "description":"Qualit Control",
+            "lastMessage":"it didn't passed!"
+        },
+        
+        {
+            "id":14,
+            "title":"Network admin",
+            "image":"avatar12",
+            "description":"Fix network problem",
+            "lastMessage":"No internet"
+        },
+        {
+            "id":15,
+            "title":"Head of Social",
+            "image":"avatar11",
+            "description":"Let me know if I can",
+            "lastMessage":"Do not do that withouth my permission"
+        }
+        
+    ],
+    "messages":[
+        {
+            "delivered" :true,
+            "edited" :false,
+            "id" :1,
+            "message" :"Hello",
+            "messageType" :1,
+            "metadata" :null,
+            "pinned" :true,
+            "previousId" : null,
+            "time" :12500,
+            "conversation" :null,
+            "forwardInfo" :null,
+            "participant" :{
+                "id":12
+            },
+            "replyInfoVO" :null,
+            "ownerId" :12,
+            "threadId" :0,
+            "seen":true
+        },
+        {
+            "delivered" :true,
+            "edited" :false,
+            "id" :2,
+            "message" :"What's up?",
+            "messageType" :1,
+            "metadata" :null,
+            "pinned" :true,
+            "previousId" : null,
+            "time" :12500,
+            "conversation" :null,
+            "forwardInfo" :null,
+            "participant":{
+                "id":12
+            },
+            "replyInfoVO" :null,
+            "ownerId" :12,
+            "threadId" :0,
+            "seen":true
+        },
+        {
+            "delivered" :true,
+            "edited" :false,
+            "id" :3,
+            "message" :"Hi Hamed.",
+            "messageType" :1,
+            "metadata" :null,
+            "pinned" :true,
+            "previousId" : null,
+            "time" :12500,
+            "conversation" :null,
+            "forwardInfo" :null,
+            "participant":null,
+            "replyInfoVO" :null,
+            "ownerId" :null,
+            "threadId" :0,
+            "seen":true
+        },
+        {
+            "delivered" :true,
+            "edited" :false,
+            "id" :4,
+            "message" :"I'm great, thx. Hows's it going?",
+            "messageType" :1,
+            "metadata" :null,
+            "pinned" :true,
+            "previousId" : null,
+            "time" :12500,
+            "conversation" :null,
+            "forwardInfo" :null,
+            "participant":null,
+            "replyInfoVO" :null,
+            "ownerId" :null,
+            "threadId" :0,
+            "seen":true
+        },
+        {
+            "delivered" :true,
+            "edited" :false,
+            "id" :4,
+            "message" :"May I ask you do me a favor? Could you check if this image is suit for my profile?",
+            "messageType" :3,
+            "metadata" :"{\"file\":{\"size\":10240,\"name\":\"avatar5\",\"extension\":\"jpg\",\"actualHeight\":128,\"actualWidth\":128},\"fileHash\":\"RTX12\",\"hashCode\":\"RTX12\",\"name\":\"avatar5\"}",
+            "pinned" :true,
+            "previousId" : null,
+            "time" :12500,
+            "conversation" :null,
+            "forwardInfo" :null,
+            "participant":{
+                "id":12
+            },
+            "replyInfoVO" :null,
+            "ownerId" :12,
+            "threadId" :0,
+            "seen":true
+        },{
+            "delivered" :true,
+            "edited" :false,
+            "id" :4,
+            "message" :"Use This",
+            "messageType" :3,
+            "metadata" :"{\"file\":{\"size\":540000,\"name\":\"avatar6\",\"extension\":\"jpg\",\"actualHeight\":256,\"actualWidth\":256},\"fileHash\":\"RTX13\",\"hashCode\":\"RTX13\",\"name\":\"avatar6\"}",
+            "pinned" :true,
+            "previousId" : null,
+            "time" :12500,
+            "conversation" :null,
+            "forwardInfo" :null,
+            "participant":null,
+            "replyInfoVO" :null,
+            "ownerId" :null,
+            "threadId" :0,
+            "seen":true
+        },{
+            "delivered" :true,
+            "edited" :false,
+            "id" :4,
+            "message" :"What about this?",
+            "messageType" :6,
+            "metadata" :"{\"file\":{\"size\":540000,\"name\":\"avatar6\",\"extension\":\"pdf\"},\"fileHash\":\"RTX13\",\"hashCode\":\"RTX13\"}",
+            "pinned" :true,
+            "previousId" : null,
+            "time" :12500,
+            "conversation" :null,
+            "forwardInfo" :null,
+            "participant" :{
+                "id":12
+            },
+            "replyInfoVO" :null,
+            "ownerId" :12,
+            "threadId" :0,
+            "seen":true
+        },{
+            "delivered" :true,
+            "edited" :false,
+            "id" :4,
+            "message" :"or this one?",
+            "messageType" :6,
+            "metadata" :"{\"file\":{\"size\":540000,\"name\":\"avatar6\",\"extension\":\"pdf\"},\"fileHash\":\"RTX13\",\"hashCode\":\"RTX13\"}",
+            "pinned" :true,
+            "previousId" : null,
+            "time" :12500,
+            "conversation" :null,
+            "forwardInfo" :{
+                "participant":{
+                    "id":12,
+                    "name":"Dress Style"
+                },
+                "conversation":{
+                    "id":12,
+                    "title":"Dress Style"
+                }
+            },
+            "participant" :{
+                "id":12
+            },
+            "replyInfoVO" :null,
+            "ownerId" :12,
+            "threadId" :0,
+            "seen":true
+        }
+    ],
+    "contacts":[
+        {
+            "id":1,
+            "blocked" : false,
+            "firstName":"Adrain",
+            "lastName":"Ping",
+            "profileImage":"avatar1",
+            "notSeenDuration": 1500
+        },
+        {
+            "id":2,
+            "blocked" : false,
+            "firstName":"Mathew",
+            "lastName":"Paze",
+            "profileImage":"avatar2",
+            "notSeenDuration": 22000000
+        },
+        {
+            "id":3,
+            "blocked" : false,
+            "firstName":"Json",
+            "lastName":"Anpic",
+            "profileImage":"avatar3",
+            "notSeenDuration": 220000000
+        },
+        {
+            "id":4,
+            "blocked" : false,
+            "firstName":"Mason",
+            "lastName":"Tech",
+            "profileImage":"avatar4",
+            "notSeenDuration": 8457455
+        },
+        {
+            "id":5,
+            "blocked" : false,
+            "firstName":"Liam",
+            "lastName":"Perri",
+            "profileImage":"avatar5",
+            "notSeenDuration": 45000
+        },
+        {
+            "id":6,
+            "blocked" : true,
+            "firstName":"Tesin",
+            "lastName":"Pawrrot",
+            "profileImage":"avatar6",
+            "notSeenDuration": 4578522
+        },
+        {
+            "id":7,
+            "blocked" : false,
+            "firstName":"Emiin",
+            "lastName":"Moshe",
+            "profileImage":"avatar7",
+            "notSeenDuration": 5481
+        },
+        {
+            "id":8,
+            "blocked" : false,
+            "firstName":"Steve",
+            "lastName":"Tanchi",
+            "profileImage":"avatar8",
+            "notSeenDuration": 62222
+        },
+        {
+            "id":9,
+            "blocked" : false,
+            "firstName":"Jane",
+            "lastName":"Pit",
+            "profileImage":"avatar9",
+            "notSeenDuration": 445555110011
+        },
+        {
+            "id":10,
+            "blocked" : false,
+            "firstName":"Eshia",
+            "lastName":"Lip",
+            "profileImage":"avatar10",
+            "notSeenDuration": 664545555
+        },
+        {
+            "id":11,
+            "blocked" : false,
+            "firstName":"Tanon",
+            "lastName":"Akin",
+            "profileImage":"avatar11",
+            "notSeenDuration": 5544444
+        },
+        {
+            "id":12,
+            "blocked" : false,
+            "firstName":"Liam",
+            "lastName":"Cjo",
+            "profileImage":"avatar12",
+            "notSeenDuration": 455522
+        },
+        {
+            "id":13,
+            "blocked" : false,
+            "firstName":"Amin",
+            "lastName":"Sarfaraz",
+            "profileImage":"avatar1",
+            "notSeenDuration": 1504454450
+        },
+        {
+            "id":14,
+            "blocked" : false,
+            "firstName":"Azar",
+            "lastName":"Tili",
+            "profileImage":"avatar2",
+            "notSeenDuration": 5545455
+        },
+        {
+            "id":15,
+            "blocked" : false,
+            "firstName":"Podin",
+            "lastName":"Zxin",
+            "profileImage":"avatar3",
+            "notSeenDuration": 5545888
+        },
+        {
+            "id":16,
+            "blocked" : false,
+            "firstName":"Quror",
+            "lastName":"Jin",
+            "profileImage":"avatar4",
+            "notSeenDuration": 55220
+        }
+    ],
+    "tags":[
+    ],
+    "participants":[
+        {
+            "id":1,
+            "cellphoneNumber":"+1 555 65 60",
+            "blocked" : false,
+            "firstName":"Adrain",
+            "lastName":"Ping",
+            "image":"avatar1",
+            "online":false,
+            "notSeenDuration": 1500
+        },
+        {
+            "id":2,
+            "cellphoneNumber":"+77 25 555 888",
+            "blocked" : false,
+            "firstName":"Mathew",
+            "lastName":"Paze",
+            "image":"avatar2",
+            "online":true,
+            "notSeenDuration": 22000000
+        },
+        {
+            "id":3,
+            "cellphoneNumber":"+1 268 656 2",
+            "blocked" : false,
+            "firstName":"Json",
+            "lastName":"Anpic",
+            "image":"avatar3",
+            "online":false,
+            "notSeenDuration": 220000000
+        },
+        {
+            "id":4,
+            "cellphoneNumber":"+12 333 3522",
+            "blocked" : false,
+            "firstName":"Mason",
+            "lastName":"Tech",
+            "image":"avatar4",
+            "online":false,
+            "notSeenDuration": 8457455
+        },
+        {
+            "id":5,
+            "cellphoneNumber":"+4 52 6377 77",
+            "blocked" : false,
+            "firstName":"Liam",
+            "lastName":"Perri",
+            "image":"avatar5",
+            "online":true,
+            "notSeenDuration": 45000
+        },
+        {
+            "id":6,
+            "cellphoneNumber":"+5 588 55 55",
+            "blocked" : true,
+            "firstName":"Tesin",
+            "lastName":"Pawrrot",
+            "image":"avatar6",
+            "online":false,
+            "notSeenDuration": 4578522
+        },
+        {
+            "id":7,
+            "cellphoneNumber":"+22 24652 564",
+            "blocked" : false,
+            "firstName":"Emiin",
+            "lastName":"Moshe",
+            "image":"avatar7",
+            "online":false,
+            "notSeenDuration": 5481
+        },
+        {
+            "id":8,
+            "cellphoneNumber":"+1 256 5256",
+            "blocked" : false,
+            "firstName":"Steve",
+            "lastName":"Tanchi",
+            "image":"avatar8",
+            "online":false,
+            "notSeenDuration": 62222
+        },
+        {
+            "id":9,
+            "cellphoneNumber":"+1 12 32 552",
+            "blocked" : false,
+            "firstName":"Jane",
+            "lastName":"Pit",
+            "image":"avatar9",
+            "online":false,
+            "notSeenDuration": 445555110011
+        },
+        {
+            "id":10,
+            "cellphoneNumber":"+1 25 662 66",
+            "blocked" : false,
+            "firstName":"Eshia",
+            "lastName":"Lip",
+            "image":"avatar10",
+            "online":false,
+            "notSeenDuration": 664545555
+        },
+        {
+            "id":11,
+            "cellphoneNumber":"+1 26 625 52",
+            "blocked" : false,
+            "firstName":"Tanon",
+            "lastName":"Akin",
+            "image":"avatar11",
+            "online":false,
+            "notSeenDuration": 5544444
+        },
+        {
+            "id":12,
+            "cellphoneNumber":"+1 225 552 255",
+            "blocked" : false,
+            "firstName":"Liam",
+            "lastName":"Cjo",
+            "image":"avatar12",
+            "online":false,
+            "notSeenDuration": 455522
+        },
+        {
+            "id":13,
+            "cellphoneNumber":"+1 458 585 55",
+            "blocked" : false,
+            "firstName":"Amin",
+            "lastName":"Sarfaraz",
+            "image":"avatar1",
+            "online":false,
+            "notSeenDuration": 1504454450
+        },
+        {
+            "id":14,
+            "cellphoneNumber":"+1 651 65 65",
+            "blocked" : false,
+            "firstName":"Azar",
+            "lastName":"Tili",
+            "image":"avatar2",
+            "online":false,
+            "notSeenDuration": 5545455
+        },
+        {
+            "id":15,
+            "cellphoneNumber":"+1 552 55 33",
+            "blocked" : false,
+            "firstName":"Podin",
+            "lastName":"Zxin",
+            "image":"avatar3",
+            "online":false,
+            "notSeenDuration": 5545888
+        },
+        {
+            "id":16,
+            "cellphoneNumber":"+1 123 123 32",
+            "blocked" : false,
+            "firstName":"Quror",
+            "lastName":"Jin",
+            "image":"avatar4",
+            "online":false,
+            "notSeenDuration": 55220
+        }
+    ]
+}

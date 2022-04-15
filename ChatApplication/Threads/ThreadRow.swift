@@ -22,11 +22,14 @@ struct ThreadRow: View {
     @State
     var isTypingText:String? = nil
 	
+    @Environment(\.isPreview)
+    var isPreview
+    
 	var body: some View {
-		let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
+        let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
 		Button(action: {}, label: {
 			HStack{
-                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata, imageSize: .MEDIUM , token: token)
+                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata, imageSize: .MEDIUM , token: token, previewImageName: thread.image ?? "avatar")
 				VStack(alignment: .leading, spacing:8){
                     HStack{
                         Text(thread.title ?? "")
@@ -39,7 +42,7 @@ struct ThreadRow: View {
                                 .foregroundColor(Color.gray)
                         }
                     }
-					
+
 					if let message = thread.lastMessageVO?.message?.prefix(100){
 						Text(message)
 							.lineLimit(1)
@@ -97,31 +100,31 @@ struct ThreadRow: View {
             } label: {
                 Label((thread.pin ?? false) ? "UnPin" : "Pin", systemImage: "pin")
             }
-            
+
             Button {
                 viewModel.clearHistory(thread)
             } label: {
                 Label("Clear History", systemImage: "clock")
             }
-            
+
             Button {
                 viewModel.muteUnMuteThread(thread)
             } label: {
                 Label((thread.mute ?? false) ? "Unmute" : "Mute", systemImage: "speaker.slash")
             }
-            
+
             Button {
                 viewModel.showAddThreadToTag(thread)
             } label: {
                 Label("Add To Folder", systemImage: "folder.badge.plus")
             }
-            
+
             Button {
                 viewModel.spamPVThread(thread)
             } label: {
                 Label("Spam", systemImage: "ladybug")
             }
-            
+
             Button(role:.destructive) {
                 viewModel.deleteThread(thread)
             } label: {

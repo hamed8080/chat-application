@@ -141,9 +141,7 @@ struct ThreadModel {
 
 extension ThreadModel{
     
-    mutating func setupPreview(){
-        let m4 = UploadFileMessage(uploadFileUrl: URL(string: "http://sandbox.podspace.ir:8080/nzh/drive/downloadFile?hash=MGTCI6EZFAU4HO3G")!, textMessage: "Test")
-        m4.messageType = MessageType.TEXT.rawValue
+    mutating func setupPreview(){    
         appendMessages(messages: MockData.generateMessages())
     }
 }

@@ -15,6 +15,16 @@ enum ConnectionStatus:Int{
     case Reconnecting = 2
     case UnAuthorized = 3
     case CONNECTED    = 4
+    
+    var stringValue:String{
+        switch self{
+        case .Connecting: return "connecting"
+        case .CONNECTED: return "connected"
+        case .Disconnected: return "disconnected"
+        case .Reconnecting: return "reconnectiong"
+        case .UnAuthorized: return "un authorized"
+        }
+    }
 }
 
 let CONNECT_NAME = Notification.Name("NotificationIdentifier")

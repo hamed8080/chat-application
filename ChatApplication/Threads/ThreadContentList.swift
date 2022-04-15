@@ -17,65 +17,74 @@ struct ThreadContentList:View {
     @State
     var searechInsideThread:String = ""
     
-    @State
-    var isKeyboardShown = false
-    
     var body: some View{
-        GeometryReader{ reader in
+        ZStack{
             VStack(spacing:0){
-                CustomNavigationBar(title: "Chats",
-                                    trailingActions: [
-                                        .init(systemImageName: "plus",font: .headline){
-                                            viewModel.toggleThreadContactPicker.toggle()
-                                        }
-                                    ]
-                )
                 List {
                     MultilineTextField("Search ...",
                                        text: $searechInsideThread,
                                        backgroundColor:Color.gray.opacity(0.2),
                                        keyboardReturnType: .search){ text in
-                        isKeyboardShown = false
+                        hideKeyboard()
                     }
-                    .cornerRadius(8)
-                    .noSeparators()
-                    .onChange(of: searechInsideThread) { newValue in
-                        viewModel.searchInsideAllThreads(text: searechInsideThread)
-                    }
-                    
+                                       .cornerRadius(8)
+                                       .noSeparators()
+                                       .onChange(of: searechInsideThread) { newValue in
+                                           viewModel.searchInsideAllThreads(text: searechInsideThread)
+                                       }
                     ForEach(viewModel.model.threads , id:\.id) { thread in
-                        ThreadRow(thread: thread,viewModel: viewModel)
-                            .onAppear {
-                                if viewModel.model.threads.last == thread{
-                                    viewModel.loadMore()
-                                }
-                            }
-                            .onTapGesture {
-                                if isKeyboardShown == false{
-                                    //navigate to thread only keyboard is not showing
-                                    withAnimation {
-                                        print("Go to thread ")
-                                        appState.selectedThread = thread
+
+                        NavigationLink {
+                            ThreadView(viewModel: ThreadViewModel(thread:thread))
+                        } label: {
+                            ThreadRow(thread: thread,viewModel: viewModel)
+                                .onAppear {
+                                    if viewModel.model.threads.last == thread{
+                                        viewModel.loadMore()
                                     }
-                                }else{
-                                    //hide keyboard and prevent action to navigate to thread
-                                    isKeyboardShown = false
                                 }
-                            }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive) {
-                                    viewModel.deleteThread(thread)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        viewModel.deleteThread(thread)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
                                 }
-                            }
+                        }
                     }
                 }
-                .listStyle(PlainListStyle())
-                LoadingViewAtCenterOfView(isLoading:viewModel.centerIsLoading ,reader:reader)
-                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
+                .listStyle(.plain)
+            }
+            
+            VStack{
+                GeometryReader{ reader in
+                    LoadingViewAtCenterOfView(isLoading:viewModel.centerIsLoading,reader: reader)
+                    LoadingViewAtBottomOfView(isLoading:viewModel.isLoading, reader: reader)
+                }
             }
         }
+        .toolbar{
+            ToolbarItem{
+                Button {
+                    viewModel.toggleThreadContactPicker.toggle()
+                } label: {
+                    Label {
+                        Text("Start new chat")
+                    } icon: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            
+            ToolbarItem(placement: .principal) {
+                if viewModel.connectionStatus != .CONNECTED{
+                    Text("\(viewModel.connectionStatus.stringValue) ...")
+                        .foregroundColor(Color(named: "text_color_blue"))
+                        .font(.subheadline.bold())
+                }
+            }
+        }
+        .navigationTitle(Text("Chats"))
         .sheet(isPresented: $viewModel.showAddParticipants, onDismiss: nil, content: {
             AddParticipantsToThreadView(viewModel: .init()) { contacts in
                 viewModel.addParticipantsToThread(contacts)
@@ -94,7 +103,6 @@ struct ThreadContentList:View {
                 viewModel.toggleThreadContactPicker.toggle()
             }
         })
-        .manageKeyboardForList(isKeyboardShown: $isKeyboardShown)
         .onAppear {
             UINavigationBar.changeAppearance(clear: false)
             viewModel.setViewAppear(appear: true)
@@ -109,6 +117,7 @@ struct ThreadContentList_Previews: PreviewProvider {
         let appState = AppState.shared
         let vm = ThreadsViewModel()
         ThreadContentList(viewModel: vm)
+            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .onAppear(){
                 vm.setupPreview()
             }

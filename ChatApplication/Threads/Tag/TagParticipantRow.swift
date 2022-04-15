@@ -25,7 +25,9 @@ struct TagParticipantRow: View {
                                userName: thread.inviter?.username?.uppercased(),
                                fileMetaData: thread.metadata,
                                style: .init(size: 28, textSize: 12),
-                               token: token)
+                               token: token,
+                               previewImageName: thread.image ?? "avatar"
+                        )
                         
                         VStack(alignment:.leading){
                             Text(thread.title ?? "")

@@ -19,7 +19,7 @@ final class MockData{
         let thread = Conversation(
             description   : "description",
             id            : 123,
-            image         : "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png",
+            image         : "avatar1",
             pin           : false,
             title         : "Hamed Hosseini",
             type          : ThreadTypes.PUBLIC_GROUP.rawValue,
@@ -30,13 +30,22 @@ final class MockData{
     
     
     static func generateThreads(count:Int = 50)->[Conversation]{
-        var threads:[Conversation] = []
-        for index in 0...count{
-            let thread          = thread
-            thread.title        = "Title \(index)"
-            thread.description  = "Description \(index)"
-            thread.id           = index
-            threads.append(thread)
+        var threads:[Conversation] = mockDataModel.threads.map { thread in
+            thread.lastMessageVO = Message(message:thread.lastMessage)
+            return thread
+        }
+        if threads.count < count{
+            var lastIndex = threads.count + 1
+            for _ in 0...count{
+                let thread             = thread
+                thread.title           = mockDataModel.threads[Int.random(in: 1...15)].title
+                thread.description     = mockDataModel.threads[Int.random(in: 1...15)].description
+                thread.image           = mockDataModel.threads[Int.random(in: 1...15)].image
+                thread.lastMessageVO   = Message(message:mockDataModel.threads[Int.random(in: 1...15)].lastMessage ?? "")
+                thread.id              = lastIndex
+                lastIndex              += 1
+                threads.append(thread)
+            }
         }
         return threads
     }
@@ -50,7 +59,7 @@ final class MockData{
             firstName       : "Hamed",
             hasUser         : true,
             id              : 0,
-            image           : "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png",
+            image           : "avatar4",
             lastName        : "Hosseini",
             linkedUser      : nil,
             notSeenDuration : 1622969881,
@@ -62,13 +71,19 @@ final class MockData{
     
     
     static func generateContacts(count:Int = 50)->[Contact]{
-        var contacts:[Contact] = []
-        for index in 0...count{
-            let contact       = MockData.contact
-            contact.firstName = "Hamed"
-            contact.lastName  = "Hosseini\(index)"
-            contact.id        = index
-            contacts.append(contact)
+        var contacts:[Contact] = mockDataModel.contacts
+        
+        if contacts.count < count{
+            var lastIndex = contacts.count + 2
+            for _ in 0...count{
+                let contact       = contact
+                contact.firstName = mockDataModel.contacts[Int.random(in: 1...15)].firstName
+                contact.lastName  = mockDataModel.contacts[Int.random(in: 1...15)].lastName
+                contact.image     = mockDataModel.contacts[Int.random(in: 1...15)].image
+                contact.id        = lastIndex
+                lastIndex         += 1
+                contacts.append(contact)
+            }
         }
         return contacts
     }
@@ -78,91 +93,12 @@ final class MockData{
         let message = Message(
             threadId    : 0,
             id          : 0,
-            message     : "Hello",
+            message     : "Hello sahdkf ashfdl sad div exit \nHello",
             messageType : 1,
             seen        : false,
             time        : 1636807773
         )
         return message
-    }
-    
-    static var forwardedMessage:Message{
-        let ms = Message(
-            threadId    : 0,
-            id          : 12,
-            message     : "Hello",
-            messageType : 1,
-            seen        : false,
-            time        : 1636807773,
-            forwardInfo : ForwardInfo(conversation : thread, participant : participant)
-        )
-        return ms
-    }
-    
-    static var downloadMessageLongText:Message{
-        let metaData = FileMetaData(
-            file: .init(
-                fileExtension : ".pdf",
-                link          : "",
-                mimeType      : "",
-                name          : "Test File Name",
-                originalName  : "tes",
-                size          : 8240000
-            )
-        )
-        let metaDataString = String(data: (try! JSONEncoder().encode(metaData)), encoding: .utf8)
-        return Message(
-            threadId    : 0,
-            id          : 12,
-            message     : "A SwiftUI view that has content, such as Text and Button, usually take the smallest space possible to wrap their content. But there is a time that we want these views to fill its container width or height. Let's learn a SwiftUI way to do that.",
-            messageType : MessageType.FILE.rawValue,
-            metadata    : metaDataString,
-            time        : 1636807773
-        )
-    }
-    
-    static var downloadPersianMessageLongText:Message{
-        let metaData = FileMetaData(
-            file: .init(
-                fileExtension : ".pdf",
-                link          : "",
-                mimeType      : "",
-                name          : "Test File Name",
-                originalName  : "tes",
-                size          : 8240000
-            )
-        )
-        let metaDataString = String(data: (try! JSONEncoder().encode(metaData)), encoding: .utf8)
-        return Message(
-            threadId               : 0,
-                       id          : 14,
-                       message     : "به‌نقل از appleinsider، یوتیوب ۹ ماه پس از شروع آزمایشی ویژگی Picture-in-Picture، اکنون آن را برای اپلیکیشن iOS غیرفعال کرده است. این شرکت ویژگی PiP در iOS را تحت عنوان یک ویژگی «آزمایشی» در اوت ۲۰۲۱ فعال کرد. این سرویس اشتراک ویدئو ظاهراً در آوریل ۲۰۲۲ نتیجه گرفت که ویژگی مذکور ارزش حفظ کردن را ندارد",
-                       messageType : MessageType.FILE.rawValue,
-                       metadata    : metaDataString,
-                       time        : 1636807773
-        )
-    }
-    
-    static var downloadMessageSmallText:Message{
-        let metaData = FileMetaData(
-            file: .init(
-                fileExtension : ".pdf",
-                link          : "",
-                mimeType      : "",
-                name          : "Test File Name",
-                originalName  : "tes",
-                size          : 8240000
-            )
-        )
-        let metaDataString = String(data: (try! JSONEncoder().encode(metaData)), encoding: .utf8)
-        return Message(
-            threadId    : 0,
-            id          : 13,
-            message     : nil,
-            messageType : MessageType.FILE.rawValue,
-            metadata    : metaDataString,
-            time        : 1636807773
-        )
     }
     
     static var uploadMessage:UploadFileMessage{
@@ -172,13 +108,22 @@ final class MockData{
     }
     
     static func generateMessages(count:Int = 50)->[Message]{
-        var messages:[Message] = []
-        for index in 0...count{
-            let message          = message
-            message.message      = "Message Body \(index)"
-            message.time         = (message.time ?? 0) * 10
-            message.id           = index
-            messages.append(message)
+        var messages:[Message] = mockDataModel.messages.map { message in
+            message.uniqueId = UUID().uuidString
+            return message
+        }
+        if messages.count < count{
+            var lastIndex = messages.count + 1
+            for _ in 0...count{
+                let message          = message
+                message.message      = mockDataModel.messages[Int.random(in: 1...2)].message
+                message.time         = UInt.random(in: 0...UInt.max)
+                message.ownerId      = lastIndex
+                message.id           = lastIndex
+                message.uniqueId     = UUID().string
+                lastIndex            += 1
+                messages.append(message)
+            }
         }
         return messages
     }
@@ -193,6 +138,7 @@ final class MockData{
             contactLastName  : "Hosseini",
             firstName        : "Hamed",
             id               : 0,
+            image            : "avatar4",
             lastName         : "Hosseini",
             name             : "Hamed",
             online           : true,
@@ -203,13 +149,19 @@ final class MockData{
     
     static func generateParticipants(count:Int = 50)->[Participant]{
         
-        var participants:[Participant] = []
-        for index in 0...count{
-            let participant          = participant
-            participant.name         = "Name \(index)"
-            participant.online       = Bool.random()
-            participant.id           = index
-            participants.append(participant)
+        var participants:[Participant] = mockDataModel.participants
+        
+        if participants.count < count{
+            var lastIndex = participants.count + 1
+            for _ in 0...count{
+                let participant       = participant
+                participant.firstName = mockDataModel.participants[Int.random(in: 1...15)].firstName
+                participant.lastName  = mockDataModel.participants[Int.random(in: 1...15)].lastName
+                participant.image     = mockDataModel.participants[Int.random(in: 1...15)].image
+                participant.id        = lastIndex
+                lastIndex             += 1
+                participants.append(participant)
+            }
         }
         return participants
     }
@@ -267,7 +219,21 @@ final class MockData{
         return tagParticipants
     }
     
+    static var mockDataModel:MockDataModel = {
+        guard let path = Bundle.main.path(forResource: "MockData", ofType: ".json") else{
+            return MockDataModel(threads:[], messages:[], contacts:[], tags:[], participants:[])
+        }
+        let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+        return try! JSONDecoder().decode(MockDataModel.self, from: data)
+    }()
+    
 }
 
-
+struct MockDataModel :Decodable{
+    let threads:[Conversation]
+    let messages:[Message]
+    let contacts:[Contact]
+    let tags:[Tag]
+    let participants:[Participant]
+}
 

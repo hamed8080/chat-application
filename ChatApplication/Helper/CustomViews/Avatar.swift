@@ -18,18 +18,21 @@ struct Avatar :View{
     private (set) var url            :String?
     private (set) var userName       :String?
     private (set) var style          :StyleConfig
+    private (set) var previewImageName: String
     
     init(url          :String?,
          userName     :String?,
          fileMetaData :String? = nil,
          imageSize    :ImageSize = .SMALL,
          style        :StyleConfig = StyleConfig(),
-         token        :String? = nil
+         token        :String? = nil,
+         previewImageName: String = "avatar"
          
     ) {
         self.url      = url
         self.userName = userName
         self.style    = style
+        self.previewImageName = previewImageName
         imageLoader   = ImageLoader(url: url , fileMetaData:fileMetaData,size: imageSize, token:token)
     }
     
@@ -41,7 +44,7 @@ struct Avatar :View{
     
     var body: some View{
         if isPreview{
-            Image("avatar\(Int.random(in: 1...12))")
+            Image(previewImageName)
                 .resizable()
                 .frame(width: style.size, height: style.size)
                 .cornerRadius(style.size / style.cornerRadius)

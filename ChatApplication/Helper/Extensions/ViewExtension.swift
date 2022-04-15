@@ -21,5 +21,9 @@ extension View {
     var isIpad:Bool{
         return UIDevice.current.userInterfaceIdiom == .pad
     }
+    
+    func hideKeyboard(){
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to:nil, from:nil, for:nil)
+    }
 
 }

@@ -78,4 +78,10 @@ extension String{
         guard let code = languageRecognizer.dominantLanguage?.rawValue else{return true}
         return Locale.current.localizedString(forIdentifier: code) == "English"
     }
+    
+    func widthOfString(usingFont font: UIFont) -> CGFloat {
+        let fontAttributes = [NSAttributedString.Key.font: font]
+        let size = self.size(withAttributes: fontAttributes)
+        return size.width
+    }
 }

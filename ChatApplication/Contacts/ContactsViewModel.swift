@@ -27,11 +27,15 @@ class ContactsViewModel:ObservableObject{
     
     private (set) var isFirstTimeConnectedRequestSuccess = false
     
+    @Published
+    var connectionStatus:ConnectionStatus     = .Connecting
+    
     init() {
         connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
             if self.isFirstTimeConnectedRequestSuccess == false  && status == .CONNECTED{
                 self.getContacts()
-            }
+            }            
+            self.connectionStatus = status
         }
         getOfflineContacts()
     }

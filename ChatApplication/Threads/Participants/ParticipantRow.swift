@@ -27,17 +27,18 @@ struct ParticipantRow: View {
         
         Button(action: {}, label: {
             HStack{
-                Avatar(url:participant.image ,userName: participant.username?.uppercased(), fileMetaData: nil, style: style.avatarConfig)
+                Avatar(url:participant.image ,userName: participant.username?.uppercased(), fileMetaData: nil, style: style.avatarConfig, previewImageName: participant.image ?? "avatar")
                 HStack(alignment: .center, spacing:8){
                     VStack(alignment:.leading, spacing:6){
-                        Text(participant.name ?? "")
+                        Text(participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")
                             .font(style.textFont)
-                        Text(participant.cellphoneNumber ?? "092321298")
+                        Text(participant.cellphoneNumber ?? "")
                             .font(.caption2)
                             .foregroundColor(.primary.opacity(0.5))
                         if participant.online == true{
                             Text("online")
                                 .font(.caption2)
+                                .foregroundColor(.blue)
                         }
                     }
                     

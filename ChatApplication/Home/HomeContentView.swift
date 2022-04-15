@@ -11,27 +11,33 @@ import FanapPodChatSDK
 struct HomeContentView: View {
     
     @StateObject
-    var loginModel            = LoginViewModel()
+    var loginModel     = LoginViewModel()
     
     @StateObject
-    var contactsViewModel     = ContactsViewModel()
+    var contactsVM     = ContactsViewModel()
     
     @StateObject
-    var threadsViewModel      = ThreadsViewModel()
+    var threadsVM      = ThreadsViewModel()
     
     @StateObject
-    var tokenManager          = TokenManager.shared
+    var settingsVM     = SettingViewModel()
     
-    @EnvironmentObject
-    var appState:AppState
+    @StateObject
+    var tokenManager   = TokenManager.shared
     
     @Environment(\.localStatusBarStyle)
     var statusBarStyle          :LocalStatusBarStyle
     
+    @Environment(\.colorScheme)
+    var colorScheme
+    
+    @Environment(\.isPreview)
+    var isPreview
+    
+    @State var appState = AppState.shared
+    
     @State
     var showThreadView:Bool = false
-    
-    @Environment(\.colorScheme) var colorScheme
     
     @State
     var selectedThread:Conversation? = nil
@@ -40,71 +46,123 @@ struct HomeContentView: View {
         if tokenManager.isLoggedIn == false{
             LoginView(viewModel:loginModel)
         }else{
-            
             NavigationView{
-                ZStack{
-                    MasterView(contactsViewModel: contactsViewModel,
-                               threadsViewModel: threadsViewModel)
-                      
-                    
-                    ///do not remove this navigation to any view swift will give you unexpected behavior
-                    if let selectedThread = selectedThread{
-                        NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread:selectedThread)) ,isActive: $showThreadView) {
-                            EmptyView()
-                        }
-                    }
-                }
-                .navigationBarTitle("")
-                .navigationBarHidden(true)
+                SideBar(contactsVM:contactsVM,threadsVM:threadsVM,settingsVM:settingsVM)
+                    .environmentObject(appState)
+                
+                SecondSideBar(threadsVM:threadsVM)
+                
+                DetailContentView(threadsVM: threadsVM)
             }
-            .navigationViewStyle(.stack)//dont remove this line in ipad tabs will be hidden
-            .onReceive(appState.$selectedThread, perform: { selectedThread in
-                self.selectedThread = selectedThread
-                self.showThreadView = selectedThread != nil
-            })
             .onAppear{
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
+                if isPreview{
+                    threadsVM.setupPreview()
+                    contactsVM.setupPreview()
+                }
             }
         }
     }
-    
 }
 
-struct MasterView:View{
+struct SideBar:View{
     
-    @State
-    var seletedTabTag = 2
+    @StateObject
+    var contactsVM:ContactsViewModel
     
-    private var contactsView  : ContactContentList
-    private var settingssView : SettingsView
-    private var threadsView   : ThreadContentList
+    @StateObject
+    var threadsVM:ThreadsViewModel
     
-    
-    init(contactsViewModel:ContactsViewModel,
-         threadsViewModel:ThreadsViewModel){
-        contactsView  = ContactContentList(viewModel: contactsViewModel)
-        settingssView = SettingsView()
-        threadsView   = ThreadContentList(viewModel: threadsViewModel)
-    }
+    @StateObject
+    var settingsVM:SettingViewModel
     
     var body: some View{
-        TabView(selection: $seletedTabTag){
+        
+        List{
+            NavigationLink {
+                ContactContentList(viewModel: contactsVM)
+            } label: {
+                Label {
+                    Text("Contacts")
+                } icon: {
+                    Image(systemName: "person.icloud")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(Color.blue)
+                }
+            }
             
-            contactsView
-                .tabItem {
-                    Label("Contacts", systemImage: "person.fill")
-                }.tag(1)
+            NavigationLink {
+                ThreadContentList(viewModel: threadsVM)
+            } label: {
+                Label {
+                    Text("Chats")
+                } icon: {
+                    Image(systemName: "captions.bubble")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(Color.blue)
+                }
+            }
             
-            threadsView
-                .tabItem {
-                    Label("Chats", systemImage: "bubble.left.and.bubble.right.fill")
-                }.tag(2)
-            
-            settingssView
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }.tag(4)
+            NavigationLink {
+                SettingsView(viewModel: settingsVM)
+            } label: {
+                Label {
+                    Text("Setting")
+                } icon: {
+                    Image(systemName: "gear")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(Color.blue)
+                        
+                }
+            }
         }
+        .listStyle(.plain)
+    }
+}
+
+///this view only render once when view created to show list of threads after that all views are created by SideBar from list
+struct SecondSideBar:View{
+    
+    @StateObject
+    var threadsVM:ThreadsViewModel
+    
+    var body: some View{
+        ThreadContentList(viewModel: threadsVM)
+    }
+}
+
+struct DetailContentView:View{
+    
+    @StateObject
+    var threadsVM:ThreadsViewModel
+    
+    var body: some View{
+        VStack(spacing:48){
+            Image(systemName: "doc.text.magnifyingglass")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 148, height: 148)
+                .opacity(0.2)
+            VStack(spacing:16){
+                Text("Nothing has been selected. You can start a conversation right now!")
+                    .font(.body.bold())
+                    .foregroundColor(Color.primary.opacity(0.8))
+                Button {
+                    threadsVM.toggleThreadContactPicker.toggle()
+                } label: {
+                    Text("Start")
+                }
+                .font(.body.bold())
+            }
+            
+        }
+        .padding([.leading,.trailing], 48)
+        .padding([.bottom,.top], 96)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
     }
 }
 
@@ -112,9 +170,13 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
         HomeContentView()
+            .preferredColorScheme(.dark)
+            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .environmentObject(appState)
             .onAppear(){
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
             }
+            .previewInterfaceOrientation(.landscapeLeft)
+        
     }
 }

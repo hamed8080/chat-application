@@ -51,7 +51,6 @@ struct MessageRow: View{
                         Spacer()
                     }
                     TextMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
-                                .frame(minWidth: 72, maxWidth: 420, minHeight: 48, alignment: .leading)
                 }else if type == .END_CALL || type == .START_CALL{
                     CallMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
                 }
@@ -105,44 +104,28 @@ struct TextMessageType:View{
                 Spacer()
             }
             VStack{
-                if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
-                    DownloadFileView(message: message)
-                        .frame(minHeight:128)
-                }
-                
                 if let forwardInfo = message.forwardInfo{
                     ForwardMessageRow(forwardInfo: forwardInfo)
                 }
+                
+                if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
+                    DownloadFileView(message: message)
+                }
+                
                 //TODO: TEXT must be alignment and image muset be fit
                 Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
                     .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
-                    .font(.body)
+                    .padding([.leading, .trailing])
+                    .font(Font(UIFont.systemFont(ofSize: 18)))
                     .foregroundColor(.black)
-                HStack{
-                    if let fileSize = message.metaData?.file?.size, let size = Int(fileSize){
-                        Text(size.toSizeString)
-                            .multilineTextAlignment(.leading)
-                            .font(.subheadline)
-                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                        Spacer()
-                    }
-                    if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
-                        Text("\(date.getTime())")
-                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                            .font(.caption2.weight(.light))
-                    }
-
-                    if isMe{
-                        Image(uiImage: UIImage(named:  message.seen == true ? "double_checkmark" : "single_chekmark")!)
-                            .resizable()
-                            .frame(width: 14, height: 14)
-                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                            .font(.caption2.weight(.light))
-                    }
-                }
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                MessageFooterView(message: message, isMe: isMe)
+                    .padding([.leading, .trailing , .bottom], 8)
             }
+            .frame(minWidth:message.calculatedMaxAndMinWidth.minWidth, maxWidth: message.calculatedMaxAndMinWidth.maxWidth, minHeight: 48, alignment: .leading)
+            .padding([.leading,.trailing] , 0)
             .contentShape(Rectangle())
-            .padding(8)
             .background(isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named:"chat_sender")!))
             .cornerRadius(12)
             .onTapGesture {
@@ -232,26 +215,26 @@ struct ForwardMessageRow:View{
                         .font(.footnote)
                         .foregroundColor(Color.gray)
                 }
-               
+               Spacer()
                 Image(systemName: "arrowshape.turn.up.right")
                     .foregroundColor(Color.blue)
             }
+            .padding([.leading, .trailing, .top], 8)
             .frame(minHeight:20)
             Rectangle()
                 .fill(Color.gray.opacity(0.2))
-                .frame(width: 82)
                 .frame(height:1)
                 .padding([.top], 4)
         }.onTapGesture {
             showReadOnlyThreadView = true
         }
-        if let forwardThread = forwardInfo.conversation{
-            NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: forwardThread, readOnly: true)), isActive: $showReadOnlyThreadView){
-                EmptyView()
-            }
-            .frame(width:0)
-            .hidden()
-        }
+//        if let forwardThread = forwardInfo.conversation{
+//            NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: forwardThread, readOnly: true)), isActive: $showReadOnlyThreadView){
+//                EmptyView()
+//            }
+//            .frame(width:0)
+//            .hidden()
+//        }
     }
 }
 
@@ -263,7 +246,7 @@ struct UploadMessageType:View{
         
         HStack(alignment: .top){
             Spacer()
-            HStack{
+            VStack{
                 UploadFileView(uploadFile:UploadFile(thread: viewModel.model.thread,
                                                      fileUrl: message.uploadFileUrl,
                                                      textMessage: message.message ?? ""
@@ -271,13 +254,57 @@ struct UploadMessageType:View{
                                viewModel: viewModel,
                                message: UploadFileMessage(uploadFileUrl: message.uploadFileUrl)
                 )
-                    .frame(width: 148, height: 148)
+                .frame(width: 148, height: 148)
+                if let fileName = message.metaData?.name{
+                    Text(fileName)
+                        .foregroundColor(.black)
+                        .font(Font(UIFont.systemFont(ofSize: 18)))
+                }
+                
+                if let message = message.message{
+                    Text(message)
+                        .foregroundColor(.black)
+                        .font(Font(UIFont.systemFont(ofSize: 18)))
+                }
             }
+            .padding()
             .contentShape(Rectangle())
-            .frame(width: 128, height: 168)
             .background(Color(UIColor(named: "chat_me")!))
             .cornerRadius(12)
         }
+    }
+}
+
+struct MessageFooterView:View{
+    let message:Message
+    let isMe:Bool
+    var body: some View{
+        HStack{
+            
+            if let fileSize = message.metaData?.file?.size, let size = Int(fileSize){
+                Text(size.toSizeString)
+                    .multilineTextAlignment(.leading)
+                    .font(.subheadline)
+                    .foregroundColor(Color(named: "dark_green").opacity(0.8))
+            }
+            Spacer()
+            HStack{
+                if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
+                    Text("\(date.getTime())")
+                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .font(.subheadline)
+                }
+                
+                if isMe{
+                    Image(uiImage: UIImage(named:  message.seen == true ? "double_checkmark" : "single_chekmark")!)
+                        .resizable()
+                        .frame(width: 14, height: 14)
+                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .font(.subheadline)
+                }
+            }
+        }
+        .padding([.top], 4)
     }
 }
 
@@ -289,15 +316,11 @@ struct MessageRow_Previews: PreviewProvider {
         List{
             let thread = MockData.thread
             MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread) , isInEditMode: .constant(true),isMeForPreView: false)
-            MessageRow(message: MockData.forwardedMessage,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: false)
             MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
-            MessageRow(message: MockData.downloadMessageSmallText, viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
-            MessageRow(message: MockData.downloadMessageLongText, viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
-            MessageRow(message: MockData.downloadPersianMessageLongText, viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
             MessageRow(message: MockData.uploadMessage, viewModel: ThreadViewModel(thread: thread), isInEditMode: .constant(true))
         }
         .previewDevice("iPad Pro (12.9-inch) (5th generation)")
         .preferredColorScheme(.light)
-        
+        .listStyle(.plain)
     }
 }

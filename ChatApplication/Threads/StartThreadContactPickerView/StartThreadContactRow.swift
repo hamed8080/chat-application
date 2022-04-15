@@ -39,7 +39,8 @@ struct StartThreadContactRow: View {
                     Avatar(url:contact.image ?? contact.linkedUser?.image,
                            userName: contact.firstName?.uppercased(),
                            fileMetaData: nil,
-                           style: .init(size: 32, textSize: 14)
+                           style: .init(size: 32, textSize: 14),
+                           previewImageName: contact.image ?? "avatar"
                     )
                     
                     VStack(alignment: .leading, spacing:8){

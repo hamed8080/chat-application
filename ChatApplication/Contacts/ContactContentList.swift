@@ -22,82 +22,109 @@ struct ContactContentList:View {
     @State
     var enableDeleteButton = false
     
-    @State
-    var isKeyboardShown:Bool = false
-    
     var body: some View{
-        GeometryReader{ reader in
-            VStack(spacing:0){
-                CustomNavigationBar(title:"contacts",
-                                    trailingActions: [
-                                        .init(systemImageName: "plus.circle.fill"){
-                                            viewModel.navigateToAddOrEditContact.toggle()
-                                        }
-                                    ],
-                                    leadingActions: [
-                                        .init(systemImageName: "pencil.circle.fill"){
-                                            enableDeleteButton.toggle()
-                                            viewModel.isInEditMode.toggle()
-                                        },
-                                        .init(systemImageName: "trash.circle",
-                                              foregroundColor: Color(named: "red_soft"),
-                                              isEnabled: enableDeleteButton)
-                                        {
-                                            viewModel.deleteSelectedItems()
-                                        }
-                                    ]
-                )
-                List{
-                    if viewModel.model.totalCount > 0 {
-                        HStack(spacing:4){
-                            Spacer()
-                            Text("Total contacts:".uppercased())
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                            Text("\(viewModel.model.totalCount)")
-                                .fontWeight(.bold)
-                            Spacer()
-                        }
-                        .noSeparators()
-                    }
-                    
-                    MultilineTextField("Search contact ...",text: $searchedContact,backgroundColor:Color.gray.opacity(0.2))
-                        .cornerRadius(16)
-                        .noSeparators()
-                        .onChange(of: searchedContact) { newValue in
-                            viewModel.searchContact(searchedContact)
-                        }
-                    
-                    if viewModel.model.showSearchedContacts{
-                        Text("Searched contacts")
+        VStack(spacing:0){
+            List{
+                if viewModel.model.totalCount > 0 {
+                    HStack(spacing:4){
+                        Spacer()
+                        Text("Total contacts:".uppercased())
                             .font(.subheadline)
                             .foregroundColor(.gray)
+                        Text("\(viewModel.model.totalCount)")
+                            .fontWeight(.bold)
+                        Spacer()
+                    }
+                    .noSeparators()
+                }
+                
+                MultilineTextField("Search contact ...",text: $searchedContact,backgroundColor:Color.gray.opacity(0.2)){submit in
+                    hideKeyboard()
+                    if searchedContact.isEmpty {
+                        viewModel.searchContact(searchedContact)// to reset view
+                    }
+                }
+                .cornerRadius(16)
+                .noSeparators()
+                .onChange(of: searchedContact) { newValue in
+                    viewModel.searchContact(searchedContact)
+                }
+                
+                if viewModel.model.showSearchedContacts{
+                    Text("Searched contacts")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .noSeparators()
+                    ForEach(viewModel.model.searchedContacts, id:\.self){ contact in
+                        SearchContactRow(contact: contact, viewModel: viewModel)
                             .noSeparators()
-                        ForEach(viewModel.model.searchedContacts, id:\.self){ contact in
-                            SearchContactRow(contact: contact, viewModel: viewModel)
-                                .noSeparators()
+                    }
+                }
+                
+                ForEach(viewModel.model.contacts , id:\.id) { contact in
+                    ContactRow(contact: contact , isInEditMode: $viewModel.isInEditMode , viewModel: viewModel)
+                        .noSeparators()
+                        .onAppear {
+                            if viewModel.model.contacts.last == contact{
+                                viewModel.loadMore()
+                            }
+                        }
+                        .customAnimation(.default)
+                }
+                .onDelete(perform:viewModel.delete)
+                .padding(0)
+            }
+            .listStyle(.plain)
+            NavigationLink(destination: AddOrEditContactView(), isActive: $viewModel.navigateToAddOrEditContact){
+                EmptyView()
+            }
+        }
+        .navigationTitle(Text("Contacts"))
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button {
+                        viewModel.navigateToAddOrEditContact.toggle()
+                    } label: {
+                        Label {
+                            Text("Create new contacts")
+                        } icon: {
+                            Image(systemName: "person.badge.plus")
                         }
                     }
-                    
-                    ForEach(viewModel.model.contacts , id:\.id) { contact in
-                        ContactRow(contact: contact , isInEditMode: $viewModel.isInEditMode , viewModel: viewModel)
-                            .noSeparators()
-                            .onAppear {
-                                if viewModel.model.contacts.last == contact{
-                                    viewModel.loadMore()
-                                }
-                            }
-                            .customAnimation(.default)
+            }
+            
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                
+                Button {
+                    viewModel.isInEditMode.toggle()
+                } label: {
+                    Label {
+                        Text("Edit")
+                    } icon: {
+                        Image(systemName: "list.bullet.rectangle.portrait")
+                            .font(.body.bold())
                     }
-                    .onDelete(perform:viewModel.delete)
-                    .padding(0)
                 }
-                .manageKeyboardForList(isKeyboardShown: $isKeyboardShown)
-//                .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
-                .listStyle(PlainListStyle())
-                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
-                NavigationLink(destination: AddOrEditContactView(), isActive: $viewModel.navigateToAddOrEditContact){
-                    EmptyView()
+                
+                Button {
+                    viewModel.navigateToAddOrEditContact.toggle()
+                } label: {
+                    Label {
+                        Text("Delete")
+                    } icon: {
+                        Image(systemName: "trash")
+                            .foregroundColor(Color.red)
+                            .font(.body.bold())
+                    }
+                }
+                .opacity(viewModel.isInEditMode ? 1 : 0.5)
+                .disabled(!viewModel.isInEditMode)
+            }
+            ToolbarItem(placement: .principal) {
+                if viewModel.connectionStatus != .CONNECTED{
+                    Text("\(viewModel.connectionStatus.stringValue) ...")
+                        .foregroundColor(Color(named: "text_color_blue"))
+                        .font(.subheadline.bold())
                 }
             }
         }

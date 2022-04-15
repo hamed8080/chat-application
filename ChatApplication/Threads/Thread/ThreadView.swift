@@ -11,35 +11,36 @@ import FanapPodChatSDK
 struct ThreadView:View {
     
     @StateObject var viewModel:ThreadViewModel
-    
+
     @State
     var showThreadDetailButton = false
-    
+
     @State
     var showAttachmentDialog: Bool = false
-    
+
     @EnvironmentObject
     var appState:AppState
-    
+
     @State
     var isInEditMode:Bool = false
-    
+
     @State
     var showDeleteSelectedMessages:Bool = false
-    
+
     @State
     var showSelectThreadToForward:Bool = false
-    
+
     @Environment(\.colorScheme) var colorScheme
+
+    @Environment(\.isPreview) var isPreview
     
     var body: some View{
         ZStack{
             VStack{
-                GeometryReader{ reader in
                     ScrollViewReader{ scrollView in
                         ZStack{
                             List(viewModel.model.messages , id:\.uniqueId) { message in
-                                
+
                                 MessageRow(message: message,viewModel: viewModel, isInEditMode: $isInEditMode)
                                     .onAppear {
                                         if viewModel.model.messages.last == message{
@@ -65,8 +66,7 @@ struct ThreadView:View {
                                                    endPoint: .bottom)
                                 }
                             )
-                            .padding(EdgeInsets(top: 1, leading: 0, bottom: 1, trailing: 0))
-                            .listStyle(PlainListStyle())
+                            .listStyle(.plain)
                             .onChange(of: viewModel.model.messages) { newValue in
                                 withAnimation {
                                     if let index = viewModel.model.messages.firstIndex(where: {$0.uniqueId == viewModel.model.messages.last?.uniqueId}){
@@ -74,79 +74,92 @@ struct ThreadView:View {
                                     }
                                 }
                             }
-                            
-                            Button {
-                                withAnimation {
-                                    if let index = viewModel.model.messages.firstIndex(where: {$0.uniqueId == viewModel.model.messages.last?.uniqueId}){
-                                        scrollView.scrollTo(viewModel.model.messages[index].uniqueId, anchor: .top)
-                                    }
-                                }
-                            } label: {
-                                Image(systemName: "chevron.down")
-                                    .resizable()
-                                    .foregroundColor(Color.gray)
-                                    .aspectRatio(contentMode: .fit)
-                            }
-                            .frame(width: 16, height: 16)
-                            .padding(8)
-                            .background(Color.white)
-                            .cornerRadius(24)
-                            .position(x: reader.size.width - 24, y: reader.size.height - 36)
-                            .contentShape(Rectangle())
+
+//                            Button {
+//                                withAnimation {
+//                                    if let index = viewModel.model.messages.firstIndex(where: {$0.uniqueId == viewModel.model.messages.last?.uniqueId}){
+//                                        scrollView.scrollTo(viewModel.model.messages[index].uniqueId, anchor: .top)
+//                                    }
+//                                }
+//                            } label: {
+//                                Image(systemName: "chevron.down")
+//                                    .resizable()
+//                                    .foregroundColor(Color.gray)
+//                                    .aspectRatio(contentMode: .fit)
+//                            }
+//                            .frame(width: 16, height: 16)
+//                            .padding(8)
+//                            .background(Color.white)
+//                            .cornerRadius(24)
+//                            .position(x: reader.size.width - 24, y: reader.size.height - 36)
+//                            .contentShape(Rectangle())
                         }
                     }
-                }.onTapGesture {
+//                }
+                .onTapGesture {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to:nil, from:nil, for:nil)
                 }
-                
+
                 SendContainer(viewModel: viewModel,
                               showAttachmentDialog: $showAttachmentDialog,
                               showDeleteSelectedMessages: $showDeleteSelectedMessages,
                               showSelectThreadToForward: $showSelectThreadToForward
                 )
-                
+
                 NavigationLink(destination: ThreadDetailView(viewModel: viewModel) , isActive: $showThreadDetailButton){
                     EmptyView()
                 }
             }
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .toolbar{
-                
+
                 ToolbarItemGroup(placement:.navigationBarTrailing){
-                    let thread = viewModel.model.thread
-                    NavBarButton(showAvatarImage: true,
-                                 avatarUrl: thread?.image,
-                                 avatarUserName: thread?.title,
-                                 avatarMetaData:thread?.metadata,
-                                 action: {
-                        showThreadDetailButton.toggle()
+                    if let thread = viewModel.model.thread{
+                        let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
+                        Avatar(
+                            url:thread.image ,
+                            userName: thread.inviter?.username?.uppercased(),
+                            fileMetaData: thread.metadata,
+                            imageSize: .MEDIUM,
+                            style: .init(size: 36),
+                            token: token,
+                            previewImageName: thread.image ?? "avatar"
+                        )
+                        .onTapGesture {
+                            showThreadDetailButton.toggle()
+                        }
+                        .cornerRadius(18)
                     }
-                    ).getNavBarItem().view
                 }
-                
+
                 ToolbarItem(placement: .principal) {
                     VStack (alignment:.center){
-                        
+
                         Text(viewModel.model.thread?.title ?? "")
                             .fixedSize()
                             .font(.headline)
-                        
+
                         if let signalMessageText = viewModel.model.signalMessageText{
                             Text(signalMessageText)
                                 .foregroundColor(Color(named: "text_color_blue"))
                                 .font(.subheadline.bold())
                         }
-                        
+
                         if let participantsCount = viewModel.model.thread?.participantCount{
                             Text("Members \(participantsCount)")
                                 .fixedSize()
                                 .foregroundColor(Color.gray)
                                 .font(.footnote)
                         }
+                        
+                        if viewModel.connectionStatus != .CONNECTED{
+                            Text("\(viewModel.connectionStatus.stringValue) ...")
+                                .foregroundColor(Color(named: "text_color_blue"))
+                                .font(.subheadline.bold())
+                        }                        
                     }
                 }
             }
-            .navigationViewStyle(.stack)
             .customAnimation(.default)
             .customDialog(isShowing: $showDeleteSelectedMessages, content: {
                 PrimaryCustomDialog(title: "Delete selected messages",
@@ -167,6 +180,9 @@ struct ThreadView:View {
             viewModel.textMessage = viewModel.model.editMessage?.message ?? ""
         }
         .onAppear{
+            if isPreview{
+                viewModel.setupPreview()
+            }
             viewModel.getMessagesHistory()
             viewModel.setViewAppear(appear: true)
         }
@@ -311,14 +327,13 @@ struct ThreadView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = ThreadViewModel(thread: MockData.thread)
         ThreadView(viewModel: vm,showAttachmentDialog: false)
-            .preferredColorScheme(.dark)
-            .previewDevice("iPhone 13 Pro Max")
+            .preferredColorScheme(.light)
+            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .environmentObject(AppState.shared)
             .onAppear(){
-                vm.setupPreview()
-                //                vm.toggleRecording()
-                //                vm.setReplyMessage(MessageRow_Previews.message)
-                //                vm.setForwardMessage(MessageRow_Previews.message)
+//                                vm.toggleRecording()
+//                                vm.setReplyMessage(MockData.message)
+//                                vm.setForwardMessage(MockData.message)
                 vm.setIsInEditMode(false)
             }
     }

@@ -45,97 +45,101 @@ struct DownloadFileView :View{
     
     var body: some View{
         if isPreview{
-            
-            Image("avatar", bundle: .main)
-                .resizable()
-                .scaledToFit()
-                .frame(maxHeight:128)
-                .clipped()
+            if message?.metaData?.file?.extension == "png" || message?.metaData?.file?.extension == "jpg"{
+                Image(message?.metaData?.name ?? "avatar", bundle: .main)
+                    .resizable()
+                    .scaledToFit()
+            }else{
+                Image(systemName: message?.iconName ?? "")
+                    .resizable()
+                    .padding(4)
+                    .frame(width: 64, height: 64)
+                    .foregroundColor(Color(named: "icon_color").opacity(0.8))
+                    .scaledToFit()
+                    .onTapGesture {
+                        shareDownloadedFile.toggle()
+                    }
+            }
         }else{
-            GeometryReader{ reader in
-               HStack{
-                   ZStack(alignment:.center){
-                       switch downloadFile.state{
-                       case .COMPLETED:
-                           if isImage{
-                               Image(uiImage: image)
-                                   .resizable()
-                                   .cornerRadius(8)
-                                   .aspectRatio(contentMode: .fit)
-//                                   .scaledToFill()
-                                   .frame(maxHeight:128)
-                                   .clipped()
-                           }else{
-                               Image(systemName: message?.iconName ?? "")
-                                   .resizable()
-                                   .foregroundColor(Color(named: "text_color_blue").opacity(0.8))
-                                   .scaledToFit()
-                                   .frame(width: 64, height: 64)
-                                   .onTapGesture {
-                                       shareDownloadedFile.toggle()
-                                   }
-                           }
-                       case .DOWNLOADING, .STARTED:
-                           CircularProgressView(percent: $percent)
-                               .padding()
-                               .onTapGesture {
-                                   downloadFile.pauseDownload()
-                               }
-                       case .PAUSED:
-                           Image(systemName: "pause.circle")
-                               .resizable()
-                               .font(.headline.weight(.thin))
-                               .foregroundColor(Color.white)
-                               .scaledToFit()
-                               .frame(width: 64, height: 64)
-                               .onTapGesture {
-                                   downloadFile.resumeDownload()
-                               }
-                       case .UNDEFINED:
-                           Rectangle()
-                               .fill(Color.blue.opacity(0.5))
-                               .blur(radius: 24)
-                           
-                           Image(systemName: "arrow.down.circle")
-                               .resizable()
-                               .font(.headline.weight(.thin))
-                               .padding(32)
-                               .scaledToFit()
-                               .foregroundColor(Color.white)
-                               .onTapGesture {
-                                   downloadFile.startDownload()
-                               }
-                       default:
-                           EmptyView()
-                       }
-                   }
-               }
-               .frame(maxWidth:.infinity, maxHeight: .infinity)
-               .onReceive(downloadFile.$data) { data in
-                   self.data = data ?? Data()
-               }
-               .onReceive(downloadFile.$image) { image in
-                   if let image = image{
-                       self.image = image
-                   }
-               }
-               .onReceive(downloadFile.didChangeProgress) { percent in
-                   if let percent = percent{
-                       self.percent = percent
-                   }
-               }.onAppear {
-                   downloadFile.getImageIfExistInCache()
-               }
-               .sheet(isPresented: $shareDownloadedFile, content:{
-                   if let fileUrl = downloadFile.fileUrl{
-                       ActivityViewControllerWrapper(activityItems: [fileUrl])
-                   }else{
-                       EmptyView()
-                   }
-               })
-           }
+            HStack{
+                ZStack(alignment:.center){
+                    switch downloadFile.state{
+                    case .COMPLETED:
+                        if isImage{
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                        }else{
+                            Image(systemName: message?.iconName ?? "")
+                                .resizable()
+                                .padding(4)
+                                .foregroundColor(Color(named: "icon_color").opacity(0.8))
+                                .scaledToFit()
+                                .frame(width: 64, height: 64)
+                                .onTapGesture {
+                                    shareDownloadedFile.toggle()
+                                }
+                        }
+                    case .DOWNLOADING, .STARTED:
+                        CircularProgressView(percent: $percent)
+                            .padding()
+                            .onTapGesture {
+                                downloadFile.pauseDownload()
+                            }
+                    case .PAUSED:
+                        Image(systemName: "pause.circle")
+                            .resizable()
+                            .font(.headline.weight(.thin))
+                            .foregroundColor(Color.white)
+                            .scaledToFit()
+                            .frame(width: 64, height: 64)
+                            .onTapGesture {
+                                downloadFile.resumeDownload()
+                            }
+                    case .UNDEFINED:
+                        Rectangle()
+                            .fill(Color.blue.opacity(0.5))
+                            .blur(radius: 24)
+                        
+                        Image(systemName: "arrow.down.circle")
+                            .resizable()
+                            .font(.headline.weight(.thin))
+                            .padding(32)
+                            .scaledToFit()
+                            .foregroundColor(Color.white)
+                            .onTapGesture {
+                                downloadFile.startDownload()
+                            }
+                    default:
+                        EmptyView()
+                    }
+                }
+            }
+            .frame(maxWidth:.infinity, maxHeight: .infinity)
+            .onReceive(downloadFile.$data) { data in
+                self.data = data ?? Data()
+            }
+            .onReceive(downloadFile.$image) { image in
+                if let image = image{
+                    self.image = image
+                }
+            }
+            .onReceive(downloadFile.didChangeProgress) { percent in
+                if let percent = percent{
+                    self.percent = percent
+                }
+            }.onAppear {
+                downloadFile.getImageIfExistInCache()
+            }
+            .sheet(isPresented: $shareDownloadedFile, content:{
+                if let fileUrl = downloadFile.fileUrl{
+                    ActivityViewControllerWrapper(activityItems: [fileUrl])
+                }else{
+                    EmptyView()
+                }
+            })
         }
-     
+        
     }
 }
 

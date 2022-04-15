@@ -24,6 +24,9 @@ class ThreadViewModel:ObservableObject{
     
     var readOnly = false
 
+    @Published
+    var connectionStatus:ConnectionStatus     = .Connecting
+    
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     private (set) var messageCancelable:AnyCancellable? = nil
     private (set) var systemMessageCancelable:AnyCancellable? = nil
@@ -32,6 +35,11 @@ class ThreadViewModel:ObservableObject{
     init(thread:Conversation, readOnly:Bool = false){
         self.readOnly = readOnly
         model.setThread(thread)
+        
+        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in            
+             self.connectionStatus = status
+        }
+        
         messageCancelable = NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
             .compactMap{$0.object as? MessageEventModel}
             .sink { messageEvent in

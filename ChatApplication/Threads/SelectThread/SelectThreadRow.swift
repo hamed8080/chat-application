@@ -19,7 +19,9 @@ struct SelectThreadRow: View {
                    userName: thread.inviter?.username?.uppercased(),
                    fileMetaData: thread.metadata,
                    style: .init(size: 36, textSize: 12),
-                   token: token)
+                   token: token,
+                   previewImageName: thread.image ?? "avatar"
+            )
             Text(thread.title ?? "")
                 .font(.headline)
             Spacer()
