@@ -7,11 +7,13 @@
 
 import Foundation
 import FanapPodChatSDK
+import SwiftUI
+
 extension Message{
     
-    var calculatedMaxAndMinWidth:(minWidth:CGFloat,maxWidth:CGFloat){
+    func calculatedMaxAndMinWidth(proxy:GeometryProxy)->(minWidth:CGFloat,maxWidth:CGFloat){
         let isIpad = UIDevice.current.userInterfaceIdiom == .pad
-        let maxViewWidth = isIpad ? UIScreen.main.bounds.width / 2 : UIScreen.main.bounds.width
+        let maxViewWidth = isIpad ? proxy.size.width * (40 / 100) : UIScreen.main.bounds.width
         let actualWidth = CGFloat( metaData?.file?.actualWidth ?? 0)
         let textWidth = (message?.widthOfString(usingFont:UIFont.systemFont(ofSize: 22)) ?? 0 ) + 16
         let maxImageAndText = max(textWidth, actualWidth)

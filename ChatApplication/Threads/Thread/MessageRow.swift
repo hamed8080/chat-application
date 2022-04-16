@@ -22,12 +22,15 @@ struct MessageRow: View{
     @State
     private var isSelected   = false
     
-    init(message: Message, viewModel:ThreadViewModel,isInEditMode: Binding<Bool>,isMeForPreView:Bool? = nil) {
+    var proxy:GeometryProxy
+    
+    init(message: Message, viewModel:ThreadViewModel,isInEditMode: Binding<Bool>,isMeForPreView:Bool? = nil, proxy:GeometryProxy) {
         self.message = message
         self.viewModel = viewModel
         self._isInEditMode = isInEditMode
         let cachedUserId = AppState.shared.user?.id
         self.isMe = isMeForPreView ?? (message.ownerId == (cachedUserId ?? Chat.sharedInstance.getCurrentUser()?.id ?? AppState.shared.user?.id))
+        self.proxy = proxy
     }
     
     var body: some View {
@@ -50,7 +53,7 @@ struct MessageRow: View{
                     if isMe{
                         Spacer()
                     }
-                    TextMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
+                    TextMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel, proxy:proxy)
                 }else if type == .END_CALL || type == .START_CALL{
                     CallMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
                 }
@@ -96,6 +99,7 @@ struct TextMessageType:View{
     @State var showActionSheet:Bool = false
     var isMe:Bool
     var viewModel:ThreadViewModel
+    var proxy:GeometryProxy
     
     var body: some View {
         let type = MessageType(rawValue: message.messageType ?? 0)
@@ -103,7 +107,9 @@ struct TextMessageType:View{
             if isMe {
                 Spacer()
             }
+            let calculatedSize = message.calculatedMaxAndMinWidth(proxy: proxy)
             VStack{
+                
                 if let forwardInfo = message.forwardInfo{
                     ForwardMessageRow(forwardInfo: forwardInfo)
                 }
@@ -123,7 +129,7 @@ struct TextMessageType:View{
                 MessageFooterView(message: message, isMe: isMe)
                     .padding([.leading, .trailing , .bottom], 8)
             }
-            .frame(minWidth:message.calculatedMaxAndMinWidth.minWidth, maxWidth: message.calculatedMaxAndMinWidth.maxWidth, minHeight: 48, alignment: .leading)
+            .frame(minWidth: calculatedSize.minWidth, maxWidth: calculatedSize.maxWidth, minHeight: 48, alignment: .leading)
             .padding([.leading,.trailing] , 0)
             .contentShape(Rectangle())
             .background(isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named:"chat_sender")!))
@@ -313,14 +319,16 @@ struct MessageRow_Previews: PreviewProvider {
     
     
     static var previews: some View {
-        List{
-            let thread = MockData.thread
-            MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread) , isInEditMode: .constant(true),isMeForPreView: false)
-            MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
-            MessageRow(message: MockData.uploadMessage, viewModel: ThreadViewModel(thread: thread), isInEditMode: .constant(true))
+        GeometryReader{ proxy in
+            List{
+                let thread = MockData.thread
+                MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread) , isInEditMode: .constant(true),isMeForPreView: false, proxy: proxy)
+                MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true, proxy: proxy)
+                MessageRow(message: MockData.uploadMessage, viewModel: ThreadViewModel(thread: thread), isInEditMode: .constant(true),proxy: proxy)
+            }
+            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
+            .preferredColorScheme(.light)
+            .listStyle(.plain)
         }
-        .previewDevice("iPad Pro (12.9-inch) (5th generation)")
-        .preferredColorScheme(.light)
-        .listStyle(.plain)
     }
 }
