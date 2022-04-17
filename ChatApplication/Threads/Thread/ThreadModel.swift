@@ -23,6 +23,8 @@ struct ThreadModel {
     private (set) var selectedMessages:[Message]    = []
     private (set) var editMessage:Message?          = nil
     private (set) var thread:Conversation?          = nil
+    private (set) var showExportView:Bool           = false
+    private (set) var exportFileUrl:URL?            = nil
     
     func hasNext()->Bool{
         return messages.count < totalCount
@@ -136,6 +138,11 @@ struct ThreadModel {
     
     mutating func setThread(_ thread:Conversation?){
         self.thread = thread
+    }
+    
+    mutating func setShowExportView(_ show:Bool, exportFileUrl:URL?){
+        self.showExportView = show
+        self.exportFileUrl = exportFileUrl
     }
 }
 

@@ -34,6 +34,15 @@ struct ThreadView:View {
 
     @Environment(\.isPreview) var isPreview
     
+    @State
+    var showMoreButton = false
+    
+    @State
+    var showDatePicker = false
+    
+    @State
+    var showExportFileURL = false
+    
     var body: some View{
         ZStack{
             VStack{
@@ -132,6 +141,22 @@ struct ThreadView:View {
                         }
                         .cornerRadius(18)
                     }
+                    
+                    Menu {
+                        Button {
+                            showDatePicker.toggle()
+                        } label: {
+                            Label {
+                                Text("Export")
+                            } icon: {
+                                Image(systemName: "square.and.arrow.up")
+                                    .resizable()
+                                    .scaledToFit()
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                    }
                 }
 
                 ToolbarItem(placement: .principal) {
@@ -174,12 +199,22 @@ struct ThreadView:View {
                 .padding()
             })
             AttachmentDialog(showAttachmentDialog: $showAttachmentDialog,viewModel: ActionSheetViewModel(threadViewModel: viewModel))
+            
+            if showDatePicker{
+                DateSelectionView(){ startDate, endDate in
+                    showDatePicker.toggle()
+                    viewModel.exportChats(startDate: startDate, endDate: endDate)
+                }
+            }
         }
         .onChange(of: viewModel.model.isInEditMode) { newValue in
             isInEditMode = viewModel.model.isInEditMode
         }
         .onChange(of: viewModel.model.editMessage) { newValue in
             viewModel.textMessage = viewModel.model.editMessage?.message ?? ""
+        }
+        .onChange(of:  viewModel.model.showExportView){ newValue in
+            showExportFileURL = newValue == true
         }
         .onAppear{
             if isPreview{
@@ -191,6 +226,15 @@ struct ThreadView:View {
         .onDisappear{
             viewModel.setViewAppear(appear: false)
         }
+        .sheet(isPresented: $showExportFileURL,onDismiss: {
+            viewModel.hideExportView()
+        }, content: {
+            if let exportFileUrl = viewModel.model.exportFileUrl{
+                ActivityViewControllerWrapper(activityItems: [exportFileUrl])
+            }else{
+                EmptyView()
+            }
+        })
         .sheet(isPresented: $showSelectThreadToForward, onDismiss: nil, content: {
             SelectThreadContentList{ selectedThread in
                 viewModel.sendForwardMessage(selectedThread)

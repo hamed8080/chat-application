@@ -409,5 +409,19 @@ class ThreadViewModel:ObservableObject{
             var i = 0
         }
     }
+    
+    func exportChats(startDate:Date, endDate:Date){
+        guard let threadId = model.thread?.id else{return}
+        Chat.sharedInstance.exportChat(.init(threadId: threadId,fromTime: UInt(startDate.millisecondsSince1970), toTime: UInt(endDate.millisecondsSince1970))) { fileUrl, uniqueId, error in
+            if let unwrappedFileURL = fileUrl{
+                self.model.setShowExportView(true, exportFileUrl: unwrappedFileURL)
+            }
+        }
+    }
+    
+    
+    func hideExportView(){
+        model.setShowExportView(false, exportFileUrl: nil)
+    }
 }
  
