@@ -41,7 +41,7 @@ class LinkMetaDataManager:NSObject,UIActivityItemSource{
     }
     
     func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
-        let image = Bundle.main.appIcon
+        let image = UIImage(named: "global_app_icon")
         let imageProvider = NSItemProvider(object: image!)
         let metadata = LPLinkMetadata()
         metadata.originalURL = url

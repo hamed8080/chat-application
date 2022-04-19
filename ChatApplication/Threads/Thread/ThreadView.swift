@@ -201,12 +201,13 @@ struct ThreadView:View {
             AttachmentDialog(showAttachmentDialog: $showAttachmentDialog,viewModel: ActionSheetViewModel(threadViewModel: viewModel))
             
             if showDatePicker{
-                DateSelectionView(){ startDate, endDate in
+                DateSelectionView(showDialog: $showDatePicker){ startDate, endDate in
                     showDatePicker.toggle()
                     viewModel.exportChats(startDate: startDate, endDate: endDate)
                 }
             }
         }
+        .customAnimation(.default)
         .onChange(of: viewModel.model.isInEditMode) { newValue in
             isInEditMode = viewModel.model.isInEditMode
         }

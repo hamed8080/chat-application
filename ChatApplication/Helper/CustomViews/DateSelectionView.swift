@@ -19,6 +19,9 @@ struct DateSelectionView:View{
     @State
     var showEndDate = false
     
+    @Binding
+    var showDialog:Bool
+    
     var completion:(Date,Date)->()
     
     var body: some View{
@@ -28,9 +31,21 @@ struct DateSelectionView:View{
                 Spacer()
                 if !showEndDate {
                     VStack{
-                        Text("Start Date")
-                            .foregroundColor(Color("text_color_blue"))
-                            .font(.title.bold())
+                        HStack{
+                            Text("Start Date")
+                                .foregroundColor(Color("text_color_blue"))
+                                .font(.title.bold())
+                            Spacer()
+                            Image(systemName: "xmark.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 36, height: 36)
+                                .foregroundColor(.gray.opacity(0.5))
+                                .onTapGesture {
+                                    showDialog = false
+                                }
+                        }
+                        
                         DatePicker("", selection: $startDate)
                             .labelsHidden()
                             .padding(16)
@@ -41,15 +56,26 @@ struct DateSelectionView:View{
                         }
                         .buttonStyle(PrimaryButtonStyle(bgColor:Color(named: "icon_color")))
                     }
+                    .frame(maxWidth: isIpad ? 420 : .infinity)
                     .padding()
                     .background(Color(named: "background"))
                     .cornerRadius(12)
                 }else{
                     VStack{
-                        
-                        Text("End Date")
-                            .foregroundColor(Color("text_color_blue"))
-                            .font(.title.bold())
+                        HStack{
+                            Text("End Date")
+                                .foregroundColor(Color("text_color_blue"))
+                                .font(.title.bold())
+                            Spacer()
+                            Image(systemName: "xmark.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 36, height: 36)
+                                .foregroundColor(.gray.opacity(0.5))
+                                .onTapGesture {
+                                    showDialog = false
+                                }
+                        }
                         
                         DatePicker("", selection: $endDate)
                             .labelsHidden()
@@ -72,6 +98,7 @@ struct DateSelectionView:View{
                             .buttonStyle(PrimaryButtonStyle(bgColor:Color(named: "icon_color")))
                         }
                     }
+                    .frame(maxWidth: isIpad ? 420 : .infinity)
                     .padding()
                     .background(Color(named: "background"))
                     .cornerRadius(12)
@@ -81,8 +108,8 @@ struct DateSelectionView:View{
             .padding(16)
             Spacer()
         }
+        .customAnimation(.default)
         .background(.ultraThinMaterial)
-        
     }
 }
 
@@ -90,7 +117,7 @@ struct DateSelectionView:View{
 struct DateSelectionView_Previews: PreviewProvider {
     
     static var previews: some View {
-        DateSelectionView(){ startDate, endDate in
+        DateSelectionView(showDialog:.constant(true)){ startDate, endDate in
             
         }
         .preferredColorScheme(.dark)

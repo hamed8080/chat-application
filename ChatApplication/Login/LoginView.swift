@@ -39,7 +39,7 @@ struct VerifyContentView:View{
                 viewModel.model.setIsInVerifyState(false)
             }
             .padding([.bottom], 48)
-            Image(uiImage: UIImage.appIcon!)
+            Image("global_app_icon")
                 .resizable()
                 .frame(width: 72, height: 72)
                 .scaledToFit()
@@ -77,7 +77,7 @@ struct LoginContentView:View{
     
     var body: some View{
         VStack(alignment:.center,spacing: 16){
-            Image(uiImage: UIImage.appIcon!)
+            Image("global_app_icon")
                 .resizable()
                 .frame(width: 72, height: 72)
                 .scaledToFit()
