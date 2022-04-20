@@ -17,21 +17,20 @@ struct AttachmentDialog : View {
     var viewModel: ActionSheetViewModel
     
     var body: some View{
-        ZStack{
-            VStack{
-                Spacer()
-                CustomActionSheetView(viewModel: viewModel, showAttachmentDialog: $showAttachmentDialog)
-                    .offset(y: showAttachmentDialog ? 0 : UIScreen.main.bounds.height)
-            }
-            .background((showAttachmentDialog ? Color.gray.opacity(0.3).ignoresSafeArea() : Color.clear.ignoresSafeArea())
-                            .onTapGesture {
+        VStack{
+            Spacer()
+            CustomActionSheetView(viewModel: viewModel, showAttachmentDialog: $showAttachmentDialog)
+                .offset(y: showAttachmentDialog ? 0 : UIScreen.main.bounds.height)
+                .customAnimation(.spring())
+        }
+        .frame(width: showAttachmentDialog ? .infinity : 0, height: showAttachmentDialog ? .infinity : 0) // frame must be set to zero because textview will be coverd with auto correction on keyboard
+        .background((showAttachmentDialog ? Color.gray.opacity(0.3).ignoresSafeArea() : Color.clear.ignoresSafeArea())
+            .onTapGesture {
                 viewModel.clearSelectedPhotos()
                 showAttachmentDialog.toggle()
             }
-            )
-            .edgesIgnoringSafeArea(.bottom)
-        }
-        .customAnimation(.default)
+        )
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
