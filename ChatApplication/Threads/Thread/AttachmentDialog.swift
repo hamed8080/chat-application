@@ -50,7 +50,7 @@ struct CustomActionSheetView:View{
         VStack(spacing:24){
             if viewModel.allImageItems.count > 0{
                 ScrollView(.horizontal){
-                    HStack {
+                    LazyHStack {
                         ForEach(viewModel.allImageItems , id:\.self){ item in
                             ZStack{
                                 Image(uiImage: item.image)
@@ -58,6 +58,7 @@ struct CustomActionSheetView:View{
                                     .frame(width: 96, height: 96)
                                     .scaledToFit()
                                     .cornerRadius(12)
+                                
                                 let isSelected = viewModel.selectedImageItems.contains(where: {$0.phAsset === item.phAsset})
                                 VStack{
                                     HStack{
@@ -72,13 +73,21 @@ struct CustomActionSheetView:View{
                                     }
                                     Spacer()
                                 }
+                                
                             }
+                            .onAppear(perform: {
+                                if viewModel.allImageItems.last == item{
+                                    viewModel.loadMore()
+                                }
+                            })
                             .onTapGesture {
                                 viewModel.toggleSelectedImage(item)
                             }
-                            .frame(width: 96, height: 96)
                         }
-                    }.padding([.leading], 16)
+                        
+                    }
+                    .frame(height: 96)
+                    .padding([.leading], 16)
                 }
             }
             
@@ -133,7 +142,7 @@ struct CustomActionSheetView:View{
         .sheet(isPresented: $showDocumentPicker, onDismiss: nil) {
             DocumentPicker(fileUrl: $viewModel.selectedFileUrl, showDocumentPicker: $showDocumentPicker)
         }.onAppear(perform: {
-            viewModel.fecthAllPhotos()
+            viewModel.loadImages()
         })
             .padding(.top ,24)
             .padding(.bottom , (UIApplication.shared.windows.last?.safeAreaInsets.bottom)! + 10)

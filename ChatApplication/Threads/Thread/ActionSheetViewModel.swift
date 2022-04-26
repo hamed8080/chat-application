@@ -16,6 +16,21 @@ class ActionSheetViewModel : ObservableObject{
     
     @Published
     var selectedImageItems : [ImageItem] = []
+    let fetchCount = 10
+    var totalCount = 0
+    var offset     = 0
+    
+    var hasNext:Bool{
+        return offset < totalCount
+    }
+    
+    var indexSet:IndexSet{
+        let lastIndex = min(offset + fetchCount, totalCount - 1)
+        return IndexSet(self.offset + 1...lastIndex)
+    }
+    
+    @Published
+    var isLoading = false
     
     @Published
     var selectedFileUrl : URL?{
@@ -30,24 +45,43 @@ class ActionSheetViewModel : ObservableObject{
     
     init(threadViewModel:ThreadViewModel){
         self.threadViewModel = threadViewModel
+        setTotalImageCount()
     }
     
-    func fecthAllPhotos(){
+    func setTotalImageCount(){
+        let options = PHFetchOptions()
+        options.includeHiddenAssets = true
+        let allImages = PHAsset.fetchAssets(with: .image, options: options)
+        totalCount = allImages.count
+    }
+    
+    func loadImages(){
+  
+        isLoading = true
         PHPhotoLibrary.requestAuthorization { (status) in
             switch status {
             case .authorized:
                 let fetchOptions = PHFetchOptions()
-                let allPhotosAsset = PHAsset.fetchAssets(with: .image, options: fetchOptions)
-                allPhotosAsset.enumerateObjects { object, index, stop in
-                    let options = PHImageRequestOptions()
-                    options.isSynchronous = true
-                    options.deliveryMode = .fastFormat
-                    let imageSize = CGSize(width: 96, height: 96)
-                    PHImageManager.default().requestImage(for: object, targetSize: imageSize, contentMode: .aspectFit, options: options) { image, dict in
-                        if let image = image{
-                            self.allImageItems.append(.init(image: image, phAsset: object))
+               
+                let fetchResults = PHAsset.fetchAssets(with: .image, options: fetchOptions)
+                DispatchQueue.global(qos: .background).async {
+                    fetchResults.enumerateObjects(at: self.indexSet, options: .concurrent) { object, index, stop in
+                        let options = PHImageRequestOptions()
+                        options.isSynchronous = true
+                        options.deliveryMode = .fastFormat
+                        let imageSize = CGSize(width: 96, height: 96)
+                        PHImageManager.default().requestImage(for: object, targetSize: imageSize, contentMode: .aspectFit, options: options) { image, dict in
+                            if let image = image{
+                                DispatchQueue.main.async {
+                                    self.allImageItems.append(.init(image: image, phAsset: object))
+                                }
+                            }
                         }
                     }
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                    }
+                    self.offset = self.offset + self.fetchCount
                 }
             case .denied, .restricted:
                 print("Not allowed")
@@ -90,6 +124,11 @@ class ActionSheetViewModel : ObservableObject{
     
     func clearSelectedPhotos(){
         selectedImageItems.removeAll()
+    }
+    
+    func loadMore(){
+        if !hasNext{return}
+        loadImages()
     }
 }
 
