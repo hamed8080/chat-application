@@ -22,6 +22,7 @@ struct Config:Codable {
     var socketAddresss :String
     var ssoHost        :String
     var platformHost   :String
+    var encryption     :String
     var fileServer     :String
     var serverName     :String
     var debugToken     :String

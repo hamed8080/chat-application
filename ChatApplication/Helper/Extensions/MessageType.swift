@@ -43,6 +43,8 @@ extension Message{
             return "face.smiling.fill"
         case .LOCATION:
             return "map.fill"
+        case .ENCRPTED_TEXT:
+            return "ellipsis.rectangle"
         case .none:
             return "paperclip.circle.fill"
         }
