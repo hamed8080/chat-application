@@ -63,7 +63,8 @@ struct TagRow: View {
 			.padding([.leading , .trailing] , 8)
 			.padding([.top , .bottom] , 4)
 		})
-        .customAnimation(.default)
+        .animation(.easeInOut, value: showManageTag)
+        .animation(.easeInOut, value: isSelected)
         .sheet(isPresented: $showManageTag, onDismiss: nil, content: {
             ManageTagView(tag:tag, viewModel: viewModel) { tag in
                 

@@ -21,7 +21,7 @@ struct AttachmentDialog : View {
             Spacer()
             CustomActionSheetView(viewModel: viewModel, showAttachmentDialog: $showAttachmentDialog)
                 .offset(y: showAttachmentDialog ? 0 : UIScreen.main.bounds.height)
-                .customAnimation(.spring())
+                .animation(.spring(), value: showAttachmentDialog)
         }
         .frame(width: showAttachmentDialog ? .infinity : 0, height: showAttachmentDialog ? .infinity : 0) // frame must be set to zero because textview will be coverd with auto correction on keyboard
         .background((showAttachmentDialog ? Color.gray.opacity(0.3).ignoresSafeArea() : Color.clear.ignoresSafeArea())

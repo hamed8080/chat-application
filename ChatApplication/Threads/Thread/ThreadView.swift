@@ -183,11 +183,10 @@ struct ThreadView:View {
                             Text("\(viewModel.connectionStatus.stringValue) ...")
                                 .foregroundColor(Color(named: "text_color_blue"))
                                 .font(.subheadline.bold())
-                        }                        
+                        }
                     }
                 }
             }
-            .customAnimation(.default)
             .customDialog(isShowing: $showDeleteSelectedMessages, content: {
                 PrimaryCustomDialog(title: "Delete selected messages",
                                     message: "Are you sure you want to delete all selected messages?",
@@ -207,7 +206,9 @@ struct ThreadView:View {
                 }
             }
         }
-        .customAnimation(.default)
+        .animation(.easeInOut, value: showExportFileURL)
+        .animation(.easeInOut, value: viewModel.model.isInEditMode)
+        .animation(.easeInOut, value: viewModel.model.editMessage)
         .onChange(of: viewModel.model.isInEditMode) { newValue in
             isInEditMode = viewModel.model.isInEditMode
         }

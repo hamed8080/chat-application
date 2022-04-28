@@ -26,6 +26,9 @@ class ActionSheetViewModel : ObservableObject{
     
     var indexSet:IndexSet{
         let lastIndex = min(offset + fetchCount, totalCount - 1)
+        if lastIndex == -1 {
+            return IndexSet()//if the user install app for first time and not accepted the permission to aceess photo gallery it cause crash cause index is equal -1
+        }
         return IndexSet(self.offset + 1...lastIndex)
     }
     
@@ -62,7 +65,9 @@ class ActionSheetViewModel : ObservableObject{
             switch status {
             case .authorized:
                 let fetchOptions = PHFetchOptions()
-               
+                if self.totalCount == 0{
+                    self.setTotalImageCount()
+                }
                 let fetchResults = PHAsset.fetchAssets(with: .image, options: fetchOptions)
                 DispatchQueue.global(qos: .background).async {
                     fetchResults.enumerateObjects(at: self.indexSet, options: .concurrent) { object, index, stop in

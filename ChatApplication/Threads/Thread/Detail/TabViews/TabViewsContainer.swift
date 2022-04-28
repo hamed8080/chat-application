@@ -87,7 +87,7 @@ struct Tabs:View{
                     .buttonStyle(.plain)
                 }
             }
-            .customAnimation(.default)
+            .animation(.spring(), value: selectedTabIndex)
             .padding([.top, .leading,.trailing])
         }
     }

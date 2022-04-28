@@ -16,9 +16,6 @@ struct ThreadRow: View {
     @StateObject
     var viewModel:ThreadsViewModel
     
-    @EnvironmentObject
-    var appState:AppState
-    
     @State
     var isTypingText:String? = nil
 	
@@ -93,7 +90,6 @@ struct ThreadRow: View {
 			.padding([.leading , .trailing] , 8)
 			.padding([.top , .bottom] , 4)
 		})
-        .customAnimation(.default)
         .contextMenu{
             Button {
                 viewModel.pinUnpinThread(thread)

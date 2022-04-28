@@ -123,7 +123,7 @@ struct ThreadDetailView:View {
                 }
             }
         }
-        .customAnimation(.default)
+        .animation(.interactiveSpring(), value: isInEditMode)
     }
     
 }

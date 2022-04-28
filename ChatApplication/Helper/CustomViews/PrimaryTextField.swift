@@ -45,7 +45,6 @@ struct PrimaryTextField:View{
                 }
         )
         .overlay(RoundedRectangle(cornerRadius: 8).stroke( isEditing ? Color.gray : Color.clear))
-        .customAnimation(.easeInOut)
     }
 }
 

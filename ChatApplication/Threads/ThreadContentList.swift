@@ -103,12 +103,6 @@ struct ThreadContentList:View {
                 viewModel.toggleThreadContactPicker.toggle()
             }
         })
-        .onAppear {
-            UINavigationBar.changeAppearance(clear: false)
-            viewModel.setViewAppear(appear: true)
-        }.onDisappear {
-            viewModel.setViewAppear(appear: false)
-        }
     }
 }
 

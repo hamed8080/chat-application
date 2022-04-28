@@ -231,16 +231,16 @@ struct ForwardMessageRow:View{
                 .fill(Color.gray.opacity(0.2))
                 .frame(height:1)
                 .padding([.top], 4)
+            if let forwardThread = forwardInfo.conversation{
+                NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: forwardThread, readOnly: true)), isActive: $showReadOnlyThreadView){
+                    EmptyView()
+                }
+                .frame(width:0)
+                .hidden()
+            }
         }.onTapGesture {
             showReadOnlyThreadView = true
         }
-//        if let forwardThread = forwardInfo.conversation{
-//            NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: forwardThread, readOnly: true)), isActive: $showReadOnlyThreadView){
-//                EmptyView()
-//            }
-//            .frame(width:0)
-//            .hidden()
-//        }
     }
 }
 

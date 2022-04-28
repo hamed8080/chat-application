@@ -35,16 +35,23 @@ class ImageLoader : ObservableObject{
                 self.didChange.send(self.image)
             }
         }else if let urlString = url, let url = URL(string:urlString) {
-            let task = URLSession.shared.dataTask(with: URLRequest(url: url)){[weak self] data,response ,error in
-                if let data = data{
-                    DispatchQueue.main.async {
-                        self?.data = data
-                        self?.didChange.send(self?.image)
-                        CacheFileManager.sharedInstance.saveImageProfile(url: url.absoluteString, data: data, group: AppGroup.group)
+            if let data = CacheFileManager.sharedInstance.getImageProfileCache(url: urlString, group: AppGroup.group){
+                DispatchQueue.main.async { [weak self] in
+                    self?.data = data
+                    self?.didChange.send(self?.image)
+                }
+            }else {
+                let task = URLSession.shared.dataTask(with: URLRequest(url: url)){[weak self] data,response ,error in
+                    if let data = data{
+                        DispatchQueue.main.async {
+                            self?.data = data
+                            self?.didChange.send(self?.image)
+                            CacheFileManager.sharedInstance.saveImageProfile(url: url.absoluteString, data: data, group: AppGroup.group)
+                        }
                     }
                 }
+                task.resume()
             }
-            task.resume()
         }
     }
 }

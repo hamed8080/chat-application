@@ -30,7 +30,7 @@ struct PrimaryButtonStyle:ButtonStyle{
                 .font(.subheadline.weight(.black))
                 .shadow(radius: configuration.isPressed ? 0 : 6)
                 .scaleEffect(x: configuration.isPressed ? 0.98 : 1, y: configuration.isPressed ? 0.98 : 1)
-                .customAnimation(.easeInOut)
+                .animation(.easeInOut, value: configuration.isPressed)
         }
         .frame(maxHeight: 56, alignment: .center)
     }

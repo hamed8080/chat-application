@@ -16,7 +16,7 @@ struct RecordAudioBackground: View {
     var scale:CGFloat = 6
     var cornerRadius:CGFloat = 24
     var blurRadius = 1
-    
+        
     var body: some View {
         if viewModel.model.isRecording {
             ZStack{
@@ -24,16 +24,19 @@ struct RecordAudioBackground: View {
                     createRectangle(index: item - 1)
                 }
             }
-            .customAnimation(
+            .animation(
                     .easeInOut(duration: 0.5)
                     .speed(0.099)
                     .repeatForever(autoreverses: true)
-                    .delay(0.0)
+                    .delay(0.0),
+                     value: 0
             )
             .onAppear {
                 Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { timer in
-                    degrees.enumerated().forEach { element in
-                        degrees[element.offset] = element.element + (element.element * 80 / 100)
+                    withAnimation {
+                        degrees.enumerated().forEach { element in
+                            degrees[element.offset] = element.element + (element.element * 80 / 100)
+                        }
                     }
                 }
             }

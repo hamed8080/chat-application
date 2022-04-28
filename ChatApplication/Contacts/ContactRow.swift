@@ -68,7 +68,6 @@ struct ContactRow: View {
                     getActionsView()
                 }else{
                     EmptyView()
-                        .customAnimation(.default)
                 }
             }
             .modifier(AnimatingCellHeight(height: self.showActionViews ? 148 : 64))

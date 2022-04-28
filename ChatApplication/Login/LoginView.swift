@@ -25,7 +25,7 @@ struct LoginView: View {
             .padding()
             .padding()
         }
-        .customAnimation(.default)
+        .animation(.easeInOut, value: viewModel.model.isInVerifyState)
     }
 }
 

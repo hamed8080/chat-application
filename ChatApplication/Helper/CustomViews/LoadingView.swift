@@ -27,10 +27,11 @@ struct LoadingView: View {
             ForEach(0..<Int(count)) { index in
                 item(forIndex: index, in: geometry.size)
                     .rotationEffect(isAnimating.wrappedValue ? .degrees(360) : .degrees(0))
-                    .customAnimation(
+                    .animation(
                         Animation.default
                             .speed(Double.random(in: 0.2...0.5))
-                            .repeatCount(isAnimating.wrappedValue ? .max : 1, autoreverses: false)
+                            .repeatCount(isAnimating.wrappedValue ? .max : 1, autoreverses: false),
+                        value: isAnimating.wrappedValue
                     )
             }
         }

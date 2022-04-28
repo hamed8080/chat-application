@@ -68,8 +68,9 @@ struct StartThreadContactRow: View {
                     }
                 })
             }
-            .customAnimation(.default)
         }
+        .animation(.spring(), value: isInMultiSelectMode)
+        .animation(.easeInOut, value: isSelected)
         .contentShape(Rectangle())
     }
     

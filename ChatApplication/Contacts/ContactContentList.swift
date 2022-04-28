@@ -69,7 +69,7 @@ struct ContactContentList:View {
                                 viewModel.loadMore()
                             }
                         }
-                        .customAnimation(.default)
+                        .animation(.spring(), value:viewModel.isInEditMode)
                 }
                 .onDelete(perform:viewModel.delete)
                 .padding(0)

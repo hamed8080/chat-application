@@ -43,7 +43,6 @@ struct TagParticipantRow: View {
         .contentShape(Rectangle())
         .padding([.leading , .trailing] , 8)
         .padding([.top , .bottom] , 4)
-        .customAnimation(.default)
     }
 }
 

@@ -108,7 +108,8 @@ struct DateSelectionView:View{
             .padding(16)
             Spacer()
         }
-        .customAnimation(.default)
+        .animation(.easeInOut, value: showDialog)
+        .animation(.spring(), value: showEndDate)
         .background(.ultraThinMaterial)
     }
 }

@@ -20,6 +20,6 @@ struct DeepButtonStyle:ButtonStyle{
             .cornerRadius(cornerRadius)
             .shadow(radius: configuration.isPressed ? 0 : shadow)
             .scaleEffect(x: configuration.isPressed ? 0.98 : 1, y: configuration.isPressed ? 0.98 : 1)
-            .customAnimation(.easeInOut)
+            .animation(.easeInOut, value: configuration.isPressed)
     }
 }
