@@ -29,8 +29,9 @@ struct LoginModel {
     private (set) var isInVerifyState              :Bool  = false
     private (set) var keyId                        :String? = nil
     
-    mutating func isPhoneNumberValid(){
-        
+    mutating func isPhoneNumberValid()->Bool{
+        isValidPhoneNumber = !phoneNumber.isEmpty
+        return !phoneNumber.isEmpty
     }
     
     

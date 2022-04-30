@@ -14,9 +14,13 @@ class LoginViewModel: ObservableObject {
     @Published
     var model = LoginModel()
     
+    @Published
+    var isLoading = false
+    
     var tokenManager  = TokenManager.shared
     
     func login(){
+        isLoading = true
         let client = RestClient<HandshakeResponse>()
         let req = HandshakeRequest(deviceName: UIDevice.current.name,
                                    deviceOs: UIDevice.current.systemName,
@@ -32,6 +36,7 @@ class LoginViewModel: ObservableObject {
                 print("error on login:\(error.debugDescription)")
             })
             .request { [weak self] response in
+                self?.isLoading = false
                 guard let self = self else {return}
                 self.requestOTP(identity: self.model.phoneNumber, handskahe: response)
             }
@@ -41,6 +46,7 @@ class LoginViewModel: ObservableObject {
         guard let keyId = handskahe.result?.keyId else {return}
         let client = RestClient<AuthorizeResponse>()
         let req = AuthorizeRequest(identity: identity, keyId: keyId)
+        self.isLoading = true
         client
             .setUrl(Routes.AUTHORIZE)
             .setMethod(.post)
@@ -51,6 +57,7 @@ class LoginViewModel: ObservableObject {
                 print("error on requestOTP:\(error.debugDescription)")
             })
             .request { [weak self] response in
+                self?.isLoading = false
                 guard let self = self else {return}
                 if let _ = response.result?.identity{
                     self.model.setIsInVerifyState(true)
@@ -63,6 +70,7 @@ class LoginViewModel: ObservableObject {
         guard let keyId = model.keyId else {return}
         let client = RestClient<SSOTokenResponse>()
         let req = VerifyRequest(identity: model.phoneNumber, keyId: keyId, otp: model.verifyCode)
+        self.isLoading = true
         client
             .setUrl(Routes.VERIFY)
             .setMethod(.post)
@@ -73,6 +81,7 @@ class LoginViewModel: ObservableObject {
                 print("error on verifyCode:\(error.debugDescription)")
             })
             .request { [weak self] response in
+                self?.isLoading = false
                 guard let self = self else {return}
                 //save refresh token
                 if let ssoToken = response.result{
@@ -87,6 +96,7 @@ class LoginViewModel: ObservableObject {
         guard let keyId = model.keyId else {return}
         let client = RestClient<SSOTokenResponse>()
         let req = VerifyRequest(identity: model.phoneNumber, keyId: keyId, otp: model.verifyCode)
+        self.isLoading = true
         client
             .setUrl(Routes.VERIFY)
             .setMethod(.post)
@@ -97,6 +107,7 @@ class LoginViewModel: ObservableObject {
                 print("error on refreshToken:\(error.debugDescription)")
             })
             .request { [weak self] response in
+                self?.isLoading = false
                 guard let self = self else {return}
                 //save refresh token
                 if let _ = response.result?.accessToken{

@@ -21,6 +21,11 @@ struct LoginView: View {
                 }else{
                     VerifyContentView(viewModel: viewModel)
                 }
+                if viewModel.isLoading{
+                    LoadingView()
+                        .frame(width: 36, height: 36)
+                }
+                Spacer()
             }
             .padding()
             .padding()
@@ -65,7 +70,6 @@ struct VerifyContentView:View{
                 Text("Verification Code was incorrect!")
                     .foregroundColor(.red)
             }
-            Spacer()
         }
         .transition(.move(edge: .trailing))
         
@@ -91,11 +95,17 @@ struct LoginContentView:View{
             Text(viewModel.model.state?.rawValue ?? "")
             
             PrimaryTextField(title:"Phone number",textBinding: $viewModel.model.phoneNumber){
-                viewModel.model.isPhoneNumberValid()
+            }
+            
+            if viewModel.model.isValidPhoneNumber == false{
+                Text("Please input correct phone number")
+                    .foregroundColor(.init("red_soft"))
             }
             
             Button("Login".uppercased()) {
-                viewModel.login()
+                if viewModel.model.isPhoneNumberValid(){
+                    viewModel.login()
+                }
             }
             .buttonStyle(PrimaryButtonStyle())
             
@@ -103,11 +113,6 @@ struct LoginContentView:View{
                 .multilineTextAlignment(.center)
                 .font(.subheadline.weight(.medium))
                 .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
-            Spacer()
-            if viewModel.model.isValidPhoneNumber == false{
-                Text("Please input correct phone number")
-                    .foregroundColor(.red)
-            }
         }
         .transition(.move(edge: .trailing))
     }
@@ -116,11 +121,11 @@ struct LoginContentView:View{
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = LoginViewModel()
-        LoginView(viewModel: vm).onAppear{
+        LoginView(viewModel: vm).preferredColorScheme(.light).onAppear{
             //            Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
             //                vm.model.setIsInVerifyState(true)
             //            }
-            vm.model.setIsInVerifyState(true)
+            vm.model.setIsInVerifyState(false)
         }
     }
 }

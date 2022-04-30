@@ -13,7 +13,7 @@ struct PrimaryButtonStyle:ButtonStyle{
     let textColor:Color
     let minHeight:CGFloat
     
-    init(bgColor:Color = Color(named: "text_color_blue"),textColor:Color = Color.white,minHeight:CGFloat = 56, cornerRadius:CGFloat = 8){
+    init(bgColor:Color = Color(named: "primary_button_bg_color"),textColor:Color = Color.white,minHeight:CGFloat = 56, cornerRadius:CGFloat = 8){
         self.bgColor      = bgColor
         self.cornerRadius = cornerRadius
         self.textColor    = textColor

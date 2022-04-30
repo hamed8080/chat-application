@@ -45,6 +45,14 @@ struct StartThreadContactPickerView:View {
     var body: some View{
         
         VStack(alignment:.leading,spacing: 0){
+            
+            HStack{
+                backButton()
+                Spacer()
+                nextButton()
+            }
+            .padding()
+            
             if showGroupTitleView{
                 VStack{
                     MultilineTextField("Enter group name", text: $groupTitle, backgroundColor:Color.gray.opacity(0.2))
@@ -56,6 +64,7 @@ struct StartThreadContactPickerView:View {
                     
                 }
                 .padding([.leading, .trailing,.top], 16)
+                Spacer()
             }else{
                 StartThreadButton(name: "person.2", title: "New Group", color: .blue){
                     isInMultiSelectMode.toggle()
@@ -91,21 +100,23 @@ struct StartThreadContactPickerView:View {
         .padding(0)
     }
     
-    func getLeadingItems()->[NavBarItem]{
+    @ViewBuilder
+    func backButton()-> some View{
         if showGroupTitleView{
-            return [NavBarButton(title: showGroupTitleView == true ? "Back" : "" , isBold: true) {
+            Button {
                 withAnimation {
                     showGroupTitleView = false
                 }
-            }.getNavBarItem()]
-        }else{
-            return []
+            } label: {
+                Text(showGroupTitleView == true ? "Back" : "")
+            }
         }
     }
     
-    func getTrailingItems()->[NavBarItem]{
+    @ViewBuilder
+    func nextButton()->some View{
         if isInMultiSelectMode{
-            return [NavBarButton(title: showGroupTitleView == false ? "Next" :"Create" , isBold: true) {
+            Button {
                 withAnimation {
                     if showGroupTitleView == true{
                         if groupTitle.isEmpty{
@@ -117,9 +128,9 @@ struct StartThreadContactPickerView:View {
                         showGroupTitleView.toggle()
                     }
                 }
-            }.getNavBarItem()]
-        }else{
-            return []
+            } label: {
+                Text(showGroupTitleView == false ? "Next" :"Create")
+            }
         }
     }
 }
