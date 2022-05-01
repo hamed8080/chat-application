@@ -39,6 +39,7 @@ class ThreadsViewModel:ObservableObject{
     private (set) var systemMessageCancelable       : AnyCancellable? = nil
     private (set) var isFirstTimeConnectedRequestSuccess = false
     
+    @Published
     private (set) var tagViewModel = TagsViewModel()
     
     init() {

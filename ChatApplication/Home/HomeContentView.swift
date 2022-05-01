@@ -105,6 +105,21 @@ struct SideBar:View{
                 }
             }
             
+            ForEach(threadsVM.tagViewModel.model.tags, id:\.id){ tag in
+                NavigationLink {
+                    ThreadContentList(viewModel: threadsVM, folder:tag)
+                } label: {
+                    Label {
+                        Text(tag.name)
+                    } icon: {
+                        Image(systemName: "folder")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(Color.blue)
+                    }
+                }
+            }
+            
             NavigationLink {
                 SettingsView(viewModel: settingsVM)
             } label: {

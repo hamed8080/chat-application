@@ -57,8 +57,8 @@ struct TagsModel {
     }
     
     mutating func addParticipant(_ tagId:Int, _ participants:[TagParticipant]){
-        if var tag = tags.first(where: {$0.id == tagId}){
-            tag.tagParticipants?.append(contentsOf: participants)
+        if let tagIndex = tags.firstIndex(where: {$0.id == tagId}){
+            tags[tagIndex].tagParticipants?.append(contentsOf: participants)
         }
     }
 }

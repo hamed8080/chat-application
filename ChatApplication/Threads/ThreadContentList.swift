@@ -17,6 +17,9 @@ struct ThreadContentList:View {
     @State
     var searechInsideThread:String = ""
     
+    @State
+    var folder:Tag? = nil
+    
     var body: some View{
         ZStack{
             VStack(spacing:0){
@@ -32,24 +35,43 @@ struct ThreadContentList:View {
                                        .onChange(of: searechInsideThread) { newValue in
                                            viewModel.searchInsideAllThreads(text: searechInsideThread)
                                        }
-                    ForEach(viewModel.model.threads , id:\.id) { thread in
+                    if let threadsInsideFolder = folder?.tagParticipants{
+                        ForEach(threadsInsideFolder, id:\.id) { thread in
+                            if let thread = thread.conversation{
+                                NavigationLink {
+                                    ThreadView(viewModel: ThreadViewModel(thread:thread))
+                                } label: {
+                                    ThreadRow(thread: thread,viewModel: viewModel)
+                                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                            Button(role: .destructive) {
+                                                viewModel.deleteThread(thread)
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
+                                        }
+                                }
+                            }
+                        }
+                    }else{
+                        ForEach(viewModel.model.threads , id:\.id) { thread in
 
-                        NavigationLink {
-                            ThreadView(viewModel: ThreadViewModel(thread:thread))
-                        } label: {
-                            ThreadRow(thread: thread,viewModel: viewModel)
-                                .onAppear {
-                                    if viewModel.model.threads.last == thread{
-                                        viewModel.loadMore()
+                            NavigationLink {
+                                ThreadView(viewModel: ThreadViewModel(thread:thread))
+                            } label: {
+                                ThreadRow(thread: thread,viewModel: viewModel)
+                                    .onAppear {
+                                        if viewModel.model.threads.last == thread{
+                                            viewModel.loadMore()
+                                        }
                                     }
-                                }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive) {
-                                        viewModel.deleteThread(thread)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                        Button(role: .destructive) {
+                                            viewModel.deleteThread(thread)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
                                     }
-                                }
+                            }
                         }
                     }
                 }
@@ -84,7 +106,7 @@ struct ThreadContentList:View {
                 }
             }
         }
-        .navigationTitle(Text("Chats"))
+        .navigationTitle(Text( folder?.name ?? "Chats"))
         .sheet(isPresented: $viewModel.showAddParticipants, onDismiss: nil, content: {
             AddParticipantsToThreadView(viewModel: .init()) { contacts in
                 viewModel.addParticipantsToThread(contacts)
