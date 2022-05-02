@@ -49,17 +49,20 @@ struct ThreadView:View {
                     ScrollViewReader{ scrollView in
                         ZStack{
                             GeometryReader{ reader in
-                                List(viewModel.model.messages , id:\.uniqueId) { message in
-                                    
-                                    MessageRow(message: message,viewModel: viewModel, isInEditMode: $isInEditMode, proxy: reader)
-                                        .onAppear {
-                                            if viewModel.model.messages.last == message{
-                                                viewModel.loadMore()
-                                            }
-                                            viewModel.sendSeenMessageIfNeeded(message)
+                                ScrollView{
+                                    VStack{
+                                        ForEach(viewModel.model.messages , id:\.uniqueId) { message in
+                                            
+                                            MessageRow(message: message,viewModel: viewModel, isInEditMode: $isInEditMode, proxy: reader)
+                                                .onAppear {
+                                                    if viewModel.model.messages.last == message{
+                                                        viewModel.loadMore()
+                                                    }
+                                                    viewModel.sendSeenMessageIfNeeded(message)
+                                                }
                                         }
-                                        .noSeparators()
-                                        .listRowBackground(Color.clear)
+                                    }
+                                    .padding([.leading, .trailing])
                                 }
                             }
                             .background(
