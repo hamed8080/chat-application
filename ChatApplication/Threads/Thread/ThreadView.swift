@@ -50,7 +50,7 @@ struct ThreadView:View {
                         ZStack{
                             GeometryReader{ reader in
                                 ScrollView{
-                                    VStack{
+                                    VStack(spacing:8){
                                         ForEach(viewModel.model.messages , id:\.uniqueId) { message in
                                             
                                             MessageRow(message: message,viewModel: viewModel, isInEditMode: $isInEditMode, proxy: reader)
