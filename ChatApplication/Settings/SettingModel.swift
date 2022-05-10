@@ -11,7 +11,7 @@ import FanapPodChatSDK
 struct SettingModel {
     
     private (set) var tokens                :[String]        = []
-    private (set) var currentUser           :User?           = Chat.sharedInstance.getCurrentUser()
+    private (set) var currentUser           :User?           = Chat.sharedInstance.userInfo
     
     mutating func setCurrentUser(_ user:User?){
         self.currentUser = user

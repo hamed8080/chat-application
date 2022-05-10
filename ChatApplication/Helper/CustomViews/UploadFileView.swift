@@ -94,9 +94,9 @@ class UploadFile: ObservableObject{
     func startUpload(){
         state = .STARTED
         guard let threadId = thread?.id, let data = try? Data(contentsOf: fileUrl) else {return}
-        let message = NewSendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .POD_SPACE_FILE)
+        let message = SendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .POD_SPACE_FILE)
         
-        let uploadFile = NewUploadFileRequest(data : data,
+        let uploadFile = UploadFileRequest(data : data,
                                               fileExtension: ".\(fileUrl.fileExtension)",
                                               fileName: fileUrl.fileName,
                                               mimeType: fileUrl.mimeType,

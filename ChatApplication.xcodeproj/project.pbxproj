@@ -123,7 +123,6 @@
 		AC924CC4274A80CC00E33BD1 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1D2CBF2662016D00AA351A /* ImageLoader.swift */; };
 		AC94B09A274E0BC200199B35 /* PHAssetEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC94B099274E0BC200199B35 /* PHAssetEX.swift */; };
 		ACA6DA79271ABB2200286563 /* ActivityViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA6DA78271ABB2200286563 /* ActivityViewControllerWrapper.swift */; };
-		ACA89499272678130014DDE9 /* TestAsyncRefactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA89498272678130014DDE9 /* TestAsyncRefactor.swift */; };
 		ACAB96D227030F9A005FB9AA /* ShapeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */; };
 		ACAB96D427030FBE005FB9AA /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAB96D327030FBE005FB9AA /* ViewExtension.swift */; };
 		ACADE27D275788EB00DD40B4 /* MessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACADE27C275788EB00DD40B4 /* MessageType.swift */; };
@@ -289,7 +288,6 @@
 		AC9DAC6E266CAD63009E4722 /* ContactRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRow.swift; sourceTree = "<group>"; };
 		AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactContentList.swift; sourceTree = "<group>"; };
 		ACA6DA78271ABB2200286563 /* ActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
-		ACA89498272678130014DDE9 /* TestAsyncRefactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAsyncRefactor.swift; sourceTree = "<group>"; };
 		ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeExtension.swift; sourceTree = "<group>"; };
 		ACAB96D327030FBE005FB9AA /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		ACADE27C275788EB00DD40B4 /* MessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageType.swift; sourceTree = "<group>"; };
@@ -459,7 +457,6 @@
 				AC1D2CBC2662016D00AA351A /* Helper */,
 				AC1D2CC32662016D00AA351A /* Threads */,
 				AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */,
-				ACA89498272678130014DDE9 /* TestAsyncRefactor.swift */,
 				AC1D2CC22662016D00AA351A /* SceneDelegate.swift */,
 				AC1D2CB52661FFAD00AA351A /* Info.plist */,
 				AC1D2CAF2661FFAD00AA351A /* Preview Content */,
@@ -977,7 +974,6 @@
 				ACAB96D227030F9A005FB9AA /* ShapeExtension.swift in Sources */,
 				AC826E3626F47A1F00551578 /* LoginModel.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
-				ACA89499272678130014DDE9 /* TestAsyncRefactor.swift in Sources */,
 				AC7EBFF6266CAF2E00984E81 /* ContactsViewModel.swift in Sources */,
 				ACFADE8427675DA5007C555F /* DeepButtonStyle.swift in Sources */,
 				AC04360126998D5F00B1C87B /* ParticipantsContentList.swift in Sources */,

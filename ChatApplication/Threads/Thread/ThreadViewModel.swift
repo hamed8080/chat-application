@@ -155,7 +155,7 @@ class ThreadViewModel:ObservableObject{
     
     func sendReplyMessage(_ replyMessageId:Int, _ textMessage:String){
         guard let threadId = model.thread?.id else {return}
-        let req = NewReplyMessageRequest(threadId: threadId,
+        let req = ReplyMessageRequest(threadId: threadId,
                                          repliedTo: replyMessageId,
                                          textMessage:textMessage,
                                          messageType: .TEXT)
@@ -172,7 +172,7 @@ class ThreadViewModel:ObservableObject{
     
     func sendEditMessage(_ textMessage:String){
         guard let threadId = model.thread?.id , let editMessage = model.editMessage , let messageId = editMessage.id else {return}
-        let req = NewEditMessageRequest(threadId: threadId,
+        let req = EditMessageRequest(threadId: threadId,
                                         messageType: .TEXT,
                                         messageId: messageId,
                                         textMessage: textMessage)
@@ -185,7 +185,7 @@ class ThreadViewModel:ObservableObject{
     
     func sendNormalMessage(_ textMessage:String){
         guard let threadId = model.thread?.id else {return}
-        let req = NewSendTextMessageRequest(threadId: threadId,
+        let req = SendTextMessageRequest(threadId: threadId,
                                             textMessage: textMessage,
                                             messageType: .TEXT)
         Chat.sharedInstance.sendTextMessage(req) { uniqueId in
@@ -202,7 +202,7 @@ class ThreadViewModel:ObservableObject{
     func sendForwardMessage(_ destinationThread:Conversation){
         guard let destinationThreadId = destinationThread.id else {return}
         let messageIds = model.selectedMessages.compactMap{$0.id}
-        let req = NewForwardMessageRequest(threadId: destinationThreadId, messageIds: messageIds)
+        let req = ForwardMessageRequest(threadId: destinationThreadId, messageIds: messageIds)
         Chat.sharedInstance.forwardMessages(req) { sentResponse, uniqueId, error in
             
         } onSeen: { seenResponse, uniqueId, error in
@@ -259,9 +259,9 @@ class ThreadViewModel:ObservableObject{
         guard let image = uiImage, let threadId = model.thread?.id else{return}
         let width = Int(image.size.width)
         let height = Int(image.size.height)
-        let message = NewSendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .POD_SPACE_PICTURE)
+        let message = SendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .POD_SPACE_PICTURE)
         let fileName = item.phAsset.originalFilename
-        let imageRequest = NewUploadImageRequest(data: image.jpegData(compressionQuality: 1.0) ?? Data(),
+        let imageRequest = UploadImageRequest(data: image.jpegData(compressionQuality: 1.0) ?? Data(),
                                                  hC: height,
                                                  wC: width,
                                                  fileName: fileName,
@@ -336,7 +336,7 @@ class ThreadViewModel:ObservableObject{
     
     func sendSignal(_ signalMessage:SignalMessageType){
         guard let threadId = model.thread?.id else{ return }
-        Chat.sharedInstance.newSendSignalMessage(req: .init(signalType: signalMessage , threadId:threadId))
+        Chat.sharedInstance.sendSignalMessage(req: .init(signalType: signalMessage , threadId:threadId))
     }
     
     func playAudio(){
@@ -385,11 +385,11 @@ class ThreadViewModel:ObservableObject{
     
     func updateThreadInfo(_ title:String, _ description:String, image:UIImage?, assetResources:[PHAssetResource]?){
         guard let thread = model.thread, let threadId = thread.id else{return}
-        var imageRequest:NewUploadImageRequest? = nil
+        var imageRequest:UploadImageRequest? = nil
         if let image = image{
             let width = Int(image.size.width)
             let height = Int(image.size.height)
-            imageRequest = NewUploadImageRequest(data: image.pngData() ?? Data(),
+            imageRequest = UploadImageRequest(data: image.pngData() ?? Data(),
                                                  hC: height,
                                                  wC: width,
                                                  fileExtension: "png",
@@ -400,7 +400,7 @@ class ThreadViewModel:ObservableObject{
             )
         }
         
-        let req = NewUpdateThreadInfoRequest(description: description, threadId: threadId, threadImage: imageRequest, title: title)
+        let req = UpdateThreadInfoRequest(description: description, threadId: threadId, threadImage: imageRequest, title: title)
         Chat.sharedInstance.updateThreadInfo(req) { uniqueId in
             
         } uploadProgress: { progress, error in

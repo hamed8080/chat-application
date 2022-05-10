@@ -29,7 +29,7 @@ struct MessageRow: View{
         self.viewModel = viewModel
         self._isInEditMode = isInEditMode
         let cachedUserId = AppState.shared.user?.id
-        self.isMe = isMeForPreView ?? (message.ownerId == (cachedUserId ?? Chat.sharedInstance.getCurrentUser()?.id ?? AppState.shared.user?.id))
+        self.isMe = isMeForPreView ?? (message.ownerId == (cachedUserId ?? Chat.sharedInstance.userInfo?.id ?? AppState.shared.user?.id))
         self.proxy = proxy
     }
     

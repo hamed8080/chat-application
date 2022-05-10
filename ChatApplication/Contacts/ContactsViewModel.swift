@@ -140,14 +140,14 @@ class ContactsViewModel:ObservableObject{
     
     func blockOrUnBlock(_ contact:Contact){
         if contact.blocked == false{
-            let req = NewBlockRequest(contactId: contact.id)
+            let req = BlockRequest(contactId: contact.id)
             Chat.sharedInstance.blockContact(req) { blockedUser, uniqueId, error in
                 if let contact = blockedUser?.contact{
                     self.model.blockOrUnBlock(contact)
                 }
             }
         }else {
-            let req = NewUnBlockRequest(contactId: contact.id)
+            let req = UnBlockRequest(contactId: contact.id)
             Chat.sharedInstance.unBlockContact(req) { unblockedUser, uniqueId, error in
                 if let contact = unblockedUser?.contact{
                     self.model.blockOrUnBlock(contact)

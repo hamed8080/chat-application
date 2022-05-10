@@ -67,7 +67,7 @@ struct SettingsView:View {
                         GroupItemInSlideMenu<AnyView>(name: "note.text", title: "Logs", color: Color.yellow , destinationView:AnyView(resultViewWithIgnoreSafeArea()))
                         
                         Button(action: {
-                            Chat.sharedInstance.newlogOut()
+                            Chat.sharedInstance.logOut()
                             CacheFactory.write(cacheType: .DELETE_ALL_CACHE_DATA)
                             TokenManager.shared.clearToken()
                         }, label: {
