@@ -16,10 +16,22 @@ struct LoginView: View {
             Color.gray.opacity(0.2)
                 .edgesIgnoringSafeArea(.all)
             VStack(spacing:12){
-                if viewModel.model.isInVerifyState == false{
-                    LoginContentView(viewModel: viewModel)
-                }else{
-                    VerifyContentView(viewModel: viewModel)
+                GeometryReader{ reader in
+                    VStack{
+                        HStack{
+                            Spacer()
+                            if viewModel.model.isInVerifyState == false{
+                                LoginContentView(viewModel: viewModel)
+                                    .frame(width: isIpad ? reader.size.width * 50/100 : .infinity)
+                                    
+                            }else{
+                                VerifyContentView(viewModel: viewModel)
+                                    .frame(width: isIpad ? reader.size.width * 50/100 : .infinity)
+                            }
+                            Spacer()
+                        }
+                        Spacer()
+                    }
                 }
                 if viewModel.isLoading{
                     LoadingView()
@@ -58,7 +70,7 @@ struct VerifyContentView:View{
                 .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
             + Text(" \(viewModel.model.phoneNumber)")
                 .font(.subheadline.weight(.bold))
-            PrimaryTextField(title:"Enter Verification Code",textBinding: $viewModel.model.verifyCode){
+            PrimaryTextField(title:"Enter Verification Code",textBinding: $viewModel.model.verifyCode, backgroundColor: Color.primary.opacity(0.1)){
                 viewModel.verifyCode()
             }
             Button("Verify".uppercased()) {
@@ -94,7 +106,7 @@ struct LoginContentView:View{
                 .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
             Text(viewModel.model.state?.rawValue ?? "")
             
-            PrimaryTextField(title:"Phone number",textBinding: $viewModel.model.phoneNumber){
+            PrimaryTextField(title:"Phone number", textBinding: $viewModel.model.phoneNumber, backgroundColor: Color.primary.opacity(0.1)){
             }
             
             if viewModel.model.isValidPhoneNumber == false{

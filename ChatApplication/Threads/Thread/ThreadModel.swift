@@ -10,9 +10,8 @@ import FanapPodChatSDK
 
 struct ThreadModel {
     
+    private (set) var isEnded                       = false
     private (set) var count                         = 15
-    private (set) var offset                        = 0
-    private (set) var totalCount                    = 0
     private (set) var messages :[Message]           = []
     private (set) var isViewDisplaying              = false
     private (set) var signalMessageText:String?     = nil
@@ -26,25 +25,16 @@ struct ThreadModel {
     private (set) var showExportView:Bool           = false
     private (set) var exportFileUrl:URL?            = nil
     
-    func hasNext()->Bool{
-        return messages.count < totalCount
-    }
-    
-    mutating func preparePaginiation(){
-        offset = messages.count
-    }
-    
-    mutating func setContentCount(totalCount:Int){
-        self.totalCount = totalCount
-    }
-    
-    mutating func setMessages(messages:[Message]){
-        self.messages = messages
-        sort()
+    mutating func setEnded(){
+        self.isEnded = true
     }
     
     mutating func appendMessages(messages:[Message]){
-        self.messages.append(contentsOf: filterNewMessagesToAppend(serverMessages: messages))
+        if messages.count == 0{
+            setEnded()
+            return
+        }
+        self.messages.insert(contentsOf: filterNewMessagesToAppend(serverMessages: messages), at:0)
         sort()
     }
     
@@ -65,9 +55,7 @@ struct ThreadModel {
     }
     
     mutating func clear(){
-        self.offset     = 0
         self.count      = 15
-        self.totalCount = 0
         self.messages   = []
     }
 	

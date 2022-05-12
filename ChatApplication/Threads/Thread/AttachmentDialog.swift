@@ -130,7 +130,7 @@ struct CustomActionSheetView:View{
             viewModel.loadImages()
         })
             .padding(.top ,24)
-            .padding(.bottom , (UIApplication.shared.windows.last?.safeAreaInsets.bottom)! + 10)
+            .padding(.bottom ,((UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.safeAreaInsets.bottom ?? 0) + 10)
             .background(Color.white.ignoresSafeArea())
             .cornerRadius(16)
     }

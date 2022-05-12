@@ -227,7 +227,7 @@ class DownloadFile: ObservableObject{
     }
     
     func getImageIfExistInCache(isThumbnail:Bool = true){
-        if CacheFileManager.sharedInstance.getFile(hashCode: fileHashCode) != nil{
+        if CacheFileManager.sharedInstance.getImage(hashCode: fileHashCode) != nil{
             let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: false  , isThumbnail: false , size: .ACTUAL)
             Chat.sharedInstance.getImage(req: req) { downloadProgress in
             } completion: { data, fileModel, error in

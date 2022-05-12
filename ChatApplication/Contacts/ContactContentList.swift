@@ -83,7 +83,7 @@ struct ContactContentList:View {
             
             VStack{
                 GeometryReader{ reader in
-                    LoadingViewAtBottomOfView(isLoading:viewModel.isLoading, reader: reader)
+                    LoadingViewAt(isLoading:viewModel.isLoading, reader: reader)
                 }
             }
         }

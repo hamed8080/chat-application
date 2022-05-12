@@ -80,8 +80,8 @@ struct ThreadContentList:View {
             
             VStack{
                 GeometryReader{ reader in
-                    LoadingViewAtCenterOfView(isLoading:viewModel.centerIsLoading,reader: reader)
-                    LoadingViewAtBottomOfView(isLoading:viewModel.isLoading, reader: reader)
+                    LoadingViewAt(at: .CENTER, isLoading:viewModel.centerIsLoading, reader: reader)
+                    LoadingViewAt(at: .BOTTOM, isLoading:viewModel.isLoading, reader: reader)
                 }
             }
         }

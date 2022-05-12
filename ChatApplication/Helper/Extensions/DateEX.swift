@@ -75,8 +75,15 @@ extension Date {
     
     func getTime()->String{
         let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
+        formatter.dateFormat = "hh:mm"
+        formatter.timeZone = .current
+        return formatter.string(from: self)
+    }
+    
+    func getDate()->String{
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY/MM/dd"
+        formatter.timeZone = .current
         return formatter.string(from: self)
     }
     

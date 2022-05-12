@@ -48,7 +48,7 @@ struct MessageRow: View{
             }
             if let type = MessageType(rawValue: message.messageType ?? 0){
                 if let message = message as? UploadFileMessage{
-                    UploadMessageType(viewModel: viewModel, message: message)
+                    UploadMessageType(threaViewModel: viewModel, message: message)
                 }else if type == .TEXT || type == .PICTURE || type == .POD_SPACE_PICTURE || type == .FILE || type == .POD_SPACE_FILE {
                     if isMe{
                         Spacer()
@@ -119,15 +119,17 @@ struct TextMessageType:View{
                 }
                 
                 //TODO: TEXT must be alignment and image muset be fit
-                Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
+                Text(((message.message?.isEmpty ?? true) == true ? message.metaData?.name : message.message) ?? "")
                     .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
-                    .padding([.leading, .trailing])
+                    .padding(.top, 8)
+                    .padding([.leading, .trailing , .top])
                     .font(Font(UIFont.systemFont(ofSize: 18)))
                     .foregroundColor(.black)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 MessageFooterView(message: message, isMe: isMe)
-                    .padding([.leading, .trailing , .bottom], 8)
+                    .padding(.bottom, 8)
+                    .padding([.leading, .trailing])
             }
             .frame(minWidth: calculatedSize.minWidth, maxWidth: calculatedSize.maxWidth, minHeight: 48, alignment: .leading)
             .padding([.leading,.trailing] , 0)
@@ -245,7 +247,8 @@ struct ForwardMessageRow:View{
 }
 
 struct UploadMessageType:View{
-    var viewModel:ThreadViewModel
+    
+    var threaViewModel:ThreadViewModel
     var message: UploadFileMessage
     
     var body: some View {
@@ -253,13 +256,7 @@ struct UploadMessageType:View{
         HStack(alignment: .top){
             Spacer()
             VStack{
-                UploadFileView(uploadFile:UploadFile(thread: viewModel.model.thread,
-                                                     fileUrl: message.uploadFileUrl,
-                                                     textMessage: message.message ?? ""
-                                                    ),
-                               viewModel: viewModel,
-                               message: UploadFileMessage(uploadFileUrl: message.uploadFileUrl)
-                )
+                UploadFileView(threaViewModel, message: message)
                 .frame(width: 148, height: 148)
                 if let fileName = message.metaData?.name{
                     Text(fileName)
@@ -295,7 +292,7 @@ struct MessageFooterView:View{
             }
             Spacer()
             HStack{
-                if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
+                if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000) {
                     Text("\(date.getTime())")
                         .foregroundColor(Color(named: "dark_green").opacity(0.8))
                         .font(.subheadline)

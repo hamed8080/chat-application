@@ -42,7 +42,7 @@ class ChatDelegateImplementation: ChatDelegate {
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponse.Result(accessToken: config.debugToken, expiresIn: Int.max, idToken: nil, refreshToken: nil, scope: nil, tokenType: nil))
             }
             let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken
-            print("token is: \(token ?? "")")
+            print("token is: \(token)")
             Chat.sharedInstance.createChatObject(config: .init(socketAddress: config.socketAddresss,
                                                                serverName: config.serverName,
                                                                token: token,

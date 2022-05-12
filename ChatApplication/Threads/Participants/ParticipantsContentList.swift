@@ -35,7 +35,7 @@ struct ParticipantsContentList:View {
                         print("on delete")
                     })
 				}.listStyle(PlainListStyle())
-                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
+                LoadingViewAt(isLoading:viewModel.isLoading ,reader:reader)
             }
             .onAppear{
                 viewModel.threadId = threadId

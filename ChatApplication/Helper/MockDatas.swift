@@ -102,7 +102,7 @@ final class MockData{
     }
     
     static var uploadMessage:UploadFileMessage{
-        let msg = UploadFileMessage(uploadFileUrl: URL(string: "http://www.google.com")!, textMessage: "Test")
+        let msg = UploadFileMessage(uploadFileRequest: UploadFileRequest(data: Data()), textMessage: "Test")
         msg.message = "Film.mp4"
         return msg
     }

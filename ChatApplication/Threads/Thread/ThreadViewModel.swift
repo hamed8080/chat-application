@@ -10,6 +10,7 @@ import FanapPodChatSDK
 import Combine
 import AVFoundation
 import Photos
+import SwiftUI
 
 class ThreadViewModel:ObservableObject{
     
@@ -74,22 +75,21 @@ class ThreadViewModel:ObservableObject{
     }
     
     func loadMore(){
-        if !model.hasNext() || isLoading{return}
+        if isLoading || model.isEnded{return}
         isLoading = true
-        model.preparePaginiation()
-        getMessagesHistory()
+        getMessagesHistory(toTime: model.messages.first?.time)
     }
     
-    func getMessagesHistory(){
+    func getMessagesHistory(toTime:UInt? = nil){
         guard let threadId = model.thread?.id else{return}
-        Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count,offset: model.offset, readOnly: readOnly)) {[weak self] messages, uniqueId, pagination, error in
+        Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count,offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)) {[weak self] messages, uniqueId, pagination, error in
             if let messages = messages{
                 self?.model.appendMessages(messages: messages)
                 self?.isLoading = false
             }
         }cacheResponse: { [weak self] messages, uniqueId, error in
             if let messages = messages{
-                self?.model.setMessages(messages: messages)
+                self?.model.appendMessages(messages: messages)
             }
         }
     }
@@ -255,11 +255,11 @@ class ThreadViewModel:ObservableObject{
         
     }
     
+    ///add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image
     func sendPhotos(uiImage:UIImage?, info:[AnyHashable:Any]?, item:ImageItem, textMessage:String = ""){
-        guard let image = uiImage, let threadId = model.thread?.id else{return}
+        guard let image = uiImage else{return}
         let width = Int(image.size.width)
         let height = Int(image.size.height)
-        let message = SendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .POD_SPACE_PICTURE)
         let fileName = item.phAsset.originalFilename
         let imageRequest = UploadImageRequest(data: image.jpegData(compressionQuality: 1.0) ?? Data(),
                                                  hC: height,
@@ -267,24 +267,19 @@ class ThreadViewModel:ObservableObject{
                                                  fileName: fileName,
                                                  mimeType: "image/jpg",
                                                  userGroupHash: model.thread?.userGroupHash)
-        Chat.sharedInstance.sendFileMessage(textMessage:message, uploadFile: imageRequest){ uploadFileProgress ,error in
-            print(uploadFileProgress ?? error ?? "")
-        }onSent: { sentResponse, uniqueId, error in
-            print(sentResponse ?? "")
-        }onSeen: { seenResponse, uniqueId, error in
-            print(seenResponse ?? "")
-        }onDeliver: { deliverResponse, uniqueId, error in
-            print(deliverResponse ?? "")
-        }uploadUniqueIdResult:{ uploadUniqueId in
-            print(uploadUniqueId)
-        }messageUniqueIdResult:{ messageUniqueId in
-           print(messageUniqueId)
-        }
+        
+        model.appendMessage(UploadFileMessage(uploadFileRequest: imageRequest, textMessage: textMessage))
     }
     
     ///add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
     func sendFile(selectedFileUrl:URL, textMessage:String = ""){
-        model.appendMessage(UploadFileMessage(uploadFileUrl: selectedFileUrl, textMessage: textMessage))
+        guard let data = try? Data(contentsOf: selectedFileUrl) else{return}
+        let uploadRequest = UploadFileRequest(data : data,
+                                              fileExtension: ".\(selectedFileUrl.fileExtension)",
+                                              fileName: selectedFileUrl.fileName,
+                                              mimeType: selectedFileUrl.mimeType,
+                                              userGroupHash: model.thread?.userGroupHash)
+        model.appendMessage(UploadFileMessage(uploadFileRequest: uploadRequest, textMessage: textMessage))
     }
     
     func toggleRecording(){
@@ -406,7 +401,7 @@ class ThreadViewModel:ObservableObject{
         } uploadProgress: { progress, error in
             
         } completion: { conversation, uniqueId, error in
-            var i = 0
+            
         }
     }
     
