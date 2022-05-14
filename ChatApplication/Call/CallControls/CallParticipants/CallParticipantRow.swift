@@ -55,8 +55,7 @@ struct CallParticipantRow: View {
 
 struct CallParticipantRow_Previews: PreviewProvider {
 	static var callParticipant:CallParticipant{
-        let participant = ParticipantRow_Previews.participant
-        let callParticipant = CallParticipant(sendTopic: "Test",participant: participant)
+        let callParticipant = CallParticipant(sendTopic: "Test",participant: MockData.participant)
 		return callParticipant
 	}
 	

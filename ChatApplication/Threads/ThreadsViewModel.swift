@@ -31,11 +31,15 @@ class ThreadsViewModel:ObservableObject{
     @Published
     var showAddToTags       = false
     
+    @Published
+    var connectionStatus:ConnectionStatus     = .Connecting
+    
     private (set) var connectionStatusCancelable    : AnyCancellable? = nil
     private (set) var messageCancelable             : AnyCancellable? = nil
     private (set) var systemMessageCancelable       : AnyCancellable? = nil
     private (set) var isFirstTimeConnectedRequestSuccess = false
     
+    @Published
     private (set) var tagViewModel = TagsViewModel()
     
     init() {
@@ -43,6 +47,7 @@ class ThreadsViewModel:ObservableObject{
             if self.isFirstTimeConnectedRequestSuccess == false && status == .CONNECTED{
                 self.getThreads()
             }
+             self.connectionStatus = status
         }
         messageCancelable = NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
             .compactMap{$0.object as? MessageEventModel}

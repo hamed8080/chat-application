@@ -19,6 +19,6 @@ struct GIFView: View {
 
 struct GIFView_Previews: PreviewProvider {
     static var previews: some View {
-        GIFView(thread: ThreadRow_Previews.thread)
+        GIFView(thread: MockData.thread)
     }
 }

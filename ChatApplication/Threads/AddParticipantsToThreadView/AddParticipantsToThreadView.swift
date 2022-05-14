@@ -23,26 +23,20 @@ struct AddParticipantsToThreadView:View {
     var onCompleted:([Contact])->()
     
     var body: some View{
-        
-        GeometryReader{ reader in
-            PageWithNavigationBarView(title:$title, subtitle:$appState.connectionStatusString,trailingItems: getTrailingItems(), leadingItems: []){
-                VStack(alignment:.leading,spacing: 0){
-                    List {
-                        ForEach(contactsVM.model.contacts , id:\.id) { contact in
-                            StartThreadContactRow(contact: contact, isInMultiSelectMode: .constant(true), viewModel: contactsVM)
-                                .onAppear {
-                                    if contactsVM.model.contacts.last == contact{
-                                        contactsVM.loadMore()
-                                    }
-                                }
+        VStack(alignment:.leading,spacing: 0){
+            List {
+                ForEach(contactsVM.model.contacts , id:\.id) { contact in
+                    StartThreadContactRow(contact: contact, isInMultiSelectMode: .constant(true), viewModel: contactsVM)
+                        .onAppear {
+                            if contactsVM.model.contacts.last == contact{
+                                contactsVM.loadMore()
+                            }
                         }
-                    }
-                    .listStyle(PlainListStyle())
                 }
-                .padding(0)
-                Spacer()
             }
+            .listStyle(.plain)
         }
+        .padding(0)
     }
     
     func getTrailingItems()->[NavBarItem]{
@@ -61,6 +55,7 @@ struct StartThreadResultModel_Previews: PreviewProvider {
         let contactVM = ContactsViewModel()
         StartThreadContactPickerView(viewModel: vm,contactsVM: contactVM, onCompletedConfigCreateThread: { model in
         })
+        .preferredColorScheme(.dark)
             .onAppear(){
                 vm.setupPreview()
                 contactVM.setupPreview()

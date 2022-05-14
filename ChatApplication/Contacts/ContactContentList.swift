@@ -26,27 +26,8 @@ struct ContactContentList:View {
     var isKeyboardShown:Bool = false
     
     var body: some View{
-        GeometryReader{ reader in
+        ZStack{
             VStack(spacing:0){
-                CustomNavigationBar(title:"contacts",
-                                    trailingActions: [
-                                        .init(systemImageName: "plus.circle.fill"){
-                                            viewModel.navigateToAddOrEditContact.toggle()
-                                        }
-                                    ],
-                                    leadingActions: [
-                                        .init(systemImageName: "pencil.circle.fill"){
-                                            enableDeleteButton.toggle()
-                                            viewModel.isInEditMode.toggle()
-                                        },
-                                        .init(systemImageName: "trash.circle",
-                                              foregroundColor: Color(named: "red_soft"),
-                                              isEnabled: enableDeleteButton)
-                                        {
-                                            viewModel.deleteSelectedItems()
-                                        }
-                                    ]
-                )
                 List{
                     if viewModel.model.totalCount > 0 {
                         HStack(spacing:4){
@@ -61,12 +42,17 @@ struct ContactContentList:View {
                         .noSeparators()
                     }
                     
-                    MultilineTextField("Search contact ...",text: $searchedContact,backgroundColor:Color.gray.opacity(0.2))
-                        .cornerRadius(16)
-                        .noSeparators()
-                        .onChange(of: searchedContact) { newValue in
-                            viewModel.searchContact(searchedContact)
+                    MultilineTextField("Search contact ...",text: $searchedContact,backgroundColor:Color.gray.opacity(0.2)){submit in
+                        hideKeyboard()
+                        if searchedContact.isEmpty {
+                            viewModel.searchContact(searchedContact)// to reset view
                         }
+                    }
+                    .cornerRadius(16)
+                    .noSeparators()
+                    .onChange(of: searchedContact) { newValue in
+                        viewModel.searchContact(searchedContact)
+                    }
                     
                     if viewModel.model.showSearchedContacts{
                         Text("Searched contacts")
@@ -87,18 +73,70 @@ struct ContactContentList:View {
                                     viewModel.loadMore()
                                 }
                             }
-                            .customAnimation(.default)
+                            .animation(.spring(), value:viewModel.isInEditMode)
                     }
                     .onDelete(perform:viewModel.delete)
                     .padding(0)
                 }
-
-                .manageKeyboardForList(isKeyboardShown: $isKeyboardShown)
-//                .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
-                .listStyle(PlainListStyle())
-                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
+                .listStyle(.plain)
                 NavigationLink(destination: AddOrEditContactView(), isActive: $viewModel.navigateToAddOrEditContact){
                     EmptyView()
+                }
+            }
+            
+            VStack{
+                GeometryReader{ reader in
+                    LoadingViewAt(isLoading:viewModel.isLoading, reader: reader)
+                }
+            }
+        }
+        
+        .navigationTitle(Text("Contacts"))
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button {
+                        viewModel.navigateToAddOrEditContact.toggle()
+                    } label: {
+                        Label {
+                            Text("Create new contacts")
+                        } icon: {
+                            Image(systemName: "person.badge.plus")
+                        }
+                    }
+            }
+            
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                
+                Button {
+                    viewModel.isInEditMode.toggle()
+                } label: {
+                    Label {
+                        Text("Edit")
+                    } icon: {
+                        Image(systemName: "list.bullet.rectangle.portrait")
+                            .font(.body.bold())
+                    }
+                }
+                
+                Button {
+                    viewModel.navigateToAddOrEditContact.toggle()
+                } label: {
+                    Label {
+                        Text("Delete")
+                    } icon: {
+                        Image(systemName: "trash")
+                            .foregroundColor(Color.red)
+                            .font(.body.bold())
+                    }
+                }
+                .opacity(viewModel.isInEditMode ? 1 : 0.5)
+                .disabled(!viewModel.isInEditMode)
+            }
+            ToolbarItem(placement: .principal) {
+                if viewModel.connectionStatus != .CONNECTED{
+                    Text("\(viewModel.connectionStatus.stringValue) ...")
+                        .foregroundColor(Color(named: "text_color_blue"))
+                        .font(.subheadline.bold())
                 }
             }
         }

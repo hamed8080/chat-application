@@ -386,7 +386,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     }
     
     func toggleMute(){
-        guard let currentUserId = Chat.sharedInstance.getCurrentUser()?.id , let callId = model.startCall?.callId else{return}
+        guard let currentUserId = Chat.sharedInstance.userInfo?.id , let callId = model.startCall?.callId else{return}
         let oldIsMuteState = model.usersRTC.first(where:{$0.direction == .SEND && $0.isAudioTopic})?.isMute ?? true
         let newIsMuteState = !oldIsMuteState
         if oldIsMuteState{

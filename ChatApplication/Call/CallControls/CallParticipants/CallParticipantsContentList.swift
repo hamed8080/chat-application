@@ -29,7 +29,7 @@ struct CallParticipantsContentList:View {
                 LinearGradient(gradient: Gradient(colors: [Color.black.opacity(0.9), Color.blue.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
                     .ignoresSafeArea(.all)
             )
-            LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
+            LoadingViewAt(isLoading:viewModel.isLoading ,reader:reader)
         }.onAppear{
             UITableView.appearance().backgroundColor = UIColor.clear
             UITableViewCell.appearance().backgroundColor = UIColor.clear

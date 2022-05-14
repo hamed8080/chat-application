@@ -10,7 +10,7 @@ import SwiftUI
 struct ParticipantsContentList:View {
     
     var threadId:Int
-    var title = "Chats"
+    var title = "Participants"
     var style:StyleConfig = .init()
     
     struct StyleConfig{
@@ -18,7 +18,7 @@ struct ParticipantsContentList:View {
     }
     
     @StateObject
-    private var viewModel:ParticipantsViewModel = ParticipantsViewModel()
+    var viewModel:ParticipantsViewModel = ParticipantsViewModel()
     
     var body: some View{
         NavigationView{
@@ -35,7 +35,7 @@ struct ParticipantsContentList:View {
                         print("on delete")
                     })
 				}.listStyle(PlainListStyle())
-                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
+                LoadingViewAt(isLoading:viewModel.isLoading ,reader:reader)
             }
             .onAppear{
                 viewModel.threadId = threadId
@@ -56,7 +56,7 @@ struct ParticipantsContentList:View {
 struct ParticipantContentList_Previews: PreviewProvider {
     static var previews: some View {
         let vm = ParticipantsViewModel()
-		ParticipantsContentList(threadId: 0)
+        ParticipantsContentList(threadId: 0, viewModel: vm)
             .onAppear(){
                 vm.setupPreview()
             }

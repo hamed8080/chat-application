@@ -57,8 +57,8 @@ struct TagsModel {
     }
     
     mutating func addParticipant(_ tagId:Int, _ participants:[TagParticipant]){
-        if var tag = tags.first(where: {$0.id == tagId}){
-            tag.tagParticipants?.append(contentsOf: participants)
+        if let tagIndex = tags.firstIndex(where: {$0.id == tagId}){
+            tags[tagIndex].tagParticipants?.append(contentsOf: participants)
         }
     }
 }
@@ -66,19 +66,6 @@ struct TagsModel {
 extension TagsModel{
     
     mutating func setupPreview(){
-        var t1 = TagRow_Previews.tag
-        t1.name = "Social Chat"
-        t1.id = 1
-        
-        var t2 = TagRow_Previews.tag
-        t2.name = "Network teams"
-        t2.id = 2
-        
-        
-        var t3 = TagRow_Previews.tag
-        t3.name = "Backend"
-        t3.id = 3
-        
-        appendTags(tags: [t1 , t2, t3])
+        appendTags(tags: MockData.generateTags())
     }
 }

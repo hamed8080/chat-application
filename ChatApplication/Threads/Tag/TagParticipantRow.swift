@@ -25,7 +25,9 @@ struct TagParticipantRow: View {
                                userName: thread.inviter?.username?.uppercased(),
                                fileMetaData: thread.metadata,
                                style: .init(size: 28, textSize: 12),
-                               token: token)
+                               token: token,
+                               previewImageName: thread.image ?? "avatar"
+                        )
                         
                         VStack(alignment:.leading){
                             Text(thread.title ?? "")
@@ -41,21 +43,12 @@ struct TagParticipantRow: View {
         .contentShape(Rectangle())
         .padding([.leading , .trailing] , 8)
         .padding([.top , .bottom] , 4)
-        .customAnimation(.default)
     }
 }
 
 struct TagParticipantRow_Previews: PreviewProvider {
 	
-    static func getTagParticipants(count:Int = 5)->[TagParticipant]{
-        var tagParticipants:[TagParticipant] = []
-        for index in 0...count{
-            tagParticipants.append(.init(id: index, active: true, tagId: index, threadId: index, conversation: ThreadRow_Previews.thread))
-        }
-        return tagParticipants
-    }
-    
 	static var previews: some View {
-        TagParticipantRow(tag: TagRow_Previews.tag, tagParticipant: TagRow_Previews.tag.tagParticipants!.first! ,viewModel: TagsViewModel())
+        TagParticipantRow(tag: MockData.tag, tagParticipant: MockData.tag.tagParticipants!.first! ,viewModel: TagsViewModel())
 	}
 }

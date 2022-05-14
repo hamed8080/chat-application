@@ -43,6 +43,6 @@ struct SearchContactRow: View {
 
 struct SearchContactRow_Previews: PreviewProvider {
     static var previews: some View {
-        SearchContactRow(contact: ContactRow_Previews.contact,viewModel: ContactsViewModel())
+        SearchContactRow(contact: MockData.contact,viewModel: ContactsViewModel())
     }
 }

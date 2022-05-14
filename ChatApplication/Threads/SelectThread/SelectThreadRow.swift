@@ -19,7 +19,9 @@ struct SelectThreadRow: View {
                    userName: thread.inviter?.username?.uppercased(),
                    fileMetaData: thread.metadata,
                    style: .init(size: 36, textSize: 12),
-                   token: token)
+                   token: token,
+                   previewImageName: thread.image ?? "avatar"
+            )
             Text(thread.title ?? "")
                 .font(.headline)
             Spacer()
@@ -27,12 +29,11 @@ struct SelectThreadRow: View {
         .contentShape(Rectangle())
         .padding([.leading , .trailing] , 8)
         .padding([.top , .bottom] , 4)
-        .customAnimation(.default)
     }
 }
 
 struct SelectThreadRow_Previews: PreviewProvider {
 	static var previews: some View {
-        SelectThreadRow(thread: ThreadRow_Previews.thread)
+        SelectThreadRow(thread: MockData.thread)
 	}
 }

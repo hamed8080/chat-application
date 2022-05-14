@@ -19,6 +19,10 @@ struct DownloadFileView :View{
     private var isImage              : Bool    = false
     private var message              : Message?
     
+    @Environment(\.isPreview)
+    var isPreview
+
+    
     @State
     var shareDownloadedFile          : Bool    = false
     
@@ -40,7 +44,23 @@ struct DownloadFileView :View{
     }
     
     var body: some View{
-        GeometryReader{ reader in
+        if isPreview{
+            if message?.metaData?.file?.extension == "png" || message?.metaData?.file?.extension == "jpg"{
+                Image(message?.metaData?.name ?? "avatar", bundle: .main)
+                    .resizable()
+                    .scaledToFit()
+            }else{
+                Image(systemName: message?.iconName ?? "")
+                    .resizable()
+                    .padding(4)
+                    .frame(width: 64, height: 64)
+                    .foregroundColor(Color(named: "icon_color").opacity(0.8))
+                    .scaledToFit()
+                    .onTapGesture {
+                        shareDownloadedFile.toggle()
+                    }
+            }
+        }else{
             HStack{
                 ZStack(alignment:.center){
                     switch downloadFile.state{
@@ -48,12 +68,12 @@ struct DownloadFileView :View{
                         if isImage{
                             Image(uiImage: image)
                                 .resizable()
-                                .cornerRadius(8)
                                 .scaledToFit()
                         }else{
                             Image(systemName: message?.iconName ?? "")
                                 .resizable()
-                                .foregroundColor(Color(named: "text_color_blue").opacity(0.8))
+                                .padding(4)
+                                .foregroundColor(Color(named: "icon_color").opacity(0.8))
                                 .scaledToFit()
                                 .frame(width: 64, height: 64)
                                 .onTapGesture {
@@ -78,15 +98,16 @@ struct DownloadFileView :View{
                             }
                     case .UNDEFINED:
                         Rectangle()
-                            .fill(Color.blue.opacity(0.5))
+                            .fill(Color.primary.opacity(0.1))
                             .blur(radius: 24)
                         
                         Image(systemName: "arrow.down.circle")
                             .resizable()
                             .font(.headline.weight(.thin))
                             .padding(32)
+                            .frame(width: 96, height: 96)
                             .scaledToFit()
-                            .foregroundColor(Color.white)
+                            .foregroundColor(Color.black)
                             .onTapGesture {
                                 downloadFile.startDownload()
                             }
@@ -119,6 +140,7 @@ struct DownloadFileView :View{
                 }
             })
         }
+        
     }
 }
 
@@ -205,25 +227,29 @@ class DownloadFile: ObservableObject{
     }
     
     func getImageIfExistInCache(isThumbnail:Bool = true){
-        let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: false  , isThumbnail: false , size: .ACTUAL)
-        Chat.sharedInstance.getImage(req: req) { downloadProgress in
-        } completion: { data, fileModel, error in
-        } cacheResponse: { data, fileModel, error in
-            if let data = data{
-                self.state = .COMPLETED
-                self.image = UIImage(data: data)
+        if CacheFileManager.sharedInstance.getImage(hashCode: fileHashCode) != nil{
+            let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: false  , isThumbnail: false , size: .ACTUAL)
+            Chat.sharedInstance.getImage(req: req) { downloadProgress in
+            } completion: { data, fileModel, error in
+            } cacheResponse: { data, fileModel, error in
+                if let data = data{
+                    self.state = .COMPLETED
+                    self.image = UIImage(data: data)
+                }
             }
         }
     }
     
     func getFileIfExistInCache(){
-        let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: false)
-        Chat.sharedInstance.getFile(req: req) { downloadProgress in
-        } completion: { data, fileModel, error in
-        } cacheResponse: { data, fileModel, error in
-            if let data = data{
-                self.state = .COMPLETED
-                self.data = data
+        if CacheFileManager.sharedInstance.getFile(hashCode: fileHashCode) != nil{
+            let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: false)
+            Chat.sharedInstance.getFile(req: req) { downloadProgress in
+            } completion: { data, fileModel, error in
+            } cacheResponse: { data, fileModel, error in
+                if let data = data{
+                    self.state = .COMPLETED
+                    self.data = data
+                }
             }
         }
     }

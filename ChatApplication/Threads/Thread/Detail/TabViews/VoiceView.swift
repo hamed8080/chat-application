@@ -19,6 +19,6 @@ struct VoiceView: View {
 
 struct VoiceView_Previews: PreviewProvider {
     static var previews: some View {
-        VoiceView(thread: ThreadRow_Previews.thread)
+        VoiceView(thread: MockData.thread)
     }
 }

@@ -105,17 +105,6 @@ struct ThreadsModel {
 extension ThreadsModel{
     
     mutating func setupPreview(){
-        let t1 = ThreadRow_Previews.thread
-        t1.title = "Hamed Hosseini"
-        t1.id = 1
-        
-        let t2 = ThreadRow_Previews.thread
-        t2.title = "Masoud Amjadi"
-        t2.id = 2
-        
-        let t3 = ThreadRow_Previews.thread
-        t2.title = "Pod Group"
-        t3.id = 3
-        appendThreads(threads: [t1 , t2, t3])
+        appendThreads(threads: MockData.generateThreads())
     }
 }

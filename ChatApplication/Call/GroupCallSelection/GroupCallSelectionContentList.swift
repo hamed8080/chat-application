@@ -60,7 +60,7 @@ struct GroupCallSelectionContentList: View {
                     .background(Color(named: "text_color_blue").ignoresSafeArea())
                 }
             }
-            LoadingViewAtBottomOfView(isLoading:contactViewModel.isLoading ,reader:reader)
+            LoadingViewAt(isLoading:contactViewModel.isLoading ,reader:reader)
         }
         .navigationBarTitle(Text("Select Contacts"), displayMode: .inline)
     }

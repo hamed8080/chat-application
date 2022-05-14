@@ -15,6 +15,16 @@ enum ConnectionStatus:Int{
     case Reconnecting = 2
     case UnAuthorized = 3
     case CONNECTED    = 4
+    
+    var stringValue:String{
+        switch self{
+        case .Connecting: return "connecting"
+        case .CONNECTED: return "connected"
+        case .Disconnected: return "disconnected"
+        case .Reconnecting: return "reconnectiong"
+        case .UnAuthorized: return "un authorized"
+        }
+    }
 }
 
 let CONNECT_NAME = Notification.Name("NotificationIdentifier")
@@ -22,7 +32,7 @@ let MESSAGE_NOTIFICATION_NAME = Notification.Name("MESSAGE_NOTIFICATION_NAME")
 let SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME = Notification.Name("SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME")
 
 
-class ChatDelegateImplementation: NewChatDelegate {
+class ChatDelegateImplementation: ChatDelegate {
 
 	private (set) static var sharedInstance = ChatDelegateImplementation()
     
@@ -32,7 +42,7 @@ class ChatDelegateImplementation: NewChatDelegate {
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponse.Result(accessToken: config.debugToken, expiresIn: Int.max, idToken: nil, refreshToken: nil, scope: nil, tokenType: nil))
             }
             let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken
-            print("token is: \(token ?? "")")
+            print("token is: \(token)")
             Chat.sharedInstance.createChatObject(config: .init(socketAddress: config.socketAddresss,
                                                                serverName: config.serverName,
                                                                token: token,
@@ -47,52 +57,18 @@ class ChatDelegateImplementation: NewChatDelegate {
                                                                isDebuggingLogEnabled: true,
                                                                isDebuggingAsyncEnable: false,
                                                                enableNotificationLogObserver: true,
-                                                               useNewSDK:true,
-                                                               callTimeout: 20
+                                                               callTimeout: 20                                                               
             ))
             Chat.sharedInstance.delegate = self
+            AppState.shared.setCachedUser()
         }
     }
-	
-	func chatState(state: AsyncStateType) {
-		print("chat state changed: \(state)")
-	}
 	
 	func chatError(errorCode: Int, errorMessage: String, errorResult: Any?) {
 		if errorCode == 21  || errorCode == 401{
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .UnAuthorized
 		}
-	}
-	
-	func botEvents(model: BotEventModel) {
-		print(model)
-	}
-	
-	func contactEvents(model: ContactEventModel) {
-		print(model)
-	}
-	
-	func fileUploadEvents(model: FileUploadEventModel) {
-		print(model)
-	}
-	
-	func messageEvents(model: MessageEventModel) {
-		print(model)
-        NotificationCenter.default.post(name: MESSAGE_NOTIFICATION_NAME, object: model)
-	}
-	
-	func systemEvents(model: SystemEventModel) {
-		print(model)
-        NotificationCenter.default.post(name: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME, object: model)
-	}
-	
-	func threadEvents(model: ThreadEventModel) {
-		print(model)
-	}
-	
-	func userEvents(model: UserEventModel) {
-		print(model)
 	}
     
     func chatState(state: ChatState, currentUser: User?, error: ChatError?) {
@@ -120,22 +96,18 @@ class ChatDelegateImplementation: NewChatDelegate {
     }
     
     func chatError(error: ChatError) {
-        
+        print(error)
     }
     
-    func chatConnect() {
+    func chatEvent(event: ChatEventType) {
+        print(event)
+        if case .System(let event) = event {
+            NotificationCenter.default.post(name: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME, object: event)
+        }
         
+        if case .Message(let event) = event {
+            NotificationCenter.default.post(name: MESSAGE_NOTIFICATION_NAME, object: event)
+        }
     }
     
-    func chatDisconnect() {
-        
-    }
-    
-    func chatReconnect() {
-        
-    }
-    
-    func chatReady(withUserInfo: User) {
-        
-    }
 }

@@ -13,4 +13,8 @@ extension Color{
     init(named:String){
         self = Color(UIColor(named: named)!)
     }
+    
+    static var random:Color{
+        return Color(uiColor: UIColor.random())
+    }
 }

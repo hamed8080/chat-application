@@ -28,7 +28,7 @@ struct CustomDialog<DialogContent:View>: ViewModifier {
                 Rectangle().foregroundColor(Color.black.opacity(0.6))
                     .ignoresSafeArea()
                     .transition(.opacity)
-                    .customAnimation(.easeInOut)
+                    .animation(.easeInOut, value: isShowing)
                 // the dialog content is in a ZStack to pad it from the edges
                 // of the screen
                 ZStack {
@@ -43,7 +43,7 @@ struct CustomDialog<DialogContent:View>: ViewModifier {
                 .padding(40)
             }
         }
-        .customAnimation(.spring(response: 0.5, dampingFraction: isShowing ? 0.6 : 1 , blendDuration: isShowing ? 1 : 0.2).speed(isShowing ? 1 : 3))
+        .animation(.spring(response: 0.5, dampingFraction: isShowing ? 0.6 : 1 , blendDuration: isShowing ? 1 : 0.2).speed(isShowing ? 1 : 3), value: isShowing)
     }
 }
 
@@ -69,7 +69,6 @@ struct CustomDialog_Previews: PreviewProvider {
                     }.buttonStyle(PrimaryButtonStyle(bgColor:Color.pink.opacity(0.4)))
                 }
             }
-            .customAnimation(.spring())
             .padding()
         }
     }

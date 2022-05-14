@@ -13,7 +13,7 @@ struct PrimaryButtonStyle:ButtonStyle{
     let textColor:Color
     let minHeight:CGFloat
     
-    init(bgColor:Color = Color(named: "text_color_blue"),textColor:Color = Color.white,minHeight:CGFloat = 56, cornerRadius:CGFloat = 8){
+    init(bgColor:Color = Color(named: "primary_button_bg_color"),textColor:Color = Color.white,minHeight:CGFloat = 56, cornerRadius:CGFloat = 8){
         self.bgColor      = bgColor
         self.cornerRadius = cornerRadius
         self.textColor    = textColor
@@ -30,7 +30,7 @@ struct PrimaryButtonStyle:ButtonStyle{
                 .font(.subheadline.weight(.black))
                 .shadow(radius: configuration.isPressed ? 0 : 6)
                 .scaleEffect(x: configuration.isPressed ? 0.98 : 1, y: configuration.isPressed ? 0.98 : 1)
-                .customAnimation(.easeInOut)
+                .animation(.easeInOut, value: configuration.isPressed)
         }
         .frame(maxHeight: 56, alignment: .center)
     }

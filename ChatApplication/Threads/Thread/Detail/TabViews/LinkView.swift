@@ -20,6 +20,6 @@ struct LinkView: View {
 
 struct LinkView_Previews: PreviewProvider {
     static var previews: some View {
-        LinkView(thread: ThreadRow_Previews.thread)
+        LinkView(thread: MockData.thread)
     }
 }

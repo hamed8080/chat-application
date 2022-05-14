@@ -65,7 +65,7 @@ struct CallDetails: View {
                     
                 }
                 .ignoresSafeArea()
-                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
+                LoadingViewAt(isLoading:viewModel.isLoading ,reader:reader)
             }
         }
         .navigationBarHidden(true)

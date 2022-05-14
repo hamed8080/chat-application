@@ -51,10 +51,12 @@ struct ThreadDetailView:View {
                         .multilineTextAlignment(.center)
                         .font(.headline.bold())
                         
-                        PrimaryTextField(title:"Description", textBinding: $threadDescription, keyboardType: .alphabet,backgroundColor: Color.primary.opacity(0.08))
-                        .disabled(!isInEditMode)
-                        .multilineTextAlignment(.center)
-                        .font(.caption)
+                        if !threadDescription.isEmpty || isInEditMode{
+                            PrimaryTextField(title:"Description", textBinding: $threadDescription, keyboardType: .alphabet,backgroundColor: Color.primary.opacity(0.08))
+                            .disabled(!isInEditMode)
+                            .multilineTextAlignment(.center)
+                            .font(.caption)
+                        }
                         
                         if let lastSeen = ContactRow.getDate(notSeenDuration: thread?.participants?.first?.notSeenDuration){
                             Text(lastSeen)
@@ -96,7 +98,7 @@ struct ThreadDetailView:View {
                             }
                             Spacer()
                         }
-                        .padding(SwiftUI.EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
+                        .padding(SwiftUI.EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                         .background(Color.primary.opacity(0.08))
                         .cornerRadius(16)
                     }
@@ -141,7 +143,7 @@ struct ThreadDetailView:View {
                 }
             }
         }
-        .customAnimation(.default)
+        .animation(.interactiveSpring(), value: isInEditMode)
     }
     
 }
@@ -150,7 +152,7 @@ struct ThreadDetailView_Previews: PreviewProvider {
 
     static var vm:ThreadViewModel{
         
-        let thread = ThreadRow_Previews.thread
+        let thread = MockData.thread
         let vm = ThreadViewModel(thread: thread)
         thread.title = "Test Thread title"
         thread.description = "Test Thread Description with slightly long text"

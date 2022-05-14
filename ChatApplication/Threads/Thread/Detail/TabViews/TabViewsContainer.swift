@@ -87,7 +87,7 @@ struct Tabs:View{
                     .buttonStyle(.plain)
                 }
             }
-            .customAnimation(.default)
+            .animation(.spring(), value: selectedTabIndex)
             .padding([.top, .leading,.trailing])
         }
     }
@@ -100,6 +100,6 @@ struct Tab{
 
 struct TabViewsContainer_Previews: PreviewProvider {
     static var previews: some View {
-        TabViewsContainer(thread: ThreadRow_Previews.thread,selectedTabIndex: 0)
+        TabViewsContainer(thread: MockData.thread, selectedTabIndex: 0)
     }
 }

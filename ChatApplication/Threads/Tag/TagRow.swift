@@ -63,7 +63,8 @@ struct TagRow: View {
 			.padding([.leading , .trailing] , 8)
 			.padding([.top , .bottom] , 4)
 		})
-        .customAnimation(.default)
+        .animation(.easeInOut, value: showManageTag)
+        .animation(.easeInOut, value: isSelected)
         .sheet(isPresented: $showManageTag, onDismiss: nil, content: {
             ManageTagView(tag:tag, viewModel: viewModel) { tag in
                 
@@ -81,15 +82,7 @@ struct TagRow: View {
 
 struct TagRow_Previews: PreviewProvider {
 	
-    static var tag:Tag{
-        let owner = ParticipantRow_Previews.participant
-        let tag = Tag(id: 0, name: "Social",
-                      owner: owner, active: true,
-                      tagParticipants: TagParticipantRow_Previews.getTagParticipants(count: 20))
-        return tag
-	}
-    
 	static var previews: some View {
-		TagRow(tag: tag,viewModel: TagsViewModel())
+        TagRow(tag: MockData.tag,viewModel: TagsViewModel())
 	}
 }

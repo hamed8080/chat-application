@@ -10,9 +10,8 @@ import FanapPodChatSDK
 
 struct ThreadModel {
     
+    private (set) var isEnded                       = false
     private (set) var count                         = 15
-    private (set) var offset                        = 0
-    private (set) var totalCount                    = 0
     private (set) var messages :[Message]           = []
     private (set) var isViewDisplaying              = false
     private (set) var signalMessageText:String?     = nil
@@ -23,26 +22,19 @@ struct ThreadModel {
     private (set) var selectedMessages:[Message]    = []
     private (set) var editMessage:Message?          = nil
     private (set) var thread:Conversation?          = nil
+    private (set) var showExportView:Bool           = false
+    private (set) var exportFileUrl:URL?            = nil
     
-    func hasNext()->Bool{
-        return messages.count < totalCount
-    }
-    
-    mutating func preparePaginiation(){
-        offset = messages.count
-    }
-    
-    mutating func setContentCount(totalCount:Int){
-        self.totalCount = totalCount
-    }
-    
-    mutating func setMessages(messages:[Message]){
-        self.messages = messages
-        sort()
+    mutating func setEnded(){
+        self.isEnded = true
     }
     
     mutating func appendMessages(messages:[Message]){
-        self.messages.append(contentsOf: filterNewMessagesToAppend(serverMessages: messages))
+        if messages.count == 0{
+            setEnded()
+            return
+        }
+        self.messages.insert(contentsOf: filterNewMessagesToAppend(serverMessages: messages), at:0)
         sort()
     }
     
@@ -63,9 +55,7 @@ struct ThreadModel {
     }
     
     mutating func clear(){
-        self.offset     = 0
         self.count      = 15
-        self.totalCount = 0
         self.messages   = []
     }
 	
@@ -137,25 +127,16 @@ struct ThreadModel {
     mutating func setThread(_ thread:Conversation?){
         self.thread = thread
     }
+    
+    mutating func setShowExportView(_ show:Bool, exportFileUrl:URL?){
+        self.showExportView = show
+        self.exportFileUrl = exportFileUrl
+    }
 }
 
 extension ThreadModel{
     
-    mutating func setupPreview(){
-        let m1 = MessageRow_Previews.message
-        m1.message = "Hamed Hosseini"
-        m1.id = 1
-        
-        let m2 = MessageRow_Previews.message
-        m2.message = "Masoud Amjadi"
-        m2.id = 2
-        
-        let m3 = MessageRow_Previews.message
-        m2.message = "Pod Group"
-        m3.id = 3
-        
-        let m4 = UploadFileMessage(uploadFileUrl: URL(string: "http://sandbox.podspace.ir:8080/nzh/drive/downloadFile?hash=MGTCI6EZFAU4HO3G")!, textMessage: "Test")
-        m4.messageType = MessageType.TEXT.rawValue
-        appendMessages(messages: [m1 , m2, m3, m4])
+    mutating func setupPreview(){    
+        appendMessages(messages: MockData.generateMessages())
     }
 }

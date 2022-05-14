@@ -60,7 +60,7 @@ struct CallsHistoryContentList: View {
                         .padding([.trailing, .bottom], 8)
                     }
                 }
-                LoadingViewAtBottomOfView(isLoading:viewModel.isLoading ,reader:reader)
+                LoadingViewAt(isLoading:viewModel.isLoading ,reader:reader)
             }
             NavigationLink(
                 destination: GroupCallSelectionContentList(viewModel: viewModel),

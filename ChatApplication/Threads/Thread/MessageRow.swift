@@ -22,11 +22,15 @@ struct MessageRow: View{
     @State
     private var isSelected   = false
     
-    init(message: Message, viewModel:ThreadViewModel,isInEditMode: Binding<Bool>,isMeForPreView:Bool? = nil) {
+    var proxy:GeometryProxy
+    
+    init(message: Message, viewModel:ThreadViewModel,isInEditMode: Binding<Bool>,isMeForPreView:Bool? = nil, proxy:GeometryProxy) {
         self.message = message
         self.viewModel = viewModel
         self._isInEditMode = isInEditMode
-        self.isMe = isMeForPreView ?? (message.ownerId == (Chat.sharedInstance.getCurrentUser()?.id ?? AppState.shared.user?.id))
+        let cachedUserId = AppState.shared.user?.id
+        self.isMe = isMeForPreView ?? (message.ownerId == (cachedUserId ?? Chat.sharedInstance.userInfo?.id ?? AppState.shared.user?.id))
+        self.proxy = proxy
     }
     
     var body: some View {
@@ -44,9 +48,12 @@ struct MessageRow: View{
             }
             if let type = MessageType(rawValue: message.messageType ?? 0){
                 if let message = message as? UploadFileMessage{
-                    UploadMessageType(viewModel: viewModel, message: message)
+                    UploadMessageType(threaViewModel: viewModel, message: message)
                 }else if type == .TEXT || type == .PICTURE || type == .POD_SPACE_PICTURE || type == .FILE || type == .POD_SPACE_FILE {
-                    TextMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
+                    if isMe{
+                        Spacer()
+                    }
+                    TextMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel, proxy:proxy)
                 }else if type == .END_CALL || type == .START_CALL{
                     CallMessageType(message: message, showActionSheet: showActionSheet, isMe: isMe, viewModel: viewModel)
                 }
@@ -92,56 +99,41 @@ struct TextMessageType:View{
     @State var showActionSheet:Bool = false
     var isMe:Bool
     var viewModel:ThreadViewModel
+    var proxy:GeometryProxy
+    
     var body: some View {
         let type = MessageType(rawValue: message.messageType ?? 0)
         HStack{
             if isMe {
                 Spacer()
             }
-            VStack(spacing:8){
-                if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
-                    DownloadFileView(message: message)
-                        .frame(width: 128, height: 128)
-                }
+            let calculatedSize = message.calculatedMaxAndMinWidth(proxy: proxy)
+            VStack{
                 
                 if let forwardInfo = message.forwardInfo{
                     ForwardMessageRow(forwardInfo: forwardInfo)
                 }
                 
-                Text((message.message?.isEmpty == true ? message.metaData?.name : message.message) ?? "")
-                    .multilineTextAlignment(.trailing)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundColor(.black)
-                HStack{
-                    if let fileSize = message.metaData?.file?.size, let size = Int(fileSize){
-                        Text(size.toSizeString)
-                            .multilineTextAlignment(.leading)
-                            .font(.subheadline)
-                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                        Spacer()
-                    }
-                    if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time)) {
-                        Spacer()
-                        Text("\(date.getTime())")
-                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                            .font(.caption2.weight(.light))
-                    }
-                    
-                    if isMe{
-                        Image(uiImage: UIImage(named:  message.seen == true ? "double_checkmark" : "single_chekmark")!)
-                            .resizable()
-                            .frame(width: 14, height: 14)
-                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                            .font(.caption2.weight(.light))
-                    }
+                if type == .POD_SPACE_PICTURE || type == .PICTURE || type == .POD_SPACE_FILE || type == .FILE{
+                    DownloadFileView(message: message)
                 }
                 
-
+                //TODO: TEXT must be alignment and image muset be fit
+                Text(((message.message?.isEmpty ?? true) == true ? message.metaData?.name : message.message) ?? "")
+                    .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
+                    .padding(.top, 8)
+                    .padding([.leading, .trailing , .top])
+                    .font(Font(UIFont.systemFont(ofSize: 18)))
+                    .foregroundColor(.black)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                MessageFooterView(message: message, isMe: isMe)
+                    .padding(.bottom, 8)
+                    .padding([.leading, .trailing])
             }
-            .fixedSize()
-            .frame(minWidth: 72, minHeight: 48, alignment: .leading)
+            .frame(minWidth: calculatedSize.minWidth, maxWidth: calculatedSize.maxWidth, minHeight: 48, alignment: .leading)
+            .padding([.leading,.trailing] , 0)
             .contentShape(Rectangle())
-            .padding(8)
             .background(isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named:"chat_sender")!))
             .cornerRadius(12)
             .onTapGesture {
@@ -223,108 +215,117 @@ struct ForwardMessageRow:View{
     var showReadOnlyThreadView : Bool         = false
     
     var body: some View{
-        
-        VStack(spacing:0){
+        VStack(alignment: .leading, spacing:0){
             HStack{
-                Text(forwardInfo.participant?.name ?? "")
-                    .italic()
-                    .font(.footnote)
-                    .foregroundColor(Color.gray)
+                if let name = forwardInfo.participant?.name{
+                    Text(name)
+                        .italic()
+                        .font(.footnote)
+                        .foregroundColor(Color.gray)
+                }
+               Spacer()
                 Image(systemName: "arrowshape.turn.up.right")
                     .foregroundColor(Color.blue)
             }
+            .padding([.leading, .trailing, .top], 8)
             .frame(minHeight:20)
             Rectangle()
                 .fill(Color.gray.opacity(0.2))
                 .frame(height:1)
+                .padding([.top], 4)
+            if let forwardThread = forwardInfo.conversation{
+                NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: forwardThread, readOnly: true)), isActive: $showReadOnlyThreadView){
+                    EmptyView()
+                }
+                .frame(width:0)
+                .hidden()
+            }
         }.onTapGesture {
             showReadOnlyThreadView = true
-        }
-        if let forwardThread = forwardInfo.conversation{
-            NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: forwardThread, readOnly: true)), isActive: $showReadOnlyThreadView){
-                EmptyView()
-            }
         }
     }
 }
 
 struct UploadMessageType:View{
-    var viewModel:ThreadViewModel
+    
+    var threaViewModel:ThreadViewModel
     var message: UploadFileMessage
     
     var body: some View {
         
         HStack(alignment: .top){
             Spacer()
-            HStack{
-                UploadFileView(uploadFile:UploadFile(thread: viewModel.model.thread,
-                                                     fileUrl: message.uploadFileUrl,
-                                                     textMessage: message.message ?? ""
-                                                    ),
-                               viewModel: viewModel,
-                               message: UploadFileMessage(uploadFileUrl: message.uploadFileUrl)
-                )
-                    .frame(width: 148, height: 148)
+            VStack{
+                UploadFileView(threaViewModel, message: message)
+                .frame(width: 148, height: 148)
+                if let fileName = message.metaData?.name{
+                    Text(fileName)
+                        .foregroundColor(.black)
+                        .font(Font(UIFont.systemFont(ofSize: 18)))
+                }
+                
+                if let message = message.message{
+                    Text(message)
+                        .foregroundColor(.black)
+                        .font(Font(UIFont.systemFont(ofSize: 18)))
+                }
             }
+            .padding()
             .contentShape(Rectangle())
-            .frame(width: 128, height: 168)
             .background(Color(UIColor(named: "chat_me")!))
             .cornerRadius(12)
         }
     }
 }
 
+struct MessageFooterView:View{
+    let message:Message
+    let isMe:Bool
+    var body: some View{
+        HStack{
+            
+            if let fileSize = message.metaData?.file?.size, let size = Int(fileSize){
+                Text(size.toSizeString)
+                    .multilineTextAlignment(.leading)
+                    .font(.subheadline)
+                    .foregroundColor(Color(named: "dark_green").opacity(0.8))
+            }
+            Spacer()
+            HStack{
+                if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000) {
+                    Text("\(date.getTime())")
+                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .font(.subheadline)
+                }
+                
+                if isMe{
+                    Image(uiImage: UIImage(named:  message.seen == true ? "double_checkmark" : "single_chekmark")!)
+                        .resizable()
+                        .frame(width: 14, height: 14)
+                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .font(.subheadline)
+                }
+            }
+        }
+        .padding([.top], 4)
+    }
+}
+
 
 struct MessageRow_Previews: PreviewProvider {
-    static var message:Message{
-        let message = Message(threadId: 0,
-                              id: 12,
-                              message: "Hello",
-                              messageType: 1,
-                              seen: false,
-                              time: 1636807773)
-        return message
-    }
     
-    static var forwardedMessage:Message{
-        let ms = Message(threadId: 0,
-                         id: 12,
-                         message: "Hello",
-                         messageType: 1,
-                         seen: false,
-                         time: 1636807773,
-                         forwardInfo: ForwardInfo(conversation: ThreadRow_Previews.thread, participant: ParticipantRow_Previews.participant)
-        )
-        return ms
-    }
-    
-    static var downloadMessage:Message{
-        let metaData = FileMetaData(file: .init(fileExtension: ".pdf", link: "", mimeType: "", name: "Test File Name", originalName: "tes", size: 8240000))
-        let metaDataString = String(data: (try! JSONEncoder().encode(metaData)), encoding: .utf8)
-        return Message(threadId: 0,
-                       id: 12,
-                       message: "Hello",
-                       messageType: MessageType.FILE.rawValue,
-                       metadata: metaDataString,
-                       time: 1636807773
-        )
-    }
-    
-    static var uploadMessage:UploadFileMessage{
-        let msg = UploadFileMessage(uploadFileUrl: URL(string: "http://www.google.com")!, textMessage: "Test")
-        msg.message = "Film.mp4"
-        return msg
-    }
     
     static var previews: some View {
-        List{
-            let thread = ThreadRow_Previews.thread
-            MessageRow(message: message,viewModel:ThreadViewModel(thread: thread) , isInEditMode: .constant(true),isMeForPreView: false)
-            MessageRow(message: forwardedMessage,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: false)
-            MessageRow(message: message,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
-            MessageRow(message: downloadMessage, viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true)
-            MessageRow(message: uploadMessage, viewModel: ThreadViewModel(thread: thread), isInEditMode: .constant(true))
+        GeometryReader{ proxy in
+            List{
+                let thread = MockData.thread
+                MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread) , isInEditMode: .constant(true),isMeForPreView: false, proxy: proxy)
+                MessageRow(message: MockData.message,viewModel:ThreadViewModel(thread: thread), isInEditMode: .constant(true),isMeForPreView: true, proxy: proxy)
+                MessageRow(message: MockData.uploadMessage, viewModel: ThreadViewModel(thread: thread), isInEditMode: .constant(true),proxy: proxy)
+            }
+            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
+            .preferredColorScheme(.light)
+            .listStyle(.plain)
         }
-        .preferredColorScheme(.light)
     }
 }

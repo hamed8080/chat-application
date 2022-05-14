@@ -16,17 +16,17 @@ struct ThreadRow: View {
     @StateObject
     var viewModel:ThreadsViewModel
     
-    @EnvironmentObject
-    var appState:AppState
-    
     @State
     var isTypingText:String? = nil
 	
+    @Environment(\.isPreview)
+    var isPreview
+    
 	var body: some View {
-		let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
+        let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
 		Button(action: {}, label: {
-            HStack{
-                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata, imageSize: .MEDIUM , token: token)
+			HStack{
+                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata, imageSize: .MEDIUM , token: token, previewImageName: thread.image ?? "avatar")
 				VStack(alignment: .leading, spacing:8){
                     HStack{
                         Text(thread.title ?? "")
@@ -39,7 +39,7 @@ struct ThreadRow: View {
                                 .foregroundColor(Color.gray)
                         }
                     }
-					
+
 					if let message = thread.lastMessageVO?.message?.prefix(100){
 						Text(message)
 							.lineLimit(1)
@@ -109,38 +109,37 @@ struct ThreadRow: View {
 			.padding([.leading , .trailing] , 8)
 			.padding([.top , .bottom] , 4)
 		})
-        .customAnimation(.default)
         .contextMenu{
             Button {
                 viewModel.pinUnpinThread(thread)
             } label: {
                 Label((thread.pin ?? false) ? "UnPin" : "Pin", systemImage: "pin")
             }
-            
+
             Button {
                 viewModel.clearHistory(thread)
             } label: {
                 Label("Clear History", systemImage: "clock")
             }
-            
+
             Button {
                 viewModel.muteUnMuteThread(thread)
             } label: {
                 Label((thread.mute ?? false) ? "Unmute" : "Mute", systemImage: "speaker.slash")
             }
-            
+
             Button {
                 viewModel.showAddThreadToTag(thread)
             } label: {
                 Label("Add To Folder", systemImage: "folder.badge.plus")
             }
-            
+
             Button {
                 viewModel.spamPVThread(thread)
             } label: {
                 Label("Spam", systemImage: "ladybug")
             }
-            
+
             Button(role:.destructive) {
                 viewModel.deleteThread(thread)
             } label: {
@@ -158,14 +157,8 @@ struct ThreadRow: View {
 }
 
 struct ThreadRow_Previews: PreviewProvider {
-	static var thread:Conversation{
-        
-		let lastMessageVO = Message(message: "Hi hamed how are you? are you ok? and what are you ding now. And i was thinking you are sad for my behavoi last night.")
-        let thread = Conversation(description: "description", id: 123, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", pin: false, title: "Hamed Hosseini", type: ThreadTypes.PUBLIC_GROUP.rawValue, lastMessageVO: lastMessageVO)
-		return thread
-	}
 	
 	static var previews: some View {
-		ThreadRow(thread: thread,viewModel: ThreadsViewModel())
+        ThreadRow(thread: MockData.thread,viewModel: ThreadsViewModel())
 	}
 }

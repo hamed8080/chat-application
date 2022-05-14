@@ -32,6 +32,8 @@ struct ParticipantsModel {
     }
     
     mutating func appendParticipants(participants:[Participant]){
+        //remove older data to prevent duplicate on view
+        self.participants.removeAll(where: { participant in participants.contains(where: {participant.id == $0.id }) })
         self.participants.append(contentsOf: participants)
     }
     
@@ -45,21 +47,7 @@ struct ParticipantsModel {
 
 extension ParticipantsModel{
     
-    mutating func setupPreview(){
-        let t1 = ParticipantRow_Previews.participant
-        t1.name = "Hamed Hosseini"
-        t1.id = 1
-        
-        let t2 = ParticipantRow_Previews.participant
-        t2.name = "Masoud Amjadi"
-        t2.id = 2
-        t2.admin = false
-        
-        let t3 = ParticipantRow_Previews.participant
-        t2.name = "Pooria Pahlevani"
-        t3.id = 3
-        t3.admin = false
-        
-        appendParticipants(participants: [t1 , t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3, t2, t3])
+    mutating func setupPreview(){        
+        appendParticipants(participants: MockData.generateParticipants())
     }
 }

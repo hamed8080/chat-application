@@ -113,7 +113,6 @@ struct CallControlsContent: View {
             }
         }
         .background(Color(named: "background").ignoresSafeArea())
-        .customAnimation(.default)
         .onAppear{
             viewModel.startRequestCallIfNeeded()
         }
@@ -143,7 +142,6 @@ struct CallControlsContent: View {
                 .foregroundColor(Color.red)
                 .position(x: 32, y: 24)
                 .opacity(showRecordingIndicator ? 1 : 0)
-                .customAnimation(self.recoringIndicatorAnimation)
                 .onAppear{
                     showRecordingIndicator.toggle()
                 }
@@ -152,37 +150,35 @@ struct CallControlsContent: View {
     
     @ViewBuilder
     func getMoreCallControlsView()->some View{
-        SheetDialog(showAttachmentDialog: $showDetailPanel) {
-            HStack{
-                CallControlItem(iconSfSymbolName: "record.circle", subtitle: "Record", color: .red){
-                    if callState.model.isRecording{
-                        viewModel.stopRecording()
-                    }else{
-                        viewModel.startRecording()
-                    }
-                }
-                
+        HStack{
+            CallControlItem(iconSfSymbolName: "record.circle", subtitle: "Record", color: .red){
                 if callState.model.isRecording{
-                    Spacer()
-                    Text(callState.model.recordingTimerString ?? "")
-                        .foregroundColor(.white)
-                        .fontWeight(.medium)
-                        .padding(8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(.thinMaterial)
-                        )
+                    viewModel.stopRecording()
+                }else{
+                    viewModel.startRecording()
                 }
-            }.padding()
+            }
             
-            CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray){
-                withAnimation {
-                    showCallParticipants.toggle()
-                }
-            }.sheet(isPresented: $showCallParticipants, content: {
-                CallParticipantsContentList(callId: callState.model.startCall?.callId ?? 0)
-            })
-        }
+            if callState.model.isRecording{
+                Spacer()
+                Text(callState.model.recordingTimerString ?? "")
+                    .foregroundColor(.white)
+                    .fontWeight(.medium)
+                    .padding(8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(.thinMaterial)
+                    )
+            }
+        }.padding()
+        
+        CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray){
+            withAnimation {
+                showCallParticipants.toggle()
+            }
+        }.sheet(isPresented: $showCallParticipants, content: {
+            CallParticipantsContentList(callId: callState.model.startCall?.callId ?? 0)
+        })
         .layoutPriority(2)
         .frame(height:UIScreen.main.bounds.height)
         .ignoresSafeArea()
@@ -302,7 +298,6 @@ struct CallControlsContent: View {
                 }
                 .padding()
             }
-            .customAnimation(.easeInOut)
             .frame(height: defaultCellHieght)
             .background(Color(named: "call_item_background").opacity(0.7))
             .border(Color(named: "border_speaking"), width: userRTC.isSpeaking ? 3 : 0)
@@ -476,7 +471,7 @@ struct CallControlsView_Previews: PreviewProvider {
             .previewDevice("iPhone 13 Pro Max")
             .onAppear(){
                 
-                let participant = ParticipantRow_Previews.participant
+                let participant = MockData.participant
                 let receiveCall = CreateCall(type: .VIDEO_CALL, creatorId: 0, creator: participant, threadId: 0, callId: 0, group: false)
                 fakeParticipant(count: 20).forEach { callParticipant in
                     callState.addCallParicipant(callParticipant)
@@ -499,7 +494,7 @@ struct CallControlsView_Previews: PreviewProvider {
     static func fakeParticipant(count:Int)->[CallParticipant]{
         var participants:[CallParticipant] = []
         for i in (1...count){
-            let participant = ParticipantRow_Previews.participant
+            let participant = MockData.participant
             participant.name = "Hamed Hosseini \(i) "
             participants.append(CallParticipant(sendTopic: "TestTopic \(i)", participant:participant))
         }

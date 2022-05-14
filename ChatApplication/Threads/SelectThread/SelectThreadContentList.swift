@@ -50,12 +50,6 @@ struct SelectThreadContentList:View {
                 .padding(.top)
             }
         }
-        .onAppear {
-            UINavigationBar.changeAppearance(clear: false)
-            viewModel.setViewAppear(appear: true)
-        }.onDisappear {
-            viewModel.setViewAppear(appear: false)
-        }
     }
 }
 

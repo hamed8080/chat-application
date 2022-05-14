@@ -10,10 +10,10 @@ import FanapPodChatSDK
 
 class UploadFileMessage:Message{
     
-    var uploadFileUrl:URL
+    var uploadFileRequest:UploadFileRequest
     
-    init(uploadFileUrl:URL, textMessage:String = "") {
-        self.uploadFileUrl = uploadFileUrl
+    init(uploadFileRequest:UploadFileRequest, textMessage:String = "") {
+        self.uploadFileRequest = uploadFileRequest
         super.init(threadId: nil,
                    deletable: nil,
                    delivered: nil,
