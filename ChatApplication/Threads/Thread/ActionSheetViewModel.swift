@@ -29,6 +29,9 @@ class ActionSheetViewModel : ObservableObject{
         if lastIndex == -1 {
             return IndexSet()//if the user install app for first time and not accepted the permission to aceess photo gallery it cause crash cause index is equal -1
         }
+        if offset + 1 >= lastIndex{
+            return IndexSet()
+        }
         return IndexSet(self.offset + 1...lastIndex)
     }
     
