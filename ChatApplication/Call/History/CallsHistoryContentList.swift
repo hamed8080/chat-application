@@ -18,56 +18,50 @@ struct CallsHistoryContentList: View {
     var navigateToGroupCallSelction = false
     
     var body: some View {
-        GeometryReader{ reader in
-            VStack(spacing:0){
-                CustomNavigationBar(title: "Calls")
-                ZStack{
-                    List {
-                        ForEach(viewModel.model.calls , id:\.id) { call in
-                            NavigationLink(destination: CallDetails(viewModel: .init(call: call))){
-                                CallRow(call: call,viewModel: viewModel)
-                                    .frame(minHeight:64)
-                                    .onAppear {
-                                        if viewModel.model.calls.last == call{
-                                            viewModel.loadMore()
-                                        }
+        VStack(spacing:0){
+            ZStack{
+                List {
+                    ForEach(viewModel.model.calls , id:\.id) { call in
+                        NavigationLink(destination: CallDetails(viewModel: .init(call: call))){
+                            CallRow(call: call,viewModel: viewModel)
+                                .frame(minHeight:64)
+                                .onAppear {
+                                    if viewModel.model.calls.last == call{
+                                        viewModel.loadMore()
                                     }
-                            }
+                                }
                         }
-                    }
-                    .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
-                    .listStyle(PlainListStyle())
-                    VStack{
-                        Spacer()
-                        HStack{
-                            Spacer()
-                            Button {
-                                navigateToGroupCallSelction.toggle()
-                            } label: {
-                                Image(systemName:"video.fill")
-                                    .scaledToFit()
-                                    .foregroundColor(.white)
-                            }
-                            .buttonStyle(
-                                DeepButtonStyle(
-                                    frame: .init(width: 52, height: 52),
-                                    backgroundColor: Color(named: "text_color_blue"),
-                                    shadow: 2,
-                                    cornerRadius: 48
-                                )
-                            )
-                        }
-                        .padding([.trailing, .bottom], 8)
                     }
                 }
-                LoadingViewAt(isLoading:viewModel.isLoading ,reader:reader)
+                .listStyle(.plain)
+                
+                VStack{
+                    GeometryReader{ reader in
+                        LoadingViewAt(isLoading:viewModel.isLoading, reader: reader)
+                    }
+                }
             }
-            NavigationLink(
-                destination: GroupCallSelectionContentList(viewModel: viewModel),
-                isActive: $navigateToGroupCallSelction){
-                    EmptyView()
-                }
         }
+        .navigationTitle(Text("Calls"))
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button {
+                        navigateToGroupCallSelction.toggle()
+                    } label: {
+                        Label {
+                            Text("Start Call")
+                        } icon: {
+                            Image(systemName: "video.fill")
+                        }
+                    }
+            }
+        }
+        NavigationLink(
+            destination: GroupCallSelectionContentList(viewModel: viewModel),
+            isActive: $navigateToGroupCallSelction){
+                EmptyView()
+            }
+        
     }
 }
 

@@ -36,6 +36,11 @@ struct CallStateModel {
     private (set) var isSpeakerOn                  :Bool              = false
     private (set) var isFrontCamera                :Bool              = true
     
+    
+    mutating func setGroupName(name:String){
+        self.groupName = name
+    }
+    
     mutating func setReceiveCall(_ receiveCall:CreateCall){
         self.receiveCall = receiveCall
         self.isVideoCall = receiveCall.type == .VIDEO_CALL

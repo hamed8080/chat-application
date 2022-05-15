@@ -23,8 +23,8 @@ struct CallRow: View {
         HStack{
             Avatar(url: call.partnerParticipant?.image, userName: call.partnerParticipant?.name, style: .init(size: 48,textSize: 18))
             VStack(alignment: .leading){
-                Text(call.partnerParticipant?.name ?? "")
-                    .foregroundColor(.black)
+                Text(call.conversation?.title ?? call.partnerParticipant?.name ?? "")
+                
                 HStack{
                     Image(systemName: call.isIncomingCall ? "arrow.down.left" : "arrow.up.right")
                         .resizable()

@@ -46,11 +46,15 @@ struct SettingsView:View {
                     HStack{
                         Spacer()
                         VStack(spacing:12){
-                            Text(viewModel.model.currentUser?.name ?? "")
-                                .font(.title.bold())
                             
-                            Text(viewModel.model.currentUser?.cellphoneNumber ?? "")
-                                .font(.subheadline)
+                            if let name = viewModel.model.currentUser?.name{
+                                Text(name)
+                                    .font(.title.bold())
+                            }
+                            if let phone = viewModel.model.currentUser?.cellphoneNumber{
+                                Text(phone)
+                                    .font(.subheadline)
+                            }
                         }
                         Spacer()
                     }

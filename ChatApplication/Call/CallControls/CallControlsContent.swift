@@ -63,7 +63,7 @@ struct CallControlsContent: View {
     @Namespace private var ns
     
     var body: some View {
-        GeometryReader{ reader in
+
             ZStack{
                 
                 if let activeLargeCall = activeLargeCall {
@@ -111,7 +111,6 @@ struct CallControlsContent: View {
                 
                 recordingDot
             }
-        }
         .background(Color(named: "background").ignoresSafeArea())
         .onAppear{
             viewModel.startRequestCallIfNeeded()

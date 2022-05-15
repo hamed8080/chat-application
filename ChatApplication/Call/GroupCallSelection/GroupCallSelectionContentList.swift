@@ -21,11 +21,23 @@ struct GroupCallSelectionContentList: View {
     @EnvironmentObject
     var callState:CallState
     
+    @State
+    var groupTitle :String = ""
+    
     var body: some View {
         GeometryReader{ reader in
             ZStack{
                 VStack(spacing:0){
                     List {
+                        MultilineTextField("Group Name ...",text: $groupTitle, backgroundColor:Color.gray.opacity(0.2)){submit in
+                            hideKeyboard()
+                        }
+                        .cornerRadius(16)
+                        .noSeparators()
+                        .onChange(of: groupTitle) { newValue in
+                            callState.model.setGroupName(name: newValue)
+                        }
+                        
                         ForEach(contactViewModel.model.contacts , id:\.id) { contact in
                             
                             ContactRow(contact: contact , isInEditMode: $isInEditMode , viewModel: contactViewModel)
@@ -35,34 +47,43 @@ struct GroupCallSelectionContentList: View {
                                         viewModel.loadMore()
                                     }
                                 }
-                            
-                        }.onDelete(perform:contactViewModel.delete)
-                    }.listStyle(PlainListStyle())
-                    
-                    
-                    HStack{
-                        Button(action: {
-                            startCallRequest(isVideoCall: false)
-                        }, label: {
-                            callButton(title: "VOICE", icon: "phone")
-                        })
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            startCallRequest(isVideoCall: true)
-                        }, label: {
-                            callButton(title: "VIDEO", icon: "video")
-                            
-                        })
+                        }
+                        .onDelete(perform:contactViewModel.delete)
                     }
-                    .padding()
-                    .background(Color(named: "text_color_blue").ignoresSafeArea())
+                    .listStyle(.plain)
+                }
+                
+                VStack{
+                    GeometryReader{ reader in
+                        LoadingViewAt(isLoading:viewModel.isLoading, reader: reader)
+                    }
                 }
             }
-            LoadingViewAt(isLoading:contactViewModel.isLoading ,reader:reader)
         }
         .navigationBarTitle(Text("Select Contacts"), displayMode: .inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button {
+                    startCallRequest(isVideoCall: true)
+                } label: {
+                    Label {
+                        Text("VIDEO")
+                    } icon: {
+                        Image(systemName: "video.fill")
+                    }
+                }
+                
+                Button {
+                    startCallRequest(isVideoCall: false)
+                } label: {
+                    Label {
+                        Text("VOICE")
+                    } icon: {
+                        Image(systemName: "phone.fill")
+                    }
+                }
+            }
+        }
     }
     
     @ViewBuilder
@@ -72,15 +93,16 @@ struct GroupCallSelectionContentList: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
-                .foregroundColor(.white)
             
             Text(title.uppercased())
-                .foregroundColor(.white)
                 .font(.system(size: 16).bold())
         }
     }
     
     func startCallRequest(isVideoCall:Bool){
+        if groupTitle.isEmpty{
+            callState.model.setGroupName(name: "group")
+        }
         callState.model.setIsVideoCallRequest(isVideoCall)
         callState.model.setIsP2PCalling(false)
         callState.model.setSelectedContacts(contactViewModel.model.selectedContacts)
