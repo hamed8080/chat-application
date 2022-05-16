@@ -43,6 +43,10 @@ struct ParticipantsModel {
         self.totalCount = 0
         self.participants    = []
     }
+    
+    mutating func removeParticipant(_ participant:Participant){
+        participants.removeAll(where: {$0.id == participant.id})
+    }
 }
 
 extension ParticipantsModel{
