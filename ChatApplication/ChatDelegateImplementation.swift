@@ -30,6 +30,7 @@ enum ConnectionStatus:Int{
 let CONNECT_NAME = Notification.Name("NotificationIdentifier")
 let MESSAGE_NOTIFICATION_NAME = Notification.Name("MESSAGE_NOTIFICATION_NAME")
 let SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME = Notification.Name("SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME")
+let THREAD_EVENT_NOTIFICATION_NAME = Notification.Name("THREAD_EVENT_NOTIFICATION_NAME")
 
 
 class ChatDelegateImplementation: ChatDelegate {
@@ -98,6 +99,10 @@ class ChatDelegateImplementation: ChatDelegate {
         print(event)
         if case .System(let event) = event {
             NotificationCenter.default.post(name: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME, object: event)
+        }
+        
+        if case .Thread(let event) = event{
+            NotificationCenter.default.post(name: THREAD_EVENT_NOTIFICATION_NAME, object: event)
         }
         
         if case .Message(let event) = event {

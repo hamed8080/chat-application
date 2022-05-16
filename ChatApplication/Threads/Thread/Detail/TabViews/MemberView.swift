@@ -24,6 +24,13 @@ struct MemberView: View {
                             viewModel.loadMore()
                         }
                     }
+                    .contextMenu{
+                        Button(role: .destructive) {
+                            viewModel.removePartitipant(participant)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
             }
         }.onAppear {
             if viewModel.model.totalCount <= 0{

@@ -83,4 +83,13 @@ class ParticipantsViewModel:ObservableObject{
 	func deleteThread(_ thread:Conversation){
 		
 	}
+    
+    func removePartitipant(_ participant:Participant){
+        guard let id = participant.id else {return}
+        Chat.sharedInstance.removeParticipants(.init(participantId: id, threadId: threadId)) { [weak self]  participant, uniqueId, error in
+            if error == nil , let participant = participant?.first{
+                self?.model.removeParticipant(participant)
+            }
+        }
+    }
 }

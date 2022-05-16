@@ -37,6 +37,8 @@ class ThreadsViewModel:ObservableObject{
     private (set) var connectionStatusCancelable    : AnyCancellable? = nil
     private (set) var messageCancelable             : AnyCancellable? = nil
     private (set) var systemMessageCancelable       : AnyCancellable? = nil
+    private (set) var threadCancelable              : AnyCancellable? = nil
+    
     private (set) var isFirstTimeConnectedRequestSuccess = false
     
     @Published
@@ -54,6 +56,16 @@ class ThreadsViewModel:ObservableObject{
             .sink { messageEvent in
                 if messageEvent.type == .MESSAGE_NEW{
                     self.model.addNewMessageToThread(messageEvent)
+                }
+            }
+        
+        threadCancelable = NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
+            .compactMap{$0.object as? ThreadEventModel}
+            .sink { threadEvent in
+                if threadEvent.type == .THREAD_NEW, let threads = threadEvent.threads {
+                    withAnimation {
+                        self.model.appendThreads(threads: threads)
+                    }
                 }
             }
         
@@ -158,10 +170,8 @@ class ThreadsViewModel:ObservableObject{
     
     func deleteThread(_ thread:Conversation){
         guard let threadId = thread.id else {return}
-        Chat.sharedInstance.closeThread(.init(threadId: threadId)) { closedThreadId, uniqueId, error in
-            Chat.sharedInstance.leaveThread(.init(threadId: threadId)) { removedThread, unqiuesId, error in
-                self.model.removeThread(thread)
-            }
+        Chat.sharedInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { user, unqiuesId, error in
+            self.model.removeThread(thread)
         }
     }
     

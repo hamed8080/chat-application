@@ -31,14 +31,19 @@ struct ThreadsModel {
     
     mutating func setThreads(threads:[Conversation]){
         self.threads = threads
-        self.threads.sort(by: {$0.time ?? 0 > $1.time ?? 0})
-        self.threads.sort(by: {$0.pin == true && $1.pin == false})        
+        sort()
     }
     
     mutating func appendThreads(threads:[Conversation]){
         //remove older data to prevent duplicate on view
         self.threads.removeAll(where: { cashedThread in threads.contains(where: {cashedThread.id == $0.id }) })
         self.threads.append(contentsOf: threads)
+        sort()
+    }
+    
+    mutating func sort(){
+        self.threads.sort(by: {$0.time ?? 0 > $1.time ?? 0})
+        self.threads.sort(by: {$0.pin == true && $1.pin == false})
     }
     
     mutating func clear(){
