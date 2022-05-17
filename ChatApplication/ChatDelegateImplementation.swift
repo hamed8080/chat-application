@@ -108,6 +108,10 @@ class ChatDelegateImplementation: ChatDelegate {
         if case .Message(let event) = event {
             NotificationCenter.default.post(name: MESSAGE_NOTIFICATION_NAME, object: event)
         }
+        
+        if case .File(let event) = event {
+            print("file Event:\(dump(event))")
+        }
     }
     
 }
