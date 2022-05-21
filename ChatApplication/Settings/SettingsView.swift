@@ -163,7 +163,15 @@ struct SettingsMenu_Previews: PreviewProvider {
             SettingsView(viewModel:viewModel)
                 .environmentObject(AppState.shared)
                 .onAppear{
-                    viewModel.model.setCurrentUser(User(cellphoneNumber: "+98 936 916 1601", contactSynced: nil, coreUserId: nil, email: "h.hosseini.co@gmail.com", id: nil, image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png", lastSeen: nil, name: "Hamed Hosseini", receiveEnable: nil, sendEnable: nil, username: "hamed8080", chatProfileVO: nil))
+                    viewModel.model.setCurrentUser(
+                        User(
+                            cellphoneNumber: "+98 936 916 1601",
+                            email: "h.hosseini.co@gmail.com",
+                            image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png",
+                            name: "Hamed Hosseini",
+                            username: "hamed8080"
+                        )
+                    )
                 }
         }
     }
