@@ -52,25 +52,25 @@ class ThreadsViewModel:ObservableObject{
              self.connectionStatus = status
         }
         messageCancelable = NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
-            .compactMap{$0.object as? MessageEventModel}
-            .sink { messageEvent in
-                if messageEvent.type == .MESSAGE_NEW{
-                    self.model.addNewMessageToThread(messageEvent)
+            .compactMap{$0.object as? MessageEventTypes}
+            .sink { event in
+                if case .MESSAGE_NEW(let message) = event{
+                    self.model.addNewMessageToThread(message)
                 }
             }
         
         threadCancelable = NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
-            .compactMap{$0.object as? ThreadEventModel}
-            .sink { threadEvent in
-                if threadEvent.type == .THREAD_NEW, let threads = threadEvent.threads {
+            .compactMap{$0.object as? ThreadEventTypes}
+            .sink { event in
+                if case .THREAD_NEW(let newThreads) = event{
                     withAnimation {
-                        self.model.appendThreads(threads: threads)
+                        self.model.appendThreads(threads: [newThreads])
                     }
                 }
             }
         
         systemMessageCancelable = NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
-            .compactMap{$0.object as? SystemEventModel}
+            .compactMap{$0.object as? SystemEventTypes}
             .sink { systemMessageEvent in
                 self.startTyping(systemMessageEvent)
             }
@@ -180,12 +180,12 @@ class ThreadsViewModel:ObservableObject{
     }
     
     var lastIsTypingTime = Date()
-    func startTyping(_ systemMessageEvent:SystemEventModel) {
-        if systemMessageEvent.type == .IS_TYPING, model.addTypingThread(systemMessageEvent){
+    func startTyping(_ event:SystemEventTypes) {
+        if case .SYSTEM_MESSAGE(let message, _ , _) = event , message.smt == .IS_TYPING, model.addTypingThread(event){
             lastIsTypingTime = Date()
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
               if self.lastIsTypingTime.advanced(by: 1) < Date(){
-                    self.model.removeTypingThread(systemMessageEvent)
+                    self.model.removeTypingThread(event)
                     timer.invalidate()
                 }
             }

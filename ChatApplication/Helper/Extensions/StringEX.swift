@@ -31,7 +31,7 @@ extension String{
         }
     }
     
-    func signalMessage(signal:SystemEventTypes,onStart:@escaping (String)->(),onChangeText:@escaping (String,Timer)->(),onEnd:@escaping ()->()){
+    func signalMessage(signal:SMT,onStart:@escaping (String)->(),onChangeText:@escaping (String,Timer)->(),onEnd:@escaping ()->()){
         onStart(self)
         var count = 0
         var indicatorCount = 0
@@ -53,7 +53,7 @@ extension String{
         }
     }
     
-    func getSystemTypeString(type:SystemEventTypes)->String?{
+    func getSystemTypeString(type:SMT)->String?{
         switch type {
         case .IS_TYPING:
             return "typing"

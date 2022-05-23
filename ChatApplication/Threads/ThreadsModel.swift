@@ -15,7 +15,7 @@ struct ThreadsModel {
     private (set) var totalCount                                = 0
     private (set) var threads :[Conversation]                   = []
     private (set) var isViewDisplaying                          = false
-    private (set) var threadsTyping:[SystemEventModel]          = []
+    private (set) var threadsTyping:[SystemEventTypes]          = []
     
     func hasNext()->Bool{
         return threads.count < totalCount
@@ -76,17 +76,18 @@ struct ThreadsModel {
         isViewDisplaying = appear
     }
     
-    mutating func addNewMessageToThread(_ event:MessageEventModel){
-        if let index = threads.firstIndex(where: {$0.id == event.message?.conversation?.id}){
+    mutating func addNewMessageToThread(_ message:Message){
+        if let index = threads.firstIndex(where: {$0.id == message.conversation?.id}){
             let thread = threads[index]
-            thread.unreadCount = event.message?.conversation?.unreadCount ?? 1
-            thread.lastMessageVO = event.message
-            thread.lastMessage   = event.message?.message
+            thread.unreadCount = message.conversation?.unreadCount ?? 1
+            thread.lastMessageVO = message
+            thread.lastMessage   = message.message
         }
     }
     
-    mutating func addTypingThread(_ event:SystemEventModel)->Bool{
-        if threadsTyping.contains(where: {$0.threadId == event.threadId}) == false{
+    mutating func addTypingThread(_ event: SystemEventTypes)->Bool{
+        
+        if case .SYSTEM_MESSAGE(_, _, let id) = event, typingThreadIds.contains(where: {$0 == id}) == false{
             threadsTyping.append(event)
             return true
         }else{
@@ -94,9 +95,16 @@ struct ThreadsModel {
         }
     }
     
-    mutating func removeTypingThread(_ event:SystemEventModel){
-        if let index = threadsTyping.firstIndex(where: { $0.threadId == event.threadId }){
+    mutating func removeTypingThread(_ event:SystemEventTypes){
+        if case .SYSTEM_MESSAGE(_, _, let id) = event, let index = typingThreadIds.firstIndex(where: { $0 == id }){
             threadsTyping.remove(at: index)
+        }
+    }
+    
+    var typingThreadIds:[Int?]{
+        return threadsTyping.map{ event -> Int? in
+            guard case .SYSTEM_MESSAGE(_, _, let id) = event else {return nil}
+            return id
         }
     }
     

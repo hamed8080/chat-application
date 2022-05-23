@@ -32,7 +32,7 @@ struct LoadingViewAt: View {
     func position(reader:GeometryProxy) -> CGFloat{
         switch at {
         case .TOP:
-            return 0
+            return reader.size.height 
         case .CENTER:
             return reader.size.height / 2
         case .BOTTOM:
