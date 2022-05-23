@@ -34,6 +34,8 @@ class LoginViewModel: ObservableObject {
             .setParamsAsQueryString(req)
             .setOnError({ data, error in
                 print("error on login:\(error.debugDescription)")
+                self.isLoading = false
+                self.model.setState(.FAILED)
             })
             .request { [weak self] response in
                 self?.isLoading = false
@@ -55,6 +57,8 @@ class LoginViewModel: ObservableObject {
             .addRequestHeader(key: "keyId", value: req.keyId)
             .setOnError({ data, error in
                 print("error on requestOTP:\(error.debugDescription)")
+                self.isLoading = false
+                self.model.setState(.FAILED)
             })
             .request { [weak self] response in
                 self?.isLoading = false
@@ -79,6 +83,8 @@ class LoginViewModel: ObservableObject {
             .addRequestHeader(key: "keyId", value: req.keyId)
             .setOnError({ data, error in
                 print("error on verifyCode:\(error.debugDescription)")
+                self.isLoading = false
+                self.model.setState(.VERIFICATION_CODE_INCORRECT)
             })
             .request { [weak self] response in
                 self?.isLoading = false
@@ -88,30 +94,6 @@ class LoginViewModel: ObservableObject {
                     self.model.setState(.SUCCESS_LOGGED_IN)
                     Chat.sharedInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: true)
                     self.tokenManager.saveSSOToken(ssoToken: ssoToken)
-                }
-            }
-    }
-    
-    func refreshToken(){
-        guard let keyId = model.keyId else {return}
-        let client = RestClient<SSOTokenResponse>()
-        let req = VerifyRequest(identity: model.phoneNumber, keyId: keyId, otp: model.verifyCode)
-        self.isLoading = true
-        client
-            .setUrl(Routes.VERIFY)
-            .setMethod(.post)
-            .enablePrint(enable: true)
-            .setParamsAsQueryString(req)
-            .addRequestHeader(key: "keyId", value: req.keyId)
-            .setOnError({ data, error in
-                print("error on refreshToken:\(error.debugDescription)")
-            })
-            .request { [weak self] response in
-                self?.isLoading = false
-                guard let self = self else {return}
-                //save refresh token
-                if let _ = response.result?.accessToken{
-                    self.model.setState(.SUCCESS_LOGGED_IN)
                 }
             }
     }
