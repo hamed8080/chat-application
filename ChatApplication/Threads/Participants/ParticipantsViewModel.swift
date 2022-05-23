@@ -31,11 +31,11 @@ class ParticipantsViewModel:ObservableObject{
         }
         
         removeThreadParticipantCancelable = NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
-            .compactMap{$0.object as? ThreadEventModel}
-            .sink { threadEvent in
-                if threadEvent.type == .THREAD_REMOVE_PARTICIPANTS, let participants = threadEvent.participants {
+            .compactMap{$0.object as? ThreadEventTypes}
+            .sink { event in
+                if case .THREAD_REMOVE_PARTICIPANTS(let removedParticipants) = event {
                     withAnimation {
-                        participants.forEach { participant in
+                        removedParticipants.forEach { participant in
                             self.model.removeParticipant(participant)
                         }
                     }

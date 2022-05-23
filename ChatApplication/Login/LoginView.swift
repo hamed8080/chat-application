@@ -78,11 +78,23 @@ struct VerifyContentView:View{
             }
             .buttonStyle(PrimaryButtonStyle())
             
-            if viewModel.model.state == .VERIFICATION_CODE_INCORRECT{
-                Text("Verification Code was incorrect!")
-                    .foregroundColor(.red)
+            if viewModel.model.state == .FAILED || viewModel.model.state == .VERIFICATION_CODE_INCORRECT {
+                
+                let error = viewModel.model.state == .VERIFICATION_CODE_INCORRECT ? "An error occured! Try again." : "Your verification code is incorrect."
+                Text(error.uppercased())
+                    .font(.footnote.weight(.bold))
+                    .foregroundColor(.red.opacity(0.8))
             }
         }
+        .onChange(of: viewModel.model.state, perform: { newState in
+            if newState == .FAILED || newState == .VERIFICATION_CODE_INCORRECT{
+                hideKeyboard()
+            }
+        })
+        .onTapGesture {
+            hideKeyboard()
+        }
+        .animation(.easeInOut, value: viewModel.model.state)
         .transition(.move(edge: .trailing))
         
     }
@@ -121,11 +133,27 @@ struct LoginContentView:View{
             }
             .buttonStyle(PrimaryButtonStyle())
             
+            if viewModel.model.state == .FAILED{
+                Text("An error occured! Try again.".uppercased())
+                    .font(.footnote.weight(.bold))
+                    .foregroundColor(.red.opacity(0.8))
+                    .transition(.slide)
+            }
+            
             Text("If you get in trouble with the login, contact the support team.")
                 .multilineTextAlignment(.center)
                 .font(.subheadline.weight(.medium))
                 .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
         }
+        .onChange(of: viewModel.model.state, perform: { newState in
+            if newState != .FAILED{
+                hideKeyboard()
+            }
+        })
+        .onTapGesture {
+            hideKeyboard()
+        }
+        .animation(.easeInOut, value: viewModel.model.state)
         .transition(.move(edge: .trailing))
     }
 }
@@ -137,7 +165,7 @@ struct LoginView_Previews: PreviewProvider {
             //            Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
             //                vm.model.setIsInVerifyState(true)
             //            }
-            vm.model.setIsInVerifyState(false)
+            vm.model.setIsInVerifyState(true)
         }
     }
 }

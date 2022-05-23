@@ -45,7 +45,7 @@ struct ThreadRow: View {
 							.lineLimit(1)
 							.font(.subheadline)
 					}
-                    if viewModel.model.threadsTyping.contains(where: {$0.threadId == thread.id }){
+                    if viewModel.model.typingThreadIds.contains(where: {$0 == thread.id }){
                         Text(isTypingText ?? "")
                             .frame(width: 72, alignment: .leading)
                             .lineLimit(1)
@@ -56,7 +56,7 @@ struct ThreadRow: View {
                                     "typing".isTypingAnimationWithText { startText in
                                         self.isTypingText = startText
                                     } onChangeText: { text, timer in
-                                        if viewModel.model.threadsTyping.contains(where: {$0.threadId == thread.id }) == true{
+                                        if viewModel.model.typingThreadIds.contains(where: {$0 == thread.id }) == true{
                                             self.isTypingText = text
                                         }else{
                                             timer.invalidate()

@@ -42,16 +42,17 @@ class ThreadViewModel:ObservableObject{
         }
         
         messageCancelable = NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
-            .compactMap{$0.object as? MessageEventModel}
-            .sink { messageEvent in
-                if messageEvent.type == .MESSAGE_NEW , let message = messageEvent.message, self.model.isViewDisplaying{
+            .compactMap{$0.object as? MessageEventTypes}
+            .sink { event in
+                if case .MESSAGE_NEW(let message) = event, self.model.isViewDisplaying{
                     self.model.appendMessage(message)
                 }
             }
         systemMessageCancelable = NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
-            .compactMap{$0.object as? SystemEventModel}
-            .sink { systemMessageEvent in
-                if systemMessageEvent.type == .IS_TYPING && systemMessageEvent.threadId == self.model.thread?.id , self.typingTimerStarted == false{
+            .compactMap{$0.object as? SystemEventTypes}
+            .sink { event in
+                guard case .SYSTEM_MESSAGE(let message, _ , let id) = event else {return}
+                if message.smt == .IS_TYPING && id == self.model.thread?.id , self.typingTimerStarted == false{
                     self.typingTimerStarted = true
                     "typing".isTypingAnimationWithText { startText in
                         self.model.setSignalMessage(text: startText)
@@ -62,8 +63,8 @@ class ThreadViewModel:ObservableObject{
                         self.model.setSignalMessage(text: nil)
                     }
                 }
-                if systemMessageEvent.type != .IS_TYPING{
-                    String().getSystemTypeString(type: systemMessageEvent.type)?.signalMessage(signal: systemMessageEvent.type, onStart: { startText in
+                if message.smt != .IS_TYPING{
+                    String().getSystemTypeString(type: message.smt)?.signalMessage(signal: message.smt, onStart: { startText in
                         self.model.setSignalMessage(text: startText)
                     }, onChangeText: { text, timer in
                         self.model.setSignalMessage(text: text)

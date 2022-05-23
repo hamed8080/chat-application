@@ -62,6 +62,13 @@ struct ThreadView:View {
                         GeometryReader{ reader in
                             ScrollView{
                                 VStack(spacing:8){
+                                    if viewModel.isLoading{
+                                        VStack{
+                                            GeometryReader{ reader in
+                                                LoadingViewAt(isLoading:viewModel.isLoading, reader: reader)
+                                            }
+                                        }
+                                    }
                                     ForEach(viewModel.model.messages , id:\.uniqueId) { message in
                                         
                                         MessageRow(message: message,viewModel: viewModel, isInEditMode: $isInEditMode, proxy: reader)
