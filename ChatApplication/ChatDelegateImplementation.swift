@@ -31,6 +31,7 @@ let CONNECT_NAME = Notification.Name("NotificationIdentifier")
 let MESSAGE_NOTIFICATION_NAME = Notification.Name("MESSAGE_NOTIFICATION_NAME")
 let SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME = Notification.Name("SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME")
 let THREAD_EVENT_NOTIFICATION_NAME = Notification.Name("THREAD_EVENT_NOTIFICATION_NAME")
+let CALL_EVENT_NAME = Notification.Name.init("CALL_EVENT_NAME")
 
 
 class ChatDelegateImplementation: ChatDelegate {
@@ -92,10 +93,6 @@ class ChatDelegateImplementation: ChatDelegate {
         }
     }
     
-    func callError(error: CallError) {
-        print("call has error: \(error)")
-    }
-    
     func chatError(error: ChatError) {
         print(error)
     }
@@ -116,6 +113,10 @@ class ChatDelegateImplementation: ChatDelegate {
         
         if case .File(let event) = event {
             print("file Event:\(dump(event))")
+        }
+        
+        if case .Call(let event) = event {
+            NotificationCenter.default.post(name: CALL_EVENT_NAME, object: event)
         }
     }
     

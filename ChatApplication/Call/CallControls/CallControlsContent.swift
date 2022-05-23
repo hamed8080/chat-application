@@ -481,7 +481,7 @@ struct CallControlsView_Previews: PreviewProvider {
                 let chatDataDto = ChatDataDTO(sendMetaData: "", screenShare: "", reciveMetaData: "", turnAddress: "", brokerAddressWeb: "", kurentoAddress: "")
                 let startedCall = StartCall(certificateFile: "", clientDTO: clientDto, chatDataDto: chatDataDto, callName: nil, callImage: nil)
                 
-                callState.onCallStarted(NSNotification(name: STARTED_CALL_NAME_OBJECT, object: startedCall))
+                callState.onCallStarted(startedCall)
                 callState.model.setIsRecording(isRecording: false)
                 callState.model.setStartRecordingDate()
                 callState.startRecordingTimer()

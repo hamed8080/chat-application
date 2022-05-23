@@ -231,69 +231,109 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     }
 
 	private init() {
-		NotificationCenter.default.addObserver(self, selector: #selector(onCallSessionCreated(_:)), name: CALL_SESSION_CREATED_NAME_OBJECT, object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(onReceiveCall(_:)), name: RECEIVE_CALL_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onCallCanceled(_:)), name: CANCELED_CALL_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onCallStarted(_:)), name: STARTED_CALL_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onCallEnd(_:)), name: END_CALL_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onMuteParticipants(_:)), name: MUTE_CALL_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onUNMuteParticipants(_:)), name: UNMUTE_CALL_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onTurnVideoOnParticipants(_:)), name: TURN_ON_VIDEO_CALL_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onTurnVideoOffParticipants(_:)), name: TURN_OFF_VIDEO_CALL_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onCallStartRecording(_:)), name: START_CALL_RECORDING_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onCallStopRecording(_:)), name: STOP_CALL_RECORDING_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onCallParticipantJoined(_:)), name: CALL_PARTICIPANT_JOINED_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onCallParticipantLeft(_:)), name: CALL_PARTICIPANT_LEFT_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onCallParticipantSpeaking(_:)), name: CALL_PARTICIPANT_IS_SPEAKING_NAME_OBJECT, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onCallParticipantStoppedSpeaking(_:)), name: CALL_PARTICIPANT_STOPPED_SPEAKING_NAME_OBJECT, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(callEvent(_:)), name: CALL_EVENT_NAME, object: nil)
+	}
+    
+    @objc func callEvent(_ notification:NSNotification){
+        guard let type = (notification.object as? CallEventModel)?.type else{return}
+        switch type{
+        case .CALL_STARTED(let startCall):
+            onCallStarted(startCall)
+            break
+        case .CALL_CREATE(let createCall):
+            onCallCreated(createCall)
+            break
+        case .CALL_RECEIVED(let receieveCall):
+            onReceiveCall(receieveCall)
+            break
+        case .CALL_DELIVERED(_):
+            break
+        case .CALL_ENDED(let callId):
+            onCallEnd(callId)
+            break
+        case .CALL_CANCELED(let canceledCall):
+            onCallCanceled(canceledCall)
+            break
+        case .CALL_REJECTED(_):
+            break
+        case .START_CALL_RECORDING(let participant):
+            onCallStartRecording(participant)
+            break
+        case .STOP_CALL_RECORDING(let participant):
+            onCallStopRecording(participant)
+            break
+        case .CALL_PARTICIPANT_JOINED(let callParticipants):
+            onCallParticipantJoined(callParticipants)
+            break
+        case .CALL_PARTICIPANT_LEFT(let callParticipants):
+            onCallParticipantLeft(callParticipants)
+            break
+        case .CALL_PARTICIPANT_MUTE(let callParticipants):
+            onMuteParticipants(callParticipants)
+            break
+        case .CALL_PARTICIPANT_UNMUTE(let callParticipants):
+            onUNMuteParticipants(callParticipants)
+            break
+        case .CALL_PARTICIPANTS_REMOVED(_):
+            break
+        case .TURN_VIDDEO_ON(let callParticipants):
+            onTurnVideoOnParticipants(callParticipants)
+            break
+        case .TURN_VIDDEO_OFF(let callParticipants):
+            onTurnVideoOffParticipants(callParticipants)
+            break
+        case .CALL_CLIENT_ERROR(_):
+            break
+        case .CALL_PARTICIPANT_START_SPEAKING(let callParticipants):
+            onCallParticipantSpeaking(callParticipants)
+            break
+        case .CALL_PARTICIPANT_STOP_SPEAKING(let callParticipants):
+            onCallParticipantStoppedSpeaking(callParticipants)
+            break
+        }
+    }
+	
+	func onCallCreated(_ createCall: CreateCall){
+        model.setCallSessionCreated(createCall)
 	}
 	
-	@objc func onCallSessionCreated(_ notification: NSNotification){
-		if let createCall = notification.object as? CreateCall{
-			model.setCallSessionCreated(createCall)
-		}
-	}
-	
-	@objc func onReceiveCall(_ notification: NSNotification){
-		if let createCall = notification.object as? CreateCall{
-            model.setShowCallView(true)
-            model.setReceiveCall(createCall)
-            AppDelegate.shared.providerDelegate?.reportIncomingCall(uuid: model.uuid, handle: model.titleOfCalling, hasVideo: model.isVideoCall, completion: nil)
-		}
-	}
+    func onReceiveCall(_ createCall: CreateCall){
+        model.setShowCallView(true)
+        model.setReceiveCall(createCall)
+        AppDelegate.shared.providerDelegate?.reportIncomingCall(uuid: model.uuid, handle: model.titleOfCalling, hasVideo: model.isVideoCall, completion: nil)
+        
+    }
 	
 	//maybe reject or canceled after a time out
-    @objc func onCallCanceled(_ notification: NSNotification){
+    func onCallCanceled(_ canceledCall: Call){
         //don't remove showCallView == true leads to show callViewControls again in receiver of call who rejected call
-        if let _ = notification.object as? Call, model.showCallView{
+        if model.showCallView{
             model.setShowCallView(false)
             endCallKitCall()
 			resetCall()
         }
     }
     
-    @objc func onCallStarted(_ notification: NSNotification){
+    func onCallStarted(_ startCall:StartCall){
         
-        if let startCall = notification.object as? StartCall{
-            model.setStartedCall(startCall)
-            startTimer()
-            ///simulator File name
-            let smFileName = TARGET_OS_SIMULATOR != 0 ? "webrtc_user_a.mp4" : nil
-            let config = WebRTCConfig(startCall: startCall, isSendVideoEnabled: model.answerWithVideo || model.isVideoCall,fileName: smFileName)
-            WebRTCClientNew.instance = WebRTCClientNew(config: config , delegate: self)
-            addCallParicipant(.init(sendTopic: config.topicSend ?? "",
-                                              mute: startCall.clientDTO.mute,
-                                              video: startCall.clientDTO.video,
-                                              participant: .init(name:"ME")
-                                             ),
-                              direction:.SEND)
-            startCall.otherClientDtoList?.filter({$0.clientId != startCall.clientDTO.clientId}).forEach({ clientDTO in
-                let callParticipant = CallParticipant(sendTopic: clientDTO.topicSend,mute: clientDTO.mute, video: clientDTO.video)
-                addCallParicipant(callParticipant)
-            })
-            WebRTCClientNew.instance?.createSession()
-            fetchCallParticipants(startCall)
-        }
+        model.setStartedCall(startCall)
+        startTimer()
+        ///simulator File name
+        let smFileName = TARGET_OS_SIMULATOR != 0 ? "webrtc_user_a.mp4" : nil
+        let config = WebRTCConfig(startCall: startCall, isSendVideoEnabled: model.answerWithVideo || model.isVideoCall,fileName: smFileName)
+        WebRTCClientNew.instance = WebRTCClientNew(config: config , delegate: self)
+        addCallParicipant(.init(sendTopic: config.topicSend ?? "",
+                                mute: startCall.clientDTO.mute,
+                                video: startCall.clientDTO.video,
+                                participant: .init(name:"ME")
+                               ),
+                          direction:.SEND)
+        startCall.otherClientDtoList?.filter({$0.clientId != startCall.clientDTO.clientId}).forEach({ clientDTO in
+            let callParticipant = CallParticipant(sendTopic: clientDTO.topicSend,mute: clientDTO.mute, video: clientDTO.video)
+            addCallParicipant(callParticipant)
+        })
+        WebRTCClientNew.instance?.createSession()
+        fetchCallParticipants(startCall)
     }
 
     func fetchCallParticipants(_ startCall:StartCall) {
@@ -308,7 +348,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         }
     }
     
-    @objc func onCallEnd(_ notification: NSNotification){
+    func onCallEnd(_ callId: Int?){
         endCallKitCall()        
         model.setShowCallView(false)
         ResultViewController.printCallLogsFile()
@@ -316,66 +356,50 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         resetCall()
     }
     
-    @objc func onMuteParticipants(_ notification: NSNotification){
-        if let callParticipants = notification.object as? [CallParticipant]{
-            model.muteParticipants(callParticipants)
-        }
+    func onMuteParticipants(_ callParticipants: [CallParticipant]){
+        model.muteParticipants(callParticipants)
     }
     
-    @objc func onUNMuteParticipants(_ notification: NSNotification){
-        if let callParticipants = notification.object as? [CallParticipant]{
-            model.unmuteParticipants(callParticipants)
-        }
+    func onUNMuteParticipants(_ callParticipants: [CallParticipant]){
+        model.unmuteParticipants(callParticipants)
     }
     
-    @objc func onTurnVideoOnParticipants(_ notification: NSNotification){
-        if let callParticipants = notification.object as? [CallParticipant]{
-            model.turnOnVideoParticipants(callParticipants)
-        }
+    func onTurnVideoOnParticipants(_ callParticipants: [CallParticipant]){
+        model.turnOnVideoParticipants(callParticipants)
     }
     
-    @objc func onTurnVideoOffParticipants(_ notification: NSNotification){
-        if let callParticipants = notification.object as? [CallParticipant]{
-            model.turnOffVideoParticipants(callParticipants)
-        }
+    func onTurnVideoOffParticipants(_ callParticipants: [CallParticipant]){
+        model.turnOffVideoParticipants(callParticipants)
     }
     
-    @objc func onCallStartRecording(_ notification: NSNotification){
-        if let recorder = notification.object as? Participant{
-            model.setStartRecording(participant: recorder)
-        }
+    func onCallStartRecording(_ recorder:Participant){
+        model.setStartRecording(participant: recorder)
     }
     
-    @objc func onCallStopRecording(_ notification: NSNotification){
-        if let recorder = notification.object as? Participant{
-            model.setStopRecording(participant: recorder)
-        }
+    func onCallStopRecording(_ recorder:Participant){
+        model.setStopRecording(participant: recorder)
     }
     
     /// Setup UI and WEBRCT for new participant joined to the call
-    @objc func onCallParticipantJoined(_ notification: NSNotification){
-        (notification.object as? [CallParticipant])?.forEach { callParticipant in
+    func onCallParticipantJoined(_ callParticipants:[CallParticipant]){
+        callParticipants.forEach { callParticipant in
             addCallParicipant(callParticipant)
         }
     }
     
     /// Setup UI and WEBRCT for new participant joined to the call
-    @objc func onCallParticipantLeft(_ notification: NSNotification){
-        (notification.object as? [CallParticipant])?.forEach { callParticipant in
+    func onCallParticipantLeft(_ callParticipants: [CallParticipant]){
+        callParticipants.forEach { callParticipant in
             removeCallParticipant(callParticipant)
         }
     }
     
-    @objc func onCallParticipantSpeaking(_ notification: NSNotification){
-        if let callParticipant = notification.object as? CallParticipant{
-            model.setUserIsSpeaking(callParticipant)
-        }
+    func onCallParticipantSpeaking(_ callParticipant: CallParticipant){
+        model.setUserIsSpeaking(callParticipant)
     }
     
-    @objc func onCallParticipantStoppedSpeaking(_ notification: NSNotification){
-        if let callParticipant = notification.object as? CallParticipant{
-            model.setUserSoppedSpeaking(callParticipant)
-        }
+    func onCallParticipantStoppedSpeaking(_ callParticipant: CallParticipant){
+        model.setUserSoppedSpeaking(callParticipant)
     }
     
     func resetCall(){
