@@ -8,6 +8,7 @@
 import Foundation
 import FanapPodChatSDK
 import Combine
+import SwiftUI
 
 class ParticipantsViewModel:ObservableObject{
     
@@ -19,7 +20,7 @@ class ParticipantsViewModel:ObservableObject{
     @Published
     private (set) var model = ParticipantsModel()
     
-    
+    private (set) var removeThreadParticipantCancelable              : AnyCancellable? = nil
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     
     func getParticipantsIfConnected() {
@@ -28,6 +29,18 @@ class ParticipantsViewModel:ObservableObject{
                 self.getParticipants()
             }
         }
+        
+        removeThreadParticipantCancelable = NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
+            .compactMap{$0.object as? ThreadEventModel}
+            .sink { threadEvent in
+                if threadEvent.type == .THREAD_REMOVE_PARTICIPANTS, let participants = threadEvent.participants {
+                    withAnimation {
+                        participants.forEach { participant in
+                            self.model.removeParticipant(participant)
+                        }
+                    }
+                }
+            }
     }
     
     func getParticipants() {
