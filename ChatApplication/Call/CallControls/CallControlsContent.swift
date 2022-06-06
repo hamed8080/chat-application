@@ -106,7 +106,7 @@ struct CallControlsContent: View {
                     self.statusBarStyle.currentStyle = .default
                 }
                 if showDetailPanel{
-                    getMoreCallControlsView()
+                    moreCallControlsView
                 }
                 
                 recordingDot
@@ -148,7 +148,7 @@ struct CallControlsContent: View {
     }
     
     @ViewBuilder
-    func getMoreCallControlsView()->some View{
+    var moreCallControlsView: some View{
         HStack{
             CallControlItem(iconSfSymbolName: "record.circle", subtitle: "Record", color: .red){
                 if callState.model.isRecording{
@@ -374,9 +374,8 @@ struct CallControlsContent: View {
                 }
                 
                 let isVideoEnabled = callState.model.usersRTC.first(where: {$0.isVideoTopic && $0.direction == .SEND})?.isVideoOn ?? false
-                
-                ForEach(callState.model.usersRTC.filter{$0.isAudioTopic && $0.direction == .SEND}, id:\.self){ callUser in
-                    CallControlItem(iconSfSymbolName: callUser.isMute ? "mic.slash.fill" : "mic.fill", subtitle: "Mute", color: callUser.isMute ? .gray : .green){
+                if let audioCallUser = callState.model.usersRTC.filter{$0.isAudioTopic && $0.direction == .SEND}.first, let audioCallUser = audioCallUser{
+                    CallControlItem(iconSfSymbolName: audioCallUser.isMute ? "mic.slash.fill" : "mic.fill", subtitle: "Mute", color: audioCallUser.isMute ? .gray : .green){
                         viewModel.toggleMic()
                     }
                 }
