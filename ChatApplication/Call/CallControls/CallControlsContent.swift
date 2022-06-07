@@ -20,21 +20,9 @@ struct CallControlsContent: View {
     @Environment(\.localStatusBarStyle)
     var statusBarStyle          :LocalStatusBarStyle
     
-    @State
-    var showCallParticipants:Bool = false
-    
-    @State
-    var showDetailPanel:Bool = false
-    
     @Environment(\.presentationMode) var presentationMode
     
-    private let recoringIndicatorAnimation = Animation.easeInOut(duration: 1).repeatForever()
-    
-    @State
-    var showRecordingIndicator: Bool = false
-    
-    @State
-    var showToast = false
+    private let recoringIndicatorAnimation = Animation.easeInOut(duration: 1).repeatForever()    
     
     var gridColumns:[GridItem]{
         let videoCount = callState.model.usersRTC.filter{$0.isVideoTopic}.count
@@ -47,16 +35,12 @@ struct CallControlsContent: View {
         return isIpad ? isMoreThanTwoParticipant ? 350 : ipadHieghtForTwoParticipant : 150
     }
     
-    @State
-    var activeLargeCall:UserRCT? = nil
     var activeLargeRenderer = RTCMTLVideoView(frame: .zero)
-    
-    @State private var location: CGPoint = CGPoint(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height  - 164)
     
     var simpleDrag: some Gesture {
         DragGesture()
             .onChanged { value in
-                self.location = value.location
+                self.viewModel.location = value.location
             }
     }
     
@@ -66,7 +50,7 @@ struct CallControlsContent: View {
 
             ZStack{
                 
-                if let activeLargeCall = activeLargeCall {
+                if let activeLargeCall = viewModel.activeLargeCall {
                     centerCallView(activeLargeCall)
                 }
                 
@@ -86,7 +70,7 @@ struct CallControlsContent: View {
                             VStack{
                                 if isIpad{
                                     callStartedActions
-                                    .position(location)
+                                        .position(viewModel.location)
                                     .gesture(
                                         simpleDrag.simultaneously(with: simpleDrag)
                                     )
@@ -105,7 +89,7 @@ struct CallControlsContent: View {
                 .onDisappear{
                     self.statusBarStyle.currentStyle = .default
                 }
-                if showDetailPanel{
+                if viewModel.showDetailPanel{
                     moreCallControlsView
                 }
                 
@@ -117,10 +101,10 @@ struct CallControlsContent: View {
         }
         .onChange(of: callState.model.callRecorder, perform: { participant in
             if callState.model.callRecorder != nil{
-                showToast = true
+                viewModel.showToast = true
             }
         })
-        .toast(isShowing: $showToast,
+        .toast(isShowing: $viewModel.showToast,
                title: "Recording the call started",
                message: "\(callState.model.callRecorder?.name ?? "")is recording the call",
                image: Image(systemName: "record.circle")
@@ -140,9 +124,9 @@ struct CallControlsContent: View {
                 .frame(width: 16, height: 16)
                 .foregroundColor(Color.red)
                 .position(x: 32, y: 24)
-                .opacity(showRecordingIndicator ? 1 : 0)
+                .opacity(viewModel.showRecordingIndicator ? 1 : 0)
                 .onAppear{
-                    showRecordingIndicator.toggle()
+                    viewModel.showRecordingIndicator.toggle()
                 }
         }
     }
@@ -173,9 +157,9 @@ struct CallControlsContent: View {
         
         CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray){
             withAnimation {
-                showCallParticipants.toggle()
+                viewModel.showCallParticipants.toggle()
             }
-        }.sheet(isPresented: $showCallParticipants, content: {
+        }.sheet(isPresented: $viewModel.showCallParticipants, content: {
             CallParticipantsContentList(callId: callState.model.startCall?.callId ?? 0)
         })
         .layoutPriority(2)
@@ -185,13 +169,23 @@ struct CallControlsContent: View {
     
     @ViewBuilder
     var listLargeIpadParticipants:some View{
-        ScrollView{
-            LazyVGrid(columns: gridColumns,spacing: 16){
+        if callState.model.usersRTC.filter({$0.isVideoTopic}).count <= 2{
+            
+            HStack(spacing: 16){
                 ForEach(callState.model.usersRTC.filter{$0.isVideoTopic}, id:\.self){ userRTC in
                     callUserView(userRTC)
                 }
             }
             .padding([.leading,.trailing], 12)
+        }else{
+            ScrollView{
+                LazyVGrid(columns: gridColumns,spacing: 16){
+                    ForEach(callState.model.usersRTC.filter{$0.isVideoTopic}, id:\.self){ userRTC in
+                        callUserView(userRTC)
+                    }
+                }
+                .padding([.leading,.trailing], 12)
+            }
         }
     }
     
@@ -202,7 +196,7 @@ struct CallControlsContent: View {
                 ForEach(callState.model.usersRTC.filter{$0.isVideoTopic}, id:\.self){ userRTC in
                     callUserView(userRTC)
                         .onTapGesture {
-                            activeLargeCall = userRTC
+                            viewModel.activeLargeCall = userRTC
                         }
                 }
             }
@@ -224,7 +218,7 @@ struct CallControlsContent: View {
                     Spacer()
                     Button {
                         userRTC.videoTrack?.remove(activeLargeRenderer)
-                        self.activeLargeCall = nil
+                        self.viewModel.activeLargeCall = nil
                     } label: {
                         Image(systemName: "xmark.circle")
                             .resizable()
@@ -369,7 +363,7 @@ struct CallControlsContent: View {
             HStack(spacing:16){
                 CallControlItem(iconSfSymbolName: "ellipsis", subtitle: "More", color: .gray){
                     withAnimation {
-                        showDetailPanel.toggle()
+                        viewModel.showDetailPanel.toggle()
                     }
                 }
                 
@@ -462,16 +456,16 @@ struct CallControlsView_Previews: PreviewProvider {
         let appState = AppState.shared
         let callState = CallState.shared
         
-        CallControlsContent(viewModel:viewModel, showToast: false)
+        CallControlsContent(viewModel:viewModel)
             .preferredColorScheme(.dark)
             .environmentObject(appState)
             .environmentObject(callState)
-            .previewDevice("iPhone 13 Pro Max")
+            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .onAppear(){
                 
                 let participant = MockData.participant
                 let receiveCall = CreateCall(type: .VIDEO_CALL, creatorId: 0, creator: participant, threadId: 0, callId: 0, group: false)
-                fakeParticipant(count: 20).forEach { callParticipant in
+                fakeParticipant(count: 1).forEach { callParticipant in
                     callState.addCallParicipant(callParticipant)
                 }
                 callState.model.setReceiveCall(receiveCall)
@@ -486,6 +480,7 @@ struct CallControlsView_Previews: PreviewProvider {
                 callState.startRecordingTimer()
                 viewModel.setupPreview()
             }
+            .previewInterfaceOrientation(.portraitUpsideDown)
         
     }
     

@@ -14,6 +14,24 @@ class CallControlsViewModel:ObservableObject{
     @Published
     var isLoading = false
     
+    @Published
+    var showRecordingIndicator: Bool = false
+    
+    @Published
+    var showToast = false
+    
+    @Published
+    var showCallParticipants:Bool = false
+    
+    @Published
+    var showDetailPanel:Bool = false
+    
+    @Published
+    var activeLargeCall:UserRCT? = nil
+    
+    @Published
+    var location: CGPoint = CGPoint(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height  - 164)
+    
     let appState = AppState.shared
     
     let callState = CallState.shared
