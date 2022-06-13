@@ -157,7 +157,8 @@ class RestClient<D:Codable>{
         req?.setValue("Application/Json", forHTTPHeaderField: "Accept")
         req?.setValue(contentType, forHTTPHeaderField: "Content-Type")
         printRequest(req)
-        task = URLSession(configuration: config).dataTask(with: req){ data,response,error in
+        task = URLSession(configuration: config).dataTask(with: req){ [weak self] data,response,error in
+            guard let self = self else{return}
             self.printResponse(data,response,error)
             DispatchQueue.main.async {
                 self.onCompleted?()

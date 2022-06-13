@@ -26,7 +26,7 @@ struct ThreadRow: View {
         let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
 		Button(action: {}, label: {
 			HStack{
-                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata, imageSize: .MEDIUM , token: token, previewImageName: thread.image ?? "avatar")
+                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata, imageSize: .SMALL , token: token, previewImageName: thread.image ?? "avatar")
 				VStack(alignment: .leading, spacing:8){
                     HStack{
                         Text(thread.title ?? "")

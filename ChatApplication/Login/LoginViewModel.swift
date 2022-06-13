@@ -101,9 +101,8 @@ class LoginViewModel: ObservableObject {
 
 class TokenManager : ObservableObject{
     
-    
-    
     static let shared = TokenManager()
+    private let refreshTokenClient = RestClient<SSOTokenResponse>()
     
     @Published
     private (set) var isLoggedIn = false //to update login logout ui
@@ -119,8 +118,7 @@ class TokenManager : ObservableObject{
     
     func getNewTokenWithRefreshToken(){
         if let refreshToken = getSSOTokenFromUserDefaults()?.refreshToken{
-            let client = RestClient<SSOTokenResponse>()
-            client
+            refreshTokenClient
                 .enablePrint(enable: true)
                 .setUrl(Routes.REFRESH_TOKEN + "?refreshToken=\(refreshToken)")
                 .setOnError({ data, error in
@@ -172,7 +170,8 @@ class TokenManager : ObservableObject{
         if let ssoToken = getSSOTokenFromUserDefaults(),let createDate = getCreateTokenDate(){
             timer?.invalidate()
             let timeToStart = createDate.advanced(by:  Double(ssoToken.expiresIn)).timeIntervalSince1970 - Date().timeIntervalSince1970
-            timer = Timer.scheduledTimer(withTimeInterval: timeToStart  , repeats: false) { timer in
+            timer = Timer.scheduledTimer(withTimeInterval: timeToStart, repeats: false) { [weak self] timer in
+                guard let self = self else{return}
                 self.getNewTokenWithRefreshToken()
             }
         }

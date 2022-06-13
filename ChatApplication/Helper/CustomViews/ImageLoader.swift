@@ -14,13 +14,19 @@ class ImageLoader : ObservableObject{
     
     private (set) var didChange = PassthroughSubject<UIImage?,Never>()
     private var data:Data? = nil
+    private var size:ImageSize? = nil
     
     var image:UIImage?{
         guard let data = data else{return nil}
-        return UIImage(data: data)
+        if size == nil {
+            return UIImage(data: data)
+        }else{
+            return UIImage(data: data)?.preparingThumbnail(of: CGSize(width: size == .SMALL ? 128 : 256, height: size == .SMALL ? 128 : 256))
+        }
     }
     
     init(url:String? , fileMetaData:String?, size:ImageSize? = nil,token:String? = nil) {
+        self.size = size
         
         if let fileMetaData = fileMetaData,
            let fileMetaDataModel = try? JSONDecoder().decode(FileMetaData.self, from: fileMetaData.data(using: .utf8) ?? Data()),

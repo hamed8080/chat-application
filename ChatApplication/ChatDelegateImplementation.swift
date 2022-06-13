@@ -69,6 +69,7 @@ class ChatDelegateImplementation: ChatDelegate {
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .UnAuthorized
 		}
+        ResultViewController.addToLog(logResult: LogResult(json: "Error just happened: code\(errorCode) message:\(errorMessage) errorContent:\(errorResult.debugDescription)", receive: true))
 	}
     
     func chatState(state: ChatState, currentUser: User?, error: ChatError?) {
@@ -88,6 +89,10 @@ class ChatDelegateImplementation: ChatDelegate {
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .CONNECTED
             NotificationCenter.default.post(name: CONNECT_NAME, object: nil)
+        }
+        
+        if let error = error {
+            ResultViewController.addToLog(logResult: LogResult(json: "Error just happened chat state changed: code\(error.code) message:\(error.message ?? "nil") errorContent:\(error.content ?? "nil")", receive: true))
         }
     }
     
