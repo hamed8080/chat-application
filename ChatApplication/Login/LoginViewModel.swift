@@ -169,6 +169,7 @@ class TokenManager : ObservableObject{
     func startTimerToGetNewToken(){
         if let ssoToken = getSSOTokenFromUserDefaults(),let createDate = getCreateTokenDate(){
             timer?.invalidate()
+            timer = nil
             let timeToStart = createDate.advanced(by:  Double(ssoToken.expiresIn)).timeIntervalSince1970 - Date().timeIntervalSince1970
             timer = Timer.scheduledTimer(withTimeInterval: timeToStart, repeats: false) { [weak self] timer in
                 guard let self = self else{return}
