@@ -18,16 +18,18 @@ class LoginViewModel: ObservableObject {
     var isLoading = false
     
     var tokenManager  = TokenManager.shared
+    let handshakeClient = RestClient<HandshakeResponse>()
+    let authorizationClient = RestClient<AuthorizeResponse>()
+    let ssoClient = RestClient<SSOTokenResponse>()
     
     func login(){
         isLoading = true
-        let client = RestClient<HandshakeResponse>()
         let req = HandshakeRequest(deviceName: UIDevice.current.name,
                                    deviceOs: UIDevice.current.systemName,
                                    deviceOsVersion: UIDevice.current.systemVersion,
                                    deviceType: "MOBILE_PHONE",
                                    deviceUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
-        client
+        handshakeClient
             .setUrl(Routes.HANDSHAKE)
             .setMethod(.post)
             .enablePrint(enable: true)
@@ -46,10 +48,9 @@ class LoginViewModel: ObservableObject {
     
     func requestOTP( identity:String,  handskahe:HandshakeResponse){
         guard let keyId = handskahe.result?.keyId else {return}
-        let client = RestClient<AuthorizeResponse>()
         let req = AuthorizeRequest(identity: identity, keyId: keyId)
         self.isLoading = true
-        client
+        authorizationClient
             .setUrl(Routes.AUTHORIZE)
             .setMethod(.post)
             .enablePrint(enable: true)
@@ -72,10 +73,10 @@ class LoginViewModel: ObservableObject {
     
     func verifyCode(){
         guard let keyId = model.keyId else {return}
-        let client = RestClient<SSOTokenResponse>()
+        
         let req = VerifyRequest(identity: model.phoneNumber, keyId: keyId, otp: model.verifyCode)
         self.isLoading = true
-        client
+        ssoClient
             .setUrl(Routes.VERIFY)
             .setMethod(.post)
             .enablePrint(enable: true)

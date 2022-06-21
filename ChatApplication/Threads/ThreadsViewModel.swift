@@ -62,10 +62,20 @@ class ThreadsViewModel:ObservableObject{
         threadCancelable = NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
             .compactMap{$0.object as? ThreadEventTypes}
             .sink { event in
-                if case .THREAD_NEW(let newThreads) = event{
+                switch event{
+                    
+                case .THREAD_NEW(let newThreads):
                     withAnimation {
                         self.model.appendThreads(threads: [newThreads])
                     }
+                    break
+                case .THREAD_DELETED(threadId: let threadId, participant: _):
+                    if let thread = self.model.threads.first(where: {$0.id == threadId}){
+                        self.model.removeThread(thread)
+                    }
+                    break
+                default:
+                    break
                 }
             }
         
@@ -168,10 +178,19 @@ class ThreadsViewModel:ObservableObject{
         }
     }
     
-    func deleteThread(_ thread:Conversation){
+    func leaveThread(_ thread:Conversation){
         guard let threadId = thread.id else {return}
         Chat.sharedInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { user, unqiuesId, error in
             self.model.removeThread(thread)
+        }
+    }
+    
+    func deleteThread(_ thread:Conversation){
+        guard let threadId = thread.id else {return}
+        Chat.sharedInstance.deleteThread(.init(threadId: threadId)) { threadId, unqiuesId, error in
+            if threadId != nil{
+                self.model.removeThread(thread)
+            }
         }
     }
     

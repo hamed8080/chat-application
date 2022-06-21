@@ -122,10 +122,19 @@ struct ThreadRow: View {
             }
 
             Button(role:.destructive) {
-                viewModel.deleteThread(thread)
+                viewModel.leaveThread(thread)
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label("Leave", systemImage: "rectangle.portrait.and.arrow.right")
             }
+            
+            if thread.admin == true{
+                Button(role:.destructive) {
+                    viewModel.deleteThread(thread)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+            
             if let typeInt = thread.type , let type = ThreadTypes(rawValue: typeInt){
                 Button {
                     viewModel.showAddParticipants(thread)
