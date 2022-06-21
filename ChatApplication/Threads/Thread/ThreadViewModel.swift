@@ -417,6 +417,9 @@ class ThreadViewModel:ObservableObject{
     
     
     func hideExportView(){
+        if let url = model.exportFileUrl, FileManager.default.fileExists(atPath: url.path){
+            try? FileManager.default.removeItem(at: url)
+        }
         model.setShowExportView(false, exportFileUrl: nil)
     }
 }
