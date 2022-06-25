@@ -28,6 +28,12 @@ class ThreadViewModel:ObservableObject{
     @Published
     var connectionStatus:ConnectionStatus     = .Connecting
     
+    @Published
+    var searchedMessages:[Message] =  []
+    
+    @Published
+    var seachableText = ""
+    
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     private (set) var messageCancelable:AnyCancellable? = nil
     private (set) var systemMessageCancelable:AnyCancellable? = nil
@@ -421,6 +427,17 @@ class ThreadViewModel:ObservableObject{
             try? FileManager.default.removeItem(at: url)
         }
         model.setShowExportView(false, exportFileUrl: nil)
+    }
+    
+    
+    func searchInsideThread(offset: Int = 0){
+        guard let threadId = model.thread?.id, seachableText.count >= 2 else {return}
+        let req = GetHistoryRequest(threadId: threadId,count: 50, offset: offset, query: "\(seachableText)")
+        Chat.sharedInstance.getHistory(req) { messages, uniqueId, pagination, error in
+            if let messages = messages {
+                self.searchedMessages.append(contentsOf: messages)
+            }
+        }
     }
 }
  

@@ -53,91 +53,18 @@ struct ThreadView:View {
     
     @State
     var scrollingUP = false
-    
+
     var body: some View{
         ZStack{
             VStack{
                 ScrollViewReader{ scrollView in
                     ZStack{
-                        GeometryReader{ reader in
-                            ScrollView{
-                                VStack(spacing:8){
-                                    if viewModel.isLoading{
-                                        VStack{
-                                            GeometryReader{ reader in
-                                                LoadingViewAt(isLoading:viewModel.isLoading, reader: reader)
-                                            }
-                                        }
-                                    }
-                                    ForEach(viewModel.model.messages , id:\.uniqueId) { message in
-                                        
-                                        MessageRow(message: message,viewModel: viewModel, isInEditMode: $isInEditMode, proxy: reader)
-                                            .onAppear {
-                                                viewModel.sendSeenMessageIfNeeded(message)
-                                            }
-                                    }
-                                }
-                                .background(
-                                    GeometryReader {
-                                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                                    }
-                                )
-                                .padding([.leading, .trailing])
-                            }
-                            .simultaneousGesture(
-                                DragGesture().onChanged { value in
-                                    scrollingUP = value.translation.height > 0
-                                }
-                            )
-                            .coordinateSpace(name: "scroll")
-                            .onPreferenceChange(ViewOffsetKey.self) { value in
-                                if value < 64 && scrollingUP{
-                                    viewModel.loadMore()
-                                }
-                            }
-                        }
+                        threadList
                         .background(
-                            ZStack{
-                                Image("chat_bg")
-                                    .resizable(resizingMode: .tile)
-                                    .renderingMode(.template)
-                                    .opacity(colorScheme == .dark ? 0.9 : 0.25)
-                                    .colorInvert()
-                                    .colorMultiply(colorScheme == .dark ? Color.white : Color.cyan)
-                                let darkColors:[Color] = [.gray.opacity(0.5), .white.opacity(0.001)]
-                                let lightColors:[Color] = [.white.opacity(0.1), .gray.opacity(0.5)]
-                                LinearGradient(gradient: Gradient(colors:colorScheme == .dark ? darkColors : lightColors),
-                                               startPoint: .top,
-                                               endPoint: .bottom)
-                            }
+                            background
                         )
                         
-                        VStack{
-                            Spacer()
-                            HStack{
-                                Spacer()
-                                Button {
-                                    withAnimation(.easeInOut) {
-                                        if let index = viewModel.model.messages.firstIndex(where: {$0.uniqueId == viewModel.model.messages.last?.uniqueId}){
-                                            scrollView.scrollTo(viewModel.model.messages[index].uniqueId, anchor: .top)
-                                        }
-                                    }
-                                } label: {
-                                    Image(systemName: "chevron.down")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 16, height: 16)
-                                        .foregroundColor(Color.gray)
-                                        .aspectRatio(contentMode: .fit)
-                                }
-                                .frame(width: 24, height: 24)
-                                .padding(8)
-                                .background(Color.white)
-                                .cornerRadius(36)
-                                .contentShape(Rectangle())
-                            }
-                            .padding([.trailing] , 8)
-                        }
+                        goToBottomOfThread(scrollView: scrollView)
                         
                         VStack{
                             GeometryReader{ reader in
@@ -164,66 +91,11 @@ struct ThreadView:View {
             .toolbar{
                 
                 ToolbarItemGroup(placement:.navigationBarTrailing){
-                    if let thread = viewModel.model.thread{
-                        let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
-                        Avatar(
-                            url:thread.image ,
-                            userName: thread.inviter?.username?.uppercased(),
-                            fileMetaData: thread.metadata,
-                            imageSize: .MEDIUM,
-                            style: .init(size: 36),
-                            token: token,
-                            previewImageName: thread.image ?? "avatar"
-                        )
-                        .onTapGesture {
-                            showThreadDetailButton.toggle()
-                        }
-                        .cornerRadius(18)
-                    }
-                    
-                    Menu {
-                        Button {
-                            showDatePicker.toggle()
-                        } label: {
-                            Label {
-                                Text("Export")
-                            } icon: {
-                                Image(systemName: "square.and.arrow.up")
-                                    .resizable()
-                                    .scaledToFit()
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis")
-                    }
+                    trailingToolbar
                 }
                 
                 ToolbarItem(placement: .principal) {
-                    VStack (alignment:.center){
-                        
-                        Text(viewModel.model.thread?.title ?? "")
-                            .fixedSize()
-                            .font(.headline)
-                        
-                        if let signalMessageText = viewModel.model.signalMessageText{
-                            Text(signalMessageText)
-                                .foregroundColor(Color(named: "text_color_blue"))
-                                .font(.subheadline.bold())
-                        }
-                        
-                        if let participantsCount = viewModel.model.thread?.participantCount{
-                            Text("Members \(participantsCount)")
-                                .fixedSize()
-                                .foregroundColor(Color.gray)
-                                .font(.footnote)
-                        }
-                        
-                        if viewModel.connectionStatus != .CONNECTED{
-                            Text("\(viewModel.connectionStatus.stringValue) ...")
-                                .foregroundColor(Color(named: "text_color_blue"))
-                                .font(.subheadline.bold())
-                        }
-                    }
+                    centerToolbarTitle
                 }
             }
             .customDialog(isShowing: $showDeleteSelectedMessages, content: {
@@ -245,6 +117,26 @@ struct ThreadView:View {
                 }
             }
         }
+        .onChange(of: viewModel.seachableText, perform: { newValue in
+            viewModel.searchedMessages.removeAll()
+            viewModel.searchInsideThread()
+        })
+        .searchable(text: $viewModel.seachableText, placement: .toolbar, prompt: "Search inside this chat"){
+            if viewModel.searchedMessages.count == 0 {
+                Text("Nothing found.")
+                    .foregroundColor(.gray.opacity(0.9))
+            }else{
+                ForEach(viewModel.searchedMessages, id: \.self){ message in
+                    SearchMessageRow(message: message)
+                        .onAppear {
+                            if message == viewModel.searchedMessages.last{
+                                viewModel.searchInsideThread(offset: viewModel.searchedMessages.count)
+                            }
+                        }
+                }
+            }
+        }
+        .animation(.easeInOut, value: viewModel.searchedMessages.count)
         .animation(.easeInOut, value: showExportFileURL)
         .animation(.easeInOut, value: viewModel.model.isInEditMode)
         .animation(.easeInOut, value: viewModel.model.editMessage)
@@ -281,6 +173,156 @@ struct ThreadView:View {
                 viewModel.sendForwardMessage(selectedThread)
             }
         })
+    }
+    
+    @ViewBuilder
+    func goToBottomOfThread(scrollView: ScrollViewProxy) -> some View{
+        VStack{
+            Spacer()
+            HStack{
+                Spacer()
+                Button {
+                    withAnimation(.easeInOut) {
+                        if let index = viewModel.model.messages.firstIndex(where: {$0.uniqueId == viewModel.model.messages.last?.uniqueId}){
+                            scrollView.scrollTo(viewModel.model.messages[index].uniqueId, anchor: .top)
+                        }
+                    }
+                } label: {
+                    Image(systemName: "chevron.down")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(Color.gray)
+                        .aspectRatio(contentMode: .fit)
+                }
+                .frame(width: 24, height: 24)
+                .padding(8)
+                .background(Color.white)
+                .cornerRadius(36)
+                .contentShape(Rectangle())
+            }
+            .padding([.trailing] , 8)
+        }
+    }
+    
+    var centerToolbarTitle:some View{
+        VStack (alignment:.center){
+            
+            Text(viewModel.model.thread?.title ?? "")
+                .fixedSize()
+                .font(.headline)
+            
+            if let signalMessageText = viewModel.model.signalMessageText{
+                Text(signalMessageText)
+                    .foregroundColor(Color(named: "text_color_blue"))
+                    .font(.subheadline.bold())
+            }
+            
+            if let participantsCount = viewModel.model.thread?.participantCount{
+                Text("Members \(participantsCount)")
+                    .fixedSize()
+                    .foregroundColor(Color.gray)
+                    .font(.footnote)
+            }
+            
+            if viewModel.connectionStatus != .CONNECTED{
+                Text("\(viewModel.connectionStatus.stringValue) ...")
+                    .foregroundColor(Color(named: "text_color_blue"))
+                    .font(.subheadline.bold())
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var trailingToolbar: some View{
+        if let thread = viewModel.model.thread{
+            let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
+            Avatar(
+                url:thread.image ,
+                userName: thread.inviter?.username?.uppercased(),
+                fileMetaData: thread.metadata,
+                imageSize: .MEDIUM,
+                style: .init(size: 36),
+                token: token,
+                previewImageName: thread.image ?? "avatar"
+            )
+            .onTapGesture {
+                showThreadDetailButton.toggle()
+            }
+            .cornerRadius(18)
+        }
+        
+        Menu {
+            Button {
+                showDatePicker.toggle()
+            } label: {
+                Label {
+                    Text("Export")
+                } icon: {
+                    Image(systemName: "square.and.arrow.up")
+                        .resizable()
+                        .scaledToFit()
+                }
+            }
+        } label: {
+            Image(systemName: "ellipsis")
+        }
+    }
+    
+    var background:some View{
+        ZStack{
+            Image("chat_bg")
+                .resizable(resizingMode: .tile)
+                .renderingMode(.template)
+                .opacity(colorScheme == .dark ? 0.9 : 0.25)
+                .colorInvert()
+                .colorMultiply(colorScheme == .dark ? Color.white : Color.cyan)
+            let darkColors:[Color] = [.gray.opacity(0.5), .white.opacity(0.001)]
+            let lightColors:[Color] = [.white.opacity(0.1), .gray.opacity(0.5)]
+            LinearGradient(gradient: Gradient(colors:colorScheme == .dark ? darkColors : lightColors),
+                           startPoint: .top,
+                           endPoint: .bottom)
+        }
+    }
+    
+    var threadList:some View{
+        GeometryReader{ reader in
+            ScrollView{
+                VStack(spacing:8){
+                    if viewModel.isLoading{
+                        VStack{
+                            GeometryReader{ reader in
+                                LoadingViewAt(isLoading:viewModel.isLoading, reader: reader)
+                            }
+                        }
+                    }
+                    ForEach(viewModel.model.messages , id:\.uniqueId) { message in
+                        
+                        MessageRow(message: message,viewModel: viewModel, isInEditMode: $isInEditMode, proxy: reader)
+                            .onAppear {
+                                viewModel.sendSeenMessageIfNeeded(message)
+                            }
+                    }
+                }
+                .background(
+                    GeometryReader {
+                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                    }
+                )
+                .padding([.leading, .trailing])
+            }
+            .simultaneousGesture(
+                DragGesture().onChanged { value in
+                    scrollingUP = value.translation.height > 0
+                }
+            )
+            .coordinateSpace(name: "scroll")
+            .onPreferenceChange(ViewOffsetKey.self) { value in
+                if value < 64 && scrollingUP{
+                    viewModel.loadMore()
+                }
+            }
+        }
     }
 }
 
