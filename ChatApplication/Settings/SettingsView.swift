@@ -64,7 +64,7 @@ struct SettingsView:View {
                         GroupItemInSlideMenu<EmptyView>(name: "gear", title: "Setting", color: .blue,destinationView:EmptyView())
                         GroupItemInSlideMenu<EmptyView>(name: "phone", title: "Calls", color: .green,destinationView:EmptyView())
                         GroupItemInSlideMenu<EmptyView>(name: "bookmark", title: "Saved Messages", color: Color.purple , destinationView:EmptyView())
-                        GroupItemInSlideMenu<AnyView>(name: "note.text", title: "Logs", color: Color.yellow , destinationView:AnyView(resultViewWithIgnoreSafeArea()))
+                        GroupItemInSlideMenu<AnyView>(name: "note.text", title: "Logs", color: Color.yellow , destinationView:AnyView(LogView()))
                         
                         Button(action: {
                             Chat.sharedInstance.logOut()
@@ -122,10 +122,6 @@ struct SettingsView:View {
             }
         }
         .navigationTitle(Text("Settings"))
-    }
-    
-    @ViewBuilder func resultViewWithIgnoreSafeArea()->some View{
-       ResultView().ignoresSafeArea()
     }
 }
 
