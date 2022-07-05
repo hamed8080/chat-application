@@ -201,6 +201,7 @@ struct ThreadView:View {
                 .cornerRadius(36)
                 .contentShape(Rectangle())
             }
+            .padding(.bottom, 16)
             .padding([.trailing] , 8)
         }
     }
@@ -309,6 +310,7 @@ struct ThreadView:View {
                         Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                     }
                 )
+                .padding(.bottom)
                 .padding([.leading, .trailing])
             }
             .simultaneousGesture(

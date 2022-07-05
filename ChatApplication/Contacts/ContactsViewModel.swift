@@ -44,7 +44,9 @@ class ContactsViewModel:ObservableObject{
         Chat.sharedInstance.getContacts(.init(count:model.count,offset: model.offset)) { [weak self] contacts, uniqueId, pagination, error in
             if let contacts = contacts{
                 self?.isFirstTimeConnectedRequestSuccess = true
-                self?.model.setContacts(contacts: contacts, totalCount: pagination?.totalCount ?? 0)
+                self?.model.setHasNext(pagination?.hasNext ?? false)
+                self?.model.setContacts(contacts: contacts)
+                self?.model.setMaxContactsCountInServer(count: (pagination as? PaginationWithContentCount)?.totalCount ?? 0)
             }
         }
     }
@@ -52,9 +54,9 @@ class ContactsViewModel:ObservableObject{
     func getOfflineContacts() {
         let req = ContactsRequest(count:model.count,offset: model.offset)
         CacheFactory.get(useCache: true, cacheType: .GET_CASHED_CONTACTS(req)) { response in
-            let pagination  = Pagination(count: req.size, offset: req.offset, totalCount: CMContact.crud.getTotalCount())
             let contacts = response.cacheResponse as? [Contact]
-            self.model.setContacts(contacts: contacts, totalCount: pagination.totalCount)
+            self.model.setContacts(contacts: contacts)
+            self.model.setMaxContactsCountInServer(count: CMContact.crud.getTotalCount())
         }
     }
     
@@ -79,7 +81,7 @@ class ContactsViewModel:ObservableObject{
     }
     
     func loadMore(){
-        if !model.hasNext() || isLoading{return}
+        if !model.hasNext || isLoading || connectionStatus != .CONNECTED{return}
         isLoading = true
         model.preparePaginiation()
         Chat.sharedInstance.getContacts(.init(count:model.count,offset: model.offset)) {[weak self] contacts, uniqueId, pagination, error in

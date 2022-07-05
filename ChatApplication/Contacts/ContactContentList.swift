@@ -26,13 +26,13 @@ struct ContactContentList:View {
         ZStack{
             VStack(spacing:0){
                 List{
-                    if viewModel.model.totalCount > 0 {
+                    if viewModel.model.maxContactsCountInServer > 0 {
                         HStack(spacing:4){
                             Spacer()
                             Text("Total contacts:".uppercased())
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
-                            Text("\(viewModel.model.totalCount)")
+                            Text(verbatim: "\(viewModel.model.maxContactsCountInServer)")
                                 .fontWeight(.bold)
                             Spacer()
                         }

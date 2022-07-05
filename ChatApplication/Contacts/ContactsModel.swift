@@ -12,33 +12,33 @@ struct ContactsModel {
     
     private (set) var count                           = 15
     private (set) var offset                          = 0
-    private (set) var totalCount                      = 0
+    private (set) var maxContactsCountInServer        = 0
+    private (set) var hasNext:Bool                    = true
     private (set) var contacts :[Contact]             = []
     private (set) var selectedContacts :[Contact]     = []
     private (set) var searchedContacts:[Contact]      = []
     private (set) var showSearchedContacts            = false
- 
-    func hasNext()->Bool{
-        return contacts.count < totalCount
+    
+    mutating func setHasNext(_ hasNext:Bool){
+        self.hasNext = hasNext
     }
     
     mutating func preparePaginiation(){
         offset = contacts.count
     }
     
-    mutating func setContentCount(totalCount:Int){
-        self.totalCount = totalCount
-    }
-    
-    mutating func setContacts(contacts:[Contact]? , totalCount:Int ){
+    mutating func setContacts(contacts:[Contact]?){
         if let contacts = contacts{
             self.contacts = contacts
-            setContentCount(totalCount:totalCount)
         }
     }
     
     mutating func appendContacts(contacts:[Contact]){
         self.contacts.append(contentsOf: contacts)
+    }
+    
+    mutating func setMaxContactsCountInServer(count:Int){
+        self.maxContactsCountInServer = count
     }
     
     mutating func reomve(_ contact:Contact){
@@ -49,7 +49,6 @@ struct ContactsModel {
     mutating func clear(){
         self.offset     = 0
         self.count      = 15
-        self.totalCount = 0
         self.contacts   = []
     }
     
@@ -77,6 +76,6 @@ struct ContactsModel {
 extension ContactsModel{
     
     mutating func setupPreview(){
-        setContacts(contacts: MockData.generateContacts(), totalCount: 500)
+        setContacts(contacts: MockData.generateContacts())
     }
 }

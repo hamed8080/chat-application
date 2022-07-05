@@ -20,7 +20,6 @@ struct SearchMessageRow: View {
                 .padding(.top, 8)
                 .padding([.leading, .trailing , .top])
                 .font(Font(UIFont.systemFont(ofSize: 18)))
-                .foregroundColor(.black)
                 .fixedSize(horizontal: false, vertical: true)
             
             if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000) {

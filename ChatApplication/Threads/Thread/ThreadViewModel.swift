@@ -82,7 +82,7 @@ class ThreadViewModel:ObservableObject{
     }
     
     func loadMore(){
-        if isLoading || model.isEnded{return}
+        if isLoading || !model.hasNext || connectionStatus != .CONNECTED{return}
         isLoading = true
         getMessagesHistory(toTime: model.messages.first?.time)
     }
@@ -91,6 +91,7 @@ class ThreadViewModel:ObservableObject{
         guard let threadId = model.thread?.id else{return}
         Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count,offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)) {[weak self] messages, uniqueId, pagination, error in
             if let messages = messages{
+                self?.model.setHasNext(pagination?.hasNext ?? false)
                 self?.model.appendMessages(messages: messages)
                 self?.isLoading = false
             }

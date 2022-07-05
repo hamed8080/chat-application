@@ -93,7 +93,7 @@ class ThreadsViewModel:ObservableObject{
             if let threads = threads{
                 self?.isFirstTimeConnectedRequestSuccess = true
                 self?.model.appendThreads(threads: threads)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
+                self?.model.hasNext(pagination?.hasNext ?? false)
                 if let data = try? JSONEncoder().encode(threads){
                     self?.threadsData = data
                 }
@@ -105,16 +105,14 @@ class ThreadsViewModel:ObservableObject{
     func getOfflineThreads(){
         let req = ThreadsRequest(count:model.count,offset: model.offset)
         CacheFactory.get(useCache: true, cacheType: .GET_THREADS(req)) { response in
-            let pagination  = Pagination(count: req.count, offset: req.offset, totalCount: CMConversation.crud.getTotalCount())
             if let threads = response.cacheResponse as? [Conversation]{
                 self.model.setThreads(threads: threads)
-                self.model.setContentCount(totalCount: pagination.totalCount)
             }
         }
     }
     
     func loadMore(){
-        if !model.hasNext() || isLoading{return}
+        if !model.hasNext || isLoading || connectionStatus != .CONNECTED {return}
         isLoading = true
         model.preparePaginiation()
         getThreads()
