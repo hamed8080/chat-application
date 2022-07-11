@@ -10,7 +10,7 @@ import FanapPodChatSDK
 
 struct ThreadModel {
     
-    private (set) var isEnded                       = false
+    private (set) var hasNext                       = true
     private (set) var count                         = 15
     private (set) var messages :[Message]           = []
     private (set) var isViewDisplaying              = false
@@ -24,18 +24,17 @@ struct ThreadModel {
     private (set) var thread:Conversation?          = nil
     private (set) var showExportView:Bool           = false
     private (set) var exportFileUrl:URL?            = nil
-    
-    mutating func setEnded(){
-        self.isEnded = true
-    }
-    
+
     mutating func appendMessages(messages:[Message]){
         if messages.count == 0{
-            setEnded()
             return
         }
         self.messages.insert(contentsOf: filterNewMessagesToAppend(serverMessages: messages), at:0)
         sort()
+    }
+    
+    mutating func setHasNext(_ hasNext:Bool){
+        self.hasNext = hasNext
     }
     
     /// Filter only new messages prevent conflict with cache messages

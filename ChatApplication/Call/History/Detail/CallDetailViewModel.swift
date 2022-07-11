@@ -33,14 +33,14 @@ class CallDetailViewModel:ObservableObject{
         Chat.sharedInstance.callsHistory(.init(count:10,offset: 1,threadId: threadId)) {[weak self] calls, uniqueId, pagination, error in
             if let calls = calls{
                 self?.model.setCalls(calls: calls)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
+                self?.model.setHasNext(pagination?.hasNext ?? false)
             }
         }
     }
     
     func loadMore(){
         guard let threadId = model.call.conversation?.id else {return}
-        if !model.hasNext() || isLoading{return}
+        if !model.hasNext || isLoading{return}
         isLoading = true
         model.preparePaginiation()
         Chat.sharedInstance.callsHistory(.init(count:model.count,offset: model.offset,threadId: threadId)) {[weak self] calls, uniqueId, pagination, error in

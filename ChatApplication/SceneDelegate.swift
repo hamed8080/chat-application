@@ -57,7 +57,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     @objc func addLog(notification: NSNotification){
         if let log = notification.object as? LogResult{
-            ResultViewController.addToLog(logResult: log)
+            LogViewModel.addToLog(logResult: log)
         }
     }
 

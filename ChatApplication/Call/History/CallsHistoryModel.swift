@@ -12,19 +12,15 @@ struct CallsHistoryModel {
     
     private (set) var count                         = 15
     private (set) var offset                        = 0
-    private (set) var totalCount                    = 0
+    private (set) var hasNext                       = false
     private (set) var calls :[Call]                 = []
     
-    func hasNext()->Bool{
-        return calls.count < totalCount
+    mutating func setHasNext(_ hasNext:Bool){
+        self.hasNext = hasNext
     }
     
     mutating func preparePaginiation(){
         offset = calls.count
-    }
-    
-    mutating func setContentCount(totalCount:Int){
-        self.totalCount = totalCount
     }
     
     mutating func setCalls(calls:[Call]){
@@ -38,7 +34,7 @@ struct CallsHistoryModel {
     mutating func clear(){
         self.offset     = 0
         self.count      = 15
-        self.totalCount = 0
+        self.hasNext    = false
         self.calls      = []
     }
 

@@ -10,13 +10,14 @@ import FanapPodChatSDK
 
 struct ParticipantsModel {
     
+    private (set) var hasNext                       = true
     private (set) var count                         = 15
     private (set) var offset                        = 0
     private (set) var totalCount                    = 0
     private (set) var participants :[Participant]   = []
     
-    func hasNext()->Bool{
-        return participants.count < totalCount
+    mutating func setHasNext(_ hasNext:Bool){
+        self.hasNext = hasNext
     }
     
     mutating func preparePaginiation(){

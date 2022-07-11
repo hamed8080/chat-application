@@ -12,22 +12,18 @@ struct ThreadsModel {
     
     private (set) var count                                     = 15
     private (set) var offset                                    = 0
-    private (set) var totalCount                                = 0
     private (set) var threads :[Conversation]                   = []
     private (set) var isViewDisplaying                          = false
     private (set) var callsToJoin:[Call]                        = []
     private (set) var threadsTyping:[SystemEventTypes]          = []
+    private (set) var hasNext:Bool                              = true
     
-    func hasNext()->Bool{
-        return threads.count < totalCount
+    mutating func hasNext(_ hasNext:Bool){
+        self.hasNext = hasNext
     }
     
     mutating func preparePaginiation(){
         offset = count + offset
-    }
-    
-    mutating func setContentCount(totalCount:Int){
-        self.totalCount = totalCount
     }
     
     mutating func setThreads(threads:[Conversation]){
@@ -49,8 +45,6 @@ struct ThreadsModel {
     
     mutating func clear(){
         self.offset     = 0
-        self.count      = 15
-        self.totalCount = 0
         self.threads    = []
     }
 	

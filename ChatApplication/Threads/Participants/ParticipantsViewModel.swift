@@ -47,19 +47,19 @@ class ParticipantsViewModel:ObservableObject{
         
         Chat.sharedInstance.getThreadParticipants(.init(threadId: threadId)) {[weak self] participants, uniqueId, pagination, error in
             if let participants = participants{
+                self?.model.setHasNext(pagination?.hasNext ?? false)
                 self?.model.setParticipants(participants: participants)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
             }
         }cacheResponse: { [weak self] participants, uniqueId, pagination, error in
             if let participants = participants{
+                self?.model.setHasNext(pagination?.hasNext ?? false)
                 self?.model.setParticipants(participants: participants)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
             }
         }
     }
 
     func loadMore(){
-        if !model.hasNext() || isLoading{return}
+        if !model.hasNext || isLoading{return}
         isLoading = true
         model.preparePaginiation()
         
@@ -71,7 +71,6 @@ class ParticipantsViewModel:ObservableObject{
         } cacheResponse: {[weak self]  participants, uniqueId, pagination, error in
             if let participants = participants{
                 self?.model.setParticipants(participants: participants)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
             }
         }
     }

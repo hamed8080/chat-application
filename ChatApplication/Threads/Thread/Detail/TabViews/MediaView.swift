@@ -74,7 +74,7 @@ class AttachmentsViewModel: ObservableObject{
         Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count, messageType: MessageType.POD_SPACE_PICTURE.rawValue, offset: model.offset)) {[weak self] messages, uniqueId, pagination, error in
             if let messages = messages{
                 self?.model.appendMessages(messages: messages)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
+                self?.model.setHasNext(pagination?.hasNext ?? false)
             }
             self?.isLoading = false
         }cacheResponse: { [weak self] messages, uniqueId, error in
@@ -85,7 +85,7 @@ class AttachmentsViewModel: ObservableObject{
     }
     
     func loadMore(){
-        if !model.hasNext() || isLoading{return}
+        if !model.hasNext || isLoading{return}
         isLoading = true
         model.preparePaginiation()
         getPictures()
@@ -99,9 +99,10 @@ struct AttachmentModel {
     private (set) var offset                        = 0
     private (set) var totalCount                    = 0
     private (set) var messages :[Message]           = []
+    private (set) var hasNext:Bool                  = false
     
-    func hasNext()->Bool{
-        return messages.count < totalCount
+    mutating func setHasNext(_ hasNext:Bool){
+        self.hasNext = hasNext
     }
     
     mutating func preparePaginiation(){

@@ -351,7 +351,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     func onCallEnd(_ callId: Int?){
         endCallKitCall()        
         model.setShowCallView(false)
-        ResultViewController.printCallLogsFile()
+        LogViewModel.printCallLogsFile()
         WebRTCClientNew.instance?.clearResourceAndCloseConnection()
         resetCall()
     }
@@ -467,7 +467,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     
     func close(){
         WebRTCClientNew.instance?.clearResourceAndCloseConnection()
-        ResultViewController.printCallLogsFile()
+        LogViewModel.printCallLogsFile()
         resetCall()
     }
     

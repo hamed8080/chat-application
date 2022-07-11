@@ -31,8 +31,8 @@ struct AddOrEditContactView: View {
                 Button(action: {
                     let isPhone = validatePhone(value: contactValue)
                     let req:AddContactRequest = isPhone ?
-                        .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: nil, uniqueId: nil) :
-                        .init(email:nil,firstName:firstName,lastName: lastName, ownerId: nil, username: contactValue, typeCode: nil, uniqueId: nil)
+                        .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
+                        .init(email:nil,firstName:firstName,lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
                     Chat.sharedInstance.addContact(req) { contacts, uniqueId, error in
                         self.presentationMode.wrappedValue.dismiss()
                     }

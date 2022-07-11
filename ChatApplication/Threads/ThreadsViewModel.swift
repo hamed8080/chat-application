@@ -62,10 +62,20 @@ class ThreadsViewModel:ObservableObject{
         threadCancelable = NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
             .compactMap{$0.object as? ThreadEventTypes}
             .sink { event in
-                if case .THREAD_NEW(let newThreads) = event{
+                switch event{
+                    
+                case .THREAD_NEW(let newThreads):
                     withAnimation {
                         self.model.appendThreads(threads: [newThreads])
                     }
+                    break
+                case .THREAD_DELETED(threadId: let threadId, participant: _):
+                    if let thread = self.model.threads.first(where: {$0.id == threadId}){
+                        self.model.removeThread(thread)
+                    }
+                    break
+                default:
+                    break
                 }
             }
         
@@ -83,7 +93,7 @@ class ThreadsViewModel:ObservableObject{
             if let threads = threads{
                 self?.isFirstTimeConnectedRequestSuccess = true
                 self?.model.appendThreads(threads: threads)
-                self?.model.setContentCount(totalCount: pagination?.totalCount ?? 0 )
+                self?.model.hasNext(pagination?.hasNext ?? false)
                 if let data = try? JSONEncoder().encode(threads){
                     self?.threadsData = data
                 }
@@ -97,16 +107,14 @@ class ThreadsViewModel:ObservableObject{
     func getOfflineThreads(){
         let req = ThreadsRequest(count:model.count,offset: model.offset)
         CacheFactory.get(useCache: true, cacheType: .GET_THREADS(req)) { response in
-            let pagination  = Pagination(count: req.count, offset: req.offset, totalCount: CMConversation.crud.getTotalCount())
             if let threads = response.cacheResponse as? [Conversation]{
                 self.model.setThreads(threads: threads)
-                self.model.setContentCount(totalCount: pagination.totalCount)
             }
         }
     }
     
     func loadMore(){
-        if !model.hasNext() || isLoading{return}
+        if !model.hasNext || isLoading || connectionStatus != .CONNECTED {return}
         isLoading = true
         model.preparePaginiation()
         getThreads()
@@ -170,10 +178,19 @@ class ThreadsViewModel:ObservableObject{
         }
     }
     
-    func deleteThread(_ thread:Conversation){
+    func leaveThread(_ thread:Conversation){
         guard let threadId = thread.id else {return}
         Chat.sharedInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { user, unqiuesId, error in
             self.model.removeThread(thread)
+        }
+    }
+    
+    func deleteThread(_ thread:Conversation){
+        guard let threadId = thread.id else {return}
+        Chat.sharedInstance.deleteThread(.init(threadId: threadId)) { threadId, unqiuesId, error in
+            if threadId != nil{
+                self.model.removeThread(thread)
+            }
         }
     }
     

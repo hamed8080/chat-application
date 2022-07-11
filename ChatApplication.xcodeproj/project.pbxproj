@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		050E521027EF275C009F52D3 /* CallControlsContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050E520F27EF275C009F52D3 /* CallControlsContent.swift */; };
+		0505C4E32869A19F0034A9F0 /* LogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E22869A19F0034A9F0 /* LogViewModel.swift */; };
+		0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E42869A1C90034A9F0 /* LogView.swift */; };
+		0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E62869A4220034A9F0 /* LogRow.swift */; };
+		0505C4EF2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4ED2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld */; };
+		0505C4F22869AC800034A9F0 /* PSM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4F12869AC800034A9F0 /* PSM.swift */; };
 		0506366E2801A8740080DF00 /* EnvironmentEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0506366D2801A8740080DF00 /* EnvironmentEX.swift */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
@@ -44,6 +49,7 @@
 		05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586497F282D40A200218ED0 /* LoadingViewAt.swift */; };
 		05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05962116280BF85B0036B3AA /* DateSelectionView.swift */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
+		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
 		05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */; };
 		05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */; };
 		05E2324C27C2267700FEA7A2 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E2324B27C2267700FEA7A2 /* ImagePicker.swift */; };
@@ -62,9 +68,6 @@
 		AC0889AA2691C32F00FD4552 /* TestSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0889A92691C32F00FD4552 /* TestSwiftUI.swift */; };
 		AC0889AC2691D47E00FD4552 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0889AB2691D47E00FD4552 /* AppState.swift */; };
 		AC0889B02691E14500FD4552 /* CustomHostinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0889AF2691E14500FD4552 /* CustomHostinViewController.swift */; };
-		AC0B1D652690721000C6917A /* LogCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0B1D642690721000C6917A /* LogCell.swift */; };
-		AC0B1D672690723B00C6917A /* ResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0B1D662690723B00C6917A /* ResultViewController.swift */; };
-		AC0B1D692690726100C6917A /* Result.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC0B1D682690726100C6917A /* Result.storyboard */; };
 		AC0FE1372755047A00C7A8DB /* IntEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0FE1362755047A00C7A8DB /* IntEX.swift */; };
 		AC10007126F4655E00C3AD67 /* AuthorizeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC10007026F4655E00C3AD67 /* AuthorizeResponse.swift */; };
 		AC10007326F4674500C3AD67 /* SSOTokenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC10007226F4674500C3AD67 /* SSOTokenResponse.swift */; };
@@ -199,6 +202,11 @@
 
 /* Begin PBXFileReference section */
 		050E520F27EF275C009F52D3 /* CallControlsContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsContent.swift; sourceTree = "<group>"; };
+		0505C4E22869A19F0034A9F0 /* LogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewModel.swift; sourceTree = "<group>"; };
+		0505C4E42869A1C90034A9F0 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
+		0505C4E62869A4220034A9F0 /* LogRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogRow.swift; sourceTree = "<group>"; };
+		0505C4EE2869AB750034A9F0 /* ChatApplicationModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChatApplicationModel.xcdatamodel; sourceTree = "<group>"; };
+		0505C4F12869AC800034A9F0 /* PSM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSM.swift; sourceTree = "<group>"; };
 		0506366D2801A8740080DF00 /* EnvironmentEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentEX.swift; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
@@ -232,6 +240,7 @@
 		0586497F282D40A200218ED0 /* LoadingViewAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAt.swift; sourceTree = "<group>"; };
 		05962116280BF85B0036B3AA /* DateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSelectionView.swift; sourceTree = "<group>"; };
 		05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifire.swift; sourceTree = "<group>"; };
+		05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
 		05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryToggleStyle.swift; sourceTree = "<group>"; };
 		05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToViewModel.swift; sourceTree = "<group>"; };
 		05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToThreadView.swift; sourceTree = "<group>"; };
@@ -255,9 +264,6 @@
 		AC0889A92691C32F00FD4552 /* TestSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSwiftUI.swift; sourceTree = "<group>"; };
 		AC0889AB2691D47E00FD4552 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		AC0889AF2691E14500FD4552 /* CustomHostinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHostinViewController.swift; sourceTree = "<group>"; };
-		AC0B1D642690721000C6917A /* LogCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogCell.swift; sourceTree = "<group>"; };
-		AC0B1D662690723B00C6917A /* ResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewController.swift; sourceTree = "<group>"; };
-		AC0B1D682690726100C6917A /* Result.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Result.storyboard; sourceTree = "<group>"; };
 		AC0FE1362755047A00C7A8DB /* IntEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntEX.swift; sourceTree = "<group>"; };
 		AC10007026F4655E00C3AD67 /* AuthorizeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizeResponse.swift; sourceTree = "<group>"; };
 		AC10007226F4674500C3AD67 /* SSOTokenResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSOTokenResponse.swift; sourceTree = "<group>"; };
@@ -394,6 +400,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0505C4F02869AC620034A9F0 /* Cache */ = {
+			isa = PBXGroup;
+			children = (
+				0505C4F12869AC800034A9F0 /* PSM.swift */,
+			);
+			path = Cache;
+			sourceTree = "<group>";
+		};
 		051DAF1027B91997002876C9 /* SelectThread */ = {
 			isa = PBXGroup;
 			children = (
@@ -473,20 +487,21 @@
 				AC085F3A2692EA8A001492B2 /* Config.json */,
 				AC1D2CAD2661FFAD00AA351A /* Assets.xcassets */,
 				AC1D2CB22661FFAD00AA351A /* LaunchScreen.storyboard */,
+				0505C4ED2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld */,
 				AC085F3D2692EC71001492B2 /* Config.swift */,
 				05DCB6872806102B00D7F37A /* MockData.json */,
 			);
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		AC0B1D63269071F500C6917A /* Result */ = {
+		AC0B1D63269071F500C6917A /* Log */ = {
 			isa = PBXGroup;
 			children = (
-				AC0B1D642690721000C6917A /* LogCell.swift */,
-				AC0B1D662690723B00C6917A /* ResultViewController.swift */,
-				AC0B1D682690726100C6917A /* Result.storyboard */,
+				0505C4E22869A19F0034A9F0 /* LogViewModel.swift */,
+				0505C4E42869A1C90034A9F0 /* LogView.swift */,
+				0505C4E62869A4220034A9F0 /* LogRow.swift */,
 			);
-			path = Result;
+			path = Log;
 			sourceTree = "<group>";
 		};
 		AC122EC0266B827B00C0630F /* Home */ = {
@@ -524,9 +539,10 @@
 			children = (
 				AC924CC2274A77BC00E33BD1 /* ChatApplication.entitlements */,
 				AC9891E2275E3D48007973F7 /* Call */,
+				0505C4F02869AC620034A9F0 /* Cache */,
 				ACC3C5EA26F462EE00AEE578 /* Login */,
 				AC085F3C2692EC2E001492B2 /* Supporting Files */,
-				AC0B1D63269071F500C6917A /* Result */,
+				AC0B1D63269071F500C6917A /* Log */,
 				AC7B6D76266DFACC0059782E /* Settings */,
 				AC9DAC6B266CAD44009E4722 /* Contacts */,
 				AC122EC0266B827B00C0630F /* Home */,
@@ -649,6 +665,7 @@
 				ACEAEDD6274CFA1100EC8252 /* AttachmentDialog.swift */,
 				ACEAEDD4274CF87600EC8252 /* ActionSheetViewModel.swift */,
 				ACF82E0E275230C3000330DB /* UploadFileMessage.swift */,
+				05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -985,7 +1002,6 @@
 				AC989204275E3D48007973F7 /* WebRTC.storyboard in Resources */,
 				AC085F3B2692EA8A001492B2 /* Config.json in Resources */,
 				AC1D2CAE2661FFAD00AA351A /* Assets.xcassets in Resources */,
-				AC0B1D692690726100C6917A /* Result.storyboard in Resources */,
 				AC2D31C426EF75BC008FF43F /* webrtc_user_b.mp4 in Resources */,
 				AC2D31C326EF75BC008FF43F /* webrtc_user_a.mp4 in Resources */,
 			);
@@ -1102,7 +1118,9 @@
 				AC98921A275E3D48007973F7 /* GroupCallSelectionContentList.swift in Sources */,
 				AC6D532626F1AF4400CBC059 /* ThreadModel.swift in Sources */,
 				05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */,
+				0505C4EF2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld in Sources */,
 				05384A8C2792FB5000D85A92 /* PrimaryCustomDialog.swift in Sources */,
+				0505C4E32869A19F0034A9F0 /* LogViewModel.swift in Sources */,
 				AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */,
 				05384A802792996200D85A92 /* TagsModel.swift in Sources */,
 				05E2324C27C2267700FEA7A2 /* ImagePicker.swift in Sources */,
@@ -1118,6 +1136,7 @@
 				AC122EC2266B82A000C0630F /* ThreadContentList.swift in Sources */,
 				057977B72805548000FE5EA4 /* UIColor.swift in Sources */,
 				ACA6DA79271ABB2200286563 /* ActivityViewControllerWrapper.swift in Sources */,
+				0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */,
 				05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */,
 				ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */,
 				055B26A027D5FA0F0098D585 /* VoiceView.swift in Sources */,
@@ -1126,6 +1145,7 @@
 				AC5646A027006DF600DE9805 /* UINavigationontroller.swift in Sources */,
 				AC62919B2750EC3900190975 /* DownloadFileView.swift in Sources */,
 				AC2E474A274B6FB40073E8E4 /* AppGroup.swift in Sources */,
+				05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */,
 				AC122EC8266BA17C00C0630F /* PullToRefresh.swift in Sources */,
 				AC1D2CCF2662016E00AA351A /* ThreadsViewModel.swift in Sources */,
 				AC989203275E3D48007973F7 /* WebRTCViewController.swift in Sources */,
@@ -1176,7 +1196,6 @@
 				AC5411E4275631A90018C78D /* ColorEx.swift in Sources */,
 				051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */,
 				05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */,
-				AC0B1D652690721000C6917A /* LogCell.swift in Sources */,
 				05384A7F2792995F00D85A92 /* TagsViewModel.swift in Sources */,
 				ACFADE7E27674DDF007C555F /* CustomNavigationBar.swift in Sources */,
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
@@ -1199,6 +1218,7 @@
 				AC98921E275E4341007973F7 /* RTCVideoReperesentable.swift in Sources */,
 				AC10007126F4655E00C3AD67 /* AuthorizeResponse.swift in Sources */,
 				05384A842792A10100D85A92 /* TagRow.swift in Sources */,
+				0505C4F22869AC800034A9F0 /* PSM.swift in Sources */,
 				AC48ED6126F6FD3A00AB1A5D /* HandshakeRequest.swift in Sources */,
 				AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */,
 				051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */,
@@ -1218,6 +1238,7 @@
 				ACC3C5EF26F4633900AEE578 /* HandshakeResponse.swift in Sources */,
 				AC924CA7274A3D1500E33BD1 /* LoadingViewAtCenterOfView.swift in Sources */,
 				AC989208275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift in Sources */,
+				0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */,
 				AC53261C2751F227003685E3 /* CircularProgressView.swift in Sources */,
 				05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */,
 				AC6D532226F1ADF000CBC059 /* ThreadViewModel.swift in Sources */,
@@ -1540,6 +1561,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		0505C4ED2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0505C4EE2869AB750034A9F0 /* ChatApplicationModel.xcdatamodel */,
+			);
+			currentVersion = 0505C4EE2869AB750034A9F0 /* ChatApplicationModel.xcdatamodel */;
+			path = ChatApplicationDataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = AC1D2C9C2661FFAC00AA351A /* Project object */;
 }

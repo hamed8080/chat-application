@@ -28,6 +28,12 @@ class ThreadViewModel:ObservableObject{
     @Published
     var connectionStatus:ConnectionStatus     = .Connecting
     
+    @Published
+    var searchedMessages:[Message] =  []
+    
+    @Published
+    var seachableText = ""
+    
     private (set) var connectionStatusCancelable:AnyCancellable? = nil
     private (set) var messageCancelable:AnyCancellable? = nil
     private (set) var systemMessageCancelable:AnyCancellable? = nil
@@ -76,7 +82,7 @@ class ThreadViewModel:ObservableObject{
     }
     
     func loadMore(){
-        if isLoading || model.isEnded{return}
+        if isLoading || !model.hasNext || connectionStatus != .CONNECTED{return}
         isLoading = true
         getMessagesHistory(toTime: model.messages.first?.time)
     }
@@ -85,6 +91,7 @@ class ThreadViewModel:ObservableObject{
         guard let threadId = model.thread?.id else{return}
         Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count,offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)) {[weak self] messages, uniqueId, pagination, error in
             if let messages = messages{
+                self?.model.setHasNext(pagination?.hasNext ?? false)
                 self?.model.appendMessages(messages: messages)
                 self?.isLoading = false
             }
@@ -417,7 +424,21 @@ class ThreadViewModel:ObservableObject{
     
     
     func hideExportView(){
+        if let url = model.exportFileUrl, FileManager.default.fileExists(atPath: url.path){
+            try? FileManager.default.removeItem(at: url)
+        }
         model.setShowExportView(false, exportFileUrl: nil)
+    }
+    
+    
+    func searchInsideThread(offset: Int = 0){
+        guard let threadId = model.thread?.id, seachableText.count >= 2 else {return}
+        let req = GetHistoryRequest(threadId: threadId,count: 50, offset: offset, query: "\(seachableText)")
+        Chat.sharedInstance.getHistory(req) { messages, uniqueId, pagination, error in
+            if let messages = messages {
+                self.searchedMessages.append(contentsOf: messages)
+            }
+        }
     }
 }
  

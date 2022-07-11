@@ -26,7 +26,7 @@ struct ThreadRow: View {
         let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
 		Button(action: {}, label: {
 			HStack{
-                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata, imageSize: .MEDIUM , token: token, previewImageName: thread.image ?? "avatar")
+                Avatar(url:thread.image ,userName: thread.inviter?.username?.uppercased(), fileMetaData: thread.metadata, imageSize: .SMALL , token: token, previewImageName: thread.image ?? "avatar")
 				VStack(alignment: .leading, spacing:8){
                     HStack{
                         Text(thread.title ?? "")
@@ -141,10 +141,19 @@ struct ThreadRow: View {
             }
 
             Button(role:.destructive) {
-                viewModel.deleteThread(thread)
+                viewModel.leaveThread(thread)
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label("Leave", systemImage: "rectangle.portrait.and.arrow.right")
             }
+            
+            if thread.admin == true{
+                Button(role:.destructive) {
+                    viewModel.deleteThread(thread)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+            
             if let typeInt = thread.type , let type = ThreadTypes(rawValue: typeInt){
                 Button {
                     viewModel.showAddParticipants(thread)
