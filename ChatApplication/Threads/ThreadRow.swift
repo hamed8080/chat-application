@@ -134,6 +134,22 @@ struct ThreadRow: View {
                     Label("Delete", systemImage: "trash")
                 }
             }
+
+            if thread.isArchive == true{
+                Button {
+                    viewModel.unarchiveThread(thread)
+                } label: {
+                    Label("UnArchive", systemImage: "tray.and.arrow.up")
+                }
+            }
+
+            if thread.isArchive == false || thread.isArchive == nil{
+                Button {
+                    viewModel.archiveThread(thread)
+                } label: {
+                    Label("Archive", systemImage: "tray.and.arrow.down")
+                }
+            }
             
             if let typeInt = thread.type , let type = ThreadTypes(rawValue: typeInt){
                 Button {

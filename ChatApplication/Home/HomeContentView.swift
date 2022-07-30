@@ -91,7 +91,7 @@ struct SideBar:View{
                         .foregroundColor(Color.blue)
                 }
             }
-            
+
             NavigationLink {
                 ThreadContentList(viewModel: threadsVM)
             } label: {
@@ -102,6 +102,21 @@ struct SideBar:View{
                         .resizable()
                         .scaledToFit()
                         .foregroundColor(Color.blue)
+                }
+            }
+
+            if threadsVM.model.threads.filter({$0.isArchive == true}).count > 0 {
+                NavigationLink {
+                    ArchivedThreadContentList(viewModel: threadsVM)
+                } label: {
+                    Label {
+                        Text("Archive")
+                    } icon: {
+                        Image(systemName: "tray.and.arrow.down")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(Color.blue)
+                    }
                 }
             }
             

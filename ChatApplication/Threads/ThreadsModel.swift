@@ -101,7 +101,14 @@ struct ThreadsModel {
             return id
         }
     }
-    
+
+    mutating func setArchiveThread(isArchive: Bool, threadId: Int?){
+        threads.first(where: {$0.id == threadId})?.isArchive = isArchive
+    }
+
+    var archivedThreads:[Conversation]{
+       return threads.filter({$0.isArchive == true})
+    }
 }
 
 extension ThreadsModel{

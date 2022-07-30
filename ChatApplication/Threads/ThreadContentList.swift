@@ -35,6 +35,14 @@ struct ThreadContentList:View {
                                        .onChange(of: searechInsideThread) { newValue in
                                            viewModel.searchInsideAllThreads(text: searechInsideThread)
                                        }
+                    if viewModel.model.archivedThreads.count > 0 {
+                        NavigationLink {
+                            ArchivedThreadContentList(viewModel: viewModel)
+                        } label: {
+                            archiveThreadsRow
+                        }
+                    }
+
                     if let threadsInsideFolder = folder?.tagParticipants{
                         ForEach(threadsInsideFolder, id:\.id) { thread in
                             if let thread = thread.conversation{
@@ -53,7 +61,7 @@ struct ThreadContentList:View {
                             }
                         }
                     }else{
-                        ForEach(viewModel.model.threads , id:\.id) { thread in
+                        ForEach(viewModel.model.threads.filter({$0.isArchive == false || $0.isArchive == nil }) , id:\.id) { thread in
 
                             NavigationLink {
                                 ThreadView(viewModel: ThreadViewModel(thread:thread))
@@ -125,6 +133,35 @@ struct ThreadContentList:View {
                 viewModel.toggleThreadContactPicker.toggle()
             }
         })
+    }
+
+    var archiveThreadsRow:some View{
+        HStack{
+            Circle()
+                .fill(Color.blue.opacity(0.4))
+                .frame(width: 64, height: 64)
+                .overlay{
+                    Image(systemName: "tray.and.arrow.down.fill")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .font(.system(size: 24).bold())
+                        .foregroundColor(.white)
+                }
+
+
+            VStack(alignment: .leading, spacing:8){
+                Text("Archives")
+                    .font(.headline.bold())
+                if let message = viewModel.model.archivedThreads.sorted(by: { $0.lastMessageVO?.time ?? 0 > $1.lastMessageVO?.time ?? 0 }).first?.lastMessageVO?.message?.prefix(100){
+                    Text(message)
+                        .lineLimit(1)
+                        .font(.subheadline)
+                }
+            }
+        }
+        .contentShape(Rectangle())
+        .padding([.leading , .trailing] , 8)
+        .padding([.top , .bottom] , 4)
     }
 }
 
