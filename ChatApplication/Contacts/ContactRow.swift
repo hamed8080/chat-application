@@ -90,7 +90,7 @@ struct ContactRow: View {
         HStack(spacing:48){
             
             ActionButton(iconSfSymbolName: "message",taped:{
-                viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)])
+                viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .CONTACT_ID)])
             })
             
             ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue , taped:{

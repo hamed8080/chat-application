@@ -36,7 +36,7 @@ struct SearchContactRow: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)])
+            viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .CONTACT_ID)])
         }
     }
 }

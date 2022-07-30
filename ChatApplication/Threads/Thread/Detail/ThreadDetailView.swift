@@ -72,7 +72,7 @@ struct ThreadDetailView:View {
                                 viewModel.searchInsideThreadMessages("")
                             })
                             
-                            if let type = thread?.type, ThreadTypes(rawValue: type) == .NORMAL{
+                            if let type = thread?.type, type == .NORMAL{
                                 ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: .blue , taped:{
                                 })
                             }

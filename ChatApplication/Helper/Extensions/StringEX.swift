@@ -69,6 +69,8 @@ extension String{
             return "uploading file"
         case .SERVER_TIME:
             return nil
+        case .UNKNOWN:
+            return "UNknown"
         }
     }
     

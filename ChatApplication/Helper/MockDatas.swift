@@ -22,7 +22,7 @@ final class MockData{
             image         : "avatar1",
             pin           : false,
             title         : "Hamed Hosseini",
-            type          : ThreadTypes.PUBLIC_GROUP.rawValue,
+            type          : ThreadTypes.PUBLIC_GROUP,
             lastMessageVO : lastMessageVO
         )
         return thread
