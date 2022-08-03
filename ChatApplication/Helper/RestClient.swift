@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Alamofire
 import FanapPodChatSDK
 struct VoidCodable:Codable{
     
