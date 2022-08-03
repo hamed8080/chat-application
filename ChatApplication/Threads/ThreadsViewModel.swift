@@ -196,7 +196,9 @@ class ThreadsViewModel:ObservableObject{
         guard let threadId = thread.id else {return}
         Chat.sharedInstance.archiveThread(.init(threadId: threadId)) { threadId, unqiuesId, error in
             if threadId != nil{
-                self.model.setArchiveThread(isArchive: true, threadId: threadId)
+                withAnimation {
+                    self.model.setArchiveThread(isArchive: true, threadId: threadId)
+                }
             }
         }
     }
@@ -205,7 +207,9 @@ class ThreadsViewModel:ObservableObject{
         guard let threadId = thread.id else {return}
         Chat.sharedInstance.unarchiveThread(.init(threadId: threadId)) { threadId, unqiuesId, error in
             if threadId != nil{
-                self.model.setArchiveThread(isArchive: false, threadId: threadId)
+                withAnimation {
+                    self.model.setArchiveThread(isArchive: false, threadId: threadId)
+                }
             }
         }
     }
