@@ -12,12 +12,10 @@ struct ContactRow: View {
     
     private (set) var contact:Contact
     
-    @State
-    private var isSelected   = false
-    
     @Binding
     public var isInEditMode:Bool
-    
+
+    @ObservedObject
     public var viewModel:ContactsViewModel
     
     @State
@@ -28,14 +26,14 @@ struct ContactRow: View {
             VStack{
                 HStack(spacing: 0, content: {
                     if isInEditMode{
-                        Image(systemName: isSelected ? "checkmark.circle" : "circle")
+                        Image(systemName: viewModel.model.selectedContacts.first(where: {$0 == contact}) != nil ? "checkmark.circle" : "circle")
                             .font(.title)
                             .frame(width: 22, height: 22, alignment: .center)
                             .foregroundColor(Color.blue)
                             .padding(24)
                             .onTapGesture {
-                                isSelected.toggle()
-                                viewModel.toggleSelectedContact(contact ,isSelected)
+                                let isSelected = viewModel.model.selectedContacts.first(where: {$0 == contact}) != nil
+                                viewModel.toggleSelectedContact(contact ,!isSelected)
                             }
                     }
                     Avatar(url:contact.image ?? contact.linkedUser?.image ,userName: contact.firstName?.uppercased(), fileMetaData: nil, previewImageName: contact.image ?? "avatar")

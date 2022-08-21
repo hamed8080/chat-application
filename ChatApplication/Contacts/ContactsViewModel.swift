@@ -19,6 +19,9 @@ class ContactsViewModel:ObservableObject{
     
     @Published
     public var isInEditMode                    = false
+
+    @Published
+    public var isAllSelected                   = false
     
     @Published
     public var navigateToAddOrEditContact      = false
@@ -108,17 +111,18 @@ class ContactsViewModel:ObservableObject{
     func delete(indexSet:IndexSet){
         let contacts = model.contacts.enumerated().filter{indexSet.contains($0.offset)}.map{$0.element}
         contacts.forEach { contact in
-            delete(contact)
+            delete([contact])
             model.reomve(contact)
         }
     }
     
-    func delete(_ contact:Contact){
-        if let contactId = contact.id{
-            Chat.sharedInstance.removeContact(.init(contactId: contactId)) { deleted, uniqueId, error in
-                if error != nil{
-                    self.model.appendContacts(contacts: [contact])
-                }
+    func delete(_ contacts:[Contact]){
+        let contactIds = contacts.compactMap{$0.id}
+        Chat.sharedInstance.removeContact(.init(contactIds: contactIds)) { deleted, uniqueId, error in
+            if error != nil{
+                self.model.appendContacts(contacts: contacts)
+            } else if deleted == true{
+                self.model.setMaxContactsCountInServer(count: self.model.maxContactsCountInServer - contacts.count)
             }
         }
     }
@@ -130,15 +134,28 @@ class ContactsViewModel:ObservableObject{
             model.removeToSelctedContacts(contact)
         }
     }
-    
-    
+
     func deleteSelectedItems(){
+        delete(model.selectedContacts)
         model.selectedContacts.forEach { contact in
             model.reomve(contact)
-            delete(contact)
+        }
+        model.clearSelectedContacts()
+    }
+
+    func selectAll(){
+        isAllSelected = true
+        model.contacts.forEach { contact in
+            model.addToSelctedContacts(contact)
         }
     }
-    
+
+    func deselectAll(){
+        isAllSelected = false
+        model.contacts.forEach { contact in
+            model.removeToSelctedContacts(contact)
+        }
+    }
     
     func blockOrUnBlock(_ contact:Contact){
         if contact.blocked == false{

@@ -31,7 +31,7 @@ struct ContactContentList:View {
                             Spacer()
                             Text("Total contacts:".uppercased())
                                 .font(.subheadline)
-                                .foregroundColor(.gray)
+                                .foregroundColor(.gray) +
                             Text(verbatim: "\(viewModel.model.maxContactsCountInServer)")
                                 .fontWeight(.bold)
                             Spacer()
@@ -114,9 +114,26 @@ struct ContactContentList:View {
                             .font(.body.bold())
                     }
                 }
+
+                if viewModel.isInEditMode {
+                    Button {
+                        if viewModel.isAllSelected {
+                            viewModel.deselectAll()
+                        }else{
+                            viewModel.selectAll()
+                        }
+                    } label: {
+                        Label {
+                            Text("Select All")
+                        } icon: {
+                            Image(systemName: viewModel.isAllSelected ? "checkmark.circle" : "circle")
+                                .font(.body.bold())
+                        }
+                    }
+                }
                 
                 Button {
-                    viewModel.navigateToAddOrEditContact.toggle()
+                    viewModel.deleteSelectedItems()
                 } label: {
                     Label {
                         Text("Delete")

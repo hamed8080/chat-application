@@ -14,7 +14,7 @@ struct AddOrEditContactView: View {
     @State var firstName    :String = ""
     @State var lastName     :String = ""
     @Environment(\.presentationMode) var presentationMode
-    
+
     @State var title    :String  = "Contacts"
     
     var body: some View{

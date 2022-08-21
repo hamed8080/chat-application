@@ -50,6 +50,7 @@ struct ContactsModel {
         self.offset     = 0
         self.count      = 15
         self.contacts   = []
+        clearSelectedContacts()
     }
     
     mutating func addToSelctedContacts(_ contact:Contact){
@@ -59,6 +60,10 @@ struct ContactsModel {
     mutating func removeToSelctedContacts(_ contact:Contact){
         guard let index = selectedContacts.firstIndex(of: contact) else {return}
         selectedContacts.remove(at: index)
+    }
+
+    mutating func clearSelectedContacts(){
+        selectedContacts.removeAll()
     }
     
     mutating func blockOrUnBlock(_ contact :Contact){
