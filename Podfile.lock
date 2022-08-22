@@ -1,15 +1,12 @@
 PODS:
-  - Alamofire (4.8.2)
   - FanapPodAsyncSDK (0.10.0.2):
     - Sentry (~> 4.3.1)
     - Starscream (~> 3.0.5)
   - FanapPodChatSDK (0.10.3.1):
-    - Alamofire (~> 4.8.2)
     - FanapPodAsyncSDK
     - FanapPodChatSDK/FanapPodAsyncSDK (= 0.10.3.1)
     - Sentry (~> 4.3.1)
   - FanapPodChatSDK/FanapPodAsyncSDK (0.10.3.1):
-    - Alamofire (~> 4.8.2)
     - FanapPodAsyncSDK
     - Sentry (~> 4.3.1)
     - Starscream (~> 3.0.5)
@@ -24,7 +21,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Alamofire
     - Sentry
     - Starscream
 
@@ -35,9 +31,8 @@ EXTERNAL SOURCES:
     :path: "/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK"
 
 SPEC CHECKSUMS:
-  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
   FanapPodAsyncSDK: 6788d0a9a74ad08a9dfd8d8c5cd6e51b54849bf4
-  FanapPodChatSDK: fca16973b16d980cbbd0c5d576430b59c4b1633c
+  FanapPodChatSDK: 649390dce45314fa2e2983024af24da0c4dc4d8e
   Sentry: 26f0e6492b103e87434d1a5eea2d241a36f2c2a2
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
 

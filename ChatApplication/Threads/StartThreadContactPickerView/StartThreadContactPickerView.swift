@@ -9,7 +9,7 @@ import SwiftUI
 import FanapPodChatSDK
 
 struct StartThreadResultModel{
-    var selectedContacts :[Contact] = []
+    var selectedContacts :[Contact]? = nil
     
     var type             :ThreadTypes = .NORMAL
     
@@ -66,6 +66,11 @@ struct StartThreadContactPickerView:View {
                 .padding([.leading, .trailing,.top], 16)
                 Spacer()
             }else{
+                
+                StartThreadButton(name: "bookmark.circle", title: "Save Message", color: .blue){
+                    onCompletedConfigCreateThread(.init(selectedContacts: nil, type: .SELF_THREAD, title: ""))
+                }
+                
                 StartThreadButton(name: "person.2", title: "New Group", color: .blue){
                     isInMultiSelectMode.toggle()
                     startThreadModel.type = .CHANNEL_GROUP

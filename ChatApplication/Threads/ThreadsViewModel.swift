@@ -215,7 +215,7 @@ class ThreadsViewModel:ObservableObject{
     
     func createThread(_ model:StartThreadResultModel){
         centerIsLoading = true
-        let invitees = model.selectedContacts.compactMap { contact in
+        let invitees = model.selectedContacts?.map { contact in
             Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)
         }
         Chat.sharedInstance.createThread(.init(invitees: invitees, title: model.title, type:model.type)) { thread, uniqueId, error in
