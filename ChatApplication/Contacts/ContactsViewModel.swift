@@ -37,7 +37,12 @@ class ContactsViewModel:ObservableObject{
         connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
             if self.isFirstTimeConnectedRequestSuccess == false  && status == .CONNECTED{
                 self.getContacts()
-            }            
+                Chat.sharedInstance.syncContacts { contacts, uniqueId, error in
+                    print("sync contact part count: \(contacts?.count ?? 0 )")
+                } completion: { completed, uniqueId, error in
+                    print("sync contact completed!!")
+                }
+            }
             self.connectionStatus = status
         }
         getOfflineContacts()
@@ -110,8 +115,8 @@ class ContactsViewModel:ObservableObject{
     
     func delete(indexSet:IndexSet){
         let contacts = model.contacts.enumerated().filter{indexSet.contains($0.offset)}.map{$0.element}
+        delete(contacts)
         contacts.forEach { contact in
-            delete([contact])
             model.reomve(contact)
         }
     }
