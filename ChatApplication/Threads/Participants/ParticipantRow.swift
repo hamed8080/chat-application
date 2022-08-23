@@ -30,7 +30,7 @@ struct ParticipantRow: View {
                 Avatar(url:participant.image ,userName: participant.username?.uppercased(), fileMetaData: nil, style: style.avatarConfig, previewImageName: participant.image ?? "avatar")
                 HStack(alignment: .center, spacing:8){
                     VStack(alignment:.leading, spacing:6){
-                        Text(participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")
+                        Text(participant.contactName ?? participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")
                             .font(style.textFont)
                         Text(participant.cellphoneNumber ?? "")
                             .font(.caption2)
