@@ -38,7 +38,7 @@ class ChatDelegateImplementation: ChatDelegate {
 	private (set) static var sharedInstance = ChatDelegateImplementation()
     
     func createChatObject(){
-        if let config = Config.getConfig(.Integeration){
+        if let config = Config.getConfig(.Sandbox){
             if config.server == "Integeration"{
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponse.Result(accessToken: config.debugToken, expiresIn: Int.max, idToken: nil, refreshToken: nil, scope: nil, tokenType: nil))
             }

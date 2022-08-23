@@ -23,20 +23,28 @@ struct ContactRow: View {
     
     var body: some View {
         VStack{
+            let isSelected = viewModel.model.selectedContacts.first(where: {$0 == contact}) != nil
             VStack{
                 HStack(spacing: 0, content: {
                     if isInEditMode{
-                        Image(systemName: viewModel.model.selectedContacts.first(where: {$0 == contact}) != nil ? "checkmark.circle" : "circle")
+                        Image(systemName: isSelected ? "checkmark.circle" : "circle")
                             .font(.title)
                             .frame(width: 22, height: 22, alignment: .center)
                             .foregroundColor(Color.blue)
                             .padding(24)
+                            .transition(.asymmetric(insertion: .move(edge: .leading), removal: .scale))
+                            .animation(.easeInOut, value: isSelected)
                             .onTapGesture {
-                                let isSelected = viewModel.model.selectedContacts.first(where: {$0 == contact}) != nil
                                 viewModel.toggleSelectedContact(contact ,!isSelected)
                             }
                     }
-                    Avatar(url:contact.image ?? contact.linkedUser?.image ,userName: contact.firstName?.uppercased(), fileMetaData: nil, previewImageName: contact.image ?? "avatar")
+
+                    Avatar(
+                        url:contact.image ?? contact.linkedUser?.image,
+                        userName: contact.firstName?.uppercased(),
+                        fileMetaData: nil,
+                        previewImageName: contact.image ?? "avatar"
+                    )
                     
                     VStack(alignment: .leading, spacing:8){
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
@@ -86,11 +94,21 @@ struct ContactRow: View {
     func getActionsView()->some View{
         Divider()
         HStack(spacing:48){
-            
+            if contact.hasUser {
+                Text("POD")
+                    .font(.footnote)
+                    .foregroundColor(Color.mint)
+                    .padding([.leading, .trailing], 6)
+                    .padding([.top, .bottom], 4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color.mint)
+                    )
+            }
             ActionButton(iconSfSymbolName: "message",taped:{
                 viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)])
             })
-            
+
             ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue , taped:{
                 viewModel.blockOrUnBlock(contact)
             })

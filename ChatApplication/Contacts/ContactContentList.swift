@@ -57,9 +57,20 @@ struct ContactContentList:View {
                             .foregroundColor(.gray)
                             .noSeparators()
                         ForEach(viewModel.model.searchedContacts, id:\.self){ contact in
-                            SearchContactRow(contact: contact, viewModel: viewModel)
+                            ContactRow(contact: contact , isInEditMode: $viewModel.isInEditMode , viewModel: viewModel)
                                 .noSeparators()
+                                .onAppear {
+                                    if viewModel.model.contacts.last == contact{
+                                        viewModel.loadMore()
+                                    }
+                                }
+                                .animation(.spring(), value:viewModel.isInEditMode)
                         }
+                        Divider()
+                        Text("Contcats")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                            .noSeparators()
                     }
                     
                     ForEach(viewModel.model.contacts , id:\.id) { contact in
@@ -74,6 +85,10 @@ struct ContactContentList:View {
                     }
                     .onDelete(perform:viewModel.delete)
                     .padding(0)
+                }
+                .refreshable {
+                    viewModel.resetModelOffset()
+                    viewModel.getContacts()
                 }
                 .listStyle(.plain)
                 NavigationLink(destination: AddOrEditContactView(), isActive: $viewModel.navigateToAddOrEditContact){

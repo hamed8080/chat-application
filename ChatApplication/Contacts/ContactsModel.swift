@@ -45,7 +45,11 @@ struct ContactsModel {
         guard let index = contacts.firstIndex(of:contact)else{return}
         contacts.remove(at: index)
     }
-    
+
+    mutating func resetOffset() {
+        offset = 0
+    }
+
     mutating func clear(){
         self.offset     = 0
         self.count      = 15

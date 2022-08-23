@@ -81,7 +81,6 @@
 		AC1D2CD32662016E00AA351A /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */; };
 		AC20FBA4266CC4B500187B47 /* DateEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20FBA3266CC4B500187B47 /* DateEX.swift */; };
 		AC21DA40273BF7D700DC86E6 /* StringEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC21DA3F273BF7D700DC86E6 /* StringEX.swift */; };
-		AC23695627439478008195D7 /* SearchContactRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC23695527439478008195D7 /* SearchContactRow.swift */; };
 		AC2D31C326EF75BC008FF43F /* webrtc_user_a.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */; };
 		AC2D31C426EF75BC008FF43F /* webrtc_user_b.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */; };
 		AC2E4747274B58880073E8E4 /* UserDefaultsEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2E4746274B58880073E8E4 /* UserDefaultsEX.swift */; };
@@ -251,7 +250,6 @@
 		AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatDelegateImplementation.swift; sourceTree = "<group>"; };
 		AC20FBA3266CC4B500187B47 /* DateEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEX.swift; sourceTree = "<group>"; };
 		AC21DA3F273BF7D700DC86E6 /* StringEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringEX.swift; sourceTree = "<group>"; };
-		AC23695527439478008195D7 /* SearchContactRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchContactRow.swift; sourceTree = "<group>"; };
 		AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_a.mp4; sourceTree = "<group>"; };
 		AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_b.mp4; sourceTree = "<group>"; };
 		AC2E4746274B58880073E8E4 /* UserDefaultsEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsEX.swift; sourceTree = "<group>"; };
@@ -622,7 +620,6 @@
 				AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */,
 				AC0889A92691C32F00FD4552 /* TestSwiftUI.swift */,
 				ACFBF1B826FCA51300DD27AE /* AddOrEditContactView.swift */,
-				AC23695527439478008195D7 /* SearchContactRow.swift */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -925,7 +922,6 @@
 				AC10007B26F46EC900C3AD67 /* LoginViewModel.swift in Sources */,
 				AC3AB626274292F3006C3F85 /* ThreadDetailView.swift in Sources */,
 				05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */,
-				AC23695627439478008195D7 /* SearchContactRow.swift in Sources */,
 				ACC4C1932765C342008940CD /* ViewEX.swift in Sources */,
 				AC122EC2266B82A000C0630F /* ThreadContentList.swift in Sources */,
 				057977B72805548000FE5EA4 /* UIColor.swift in Sources */,

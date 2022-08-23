@@ -18,16 +18,14 @@ struct AddOrEditContactView: View {
     @State var title    :String  = "Contacts"
     
     var body: some View{
-        GeometryReader{ reader in
+        ZStack{
             VStack(spacing:24){
-                CustomNavigationBar(title:"Add contact",showDivider: false){
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .padding(.bottom , 24)
-                PrimaryTextField(title:"type contact",textBinding: $contactValue,keyboardType: .alphabet)
-                PrimaryTextField(title:"first name",textBinding: $firstName,keyboardType: .alphabet)
-                PrimaryTextField(title:"last name",textBinding: $lastName, keyboardType: .alphabet)
-                
+                CustomNavigationBar(title:"Add contact", showDivider: false)
+                    .padding(.bottom, 24)
+                PrimaryTextField(title:"type contact",textBinding: $contactValue,keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
+                PrimaryTextField(title:"first name",textBinding: $firstName,keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
+                PrimaryTextField(title:"last name",textBinding: $lastName, keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
+
                 Button(action: {
                     let isPhone = validatePhone(value: contactValue)
                     let req:AddContactRequest = isPhone ?
@@ -39,18 +37,19 @@ struct AddOrEditContactView: View {
                 }, label: {
                     Text("Submit")
                 })
-                    .buttonStyle(PrimaryButtonStyle())
+                .buttonStyle(PrimaryButtonStyle())
+                Spacer()
             }
-            .navigationViewStyle(StackNavigationViewStyle())
+            .frame(width: isIpad ? UIScreen.main.bounds.width * 50/100 : .infinity)
             .padding()
             .padding()
         }
+        .frame(maxWidth: .infinity)
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         .background(Color.gray.opacity(0.2)
-                        .edgesIgnoringSafeArea(.all)
+            .edgesIgnoringSafeArea(.all)
         )
-        
     }
     
     func validatePhone(value: String) -> Bool {

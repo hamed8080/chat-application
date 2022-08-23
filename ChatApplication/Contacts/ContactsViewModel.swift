@@ -8,6 +8,7 @@
 import Foundation
 import FanapPodChatSDK
 import Combine
+import SwiftUI
 
 class ContactsViewModel:ObservableObject{
     
@@ -37,11 +38,12 @@ class ContactsViewModel:ObservableObject{
         connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
             if self.isFirstTimeConnectedRequestSuccess == false  && status == .CONNECTED{
                 self.getContacts()
-                Chat.sharedInstance.syncContacts { contacts, uniqueId, error in
-                    print("sync contact part count: \(contacts?.count ?? 0 )")
-                } completion: { completed, uniqueId, error in
-                    print("sync contact completed!!")
-                }
+                // TODO: Fix sync contacts it has problem to syncing
+//                Chat.sharedInstance.syncContacts { contacts, uniqueId, error in
+//                    print("sync contact part count: \(contacts?.count ?? 0 )")
+//                } completion: { completed, uniqueId, error in
+//                    print("sync contact completed!!")
+//                }
             }
             self.connectionStatus = status
         }
@@ -51,10 +53,12 @@ class ContactsViewModel:ObservableObject{
     func getContacts() {
         Chat.sharedInstance.getContacts(.init(count:model.count,offset: model.offset)) { [weak self] contacts, uniqueId, pagination, error in
             if let contacts = contacts{
-                self?.isFirstTimeConnectedRequestSuccess = true
-                self?.model.setHasNext(pagination?.hasNext ?? false)
-                self?.model.setContacts(contacts: contacts)
-                self?.model.setMaxContactsCountInServer(count: (pagination as? PaginationWithContentCount)?.totalCount ?? 0)
+                withAnimation {
+                    self?.isFirstTimeConnectedRequestSuccess = true
+                    self?.model.setHasNext(pagination?.hasNext ?? false)
+                    self?.model.setContacts(contacts: contacts)
+                    self?.model.setMaxContactsCountInServer(count: (pagination as? PaginationWithContentCount)?.totalCount ?? 0)
+                }
             }
         }
     }
@@ -63,11 +67,17 @@ class ContactsViewModel:ObservableObject{
         let req = ContactsRequest(count:model.count,offset: model.offset)
         CacheFactory.get(useCache: true, cacheType: .GET_CASHED_CONTACTS(req)) { response in
             let contacts = response.cacheResponse as? [Contact]
-            self.model.setContacts(contacts: contacts)
-            self.model.setMaxContactsCountInServer(count: CMContact.crud.getTotalCount())
+            withAnimation {
+                self.model.setContacts(contacts: contacts)
+                self.model.setMaxContactsCountInServer(count: CMContact.crud.getTotalCount())
+            }
         }
     }
-    
+
+    func resetModelOffset() {
+        model.resetOffset()
+    }
+
     func searchContact(_ searchContact:String){
         if searchContact.count <= 0{
             self.model.setSearchedContacts([])
@@ -75,7 +85,9 @@ class ContactsViewModel:ObservableObject{
         }
         Chat.sharedInstance.searchContacts(.init(query: searchContact)) { contacts, uniqueId, pagination, error in
             if let contacts = contacts{
-                self.model.setSearchedContacts(contacts)                
+                withAnimation {
+                    self.model.setSearchedContacts(contacts)
+                }
             }
         }
     }
@@ -149,16 +161,20 @@ class ContactsViewModel:ObservableObject{
     }
 
     func selectAll(){
-        isAllSelected = true
-        model.contacts.forEach { contact in
-            model.addToSelctedContacts(contact)
+        withAnimation {
+            isAllSelected = true
+            model.contacts.forEach { contact in
+                model.addToSelctedContacts(contact)
+            }
         }
     }
 
     func deselectAll(){
-        isAllSelected = false
-        model.contacts.forEach { contact in
-            model.removeToSelctedContacts(contact)
+        withAnimation {
+            isAllSelected = false
+            model.contacts.forEach { contact in
+                model.removeToSelctedContacts(contact)
+            }
         }
     }
     
