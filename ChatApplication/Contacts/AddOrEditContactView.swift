@@ -14,6 +14,7 @@ struct AddOrEditContactView: View {
     @State var firstName    :String = ""
     @State var lastName     :String = ""
     @Environment(\.presentationMode) var presentationMode
+    @State var isLoading = false
 
     @State var title    :String  = "Contacts"
     
@@ -31,13 +32,19 @@ struct AddOrEditContactView: View {
                     let req:AddContactRequest = isPhone ?
                         .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
                         .init(email:nil,firstName:firstName,lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
+                    isLoading = true
                     Chat.sharedInstance.addContact(req) { contacts, uniqueId, error in
+                        isLoading = false
                         self.presentationMode.wrappedValue.dismiss()
                     }
                 }, label: {
                     Text("Submit")
                 })
                 .buttonStyle(PrimaryButtonStyle())
+                if isLoading{
+                    LoadingView()
+                        .frame(width: 36, height: 36)
+                }
                 Spacer()
             }
             .frame(width: isIpad ? UIScreen.main.bounds.width * 50/100 : .infinity)
