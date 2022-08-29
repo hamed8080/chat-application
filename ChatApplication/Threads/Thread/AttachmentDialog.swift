@@ -45,6 +45,9 @@ struct CustomActionSheetView:View{
     
     @State
     var showDocumentPicker:Bool = false
+
+    @State
+    var showContactsPicker = false
     
     var body: some View{
         
@@ -118,11 +121,15 @@ struct CustomActionSheetView:View{
                     }
                     
                     AttachmentButton(title: "Contact", imageName: "person.2.crop.square.stack", hideDivider:true) {
+                        showContactsPicker.toggle()
                     }
                 }
             }
             .padding([.leading], 24)
             .frame(minWidth: 0, maxWidth: .infinity,alignment: .leading)
+        }
+        .sheet(isPresented: $showContactsPicker){
+            contactsPicker
         }
         .sheet(isPresented: $showDocumentPicker, onDismiss: nil) {
             DocumentPicker(fileUrl: $viewModel.selectedFileUrl, showDocumentPicker: $showDocumentPicker)
@@ -133,6 +140,42 @@ struct CustomActionSheetView:View{
             .padding(.bottom ,((UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.safeAreaInsets.bottom ?? 0) + 10)
             .background(Color.white.ignoresSafeArea())
             .cornerRadius(16)
+    }
+
+    @StateObject
+    var contactsVM = ContactsViewModel()
+
+    @ViewBuilder
+    var contactsPicker: some View {
+        VStack {
+            List {
+                ForEach(contactsVM.model.contacts , id:\.id) { contact in
+                    StartThreadContactRow(contact: contact, isInMultiSelectMode: .constant(true), viewModel: contactsVM)
+                        .onAppear {
+                            if contactsVM.model.contacts.last == contact{
+                                contactsVM.loadMore()
+                            }
+                        }
+                }
+            }
+            .listStyle(.plain)
+            Spacer()
+            HStack {
+                Button {
+                    viewModel.sendSelectedContact(contactsVM.model.selectedContacts)
+                    withAnimation {
+                        showContactsPicker.toggle()
+                        showAttachmentDialog.toggle()
+                    }
+                } label: {
+                    Image(systemName: "arrow.right.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 28, height: 28)
+                }
+                .buttonStyle(PrimaryButtonStyle(textColor: .accentColor, cornerRadius: 0))
+            }
+        }
     }
 }
 

@@ -8,6 +8,7 @@
 import Foundation
 import Photos
 import UIKit
+import FanapPodChatSDK
 
 class ActionSheetViewModel : ObservableObject{
 
@@ -137,6 +138,23 @@ class ActionSheetViewModel : ObservableObject{
     func loadMore(){
         if !hasNext{return}
         loadImages()
+    }
+
+    func sendSelectedContact(_ contacts: [Contact]){
+        if let threadId = threadViewModel.model.thread?.id {
+            //FIXME: Needs to be send as a contact
+            contacts.forEach { contact in
+                let nor = "NOT_REGISTERED"
+                let text = """
+                       id: \(contact.id ?? 0)\n
+                       firstName:\(contact.firstName ?? nor)\n
+                       lastName:\(contact.lastName ?? nor)\n
+                       cellphoneNumber:\(contact.cellphoneNumber ?? nor)\n
+                       email:\(contact.email ?? nor)\n
+                       """
+                Chat.sharedInstance.sendTextMessage(.init(threadId: threadId, textMessage: text, messageType: .TEXT))
+            }
+        }
     }
 }
 
