@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0505855B28BD4B15006C6DCD /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505855A28BD4B15006C6DCD /* MapView.swift */; };
 		0505C4E32869A19F0034A9F0 /* LogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E22869A19F0034A9F0 /* LogViewModel.swift */; };
 		0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E42869A1C90034A9F0 /* LogView.swift */; };
 		0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E62869A4220034A9F0 /* LogRow.swift */; };
 		0505C4EF2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4ED2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld */; };
 		0505C4F22869AC800034A9F0 /* PSM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4F12869AC800034A9F0 /* PSM.swift */; };
 		0506366E2801A8740080DF00 /* EnvironmentEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0506366D2801A8740080DF00 /* EnvironmentEX.swift */; };
+		0512F37928BDD84A0008A5C8 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0512F37828BDD84A0008A5C8 /* LocationManager.swift */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
@@ -172,12 +174,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0505855A28BD4B15006C6DCD /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		0505C4E22869A19F0034A9F0 /* LogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewModel.swift; sourceTree = "<group>"; };
 		0505C4E42869A1C90034A9F0 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		0505C4E62869A4220034A9F0 /* LogRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogRow.swift; sourceTree = "<group>"; };
 		0505C4EE2869AB750034A9F0 /* ChatApplicationModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChatApplicationModel.xcdatamodel; sourceTree = "<group>"; };
 		0505C4F12869AC800034A9F0 /* PSM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSM.swift; sourceTree = "<group>"; };
 		0506366D2801A8740080DF00 /* EnvironmentEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentEX.swift; sourceTree = "<group>"; };
+		0512F37828BDD84A0008A5C8 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
 		052D57352795323C0075BF8F /* ManageTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagView.swift; sourceTree = "<group>"; };
@@ -495,6 +499,7 @@
 				AC48ED5D26F6F6AD00AB1A5D /* Routes.swift */,
 				AC48ED5F26F6F9E300AB1A5D /* RestClient.swift */,
 				057977B42805449D00FE5EA4 /* MockDatas.swift */,
+				0512F37828BDD84A0008A5C8 /* LocationManager.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -546,6 +551,7 @@
 				05384A852792CE5E00D85A92 /* CustomDialog.swift */,
 				05E2324B27C2267700FEA7A2 /* ImagePicker.swift */,
 				05962116280BF85B0036B3AA /* DateSelectionView.swift */,
+				0505855A28BD4B15006C6DCD /* MapView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -946,6 +952,7 @@
 				ACC306AF2701E4B90035CCB9 /* StartThreadsModel.swift in Sources */,
 				AC1D2CCB2662016E00AA351A /* Avatar.swift in Sources */,
 				AC1D2CD12662016E00AA351A /* ThreadRow.swift in Sources */,
+				0505855B28BD4B15006C6DCD /* MapView.swift in Sources */,
 				05F6C7102808BB1800C2EEF4 /* Message.swift in Sources */,
 				AC0889AC2691D47E00FD4552 /* AppState.swift in Sources */,
 				AC1D2CD22662016E00AA351A /* AppDelegate.swift in Sources */,
@@ -956,6 +963,7 @@
 				AC48ED6326F7051F00AB1A5D /* AuthorizeRequest.swift in Sources */,
 				ACD6840E26F8BAC20093002C /* SettingModel.swift in Sources */,
 				AC2E4747274B58880073E8E4 /* UserDefaultsEX.swift in Sources */,
+				0512F37928BDD84A0008A5C8 /* LocationManager.swift in Sources */,
 				AC1D2CCA2662016E00AA351A /* ImageLoader.swift in Sources */,
 				AC48ED6526F7299F00AB1A5D /* VerifyRequest.swift in Sources */,
 				AC0FE1372755047A00C7A8DB /* IntEX.swift in Sources */,

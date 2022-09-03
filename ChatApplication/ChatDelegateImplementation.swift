@@ -50,6 +50,9 @@ class ChatDelegateImplementation: ChatDelegate {
                                                                ssoHost: config.ssoHost,
                                                                platformHost: config.platformHost,
                                                                fileServer: config.fileServer,
+                                                               mapApiKey: """
+                                                               8b77db18704aa646ee5aaea13e7370f4f88b9e8c
+                                                               """,
                                                                enableCache: true,
                                                                msgTTL: 800000,//for integeration server need to be long time
                                                                reconnectCount:Int.max,

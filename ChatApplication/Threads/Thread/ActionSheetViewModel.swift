@@ -8,6 +8,7 @@
 import Foundation
 import Photos
 import UIKit
+import FanapPodChatSDK
 
 class ActionSheetViewModel : ObservableObject{
 
@@ -137,6 +138,14 @@ class ActionSheetViewModel : ObservableObject{
     func loadMore(){
         if !hasNext{return}
         loadImages()
+    }
+
+    func sendLocation(_ coordinate: CLLocationCoordinate2D){
+        if let threadId = threadViewModel.model.thread?.id, let userGroupHash = threadViewModel.model.thread?.userGroupHash {
+            let center = Cordinate(lat: coordinate.latitude, lng: coordinate.longitude)
+            Chat.sharedInstance.sendLocationMessage(.init(mapCenter: center, threadId: threadId, userGroupHash: userGroupHash))
+            Chat.sharedInstance.sendTextMessage(.init(threadId: threadId, textMessage: "", messageType: .LOCATION))
+        }
     }
 }
 

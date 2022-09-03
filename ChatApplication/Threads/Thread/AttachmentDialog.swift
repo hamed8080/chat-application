@@ -45,6 +45,9 @@ struct CustomActionSheetView:View{
     
     @State
     var showDocumentPicker:Bool = false
+
+    @State
+    var showMapView: Bool = false
     
     var body: some View{
         
@@ -114,7 +117,7 @@ struct CustomActionSheetView:View{
                     }
                     
                     AttachmentButton(title: "Location", imageName: "location.viewfinder") {
-                        
+                        showMapView.toggle()
                     }
                     
                     AttachmentButton(title: "Contact", imageName: "person.2.crop.square.stack", hideDivider:true) {
@@ -123,6 +126,13 @@ struct CustomActionSheetView:View{
             }
             .padding([.leading], 24)
             .frame(minWidth: 0, maxWidth: .infinity,alignment: .leading)
+        }
+        .sheet(isPresented: $showMapView) {
+            MapView() { coordinate in
+                viewModel.sendLocation(coordinate)
+                showMapView.toggle()
+                showAttachmentDialog.toggle()
+            }
         }
         .sheet(isPresented: $showDocumentPicker, onDismiss: nil) {
             DocumentPicker(fileUrl: $viewModel.selectedFileUrl, showDocumentPicker: $showDocumentPicker)
