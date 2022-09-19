@@ -7,6 +7,7 @@
 
 import Foundation
 import FanapPodChatSDK
+import UIKit
 import NaturalLanguage
 
 extension String{
