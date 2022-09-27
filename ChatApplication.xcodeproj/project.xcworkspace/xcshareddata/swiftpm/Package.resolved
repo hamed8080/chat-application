@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "fanappodasyncsdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/fanappodasyncsdk.git",
+      "state" : {
+        "revision" : "0077598de04da9fb89e982cb5ae2d0d082402dde",
+        "version" : "1.1.0"
+      }
+    },
+    {
       "identity" : "sentry-cocoa",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
@@ -16,6 +25,24 @@
       "state" : {
         "revision" : "e6b65c6d9077ea48b4a7bdda8994a1d3c6969c8d",
         "version" : "3.1.1"
+      }
+    },
+    {
+      "identity" : "swift-docc-plugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-docc-plugin",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6a6577adb48651a1ca7dee6861c894ee6ca66021"
+      }
+    },
+    {
+      "identity" : "swift-docc-symbolkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-docc-symbolkit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b45d1f2ed151d057b54504d653e0da5552844e34"
       }
     },
     {
