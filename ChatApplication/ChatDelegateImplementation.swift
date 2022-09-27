@@ -7,6 +7,7 @@
 
 import Foundation
 import FanapPodChatSDK
+import FanapPodAsyncSDK
 import UIKit
 
 enum ConnectionStatus:Int{
@@ -44,19 +45,21 @@ class ChatDelegateImplementation: ChatDelegate {
             }
             let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken
             print("token is: \(token)")
-            Chat.sharedInstance.createChatObject(config: .init(socketAddress: config.socketAddresss,
-                                                               serverName: config.serverName,
+
+            let asyncConfig = AsyncConfig(socketAddress: config.socketAddresss,
+                                          serverName: config.serverName,
+                                          appId: "PodChat",
+                                          reconnectCount:Int.max,
+                                          reconnectOnClose: true,
+                                          isDebuggingLogEnabled: false)
+            Chat.sharedInstance.createChatObject(config: .init(asyncConfig: asyncConfig,
                                                                token: token,
                                                                ssoHost: config.ssoHost,
                                                                platformHost: config.platformHost,
                                                                fileServer: config.fileServer,
                                                                enableCache: true,
                                                                msgTTL: 800000,//for integeration server need to be long time
-                                                               reconnectCount:Int.max,
-                                                               reconnectOnClose: true,
-//                                                               showDebuggingLogLevel:.verbose,
                                                                isDebuggingLogEnabled: true,
-                                                               isDebuggingAsyncEnable: false,
                                                                enableNotificationLogObserver: true
             ))
             Chat.sharedInstance.delegate = self

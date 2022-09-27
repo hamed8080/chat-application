@@ -342,7 +342,7 @@ struct SendContainer:View{
     var showSelectThreadToForward:Bool
     
     var body: some View{
-        let threadType = ThreadTypes(rawValue: viewModel.model.thread?.type ?? 0)
+        let threadType = viewModel.model.thread?.type
         
         if viewModel.model.isInEditMode{
             VStack{

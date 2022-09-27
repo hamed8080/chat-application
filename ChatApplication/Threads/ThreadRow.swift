@@ -135,7 +135,7 @@ struct ThreadRow: View {
                 }
             }
             
-            if let typeInt = thread.type , let type = ThreadTypes(rawValue: typeInt){
+            if let type = thread.type, type == .CHANNEL_GROUP || type == .PUBLIC_GROUP{
                 Button {
                     viewModel.showAddParticipants(thread)
                 } label: {
