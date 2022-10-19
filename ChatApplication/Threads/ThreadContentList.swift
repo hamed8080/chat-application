@@ -97,7 +97,7 @@ struct ThreadContentList:View {
                     }
                 }
             }
-            
+
             ToolbarItem(placement: .principal) {
                 if viewModel.connectionStatus != .CONNECTED{
                     Text("\(viewModel.connectionStatus.stringValue) ...")
@@ -133,7 +133,6 @@ struct ThreadContentList_Previews: PreviewProvider {
         let appState = AppState.shared
         let vm = ThreadsViewModel()
         ThreadContentList(viewModel: vm)
-            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .onAppear(){
                 vm.setupPreview()
             }

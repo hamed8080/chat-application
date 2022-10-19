@@ -185,13 +185,11 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
         HomeContentView()
-            .preferredColorScheme(.light)
-            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .environmentObject(appState)
             .onAppear(){
+                AppState.shared.connectionStatus = .CONNECTED
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
             }
-            .previewInterfaceOrientation(.landscapeLeft)
         
     }
 }
