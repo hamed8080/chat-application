@@ -26,8 +26,10 @@ class AppState: ObservableObject {
     
     @Published
     var connectionStatusString = ""
-    
+
     @Published
+    var showThreadView = false
+
     var selectedThread:Conversation? = nil
     
     func setConnectionStatus(_ status:ConnectionStatus){
@@ -42,7 +44,7 @@ class AppState: ObservableObject {
     
     //get cahe user from databse for working fast with something like showing message rows
     func setCachedUser(){
-        CacheFactory.get(useCache: true, cacheType: .USER_INFO) { response in
+        CacheFactory.get(useCache: true, cacheType: .userInfo) { response in
             self.user = response.cacheResponse as? User
         }
     }

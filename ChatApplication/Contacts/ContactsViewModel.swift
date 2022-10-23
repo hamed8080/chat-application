@@ -23,20 +23,20 @@ class ContactsViewModel:ObservableObject{
     @Published
     public var navigateToAddOrEditContact      = false
     
-    private (set) var connectionStatusCancelable:AnyCancellable? = nil
+    private (set) var canceableSet:Set<AnyCancellable> = []
     
     private (set) var isFirstTimeConnectedRequestSuccess = false
-    
+
     @Published
-    var connectionStatus:ConnectionStatus     = .Connecting
+    var searchContactString :String = ""
     
     init() {
-        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
+        AppState.shared.$connectionStatus.sink { status in
             if self.isFirstTimeConnectedRequestSuccess == false  && status == .CONNECTED{
                 self.getContacts()
-            }            
-            self.connectionStatus = status
+            }
         }
+        .store(in: &canceableSet)
         getOfflineContacts()
     }
     
@@ -53,7 +53,7 @@ class ContactsViewModel:ObservableObject{
     
     func getOfflineContacts() {
         let req = ContactsRequest(count:model.count,offset: model.offset)
-        CacheFactory.get(useCache: true, cacheType: .GET_CASHED_CONTACTS(req)) { response in
+        CacheFactory.get(useCache: true, cacheType: .getCashedContacts(req)) { response in
             let contacts = response.cacheResponse as? [Contact]
             self.model.setContacts(contacts: contacts)
             self.model.setMaxContactsCountInServer(count: CMContact.crud.getTotalCount())
@@ -73,15 +73,16 @@ class ContactsViewModel:ObservableObject{
     }
     
     func createThread(invitees:[Invitee]){
-        Chat.sharedInstance.createThread(.init(invitees: invitees, title: "", type:.NORMAL)) { thread, uniqueId, error in
+        Chat.sharedInstance.createThread(.init(invitees: invitees, title: "", type:.normal)) { thread, uniqueId, error in
             if let thread = thread{
                 AppState.shared.selectedThread = thread
+                AppState.shared.showThreadView = true
             }
         }
     }
     
     func loadMore(){
-        if !model.hasNext || isLoading || connectionStatus != .CONNECTED{return}
+        if !model.hasNext || isLoading || AppState.shared.connectionStatus != .CONNECTED{return}
         isLoading = true
         model.preparePaginiation()
         Chat.sharedInstance.getContacts(.init(count:model.count,offset: model.offset)) {[weak self] contacts, uniqueId, pagination, error in

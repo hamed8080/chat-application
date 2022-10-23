@@ -9,7 +9,8 @@ import SwiftUI
 
 struct LoginView: View {
     
-    @StateObject var viewModel            :LoginViewModel
+    @EnvironmentObject
+    var viewModel: LoginViewModel
     
     var body: some View {
         ZStack{
@@ -161,7 +162,9 @@ struct LoginContentView:View{
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = LoginViewModel()
-        LoginView(viewModel: vm).preferredColorScheme(.light).onAppear{
+        LoginView()
+            .environmentObject(LoginViewModel())
+            .onAppear{
             //            Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
             //                vm.model.setIsInVerifyState(true)
             //            }

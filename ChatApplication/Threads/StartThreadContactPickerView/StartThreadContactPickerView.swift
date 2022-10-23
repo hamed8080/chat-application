@@ -11,7 +11,7 @@ import FanapPodChatSDK
 struct StartThreadResultModel{
     var selectedContacts :[Contact]? = nil
     
-    var type             :ThreadTypes = .NORMAL
+    var type             :ThreadTypes = .normal
     
     var title            :String = ""
 }
@@ -68,17 +68,17 @@ struct StartThreadContactPickerView:View {
             }else{
                 
                 StartThreadButton(name: "bookmark.circle", title: "Save Message", color: .blue){
-                    onCompletedConfigCreateThread(.init(selectedContacts: nil, type: .SELF_THREAD, title: ""))
+                    onCompletedConfigCreateThread(.init(selectedContacts: nil, type: .selfThread, title: ""))
                 }
                 
                 StartThreadButton(name: "person.2", title: "New Group", color: .blue){
                     isInMultiSelectMode.toggle()
-                    startThreadModel.type = .CHANNEL_GROUP
+                    startThreadModel.type = .channelGroup
                 }
                 
                 StartThreadButton(name: "megaphone", title: "New Channel", color: .blue){
                     isInMultiSelectMode.toggle()
-                    startThreadModel.type = .CHANNEL
+                    startThreadModel.type = .channel
                 }
                 List {
                     ForEach(contactsVM.model.contacts , id:\.id) { contact in
@@ -86,7 +86,7 @@ struct StartThreadContactPickerView:View {
                         StartThreadContactRow(contact: contact, isInMultiSelectMode: $isInMultiSelectMode, viewModel: contactsVM)
                             .onTapGesture {
                                 if isInMultiSelectMode == false{
-                                    onCompletedConfigCreateThread(.init(selectedContacts: [contact], type: .NORMAL, title: ""))
+                                    onCompletedConfigCreateThread(.init(selectedContacts: [contact], type: .normal, title: ""))
                                 }
                             }
                             .onAppear {

@@ -31,14 +31,14 @@ struct SelectThreadContentList:View {
                                 viewModel.searchInsideAllThreads(text: searechInsideThread)
                             }
                         
-                        ForEach(viewModel.model.threads , id:\.id) { thread in
+                        ForEach(viewModel.threads , id:\.id) { thread in
                             SelectThreadRow(thread: thread)
                                 .onTapGesture {
                                     onSelect(thread)
                                     dismiss()
                                 }
                                 .onAppear {
-                                    if viewModel.model.threads.last == thread{
+                                    if viewModel.threads.last == thread{
                                         viewModel.loadMore()
                                     }
                                 }

@@ -26,10 +26,11 @@ struct SettingsView:View {
                             .frame(width: 128, height: 128)
                             .shadow(color: .black, radius: 20, x: 0, y: 0)
                             .overlay(
-                                Avatar(url: viewModel.model.currentUser?.image,
-                                       userName: viewModel.model.currentUser?.username?.uppercased() ?? "",
-                                       style: .init(size:128,textSize: 64)
-                                      )
+                                Avatar(
+                                    url: viewModel.model.currentUser?.image,
+                                    userName: viewModel.model.currentUser?.username?.uppercased() ?? "",
+                                    style: .init(size:128,textSize: 64)
+                                )
                             )
                             .gesture(
                                 DragGesture(minimumDistance: 0, coordinateSpace: .local)
@@ -68,7 +69,7 @@ struct SettingsView:View {
                         
                         Button(action: {
                             Chat.sharedInstance.logOut()
-                            CacheFactory.write(cacheType: .DELETE_ALL_CACHE_DATA)
+                            CacheFactory.write(cacheType: .deleteAllCacheData)
                             TokenManager.shared.clearToken()
                         }, label: {
                             HStack{
@@ -114,11 +115,7 @@ struct SettingsView:View {
             }
             
             ToolbarItem(placement: .principal) {
-                if viewModel.connectionStatus != .CONNECTED{
-                    Text("\(viewModel.connectionStatus.stringValue) ...")
-                        .foregroundColor(Color(named: "text_color_blue"))
-                        .font(.subheadline.bold())
-                }
+                ConnectionStatusToolbar()
             }
         }
         .navigationTitle(Text("Settings"))

@@ -15,12 +15,12 @@ struct SelectThreadRow: View {
     var body: some View {
         let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
         HStack{
-            Avatar(url:thread.image,
-                   userName: thread.inviter?.username?.uppercased(),
-                   fileMetaData: thread.metadata,
-                   style: .init(size: 36, textSize: 12),
-                   token: token,
-                   previewImageName: thread.image ?? "avatar"
+            Avatar(
+                url: thread.image,
+                userName: thread.inviter?.username?.uppercased(),
+                style: .init(size: 36, textSize: 12),
+                metadata: thread.metadata,
+                token: token
             )
             Text(thread.title ?? "")
                 .font(.headline)

@@ -17,14 +17,15 @@ class StartThreadContactPickerViewModel:ObservableObject{
     @Published
     private (set) var model = StartThreadModel()
     
-    private (set) var connectionStatusCancelable:AnyCancellable? = nil
+    private (set) var cancellableSet: Set<AnyCancellable> = []
     
     init() {
-        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
+        AppState.shared.$connectionStatus.sink { status in
             if self.model.threads.count == 0 && status == .CONNECTED{
          
             }
         }
+        .store(in: &cancellableSet)
     }
     
     func setupPreview(){

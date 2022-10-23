@@ -22,7 +22,7 @@ class UploadFileMessage:Message{
                    id: nil,
                    mentioned: nil,
                    message: textMessage,
-                   messageType: MessageType.TEXT.rawValue,//only for show view in message list because 0 or nil rows don't render
+                   messageType: MessageType.text,//only for show view in message list because 0 or nil rows don't render
                    metadata: nil,
                    ownerId: nil,
                    pinned: nil,

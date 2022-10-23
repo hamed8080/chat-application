@@ -18,15 +18,8 @@ class SettingViewModel: ObservableObject {
     @Published
     var secondToExpire:Double = 0
     
-    private (set) var connectionStatusCancelable:AnyCancellable? = nil
-    
-    @Published
-    var connectionStatus:ConnectionStatus     = .Connecting
-    
     init() {
-        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in            
-            self.connectionStatus = status
-        }
+
     }
     
     func startTokenTimer(){

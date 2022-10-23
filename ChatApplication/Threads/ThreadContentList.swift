@@ -7,13 +7,13 @@
 
 import SwiftUI
 import FanapPodChatSDK
+import Combine
 
 struct ThreadContentList:View {
-    
-    @StateObject var viewModel:ThreadsViewModel
-    
-    @EnvironmentObject var appState:AppState
-    
+
+    @EnvironmentObject
+    var viewModel: ThreadsViewModel
+
     @State
     var searechInsideThread:String = ""
     
@@ -21,60 +21,37 @@ struct ThreadContentList:View {
     var folder:Tag? = nil
     
     var body: some View{
+        let  _ = Self._printChanges()
         ZStack{
             VStack(spacing:0){
                 List {
-                    MultilineTextField("Search ...",
-                                       text: $searechInsideThread,
-                                       backgroundColor:Color.gray.opacity(0.2),
-                                       keyboardReturnType: .search){ text in
-                        hideKeyboard()
-                    }
-                                       .cornerRadius(8)
-                                       .noSeparators()
-                                       .onChange(of: searechInsideThread) { newValue in
-                                           viewModel.searchInsideAllThreads(text: searechInsideThread)
-                                       }
                     if let threadsInsideFolder = folder?.tagParticipants{
                         ForEach(threadsInsideFolder, id:\.id) { thread in
                             if let thread = thread.conversation{
                                 NavigationLink {
-                                    ThreadView(viewModel: ThreadViewModel(thread:thread))
+                                    ThreadView(viewModel: ThreadViewModel(thread: thread))
                                 } label: {
-                                    ThreadRow(thread: thread,viewModel: viewModel)
-                                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                            Button(role: .destructive) {
-                                                viewModel.deleteThread(thread)
-                                            } label: {
-                                                Label("Delete", systemImage: "trash")
-                                            }
-                                        }
+                                    ThreadRow(viewModel: .init(thread: thread, threadsViewModel: viewModel))
                                 }
                             }
                         }
                     }else{
-                        ForEach(viewModel.model.threads , id:\.id) { thread in
-
+                        ForEach(viewModel.threads, id:\.id) { thread in
                             NavigationLink {
-                                ThreadView(viewModel: ThreadViewModel(thread:thread))
+                                LazyView(ThreadView(viewModel: ThreadViewModel(thread: thread)))
                             } label: {
-                                ThreadRow(thread: thread,viewModel: viewModel)
+                                ThreadRow(viewModel: .init(thread: thread, threadsViewModel: viewModel))
                                     .onAppear {
-                                        if viewModel.model.threads.last == thread{
+                                        if viewModel.threads.last == thread{
                                             viewModel.loadMore()
-                                        }
-                                    }
-                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                        Button(role: .destructive) {
-                                            viewModel.deleteThread(thread)
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
                                         }
                                     }
                             }
                         }
                     }
                 }
+                .searchable(text: $viewModel.searchInsideThreadString, placement: .navigationBarDrawer, prompt: "Search...")
+                .animation(.easeInOut, value: viewModel.threads)
                 .listStyle(.plain)
             }
             
@@ -99,11 +76,7 @@ struct ThreadContentList:View {
             }
 
             ToolbarItem(placement: .principal) {
-                if viewModel.connectionStatus != .CONNECTED{
-                    Text("\(viewModel.connectionStatus.stringValue) ...")
-                        .foregroundColor(Color(named: "text_color_blue"))
-                        .font(.subheadline.bold())
-                }
+                ConnectionStatusToolbar()
             }
         }
         .navigationTitle(Text( folder?.name ?? "Chats"))
@@ -132,10 +105,11 @@ struct ThreadContentList_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
         let vm = ThreadsViewModel()
-        ThreadContentList(viewModel: vm)
+        ThreadContentList()
             .onAppear(){
                 vm.setupPreview()
             }
+            .environmentObject(vm)
             .environmentObject(appState)
     }
 }

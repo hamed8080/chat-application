@@ -48,10 +48,11 @@ struct MediaView: View {
     @ViewBuilder
     func item(picture:Message)-> some View{
         if let link = picture.metaData?.file?.link{
-            Avatar(url: link,
-                   userName: nil,
-                   fileMetaData: picture.metadata,
-                   style: .init(cornerRadius:-1, size: (UIScreen.main.bounds.width / CGFloat(columns.count)) - 16)
+            Avatar(
+                url: link,
+                userName: nil,
+                style: .init(cornerRadius: -1, size: (UIScreen.main.bounds.width / CGFloat(columns.count)) - 16),
+                metadata: picture.metadata
             )
         }
     }
@@ -71,7 +72,7 @@ class AttachmentsViewModel: ObservableObject{
     func getPictures(){
         guard let threadId = thread?.id else {return}
         
-        Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count, messageType: MessageType.POD_SPACE_PICTURE.rawValue, offset: model.offset)) {[weak self] messages, uniqueId, pagination, error in
+        Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count, messageType: MessageType.podSpacePicture.rawValue, offset: model.offset)) {[weak self] messages, uniqueId, pagination, error in
             if let messages = messages{
                 self?.model.appendMessages(messages: messages)
                 self?.model.setHasNext(pagination?.hasNext ?? false)

@@ -15,9 +15,7 @@ struct AddParticipantsToThreadView:View {
 
     @StateObject
     var contactsVM = ContactsViewModel()
-
-    @EnvironmentObject var appState:AppState
-
+    
     var onCompleted:([Contact])->()
 
     var body: some View{

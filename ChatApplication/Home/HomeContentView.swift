@@ -10,49 +10,34 @@ import FanapPodChatSDK
 
 struct HomeContentView: View {
     
-    @StateObject
-    var loginModel     = LoginViewModel()
-    
-    @StateObject
-    var contactsVM     = ContactsViewModel()
-    
-    @StateObject
-    var threadsVM      = ThreadsViewModel()
-    
-    @StateObject
-    var settingsVM     = SettingViewModel()
-    
-    @StateObject
-    var tokenManager   = TokenManager.shared
+    @EnvironmentObject
+    var threadsVM: ThreadsViewModel
+
+    @EnvironmentObject
+    var contactsVM: ThreadsViewModel
+
+    @EnvironmentObject
+    var tokenManager: TokenManager
     
     @Environment(\.localStatusBarStyle)
-    var statusBarStyle          :LocalStatusBarStyle
-    
+    var statusBarStyle
+
     @Environment(\.colorScheme)
     var colorScheme
-    
+
     @Environment(\.isPreview)
     var isPreview
-    
-    @State var appState = AppState.shared
-    
-    @State
-    var showThreadView:Bool = false
-    
-    @State
-    var selectedThread:Conversation? = nil
-    
+
     var body: some View {
         if tokenManager.isLoggedIn == false{
-            LoginView(viewModel:loginModel)
+            LoginView()
         }else{
             NavigationView{
-                SideBar(contactsVM:contactsVM,threadsVM:threadsVM,settingsVM:settingsVM)
-                    .environmentObject(appState)
-                
-                SecondSideBar(threadsVM:threadsVM)
-                
-                DetailContentView(threadsVM: threadsVM)
+                SideBar()
+
+                SecondSideBar()
+
+                DetailContentView()
             }
             .onAppear{
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
@@ -67,20 +52,20 @@ struct HomeContentView: View {
 
 struct SideBar:View{
     
-    @StateObject
+    @EnvironmentObject
     var contactsVM:ContactsViewModel
     
-    @StateObject
+    @EnvironmentObject
     var threadsVM:ThreadsViewModel
     
-    @StateObject
+    @EnvironmentObject
     var settingsVM:SettingViewModel
     
     var body: some View{
         
         List{
             NavigationLink {
-                ContactContentList(viewModel: contactsVM)
+                ContactContentList()
             } label: {
                 Label {
                     Text("Contacts")
@@ -91,9 +76,9 @@ struct SideBar:View{
                         .foregroundColor(Color.blue)
                 }
             }
-            
+
             NavigationLink {
-                ThreadContentList(viewModel: threadsVM)
+                ThreadContentList()
             } label: {
                 Label {
                     Text("Chats")
@@ -104,10 +89,10 @@ struct SideBar:View{
                         .foregroundColor(Color.blue)
                 }
             }
-            
+
             ForEach(threadsVM.tagViewModel.model.tags, id:\.id){ tag in
                 NavigationLink {
-                    ThreadContentList(viewModel: threadsVM, folder:tag)
+                    ThreadContentList(folder:tag)
                 } label: {
                     Label {
                         Text(tag.name)
@@ -130,7 +115,7 @@ struct SideBar:View{
                         .resizable()
                         .scaledToFit()
                         .foregroundColor(Color.blue)
-                        
+
                 }
             }
         }
@@ -140,18 +125,15 @@ struct SideBar:View{
 
 ///this view only render once when view created to show list of threads after that all views are created by SideBar from list
 struct SecondSideBar:View{
-    
-    @StateObject
-    var threadsVM:ThreadsViewModel
-    
+
     var body: some View{
-        ThreadContentList(viewModel: threadsVM)
+        ThreadContentList()
     }
 }
 
 struct DetailContentView:View{
     
-    @StateObject
+    @EnvironmentObject
     var threadsVM:ThreadsViewModel
     
     var body: some View{

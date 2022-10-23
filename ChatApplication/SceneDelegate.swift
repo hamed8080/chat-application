@@ -12,6 +12,21 @@ import FanapPodChatSDK
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+
+    @ObservedObject
+    var loginModel     = LoginViewModel()
+
+    @ObservedObject
+    var contactsVM     = ContactsViewModel()
+
+    @ObservedObject
+    var threadsVM      = ThreadsViewModel()
+
+    @ObservedObject
+    var settingsVM     = SettingViewModel()
+
+    @ObservedObject
+    var tokenManager = TokenManager.shared
     
     @State var appState = AppState.shared
 
@@ -23,7 +38,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Create the SwiftUI view that provides the window contents.
         NotificationCenter.default.addObserver(self, selector: #selector(addLog), name: NSNotification.Name("log"), object: nil)
         let contentView = HomeContentView()
+            .environmentObject(settingsVM)
+            .environmentObject(contactsVM)
+            .environmentObject(threadsVM)
             .environmentObject(appState)
+            .environmentObject(loginModel)
+            .environmentObject(tokenManager)
 
         if #available(iOS 15.0, *) {
             let appearance = UITabBarAppearance()

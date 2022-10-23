@@ -24,18 +24,19 @@ class LogViewModel:ObservableObject{
     
     fileprivate static let NotificationKey = "InsertLog"
     
-    private (set) var logsCancelable:AnyCancellable? = nil
+    private (set) var cancellableSet: Set<AnyCancellable> = []
     
     init(isPreview:Bool = false){
         viewContext = isPreview ? PSM.preview.container.viewContext : PSM.shared.container.viewContext
         load()
-        logsCancelable = NotificationCenter.default.publisher(for: Notification.Name.init(LogViewModel.NotificationKey))
+        NotificationCenter.default.publisher(for: Notification.Name.init(LogViewModel.NotificationKey))
             .compactMap{$0.object as? Log}
             .sink { log in
                 withAnimation {
                     self.logs.insert(log, at: 0)
                 }
             }
+            .store(in: &cancellableSet)
     }
     
     func load(){

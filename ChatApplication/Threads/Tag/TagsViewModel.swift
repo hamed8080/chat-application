@@ -26,15 +26,16 @@ class TagsViewModel:ObservableObject{
     @Published
     var showAddParticipants = false
     
-    private (set) var connectionStatusCancelable    : AnyCancellable? = nil
+    private (set) var cancellableSet: Set<AnyCancellable> = []
     private (set) var isFirstTimeConnectedRequestSuccess = false
     
     init() {
-        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
+        AppState.shared.$connectionStatus.sink { status in
             if self.isFirstTimeConnectedRequestSuccess == false && status == .CONNECTED{
                 self.getTagList()
             }
         }
+        .store(in: &cancellableSet)
         getOfflineTags()
     }
     
@@ -49,7 +50,7 @@ class TagsViewModel:ObservableObject{
     }
     
     func getOfflineTags(){
-        CacheFactory.get(useCache: true, cacheType: .TAGS) { response in
+        CacheFactory.get(useCache: true, cacheType: .tags) { response in
             if let tags = response.cacheResponse as? [Tag]{
                 self.model.setTags(tags: tags)
             }

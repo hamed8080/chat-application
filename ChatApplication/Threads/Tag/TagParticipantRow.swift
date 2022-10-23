@@ -21,14 +21,13 @@ struct TagParticipantRow: View {
                 HStack{
                     let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
                     if let thread = tagParticipant.conversation{
-                        Avatar(url:thread.image,
-                               userName: thread.inviter?.username?.uppercased(),
-                               fileMetaData: thread.metadata,
-                               style: .init(size: 28, textSize: 12),
-                               token: token,
-                               previewImageName: thread.image ?? "avatar"
+                        Avatar(
+                            url: thread.image,
+                            userName: thread.inviter?.username?.uppercased(),
+                            style: .init(size: 28, textSize: 12),
+                            metadata: thread.metadata,
+                            token: token
                         )
-                        
                         VStack(alignment:.leading){
                             Text(thread.title ?? "")
                                 .font(.headline)

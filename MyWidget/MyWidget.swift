@@ -77,6 +77,12 @@ struct MyWidgetEntryView : View {
             mediumView
         case .systemLarge:
             largeView
+        case .accessoryCircular:
+            smallView
+        case .accessoryRectangular:
+            smallView
+        case .accessoryInline:
+            smallView
         @unknown default:
             mediumView
         }
@@ -85,8 +91,12 @@ struct MyWidgetEntryView : View {
     @ViewBuilder
     var smallView: some View{
         if let thread = entry.threads.first{
-            VStack{
-                Avatar(url: thread.image, userName: thread.title?.uppercased(),fileMetaData: thread.metadata, imageSize: .SMALL)
+            VStack{ 
+                Avatar(
+                    url: thread.image,
+                    userName: thread.title?.uppercased(),
+                    metadata: thread.metadata
+                )
                 Text(thread.title ?? "")
                     .font(.subheadline)
             }.widgetURL(URL(string: "Widget://link-\(thread.id ?? 0 )")!)
@@ -134,7 +144,11 @@ struct MyWidgetEntryView : View {
     @ViewBuilder
     func item(thread:Conversation)-> some View{
         Link(destination: URL(string: "Widget://link-\(thread.id ?? 0 )")!) {
-            Avatar(url: thread.image, userName: thread.title?.uppercased(),fileMetaData: thread.metadata, imageSize: .MEDIUM)
+            Avatar(
+                url: thread.image,
+                userName: thread.title?.uppercased(),
+                metadata: thread.metadata
+            )
         }
     }
 }

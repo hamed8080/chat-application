@@ -24,7 +24,7 @@ struct UploadFileView :View{
     init(_ threadViewModel:ThreadViewModel, message:UploadFileMessage){
         self.message = message
         self.threadViewModel = threadViewModel
-        self.viewModel = UploadFileViewModel(message:message, thread: threadViewModel.model.thread)
+        self.viewModel = UploadFileViewModel(message:message, thread: threadViewModel.thread)
     }
     
     @ViewBuilder
@@ -58,7 +58,7 @@ struct UploadFileView :View{
             })
             .onReceive(viewModel.$state, perform: { state in
                 if state == .COMPLETED{
-                    threadViewModel.deleteMessageFromModel(message)
+                    threadViewModel.messages.removeAll(where: {$0 == message})
                 }
             })
             .onReceive(viewModel.uploadPercent) { percent in
@@ -98,7 +98,7 @@ class UploadFileViewModel: ObservableObject{
     func startUpload(){
         state = .STARTED
         guard let threadId = thread?.id else{return}
-        let textMessageType:MessageType = message.uploadFileRequest is UploadImageRequest ? .POD_SPACE_PICTURE : .POD_SPACE_FILE
+        let textMessageType:MessageType = message.uploadFileRequest is UploadImageRequest ? .podSpacePicture : .podSpaceFile
         let message = SendTextMessageRequest(threadId: threadId, textMessage: self.message.message ?? "", messageType:  textMessageType)
         uploadFile(message , self.message.uploadFileRequest)
     }
