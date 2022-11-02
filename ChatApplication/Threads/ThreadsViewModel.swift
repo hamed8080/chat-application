@@ -28,92 +28,107 @@ class ThreadsViewModel: ObservableObject {
     var showAddToTags = false
 
     private(set) var cancellableSet: Set<AnyCancellable> = []
-    private(set) var isFirstTimeConnectedRequestSuccess = false
+    private(set) var firstSuccessResponse = false
 
     @Published
     private(set) var tagViewModel = TagsViewModel()
 
-    @Published
-    var searchInsideThreadString = ""
-
     private(set) var count = 15
     private(set) var offset = 0
+    var searchText: String = ""
 
     @Published
-    private(set) var threads: [Conversation] = []
+    private var threads: [Conversation] = []
     private(set) var hasNext: Bool = true
+    let archived: Bool
 
-    init() {
+    init(archived: Bool = false) {
+        self.archived = archived
         AppState.shared.$connectionStatus
-            .sink { status in
-                if self.isFirstTimeConnectedRequestSuccess == false, status == .CONNECTED {
-                    self.getThreads()
-                }
-            }
+            .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)
         NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
             .compactMap { $0.object as? MessageEventTypes }
-            .sink { event in
-                if case .messageNew(let message) = event {
-                    self.addNewMessageToThread(message)
-                }
-            }
+            .sink(receiveValue: onMessageEvent)
             .store(in: &cancellableSet)
-
         NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
             .compactMap { $0.object as? ThreadEventTypes }
-            .sink { event in
-                switch event {
-                case .threadNew(let newThreads):
-                    withAnimation {
-                        self.appendThreads(threads: [newThreads])
-                    }
-                case .threadDeleted(threadId: let threadId, participant: _):
-                    if let thread = self.threads.first(where: { $0.id == threadId }) {
-                        self.removeThread(thread)
-                    }
-                default:
-                    break
-                }
-            }
+            .sink(receiveValue: onThreadEvent)
             .store(in: &cancellableSet)
-        getOfflineThreads()
+        getThreads()
+    }
+
+    func onThreadEvent(_ event: ThreadEventTypes?) {
+        switch event {
+        case .threadNew(let newThreads):
+            appendThreads(threads: [newThreads])
+        case .threadDeleted(threadId: let threadId, participant: _):
+            if let thread = threads.first(where: { $0.id == threadId }) {
+                removeThread(thread)
+            }
+        default:
+            break
+        }
+    }
+
+    func onMessageEvent(_ event: MessageEventTypes?) {
+        if case .messageNew(let message) = event {
+            addNewMessageToThread(message)
+        }
+    }
+
+    func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
+        if firstSuccessResponse == false, status == .CONNECTED {
+            offset = 0
+            getThreads()
+        }
     }
 
     func getThreads() {
         isLoading = true
-        Chat.sharedInstance.getThreads(.init(count: count, offset: offset)) { [weak self] threads, _, pagination, _ in
-            if let threads = threads {
-                self?.isFirstTimeConnectedRequestSuccess = true
-                self?.setThreads(threads: threads)
-                self?.hasNext(pagination?.hasNext ?? false)
-                if let data = try? JSONEncoder().encode(threads) {
-                    self?.threadsData = data
-                }
-            }
-            self?.isLoading = false
-        }
+        Chat.sharedInstance.getThreads(.init(count: count, offset: offset, archived: archived), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
-    func getOfflineThreads() {
-        let req = ThreadsRequest(count: count, offset: offset)
-        CacheFactory.get(useCache: true, cacheType: .getThreads(req)) { response in
-            if let threads = response.cacheResponse as? [Conversation] {
-                self.setThreads(threads: threads)
-            }
+    var filtered: [Conversation] {
+        if searchText.isEmpty {
+            return threads
+        } else {
+            return threads.filter{ $0.title?.lowercased().contains(searchText.lowercased()) ?? false }
         }
     }
 
     func loadMore() {
         if !hasNext { return }
         preparePaginiation()
-        Chat.sharedInstance.getThreads(.init(count: count, offset: offset)) { [weak self] threads, _, pagination, _ in
-            if let threads = threads {
-                self?.appendThreads(threads: threads)
-                self?.hasNext(pagination?.hasNext ?? false)
-            }
-            self?.isLoading = false
+        getThreads()
+    }
+
+    func onServerResponse(_ threads: [Conversation]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+        if let threads = threads {
+            firstSuccessResponse = true
+            appendThreads(threads: threads)
+            hasNext(pagination?.hasNext ?? false)
+            updateWidgetPreferenceThreads(threads)
         }
+        isLoading = false
+    }
+
+    func onCacheResponse(_ threads: [Conversation]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+        if let threads = threads {
+            appendThreads(threads: threads)
+            hasNext(pagination?.hasNext ?? false)
+        }
+        if isLoading, AppState.shared.connectionStatus != .CONNECTED {
+            isLoading = false
+        }
+    }
+
+    func updateWidgetPreferenceThreads(_ threads: [Conversation]) {
+        guard let threadsData = threadsData else { return }
+        var storageThreads = (try? JSONDecoder().decode([Conversation].self, from: threadsData)) ?? []
+        storageThreads.append(contentsOf: threads)
+        let data = try? JSONEncoder().encode(Array(Set(storageThreads)))
+        self.threadsData = data
     }
 
     func refresh() {
@@ -189,16 +204,11 @@ class ThreadsViewModel: ObservableObject {
         offset = count + offset
     }
 
-    func setThreads(threads: [Conversation]) {
-        self.threads = threads
-        //        sort()
-    }
-
     func appendThreads(threads: [Conversation]) {
         // remove older data to prevent duplicate on view
         self.threads.removeAll(where: { cashedThread in threads.contains(where: { cashedThread.id == $0.id }) })
         self.threads.append(contentsOf: threads)
-        //        sort()
+        sort()
     }
 
     func sort() {
@@ -227,7 +237,9 @@ class ThreadsViewModel: ObservableObject {
 
     func removeThread(_ thread: Conversation) {
         guard let index = threads.firstIndex(of: thread) else { return }
-        threads.remove(at: index)
+        withAnimation {
+            _ = threads.remove(at: index)
+        }
     }
 
     func addNewMessageToThread(_ message: Message) {
@@ -236,6 +248,14 @@ class ThreadsViewModel: ObservableObject {
             thread.unreadCount = message.conversation?.unreadCount ?? 1
             thread.lastMessageVO = message
             thread.lastMessage = message.message
+        }
+    }
+
+    func setArchiveThread(isArchive: Bool, threadId: Int?) {
+        withAnimation {
+            if self.archived, isArchive == false {
+                threads.removeAll(where: { $0.id == threadId })
+            }
         }
     }
 }

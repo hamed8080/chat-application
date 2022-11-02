@@ -10,7 +10,7 @@ import Photos
 import SwiftUI
 
 struct ThreadDetailView: View {
-    @StateObject
+    @EnvironmentObject
     var viewModel: ThreadViewModel
 
     @State
@@ -68,7 +68,7 @@ struct ThreadDetailView: View {
                         HStack {
                             Spacer()
                             ActionButton(iconSfSymbolName: "bell", iconColor: .blue, taped: {
-                                viewModel.muteUnMute()
+                                viewModel.toggleMute()
                             })
 
                             ActionButton(iconSfSymbolName: "magnifyingglass", iconColor: .blue, taped: {
@@ -139,10 +139,9 @@ struct ThreadDetailView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadDetailView(viewModel: vm)
-            .preferredColorScheme(.light)
+        ThreadDetailView()
+            .environmentObject(vm)
             .environmentObject(AppState.shared)
-            .previewDevice("iPhone 13 Pro Max")
             .onAppear {
                 vm.setupPreview()
             }

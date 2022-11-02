@@ -10,7 +10,8 @@ import FanapPodChatSDK
 
 struct SelectThreadContentList:View {
     
-    @StateObject var viewModel:ThreadsViewModel = ThreadsViewModel()
+    @EnvironmentObject
+    var viewModel: ThreadsViewModel
     
     @State
     var searechInsideThread:String = ""
@@ -31,14 +32,14 @@ struct SelectThreadContentList:View {
                                 viewModel.searchInsideAllThreads(text: searechInsideThread)
                             }
                         
-                        ForEach(viewModel.threads , id:\.id) { thread in
+                        ForEach(viewModel.filtered , id:\.id) { thread in
                             SelectThreadRow(thread: thread)
                                 .onTapGesture {
                                     onSelect(thread)
                                     dismiss()
                                 }
                                 .onAppear {
-                                    if viewModel.threads.last == thread{
+                                    if viewModel.filtered.last == thread{
                                         viewModel.loadMore()
                                     }
                                 }
@@ -57,13 +58,14 @@ struct SelectThreadContentList_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
         let vm = ThreadsViewModel()
-        SelectThreadContentList(viewModel: vm)
+        SelectThreadContentList()
         { selectedThread in
             
         }
         .onAppear(){
             vm.setupPreview()
         }
+        .environmentObject(vm)
         .environmentObject(appState)
     }
 }

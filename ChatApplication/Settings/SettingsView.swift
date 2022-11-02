@@ -10,10 +10,8 @@ import FanapPodChatSDK
 
 struct SettingsView:View {
     
-    @StateObject var viewModel  = SettingViewModel()
-    
     @EnvironmentObject
-    var appState:AppState
+    var viewModel: SettingViewModel
     
     var body: some View{
         VStack(spacing:0){
@@ -149,14 +147,15 @@ struct SettingsMenu_Previews: PreviewProvider {
     @State static var dark:Bool = false
     @State static var show:Bool = false
     @State static var showBlackView:Bool = false
-    @State static var viewModel = SettingViewModel()
+    static var vm = SettingViewModel()
     
     static var previews: some View {
         Group {
-            SettingsView(viewModel:viewModel)
+            SettingsView()
+                .environmentObject(vm)
                 .environmentObject(AppState.shared)
                 .onAppear{
-                    viewModel.model.setCurrentUser(
+                    vm.model.setCurrentUser(
                         User(
                             cellphoneNumber: "+98 936 916 1601",
                             email: "h.hosseini.co@gmail.com",

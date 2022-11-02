@@ -15,7 +15,7 @@ struct ThreadContentList:View {
     var viewModel: ThreadsViewModel
 
     @State
-    var searechInsideThread:String = ""
+    var searchText: String = ""
     
     @State
     var folder:Tag? = nil
@@ -36,13 +36,13 @@ struct ThreadContentList:View {
                             }
                         }
                     }else{
-                        ForEach(viewModel.threads, id:\.id) { thread in
+                        ForEach(viewModel.filtered, id:\.id) { thread in
                             NavigationLink {
                                 LazyView(ThreadView(viewModel: ThreadViewModel(thread: thread)))
                             } label: {
                                 ThreadRow(viewModel: .init(thread: thread, threadsViewModel: viewModel))
                                     .onAppear {
-                                        if viewModel.threads.last == thread{
+                                        if viewModel.filtered.last == thread{
                                             viewModel.loadMore()
                                         }
                                     }
@@ -50,8 +50,12 @@ struct ThreadContentList:View {
                         }
                     }
                 }
-                .searchable(text: $viewModel.searchInsideThreadString, placement: .navigationBarDrawer, prompt: "Search...")
-                .animation(.easeInOut, value: viewModel.threads)
+                .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search...")
+                .onChange(of: searchText, perform: { searchText in
+                    viewModel.searchText = searchText
+                    viewModel.getThreads()
+                })
+                .animation(.easeInOut, value: viewModel.filtered)
                 .listStyle(.plain)
             }
             
@@ -79,7 +83,7 @@ struct ThreadContentList:View {
                 ConnectionStatusToolbar()
             }
         }
-        .navigationTitle(Text( folder?.name ?? "Chats"))
+        .navigationTitle(Text( folder?.name ?? (viewModel.archived  ? "Archive" : "Chats")))
         .sheet(isPresented: $viewModel.showAddParticipants, onDismiss: nil, content: {
             AddParticipantsToThreadView(viewModel: .init()) { contacts in
                 viewModel.addParticipantsToThread(contacts)

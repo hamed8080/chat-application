@@ -31,16 +31,22 @@ protocol ThreadViewModelProtocol {
     func togglePin()
     func pin()
     func unpin()
+    func onPinChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
     func clearHistory()
     func toggleMute()
     func mute()
     func unmute()
+    func onMuteChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
     func spamPV()
     func deleteMessages(_ messages: [Message])
     func loadMoreMessage()
     func getHistory(_ toTime: UInt?)
     func sendSignal(_ signalMessage: SignalMessageType)
     func sendFile(_ url: URL, textMessage: String?)
+    func toggleArchive()
+    func archive()
+    func unarchive()
+    func onArchiveChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
 }
 
 class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
@@ -110,9 +116,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
         self.readOnly = readOnly
         self.thread = thread
         self.exportMessagesVM = ExportMessagesViewModel(thread: thread)
-//        self.exportMessagesVM.$filePath.sink { val in
-//
-//        }
         self.threadsViewModel = threadsViewModel
         NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
             .compactMap { $0.object as? SystemEventTypes }
@@ -250,16 +253,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
         //        Chat.sharedInstance.searchThread
     }
 
-    func muteUnMute() {
-        if thread.mute == false {
-            Chat.sharedInstance.muteThread(.init(threadId: threadId)) { _, _, _ in
-            }
-        } else {
-            Chat.sharedInstance.unmuteThread(.init(threadId: threadId)) { _, _, _ in
-            }
-        }
-    }
-
     func sendSeenMessageIfNeeded(_ message: Message) {
         guard let messageId = message.id else { return }
         if let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId {
@@ -393,20 +386,17 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func pin() {
-        Chat.sharedInstance.pinThread(.init(threadId: threadId)) { threadId, _, error in
-            if threadId != nil, error == nil {
-                self.thread.pin = true
-                self.objectWillChange.send()
-            }
-        }
+        Chat.sharedInstance.pinThread(.init(threadId: threadId), completion: onPinChanged)
     }
 
     func unpin() {
-        Chat.sharedInstance.unpinThread(.init(threadId: threadId)) { threadId, _, error in
-            if error == nil, threadId != nil {
-                self.thread.pin = false
-                self.objectWillChange.send()
-            }
+        Chat.sharedInstance.unpinThread(.init(threadId: threadId), completion: onPinChanged)
+    }
+
+    func onPinChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
+        if threadId != nil, error == nil {
+            thread.pin?.toggle()
+            objectWillChange.send()
         }
     }
 
@@ -424,16 +414,17 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func mute() {
-        Chat.sharedInstance.muteThread(.init(threadId: threadId)) { _, _, _ in
-            self.thread.mute = true
-            self.objectWillChange.send()
-        }
+        Chat.sharedInstance.muteThread(.init(threadId: threadId), completion: onMuteChanged)
     }
 
     func unmute() {
-        Chat.sharedInstance.unmuteThread(.init(threadId: threadId)) { _, _, _ in
-            self.thread.mute = false
-            self.objectWillChange.send()
+        Chat.sharedInstance.unmuteThread(.init(threadId: threadId), completion: onMuteChanged)
+    }
+
+    func onMuteChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
+        if threadId != nil, error == nil {
+            thread.mute?.toggle()
+            objectWillChange.send()
         }
     }
 
@@ -515,5 +506,28 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     func removeSelectedMessage(_ message: Message) {
         guard let index = selectedMessages.firstIndex(of: message) else { return }
         selectedMessages.remove(at: index)
+    }
+
+    func toggleArchive() {
+        if thread.isArchive == false {
+            archive()
+        } else {
+            unarchive()
+        }
+    }
+
+    func archive() {
+        Chat.sharedInstance.archiveThread(.init(threadId: threadId), onArchiveChanged)
+    }
+
+    func unarchive() {
+        Chat.sharedInstance.unarchiveThread(.init(threadId: threadId), onArchiveChanged)
+    }
+
+    func onArchiveChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
+        if threadId != nil, error == nil {
+            thread.isArchive?.toggle()
+            objectWillChange.send()
+        }
     }
 }

@@ -130,6 +130,12 @@ struct ThreadRow: View {
                 }
             }
 
+            Button {
+                viewModel.toggleArchive()
+            } label: {
+                Label( viewModel.thread.isArchive == false ? "Archive" : "Unarchive", systemImage: viewModel.thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
+            }
+
             if viewModel.canAddParticipant {
                 Button {
                     viewModel.showAddPaticipantToThread.toggle()

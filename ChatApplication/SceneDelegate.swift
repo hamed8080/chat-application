@@ -57,9 +57,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window = window
             window.makeKeyAndVisible()
         }
-        
-        guard let _ = (scene as? UIWindowScene) else { return }
-        ChatDelegateImplementation.sharedInstance.createChatObject()
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

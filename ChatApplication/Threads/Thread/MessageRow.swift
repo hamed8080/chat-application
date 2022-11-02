@@ -106,14 +106,20 @@ struct MessageRow: View {
             }
             if let type = viewModel.type {
                 if viewModel.isUploadMessage {
-                    UploadMessageType(viewModel: viewModel, threadViewModel: threadViewModel)
+                    UploadMessageType()
+                        .environmentObject(viewModel)
+                        .environmentObject(threadViewModel)
                 } else if viewModel.isTextMessageType {
                     if viewModel.isMe {
                         Spacer()
                     }
-                    TextMessageType(viewModel: viewModel, threadViewModel: threadViewModel, proxy: proxy)
+                    TextMessageType(proxy: proxy)
+                        .environmentObject(viewModel)
+                        .environmentObject(threadViewModel)
                 } else if type == .endCall || type == .startCall {
-                    CallMessageType(viewModel: viewModel, threadViewModel: threadViewModel)
+                    CallMessageType()
+                        .environmentObject(viewModel)
+                        .environmentObject(threadViewModel)
                 }
             }
         }
@@ -121,10 +127,10 @@ struct MessageRow: View {
 }
 
 struct CallMessageType: View {
-    @ObservedObject
+    @EnvironmentObject
     var viewModel: MessageViewModel
 
-    @ObservedObject
+    @EnvironmentObject
     var threadViewModel: ThreadViewModel
 
     @Environment(\.colorScheme)
@@ -155,10 +161,10 @@ struct CallMessageType: View {
 }
 
 struct TextMessageType: View {
-    @ObservedObject
+    @EnvironmentObject
     var viewModel: MessageViewModel
 
-    @ObservedObject
+    @EnvironmentObject
     var threadViewModel: ThreadViewModel
 
     var message: Message { viewModel.message }
@@ -306,10 +312,10 @@ struct ForwardMessageRow: View {
 }
 
 struct UploadMessageType: View {
-    @ObservedObject
+    @EnvironmentObject
     var viewModel: MessageViewModel
 
-    @ObservedObject
+    @EnvironmentObject
     var threadViewModel: ThreadViewModel
 
     var message: UploadFileMessage { viewModel.message as! UploadFileMessage }

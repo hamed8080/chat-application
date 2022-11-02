@@ -9,12 +9,6 @@ import SwiftUI
 import FanapPodChatSDK
 
 struct HomeContentView: View {
-    
-    @EnvironmentObject
-    var threadsVM: ThreadsViewModel
-
-    @EnvironmentObject
-    var contactsVM: ThreadsViewModel
 
     @EnvironmentObject
     var tokenManager: TokenManager
@@ -24,9 +18,6 @@ struct HomeContentView: View {
 
     @Environment(\.colorScheme)
     var colorScheme
-
-    @Environment(\.isPreview)
-    var isPreview
 
     var body: some View {
         if tokenManager.isLoggedIn == false{
@@ -41,25 +32,12 @@ struct HomeContentView: View {
             }
             .onAppear{
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
-                if isPreview{
-                    threadsVM.setupPreview()
-                    contactsVM.setupPreview()
-                }
             }
         }
     }
 }
 
-struct SideBar:View{
-    
-    @EnvironmentObject
-    var contactsVM:ContactsViewModel
-    
-    @EnvironmentObject
-    var threadsVM:ThreadsViewModel
-    
-    @EnvironmentObject
-    var settingsVM:SettingViewModel
+struct SideBar:View {
     
     var body: some View{
         
@@ -90,23 +68,25 @@ struct SideBar:View{
                 }
             }
 
-            ForEach(threadsVM.tagViewModel.model.tags, id:\.id){ tag in
-                NavigationLink {
-                    ThreadContentList(folder:tag)
-                } label: {
-                    Label {
-                        Text(tag.name)
-                    } icon: {
-                        Image(systemName: "folder")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(Color.blue)
-                    }
+
+            NavigationLink {
+                ThreadContentList()
+                    .environmentObject(ThreadsViewModel(archived: true))
+            } label: {
+                Label {
+                    Text("Archive")
+                } icon: {
+                    Image(systemName: "tray.and.arrow.down")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(Color.blue)
                 }
             }
+
+            TagContentList()
             
             NavigationLink {
-                SettingsView(viewModel: settingsVM)
+                SettingsView()
             } label: {
                 Label {
                     Text("Setting")
@@ -120,6 +100,31 @@ struct SideBar:View{
             }
         }
         .listStyle(.plain)
+    }
+}
+
+/// Separate this view to prevent redraw view in the sidebar and consequently redraw the whole applicaiton
+/// view multiple times and reinit the view models multiple times.
+struct TagContentList: View {
+
+    @EnvironmentObject
+    var threadsVM: ThreadsViewModel
+
+    var body: some View {
+        ForEach(threadsVM.tagViewModel.model.tags, id:\.id){ tag in
+            NavigationLink {
+                ThreadContentList(folder:tag)
+            } label: {
+                Label {
+                    Text(tag.name)
+                } icon: {
+                    Image(systemName: "folder")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(Color.blue)
+                }
+            }
+        }
     }
 }
 

@@ -80,7 +80,7 @@ struct ThreadView: View {
                               showDeleteSelectedMessages: $showDeleteSelectedMessages,
                               showSelectThreadToForward: $showSelectThreadToForward)
 
-                NavigationLink(destination: ThreadDetailView(viewModel: viewModel), isActive: $showThreadDetailButton) {
+                NavigationLink(destination: ThreadDetailView().environmentObject(viewModel), isActive: $showThreadDetailButton) {
                     EmptyView()
                 }
             }
@@ -230,7 +230,7 @@ struct ThreadView: View {
         Avatar(
             url: viewModel.thread.image,
             userName: viewModel.thread.inviter?.username?.uppercased(),
-            style: .init(size: 36),
+            style: .init(size: 32),
             size: .MEDIUM,
             token: token
         )
@@ -327,8 +327,6 @@ struct SendContainer: View {
     var showSelectThreadToForward: Bool
 
     var body: some View {
-        let threadType = viewModel.thread.type
-
         if viewModel.isInEditMode {
             VStack {
                 HStack {
@@ -409,8 +407,8 @@ struct SendContainer: View {
                     }
                 }
                 .padding(8)
-                .opacity(threadType == .channel ? 0.3 : 1.0)
-                .disabled(threadType == .channel)
+                .opacity(viewModel.thread.type == .channel ? 0.3 : 1.0)
+                .disabled(viewModel.thread.type == .channel)
             }
         }
     }
