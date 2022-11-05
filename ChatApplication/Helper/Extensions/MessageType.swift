@@ -10,40 +10,42 @@ import FanapPodChatSDK
 extension Message{
     
     var iconName:String{
-        switch MessageType(rawValue: messageType ?? 0) {
-        case .TEXT:
+        switch messageType {
+        case .text:
             return "doc.text.fill"
-        case .VOICE:
+        case .voice:
             return "play.circle.fill"
-        case .PICTURE:
+        case .picture:
             return "photo.on.rectangle.angled"
-        case .VIDEO:
+        case .video:
             return "play.rectangle.fill"
-        case .SOUND:
+        case .sound:
             return "play.circle.fill"
-        case .FILE:
+        case .file:
             return fileExtIcon
-        case .POD_SPACE_PICTURE:
+        case .podSpacePicture:
             return "photo.on.rectangle.angled"
-        case .POD_SPACE_VIDEO:
+        case .podSpaceVideo:
             return "play.rectangle.fill"
-        case .POD_SPACE_SOUND:
+        case .podSpaceSound:
             return "play.circle.fill"
-        case .POD_SPACE_VOICE:
+        case .podSpaceVoice:
             return "play.circle.fill"
-        case .POD_SPACE_FILE:
+        case .podSpaceFile:
             return fileExtIcon
-        case .LINK:
+        case .link:
             return "link.circle.fill"
-        case .END_CALL:
+        case .endCall:
             return "phone.fill.arrow.down.left"
-        case .START_CALL:
+        case .startCall:
             return "phone.fill.arrow.up.right"
-        case .STICKER:
+        case .sticker:
             return "face.smiling.fill"
-        case .LOCATION:
+        case .location:
             return "map.fill"
         case .none:
+            return "paperclip.circle.fill"
+        case .some(.unknown):
             return "paperclip.circle.fill"
         }
     }
@@ -64,9 +66,8 @@ extension Message{
     }
     
     var isFileType:Bool{
-        let type = MessageType(rawValue: messageType ?? 0)
-        switch type {
-        case .VOICE,.PICTURE,.VIDEO,.SOUND,.FILE,.POD_SPACE_FILE,.POD_SPACE_PICTURE,.POD_SPACE_SOUND,.POD_SPACE_VOICE:
+        switch messageType {
+        case .voice,.picture,.video,.sound,.file,.podSpaceFile,.podSpacePicture,.podSpaceSound,.podSpaceVoice:
             return true
         default:
             return false

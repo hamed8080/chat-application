@@ -9,8 +9,8 @@ import SwiftUI
 
 struct CallsHistoryContentList: View {
     
-    @StateObject
-    var viewModel:CallsHistoryViewModel
+    @EnvironmentObject
+    var viewModel: CallsHistoryViewModel
     
     @EnvironmentObject var appState:AppState
     
@@ -68,7 +68,8 @@ struct CallsHistoryContentList: View {
 struct CallsHistoryContentList_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = CallsHistoryViewModel()
-        CallsHistoryContentList(viewModel:viewModel)
+        CallsHistoryContentList()
+            .environmentObject(viewModel)
             .environmentObject(AppState.shared)
             .environmentObject(CallState.shared)
             .onAppear(){

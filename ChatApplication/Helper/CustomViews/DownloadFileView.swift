@@ -28,8 +28,8 @@ struct DownloadFileView :View{
     
     init(message:Message, placeHolder:UIImage? = nil, state:DownloadFileState? = nil) {
         self.message = message
-        let messageType = MessageType(rawValue: message.messageType ?? 0)
-        isImage = messageType == .POD_SPACE_PICTURE || messageType == .PICTURE
+        let messageType = message.messageType ?? .unknown
+        isImage = messageType == .podSpacePicture || messageType == .picture
         self.fileHashCode = message.metaData?.fileHash ?? ""
         downloadFile = DownloadFile(fileHashCode: fileHashCode, isImage: isImage)
         

@@ -5,239 +5,166 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import Foundation
-import FanapPodChatSDK
 import Combine
+import FanapPodChatSDK
+import Foundation
 import SwiftUI
 
-class ThreadsViewModel:ObservableObject{
-    
+class ThreadsViewModel: ObservableObject {
     @Published
     var isLoading = false
-    
+
     @Published
     var centerIsLoading = false
-    
-    @Published
-    private (set) var model = ThreadsModel()
-    
+
     @Published var toggleThreadContactPicker = false
-    
-    @AppStorage("Threads", store: UserDefaults.group) var threadsData:Data?
-    
+
+    @AppStorage("Threads", store: UserDefaults.group) var threadsData: Data?
+
     @Published
     var showAddParticipants = false
-    
+
     @Published
-    var showAddToTags       = false
-    
+    var showAddToTags = false
+
+    private(set) var cancellableSet: Set<AnyCancellable> = []
+    private(set) var firstSuccessResponse = false
+
     @Published
-    var connectionStatus:ConnectionStatus     = .Connecting
-    
-    private (set) var connectionStatusCancelable    : AnyCancellable? = nil
-    private (set) var messageCancelable             : AnyCancellable? = nil
-    private (set) var systemMessageCancelable       : AnyCancellable? = nil
-    private (set) var threadCancelable              : AnyCancellable? = nil
-    
-    private (set) var isFirstTimeConnectedRequestSuccess = false
-    
+    private(set) var tagViewModel = TagsViewModel()
+
+    private(set) var count = 15
+    private(set) var offset = 0
+    var searchText: String = ""
+    private(set) var callsToJoin: [Call] = []
+
     @Published
-    private (set) var tagViewModel = TagsViewModel()
-    
-    init() {
-        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
-            if self.isFirstTimeConnectedRequestSuccess == false && status == .CONNECTED{
-                self.getThreads()
-            }
-             self.connectionStatus = status
-        }
-        messageCancelable = NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
-            .compactMap{$0.object as? MessageEventTypes}
-            .sink { event in
-                if case .MESSAGE_NEW(let message) = event{
-                    self.model.addNewMessageToThread(message)
-                }
-            }
-        
-        threadCancelable = NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
-            .compactMap{$0.object as? ThreadEventTypes}
-            .sink { event in
-                switch event{
-                    
-                case .THREAD_NEW(let newThreads):
-                    withAnimation {
-                        self.model.appendThreads(threads: [newThreads])
-                    }
-                    break
-                case .THREAD_DELETED(threadId: let threadId, participant: _):
-                    if let thread = self.model.threads.first(where: {$0.id == threadId}){
-                        self.model.removeThread(thread)
-                    }
-                    break
-                default:
-                    break
-                }
-            }
-        
-        systemMessageCancelable = NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
-            .compactMap{$0.object as? SystemEventTypes}
-            .sink { systemMessageEvent in
-                self.startTyping(systemMessageEvent)
-            }
-        
-        getOfflineThreads()
+    private var threads: [Conversation] = []
+    private(set) var hasNext: Bool = true
+    let archived: Bool
+
+    init(archived: Bool = false) {
+        self.archived = archived
+        AppState.shared.$connectionStatus
+            .sink(receiveValue: onConnectionStatusChanged)
+            .store(in: &cancellableSet)
+        NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
+            .compactMap { $0.object as? MessageEventTypes }
+            .sink(receiveValue: onMessageEvent)
+            .store(in: &cancellableSet)
+        NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink(receiveValue: onThreadEvent)
+            .store(in: &cancellableSet)
     }
-    
+
+    func onThreadEvent(_ event: ThreadEventTypes?) {
+        switch event {
+        case .threadNew(let newThreads):
+            appendThreads(threads: [newThreads])
+        case .threadDeleted(threadId: let threadId, participant: _):
+            if let thread = threads.first(where: { $0.id == threadId }) {
+                removeThread(thread)
+            }
+        default:
+            break
+        }
+    }
+
+    func onMessageEvent(_ event: MessageEventTypes?) {
+        if case .messageNew(let message) = event {
+            addNewMessageToThread(message)
+        }
+    }
+
+    func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
+        if firstSuccessResponse == false, status == .CONNECTED {
+            offset = 0
+            getThreads()
+        }
+    }
+
     func getThreads() {
-        Chat.sharedInstance.getThreads(.init(count:model.count,offset: model.offset)) {[weak self] threads, uniqueId, pagination, error in
-            if let threads = threads{
-                self?.isFirstTimeConnectedRequestSuccess = true
-                self?.model.appendThreads(threads: threads)
-                self?.model.hasNext(pagination?.hasNext ?? false)
-                if let data = try? JSONEncoder().encode(threads){
-                    self?.threadsData = data
-                }
-                let threadIds = threads.compactMap{$0.id}
-                self?.getActiveCallsListToJoin(threadIds)
-            }
-            self?.isLoading = false
-        }
-    }
-    
-    func getOfflineThreads(){
-        let req = ThreadsRequest(count:model.count,offset: model.offset)
-        CacheFactory.get(useCache: true, cacheType: .GET_THREADS(req)) { response in
-            if let threads = response.cacheResponse as? [Conversation]{
-                self.model.setThreads(threads: threads)
-            }
-        }
-    }
-    
-    func loadMore(){
-        if !model.hasNext || isLoading || connectionStatus != .CONNECTED {return}
         isLoading = true
-        model.preparePaginiation()
+        Chat.sharedInstance.getThreads(.init(count: count, offset: offset, archived: archived), completion: onServerResponse, cacheResponse: onCacheResponse)
+    }
+
+    var filtered: [Conversation] {
+        if searchText.isEmpty {
+            return threads
+        } else {
+            return threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false }
+        }
+    }
+
+    func loadMore() {
+        if !hasNext { return }
+        preparePaginiation()
         getThreads()
     }
-    
+
+    func onServerResponse(_ threads: [Conversation]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+        if let threads = threads {
+            firstSuccessResponse = true
+            appendThreads(threads: threads)
+            hasNext(pagination?.hasNext ?? false)
+            updateWidgetPreferenceThreads(threads)
+        }
+        isLoading = false
+    }
+
+    func onCacheResponse(_ threads: [Conversation]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+        if let threads = threads {
+            appendThreads(threads: threads)
+            hasNext(pagination?.hasNext ?? false)
+        }
+        if isLoading, AppState.shared.connectionStatus != .CONNECTED {
+            isLoading = false
+        }
+    }
+
+    func updateWidgetPreferenceThreads(_ threads: [Conversation]) {
+        guard let threadsData = threadsData else { return }
+        var storageThreads = (try? JSONDecoder().decode([Conversation].self, from: threadsData)) ?? []
+        storageThreads.append(contentsOf: threads)
+        let data = try? JSONEncoder().encode(Array(Set(storageThreads)))
+        self.threadsData = data
+    }
+
     func refresh() {
         clear()
         getThreads()
     }
-    
-    func clear(){
-        model.clear()
-    }
-    
-    func setupPreview(){
-        model.setupPreview()
+
+    func setupPreview() {
+        setupPreview()
     }
 
-    func pinUnpinThread(_ thread:Conversation){
-        guard let id = thread.id else{return}
-        if thread.pin == false{
-            Chat.sharedInstance.pinThread(.init(threadId: id)) { threadId, uniqueId, error in
-                if error == nil && threadId != nil{
-                    self.model.pinThread(thread)
-                }
-            }
-        }else{
-            Chat.sharedInstance.unpinThread(.init(threadId: id)) { threadId, uniqueId, error in
-                if error == nil && threadId != nil{
-                    self.model.unpinThread(thread)
-                }
-            }
-        }
-    }
-    
-    func muteUnMuteThread(_ thread:Conversation){
-        guard let threadId = thread.id else {return}
-        if thread.mute == false{
-            Chat.sharedInstance.muteThread(.init(threadId: threadId)) { threadId, uniqueId, error in
-                self.model.muteUnMuteThread(threadId, isMute: true)
-            }
-        }else{
-            Chat.sharedInstance.unmuteThread(.init(threadId: threadId)) { threadId, uniqueId, error in
-                self.model.muteUnMuteThread(threadId, isMute: false)
-            }
-        }
-    }
-    
-    func clearHistory(_ thread:Conversation){
-        guard let threadId = thread.id else {return}
-        Chat.sharedInstance.clearHistory(.init(threadId: threadId)) { threadId, uniqueId, error in
-            if let threadId = threadId{
-                print("thread history deleted with threadId:\(threadId)")
-            }
-        }
-    }
-    
-    func spamPVThread(_ thread:Conversation){
-        guard let threadId = thread.id else {return}
-        Chat.sharedInstance.spamPvThread(SpamThreadRequest(threadId: threadId)) { blockedUser, uniqueId, error in
-        }
-    }
-    
-    func leaveThread(_ thread:Conversation){
-        guard let threadId = thread.id else {return}
-        Chat.sharedInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { user, unqiuesId, error in
-            self.model.removeThread(thread)
-        }
-    }
-    
-    func deleteThread(_ thread:Conversation){
-        guard let threadId = thread.id else {return}
-        Chat.sharedInstance.deleteThread(.init(threadId: threadId)) { threadId, unqiuesId, error in
-            if threadId != nil{
-                self.model.removeThread(thread)
-            }
-        }
-    }
-    
-    func setViewAppear(appear:Bool){
-        model.setViewAppear(appear: appear)
-    }
-    
-    var lastIsTypingTime = Date()
-    func startTyping(_ event:SystemEventTypes) {
-        if case .SYSTEM_MESSAGE(let message, _ , _) = event , message.smt == .IS_TYPING, model.addTypingThread(event){
-            lastIsTypingTime = Date()
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-              if self.lastIsTypingTime.advanced(by: 1) < Date(){
-                    self.model.removeTypingThread(event)
-                    timer.invalidate()
-                }
-            }
-        }else{
-            lastIsTypingTime = Date()
-        }
-    }
-    
-    func createThread(_ model:StartThreadResultModel){
+    func createThread(_ model: StartThreadResultModel) {
         centerIsLoading = true
         let invitees = model.selectedContacts?.map { contact in
-            Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)
+            Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
         }
-        Chat.sharedInstance.createThread(.init(invitees: invitees, title: model.title, type:model.type)) { thread, uniqueId, error in
-            if let thread = thread{
+        Chat.sharedInstance.createThread(.init(invitees: invitees, title: model.title, type: model.type)) { thread, _, _ in
+            if let thread = thread {
                 AppState.shared.selectedThread = thread
             }
             self.centerIsLoading = false
         }
     }
-    
-    func searchInsideAllThreads(text:String){
-        //not implemented yet
-//        Chat.sharedInstance.
+
+    func searchInsideAllThreads(text: String) {
+        // not implemented yet
+        //        Chat.sharedInstance.
     }
-    
-    var selectedThraed:Conversation?
-    func showAddParticipants(_ thread:Conversation){
-        self.selectedThraed = thread
+
+    var selectedThraed: Conversation?
+    func showAddParticipants(_ thread: Conversation) {
+        selectedThraed = thread
         showAddParticipants.toggle()
     }
-    
-    func addParticipantsToThread(_ contacts:[Contact] ){
+
+    func addParticipantsToThread(_ contacts: [Contact]) {
         centerIsLoading = true
         guard let threadId = selectedThraed?.id else {
             return
@@ -246,46 +173,108 @@ class ThreadsViewModel:ObservableObject{
         let participants = contacts.compactMap { contact in
             AddParticipantRequest(userName: contact.linkedUser?.username ?? "", threadId: threadId)
         }
-        
-        Chat.sharedInstance.addParticipants(participants) { thread, uniqueId, error in
-            if let thread = thread{
+
+        Chat.sharedInstance.addParticipants(participants) { thread, _, _ in
+            if let thread = thread {
                 AppState.shared.selectedThread = thread
             }
             self.centerIsLoading = false
         }
     }
-    
-    func showAddThreadToTag(_ thread:Conversation){
-        self.selectedThraed = thread
+
+    func showAddThreadToTag(_ thread: Conversation) {
+        selectedThraed = thread
         showAddToTags.toggle()
     }
-    
-    func threadAddedToTag(_ tag:Tag){
+
+    func threadAddedToTag(_ tag: Tag) {
         if let selectedThraed = selectedThraed {
             isLoading = true
-            tagViewModel.addThreadToTag(tag: tag, thread: selectedThraed){ tagParticipants, success in
+            tagViewModel.addThreadToTag(tag: tag, thread: selectedThraed) { _, _ in
                 self.isLoading = false
             }
         }
     }
-    
-    func getActiveCallsListToJoin(_ threadIds:[Int]){
-        Chat.sharedInstance.getCallsToJoin(.init(threadIds: threadIds)) { calls, uniqueId, error in
-            if let calls = calls{
-                self.model.addActiveCalls(calls)
+
+    func hasNext(_ hasNext: Bool) {
+        self.hasNext = hasNext
+    }
+
+    func preparePaginiation() {
+        offset = count + offset
+    }
+
+    func appendThreads(threads: [Conversation]) {
+        // remove older data to prevent duplicate on view
+        self.threads.removeAll(where: { cashedThread in threads.contains(where: { cashedThread.id == $0.id }) })
+        self.threads.append(contentsOf: threads)
+        sort()
+    }
+
+    func sort() {
+        threads.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
+        threads.sort(by: { $0.pin == true && $1.pin == false })
+    }
+
+    func clear() {
+        offset = 0
+        threads = []
+    }
+
+    func pinThread(_ thread: Conversation) {
+        threads.first(where: { $0.id == thread.id })?.pin = true
+    }
+
+    func unpinThread(_ thread: Conversation) {
+        threads.first(where: { $0.id == thread.id })?.pin = false
+    }
+
+    func muteUnMuteThread(_ threadId: Int?, isMute: Bool) {
+        if let threadId = threadId, let index = threads.firstIndex(where: { $0.id == threadId }) {
+            threads[index].mute = isMute
+        }
+    }
+
+    func removeThread(_ thread: Conversation) {
+        guard let index = threads.firstIndex(of: thread) else { return }
+        withAnimation {
+            _ = threads.remove(at: index)
+        }
+    }
+
+    func addNewMessageToThread(_ message: Message) {
+        if let index = threads.firstIndex(where: { $0.id == message.conversation?.id }) {
+            let thread = threads[index]
+            thread.unreadCount = message.conversation?.unreadCount ?? 1
+            thread.lastMessageVO = message
+            thread.lastMessage = message.message
+        }
+    }
+
+    func setArchiveThread(isArchive: Bool, threadId: Int?) {
+        withAnimation {
+            if self.archived, isArchive == false {
+                threads.removeAll(where: { $0.id == threadId })
             }
         }
     }
-    
-    func joinToCall(_ call:Call){
+
+    func getActiveCallsListToJoin(_ threadIds: [Int]) {
+        Chat.sharedInstance.getCallsToJoin(.init(threadIds: threadIds)) { calls, _, _ in
+            if let calls = calls {
+                self.callsToJoin.append(contentsOf: calls)
+            }
+        }
+    }
+
+    func joinToCall(_ call: Call) {
         let callState = CallState.shared
-        Chat.sharedInstance.acceptCall(.init(callId:call.id, client: .init(mute: false , video: false)))
-        withAnimation(.spring()){
+        Chat.sharedInstance.acceptCall(.init(callId: call.id, client: .init(mute: false, video: false)))
+        withAnimation(.spring()) {
             callState.model.setIsJoinCall(true)
             callState.model.setShowCallView(true)
         }
         CallState.shared.model.setAnswerWithVideo(answerWithVideo: false, micEnable: false)
         AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
     }
-    
 }

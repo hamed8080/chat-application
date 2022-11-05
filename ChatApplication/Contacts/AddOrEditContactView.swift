@@ -23,10 +23,11 @@ struct AddOrEditContactView: View {
                 CustomNavigationBar(title:"Add contact",showDivider: false){
                     presentationMode.wrappedValue.dismiss()
                 }
-                .padding(.bottom , 24)
-                PrimaryTextField(title:"type contact",textBinding: $contactValue,keyboardType: .alphabet)
-                PrimaryTextField(title:"first name",textBinding: $firstName,keyboardType: .alphabet)
-                PrimaryTextField(title:"last name",textBinding: $lastName, keyboardType: .alphabet)
+                .padding(.bottom, 24)
+
+                PrimaryTextField(title:"type contact",textBinding: $contactValue,keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
+                PrimaryTextField(title:"first name",textBinding: $firstName,keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
+                PrimaryTextField(title:"last name",textBinding: $lastName, keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
                 
                 Button(action: {
                     let isPhone = validatePhone(value: contactValue)

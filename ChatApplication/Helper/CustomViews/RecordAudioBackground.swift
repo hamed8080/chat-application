@@ -9,7 +9,8 @@ import SwiftUI
 
 struct RecordAudioBackground: View {
     
-    @StateObject var viewModel:ThreadViewModel
+    @StateObject
+    var viewModel: AudioRecordingViewModel
     
     @State
     var degrees:[CGFloat] = [270,40,70,90,120,160,220,260,290,360]
@@ -18,7 +19,7 @@ struct RecordAudioBackground: View {
     var blurRadius = 1
         
     var body: some View {
-        if viewModel.model.isRecording {
+        if viewModel.isRecording {
             ZStack{
                 ForEach(1...10, id:\.self){ item in
                     createRectangle(index: item - 1)
@@ -60,11 +61,12 @@ struct RecordAudioBackground: View {
 
 struct RecordAudioBackground_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = ThreadViewModel(thread: MockData.thread)
+        let threadVM = ThreadViewModel(thread: MockData.thread)
+        let vm = AudioRecordingViewModel(threadViewModel: threadVM)
         RecordAudioBackground(viewModel: vm, scale: 2)
             .frame(width: 128, height: 128)
             .onAppear {
-                vm.toggleRecording()
+                vm.toggle()
             }
     }
 }

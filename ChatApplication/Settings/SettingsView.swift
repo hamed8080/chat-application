@@ -10,10 +10,8 @@ import FanapPodChatSDK
 
 struct SettingsView:View {
     
-    @StateObject var viewModel  = SettingViewModel()
-    
     @EnvironmentObject
-    var appState:AppState
+    var viewModel: SettingViewModel
     
     var body: some View{
         VStack(spacing:0){
@@ -26,10 +24,11 @@ struct SettingsView:View {
                             .frame(width: 128, height: 128)
                             .shadow(color: .black, radius: 20, x: 0, y: 0)
                             .overlay(
-                                Avatar(url: viewModel.model.currentUser?.image,
-                                       userName: viewModel.model.currentUser?.username?.uppercased() ?? "",
-                                       style: .init(size:128,textSize: 64)
-                                      )
+                                Avatar(
+                                    url: viewModel.model.currentUser?.image,
+                                    userName: viewModel.model.currentUser?.username?.uppercased() ?? "",
+                                    style: .init(size:128,textSize: 64)
+                                )
                             )
                             .gesture(
                                 DragGesture(minimumDistance: 0, coordinateSpace: .local)
@@ -72,7 +71,7 @@ struct SettingsView:View {
                         
                         Button(action: {
                             Chat.sharedInstance.logOut()
-                            CacheFactory.write(cacheType: .DELETE_ALL_CACHE_DATA)
+                            CacheFactory.write(cacheType: .deleteAllCacheData)
                             TokenManager.shared.clearToken()
                         }, label: {
                             HStack{
@@ -118,11 +117,7 @@ struct SettingsView:View {
             }
             
             ToolbarItem(placement: .principal) {
-                if viewModel.connectionStatus != .CONNECTED{
-                    Text("\(viewModel.connectionStatus.stringValue) ...")
-                        .foregroundColor(Color(named: "text_color_blue"))
-                        .font(.subheadline.bold())
-                }
+                ConnectionStatusToolbar()
             }
         }
         .navigationTitle(Text("Settings"))
@@ -156,14 +151,15 @@ struct SettingsMenu_Previews: PreviewProvider {
     @State static var dark:Bool = false
     @State static var show:Bool = false
     @State static var showBlackView:Bool = false
-    @State static var viewModel = SettingViewModel()
+    static var vm = SettingViewModel()
     
     static var previews: some View {
         Group {
-            SettingsView(viewModel:viewModel)
+            SettingsView()
+                .environmentObject(vm)
                 .environmentObject(AppState.shared)
                 .onAppear{
-                    viewModel.model.setCurrentUser(
+                    vm.model.setCurrentUser(
                         User(
                             cellphoneNumber: "+98 936 916 1601",
                             email: "h.hosseini.co@gmail.com",

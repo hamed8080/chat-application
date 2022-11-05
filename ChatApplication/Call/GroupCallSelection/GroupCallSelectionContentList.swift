@@ -40,7 +40,7 @@ struct GroupCallSelectionContentList: View {
                         
                         ForEach(contactViewModel.model.contacts , id:\.id) { contact in
                             
-                            ContactRow(contact: contact , isInEditMode: $isInEditMode , viewModel: contactViewModel)
+                            ContactRow(contact: contact , isInEditMode: $isInEditMode)
                                 .noSeparators()
                                 .onAppear {
                                     if contactViewModel.model.contacts.last == contact{

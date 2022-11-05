@@ -20,20 +20,20 @@ class ParticipantsViewModel:ObservableObject{
     @Published
     private (set) var model = ParticipantsModel()
     
-    private (set) var removeThreadParticipantCancelable              : AnyCancellable? = nil
-    private (set) var connectionStatusCancelable:AnyCancellable? = nil
+    private (set) var cancellableSet: Set<AnyCancellable> = []
     
     func getParticipantsIfConnected() {
-        connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
+        AppState.shared.$connectionStatus.sink { status in
             if status == .CONNECTED && self.threadId != -1{
                 self.getParticipants()
             }
         }
+        .store(in: &cancellableSet)
         
-        removeThreadParticipantCancelable = NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
+        NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
             .compactMap{$0.object as? ThreadEventTypes}
             .sink { event in
-                if case .THREAD_REMOVE_PARTICIPANTS(let removedParticipants) = event {
+                if case .threadRemoveParticipants(let removedParticipants) = event {
                     withAnimation {
                         removedParticipants.forEach { participant in
                             self.model.removeParticipant(participant)
@@ -41,6 +41,7 @@ class ParticipantsViewModel:ObservableObject{
                     }
                 }
             }
+            .store(in: &cancellableSet)
     }
     
     func getParticipants() {
@@ -77,7 +78,7 @@ class ParticipantsViewModel:ObservableObject{
     
     func refresh() {
         clear()
-		getParticipants()
+        getParticipants()
     }
     
     func clear(){
@@ -87,14 +88,14 @@ class ParticipantsViewModel:ObservableObject{
     func setupPreview(){
         model.setupPreview()
     }
-	
-	func muteUnMuteThread(_ thread:Conversation){
-		
-	}
-	
-	func deleteThread(_ thread:Conversation){
-		
-	}
+
+    func muteUnMuteThread(_ thread:Conversation){
+
+    }
+
+    func deleteThread(_ thread:Conversation){
+
+    }
     
     func removePartitipant(_ participant:Participant){
         guard let id = participant.id else {return}

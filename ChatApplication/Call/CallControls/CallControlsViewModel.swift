@@ -8,8 +8,9 @@
 import Foundation
 import FanapPodChatSDK
 import Combine
+import SwiftUI
 
-class CallControlsViewModel:ObservableObject{
+class CallControlsViewModel: ObservableObject{
     
     @Published
     var isLoading = false
@@ -51,7 +52,7 @@ class CallControlsViewModel:ObservableObject{
             .compactMap{$0.object as? CallEventModel}
             .sink { event in
                 //NOTICE: sink in init for firsttime is nil
-                if case .CALL_STARTED(let event) = event.type, let callId = event.callId{
+                if case .callStarted(let event) = event.type, let callId = event.callId{
                     self.callId = callId
                 }
             }
@@ -75,23 +76,23 @@ class CallControlsViewModel:ObservableObject{
     }
     
     private func startP2PCall(_ selectedContacts:[Contact]){
-        let invitees = selectedContacts.map{Invitee(id: "\($0.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)}
+        let invitees = selectedContacts.map{Invitee(id: "\($0.id ?? 0)", idType: .contactId)}
         let sendClient = SendClient(mute: false, video:  callState.model.isVideoCall)
-        Chat.sharedInstance.requestCall(.init(client:sendClient,invitees: invitees, type: callState.model.isVideoCall ? .VIDEO_CALL : .VOICE_CALL),initCreateCall(createCall:uniqueId:error:))
+        Chat.sharedInstance.requestCall(.init(client:sendClient,invitees: invitees, type: callState.model.isVideoCall ? .videoCall : .voiceCall),initCreateCall(createCall:uniqueId:error:))
     }
     
     private func startGroupCall(_ selectedContacts:[Contact]){
-        let invitees = selectedContacts.map{Invitee(id: "\($0.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)}
-        let callType:CallType = callState.model.isVideoCall ? .VIDEO_CALL : .VOICE_CALL
-        let client = SendClient(mute: true, video: callType == .VIDEO_CALL)
+        let invitees = selectedContacts.map{Invitee(id: "\($0.id ?? 0)", idType: .contactId)}
+        let callType:CallType = callState.model.isVideoCall ? .videoCall : .voiceCall
+        let client = SendClient(mute: true, video: callType == .videoCall)
         let callDetail: CreateCallThreadRequest? = .init(title: callState.model.groupName)
         Chat.sharedInstance.requestGroupCall(.init(client:client,invitees: invitees, type: callType, createCallThreadRequest: callDetail),initCreateCall(createCall:uniqueId:error:))
     }
     
     private func satrtCallWithThreadId(_ thread:Conversation){
-        let callType:CallType = callState.model.isVideoCall ? .VIDEO_CALL : .VOICE_CALL
-        let client = SendClient(mute: true, video: callType == .VIDEO_CALL)
-        if let type = thread.type, ThreadTypes(rawValue: type) == .NORMAL , let threadId = thread.id{
+        let callType:CallType = callState.model.isVideoCall ? .videoCall : .voiceCall
+        let client = SendClient(mute: true, video: callType == .videoCall)
+        if let type = thread.type, type == .normal , let threadId = thread.id{
             Chat.sharedInstance.requestCall(.init(client:client,threadId: threadId, type: callType),initCreateCall(createCall:uniqueId:error:))
         }else if let threadId = thread.id{
             Chat.sharedInstance.requestGroupCall(.init(client:client,threadId: threadId, type: callType),initCreateCall(createCall:uniqueId:error:))

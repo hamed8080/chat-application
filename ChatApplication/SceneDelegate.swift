@@ -12,6 +12,24 @@ import FanapPodChatSDK
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+
+    @ObservedObject
+    var loginModel     = LoginViewModel()
+
+    @ObservedObject
+    var contactsVM     = ContactsViewModel()
+
+    @ObservedObject
+    var threadsVM      = ThreadsViewModel()
+
+    @ObservedObject
+    var settingsVM     = SettingViewModel()
+
+    @ObservedObject
+    var tokenManager = TokenManager.shared
+
+    @ObservedObject
+    var callsHistoryVM = CallsHistoryViewModel()
     
     @State var appState = AppState.shared
     @State var callState = CallState.shared
@@ -25,8 +43,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Create the SwiftUI view that provides the window contents.
         NotificationCenter.default.addObserver(self, selector: #selector(addLog), name: NSNotification.Name("log"), object: nil)
         let contentView = HomeContentView()
+            .environmentObject(settingsVM)
+            .environmentObject(contactsVM)
+            .environmentObject(threadsVM)
             .environmentObject(appState)
             .environmentObject(callState)
+            .environmentObject(loginModel)
+            .environmentObject(tokenManager)
+            .environmentObject(callsHistoryVM)
 
         if #available(iOS 15.0, *) {
             let appearance = UITabBarAppearance()
@@ -40,9 +64,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window = window
             window.makeKeyAndVisible()
         }
-        
-        guard let _ = (scene as? UIWindowScene) else { return }
-        ChatDelegateImplementation.sharedInstance.createChatObject()
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

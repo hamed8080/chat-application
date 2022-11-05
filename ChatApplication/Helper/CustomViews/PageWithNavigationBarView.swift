@@ -34,7 +34,12 @@ struct NavBarButton{
                     }
                     
                     if title == nil && showAvatarImage == true{
-                        Avatar(url: avatarUrl, userName: avatarUserName?.uppercased() ,fileMetaData:avatarMetaData, style: .init(size: 32 ,textSize: 16))
+                        Avatar(
+                            url: avatarUrl,
+                            userName: avatarUserName?.uppercased() ,
+                            style: .init(size: 32 ,textSize: 16),
+                            metadata: avatarMetaData
+                        )
                     }else if let title = title {
                         Text(title)
                             .fontWeight(isBold ? .bold : .medium)

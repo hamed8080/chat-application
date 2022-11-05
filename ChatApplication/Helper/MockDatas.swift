@@ -22,7 +22,7 @@ final class MockData{
             image         : "avatar1",
             pin           : false,
             title         : "Hamed Hosseini",
-            type          : ThreadTypes.PUBLIC_GROUP.rawValue,
+            type          : ThreadTypes.publicGroup,
             lastMessageVO : lastMessageVO
         )
         return thread
@@ -94,7 +94,7 @@ final class MockData{
             threadId    : 0,
             id          : 0,
             message     : "Hello sahdkf ashfdl sad div exit \nHello",
-            messageType : 1,
+            messageType : .text,
             seen        : false,
             time        : 1636807773
         )

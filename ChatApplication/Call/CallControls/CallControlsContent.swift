@@ -310,7 +310,7 @@ struct CallControlsContent: View {
             
             HStack{
                 Spacer()
-                if callState.model.receiveCall?.type == .VIDEO_CALL{
+                if callState.model.receiveCall?.type == .videoCall{
                     CallControlItem(iconSfSymbolName: "video.fill", subtitle: "Answer", color: .green){
                         viewModel.answerCall(video: true, audio: true)
                     }
@@ -367,8 +367,8 @@ struct CallControlsContent: View {
                     }
                 }
                 
-                let isVideoEnabled = callState.model.usersRTC.first(where: {$0.isVideoTopic && $0.direction == .SEND})?.isVideoOn ?? false
-                if let audioCallUser = callState.model.usersRTC.filter{$0.isAudioTopic && $0.direction == .SEND}.first, let audioCallUser = audioCallUser{
+                let isVideoEnabled = callState.model.usersRTC.first(where: {$0.isVideoTopic && $0.direction == .send})?.isVideoOn ?? false
+                if let audioCallUser = callState.model.usersRTC.filter{$0.isAudioTopic && $0.direction == .send}.first, let audioCallUser = audioCallUser{
                     CallControlItem(iconSfSymbolName: audioCallUser.isMute ? "mic.slash.fill" : "mic.fill", subtitle: "Mute", color: audioCallUser.isMute ? .gray : .green){
                         viewModel.toggleMic()
                     }
@@ -464,7 +464,7 @@ struct CallControlsView_Previews: PreviewProvider {
             .onAppear(){
                 
                 let participant = MockData.participant
-                let receiveCall = CreateCall(type: .VIDEO_CALL, creatorId: 0, creator: participant, threadId: 0, callId: 0, group: false)
+                let receiveCall = CreateCall(type: .videoCall, creatorId: 0, creator: participant, threadId: 0, callId: 0, group: false)
                 fakeParticipant(count: 1).forEach { callParticipant in
                     callState.addCallParicipant(callParticipant)
                 }

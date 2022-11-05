@@ -13,7 +13,6 @@ struct TagRow: View {
 	var tag:Tag
 	
     @StateObject var viewModel:TagsViewModel
-    @EnvironmentObject var appState:AppState
     @State var isSelected:Bool = false
     @State var showManageTag:Bool = false
     

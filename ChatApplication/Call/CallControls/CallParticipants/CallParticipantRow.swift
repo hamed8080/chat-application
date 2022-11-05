@@ -22,7 +22,7 @@ struct CallParticipantRow: View {
         
 		Button(action: {}, label: {
 			HStack{
-                Avatar(url:participant.participant?.image ?? "" ,userName: participant.participant?.username ?? "", fileMetaData: nil)
+                Avatar(url:participant.participant?.image ?? "", userName: participant.participant?.username ?? "")
 				VStack(alignment: .leading, spacing:8){
                     Text(participant.participant?.name ?? "")
 						.font(.headline)

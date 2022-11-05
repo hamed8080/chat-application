@@ -5,59 +5,106 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import Foundation
-import Combine
-import UIKit
 import FanapPodChatSDK
+import Foundation
+import UIKit
 
-class ImageLoader : ObservableObject{
-    
-    private (set) var didChange = PassthroughSubject<UIImage?,Never>()
-    private var data:Data? = nil
-    private var size:ImageSize? = nil
-    
-    var image:UIImage?{
-        guard let data = data else{return nil}
+class ImageLoader: ObservableObject {
+
+    @Published
+    private(set) var image: UIImage = UIImage()
+    private(set) var url: String
+    private(set) var fileMetadata: String? = nil
+    private(set) var size: ImageSize? = nil
+    private(set) var token: String? = nil
+
+    init(url: String) {
+        self.url = url
+    }
+
+    var isImageReady: Bool {
+        image.size.width > 0
+    }
+
+    private func setImage(data: Data){
         if size == nil {
-            return UIImage(data: data)
-        }else{
-            return UIImage(data: data)?.preparingThumbnail(of: CGSize(width: size == .SMALL ? 128 : 256, height: size == .SMALL ? 128 : 256))
+            self.image = UIImage(data: data) ?? UIImage()
+        } else {
+            self.image = UIImage(data: data)?.preparingThumbnail(of: CGSize(width: size == .SMALL ? 128 : 256, height: size == .SMALL ? 128 : 256)) ?? UIImage()
         }
     }
-    
-    init(url:String? , fileMetaData:String?, size:ImageSize? = nil,token:String? = nil) {
-        self.size = size
-        
-        if let fileMetaData = fileMetaData,
-           let fileMetaDataModel = try? JSONDecoder().decode(FileMetaData.self, from: fileMetaData.data(using: .utf8) ?? Data()),
-           let hashCode = fileMetaDataModel.fileHash{
-            Chat.sharedInstance.getImage(req: .init(hashCode:hashCode, size: size ?? .SMALL)) { progress in
-                
-            } completion: { data, imageModel, error in
-                self.data = data
-                self.didChange.send(self.image)
-            } cacheResponse: { data, imageModel, error in
-                self.data = data
-                self.didChange.send(self.image)
-            }
-        }else if let urlString = url, let url = URL(string:urlString) {
-            if let data = CacheFileManager.sharedInstance.getImageProfileCache(url: urlString, group: AppGroup.group){
-                DispatchQueue.main.async { [weak self] in
-                    self?.data = data
-                    self?.didChange.send(self?.image)
-                }
-            }else {
-                let task = URLSession.shared.dataTask(with: URLRequest(url: url)){[weak self] data,response ,error in
-                    if let data = data{
-                        DispatchQueue.main.async {
-                            self?.data = data
-                            self?.didChange.send(self?.image)
-                            CacheFileManager.sharedInstance.saveImageProfile(url: url.absoluteString, data: data, group: AppGroup.group)
-                        }
-                    }
-                }
-                task.resume()
-            }
+
+    private var URLObject: URL? { URL(string: url) }
+
+    private var isSDKImage: Bool { hashCode != "" }
+
+    private var fileMetadataModel: FileMetaData? { try? JSONDecoder().decode(FileMetaData.self, from: fileMetadata?.data(using: .utf8) ?? Data()) }
+
+    private var cacheData: Data? { CacheFileManager.sharedInstance.getImageProfileCache(url: url, group: AppGroup.group) }
+
+    private var oldURLHash: String? { URLComponents(url: URLObject!, resolvingAgainstBaseURL: true)?.queryItems?.first(where: {$0.name == "hash"})?.value }
+
+    private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
+
+    func fetch() {
+        if isSDKImage {
+            getFromSDK()
+        } else if let data = cacheData {
+            update(data: data)
+        } else {
+            downloadFromAnyURL()
         }
     }
+
+    private func getFromSDK() {
+        Chat.sharedInstance.getImage(req: .init(hashCode: hashCode, size: size ?? .SMALL)) { _ in
+        } completion: { [weak self] data, _, _ in
+            self?.update(data: data)
+        } cacheResponse: { [weak self] data, _, _ in
+            self?.update(data: data)
+        }
+    }
+
+    private func downloadFromAnyURL() {
+        guard let req = reqWithHeader else {return}
+        let task = URLSession.shared.dataTask(with: req) { [weak self] data, _, _ in
+            self?.update(data: data)
+            self?.storeInCache(data: data)
+        }
+        task.resume()
+    }
+
+    private func update(data: Data?) {
+        guard let data = data else {return}
+        if !isRealImage(data: data) {return}
+        DispatchQueue.main.async {
+            self.setImage(data: data)
+        }
+    }
+
+    private func storeInCache(data: Data?) {
+        guard let data = data else {return}
+        if !isRealImage(data: data) {return}
+        DispatchQueue.main.async {
+            CacheFileManager.sharedInstance.saveImageProfile(url: self.url, data: data, group: AppGroup.group)
+        }
+    }
+
+    /// Check if the response is not a string.
+    private func isRealImage(data: Data) -> Bool {
+        UIImage(data: data) != nil
+    }
+
+    private var headers: [String:String] { token != nil ?  ["Authorization": "Bearer \(token ?? "")"] : [:] }
+
+    private var reqWithHeader: URLRequest? {
+        guard let URLObject else {return nil}
+        let req = URLRequest(url: URLObject)
+        var request = URLRequest(url: URLObject)
+        headers.forEach({ key ,value in
+            request.addValue(value, forHTTPHeaderField: key)
+        })
+        return req
+    }
+
 }

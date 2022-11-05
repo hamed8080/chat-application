@@ -126,7 +126,7 @@ class ActionSheetViewModel : ObservableObject{
     
     func sendSelectedFile(){
         if let selectedFileUrl = selectedFileUrl {
-            threadViewModel.sendFile(selectedFileUrl: selectedFileUrl)
+            threadViewModel.sendFile(selectedFileUrl)
         }
     }
     

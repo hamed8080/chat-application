@@ -16,7 +16,11 @@ struct SearchContactRow: View {
     
     var body: some View{
         HStack{
-            Avatar(url:contact.image ?? contact.linkedUser?.image ,userName: contact.firstName?.uppercased(), fileMetaData: nil, style: .init(size: 24, textSize: 12))
+            Avatar(
+                url: contact.image ?? contact.linkedUser?.image,
+                userName: contact.firstName?.uppercased(),
+                style: .init(size: 24, textSize: 12)
+            )
             VStack(alignment: .leading, spacing:4){
                 Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                     .padding(.leading , 4)
@@ -35,8 +39,9 @@ struct SearchContactRow: View {
             }
         }
         .contentShape(Rectangle())
+        .autoNavigateToThread()
         .onTapGesture {
-            viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)])
+            viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
         }
     }
 }

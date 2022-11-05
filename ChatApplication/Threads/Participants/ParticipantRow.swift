@@ -27,7 +27,10 @@ struct ParticipantRow: View {
         
         Button(action: {}, label: {
             HStack{
-                Avatar(url:participant.image ,userName: participant.username?.uppercased(), fileMetaData: nil, style: style.avatarConfig, previewImageName: participant.image ?? "avatar")
+                Avatar(
+                    url: participant.image,
+                    userName: participant.username?.uppercased()
+                )
                 HStack(alignment: .center, spacing:8){
                     VStack(alignment:.leading, spacing:6){
                         Text(participant.contactName ?? participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")

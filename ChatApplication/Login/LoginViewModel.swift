@@ -135,17 +135,20 @@ class TokenManager : ObservableObject{
                 }
         }
     }
-    
+
     func getSSOTokenFromUserDefaults()->SSOTokenResponse.Result?{
         if let data = UserDefaults.standard.data(forKey: TokenManager.SSO_TOKEN_KEY) , let ssoToken = try? JSONDecoder().decode(SSOTokenResponse.Result.self, from: data){
-            setIsLoggedIn(isLoggedIn: true)
             return ssoToken
         }else{
-            setIsLoggedIn(isLoggedIn: false)
             return nil
         }
     }
-    
+
+    /// For checking the user is login at application launch 
+    func initSetIsLogin() {
+        setIsLoggedIn(isLoggedIn: getSSOTokenFromUserDefaults() != nil)
+    }
+
     func saveSSOToken(ssoToken:SSOTokenResponse.Result){
         let data = (try? JSONEncoder().encode(ssoToken)) ?? Data()
         let str = String(data: data , encoding: .utf8)

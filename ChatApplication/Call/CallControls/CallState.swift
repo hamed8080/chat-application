@@ -43,7 +43,7 @@ struct CallStateModel {
     
     mutating func setReceiveCall(_ receiveCall:CreateCall){
         self.receiveCall = receiveCall
-        self.isVideoCall = receiveCall.type == .VIDEO_CALL
+        self.isVideoCall = receiveCall.type == .videoCall
     }
     
     mutating func setShowCallView(_ showCallView:Bool){
@@ -237,57 +237,57 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     @objc func callEvent(_ notification:NSNotification){
         guard let type = (notification.object as? CallEventModel)?.type else{return}
         switch type{
-        case .CALL_STARTED(let startCall):
+        case .callStarted(let startCall):
             onCallStarted(startCall)
             break
-        case .CALL_CREATE(let createCall):
+        case .callCreate(let createCall):
             onCallCreated(createCall)
             break
-        case .CALL_RECEIVED(let receieveCall):
+        case .callReceived(let receieveCall):
             onReceiveCall(receieveCall)
             break
-        case .CALL_DELIVERED(_):
+        case .callDelivered(_):
             break
-        case .CALL_ENDED(let callId):
+        case .callEnded(let callId):
             onCallEnd(callId)
             break
-        case .CALL_CANCELED(let canceledCall):
+        case .callCanceled(let canceledCall):
             onCallCanceled(canceledCall)
             break
-        case .CALL_REJECTED(_):
+        case .callRejected(_):
             break
-        case .START_CALL_RECORDING(let participant):
+        case .startCallRecording(let participant):
             onCallStartRecording(participant)
             break
-        case .STOP_CALL_RECORDING(let participant):
+        case .stopCallRecording(let participant):
             onCallStopRecording(participant)
             break
-        case .CALL_PARTICIPANT_JOINED(let callParticipants):
+        case .callParticipantJoined(let callParticipants):
             onCallParticipantJoined(callParticipants)
             break
-        case .CALL_PARTICIPANT_LEFT(let callParticipants):
+        case .callParticipantLeft(let callParticipants):
             onCallParticipantLeft(callParticipants)
             break
-        case .CALL_PARTICIPANT_MUTE(let callParticipants):
+        case .callParticipantMute(let callParticipants):
             onMuteParticipants(callParticipants)
             break
-        case .CALL_PARTICIPANT_UNMUTE(let callParticipants):
+        case .callParticipantUnmute(let callParticipants):
             onUNMuteParticipants(callParticipants)
             break
-        case .CALL_PARTICIPANTS_REMOVED(_):
+        case .callParticipantsRemoved(_):
             break
-        case .TURN_VIDDEO_ON(let callParticipants):
+        case .turnVideoOn(let callParticipants):
             onTurnVideoOnParticipants(callParticipants)
             break
-        case .TURN_VIDDEO_OFF(let callParticipants):
+        case .turnVideoOff(let callParticipants):
             onTurnVideoOffParticipants(callParticipants)
             break
-        case .CALL_CLIENT_ERROR(_):
+        case .callClientError(_):
             break
-        case .CALL_PARTICIPANT_START_SPEAKING(let callParticipants):
+        case .callParticipantStartSpeaking(let callParticipants):
             onCallParticipantSpeaking(callParticipants)
             break
-        case .CALL_PARTICIPANT_STOP_SPEAKING(let callParticipants):
+        case .callParticipantStopSpeaking(let callParticipants):
             onCallParticipantStoppedSpeaking(callParticipants)
             break
         }
@@ -321,18 +321,18 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         ///simulator File name
         let smFileName = TARGET_OS_SIMULATOR != 0 ? "webrtc_user_a.mp4" : nil
         let config = WebRTCConfig(startCall: startCall, isSendVideoEnabled: model.answerWithVideo || model.isVideoCall,fileName: smFileName)
-        WebRTCClientNew.instance = WebRTCClientNew(config: config , delegate: self)
+        WebRTCClient.instance = WebRTCClient(config: config , delegate: self)
         addCallParicipant(.init(sendTopic: config.topicSend ?? "",
                                 mute: startCall.clientDTO.mute,
                                 video: startCall.clientDTO.video,
                                 participant: .init(name:"ME")
                                ),
-                          direction:.SEND)
+                          direction:.send)
         startCall.otherClientDtoList?.filter({$0.clientId != startCall.clientDTO.clientId}).forEach({ clientDTO in
             let callParticipant = CallParticipant(sendTopic: clientDTO.topicSend,mute: clientDTO.mute, video: clientDTO.video)
             addCallParicipant(callParticipant)
         })
-        WebRTCClientNew.instance?.createSession()
+        WebRTCClient.instance?.createSession()
         fetchCallParticipants(startCall)
     }
 
@@ -343,7 +343,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
             //update only call participants who not current user
             if let callParticipants = callParticipants?.filter({$0.userId != startCall.clientDTO.userId}){
                 self.model.updateCallParticipants(callParticipants)
-                WebRTCClientNew.instance?.updateCallParticipant(callParticipants: callParticipants)
+                WebRTCClient.instance?.updateCallParticipant(callParticipants: callParticipants)
             }
         }
     }
@@ -352,7 +352,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         endCallKitCall()        
         model.setShowCallView(false)
         LogViewModel.printCallLogsFile()
-        WebRTCClientNew.instance?.clearResourceAndCloseConnection()
+        WebRTCClient.instance?.clearResourceAndCloseConnection()
         resetCall()
     }
     
@@ -406,17 +406,17 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         startCallTimer?.invalidate()
         startCallTimer           = nil
         model                    = CallStateModel()
-        WebRTCClientNew.instance = nil
+        WebRTCClient.instance = nil
     }
     
     func toggleSpeaker(){
-        WebRTCClientNew.instance?.toggleSpeaker()
+        WebRTCClient.instance?.toggleSpeaker()
         model.toggleSpeaker()
     }
     
     func toggleMute(){
         guard let currentUserId = Chat.sharedInstance.userInfo?.id , let callId = model.startCall?.callId else{return}
-        let oldIsMuteState = model.usersRTC.first(where:{$0.direction == .SEND && $0.isAudioTopic})?.isMute ?? true
+        let oldIsMuteState = model.usersRTC.first(where:{$0.direction == .send && $0.isAudioTopic})?.isMute ?? true
         let newIsMuteState = !oldIsMuteState
         if oldIsMuteState{
             Chat.sharedInstance.unmuteCall(.init(callId: callId, userIds: [currentUserId])) { participants, uniqueId, error in
@@ -428,8 +428,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
             }
         }
         
-        WebRTCClientNew.instance?.setMute(newIsMuteState)
-        if let index = model.usersRTC.firstIndex(where: {$0.isAudioTopic && $0.direction == .SEND}), let callParticipant = model.usersRTC[index].callParticipant{
+        WebRTCClient.instance?.setMute(newIsMuteState)
+        if let index = model.usersRTC.firstIndex(where: {$0.isAudioTopic && $0.direction == .send}), let callParticipant = model.usersRTC[index].callParticipant{
             if newIsMuteState{
                 model.muteParticipants([callParticipant])
             }else{
@@ -440,7 +440,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     
     func toggleCamera(){
         guard let callId = model.startCall?.callId else{return}
-        let isVideoOnOldState = model.usersRTC.first(where:{$0.direction == .SEND && $0.isVideoTopic})?.isVideoOn ?? false
+        let isVideoOnOldState = model.usersRTC.first(where:{$0.direction == .send && $0.isVideoTopic})?.isVideoOn ?? false
         let isVideoOnNewState = !isVideoOnOldState
         if isVideoOnOldState{
             Chat.sharedInstance.turnOffVideoCall(.init(callId: callId)) { participants, uniqueId, error in
@@ -450,8 +450,8 @@ class CallState:ObservableObject,WebRTCClientDelegate {
             }
         }
         
-        WebRTCClientNew.instance?.setCameraIsOn(isVideoOnNewState)
-        if let index = model.usersRTC.firstIndex(where: {$0.isVideoTopic && $0.direction == .SEND}), let callParticipant = model.usersRTC[index].callParticipant{
+        WebRTCClient.instance?.setCameraIsOn(isVideoOnNewState)
+        if let index = model.usersRTC.firstIndex(where: {$0.isVideoTopic && $0.direction == .send}), let callParticipant = model.usersRTC[index].callParticipant{
             if isVideoOnNewState{
                 model.turnOnVideoParticipants([callParticipant])
             }else{
@@ -466,7 +466,7 @@ class CallState:ObservableObject,WebRTCClientDelegate {
     }
     
     func close(){
-        WebRTCClientNew.instance?.clearResourceAndCloseConnection()
+        WebRTCClient.instance?.clearResourceAndCloseConnection()
         LogViewModel.printCallLogsFile()
         resetCall()
     }
@@ -491,16 +491,16 @@ class CallState:ObservableObject,WebRTCClientDelegate {
         }
     }
     
-    func addCallParicipant(_ callParticipant:CallParticipant, direction:RTCDirection = .RECEIVE){
-        WebRTCClientNew.instance?.addCallParticipant(callParticipant, direction: direction)
-        let addedTopics = WebRTCClientNew.instance?.usersRTC.filter{$0.topic == topics(callParticipant).topicVideo || $0.topic == topics(callParticipant).topicAudio}
+    func addCallParicipant(_ callParticipant:CallParticipant, direction:RTCDirection = .receive){
+        WebRTCClient.instance?.addCallParticipant(callParticipant, direction: direction)
+        let addedTopics = WebRTCClient.instance?.usersRTC.filter{$0.topic == topics(callParticipant).topicVideo || $0.topic == topics(callParticipant).topicAudio}
         addedTopics?.forEach({ userRTC in
             model.addUserRTC(userRTC)
         })
     }
     
     func removeCallParticipant(_ callParticipant:CallParticipant){
-        WebRTCClientNew.instance?.removeCallParticipant(callParticipant)
+        WebRTCClient.instance?.removeCallParticipant(callParticipant)
         model.usersRTC.filter{$0.topic == topics(callParticipant).topicVideo || $0.topic == topics(callParticipant).topicAudio }.forEach { userRTC in
             model.removeUserRTC(userRTC)
         }

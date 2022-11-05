@@ -17,14 +17,26 @@ struct ContactRow: View {
     
     @Binding
     public var isInEditMode:Bool
-    
-    public var viewModel:ContactsViewModel
+
+    @EnvironmentObject
+    var viewModel:ContactsViewModel
     
     @State
     public var showActionViews:Bool = false
-    
-    var callState:CallState = CallState.shared
-    
+
+    var callState: CallState = CallState.shared
+
+    init(contact: Contact, isSelected: Bool = false, isInEditMode: Binding<Bool>, showActionViews: Bool = false) {
+        self.contact = contact
+        self.isSelected = isSelected
+        self._isInEditMode = isInEditMode
+        self.showActionViews = showActionViews
+    }
+
+    var contactImageURL: String? {
+        contact.image ?? contact.linkedUser?.image
+    }
+
     var body: some View {
         VStack{
             VStack{
@@ -40,7 +52,13 @@ struct ContactRow: View {
                                 viewModel.toggleSelectedContact(contact ,isSelected)
                             }
                     }
-                    Avatar(url:contact.image ?? contact.linkedUser?.image ,userName: contact.firstName?.uppercased(), fileMetaData: nil, previewImageName: contact.image ?? "avatar")
+
+                    let token = EnvironmentValues.init().isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
+                    Avatar(
+                        url: contactImageURL,
+                        userName: contact.firstName?.uppercased(),
+                        token: token
+                    )
                     
                     VStack(alignment: .leading, spacing:8){
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
@@ -78,6 +96,7 @@ struct ContactRow: View {
             .cornerRadius(16)
             
         }
+        .autoNavigateToThread()
         .onTapGesture {
             withAnimation {
                 showActionViews.toggle()
@@ -92,7 +111,7 @@ struct ContactRow: View {
         HStack{
             
             ActionButton(iconSfSymbolName: "message",taped:{
-                viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .TO_BE_USER_CONTACT_ID)])
+                viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
             })
             
             ActionButton(iconSfSymbolName: "video",height: 16,taped:{
@@ -155,7 +174,8 @@ struct ContactRow_Previews: PreviewProvider {
     
     static var previews: some View {
         Group {
-            ContactRow(contact: MockData.contact, isInEditMode: $isInEditMode,viewModel: ContactsViewModel())
+            ContactRow(contact: MockData.contact, isInEditMode: $isInEditMode)
+                .environmentObject( ContactsViewModel() )
                 .preferredColorScheme(.dark)
         }
     }

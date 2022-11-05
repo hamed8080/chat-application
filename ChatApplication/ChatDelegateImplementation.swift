@@ -7,6 +7,7 @@
 
 import Foundation
 import FanapPodChatSDK
+import FanapPodAsyncSDK
 import UIKit
 
 enum ConnectionStatus:Int{
@@ -43,23 +44,26 @@ class ChatDelegateImplementation: ChatDelegate {
             if config.server == "Integeration"{
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponse.Result(accessToken: config.debugToken, expiresIn: Int.max, idToken: nil, refreshToken: nil, scope: nil, tokenType: nil))
             }
+            TokenManager.shared.initSetIsLogin()
             let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken
             print("token is: \(token)")
-            Chat.sharedInstance.createChatObject(config: .init(socketAddress: config.socketAddresss,
-                                                               serverName: config.serverName,
+
+            let asyncConfig = AsyncConfig(socketAddress: config.socketAddresss,
+                                          serverName: config.serverName,
+                                          appId: "PodChat",
+                                          reconnectCount:Int.max,
+                                          reconnectOnClose: true,
+                                          isDebuggingLogEnabled: false)
+            Chat.sharedInstance.createChatObject(config: .init(asyncConfig: asyncConfig,
                                                                token: token,
                                                                ssoHost: config.ssoHost,
                                                                platformHost: config.platformHost,
                                                                fileServer: config.fileServer,
                                                                enableCache: true,
                                                                msgTTL: 800000,//for integeration server need to be long time
-                                                               reconnectCount:Int.max,
-                                                               reconnectOnClose: true,
-//                                                               showDebuggingLogLevel:.verbose,
                                                                isDebuggingLogEnabled: true,
-                                                               isDebuggingAsyncEnable: false,
                                                                enableNotificationLogObserver: true,
-                                                               callTimeout: 20                                                               
+                                                               callTimeout: 20
             ))
             Chat.sharedInstance.delegate = self
             AppState.shared.setCachedUser()
@@ -76,18 +80,18 @@ class ChatDelegateImplementation: ChatDelegate {
     
     func chatState(state: ChatState, currentUser: User?, error: ChatError?) {
         switch state {
-        case .CONNECTING:
+        case .connecting:
             print("🔄 chat connecting")
             AppState.shared.connectionStatus = .Connecting
-        case .CONNECTED:
+        case .connected:
             print("🟡 chat connected")
             AppState.shared.connectionStatus = .Connecting
-        case .CLOSED:
+        case .closed:
             print("🔴 chat Disconnect")
             AppState.shared.connectionStatus = .Disconnected
-        case .ASYNC_READY:
+        case .asyncReady:
             print("🟡 Async ready")
-        case .CHAT_READY:
+        case .chatReady:
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .CONNECTED
             NotificationCenter.default.post(name: CONNECT_NAME, object: nil)
@@ -104,23 +108,23 @@ class ChatDelegateImplementation: ChatDelegate {
     
     func chatEvent(event: ChatEventType) {
         print(event)
-        if case .System(let event) = event {
+        if case .system(let event) = event {
             NotificationCenter.default.post(name: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME, object: event)
         }
         
-        if case .Thread(let event) = event{
+        if case .thread(let event) = event{
             NotificationCenter.default.post(name: THREAD_EVENT_NOTIFICATION_NAME, object: event)
         }
         
-        if case .Message(let event) = event {
+        if case .message(let event) = event {
             NotificationCenter.default.post(name: MESSAGE_NOTIFICATION_NAME, object: event)
         }
         
-        if case .File(let event) = event {
+        if case .file(let event) = event {
             print("file Event:\(dump(event))")
         }
         
-        if case .Call(let event) = event {
+        if case .call(let event) = event {
             NotificationCenter.default.post(name: CALL_EVENT_NAME, object: event)
         }
     }

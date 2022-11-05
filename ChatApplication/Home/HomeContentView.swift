@@ -9,62 +9,39 @@ import SwiftUI
 import FanapPodChatSDK
 
 struct HomeContentView: View {
-    
-    @StateObject
-    var loginModel     = LoginViewModel()
-    
-    @StateObject
-    var callsHistoryVM = CallsHistoryViewModel()
-    
-    @StateObject
-    var contactsVM     = ContactsViewModel()
-    
-    @StateObject
-    var threadsVM      = ThreadsViewModel()
-    
-    @StateObject
-    var settingsVM     = SettingViewModel()
-    
-    @StateObject
-    var tokenManager   = TokenManager.shared
+
+    @EnvironmentObject
+    var tokenManager: TokenManager
     
     @EnvironmentObject
     var callState:CallState
     
     @Environment(\.localStatusBarStyle)
-    var statusBarStyle          :LocalStatusBarStyle
-    
+    var statusBarStyle
+
     @Environment(\.colorScheme)
     var colorScheme
-    
-    @Environment(\.isPreview)
-    var isPreview
-    
-    @State var appState = AppState.shared
+
+    @EnvironmentObject
+    var appState: AppState
     
     @State
     var showCallView = false
     
     @State
     var shareCallLogs = false
-    
-    @State
-    var showThreadView:Bool = false
-    
-    @State
-    var selectedThread:Conversation? = nil
-    
+
     var body: some View {
         if tokenManager.isLoggedIn == false{
-            LoginView(viewModel:loginModel)
+            LoginView()
         }else{
             NavigationView{
-                SideBar(contactsVM:contactsVM,threadsVM:threadsVM,settingsVM:settingsVM, callsHistoryVM: callsHistoryVM)
-                    .environmentObject(appState)
-                
-                SecondSideBar(threadsVM:threadsVM)
-                
-                DetailContentView(threadsVM: threadsVM)
+
+                SideBar()
+
+                SecondSideBar()
+
+                DetailContentView()
             }
             .fullScreenCover(isPresented: $showCallView, onDismiss: nil, content: {
                 CallControlsContent(viewModel: CallControlsViewModel())
@@ -93,34 +70,18 @@ struct HomeContentView: View {
             })
             .onAppear{
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
-                if isPreview{
-                    threadsVM.setupPreview()
-                    contactsVM.setupPreview()
-                }
             }
         }
     }
 }
 
-struct SideBar:View{
-    
-    @StateObject
-    var contactsVM:ContactsViewModel
-    
-    @StateObject
-    var threadsVM:ThreadsViewModel
-    
-    @StateObject
-    var settingsVM:SettingViewModel
-    
-    @StateObject
-    var callsHistoryVM:CallsHistoryViewModel
+struct SideBar:View {
     
     var body: some View{
         
         List{
             NavigationLink {
-                ContactContentList(viewModel: contactsVM)
+                ContactContentList()
             } label: {
                 Label {
                     Text("Contacts")
@@ -131,9 +92,9 @@ struct SideBar:View{
                         .foregroundColor(Color.blue)
                 }
             }
-            
+
             NavigationLink {
-                ThreadContentList(viewModel: threadsVM)
+                ThreadContentList()
             } label: {
                 Label {
                     Text("Chats")
@@ -144,9 +105,9 @@ struct SideBar:View{
                         .foregroundColor(Color.blue)
                 }
             }
-            
+
             NavigationLink {
-                CallsHistoryContentList(viewModel: callsHistoryVM)
+                CallsHistoryContentList()
             } label: {
                 Label {
                     Text("Calls")
@@ -157,24 +118,25 @@ struct SideBar:View{
                         .foregroundColor(Color.blue)
                 }
             }
-            
-            ForEach(threadsVM.tagViewModel.model.tags, id:\.id){ tag in
-                NavigationLink {
-                    ThreadContentList(viewModel: threadsVM, folder:tag)
-                } label: {
-                    Label {
-                        Text(tag.name)
-                    } icon: {
-                        Image(systemName: "folder")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(Color.blue)
-                    }
+
+            NavigationLink {
+                ThreadContentList()
+                    .environmentObject(ThreadsViewModel(archived: true))
+            } label: {
+                Label {
+                    Text("Archive")
+                } icon: {
+                    Image(systemName: "tray.and.arrow.down")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(Color.blue)
                 }
             }
+
+            TagContentList()
             
             NavigationLink {
-                SettingsView(viewModel: settingsVM)
+                SettingsView()
             } label: {
                 Label {
                     Text("Setting")
@@ -183,7 +145,7 @@ struct SideBar:View{
                         .resizable()
                         .scaledToFit()
                         .foregroundColor(Color.blue)
-                        
+
                 }
             }
         }
@@ -191,20 +153,42 @@ struct SideBar:View{
     }
 }
 
+/// Separate this view to prevent redraw view in the sidebar and consequently redraw the whole applicaiton
+/// view multiple times and reinit the view models multiple times.
+struct TagContentList: View {
+
+    @EnvironmentObject
+    var threadsVM: ThreadsViewModel
+
+    var body: some View {
+        ForEach(threadsVM.tagViewModel.model.tags, id:\.id){ tag in
+            NavigationLink {
+                ThreadContentList(folder:tag)
+            } label: {
+                Label {
+                    Text(tag.name)
+                } icon: {
+                    Image(systemName: "folder")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(Color.blue)
+                }
+            }
+        }
+    }
+}
+
 ///this view only render once when view created to show list of threads after that all views are created by SideBar from list
 struct SecondSideBar:View{
-    
-    @StateObject
-    var threadsVM:ThreadsViewModel
-    
+
     var body: some View{
-        ThreadContentList(viewModel: threadsVM)
+        ThreadContentList()
     }
 }
 
 struct DetailContentView:View{
     
-    @StateObject
+    @EnvironmentObject
     var threadsVM:ThreadsViewModel
     
     var body: some View{
@@ -239,14 +223,12 @@ struct HomeView_Previews: PreviewProvider {
         let appState = AppState.shared
         let callState = CallState.shared
         HomeContentView()
-            .preferredColorScheme(.light)
-            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .environmentObject(appState)
             .environmentObject(callState)
             .onAppear(){
+                AppState.shared.connectionStatus = .CONNECTED
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
             }
-            .previewInterfaceOrientation(.landscapeLeft)
         
     }
 }

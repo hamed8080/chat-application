@@ -8,6 +8,7 @@
 import Foundation
 
 import FanapPodChatSDK
+import UIKit
 import NaturalLanguage
 
 extension String{
@@ -56,20 +57,22 @@ extension String{
     
     func getSystemTypeString(type:SMT)->String?{
         switch type {
-        case .IS_TYPING:
+        case .isTyping:
             return "typing"
-        case .RECORD_VOICE:
+        case .recordVoice:
             return "recording audio"
-        case .UPLOAD_PICTURE:
+        case .uploadPicture:
             return "uploading image"
-        case .UPLOAD_VIDEO:
+        case .uploadVideo:
             return "uploading video"
-        case .UPLOAD_SOUND:
+        case .uploadSound:
             return "uploading sound"
-        case .UPLOAD_FILE:
+        case .uploadFile:
             return "uploading file"
-        case .SERVER_TIME:
+        case .serverTime:
             return nil
+        case .unknown:
+            return "UNknown"
         }
     }
     

@@ -10,17 +10,8 @@ import FanapPodChatSDK
 
 struct ContactContentList:View {
     
-    @StateObject
-    var viewModel :ContactsViewModel
-    
     @EnvironmentObject
-    var appState :AppState
-    
-    @State
-    var searchedContact :String = ""
-    
-    @State
-    var enableDeleteButton = false
+    var viewModel :ContactsViewModel
     
     @State
     var isKeyboardShown:Bool = false
@@ -42,18 +33,6 @@ struct ContactContentList:View {
                         .noSeparators()
                     }
                     
-                    MultilineTextField("Search contact ...",text: $searchedContact,backgroundColor:Color.gray.opacity(0.2)){submit in
-                        hideKeyboard()
-                        if searchedContact.isEmpty {
-                            viewModel.searchContact(searchedContact)// to reset view
-                        }
-                    }
-                    .cornerRadius(16)
-                    .noSeparators()
-                    .onChange(of: searchedContact) { newValue in
-                        viewModel.searchContact(searchedContact)
-                    }
-                    
                     if viewModel.model.showSearchedContacts{
                         Text("Searched contacts")
                             .font(.subheadline)
@@ -66,7 +45,7 @@ struct ContactContentList:View {
                     }
                     
                     ForEach(viewModel.model.contacts , id:\.id) { contact in
-                        ContactRow(contact: contact , isInEditMode: $viewModel.isInEditMode , viewModel: viewModel)
+                        ContactRow(contact: contact , isInEditMode: $viewModel.isInEditMode)
                             .noSeparators()
                             .onAppear {
                                 if viewModel.model.contacts.last == contact{
@@ -78,6 +57,8 @@ struct ContactContentList:View {
                     .onDelete(perform:viewModel.delete)
                     .padding(0)
                 }
+                .searchable(text: $viewModel.searchContactString, placement: .navigationBarDrawer, prompt: "Search...")
+                .animation(.easeInOut, value: viewModel.model.contacts)
                 .listStyle(.plain)
                 NavigationLink(destination: AddOrEditContactView(), isActive: $viewModel.navigateToAddOrEditContact){
                     EmptyView()
@@ -90,7 +71,6 @@ struct ContactContentList:View {
                 }
             }
         }
-        
         .navigationTitle(Text("Contacts"))
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -133,11 +113,7 @@ struct ContactContentList:View {
                 .disabled(!viewModel.isInEditMode)
             }
             ToolbarItem(placement: .principal) {
-                if viewModel.connectionStatus != .CONNECTED{
-                    Text("\(viewModel.connectionStatus.stringValue) ...")
-                        .foregroundColor(Color(named: "text_color_blue"))
-                        .font(.subheadline.bold())
-                }
+                ConnectionStatusToolbar()
             }
         }
     }
@@ -147,8 +123,8 @@ struct ContactContentList_Previews: PreviewProvider {
     static var previews: some View {
         let vm = ContactsViewModel()
         
-        ContactContentList(viewModel: vm)
-        //            .previewDevice("iPhone 12 Pro Max")
+        ContactContentList()
+            .environmentObject(vm)
             .onAppear(){
                 vm.setupPreview()
             }

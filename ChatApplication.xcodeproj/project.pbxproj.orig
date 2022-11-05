@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		050E521027EF275C009F52D3 /* CallControlsContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050E520F27EF275C009F52D3 /* CallControlsContent.swift */; };
 		0505C4E32869A19F0034A9F0 /* LogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E22869A19F0034A9F0 /* LogViewModel.swift */; };
 		0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E42869A1C90034A9F0 /* LogView.swift */; };
 		0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E62869A4220034A9F0 /* LogRow.swift */; };
 		0505C4EF2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4ED2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld */; };
 		0505C4F22869AC800034A9F0 /* PSM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4F12869AC800034A9F0 /* PSM.swift */; };
 		0506366E2801A8740080DF00 /* EnvironmentEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0506366D2801A8740080DF00 /* EnvironmentEX.swift */; };
-		050E521027EF275C009F52D3 /* CallControlsContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050E520F27EF275C009F52D3 /* CallControlsContent.swift */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
@@ -41,6 +41,7 @@
 		055B26A427D5FA250098D585 /* GIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A327D5FA250098D585 /* GIFView.swift */; };
 		055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A527D602CD0098D585 /* TabViewsContainer.swift */; };
 		055EFCEE27C0BFA2006E0ABC /* AnimatingCellHeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055EFCED27C0BFA2006E0ABC /* AnimatingCellHeight.swift */; };
+		0562B23327DE0ABD00CAE761 /* ManageKeyboardForList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0562B23227DE0ABD00CAE761 /* ManageKeyboardForList.swift */; };
 		05743ACF27F029590061C901 /* CallControlsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05743ACE27F029590061C901 /* CallControlsViewModel.swift */; };
 		05743AD327F02FA70061C901 /* CallState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05743AD227F02FA70061C901 /* CallState.swift */; };
 		05781CC9290184770064BDC3 /* NavigateToThreadModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05781CC8290184770064BDC3 /* NavigateToThreadModifier.swift */; };
@@ -63,6 +64,8 @@
 		05E2324C27C2267700FEA7A2 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E2324B27C2267700FEA7A2 /* ImagePicker.swift */; };
 		05F6C7102808BB1800C2EEF4 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F6C70F2808BB1800C2EEF4 /* Message.swift */; };
 		05FE518927899554004F44B5 /* AddParticipantsToViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */; };
+		0BA2FE3B1809DB20412FD55E /* Pods_ChatApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F7DD945EEAC5CFDE0C688FC /* Pods_ChatApplication.framework */; };
+		14A8489843E49721698AB9DD /* Pods_MyWidgetExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0703C3D3AE7BBA360A74A78B /* Pods_MyWidgetExtension.framework */; };
 		AC00883B271D65B000376BBB /* Ringtone.aif in Resources */ = {isa = PBXBuildFile; fileRef = AC00883A271D65B000376BBB /* Ringtone.aif */; };
 		AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F3B268C4FA500B008FF /* HomeContentView.swift */; };
 		AC0435FC26998D3700B1C87B /* ParticipantsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FB26998D2200B1C87B /* ParticipantsModel.swift */; };
@@ -135,6 +138,13 @@
 		AC924CC3274A806300E33BD1 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1D2CC02662016D00AA351A /* Avatar.swift */; };
 		AC924CC4274A80CC00E33BD1 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1D2CBF2662016D00AA351A /* ImageLoader.swift */; };
 		AC94B09A274E0BC200199B35 /* PHAssetEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC94B099274E0BC200199B35 /* PHAssetEX.swift */; };
+		AC989203275E3D48007973F7 /* WebRTCViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891E4275E3D48007973F7 /* WebRTCViewController.swift */; };
+		AC989204275E3D48007973F7 /* WebRTC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC9891E5275E3D48007973F7 /* WebRTC.storyboard */; };
+		AC989205275E3D48007973F7 /* WebRTCDirectSignaling.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC9891E7275E3D48007973F7 /* WebRTCDirectSignaling.storyboard */; };
+		AC989206275E3D48007973F7 /* WebRTC copy.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC9891E8275E3D48007973F7 /* WebRTC copy.storyboard */; };
+		AC989208275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891EA275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift */; };
+		AC989209275E3D48007973F7 /* WebRTCViewControllerLocalSignaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891EC275E3D48007973F7 /* WebRTCViewControllerLocalSignaling.swift */; };
+		AC98920A275E3D48007973F7 /* WebRTCLocalSignaling.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC9891ED275E3D48007973F7 /* WebRTCLocalSignaling.storyboard */; };
 		AC98920C275E3D48007973F7 /* CallParticipantsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891F1275E3D48007973F7 /* CallParticipantsModel.swift */; };
 		AC98920D275E3D48007973F7 /* CallParticipantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891F2275E3D48007973F7 /* CallParticipantsViewModel.swift */; };
 		AC98920E275E3D48007973F7 /* CallParticipantsContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9891F3275E3D48007973F7 /* CallParticipantsContentList.swift */; };
@@ -196,13 +206,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		050E520F27EF275C009F52D3 /* CallControlsContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsContent.swift; sourceTree = "<group>"; };
 		0505C4E22869A19F0034A9F0 /* LogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewModel.swift; sourceTree = "<group>"; };
 		0505C4E42869A1C90034A9F0 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		0505C4E62869A4220034A9F0 /* LogRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogRow.swift; sourceTree = "<group>"; };
 		0505C4EE2869AB750034A9F0 /* ChatApplicationModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChatApplicationModel.xcdatamodel; sourceTree = "<group>"; };
 		0505C4F12869AC800034A9F0 /* PSM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSM.swift; sourceTree = "<group>"; };
 		0506366D2801A8740080DF00 /* EnvironmentEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentEX.swift; sourceTree = "<group>"; };
-		050E520F27EF275C009F52D3 /* CallControlsContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsContent.swift; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
 		052C8B8827AE6C0A00C3BB2E /* CallDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDetails.swift; sourceTree = "<group>"; };
@@ -228,6 +238,7 @@
 		055B26A327D5FA250098D585 /* GIFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFView.swift; sourceTree = "<group>"; };
 		055B26A527D602CD0098D585 /* TabViewsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewsContainer.swift; sourceTree = "<group>"; };
 		055EFCED27C0BFA2006E0ABC /* AnimatingCellHeight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatingCellHeight.swift; sourceTree = "<group>"; };
+		0562B23227DE0ABD00CAE761 /* ManageKeyboardForList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageKeyboardForList.swift; sourceTree = "<group>"; };
 		05743ACE27F029590061C901 /* CallControlsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsViewModel.swift; sourceTree = "<group>"; };
 		05743AD227F02FA70061C901 /* CallState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallState.swift; sourceTree = "<group>"; };
 		05781CC8290184770064BDC3 /* NavigateToThreadModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigateToThreadModifier.swift; sourceTree = "<group>"; };
@@ -248,6 +259,12 @@
 		05DED7652904281400C8236D /* ExportMessagesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportMessagesViewModel.swift; sourceTree = "<group>"; };
 		05E2324B27C2267700FEA7A2 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		05F6C70F2808BB1800C2EEF4 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		0703C3D3AE7BBA360A74A78B /* Pods_MyWidgetExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyWidgetExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4456B7A264ACE718F903CCD4 /* Pods-ChatApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApplication.release.xcconfig"; path = "Target Support Files/Pods-ChatApplication/Pods-ChatApplication.release.xcconfig"; sourceTree = "<group>"; };
+		4F7DD945EEAC5CFDE0C688FC /* Pods_ChatApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8CA2F73799200C2D894FB00A /* Pods-MyWidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyWidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-MyWidgetExtension/Pods-MyWidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		9A615D99777E0D11597A95AC /* Pods-ChatApplication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApplication.debug.xcconfig"; path = "Target Support Files/Pods-ChatApplication/Pods-ChatApplication.debug.xcconfig"; sourceTree = "<group>"; };
+		AB5AF3771F0B0A7B17247142 /* Pods-MyWidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyWidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-MyWidgetExtension/Pods-MyWidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
 		AC00883A271D65B000376BBB /* Ringtone.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ringtone.aif; sourceTree = "<group>"; };
 		AC008F3B268C4FA500B008FF /* HomeContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContentView.swift; sourceTree = "<group>"; };
 		AC0435FA26998D0C00B1C87B /* ParticipantsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsViewModel.swift; sourceTree = "<group>"; };
@@ -316,6 +333,13 @@
 		AC924CC1274A774D00E33BD1 /* MyWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MyWidgetExtension.entitlements; sourceTree = "<group>"; };
 		AC924CC2274A77BC00E33BD1 /* ChatApplication.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChatApplication.entitlements; sourceTree = "<group>"; };
 		AC94B099274E0BC200199B35 /* PHAssetEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetEX.swift; sourceTree = "<group>"; };
+		AC9891E4275E3D48007973F7 /* WebRTCViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRTCViewController.swift; sourceTree = "<group>"; };
+		AC9891E5275E3D48007973F7 /* WebRTC.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = WebRTC.storyboard; sourceTree = "<group>"; };
+		AC9891E7275E3D48007973F7 /* WebRTCDirectSignaling.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = WebRTCDirectSignaling.storyboard; sourceTree = "<group>"; };
+		AC9891E8275E3D48007973F7 /* WebRTC copy.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "WebRTC copy.storyboard"; sourceTree = "<group>"; };
+		AC9891EA275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRTCDirectSignalingViewController.swift; sourceTree = "<group>"; };
+		AC9891EC275E3D48007973F7 /* WebRTCViewControllerLocalSignaling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRTCViewControllerLocalSignaling.swift; sourceTree = "<group>"; };
+		AC9891ED275E3D48007973F7 /* WebRTCLocalSignaling.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = WebRTCLocalSignaling.storyboard; sourceTree = "<group>"; };
 		AC9891F1275E3D48007973F7 /* CallParticipantsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallParticipantsModel.swift; sourceTree = "<group>"; };
 		AC9891F2275E3D48007973F7 /* CallParticipantsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallParticipantsViewModel.swift; sourceTree = "<group>"; };
 		AC9891F3275E3D48007973F7 /* CallParticipantsContentList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallParticipantsContentList.swift; sourceTree = "<group>"; };
@@ -337,6 +361,7 @@
 		AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactContentList.swift; sourceTree = "<group>"; };
 		ACA6DA78271ABB2200286563 /* ActivityViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewControllerWrapper.swift; sourceTree = "<group>"; };
 		ACA6DA7B271ABDC100286563 /* ProviderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
+		ACA89498272678130014DDE9 /* TestAsyncRefactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAsyncRefactor.swift; sourceTree = "<group>"; };
 		ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeExtension.swift; sourceTree = "<group>"; };
 		ACAB96D327030FBE005FB9AA /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		ACADE27C275788EB00DD40B4 /* MessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageType.swift; sourceTree = "<group>"; };
@@ -407,8 +432,6 @@
 				052C8B8F27AE6CEA00C3BB2E /* CallDetailViewModel.swift */,
 			);
 			path = Detail;
-			sourceTree = "<group>";
-		};
 		0532461128D844F900FC9C22 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
@@ -517,6 +540,8 @@
 				AC1D2CA62661FFAC00AA351A /* ChatApplication */,
 				AC924CB1274A6D7200E33BD1 /* MyWidget */,
 				AC1D2CA52661FFAC00AA351A /* Products */,
+				C0A961FA7FF2F8234A757F69 /* Pods */,
+				D7403B2DDE1AAFA662CCACED /* Frameworks */,
 				AC9891E1275E3C85007973F7 /* Recovered References */,
 			);
 			sourceTree = "<group>";
@@ -706,11 +731,42 @@
 			isa = PBXGroup;
 			children = (
 				AC98921C275E4314007973F7 /* Helper */,
+				AC9891E3275E3D48007973F7 /* WebRTCCallTest */,
+				AC9891E6275E3D48007973F7 /* WebRTCCallDirectSignalingServer */,
+				AC9891EB275E3D48007973F7 /* WebRTCCallTestLocalSignaling */,
 				AC9891EE275E3D48007973F7 /* CallControls */,
 				AC9891FB275E3D48007973F7 /* History */,
 				AC989201275E3D48007973F7 /* GroupCallSelection */,
 			);
 			path = Call;
+			sourceTree = "<group>";
+		};
+		AC9891E3275E3D48007973F7 /* WebRTCCallTest */ = {
+			isa = PBXGroup;
+			children = (
+				AC9891E4275E3D48007973F7 /* WebRTCViewController.swift */,
+				AC9891E5275E3D48007973F7 /* WebRTC.storyboard */,
+			);
+			path = WebRTCCallTest;
+			sourceTree = "<group>";
+		};
+		AC9891E6275E3D48007973F7 /* WebRTCCallDirectSignalingServer */ = {
+			isa = PBXGroup;
+			children = (
+				AC9891E7275E3D48007973F7 /* WebRTCDirectSignaling.storyboard */,
+				AC9891E8275E3D48007973F7 /* WebRTC copy.storyboard */,
+				AC9891EA275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift */,
+			);
+			path = WebRTCCallDirectSignalingServer;
+			sourceTree = "<group>";
+		};
+		AC9891EB275E3D48007973F7 /* WebRTCCallTestLocalSignaling */ = {
+			isa = PBXGroup;
+			children = (
+				AC9891EC275E3D48007973F7 /* WebRTCViewControllerLocalSignaling.swift */,
+				AC9891ED275E3D48007973F7 /* WebRTCLocalSignaling.storyboard */,
+			);
+			path = WebRTCCallTestLocalSignaling;
 			sourceTree = "<group>";
 		};
 		AC9891EE275E3D48007973F7 /* CallControls */ = {
@@ -942,10 +998,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC98920A275E3D48007973F7 /* WebRTCLocalSignaling.storyboard in Resources */,
+				AC989206275E3D48007973F7 /* WebRTC copy.storyboard in Resources */,
 				AC1D2CB42661FFAD00AA351A /* LaunchScreen.storyboard in Resources */,
 				AC00883B271D65B000376BBB /* Ringtone.aif in Resources */,
+				AC989205275E3D48007973F7 /* WebRTCDirectSignaling.storyboard in Resources */,
 				051ACDF6280848C500B77DA2 /* MockData.json in Resources */,
 				AC1D2CB12661FFAD00AA351A /* Preview Assets.xcassets in Resources */,
+				AC989204275E3D48007973F7 /* WebRTC.storyboard in Resources */,
 				AC085F3B2692EA8A001492B2 /* Config.json in Resources */,
 				AC1D2CAE2661FFAD00AA351A /* Assets.xcassets in Resources */,
 				AC2D31C426EF75BC008FF43F /* webrtc_user_b.mp4 in Resources */,
@@ -970,6 +1030,7 @@
 			files = (
 				ACFADE8027675BB6007C555F /* PrimaryButtonStyle.swift in Sources */,
 				AC90B25526FB838D00477E03 /* PageWithNavigationBarView.swift in Sources */,
+				AC0B1D672690723B00C6917A /* ResultViewController.swift in Sources */,
 				05743AD327F02FA70061C901 /* CallState.swift in Sources */,
 				AC10007326F4674500C3AD67 /* SSOTokenResponse.swift in Sources */,
 				AC989210275E3D48007973F7 /* CallManager.swift in Sources */,
@@ -981,6 +1042,7 @@
 				AC989215275E3D48007973F7 /* CallsHistoryContentList.swift in Sources */,
 				AC989217275E3D48007973F7 /* CallsHistoryModel.swift in Sources */,
 				AC98921A275E3D48007973F7 /* GroupCallSelectionContentList.swift in Sources */,
+				AC6D532626F1AF4400CBC059 /* ThreadModel.swift in Sources */,
 				05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */,
 				0505C4EF2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld in Sources */,
 				05384A8C2792FB5000D85A92 /* PrimaryCustomDialog.swift in Sources */,
@@ -995,6 +1057,7 @@
 				AC3AB626274292F3006C3F85 /* ThreadDetailView.swift in Sources */,
 				05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */,
 				AC23695627439478008195D7 /* SearchContactRow.swift in Sources */,
+				AC989209275E3D48007973F7 /* WebRTCViewControllerLocalSignaling.swift in Sources */,
 				ACC4C1932765C342008940CD /* ViewEX.swift in Sources */,
 				AC122EC2266B82A000C0630F /* ThreadContentList.swift in Sources */,
 				05781CCE2902B0040064BDC3 /* ConnectionStatusToolbar.swift in Sources */,
@@ -1012,6 +1075,7 @@
 				05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */,
 				AC122EC8266BA17C00C0630F /* PullToRefresh.swift in Sources */,
 				AC1D2CCF2662016E00AA351A /* ThreadsViewModel.swift in Sources */,
+				AC989203275E3D48007973F7 /* WebRTCViewController.swift in Sources */,
 				AC7EBFF4266CAF2500984E81 /* ContactContentList.swift in Sources */,
 				ACC306AF2701E4B90035CCB9 /* StartThreadsModel.swift in Sources */,
 				AC1D2CCB2662016E00AA351A /* Avatar.swift in Sources */,
@@ -1100,6 +1164,8 @@
 				AC924CB9274A6D7300E33BD1 /* MyWidget.intentdefinition in Sources */,
 				052C8B8E27AE6C9D00C3BB2E /* CallDetailRow.swift in Sources */,
 				ACC3C5EF26F4633900AEE578 /* HandshakeResponse.swift in Sources */,
+				AC924CA7274A3D1500E33BD1 /* LoadingViewAtCenterOfView.swift in Sources */,
+				AC989208275E3D48007973F7 /* WebRTCDirectSignalingViewController.swift in Sources */,
 				0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */,
 				05781CD62903466A0064BDC3 /* AudioRecordingViewModel.swift in Sources */,
 				AC53261C2751F227003685E3 /* CircularProgressView.swift in Sources */,
