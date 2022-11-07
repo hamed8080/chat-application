@@ -473,8 +473,13 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func appendMessage(_ message: Message) {
-        messages.append(message)
-        sort()
+        if message.conversation?.id == threadId {
+            messages.append(message)
+            thread.unreadCount = message.conversation?.unreadCount ?? 1
+            thread.lastMessageVO = message
+            thread.lastMessage = message.message
+            sort()
+        }
     }
 
     func clear() {
