@@ -36,6 +36,8 @@ class ThreadsViewModel: ObservableObject {
     private(set) var count = 15
     private(set) var offset = 0
     var searchText: String = ""
+
+    @Published
     private(set) var callsToJoin: [Call] = []
 
     @Published
@@ -109,8 +111,10 @@ class ThreadsViewModel: ObservableObject {
             appendThreads(threads: threads)
             hasNext(pagination?.hasNext ?? false)
             updateWidgetPreferenceThreads(threads)
+            getActiveCallsListToJoin(threads.compactMap{$0.id})
         }
         isLoading = false
+
     }
 
     func onCacheResponse(_ threads: [Conversation]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
@@ -269,7 +273,7 @@ class ThreadsViewModel: ObservableObject {
 
     func joinToCall(_ call: Call) {
         let callState = CallState.shared
-        Chat.sharedInstance.acceptCall(.init(callId: call.id, client: .init(mute: false, video: false)))
+        Chat.sharedInstance.acceptCall(.init(callId: call.id, client: .init(mute: true, video: false)))
         withAnimation(.spring()) {
             callState.model.setIsJoinCall(true)
             callState.model.setShowCallView(true)

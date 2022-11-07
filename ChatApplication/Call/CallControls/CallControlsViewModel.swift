@@ -16,9 +16,6 @@ class CallControlsViewModel: ObservableObject{
     var isLoading = false
     
     @Published
-    var showRecordingIndicator: Bool = false
-    
-    @Published
     var showToast = false
     
     @Published
@@ -32,7 +29,7 @@ class CallControlsViewModel: ObservableObject{
     
     @Published
     var location: CGPoint = CGPoint(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height  - 164)
-    
+
     let appState = AppState.shared
     
     let callState = CallState.shared

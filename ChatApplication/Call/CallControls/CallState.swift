@@ -20,7 +20,7 @@ struct CallStateModel {
     private (set) var timerCallString              :String?           = nil
     private (set) var recordingTimerString         :String?           = nil
     private (set) var isCallStarted                :Bool              = false
-    private (set) var usersRTC                     :[UserRCT]         = []
+    var usersRTC                     :[UserRCT]         = []
     private (set) var receiveCall                  :CreateCall?       = nil
 	private (set) var callSessionCreated           :CreateCall?       = nil
     private (set) var selectedContacts             :[Contact]         = []

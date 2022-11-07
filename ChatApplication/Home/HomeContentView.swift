@@ -44,8 +44,7 @@ struct HomeContentView: View {
                 DetailContentView()
             }
             .fullScreenCover(isPresented: $showCallView, onDismiss: nil, content: {
-                CallControlsContent(viewModel: CallControlsViewModel())
-                    .environmentObject(callState)
+                CallControlsContent()
             })
             .sheet(isPresented: $shareCallLogs, onDismiss: {
                 if let zipFile =  appState.callLogs?.first{

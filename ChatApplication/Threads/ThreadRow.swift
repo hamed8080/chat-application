@@ -55,20 +55,13 @@ struct ThreadRow: View {
                     Button {
                         viewModel.threadsViewModel?.joinToCall(call)
                     } label: {
-                        HStack{
-                            Text("Join call")
-                                .fontWeight(.medium)
-                                .foregroundColor(Color.white)
-                            Image(systemName: call.type == .videoCall ? "video.fill" : "phone.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 18, height: 18)
-                                .foregroundColor(Color.white)
-                        }
+                        Image(systemName: call.type == .videoCall ? "video.fill" : "phone.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                            .padding()
+                            .foregroundColor(Color.green)
                     }
-                    .frame(maxWidth: 100)
-                    .buttonStyle(PrimaryButtonStyle(bgColor: Color.green , minHeight:36))
-                    .offset(y:12)
                 }
                 if viewModel.thread.pin == true {
                     Image(systemName: "pin.fill")

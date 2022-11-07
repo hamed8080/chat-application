@@ -30,6 +30,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     @ObservedObject
     var callsHistoryVM = CallsHistoryViewModel()
+
+    @ObservedObject
+    var callControlsVM = CallControlsViewModel()
     
     @State var appState = AppState.shared
     @State var callState = CallState.shared
@@ -47,6 +50,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .environmentObject(contactsVM)
             .environmentObject(threadsVM)
             .environmentObject(appState)
+            .environmentObject(callControlsVM)
             .environmentObject(callState)
             .environmentObject(loginModel)
             .environmentObject(tokenManager)
