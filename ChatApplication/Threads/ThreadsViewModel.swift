@@ -50,10 +50,6 @@ class ThreadsViewModel: ObservableObject {
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)
-        NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
-            .compactMap { $0.object as? MessageEventTypes }
-            .sink(receiveValue: onMessageEvent)
-            .store(in: &cancellableSet)
         NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink(receiveValue: onThreadEvent)
@@ -70,12 +66,6 @@ class ThreadsViewModel: ObservableObject {
             }
         default:
             break
-        }
-    }
-
-    func onMessageEvent(_ event: MessageEventTypes?) {
-        if case .messageNew(let message) = event {
-            addNewMessageToThread(message)
         }
     }
 
@@ -243,15 +233,6 @@ class ThreadsViewModel: ObservableObject {
         guard let index = threads.firstIndex(of: thread) else { return }
         withAnimation {
             _ = threads.remove(at: index)
-        }
-    }
-
-    func addNewMessageToThread(_ message: Message) {
-        if let index = threads.firstIndex(where: { $0.id == message.conversation?.id }) {
-            let thread = threads[index]
-            thread.unreadCount = message.conversation?.unreadCount ?? 1
-            thread.lastMessageVO = message
-            thread.lastMessage = message.message
         }
     }
 
