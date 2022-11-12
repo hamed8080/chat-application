@@ -138,7 +138,6 @@
 		ACC3C5EF26F4633900AEE578 /* HandshakeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC3C5EE26F4633800AEE578 /* HandshakeResponse.swift */; };
 		ACC4C1932765C342008940CD /* ViewEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC4C1922765C342008940CD /* ViewEX.swift */; };
 		ACD6840C26F8BA740093002C /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6840B26F8BA740093002C /* SettingViewModel.swift */; };
-		ACD6840E26F8BAC20093002C /* SettingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6840D26F8BAC20093002C /* SettingModel.swift */; };
 		ACEAEDD5274CF87600EC8252 /* ActionSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEAEDD4274CF87600EC8252 /* ActionSheetViewModel.swift */; };
 		ACEAEDD7274CFA1100EC8252 /* AttachmentDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEAEDD6274CFA1100EC8252 /* AttachmentDialog.swift */; };
 		ACF82E0F275230C3000330DB /* UploadFileMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF82E0E275230C3000330DB /* UploadFileMessage.swift */; };
@@ -301,7 +300,6 @@
 		ACC3C5EE26F4633800AEE578 /* HandshakeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandshakeResponse.swift; sourceTree = "<group>"; };
 		ACC4C1922765C342008940CD /* ViewEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEX.swift; sourceTree = "<group>"; };
 		ACD6840B26F8BA740093002C /* SettingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
-		ACD6840D26F8BAC20093002C /* SettingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingModel.swift; sourceTree = "<group>"; };
 		ACEAEDD4274CF87600EC8252 /* ActionSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetViewModel.swift; sourceTree = "<group>"; };
 		ACEAEDD6274CFA1100EC8252 /* AttachmentDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDialog.swift; sourceTree = "<group>"; };
 		ACF82E0E275230C3000330DB /* UploadFileMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFileMessage.swift; sourceTree = "<group>"; };
@@ -617,7 +615,6 @@
 		AC7B6D76266DFACC0059782E /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				ACD6840D26F8BAC20093002C /* SettingModel.swift */,
 				ACD6840B26F8BA740093002C /* SettingViewModel.swift */,
 				AC122EC3266B83A800C0630F /* SettingsView.swift */,
 			);
@@ -877,7 +874,6 @@
 				055EFCEE27C0BFA2006E0ABC /* AnimatingCellHeight.swift in Sources */,
 				05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */,
 				AC48ED6326F7051F00AB1A5D /* AuthorizeRequest.swift in Sources */,
-				ACD6840E26F8BAC20093002C /* SettingModel.swift in Sources */,
 				AC2E4747274B58880073E8E4 /* UserDefaultsEX.swift in Sources */,
 				AC1D2CCA2662016E00AA351A /* ImageLoader.swift in Sources */,
 				AC48ED6526F7299F00AB1A5D /* VerifyRequest.swift in Sources */,

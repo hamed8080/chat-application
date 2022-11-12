@@ -127,7 +127,7 @@ class ContactsViewModel: ObservableObject {
     }
 
     func setupPreview() {
-        setContacts(contacts: MockData.generateContacts())
+        self.contacts = MockData.generateContacts()
     }
 
     func delete(indexSet: IndexSet) {
@@ -179,13 +179,9 @@ class ContactsViewModel: ObservableObject {
         }
     }
 
-    func setContacts(contacts: [Contact]?) {
-        if let contacts = contacts {
-            self.contacts = contacts
-        }
-    }
-
     func appendContacts(_ contacts: [Contact]) {
+        // Remove all contacts that were cached, to prevent duplication.
+        self.contacts.removeAll(where: { contacts.compactMap{$0.id}.contains($0.id) })
         self.contacts.append(contentsOf: contacts)
     }
 
