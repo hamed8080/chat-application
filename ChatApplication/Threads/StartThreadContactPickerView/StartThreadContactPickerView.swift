@@ -81,7 +81,7 @@ struct StartThreadContactPickerView:View {
                     startThreadModel.type = .channel
                 }
                 List {
-                    ForEach(contactsVM.model.contacts , id:\.id) { contact in
+                    ForEach(contactsVM.contacts , id:\.id) { contact in
                         
                         StartThreadContactRow(contact: contact, isInMultiSelectMode: $isInMultiSelectMode, viewModel: contactsVM)
                             .onTapGesture {
@@ -90,7 +90,7 @@ struct StartThreadContactPickerView:View {
                                 }
                             }
                             .onAppear {
-                                if contactsVM.model.contacts.last == contact{
+                                if contactsVM.contacts.last == contact{
                                     contactsVM.loadMore()
                                 }
                             }
@@ -127,7 +127,7 @@ struct StartThreadContactPickerView:View {
                         if groupTitle.isEmpty{
                             showEnterGroupNameError = true
                         }else{
-                            onCompletedConfigCreateThread(.init(selectedContacts: contactsVM.model.selectedContacts, type: startThreadModel.type , title: groupTitle))
+                            onCompletedConfigCreateThread(.init(selectedContacts: contactsVM.selectedContacts, type: startThreadModel.type , title: groupTitle))
                         }
                     }else{
                         showGroupTitleView.toggle()

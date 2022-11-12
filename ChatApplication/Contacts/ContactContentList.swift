@@ -17,35 +17,35 @@ struct ContactContentList:View {
         ZStack{
             VStack(spacing:0){
                 List{
-                    if viewModel.model.maxContactsCountInServer > 0 {
+                    if viewModel.maxContactsCountInServer > 0 {
                         HStack(spacing:4){
                             Spacer()
                             Text("Total contacts:".uppercased())
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
-                            Text(verbatim: "\(viewModel.model.maxContactsCountInServer)")
+                            Text(verbatim: "\(viewModel.maxContactsCountInServer)")
                                 .fontWeight(.bold)
                             Spacer()
                         }
                         .noSeparators()
                     }
                     
-                    if viewModel.model.showSearchedContacts{
+                    if viewModel.searchedContacts.count > 0 {
                         Text("Searched contacts")
                             .font(.subheadline)
                             .foregroundColor(.gray)
                             .noSeparators()
-                        ForEach(viewModel.model.searchedContacts, id:\.self){ contact in
+                        ForEach(viewModel.searchedContacts, id:\.self){ contact in
                             SearchContactRow(contact: contact, viewModel: viewModel)
                                 .noSeparators()
                         }
                     }
                     
-                    ForEach(viewModel.model.contacts , id:\.id) { contact in
+                    ForEach(viewModel.contacts , id:\.id) { contact in
                         ContactRow(contact: contact , isInEditMode: $viewModel.isInEditMode)
                             .noSeparators()
                             .onAppear {
-                                if viewModel.model.contacts.last == contact{
+                                if viewModel.contacts.last == contact{
                                     viewModel.loadMore()
                                 }
                             }
@@ -55,9 +55,10 @@ struct ContactContentList:View {
                     .padding(0)
                 }
                 .searchable(text: $viewModel.searchContactString, placement: .navigationBarDrawer, prompt: "Search...")
-                .animation(.easeInOut, value: viewModel.model.contacts)
+                .animation(.easeInOut, value: viewModel.contacts)
+                .animation(.easeInOut, value: viewModel.searchedContacts)
                 .listStyle(.plain)
-                NavigationLink(destination: AddOrEditContactView(), isActive: $viewModel.navigateToAddOrEditContact){
+                NavigationLink(destination: AddOrEditContactView().environmentObject(viewModel), isActive: $viewModel.navigateToAddOrEditContact){
                     EmptyView()
                 }
             }

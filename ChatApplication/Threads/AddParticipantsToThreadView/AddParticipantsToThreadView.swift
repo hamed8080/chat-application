@@ -24,7 +24,7 @@ struct AddParticipantsToThreadView:View {
                 Spacer()
                 Button {
                     withAnimation {
-                        onCompleted(contactsVM.model.selectedContacts)
+                        onCompleted(contactsVM.selectedContacts)
                     }
                 } label: {
                     Text("Add")
@@ -37,10 +37,10 @@ struct AddParticipantsToThreadView:View {
             .ignoresSafeArea()
 
             List {
-                ForEach(contactsVM.model.contacts , id:\.id) { contact in
+                ForEach(contactsVM.contacts , id:\.id) { contact in
                     StartThreadContactRow(contact: contact, isInMultiSelectMode: .constant(true), viewModel: contactsVM)
                         .onAppear {
-                            if contactsVM.model.contacts.last == contact{
+                            if contactsVM.contacts.last == contact{
                                 contactsVM.loadMore()
                             }
                         }
