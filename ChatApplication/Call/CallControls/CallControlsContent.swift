@@ -27,11 +27,7 @@ struct CallControlsContent: View {
         return Array(repeating: GridItem(.flexible(), spacing: 16), count: videoCount <= 2 ? 1 : 2)
     }
 
-    var defaultCellHieght: CGFloat {
-        let isMoreThanTwoParticipant = callState.model.usersRTC.filter { $0.isVideoTopic }.count > 2
-        let ipadHieghtForTwoParticipant = (UIScreen.main.bounds.height / 2) - 32
-        return isIpad ? isMoreThanTwoParticipant ? 350 : ipadHieghtForTwoParticipant : 150
-    }
+    var videoUsers: [UserRCT] { callState.model.usersRTC.filter { $0.isVideoTopic } }
 
     var simpleDrag: some Gesture {
         DragGesture()
@@ -65,6 +61,7 @@ struct CallControlsContent: View {
             RecieveCallActionsView()
             RecordingDotView()
         }
+        .animation(.easeInOut(duration: 0.5), value: callState.model.usersRTC.count)
         .background(Color(named: "background").ignoresSafeArea())
         .onAppear {
             self.statusBarStyle.currentStyle = .lightContent
@@ -97,20 +94,20 @@ struct CallControlsContent: View {
 
     @ViewBuilder
     var listLargeIpadParticipants: some View {
-        let videoUsers = callState.model.usersRTC.filter { $0.isVideoTopic }
-        let videoUsersBinding = Binding(get: { videoUsers }, set: { _ in })
         if videoUsers.count <= 2 {
             HStack(spacing: 16) {
-                ForEach(videoUsers.indices, id: \.self) { index in
-                    UserRTCView(userRTC: videoUsersBinding[index])
+                ForEach(videoUsers) { videoUser in
+                    UserRTCView(userRTC: videoUser)
+                        .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
                 }
             }
             .padding([.leading, .trailing], 12)
         } else {
             ScrollView {
                 LazyVGrid(columns: gridColumns, spacing: 16) {
-                    ForEach(videoUsers.indices, id: \.self) { index in
-                        UserRTCView(userRTC: videoUsersBinding[index])
+                    ForEach(videoUsers) { videoUser in
+                        UserRTCView(userRTC: videoUser)
+                            .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
                     }
                 }
                 .padding([.leading, .trailing], 12)
@@ -120,20 +117,19 @@ struct CallControlsContent: View {
 
     @ViewBuilder
     var listSmallCallParticipants: some View {
-        let videoUsers = callState.model.usersRTC.filter { $0.isVideoTopic }
-        let videoUsersBinding = Binding(get: { videoUsers }, set: { _ in })
         ScrollView(.horizontal) {
-            LazyHGrid(rows: [GridItem(.flexible(), spacing: 0)], spacing: 16) {
-                ForEach(videoUsers.indices, id: \.self) { index in
-                    UserRTCView(userRTC: videoUsersBinding[index])
-                        .padding()
+            LazyHGrid(rows: [GridItem(.flexible(), spacing: 0)], spacing: 0) {
+                ForEach(videoUsers) { videoUser in
+                    UserRTCView(userRTC: videoUser)
+                        .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
                         .onTapGesture {
-                            viewModel.activeLargeCall = videoUsers[index]
+                            viewModel.activeLargeCall = videoUser
                         }
                 }
+                .padding([.all], isIpad ? 8 : 6)
             }
         }
-        .frame(height: defaultCellHieght + 25) // +25 for when a user start talking showing frame
+        .frame(height: callState.defaultCellHieght + 25) // +25 for when a user start talking showing frame
     }
 }
 
@@ -269,7 +265,7 @@ struct MoreControlsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             HStack {
-                CallControlItem(iconSfSymbolName: "record.circle", subtitle: "Record", color: .red) {
+                CallControlItem(iconSfSymbolName: "record.circle", subtitle: "Record", color: .red, vertical: true) {
                     if callState.model.isRecording {
                         viewModel.stopRecording()
                     } else {
@@ -290,13 +286,17 @@ struct MoreControlsView: View {
                 }
             }
 
-            CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray) {
+            CallControlItem(iconSfSymbolName: "person.fill.badge.plus", subtitle: "prticipants", color: .gray, vertical: true) {
                 withAnimation {
                     viewModel.showDetailPanel.toggle()
                     viewModel.showCallParticipants.toggle()
                 }
             }
             .layoutPriority(2)
+
+            CallControlItem(iconSfSymbolName: "questionmark.app.fill", subtitle: "Update Participants Status", color: .blue, vertical: true) {
+                callState.callInquiry()
+            }
 
             Spacer()
         }
@@ -319,6 +319,12 @@ struct CallStartedActionsView: View {
                     .foregroundColor(Color.primary)
                     .cornerRadius(5)
                     .offset(y: -36)
+            }
+
+            if viewModel.socketStatus != .CONNECTED {
+                Text(viewModel.socketStatus.stringValue.appending(" ...").uppercased())
+                    .font(.subheadline.weight(.medium))
+                    .padding(.bottom, 2)
             }
 
             HStack {
@@ -363,6 +369,7 @@ struct CallStartedActionsView: View {
                 }
             }
         }
+        .animation(.easeInOut, value: viewModel.socketStatus)
         .padding(isIpad ? [.all] : [.trailing, .leading], isIpad ? 48 : 16)
         .background(controlBackground)
         .cornerRadius(isIpad ? 16 : 0)
@@ -384,6 +391,7 @@ struct CallControlItem: View {
     var iconSfSymbolName: String
     var subtitle: String
     var color: Color? = nil
+    var vertical: Bool = false
     var action: (()->Void)?
 
     @State var isActive = false
@@ -393,43 +401,49 @@ struct CallControlItem: View {
             isActive.toggle()
             action?()
         }, label: {
-            VStack(spacing: 12) {
-                Circle()
-                    .fill(color ?? .blue)
-                    .overlay(
-                        Image(systemName: iconSfSymbolName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(.white)
-                            .padding(2)
-                    )
-                    .frame(width: 52, height: 52)
-                Text(subtitle)
-                    .fontWeight(.bold)
-                    .font(.system(size: 10))
-                    .fixedSize()
+
+            if vertical {
+                HStack {
+                    content
+                }
+            }
+            else {
+                VStack {
+                    content
+                }
             }
         })
         .buttonStyle(DeepButtonStyle(backgroundColor: Color.clear, shadow: 12))
     }
+
+    @ViewBuilder
+    var content: some View {
+        Circle()
+            .fill(color ?? .blue)
+            .overlay(
+                Image(systemName: iconSfSymbolName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(.white)
+                    .padding(2)
+            )
+            .frame(width: 52, height: 52)
+        Text(subtitle)
+            .fontWeight(.bold)
+            .font(.system(size: 10))
+            .fixedSize()
+    }
 }
 
 struct UserRTCView: View {
-    @Binding
-    var userRTC: UserRCT
+    let userRTC: UserRCT
 
     @EnvironmentObject
     var callState: CallState
 
     var audioUser: UserRCT? {
         callState.model.usersRTC.first(where: { $0.rawTopicName == userRTC.rawTopicName && $0.isAudioTopic })
-    }
-
-    var defaultCellHieght: CGFloat {
-        let isMoreThanTwoParticipant = callState.model.usersRTC.filter { $0.isVideoTopic }.count > 2
-        let ipadHieghtForTwoParticipant = (UIScreen.main.bounds.height / 2) - 32
-        return isIpad ? isMoreThanTwoParticipant ? 350 : ipadHieghtForTwoParticipant : 150
     }
 
     var body: some View {
@@ -482,7 +496,7 @@ struct UserRTCView: View {
                 }
                 .padding()
             }
-            .frame(height: defaultCellHieght)
+            .frame(height: callState.defaultCellHieght)
             .background(Color(named: "call_item_background").opacity(0.7))
             .border(Color(named: "border_speaking"), width: userRTC.isSpeaking ? 3 : 0)
             .cornerRadius(8)
@@ -495,7 +509,9 @@ struct UserRTCView: View {
 struct CallControlsView_Previews: PreviewProvider {
 
     static let viewModel = CallControlsViewModel()
-    static let callState = CallState.shared
+
+    @ObservedObject
+    static var callState = CallState.shared
 
     static var previews: some View {
 
@@ -520,7 +536,7 @@ struct CallControlsView_Previews: PreviewProvider {
     }
 
     static func callAllNeededMethodsForPreview() {
-        fakeParticipant(count: 1).forEach { callParticipant in
+        fakeParticipant(count: 5).forEach { callParticipant in
             callState.addCallParicipant(callParticipant)
         }
         let participant = MockData.participant
@@ -533,7 +549,6 @@ struct CallControlsView_Previews: PreviewProvider {
         callState.model.setIsRecording(isRecording: true)
         callState.model.setStartRecordingDate()
         callState.startRecordingTimer()
-        viewModel.setupPreview()
     }
 
     static func fakeParticipant(count: Int)->[CallParticipant] {

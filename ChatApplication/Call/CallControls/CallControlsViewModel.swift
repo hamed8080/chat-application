@@ -31,6 +31,9 @@ class CallControlsViewModel: ObservableObject{
     var location: CGPoint = CGPoint(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height  - 164)
 
     let appState = AppState.shared
+
+    @Published
+    var socketStatus: ConnectionStatus = .Connecting
     
     let callState = CallState.shared
     
@@ -41,8 +44,9 @@ class CallControlsViewModel: ObservableObject{
     
     
     init() {
-        connectionStatusCancelable = appState.$connectionStatus.sink { status in
-            if status == .CONNECTED{
+        connectionStatusCancelable = appState.$connectionStatus.sink { [weak self] status in
+            if let self = self {
+                self.socketStatus = status
             }
         }
         startCallCancelable = NotificationCenter.default.publisher(for: CALL_EVENT_NAME)
@@ -89,9 +93,9 @@ class CallControlsViewModel: ObservableObject{
     private func satrtCallWithThreadId(_ thread:Conversation){
         let callType:CallType = callState.model.isVideoCall ? .videoCall : .voiceCall
         let client = SendClient(mute: true, video: callType == .videoCall)
-        if let type = thread.type, type == .normal , let threadId = thread.id{
+        if let threadId = thread.id, thread.group == false {
             Chat.sharedInstance.requestCall(.init(client:client,threadId: threadId, type: callType),initCreateCall(createCall:uniqueId:error:))
-        }else if let threadId = thread.id{
+        } else if let threadId = thread.id {
             Chat.sharedInstance.requestGroupCall(.init(client:client,threadId: threadId, type: callType),initCreateCall(createCall:uniqueId:error:))
         }
     }
@@ -149,9 +153,6 @@ class CallControlsViewModel: ObservableObject{
     
     func toggleSpeaker(){
         callState.toggleSpeaker()
-    }
-    
-    func setupPreview(){
     }
     
     func switchCamera(){
