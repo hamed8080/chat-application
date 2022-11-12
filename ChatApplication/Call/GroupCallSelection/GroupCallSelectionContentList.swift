@@ -38,12 +38,12 @@ struct GroupCallSelectionContentList: View {
                             callState.model.setGroupName(name: newValue)
                         }
                         
-                        ForEach(contactViewModel.model.contacts , id:\.id) { contact in
+                        ForEach(contactViewModel.contacts , id:\.id) { contact in
                             
                             ContactRow(contact: contact , isInEditMode: $isInEditMode)
                                 .noSeparators()
                                 .onAppear {
-                                    if contactViewModel.model.contacts.last == contact{
+                                    if contactViewModel.contacts.last == contact{
                                         viewModel.loadMore()
                                     }
                                 }
@@ -105,7 +105,7 @@ struct GroupCallSelectionContentList: View {
         }
         callState.model.setIsVideoCallRequest(isVideoCall)
         callState.model.setIsP2PCalling(false)
-        callState.model.setSelectedContacts(contactViewModel.model.selectedContacts)
+        callState.model.setSelectedContacts(contactViewModel.selectedContacts)
         callState.model.setShowCallView(true)
     }
 }

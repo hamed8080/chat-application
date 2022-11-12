@@ -14,6 +14,9 @@ struct AddOrEditContactView: View {
     @State var firstName    :String = ""
     @State var lastName     :String = ""
     @Environment(\.presentationMode) var presentationMode
+
+    @EnvironmentObject
+    var contactsVM: ContactsViewModel
     
     @State var title    :String  = "Contacts"
     
@@ -35,6 +38,9 @@ struct AddOrEditContactView: View {
                         .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
                         .init(email:nil,firstName:firstName,lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
                     Chat.sharedInstance.addContact(req) { contacts, uniqueId, error in
+                        if let contacts = contacts {
+                            contactsVM.insertContactsAtTop(contacts)
+                        }
                         self.presentationMode.wrappedValue.dismiss()
                     }
                 }, label: {

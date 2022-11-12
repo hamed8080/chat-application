@@ -123,7 +123,6 @@
 		AC7EBFF4266CAF2500984E81 /* ContactContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */; };
 		AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6E266CAD63009E4722 /* ContactRow.swift */; };
 		AC7EBFF6266CAF2E00984E81 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6D266CAD63009E4722 /* ContactsViewModel.swift */; };
-		AC7EBFF7266CAF3100984E81 /* ContactsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6C266CAD63009E4722 /* ContactsModel.swift */; };
 		AC826E3626F47A1F00551578 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC826E3526F47A1F00551578 /* LoginModel.swift */; };
 		AC90B25526FB838D00477E03 /* PageWithNavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90B25426FB838D00477E03 /* PageWithNavigationBarView.swift */; };
 		AC91591D2718390D00437517 /* FileManagerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC91591C2718390D00437517 /* FileManagerExtension.swift */; };
@@ -777,7 +776,6 @@
 		AC9DAC6B266CAD44009E4722 /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
-				AC9DAC6C266CAD63009E4722 /* ContactsModel.swift */,
 				AC9DAC6D266CAD63009E4722 /* ContactsViewModel.swift */,
 				AC9DAC6E266CAD63009E4722 /* ContactRow.swift */,
 				AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */,
@@ -1039,7 +1037,6 @@
 				055B26A427D5FA250098D585 /* GIFView.swift in Sources */,
 				AC53261A2751F1F3003685E3 /* UploadFileView.swift in Sources */,
 				ACC306B12701E6350035CCB9 /* StartThreadContactRow.swift in Sources */,
-				AC7EBFF7266CAF3100984E81 /* ContactsModel.swift in Sources */,
 				055B269C27D5F9F90098D585 /* FileView.swift in Sources */,
 				AC48ED6026F6F9E300AB1A5D /* RestClient.swift in Sources */,
 				05FE518927899554004F44B5 /* AddParticipantsToViewModel.swift in Sources */,
