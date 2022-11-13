@@ -5,26 +5,25 @@
 //  Created by hamed on 3/7/22.
 //
 
-import SwiftUI
 import FanapPodChatSDK
+import SwiftUI
 
 struct MemberView: View {
 
-    var thread:Conversation
-    
-    @StateObject
-    var viewModel:ParticipantsViewModel = ParticipantsViewModel()
-    
+    @EnvironmentObject
+    var viewModel: ParticipantsViewModel
+
     var body: some View {
-        List{
-            ForEach(viewModel.model.participants , id:\.id) { participant in
+        List {
+            ListLoadingView(isLoading: $viewModel.isLoading)
+            ForEach(viewModel.participants, id: \.id) { participant in
                 ParticipantRow(participant: participant, style: .init(avatarConfig: .init(size: 32, textSize: 16), textFont: .headline))
                     .onAppear {
-                        if viewModel.model.participants.last == participant{
+                        if viewModel.participants.last == participant {
                             viewModel.loadMore()
                         }
                     }
-                    .contextMenu{
+                    .contextMenu {
                         Button(role: .destructive) {
                             viewModel.removePartitipant(participant)
                         } label: {
@@ -32,22 +31,17 @@ struct MemberView: View {
                         }
                     }
             }
-        }.onAppear {
-            if viewModel.model.totalCount <= 0{
-                viewModel.threadId = thread.id ?? -1
-                viewModel.getParticipantsIfConnected()
-            }
         }
     }
 }
 
 struct MemberView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = ParticipantsViewModel()
-        MemberView(thread: MockData.thread, viewModel: viewModel)
+        let viewModel = ParticipantsViewModel(thread: MockData.thread)
+        MemberView()
+            .environmentObject(viewModel)
             .onAppear {
                 viewModel.setupPreview()
             }
-        
     }
 }

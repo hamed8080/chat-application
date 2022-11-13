@@ -5,69 +5,59 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
-import SwiftUI
-import FanapPodChatSDK
 import Combine
+import FanapPodChatSDK
+import SwiftUI
 
-struct ThreadContentList:View {
-
+struct ThreadContentList: View {
     @EnvironmentObject
     var viewModel: ThreadsViewModel
 
     @State
     var searchText: String = ""
-    
+
     @State
-    var folder:Tag? = nil
-    
-    var body: some View{
-        let  _ = Self._printChanges()
-        ZStack{
-            VStack(spacing:0){
-                List {
-                    if let threadsInsideFolder = folder?.tagParticipants{
-                        ForEach(threadsInsideFolder, id:\.id) { thread in
-                            if let thread = thread.conversation{
-                                NavigationLink {
-                                    ThreadView(viewModel: ThreadViewModel(thread: thread))
-                                } label: {
-                                    ThreadRow(viewModel: .init(thread: thread, threadsViewModel: viewModel))
-                                }
-                            }
-                        }
-                    }else{
-                        ForEach(viewModel.filtered, id:\.id) { thread in
-                            NavigationLink {
-                                LazyView(ThreadView(viewModel: ThreadViewModel(thread: thread)))
-                            } label: {
-                                ThreadRow(viewModel: .init(thread: thread, threadsViewModel: viewModel))
-                                    .onAppear {
-                                        if viewModel.filtered.last == thread{
-                                            viewModel.loadMore()
-                                        }
-                                    }
-                            }
+    var folder: Tag? = nil
+
+    var body: some View {
+        let _ = Self._printChanges()
+        List {
+            ListLoadingView(isLoading: $viewModel.isLoading)
+            if let threadsInsideFolder = folder?.tagParticipants {
+                ForEach(threadsInsideFolder, id: \.id) { thread in
+                    if let thread = thread.conversation {
+                        NavigationLink {
+                            ThreadView(viewModel: ThreadViewModel(thread: thread))
+                        } label: {
+                            ThreadRow(viewModel: .init(thread: thread, threadsViewModel: viewModel))
                         }
                     }
                 }
-                .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search...")
-                .onChange(of: searchText, perform: { searchText in
-                    viewModel.searchText = searchText
-                    viewModel.getThreads()
-                })
-                .animation(.easeInOut, value: viewModel.filtered)
-                .listStyle(.plain)
-            }
-            
-            VStack{
-                GeometryReader{ reader in
-                    LoadingViewAt(at: .CENTER, isLoading:viewModel.centerIsLoading, reader: reader)
-                    LoadingViewAt(at: .BOTTOM, isLoading:viewModel.isLoading, reader: reader)
+            } else {
+                ForEach(viewModel.filtered, id: \.id) { thread in
+                    NavigationLink {
+                        LazyView(ThreadView(viewModel: ThreadViewModel(thread: thread)))
+                    } label: {
+                        ThreadRow(viewModel: .init(thread: thread, threadsViewModel: viewModel))
+                            .onAppear {
+                                if viewModel.filtered.last == thread {
+                                    viewModel.loadMore()
+                                }
+                            }
+                    }
                 }
             }
         }
-        .toolbar{
-            ToolbarItem{
+        .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search...")
+        .onChange(of: searchText, perform: { searchText in
+            viewModel.searchText = searchText
+            viewModel.getThreads()
+        })
+        .animation(.easeInOut, value: viewModel.filtered)
+        .animation(.easeInOut, value: viewModel.isLoading)
+        .listStyle(.plain)
+        .toolbar {
+            ToolbarItem {
                 Button {
                     viewModel.toggleThreadContactPicker.toggle()
                 } label: {
@@ -83,7 +73,7 @@ struct ThreadContentList:View {
                 ConnectionStatusToolbar()
             }
         }
-        .navigationTitle(Text( folder?.name ?? (viewModel.archived  ? "Archive" : "Chats")))
+        .navigationTitle(Text(folder?.name ?? (viewModel.archived ? "Archive" : "Chats")))
         .sheet(isPresented: $viewModel.showAddParticipants, onDismiss: nil, content: {
             AddParticipantsToThreadView(viewModel: .init()) { contacts in
                 viewModel.addParticipantsToThread(contacts)
@@ -110,7 +100,7 @@ struct ThreadContentList_Previews: PreviewProvider {
         let appState = AppState.shared
         let vm = ThreadsViewModel()
         ThreadContentList()
-            .onAppear(){
+            .onAppear {
                 vm.setupPreview()
             }
             .environmentObject(vm)
