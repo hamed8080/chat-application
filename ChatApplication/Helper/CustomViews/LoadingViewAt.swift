@@ -40,3 +40,20 @@ struct LoadingViewAt: View {
         }
     }
 }
+
+struct ListLoadingView: View {
+    @Binding
+    var isLoading: Bool
+
+    var body: some View {
+        if isLoading {
+            HStack {
+                Spacer()
+                LoadingView(isAnimating: true, width: 3)
+                    .frame(width: 24, height: 24)
+                    .noSeparators()
+                Spacer()
+            }
+        }
+    }
+}

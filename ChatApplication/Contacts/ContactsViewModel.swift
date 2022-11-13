@@ -88,6 +88,7 @@ class ContactsViewModel: ObservableObject {
             setSearchedContacts([])
             return
         }
+        isLoading = true
         Chat.sharedInstance.searchContacts(.init(query: searchContactString)) { contacts, _, _, _ in
             if let contacts = contacts {
                 self.setSearchedContacts(contacts)
@@ -106,7 +107,6 @@ class ContactsViewModel: ObservableObject {
 
     func loadMore() {
         if !canLoadNextPage { return }
-        isLoading = true
         preparePaginiation()
         getContacts()
     }
@@ -208,6 +208,7 @@ class ContactsViewModel: ObservableObject {
     }
 
     func setSearchedContacts(_ contacts: [Contact]) {
+        isLoading = false
         searchedContacts = contacts
     }
 }
