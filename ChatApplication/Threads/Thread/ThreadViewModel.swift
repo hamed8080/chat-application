@@ -21,7 +21,6 @@ protocol ThreadViewModelProtocol {
     var canLoadNexPage: Bool { get }
     var threadsViewModel: ThreadsViewModel? { get set }
     var showManageFolder: Bool { get set }
-    var showAddPaticipantToThread: Bool { get set }
     var isTyping: Bool { get set }
     var canAddParticipant: Bool { get }
     var hasNext: Bool { get set }
@@ -91,12 +90,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
 
     var showManageFolder: Bool = false
 
-    var showAddPaticipantToThread: Bool = false
-
-    var canAddParticipant: Bool {
-        let type = thread.type
-        return type == .channelGroup || type == .publicGroup
-    }
+    var canAddParticipant: Bool {  thread.group ?? false && thread.admin ?? false == true }
 
     var signalMessageText: String?
     var replyMessage: Message?

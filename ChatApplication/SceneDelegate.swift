@@ -5,25 +5,24 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import UIKit
-import SwiftUI
 import FanapPodChatSDK
+import SwiftUI
+import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
     var window: UIWindow?
 
     @ObservedObject
-    var loginModel     = LoginViewModel()
+    var loginModel = LoginViewModel()
 
     @ObservedObject
-    var contactsVM     = ContactsViewModel()
+    var contactsVM = ContactsViewModel()
 
     @ObservedObject
-    var threadsVM      = ThreadsViewModel()
+    var threadsVM = ThreadsViewModel()
 
     @ObservedObject
-    var settingsVM     = SettingViewModel()
+    var settingsVM = SettingViewModel()
 
     @ObservedObject
     var tokenManager = TokenManager.shared
@@ -33,7 +32,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     @ObservedObject
     var callControlsVM = CallControlsViewModel()
-    
+
     @State var appState = AppState.shared
     @State var callState = CallState.shared
 
@@ -64,7 +63,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = CustomUIHostinViewController(rootView: contentView) //CustomUIHosting Needed for change status bar color per page
+            window.rootViewController = CustomUIHostinViewController(rootView: contentView) // CustomUIHosting Needed for change status bar color per page
             self.window = window
             window.makeKeyAndVisible()
         }
@@ -76,12 +75,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
            let threadId = Int(threadIdString),
            let thread = CMConversation.crud.find(keyWithFromat: "id == %i", value: threadId)?.getCodable()
         {
-                AppState.shared.selectedThread = thread
+            AppState.shared.selectedThread = thread
         }
     }
-    
-    @objc func addLog(notification: NSNotification){
-        if let log = notification.object as? LogResult{
+
+    @objc func addLog(notification: NSNotification) {
+        if let log = notification.object as? LogResult {
             LogViewModel.addToLog(logResult: log)
         }
     }
@@ -114,7 +113,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
-
-
 }
-

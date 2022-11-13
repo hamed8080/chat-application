@@ -5,37 +5,30 @@
 //  Created by Hamed Hosseini on 9/17/21.
 //
 
-import Foundation
-import UIKit
-import FanapPodChatSDK
 import Combine
+import FanapPodChatSDK
+import SwiftUI
 
 class SettingViewModel: ObservableObject {
-    
-    @Published
-    var model = SettingModel()
-    
-    @Published
-    var secondToExpire:Double = 0
-    
-    init() {
 
-    }
-    
-    func startTokenTimer(){
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
-            if let createDate = TokenManager.shared.getCreateTokenDate() , let ssoTokenExipreTime = TokenManager.shared.getSSOTokenFromUserDefaults()?.expiresIn{
-                let expireIn = createDate.advanced(by:  Double(ssoTokenExipreTime)).timeIntervalSince1970 - Date().timeIntervalSince1970
-                self?.secondToExpire = Double(expireIn)
-            }
+    @Published
+    var currentUser: User? = Chat.sharedInstance.userInfo
+
+    private(set) var cancellableSet: Set<AnyCancellable> = []
+    private(set) var firstSuccessResponse = false
+
+    init() {
+        AppState.shared.$connectionStatus
+            .sink(receiveValue: onConnectionStatusChanged)
+            .store(in: &cancellableSet)
+        if let cachedUser = AppState.shared.user {
+            currentUser = cachedUser
         }
     }
-    
-    func switchUser(isNext: Bool){
-        if isNext {
-            
-        }else{
-            
+
+    func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
+        if firstSuccessResponse == false, status == .CONNECTED {
+            firstSuccessResponse = true
         }
     }
 }

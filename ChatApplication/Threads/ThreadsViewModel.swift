@@ -170,6 +170,7 @@ class ThreadsViewModel: ObservableObject {
 
         Chat.sharedInstance.addParticipants(participants) { thread, _, _ in
             if let thread = thread {
+                // To navigate to the thread immediately after adding participants
                 AppState.shared.selectedThread = thread
             }
             self.centerIsLoading = false

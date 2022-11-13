@@ -150,7 +150,7 @@ struct ThreadRow: View {
 
             if viewModel.canAddParticipant {
                 Button {
-                    viewModel.showAddPaticipantToThread.toggle()
+                    viewModel.threadsViewModel?.showAddParticipants(viewModel.thread)
                 } label: {
                     Label("Invite", systemImage: "person.crop.circle.badge.plus")
                 }

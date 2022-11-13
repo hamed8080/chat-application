@@ -25,7 +25,9 @@ class MessageViewModel: ObservableObject, MessageViewModelProtocol {
     @Published
     var message: Message
 
-    var isMe: Bool { message.ownerId ?? 0 == (AppState.shared.user?.id ?? Chat.sharedInstance.userInfo?.id ?? 0) }
+    var currentUser: User? { Chat.sharedInstance.userInfo ?? AppState.shared.user }
+
+    var isMe: Bool { message.ownerId ?? 0 == currentUser?.id ?? 0 }
 
     var type: MessageType? { message.messageType ?? .unknown }
 
