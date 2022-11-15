@@ -105,7 +105,7 @@ struct ThreadRow: View {
             }
 
             Button {
-                viewModel.showManageFolder.toggle()
+                viewModel.threadsViewModel?.showAddThreadToTag(viewModel.thread)
             } label: {
                 Label("Add To Folder", systemImage: "folder.badge.plus")
             }

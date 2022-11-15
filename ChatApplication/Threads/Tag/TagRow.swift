@@ -24,7 +24,7 @@ struct TagRow: View {
 			HStack{
 				VStack(alignment: .leading, spacing:8){
                     HStack{
-                        Image(systemName: viewModel.model.selectedTag?.id == tag.id ? "checkmark.circle" : "circle")
+                        Image(systemName: viewModel.selectedTag?.id == tag.id ? "checkmark.circle" : "circle")
                             .font(.title)
                             .frame(width: 22, height: 22, alignment: .center)
                             .foregroundColor(Color.blue)

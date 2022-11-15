@@ -49,9 +49,9 @@ class ContactsViewModel: ObservableObject {
     private var canLoadNextPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .CONNECTED }
 
     init() {
-        AppState.shared.$connectionStatus.sink { status in
-            if self.firstSuccessResponse == false, status == .CONNECTED {
-                self.getContacts()
+        AppState.shared.$connectionStatus.sink { [weak self] status in
+            if self?.firstSuccessResponse == false, status == .CONNECTED {
+                self?.getContacts()
             }
         }
         .store(in: &canceableSet)
@@ -89,9 +89,9 @@ class ContactsViewModel: ObservableObject {
             return
         }
         isLoading = true
-        Chat.sharedInstance.searchContacts(.init(query: searchContactString)) { contacts, _, _, _ in
+        Chat.sharedInstance.searchContacts(.init(query: searchContactString)) { [weak self] contacts, _, _, _ in
             if let contacts = contacts {
-                self.setSearchedContacts(contacts)
+                self?.setSearchedContacts(contacts)
             }
         }
     }
@@ -140,9 +140,9 @@ class ContactsViewModel: ObservableObject {
 
     func delete(_ contact: Contact) {
         if let contactId = contact.id {
-            Chat.sharedInstance.removeContact(.init(contactId: contactId)) { _, _, error in
+            Chat.sharedInstance.removeContact(.init(contactId: contactId)) { [weak self] _, _, error in
                 if error != nil {
-                    self.appendContacts([contact])
+                    self?.appendContacts([contact])
                 }
             }
         }

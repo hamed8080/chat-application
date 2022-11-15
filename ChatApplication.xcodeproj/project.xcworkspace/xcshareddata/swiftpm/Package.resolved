@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "fanappodasyncsdk",
-      "kind" : "remoteSourceControl",
-      "location" : "https://pubgi.fanapsoft.ir/chat/ios/fanappodasyncsdk.git",
-      "state" : {
-        "revision" : "0077598de04da9fb89e982cb5ae2d0d082402dde",
-        "version" : "1.1.0"
-      }
-    },
-    {
       "identity" : "sentry-cocoa",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",

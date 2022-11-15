@@ -52,17 +52,17 @@ class MessageViewModel: ObservableObject, MessageViewModelProtocol {
     }
 
     func pin() {
-        Chat.sharedInstance.pinMessage(.init(messageId: messageId)) { messageId, _, error in
+        Chat.sharedInstance.pinMessage(.init(messageId: messageId)) {[weak self] messageId, _, error in
             if error == nil, messageId != nil {
-                self.message.pinned = true
+                self?.message.pinned = true
             }
         }
     }
 
     func unpin() {
-        Chat.sharedInstance.unpinMessage(.init(messageId: messageId)) { messageId, _, error in
+        Chat.sharedInstance.unpinMessage(.init(messageId: messageId)) { [weak self] messageId, _, error in
             if error == nil, messageId != nil {
-                self.message.pinned = false
+                self?.message.pinned = false
             }
         }
     }
@@ -171,14 +171,24 @@ struct TextMessageType: View {
 
     var message: Message { viewModel.message }
 
+    var isSameUser: Bool {
+        if let previousMessage = threadViewModel.messages.first(where: {$0.id == message.previousId}) {
+           return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
+        }
+        return false
+    }
+
     var proxy: GeometryProxy
 
     var body: some View {
-        HStack {
+        HStack(spacing: 8) {
             if viewModel.isMe {
                 Spacer()
             }
             let calculatedSize = message.calculatedMaxAndMinWidth(proxy: proxy)
+            if !viewModel.isMe {
+                SameUserAvatar
+            }
             VStack {
                 if let forwardInfo = message.forwardInfo {
                     ForwardMessageRow(forwardInfo: forwardInfo)
@@ -268,9 +278,30 @@ struct TextMessageType: View {
                 }
             }
 
+            if viewModel.isMe {
+                SameUserAvatar
+            }
+
             if !viewModel.isMe {
                 Spacer()
             }
+        }
+    }
+
+    @ViewBuilder
+    var SameUserAvatar: some View {
+        if !isSameUser, let participant = message.participant {
+            let token = EnvironmentValues().isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
+            Avatar(
+                url: participant.image,
+                userName: participant.username?.uppercased(),
+                style: .init(size: 36, textSize: 12),
+                token: token
+            )
+        } else {
+            Image(systemName: "")
+                .frame(width: 36, height: 36)
+                .hidden()
         }
     }
 }
@@ -391,6 +422,12 @@ struct MessageRow_Previews: PreviewProvider {
                 MessageRow(viewModel: .init(message: MockData.message), threadViewModel: threadVM, isInEditMode: .constant(true), isMeForPreView: false, proxy: proxy)
                 MessageRow(viewModel: .init(message: MockData.message), threadViewModel: threadVM, isInEditMode: .constant(true), isMeForPreView: true, proxy: proxy)
                 MessageRow(viewModel: .init(message: MockData.uploadMessage), threadViewModel: threadVM, isInEditMode: .constant(true), proxy: proxy)
+
+                ForEach(MockData.generateMessages(count: 5), id: \.self) { message in
+                    TextMessageType(proxy: proxy)
+                        .environmentObject(threadVM)
+                        .environmentObject(MessageViewModel(message: message))
+                }
             }
             .listStyle(.plain)
         }

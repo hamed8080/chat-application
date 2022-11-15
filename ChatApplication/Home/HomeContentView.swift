@@ -111,9 +111,9 @@ struct TagContentList: View {
     var threadsVM: ThreadsViewModel
 
     var body: some View {
-        ForEach(threadsVM.tagViewModel.model.tags, id:\.id){ tag in
+        ForEach(threadsVM.tagViewModel.tags, id:\.id){ tag in
             NavigationLink {
-                ThreadContentList(folder:tag)
+                ThreadContentList(folder: tag)
             } label: {
                 Label {
                     Text(tag.name)
