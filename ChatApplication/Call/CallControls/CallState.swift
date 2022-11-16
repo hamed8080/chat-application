@@ -327,7 +327,7 @@ class CallState: ObservableObject, WebRTCClientDelegate {
 
     func fetchCallParticipants(_ startCall: StartCall) {
         guard let callId = startCall.callId else { return }
-        Chat.sharedInstance.activeCallParticipants(.init(callId: callId)) { callParticipants, _, _ in
+        Chat.sharedInstance.activeCallParticipants(.init(subjectId: callId)) { callParticipants, _, _ in
 
             // update only call participants who not current user
             if let callParticipants = callParticipants?.filter({ $0.userId != startCall.clientDTO.userId }) {
@@ -339,7 +339,7 @@ class CallState: ObservableObject, WebRTCClientDelegate {
 
     func callInquiry() {
         guard let callId = model.startCall?.callId else { return }
-        Chat.sharedInstance.callInquery(.init(callId: callId)) { [weak self] callParticipants, _, _ in
+        Chat.sharedInstance.callInquery(.init(subjectId: callId)) { [weak self] callParticipants, _, _ in
             if let self = self, let callParticipants = callParticipants?.filter({ $0.userId != self.model.startCall?.clientDTO.userId }) {
                 // update only call participants who not current user
                 self.model.updateCallParticipants(callParticipants)
@@ -441,10 +441,10 @@ class CallState: ObservableObject, WebRTCClientDelegate {
         let isVideoOnOldState = model.usersRTC.first(where: { $0.direction == .send && $0.isVideoTopic })?.isVideoOn ?? false
         let isVideoOnNewState = !isVideoOnOldState
         if isVideoOnOldState {
-            Chat.sharedInstance.turnOffVideoCall(.init(callId: callId)) { _, _, _ in
+            Chat.sharedInstance.turnOffVideoCall(.init(subjectId: callId)) { _, _, _ in
             }
         } else {
-            Chat.sharedInstance.turnOnVideoCall(.init(callId: callId)) { _, _, _ in
+            Chat.sharedInstance.turnOnVideoCall(.init(subjectId: callId)) { _, _, _ in
             }
         }
 

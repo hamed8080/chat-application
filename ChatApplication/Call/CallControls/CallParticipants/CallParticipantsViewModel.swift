@@ -32,7 +32,7 @@ class CallParticipantsViewModel:ObservableObject{
     
     func getActiveParticipants() {
         isLoading = true
-        Chat.sharedInstance.activeCallParticipants(.init(callId: callId)) { callParticipants, uniqueId, error in
+        Chat.sharedInstance.activeCallParticipants(.init(subjectId: callId)) { callParticipants, uniqueId, error in
             self.isLoading = false
             if let callParticipants = callParticipants{
                 self.model.setCallParticipants(callParticipants: callParticipants)

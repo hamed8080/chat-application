@@ -114,7 +114,7 @@ class CallControlsViewModel: ObservableObject{
 		}else {
 			// TODO: realease microphone and camera at the moument and dont need to wait and get response from server
 			if let callId = callId{
-				Chat.sharedInstance.endCall(.init(callId: callId)) { callId, uniqueId, error in
+				Chat.sharedInstance.endCall(.init(subjectId: callId)) { callId, uniqueId, error in
 					
 				}
 			}
@@ -161,7 +161,7 @@ class CallControlsViewModel: ObservableObject{
     
     func startRecording(){
         guard let callId = callId else{return}
-        Chat.sharedInstance.startRecording(.init(callId: callId)) { [weak self] participant, uniqueId, error in
+        Chat.sharedInstance.startRecording(.init(subjectId: callId)) { [weak self] participant, uniqueId, error in
             if let _ = participant, let self = self{
                 self.callState.model.setIsRecording(isRecording: true)
                 self.callState.model.setStartRecordingDate()
@@ -172,7 +172,7 @@ class CallControlsViewModel: ObservableObject{
     
     func stopRecording(){
         guard let callId = callId else{return}
-        Chat.sharedInstance.stopRecording(.init(callId: callId)) { [weak self] participant, uniqueId, error in
+        Chat.sharedInstance.stopRecording(.init(subjectId: callId)) { [weak self] participant, uniqueId, error in
             if let _ = participant, let self = self{
                 self.callState.model.setIsRecording(isRecording: false)
                 self.callState.model.setStopRecordingDate()
