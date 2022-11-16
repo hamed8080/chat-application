@@ -42,6 +42,9 @@ class ThreadsViewModel: ObservableObject {
 
     @Published
     private var threads: [Conversation] = []
+
+    var threadsRowVM: [ThreadViewModel] = []
+
     private(set) var hasNext: Bool = true
     let archived: Bool
 
@@ -83,9 +86,9 @@ class ThreadsViewModel: ObservableObject {
 
     var filtered: [Conversation] {
         if searchText.isEmpty {
-            return threads
+            return threads.filter{ $0.isArchive == archived }
         } else {
-            return threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false }
+            return threads.filter{ $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == archived }
         }
     }
 
@@ -131,7 +134,7 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func setupPreview() {
-        setupPreview()
+        appendThreads(threads: MockData.generateThreads(count: 10))
     }
 
     func createThread(_ model: StartThreadResultModel) {
@@ -139,11 +142,11 @@ class ThreadsViewModel: ObservableObject {
         let invitees = model.selectedContacts?.map { contact in
             Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
         }
-        Chat.sharedInstance.createThread(.init(invitees: invitees, title: model.title, type: model.type)) { thread, _, _ in
+        Chat.sharedInstance.createThread(.init(invitees: invitees, title: model.title, type: model.type)) { [weak self] thread, _, _ in
             if let thread = thread {
                 AppState.shared.selectedThread = thread
             }
-            self.centerIsLoading = false
+            self?.centerIsLoading = false
         }
     }
 
@@ -164,16 +167,15 @@ class ThreadsViewModel: ObservableObject {
             return
         }
 
-        let participants = contacts.compactMap { contact in
-            AddParticipantRequest(userName: contact.linkedUser?.username ?? "", threadId: threadId)
-        }
+        let contactIds = contacts.compactMap{ $0.id }
+        let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)
 
-        Chat.sharedInstance.addParticipants(participants) { thread, _, _ in
+        Chat.sharedInstance.addParticipant(req) { [weak self] thread, _, _ in
             if let thread = thread {
                 // To navigate to the thread immediately after adding participants
                 AppState.shared.selectedThread = thread
             }
-            self.centerIsLoading = false
+            self?.centerIsLoading = false
         }
     }
 
@@ -185,8 +187,8 @@ class ThreadsViewModel: ObservableObject {
     func threadAddedToTag(_ tag: Tag) {
         if let selectedThraed = selectedThraed {
             isLoading = true
-            tagViewModel.addThreadToTag(tag: tag, thread: selectedThraed) { _, _ in
-                self.isLoading = false
+            tagViewModel.addThreadToTag(tag: tag, thread: selectedThraed) { [weak self] _, _ in
+                self?.isLoading = false
             }
         }
     }
@@ -202,6 +204,13 @@ class ThreadsViewModel: ObservableObject {
     func appendThreads(threads: [Conversation]) {
         // remove older data to prevent duplicate on view
         self.threads.removeAll(where: { cashedThread in threads.contains(where: { cashedThread.id == $0.id }) })
+        threads.forEach { thread in
+            if let oldThreadVM = threadsRowVM.first(where: { $0.threadId == thread.id }) {
+                oldThreadVM.thread = thread
+            } else {
+                threadsRowVM.append(ThreadViewModel(thread: thread, threadsViewModel: self))
+            }
+        }
         self.threads.append(contentsOf: threads)
         sort()
     }

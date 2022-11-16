@@ -30,7 +30,7 @@ struct AddThreadToTagsView:View {
             PageWithNavigationBarView(title:$title, subtitle:$appState.connectionStatusString,trailingItems: getTrailingItems(), leadingItems: getLeadingItems()){
                 VStack(alignment:.leading,spacing: 0){
                     List {
-                        ForEach(viewModel.model.tags , id:\.id) { tag in
+                        ForEach(viewModel.tags , id:\.id) { tag in
                             TagRow(tag: tag, viewModel: viewModel)
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true, content: {
                                     Button(role:.destructive) {
@@ -68,7 +68,7 @@ struct AddThreadToTagsView:View {
     func getTrailingItems()->[NavBarItem]{
         return [NavBarButton(title: "Add", isBold: true) {
             withAnimation {
-                if let tag = viewModel.model.selectedTag{
+                if let tag = viewModel.selectedTag {
                     onCompleted(tag)
                 }
             }

@@ -26,7 +26,6 @@
 		0532461628D8455B00FC9C22 /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0532461528D8455B00FC9C22 /* FanapPodChatSDK */; };
 		0532461828D8457800FC9C22 /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0532461728D8457800FC9C22 /* FanapPodChatSDK */; };
 		05384A7F2792995F00D85A92 /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A7D2792993500D85A92 /* TagsViewModel.swift */; };
-		05384A802792996200D85A92 /* TagsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A7E2792993900D85A92 /* TagsModel.swift */; };
 		05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */; };
 		05384A842792A10100D85A92 /* TagRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A832792A10100D85A92 /* TagRow.swift */; };
 		05384A862792CE5E00D85A92 /* CustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A852792CE5E00D85A92 /* CustomDialog.swift */; };
@@ -199,6 +198,7 @@
 		0505C4F12869AC800034A9F0 /* PSM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSM.swift; sourceTree = "<group>"; };
 		0506366D2801A8740080DF00 /* EnvironmentEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentEX.swift; sourceTree = "<group>"; };
 		050E520F27EF275C009F52D3 /* CallControlsContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsContent.swift; sourceTree = "<group>"; };
+		051C8EF9292235300078AD7E /* FanapPodAsyncSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FanapPodAsyncSDK; path = ../FanapPodAsyncSDK; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
 		052C8B8827AE6C0A00C3BB2E /* CallDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallDetails.swift; sourceTree = "<group>"; };
@@ -209,7 +209,6 @@
 		052D5737279539840075BF8F /* TagParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagParticipantRow.swift; sourceTree = "<group>"; };
 		0532461328D8453100FC9C22 /* FanapPodChatSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FanapPodChatSDK; path = ../FanapPodChatSDK; sourceTree = "<group>"; };
 		05384A7D2792993500D85A92 /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
-		05384A7E2792993900D85A92 /* TagsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsModel.swift; sourceTree = "<group>"; };
 		05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddThreadToTagsView.swift; sourceTree = "<group>"; };
 		05384A832792A10100D85A92 /* TagRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRow.swift; sourceTree = "<group>"; };
 		05384A852792CE5E00D85A92 /* CustomDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialog.swift; sourceTree = "<group>"; };
@@ -407,6 +406,7 @@
 			isa = PBXGroup;
 			children = (
 				0532461328D8453100FC9C22 /* FanapPodChatSDK */,
+				051C8EF9292235300078AD7E /* FanapPodAsyncSDK */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -415,7 +415,6 @@
 			isa = PBXGroup;
 			children = (
 				05384A7D2792993500D85A92 /* TagsViewModel.swift */,
-				05384A7E2792993900D85A92 /* TagsModel.swift */,
 				05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */,
 				052D57352795323C0075BF8F /* ManageTagView.swift */,
 				052D5737279539840075BF8F /* TagParticipantRow.swift */,
@@ -976,7 +975,6 @@
 				05384A8C2792FB5000D85A92 /* PrimaryCustomDialog.swift in Sources */,
 				0505C4E32869A19F0034A9F0 /* LogViewModel.swift in Sources */,
 				AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */,
-				05384A802792996200D85A92 /* TagsModel.swift in Sources */,
 				05E2324C27C2267700FEA7A2 /* ImagePicker.swift in Sources */,
 				ACFADE8227675C29007C555F /* PrimaryTextField.swift in Sources */,
 				052C8B8C27AE6C8500C3BB2E /* CallDetailModel.swift in Sources */,

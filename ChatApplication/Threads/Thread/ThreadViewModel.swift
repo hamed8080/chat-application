@@ -12,15 +12,13 @@ import Photos
 import SwiftUI
 
 protocol ThreadViewModelProtocol {
-
     var thread: Conversation { get set }
     var messages: [Message] { get set }
-    var editMessage: Message? {get set}
+    var editMessage: Message? { get set }
     var threadId: Int { get }
     var readOnly: Bool { get }
     var canLoadNexPage: Bool { get }
     var threadsViewModel: ThreadsViewModel? { get set }
-    var showManageFolder: Bool { get set }
     var isTyping: Bool { get set }
     var canAddParticipant: Bool { get }
     var hasNext: Bool { get set }
@@ -46,6 +44,7 @@ protocol ThreadViewModelProtocol {
     func archive()
     func unarchive()
     func onArchiveChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
+    func onLastMessageChanged(_ thread: Conversation)
 }
 
 class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
@@ -76,9 +75,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
 
     private var typingTimerStarted = false
 
-    lazy var audioRecoderVM: AudioRecordingViewModel = {
-        return AudioRecordingViewModel(threadViewModel: self)
-    }()
+    lazy var audioRecoderVM: AudioRecordingViewModel = .init(threadViewModel: self)
 
     var hasNext = true
 
@@ -86,21 +83,19 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
 
     var threadId: Int { thread.id ?? 0 }
 
-    var threadsViewModel: ThreadsViewModel?
+    weak var threadsViewModel: ThreadsViewModel?
 
-    var showManageFolder: Bool = false
-
-    var canAddParticipant: Bool {  thread.group ?? false && thread.admin ?? false == true }
+    var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
 
     var signalMessageText: String?
-    var replyMessage: Message?
-    var forwardMessage: Message?
+    weak var replyMessage: Message?
+    weak var forwardMessage: Message?
     var isInEditMode: Bool = false
     var selectedMessages: [Message] = []
 
     @Published
     var editMessage: Message?
-    
+
     @Published
     var exportMessagesVM: ExportMessagesViewModelProtocol
 
@@ -113,19 +108,40 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
         self.threadsViewModel = threadsViewModel
         NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
             .compactMap { $0.object as? SystemEventTypes }
-            .sink { systemMessageEvent in
-                self.startTypingTimer(systemMessageEvent)
+            .sink { [weak self] systemMessageEvent in
+                self?.startTypingTimer(systemMessageEvent)
             }
+            .store(in: &cancellableSet)
+
+        NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink(receiveValue: onThreadEvent)
             .store(in: &cancellableSet)
 
         NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
             .compactMap { $0.object as? MessageEventTypes }
-            .sink { event in
+            .sink { [weak self] event in
                 if case .messageNew(let message) = event {
-                    self.appendMessage(message)
+                    self?.appendMessage(message)
                 }
             }
             .store(in: &cancellableSet)
+    }
+
+    func onThreadEvent(_ event: ThreadEventTypes?) {
+        switch event {
+        case .lastMessageDeleted(let thread), .lastMessageEdited(let thread):
+            onLastMessageChanged(thread)
+        default:
+            break
+        }
+    }
+
+    func onLastMessageChanged(_ thread: Conversation) {
+        if thread.id == threadId {
+            self.thread.lastMessage = thread.lastMessage
+            self.thread.lastMessageVO = thread.lastMessageVO
+        }
     }
 
     func loadMoreMessage() {
@@ -154,9 +170,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
 
     func deleteMessages(_ messages: [Message]) {
         let messagedIds = messages.compactMap { $0.id }
-        Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true)) { message, _, _ in
-            self.messages.removeAll(where: { $0.id == message?.id })
-        }
+        Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
     }
 
     func clearCacheFile(message: Message) {
@@ -198,9 +212,9 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
                                      messageType: .text,
                                      messageId: messageId,
                                      textMessage: textMessage)
-        Chat.sharedInstance.editMessage(req) { editedMessage, _, _ in
+        Chat.sharedInstance.editMessage(req) { [weak self] editedMessage, _, _ in
             if let editedMessage = editedMessage {
-                self.setEditMessage(editedMessage)
+                self?.setEditMessage(editedMessage)
             }
         }
     }
@@ -348,24 +362,24 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     func searchInsideThread(offset: Int = 0) {
         guard seachableText.count >= 2 else { return }
         let req = GetHistoryRequest(threadId: threadId, count: 50, offset: offset, query: "\(seachableText)")
-        Chat.sharedInstance.getHistory(req) { messages, _, _, _ in
+        Chat.sharedInstance.getHistory(req) { [weak self] messages, _, _, _ in
             if let messages = messages {
-                self.searchedMessages.append(contentsOf: messages)
+                self?.searchedMessages.append(contentsOf: messages)
             }
         }
     }
 
     func delete() {
-        Chat.sharedInstance.deleteThread(.init(threadId: threadId)) { threadId, _, error in
-            if threadId != nil, error == nil {
+        Chat.sharedInstance.deleteThread(.init(threadId: threadId)) { [weak self] threadId, _, error in
+            if let self = self, threadId != nil, error == nil {
                 self.threadsViewModel?.removeThread(self.thread)
             }
         }
     }
 
     func leave() {
-        Chat.sharedInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { user, _, error in
-            if user != nil, error == nil {
+        Chat.sharedInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { [weak self] user, _, error in
+            if let self = self, user != nil, error == nil {
                 self.threadsViewModel?.removeThread(self.thread)
             }
         }
@@ -395,8 +409,11 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func clearHistory() {
-        Chat.sharedInstance.clearHistory(.init(threadId: threadId)) { _, _, _ in }
-        objectWillChange.send()
+        Chat.sharedInstance.clearHistory(.init(threadId: threadId)) { [weak self] threadId, _, _ in
+            if let _ = threadId {
+                self?.clear()
+            }
+        }
     }
 
     func toggleMute() {
@@ -423,7 +440,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func spamPV() {
-        Chat.sharedInstance.spamPvThread(SpamThreadRequest(threadId: threadId)) { _, _, _ in }
+        Chat.sharedInstance.spamPvThread(.init(threadId: threadId)) { _, _, _ in }
     }
 
     private var lastIsTypingTime = Date()
@@ -432,8 +449,8 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
         if case .systemMessage(let message, _, let id) = event, message.smt == .isTyping, isTyping == false, thread.id == id {
             lastIsTypingTime = Date()
             isTyping = true
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                if self.lastIsTypingTime.advanced(by: 1) < Date() {
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+                if let self = self, self.lastIsTypingTime.advanced(by: 1) < Date() {
                     timer.invalidate()
                     self.isTyping = false
                 }
@@ -449,6 +466,10 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
         }
         self.messages.insert(contentsOf: filterNewMessagesToAppend(serverMessages: messages), at: 0)
         sort()
+    }
+
+    func onDeleteMessage(_ message: Message?, _ uniqueId: String?, _ error: ChatError?) {
+        messages.removeAll(where: { $0.id == message?.id })
     }
 
     func setHasNext(_ hasNext: Bool) {

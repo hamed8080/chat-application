@@ -51,16 +51,16 @@ struct ContactContentList: View {
             }
             .onDelete(perform: viewModel.delete)
             .padding(0)
-
             ListLoadingView(isLoading: $viewModel.isLoading)
-
+        }
+        .background(
             NavigationLink(destination: AddOrEditContactView().environmentObject(viewModel), isActive: $viewModel.navigateToAddOrEditContact) {
                 EmptyView()
             }
-            .frame(width: 0, height: 0)
-            .hidden()
-            .noSeparators()
-        }
+                .frame(width: 0, height: 0)
+                .hidden()
+                .noSeparators()
+        )
         .searchable(text: $viewModel.searchContactString, placement: .navigationBarDrawer, prompt: "Search...")
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)

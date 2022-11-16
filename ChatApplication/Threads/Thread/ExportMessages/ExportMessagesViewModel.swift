@@ -31,8 +31,8 @@ class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol
     }
 
     func exportChats(startDate: Date, endDate: Date) {
-        Chat.sharedInstance.exportChat(.init(threadId: threadId, fromTime: UInt(startDate.millisecondsSince1970), toTime: UInt(endDate.millisecondsSince1970))) { fileUrl, _, _ in
-            self.filePath = fileUrl
+        Chat.sharedInstance.exportChat(.init(threadId: threadId, fromTime: UInt(startDate.millisecondsSince1970), toTime: UInt(endDate.millisecondsSince1970))) { [weak self] fileUrl, _, _ in
+            self?.filePath = fileUrl
         }
     }
 

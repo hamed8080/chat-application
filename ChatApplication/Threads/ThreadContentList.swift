@@ -19,28 +19,32 @@ struct ThreadContentList: View {
     @State
     var folder: Tag? = nil
 
+    @State
+    var archived: Bool = false
+
     var body: some View {
         let _ = Self._printChanges()
         List {
             ListLoadingView(isLoading: $viewModel.isLoading)
-            if let threadsInsideFolder = folder?.tagParticipants {
-                ForEach(threadsInsideFolder, id: \.id) { thread in
-                    if let thread = thread.conversation {
+            if let folder = folder {
+                ForEach(folder.tagParticipants ?? [], id: \.id) { tagParticipant in
+                    if let thread = tagParticipant.conversation, let threadVm = viewModel.threadsRowVM.first{$0.threadId == thread.id} ?? ThreadViewModel(thread: thread){
                         NavigationLink {
-                            ThreadView(viewModel: ThreadViewModel(thread: thread))
+                            ThreadView(viewModel: threadVm)
                         } label: {
-                            ThreadRow(viewModel: .init(thread: thread, threadsViewModel: viewModel))
+                            ThreadRow(viewModel: threadVm)
                         }
                     }
                 }
             } else {
                 ForEach(viewModel.filtered, id: \.id) { thread in
+                    let threadVM = viewModel.threadsRowVM.first{$0.threadId == thread.id}!
                     NavigationLink {
-                        LazyView(ThreadView(viewModel: ThreadViewModel(thread: thread)))
+                        ThreadView(viewModel: threadVM)
                     } label: {
-                        ThreadRow(viewModel: .init(thread: thread, threadsViewModel: viewModel))
+                        ThreadRow(viewModel: threadVM)
                             .onAppear {
-                                if viewModel.filtered.last == thread {
+                                if self.viewModel.filtered.last == thread {
                                     viewModel.loadMore()
                                 }
                             }
@@ -73,7 +77,7 @@ struct ThreadContentList: View {
                 ConnectionStatusToolbar()
             }
         }
-        .navigationTitle(Text(folder?.name ?? (viewModel.archived ? "Archive" : "Chats")))
+        .navigationTitle(Text(folder?.name ?? (archived ? "Archive" : "Chats")))
         .sheet(isPresented: $viewModel.showAddParticipants, onDismiss: nil, content: {
             AddParticipantsToThreadView(viewModel: .init()) { contacts in
                 viewModel.addParticipantsToThread(contacts)

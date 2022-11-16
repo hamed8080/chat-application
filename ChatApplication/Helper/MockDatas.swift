@@ -121,6 +121,7 @@ final class MockData{
                 message.ownerId      = lastIndex
                 message.id           = lastIndex
                 message.uniqueId     = UUID().string
+                message.participant  = participant
                 lastIndex            += 1
                 messages.append(message)
             }

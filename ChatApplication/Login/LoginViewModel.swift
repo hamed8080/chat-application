@@ -16,7 +16,7 @@ class LoginViewModel: ObservableObject {
     @Published
     var isLoading = false
     
-    var tokenManager = TokenManager.shared
+    weak var tokenManager: TokenManager? = TokenManager.shared
     let handshakeClient = RestClient<HandshakeResponse>()
     let authorizationClient = RestClient<AuthorizeResponse>()
     let ssoClient = RestClient<SSOTokenResponse>()
@@ -33,10 +33,10 @@ class LoginViewModel: ObservableObject {
             .setMethod(.post)
             .enablePrint(enable: true)
             .setParamsAsQueryString(req)
-            .setOnError { _, error in
+            .setOnError { [weak self] _, error in
                 print("error on login:\(error.debugDescription)")
-                self.isLoading = false
-                self.model.setState(.FAILED)
+                self?.isLoading = false
+                self?.model.setState(.FAILED)
             }
             .request { [weak self] response in
                 self?.isLoading = false
@@ -55,10 +55,10 @@ class LoginViewModel: ObservableObject {
             .enablePrint(enable: true)
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
-            .setOnError { _, error in
+            .setOnError { [weak self] _, error in
                 print("error on requestOTP:\(error.debugDescription)")
-                self.isLoading = false
-                self.model.setState(.FAILED)
+                self?.isLoading = false
+                self?.model.setState(.FAILED)
             }
             .request { [weak self] response in
                 self?.isLoading = false
@@ -81,10 +81,10 @@ class LoginViewModel: ObservableObject {
             .enablePrint(enable: true)
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
-            .setOnError { _, error in
+            .setOnError { [weak self] _, error in
                 print("error on verifyCode:\(error.debugDescription)")
-                self.isLoading = false
-                self.model.setState(.VERIFICATION_CODE_INCORRECT)
+                self?.isLoading = false
+                self?.model.setState(.VERIFICATION_CODE_INCORRECT)
             }
             .request { [weak self] response in
                 self?.isLoading = false
@@ -93,7 +93,7 @@ class LoginViewModel: ObservableObject {
                 if let ssoToken = response.result {
                     self.model.setState(.SUCCESS_LOGGED_IN)
                     Chat.sharedInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: true)
-                    self.tokenManager.saveSSOToken(ssoToken: ssoToken)
+                    self.tokenManager?.saveSSOToken(ssoToken: ssoToken)
                 }
             }
     }
@@ -112,7 +112,7 @@ class TokenManager: ObservableObject {
         _ = getSSOTokenFromUserDefaults() // need first time app luanch to set hasToken
     }
     
-    private var timer: Timer?
+    private weak var timer: Timer?
     private static let SSO_TOKEN_KEY = "SSO_TOKEN"
     private static let SSO_TOKEN_CREATE_DATE = "SSO_TOKEN_CREATE_DATE"
     

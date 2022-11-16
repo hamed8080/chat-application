@@ -31,9 +31,9 @@ class LogViewModel:ObservableObject{
         load()
         NotificationCenter.default.publisher(for: Notification.Name.init(LogViewModel.NotificationKey))
             .compactMap{$0.object as? Log}
-            .sink { log in
+            .sink { [weak self] log in
                 withAnimation {
-                    self.logs.insert(log, at: 0)
+                    self?.logs.insert(log, at: 0)
                 }
             }
             .store(in: &cancellableSet)
