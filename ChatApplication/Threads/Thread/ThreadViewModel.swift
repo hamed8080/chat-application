@@ -370,7 +370,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func delete() {
-        Chat.sharedInstance.deleteThread(.init(threadId: threadId)) { [weak self] threadId, _, error in
+        Chat.sharedInstance.deleteThread(.init(subjectId: threadId)) { [weak self] threadId, _, error in
             if let self = self, threadId != nil, error == nil {
                 self.threadsViewModel?.removeThread(self.thread)
             }
@@ -394,11 +394,11 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func pin() {
-        Chat.sharedInstance.pinThread(.init(threadId: threadId), completion: onPinChanged)
+        Chat.sharedInstance.pinThread(.init(subjectId: threadId), completion: onPinChanged)
     }
 
     func unpin() {
-        Chat.sharedInstance.unpinThread(.init(threadId: threadId), completion: onPinChanged)
+        Chat.sharedInstance.unpinThread(.init(subjectId: threadId), completion: onPinChanged)
     }
 
     func onPinChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
@@ -409,7 +409,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func clearHistory() {
-        Chat.sharedInstance.clearHistory(.init(threadId: threadId)) { [weak self] threadId, _, _ in
+        Chat.sharedInstance.clearHistory(.init(subjectId: threadId)) { [weak self] threadId, _, _ in
             if let _ = threadId {
                 self?.clear()
             }
@@ -425,11 +425,11 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func mute() {
-        Chat.sharedInstance.muteThread(.init(threadId: threadId), completion: onMuteChanged)
+        Chat.sharedInstance.muteThread(.init(subjectId: threadId), completion: onMuteChanged)
     }
 
     func unmute() {
-        Chat.sharedInstance.unmuteThread(.init(threadId: threadId), completion: onMuteChanged)
+        Chat.sharedInstance.unmuteThread(.init(subjectId: threadId), completion: onMuteChanged)
     }
 
     func onMuteChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
@@ -440,7 +440,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func spamPV() {
-        Chat.sharedInstance.spamPvThread(.init(threadId: threadId)) { _, _, _ in }
+        Chat.sharedInstance.spamPvThread(.init(subjectId: threadId)) { _, _, _ in }
     }
 
     private var lastIsTypingTime = Date()
@@ -537,11 +537,11 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func archive() {
-        Chat.sharedInstance.archiveThread(.init(threadId: threadId), onArchiveChanged)
+        Chat.sharedInstance.archiveThread(.init(subjectId: threadId), onArchiveChanged)
     }
 
     func unarchive() {
-        Chat.sharedInstance.unarchiveThread(.init(threadId: threadId), onArchiveChanged)
+        Chat.sharedInstance.unarchiveThread(.init(subjectId: threadId), onArchiveChanged)
     }
 
     func onArchiveChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
