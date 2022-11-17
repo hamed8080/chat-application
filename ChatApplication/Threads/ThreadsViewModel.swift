@@ -38,8 +38,6 @@ class ThreadsViewModel: ObservableObject {
     var searchText: String = ""
 
     @Published
-    private var threads: [Conversation] = []
-
     var threadsRowVM: [ThreadViewModel] = []
 
     private(set) var hasNext: Bool = true
@@ -62,8 +60,8 @@ class ThreadsViewModel: ObservableObject {
         case .threadNew(let newThreads):
             appendThreads(threads: [newThreads])
         case .threadDeleted(threadId: let threadId, participant: _):
-            if let thread = threads.first(where: { $0.id == threadId }) {
-                removeThread(thread)
+            if let thread = threadsRowVM.first(where: { $0.thread.id == threadId }) {
+                removeThreadVM(thread)
             }
         default:
             break
@@ -82,11 +80,11 @@ class ThreadsViewModel: ObservableObject {
         Chat.sharedInstance.getThreads(.init(count: count, offset: offset, archived: archived), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
-    var filtered: [Conversation] {
+    var filtered: [ThreadViewModel] {
         if searchText.isEmpty {
-            return threads.filter{ $0.isArchive == archived }
+            return threadsRowVM.filter{ $0.thread.isArchive == archived }
         } else {
-            return threads.filter{ $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == archived }
+            return threadsRowVM.filter{ $0.thread.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.thread.isArchive == archived }
         }
     }
 
@@ -198,47 +196,44 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func appendThreads(threads: [Conversation]) {
-        // remove older data to prevent duplicate on view
-        self.threads.removeAll(where: { cashedThread in threads.contains(where: { cashedThread.id == $0.id }) })
         threads.forEach { thread in
             if let oldThreadVM = threadsRowVM.first(where: { $0.threadId == thread.id }) {
-                oldThreadVM.thread = thread
+                oldThreadVM.updateThread(thread)
             } else {
                 threadsRowVM.append(ThreadViewModel(thread: thread, threadsViewModel: self))
             }
         }
-        self.threads.append(contentsOf: threads)
         sort()
     }
 
     func sort() {
-        threads.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
-        threads.sort(by: { $0.pin == true && $1.pin == false })
+        threadsRowVM.sort(by: { $0.thread.time ?? 0 > $1.thread.time ?? 0 })
+        threadsRowVM.sort(by: { $0.thread.pin == true && $1.thread.pin == false })
     }
 
     func clear() {
         offset = 0
-        threads = []
+        threadsRowVM = []
     }
 
     func pinThread(_ thread: Conversation) {
-        threads.first(where: { $0.id == thread.id })?.pin = true
+        threadsRowVM.first(where: { $0.thread.id == thread.id })?.thread.pin = true
     }
 
     func unpinThread(_ thread: Conversation) {
-        threads.first(where: { $0.id == thread.id })?.pin = false
+        threadsRowVM.first(where: { $0.thread.id == thread.id })?.thread.pin = false
     }
 
     func muteUnMuteThread(_ threadId: Int?, isMute: Bool) {
-        if let threadId = threadId, let index = threads.firstIndex(where: { $0.id == threadId }) {
-            threads[index].mute = isMute
+        if let threadId = threadId, let index = threadsRowVM.firstIndex(where: { $0.threadId == threadId }) {
+            threadsRowVM[index].thread.mute = isMute
         }
     }
 
-    func removeThread(_ thread: Conversation) {
-        guard let index = threads.firstIndex(of: thread) else { return }
+    func removeThreadVM(_ threadVM: ThreadViewModel) {
+        guard let index = threadsRowVM.firstIndex(where: {$0.threadId == threadVM.threadId}) else { return }
         withAnimation {
-            _ = threads.remove(at: index)
+            _ = threadsRowVM.remove(at: index)
         }
     }
 }

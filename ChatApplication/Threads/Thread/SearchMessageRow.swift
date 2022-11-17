@@ -5,32 +5,30 @@
 //  Created by hamed on 6/21/22.
 //
 
-import SwiftUI
 import FanapPodChatSDK
+import SwiftUI
 
 struct SearchMessageRow: View {
-    
-    let message:Message
-    
+    let message: Message
+
     var body: some View {
-        VStack(alignment: .trailing, spacing: 16){
-            
+        VStack(alignment: .trailing, spacing: 16) {
             Text(((message.message?.isEmpty ?? true) == true ? message.metaData?.name : message.message) ?? "")
                 .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
                 .padding(.top, 8)
-                .padding([.leading, .trailing , .top])
+                .padding([.leading, .trailing, .top])
                 .font(Font(UIFont.systemFont(ofSize: 18)))
                 .fixedSize(horizontal: false, vertical: true)
-            
+
             if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000) {
-                HStack{
-                    if message.message?.isEnglishString == true{
+                HStack {
+                    if message.message?.isEnglishString == true {
                         Spacer()
                     }
                     Text("\(date.getTime())")
                         .foregroundColor(Color(named: "dark_green").opacity(0.8))
                         .font(.subheadline)
-                    if message.message?.isEnglishString == false{
+                    if message.message?.isEnglishString == false {
                         Spacer()
                     }
                 }

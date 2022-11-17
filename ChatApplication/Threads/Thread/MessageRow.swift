@@ -246,6 +246,7 @@ struct TextMessageType: View {
                 } label: {
                     Label("Edit", systemImage: "pencil.circle")
                 }
+                .disabled(viewModel.message.editable == false)
 
                 if viewModel.message.isFileType == true {
                     Button {
@@ -276,6 +277,7 @@ struct TextMessageType: View {
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
+                .disabled(viewModel.message.deletable == false)
             }
 
             if viewModel.isMe {
@@ -299,7 +301,7 @@ struct TextMessageType: View {
                 token: token
             )
         } else {
-            Image(systemName: "")
+            Rectangle()
                 .frame(width: 36, height: 36)
                 .hidden()
         }
@@ -394,19 +396,26 @@ struct MessageFooterView: View {
                     .foregroundColor(Color(named: "dark_green").opacity(0.8))
             }
             Spacer()
-            HStack {
-                if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000) {
-                    Text("\(date.getTime())")
-                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                        .font(.subheadline)
-                }
+            VStack(alignment: .trailing, spacing: 0) {
+                HStack {
+                    if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000) {
+                        Text("\(date.getTime())")
+                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                            .font(.subheadline)
+                    }
 
-                if viewModel.isMe {
-                    Image(uiImage: UIImage(named: message.seen == true ? "double_checkmark" : "single_chekmark")!)
-                        .resizable()
-                        .frame(width: 14, height: 14)
+                    if viewModel.isMe {
+                        Image(uiImage: UIImage(named: message.seen == true ? "double_checkmark" : "single_chekmark")!)
+                            .resizable()
+                            .frame(width: 14, height: 14)
+                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                            .font(.subheadline)
+                    }
+                }
+                if viewModel.message.edited == true {
+                    Text("Edited")
                         .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                        .font(.subheadline)
+                        .font(.caption2)
                 }
             }
         }
