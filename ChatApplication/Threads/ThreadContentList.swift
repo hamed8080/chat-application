@@ -37,14 +37,13 @@ struct ThreadContentList: View {
                     }
                 }
             } else {
-                ForEach(viewModel.filtered, id: \.id) { thread in
-                    let threadVM = viewModel.threadsRowVM.first{$0.threadId == thread.id}!
+                ForEach(viewModel.filtered, id: \.self) { threadVM in
                     NavigationLink {
                         ThreadView(viewModel: threadVM)
                     } label: {
                         ThreadRow(viewModel: threadVM)
                             .onAppear {
-                                if self.viewModel.filtered.last == thread {
+                                if self.viewModel.filtered.last == threadVM {
                                     viewModel.loadMore()
                                 }
                             }

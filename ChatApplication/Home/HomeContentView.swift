@@ -5,17 +5,16 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import SwiftUI
 import FanapPodChatSDK
+import SwiftUI
 
 struct HomeContentView: View {
-
     @EnvironmentObject
     var tokenManager: TokenManager
-    
+
     @EnvironmentObject
     var callState:CallState
-    
+
     @Environment(\.localStatusBarStyle)
     var statusBarStyle
 
@@ -32,11 +31,10 @@ struct HomeContentView: View {
     var shareCallLogs = false
 
     var body: some View {
-        if tokenManager.isLoggedIn == false{
+        if tokenManager.isLoggedIn == false {
             LoginView()
-        }else{
-            NavigationView{
-
+        } else {
+            NavigationView {
                 SideBar()
 
                 SecondSideBar()
@@ -67,18 +65,16 @@ struct HomeContentView: View {
                     showCallView = callState.model.showCallView
                 }
             })
-            .onAppear{
+            .onAppear {
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }
         }
     }
 }
 
-struct SideBar:View {
-    
-    var body: some View{
-        
-        List{
+struct SideBar: View {
+    var body: some View {
+        List {
             NavigationLink {
                 ContactContentList()
             } label: {
@@ -133,7 +129,7 @@ struct SideBar:View {
             }
 
             TagContentList()
-            
+
             NavigationLink {
                 SettingsView()
             } label: {
@@ -144,7 +140,6 @@ struct SideBar:View {
                         .resizable()
                         .scaledToFit()
                         .foregroundColor(Color.blue)
-
                 }
             }
         }
@@ -155,12 +150,11 @@ struct SideBar:View {
 /// Separate this view to prevent redraw view in the sidebar and consequently redraw the whole applicaiton
 /// view multiple times and reinit the view models multiple times.
 struct TagContentList: View {
-
     @EnvironmentObject
     var threadsVM: ThreadsViewModel
 
     var body: some View {
-        ForEach(threadsVM.tagViewModel.tags, id:\.id){ tag in
+        ForEach(threadsVM.tagViewModel.tags, id: \.id) { tag in
             NavigationLink {
                 ThreadContentList(folder: tag)
             } label: {
@@ -177,27 +171,25 @@ struct TagContentList: View {
     }
 }
 
-///this view only render once when view created to show list of threads after that all views are created by SideBar from list
-struct SecondSideBar:View{
-
-    var body: some View{
+/// This view only render once when view created to show list of threads after that all views are created by SideBar from list
+struct SecondSideBar: View {
+    var body: some View {
         ThreadContentList()
     }
 }
 
-struct DetailContentView:View{
-    
+struct DetailContentView: View {
     @EnvironmentObject
-    var threadsVM:ThreadsViewModel
-    
-    var body: some View{
-        VStack(spacing:48){
+    var threadsVM: ThreadsViewModel
+
+    var body: some View {
+        VStack(spacing: 48) {
             Image(systemName: "doc.text.magnifyingglass")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 148, height: 148)
                 .opacity(0.2)
-            VStack(spacing:16){
+            VStack(spacing: 16) {
                 Text("Nothing has been selected. You can start a conversation right now!")
                     .font(.body.bold())
                     .foregroundColor(Color.primary.opacity(0.8))
@@ -208,10 +200,9 @@ struct DetailContentView:View{
                 }
                 .font(.body.bold())
             }
-            
         }
-        .padding([.leading,.trailing], 48)
-        .padding([.bottom,.top], 96)
+        .padding([.leading, .trailing], 48)
+        .padding([.bottom, .top], 96)
         .background(Color.gray.opacity(0.1))
         .cornerRadius(12)
     }
@@ -224,10 +215,9 @@ struct HomeView_Previews: PreviewProvider {
         HomeContentView()
             .environmentObject(appState)
             .environmentObject(callState)
-            .onAppear(){
+            .onAppear {
                 AppState.shared.connectionStatus = .CONNECTED
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
             }
-        
     }
 }

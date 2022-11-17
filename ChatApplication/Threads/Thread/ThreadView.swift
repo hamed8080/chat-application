@@ -85,16 +85,7 @@ struct ThreadView: View {
                 }
             }
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    trailingToolbar
-                }
-
-                ToolbarItem(placement: .principal) {
-                    centerToolbarTitle
-                }
-            }
-            .customDialog(isShowing: $showDeleteSelectedMessages, content: {
+            .customDialog(isShowing: $showDeleteSelectedMessages) {
                 PrimaryCustomDialog(title: "Delete selected messages",
                                     message: "Are you sure you want to delete all selected messages?",
                                     systemImageName: "trash.fill",
@@ -102,7 +93,7 @@ struct ThreadView: View {
                     viewModel.deleteMessages(viewModel.selectedMessages)
                 }
                 .padding()
-            })
+            }
             AttachmentDialog(showAttachmentDialog: $showAttachmentDialog, viewModel: ActionSheetViewModel(threadViewModel: viewModel))
 
             if showDatePicker {
@@ -112,8 +103,16 @@ struct ThreadView: View {
                 }
             }
         }
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                trailingToolbar
+            }
+
+            ToolbarItem(placement: .principal) {
+                centerToolbarTitle
+            }
+        }
         .onChange(of: viewModel.seachableText, perform: { _ in
-            viewModel.searchedMessages.removeAll()
             viewModel.searchInsideThread()
         })
         .searchable(text: $viewModel.seachableText, placement: .toolbar, prompt: "Search inside this chat") {
@@ -358,6 +357,7 @@ struct SendContainer: View {
                 }.padding(8)
                 Divider()
             }
+            .animation(.easeInOut, value: viewModel.selectedMessages.count)
         } else {
             VStack {
                 if let replyMessage = viewModel.replyMessage {

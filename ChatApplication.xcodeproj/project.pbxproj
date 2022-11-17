@@ -54,6 +54,7 @@
 		057977B92805552E00FE5EA4 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057977B62805548000FE5EA4 /* UIColor.swift */; };
 		05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586497F282D40A200218ED0 /* LoadingViewAt.swift */; };
 		05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05962116280BF85B0036B3AA /* DateSelectionView.swift */; };
+		059914B029262FF60070BD89 /* Conversation+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059914AF29262FF60070BD89 /* Conversation+.swift */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
 		05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */; };
@@ -234,6 +235,7 @@
 		057977B62805548000FE5EA4 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		0586497F282D40A200218ED0 /* LoadingViewAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAt.swift; sourceTree = "<group>"; };
 		05962116280BF85B0036B3AA /* DateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSelectionView.swift; sourceTree = "<group>"; };
+		059914AF29262FF60070BD89 /* Conversation+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+.swift"; sourceTree = "<group>"; };
 		05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifire.swift; sourceTree = "<group>"; };
 		05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
 		05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryToggleStyle.swift; sourceTree = "<group>"; };
@@ -585,6 +587,7 @@
 				0506366D2801A8740080DF00 /* EnvironmentEX.swift */,
 				057977B62805548000FE5EA4 /* UIColor.swift */,
 				05F6C70F2808BB1800C2EEF4 /* Message.swift */,
+				059914AF29262FF60070BD89 /* Conversation+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1014,6 +1017,7 @@
 				05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */,
 				AC48ED6326F7051F00AB1A5D /* AuthorizeRequest.swift in Sources */,
 				AC2E4747274B58880073E8E4 /* UserDefaultsEX.swift in Sources */,
+				059914B029262FF60070BD89 /* Conversation+.swift in Sources */,
 				AC1D2CCA2662016E00AA351A /* ImageLoader.swift in Sources */,
 				AC48ED6526F7299F00AB1A5D /* VerifyRequest.swift in Sources */,
 				AC0FE1372755047A00C7A8DB /* IntEX.swift in Sources */,

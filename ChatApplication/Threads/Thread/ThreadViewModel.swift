@@ -45,9 +45,26 @@ protocol ThreadViewModelProtocol {
     func unarchive()
     func onArchiveChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
     func onLastMessageChanged(_ thread: Conversation)
+    func onEditedMessage(_ editedMessage: Message?)
+    func sendEditMessage(_ textMessage: String)
+    func sendTextMessage(_ textMessage: String)
+    func clearCacheFile(message: Message)
+    func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String)
+    func sendNormalMessage(_ textMessage: String)
+    func sendForwardMessage(_ destinationThread: Conversation)
+    func sendSeenMessageIfNeeded(_ message: Message)
+    func updateThread(_ thread: Conversation)
 }
 
-class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
+class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, Hashable {
+    static func == (lhs: ThreadViewModel, rhs: ThreadViewModel) -> Bool {
+        rhs.threadId == lhs.threadId
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(threadId)
+    }
+
     @Published
     var thread: Conversation
 
@@ -90,7 +107,11 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     var signalMessageText: String?
     weak var replyMessage: Message?
     weak var forwardMessage: Message?
+
+    @Published
     var isInEditMode: Bool = false
+
+    @Published
     var selectedMessages: [Message] = []
 
     @Published
@@ -212,9 +233,17 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
                                      messageType: .text,
                                      messageId: messageId,
                                      textMessage: textMessage)
+        self.editMessage = nil
+        isInEditMode = false
         Chat.sharedInstance.editMessage(req) { [weak self] editedMessage, _, _ in
-            if let editedMessage = editedMessage {
-                self?.setEditMessage(editedMessage)
+            self?.onEditedMessage(editedMessage)
+        }
+    }
+
+    func onEditedMessage(_ editedMessage: Message?) {
+        if let editedMessage = editedMessage, let index = messages.firstIndex(where: { $0.id == editedMessage.id }) {
+            withAnimation(.easeInOut) {
+                messages[index] = editedMessage
             }
         }
     }
@@ -335,6 +364,11 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
         messages.first(where: { $0.id == message.id })?.message = message.message
     }
 
+    /// Prevent reconstructing the thread in updates like from a cached version to a server version.
+    func updateThread(_ thread: Conversation) {
+        thread.updateValues(thread)        
+    }
+
     func updateThreadInfo(_ title: String, _ description: String, image: UIImage?, assetResources: [PHAssetResource]?) {
         var imageRequest: UploadImageRequest?
         if let image = image {
@@ -360,6 +394,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     }
 
     func searchInsideThread(offset: Int = 0) {
+//        searchedMessages.removeAll()
         guard seachableText.count >= 2 else { return }
         let req = GetHistoryRequest(threadId: threadId, count: 50, offset: offset, query: "\(seachableText)")
         Chat.sharedInstance.getHistory(req) { [weak self] messages, _, _, _ in
@@ -372,7 +407,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     func delete() {
         Chat.sharedInstance.deleteThread(.init(subjectId: threadId)) { [weak self] threadId, _, error in
             if let self = self, threadId != nil, error == nil {
-                self.threadsViewModel?.removeThread(self.thread)
+                self.threadsViewModel?.removeThreadVM(self)
             }
         }
     }
@@ -380,7 +415,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol {
     func leave() {
         Chat.sharedInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { [weak self] user, _, error in
             if let self = self, user != nil, error == nil {
-                self.threadsViewModel?.removeThread(self.thread)
+                self.threadsViewModel?.removeThreadVM(self)
             }
         }
     }
