@@ -48,7 +48,6 @@ protocol ThreadViewModelProtocol {
     func onEditedMessage(_ editedMessage: Message?)
     func sendEditMessage(_ textMessage: String)
     func sendTextMessage(_ textMessage: String)
-    func clearCacheFile(message: Message)
     func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String)
     func sendNormalMessage(_ textMessage: String)
     func sendForwardMessage(_ destinationThread: Conversation)
@@ -192,12 +191,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
     func deleteMessages(_ messages: [Message]) {
         let messagedIds = messages.compactMap { $0.id }
         Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
-    }
-
-    func clearCacheFile(message: Message) {
-        if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
-            CacheFileManager.sharedInstance.deleteImageFromCache(fileHashCode: fileHashCode)
-        }
     }
 
     /// It triggers when send button tapped
@@ -496,10 +489,13 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
     }
 
     func appendMessages(messages: [Message]) {
-        if messages.count == 0 {
-            return
+        messages.forEach { message in
+            if let oldMessage = self.messages.first(where: { $0.id == message.id }) {
+                oldMessage.updateMessage(message: message)
+            } else {
+                self.messages.append(message)
+            }
         }
-        self.messages.insert(contentsOf: filterNewMessagesToAppend(serverMessages: messages), at: 0)
         sort()
     }
 
@@ -509,17 +505,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
 
     func setHasNext(_ hasNext: Bool) {
         self.hasNext = hasNext
-    }
-
-    /// Filter only new messages prevent conflict with cache messages
-    func filterNewMessagesToAppend(serverMessages: [Message]) -> [Message] {
-        let ids = messages.map { $0.id }
-        let newMessages = serverMessages.filter { message in
-            !ids.contains { id in
-                id == message.id
-            }
-        }
-        return newMessages
     }
 
     func appendMessage(_ message: Message) {

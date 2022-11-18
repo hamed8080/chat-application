@@ -5,34 +5,31 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import SwiftUI
-import FanapPodChatSDK
 import Combine
 import CoreMedia
+import FanapPodChatSDK
+import SwiftUI
 
-struct UploadFileView :View{
-    
+struct UploadFileView: View {
     @ObservedObject
     var viewModel: UploadFileViewModel
-    
     @State
-    var percent:Double = 0
-    
-    let threadViewModel:ThreadViewModel
-    let message:UploadFileMessage
-    
-    init(_ threadViewModel:ThreadViewModel, message:UploadFileMessage){
+    var percent: Int64 = 0
+    let threadViewModel: ThreadViewModel
+    let message: UploadFileMessage
+
+    init(_ threadViewModel: ThreadViewModel, message: UploadFileMessage) {
         self.message = message
         self.threadViewModel = threadViewModel
-        self.viewModel = UploadFileViewModel(message:message, thread: threadViewModel.thread)
+        self.viewModel = UploadFileViewModel(message: message, thread: threadViewModel.thread)
     }
-    
+
     @ViewBuilder
-    var body: some View{
-        GeometryReader{ reader in
-            ZStack(alignment:.center){
-                switch viewModel.state{
-                case .UPLOADING,.STARTED:
+    var body: some View {
+        GeometryReader { reader in
+            ZStack(alignment: .center) {
+                switch viewModel.state {
+                case .UPLOADING, .STARTED:
                     CircularProgressView(percent: $percent)
                         .padding()
                         .onTapGesture {
@@ -57,14 +54,14 @@ struct UploadFileView :View{
                 viewModel.startUpload()
             })
             .onReceive(viewModel.$state, perform: { state in
-                if state == .COMPLETED{
-                    threadViewModel.messages.removeAll(where: {$0 == message})
+                if state == .COMPLETED {
+                    threadViewModel.messages.removeAll(where: { $0 == message })
                 }
             })
             .onReceive(viewModel.uploadPercent) { percent in
                 DispatchQueue.main.async {
-                    if let percent = percent{
-                        self.percent = percent
+                    if let percent = percent {
+                        self.percent = Int64(percent)
                     }
                 }
             }
@@ -72,7 +69,7 @@ struct UploadFileView :View{
     }
 }
 
-enum UploadFileState{
+enum UploadFileState {
     case STARTED
     case COMPLETED
     case UPLOADING
@@ -80,69 +77,66 @@ enum UploadFileState{
     case ERROR
 }
 
-class UploadFileViewModel: ObservableObject{
-    
-    private (set) var uploadPercent = PassthroughSubject<Double?,Never>()
-    
+class UploadFileViewModel: ObservableObject {
+    private(set) var uploadPercent = PassthroughSubject<Double?, Never>()
+
     @Published
-    var state             :UploadFileState = .STARTED
-    var message           :UploadFileMessage
-    var thread            :Conversation?
-    var uploadUniqueId    :String?         = nil
-    
-    init(message:UploadFileMessage, thread:Conversation?){
-        self.message           = message
-        self.thread            = thread
+    var state: UploadFileState = .STARTED
+    var message: UploadFileMessage
+    var thread: Conversation?
+    var uploadUniqueId: String?
+
+    init(message: UploadFileMessage, thread: Conversation?) {
+        self.message = message
+        self.thread = thread
     }
-    
-    func startUpload(){
+
+    func startUpload() {
         state = .STARTED
-        guard let threadId = thread?.id else{return}
-        let textMessageType:MessageType = message.uploadFileRequest is UploadImageRequest ? .podSpacePicture : .podSpaceFile
-        let message = SendTextMessageRequest(threadId: threadId, textMessage: self.message.message ?? "", messageType:  textMessageType)
-        uploadFile(message , self.message.uploadFileRequest)
+        guard let threadId = thread?.id else { return }
+        let textMessageType: MessageType = message.uploadFileRequest is UploadImageRequest ? .podSpacePicture : .podSpaceFile
+        let message = SendTextMessageRequest(threadId: threadId, textMessage: self.message.message ?? "", messageType: textMessageType)
+        uploadFile(message, self.message.uploadFileRequest)
     }
-    
-    func uploadFile(_ message:SendTextMessageRequest, _ uploadFileRequest:UploadFileRequest){
-        Chat.sharedInstance.sendFileMessage(textMessage:message, uploadFile: uploadFileRequest){ uploadFileProgress ,error in
+
+    func uploadFile(_ message: SendTextMessageRequest, _ uploadFileRequest: UploadFileRequest) {
+        Chat.sharedInstance.sendFileMessage(textMessage: message, uploadFile: uploadFileRequest) { uploadFileProgress, _ in
             self.uploadPercent.send(Double(uploadFileProgress?.percent ?? 0))
-        }onSent: { sentResponse, uniqueId, error in
+        } onSent: { sentResponse, _, error in
             print(sentResponse ?? "")
-            if error == nil{
+            if error == nil {
                 self.state = .COMPLETED
             }
-        }onSeen: { seenResponse, uniqueId, error in
+        } onSeen: { seenResponse, _, _ in
             print(seenResponse ?? "")
-        }onDeliver: { deliverResponse, uniqueId, error in
+        } onDeliver: { deliverResponse, _, _ in
             print(deliverResponse ?? "")
-        }uploadUniqueIdResult:{ uploadUniqueId in
+        } uploadUniqueIdResult: { uploadUniqueId in
             self.uploadUniqueId = uploadUniqueId
-        }messageUniqueIdResult:{ messageUniqueId in
-           print(messageUniqueId)
+        } messageUniqueIdResult: { messageUniqueId in
+            print(messageUniqueId)
         }
     }
-    
-    func pauseUpload(){
-        guard let uploadUniqueId = uploadUniqueId else {return}
-        Chat.sharedInstance.manageUpload(uniqueId: uploadUniqueId, action: .suspend, isImage: true){ statusString, susccessAction in
+
+    func pauseUpload() {
+        guard let uploadUniqueId = uploadUniqueId else { return }
+        Chat.sharedInstance.manageUpload(uniqueId: uploadUniqueId, action: .suspend, isImage: true) { _, _ in
             self.state = .PAUSED
         }
     }
-    
-    func resumeUpload(){
-        guard let uploadUniqueId = uploadUniqueId else {return}
-        Chat.sharedInstance.manageUpload(uniqueId: uploadUniqueId, action: .resume, isImage: true){ statusString, susccessAction in
+
+    func resumeUpload() {
+        guard let uploadUniqueId = uploadUniqueId else { return }
+        Chat.sharedInstance.manageUpload(uniqueId: uploadUniqueId, action: .resume, isImage: true) { _, _ in
             self.state = .UPLOADING
         }
     }
 }
 
 struct UploadFileView_Previews: PreviewProvider {
-    
     static var previews: some View {
         let threadViewModel = ThreadViewModel(thread: MockData.thread)
         UploadFileView(threadViewModel, message: UploadFileMessage(uploadFileRequest: UploadFileRequest(data: Data())))
             .background(Color.black.ignoresSafeArea())
     }
 }
-

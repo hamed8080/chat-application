@@ -8,71 +8,11 @@
 import FanapPodChatSDK
 import SwiftUI
 
-protocol MessageViewModelProtocol {
-    var message: Message { get set }
-    var messageId: Int { get }
-    var isMe: Bool { get }
-    var type: MessageType? { get }
-    var isTextMessageType: Bool { get }
-    var isUploadMessage: Bool { get }
-    var isFileType: Bool { get }
-    func togglePin()
-    func pin()
-    func unpin()
-}
-
-class MessageViewModel: ObservableObject, MessageViewModelProtocol {
-    @Published
-    var message: Message
-
-    var currentUser: User? { Chat.sharedInstance.userInfo ?? AppState.shared.user }
-
-    var isMe: Bool { message.ownerId ?? 0 == currentUser?.id ?? 0 }
-
-    var type: MessageType? { message.messageType ?? .unknown }
-
-    var isTextMessageType: Bool { type == .text || isFileType }
-
-    var isFileType: Bool { type == .podSpacePicture || type == .picture || type == .podSpaceFile || type == .file }
-
-    var isUploadMessage: Bool { message is UploadFileMessage }
-
-    var messageId: Int { message.id ?? 0 }
-
-    init(message: Message) {
-        self.message = message
-    }
-
-    func togglePin() {
-        if message.pinned == false {
-            pin()
-        } else {
-            unpin()
-        }
-    }
-
-    func pin() {
-        Chat.sharedInstance.pinMessage(.init(messageId: messageId)) {[weak self] messageId, _, error in
-            if error == nil, messageId != nil {
-                self?.message.pinned = true
-            }
-        }
-    }
-
-    func unpin() {
-        Chat.sharedInstance.unpinMessage(.init(messageId: messageId)) { [weak self] messageId, _, error in
-            if error == nil, messageId != nil {
-                self?.message.pinned = false
-            }
-        }
-    }
-}
-
 struct MessageRow: View {
     @ObservedObject
     var viewModel: MessageViewModel
 
-    @ObservedObject
+    @EnvironmentObject
     var threadViewModel: ThreadViewModel
 
     @State
@@ -84,13 +24,9 @@ struct MessageRow: View {
     @State
     private var isSelected = false
 
-    var proxy: GeometryProxy
-
-    init(viewModel: MessageViewModel, threadViewModel: ThreadViewModel, isInEditMode: Binding<Bool>, isMeForPreView: Bool? = nil, proxy: GeometryProxy) {
+    init(viewModel: MessageViewModel, isInEditMode: Binding<Bool>, isMeForPreView: Bool? = nil) {
         self.viewModel = viewModel
         self._isInEditMode = isInEditMode
-        self.proxy = proxy
-        self.threadViewModel = threadViewModel
     }
 
     var body: some View {
@@ -115,7 +51,7 @@ struct MessageRow: View {
                     if viewModel.isMe {
                         Spacer()
                     }
-                    TextMessageType(proxy: proxy)
+                    TextMessageType()
                         .environmentObject(viewModel)
                         .environmentObject(threadViewModel)
                 } else if type == .endCall || type == .startCall {
@@ -172,20 +108,17 @@ struct TextMessageType: View {
     var message: Message { viewModel.message }
 
     var isSameUser: Bool {
-        if let previousMessage = threadViewModel.messages.first(where: {$0.id == message.previousId}) {
-           return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
+        if let previousMessage = threadViewModel.messages.first(where: { $0.id == message.previousId }) {
+            return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
         }
         return false
     }
-
-    var proxy: GeometryProxy
 
     var body: some View {
         HStack(spacing: 8) {
             if viewModel.isMe {
                 Spacer()
             }
-            let calculatedSize = message.calculatedMaxAndMinWidth(proxy: proxy)
             if !viewModel.isMe {
                 SameUserAvatar
             }
@@ -196,22 +129,22 @@ struct TextMessageType: View {
 
                 if viewModel.isFileType {
                     DownloadFileView(message: message)
+                        .frame(maxHeight: 320)
                 }
 
                 // TODO: TEXT must be alignment and image muset be fit
-                Text(((message.message?.isEmpty ?? true) == true ? message.metaData?.name : message.message) ?? "")
+                Text(message.messageTitle)
                     .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
                     .padding(.top, 8)
                     .padding([.leading, .trailing, .top])
                     .font(Font(UIFont.systemFont(ofSize: 18)))
                     .foregroundColor(.black)
-                    .fixedSize(horizontal: false, vertical: true)
 
                 MessageFooterView(viewModel: viewModel)
                     .padding(.bottom, 8)
                     .padding([.leading, .trailing])
             }
-            .frame(minWidth: calculatedSize.minWidth, maxWidth: calculatedSize.maxWidth, minHeight: 48, alignment: .leading)
+            .frame(maxWidth: message.calculatedMaxAndMinWidth, alignment: .leading)
             .padding([.leading, .trailing], 0)
             .contentShape(Rectangle())
             .background(viewModel.isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named: "chat_sender")!))
@@ -250,7 +183,7 @@ struct TextMessageType: View {
 
                 if viewModel.message.isFileType == true {
                     Button {
-                        threadViewModel.clearCacheFile(message: message)
+                        viewModel.clearCacheFile(message: message)
                     } label: {
                         Label("Delete file from cache", systemImage: "cylinder.split.1x2")
                     }
@@ -382,10 +315,9 @@ struct UploadMessageType: View {
 }
 
 struct MessageFooterView: View {
-
     var viewModel: MessageViewModel
 
-    var message: Message {viewModel.message}
+    var message: Message { viewModel.message }
 
     var body: some View {
         HStack {
@@ -425,20 +357,21 @@ struct MessageFooterView: View {
 
 struct MessageRow_Previews: PreviewProvider {
     static var previews: some View {
-        GeometryReader { proxy in
-            List {
-                let threadVM = ThreadViewModel(thread: MockData.thread)
-                MessageRow(viewModel: .init(message: MockData.message), threadViewModel: threadVM, isInEditMode: .constant(true), isMeForPreView: false, proxy: proxy)
-                MessageRow(viewModel: .init(message: MockData.message), threadViewModel: threadVM, isInEditMode: .constant(true), isMeForPreView: true, proxy: proxy)
-                MessageRow(viewModel: .init(message: MockData.uploadMessage), threadViewModel: threadVM, isInEditMode: .constant(true), proxy: proxy)
+        List {
+            let threadVM = ThreadViewModel(thread: MockData.thread)
+            MessageRow(viewModel: .init(message: MockData.message), isInEditMode: .constant(true), isMeForPreView: false)
+                .environmentObject(threadVM)
+            MessageRow(viewModel: .init(message: MockData.message), isInEditMode: .constant(true), isMeForPreView: true)
+                .environmentObject(threadVM)
+            MessageRow(viewModel: .init(message: MockData.uploadMessage), isInEditMode: .constant(true))
+                .environmentObject(threadVM)
 
-                ForEach(MockData.generateMessages(count: 5), id: \.self) { message in
-                    TextMessageType(proxy: proxy)
-                        .environmentObject(threadVM)
-                        .environmentObject(MessageViewModel(message: message))
-                }
+            ForEach(MockData.generateMessages(count: 5), id: \.self) { message in
+                TextMessageType()
+                    .environmentObject(threadVM)
+                    .environmentObject(MessageViewModel(message: message))
             }
-            .listStyle(.plain)
         }
+        .listStyle(.plain)
     }
 }
