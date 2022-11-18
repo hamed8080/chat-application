@@ -57,18 +57,11 @@ struct ThreadView: View {
             VStack {
                 ScrollViewReader { scrollView in
                     ZStack {
-                        threadList
+                        threadMessages
                             .background(
                                 background
                             )
-
                         goToBottomOfThread(scrollView: scrollView)
-
-                        VStack {
-                            GeometryReader { reader in
-                                LoadingViewAt(isLoading: viewModel.isLoading, reader: reader)
-                            }
-                        }
                     }
                 }
                 .onTapGesture {
@@ -271,43 +264,36 @@ struct ThreadView: View {
         }
     }
 
-    var threadList: some View {
-        GeometryReader { reader in
-            ScrollView {
-                LazyVStack(spacing: 8) {
-                    if viewModel.isLoading {
-                        VStack {
-                            GeometryReader { reader in
-                                LoadingViewAt(isLoading: viewModel.isLoading, reader: reader)
-                            }
+    var threadMessages: some View {
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                ListLoadingView(isLoading: $viewModel.isLoading)
+                ForEach(viewModel.messages, id: \.uniqueId) { message in
+                    MessageRow(viewModel: .init(message: message), isInEditMode: $isInEditMode)
+                        .environmentObject(viewModel)
+                        .onAppear {
+                            viewModel.sendSeenMessageIfNeeded(message)
                         }
-                    }
-                    ForEach(viewModel.messages, id: \.uniqueId) { message in
-
-                        MessageRow(viewModel: .init(message: message), threadViewModel: viewModel, isInEditMode: $isInEditMode, proxy: reader)
-                            .onAppear {
-                                viewModel.sendSeenMessageIfNeeded(message)
-                            }
-                    }
                 }
-                .background(
-                    GeometryReader {
-                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                    }
-                )
-                .padding(.bottom)
-                .padding([.leading, .trailing])
+                ListLoadingView(isLoading: $viewModel.isLoading)
             }
-            .simultaneousGesture(
-                DragGesture().onChanged { value in
-                    scrollingUP = value.translation.height > 0
+            .background(
+                GeometryReader {
+                    Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
                 }
             )
-            .coordinateSpace(name: "scroll")
-            .onPreferenceChange(ViewOffsetKey.self) { value in
-                if value < 64, scrollingUP {
-                    viewModel.loadMoreMessage()
-                }
+            .padding(.bottom)
+            .padding([.leading, .trailing])
+        }
+        .simultaneousGesture(
+            DragGesture().onChanged { value in
+                scrollingUP = value.translation.height > 0
+            }
+        )
+        .coordinateSpace(name: "scroll")
+        .onPreferenceChange(ViewOffsetKey.self) { value in
+            if value < 64, scrollingUP {
+                viewModel.loadMoreMessage()
             }
         }
     }

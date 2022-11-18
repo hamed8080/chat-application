@@ -8,25 +8,24 @@
 import SwiftUI
 
 struct CircularProgressView: View {
-    
     @Binding
-    var percent:Double
-    
-    var body: some View{
-        ZStack{
+    var percent: Int64
+
+    var body: some View {
+        ZStack {
             Circle()
                 .stroke(lineWidth: 4)
                 .foregroundColor(Color.gray.opacity(0.5))
-            
-            Text(String(format: "%.0f", percent) + " %")
-                .foregroundColor(Color.white)
+
+            Text("\(percent) %")
                 .font(.title2)
+                .foregroundColor(.indigo)
                 .fontWeight(.heavy)
-            
+
             Circle()
-                .trim(from: 0.0, to: min((percent / 100), 1.0) )
+                .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
                 .stroke(style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
-                .foregroundColor(Color.white)
+                .foregroundColor(.indigo)
                 .rotationEffect(Angle(degrees: 270))
         }
     }
