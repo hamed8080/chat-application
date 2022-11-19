@@ -27,7 +27,7 @@ class SettingViewModel: ObservableObject {
     }
 
     func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if firstSuccessResponse == false, status == .CONNECTED {
+        if firstSuccessResponse == false, status == .connected {
             firstSuccessResponse = true
         }
     }

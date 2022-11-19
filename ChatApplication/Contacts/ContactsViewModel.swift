@@ -46,11 +46,11 @@ class ContactsViewModel: ObservableObject {
 
     private(set) var firstSuccessResponse = false
 
-    private var canLoadNextPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .CONNECTED }
+    private var canLoadNextPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
 
     init() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
-            if self?.firstSuccessResponse == false, status == .CONNECTED {
+            if self?.firstSuccessResponse == false, status == .connected {
                 self?.getContacts()
             }
         }
@@ -73,7 +73,7 @@ class ContactsViewModel: ObservableObject {
             appendContacts(contacts)
             hasNext = pagination?.hasNext ?? false
         }
-        if isLoading, AppState.shared.connectionStatus != .CONNECTED {
+        if isLoading, AppState.shared.connectionStatus != .connected {
             isLoading = false
         }
     }

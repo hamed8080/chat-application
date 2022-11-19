@@ -33,7 +33,7 @@ class CallControlsViewModel: ObservableObject{
     let appState = AppState.shared
 
     @Published
-    var socketStatus: ConnectionStatus = .Connecting
+    var socketStatus: ConnectionStatus = .connecting
     
     let callState = CallState.shared
     

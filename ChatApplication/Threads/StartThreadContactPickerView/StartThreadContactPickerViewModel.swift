@@ -21,7 +21,7 @@ class StartThreadContactPickerViewModel:ObservableObject{
     
     init() {
         AppState.shared.$connectionStatus.sink { status in
-            if self.model.threads.count == 0 && status == .CONNECTED{
+            if self.model.threads.count == 0 && status == .connected{
          
             }
         }

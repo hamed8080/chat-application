@@ -321,7 +321,7 @@ struct CallStartedActionsView: View {
                     .offset(y: -36)
             }
 
-            if viewModel.socketStatus != .CONNECTED {
+            if viewModel.socketStatus != .connected {
                 Text(viewModel.socketStatus.stringValue.appending(" ...").uppercased())
                     .font(.subheadline.weight(.medium))
                     .padding(.bottom, 2)

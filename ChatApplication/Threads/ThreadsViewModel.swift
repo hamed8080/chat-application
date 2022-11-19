@@ -70,7 +70,7 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if firstSuccessResponse == false, status == .CONNECTED {
+        if firstSuccessResponse == false, status == .connected {
             offset = 0
             getThreads()
         }
@@ -112,7 +112,7 @@ class ThreadsViewModel: ObservableObject {
             appendThreads(threads: threads)
             hasNext(pagination?.hasNext ?? false)
         }
-        if isLoading, AppState.shared.connectionStatus != .CONNECTED {
+        if isLoading, AppState.shared.connectionStatus != .connected {
             isLoading = false
         }
     }

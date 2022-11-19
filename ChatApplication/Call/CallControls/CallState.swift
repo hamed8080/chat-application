@@ -225,7 +225,7 @@ class CallState: ObservableObject, WebRTCClientDelegate {
     private(set) var cancellableSet: Set<AnyCancellable> = []
 
     func setConnectionStatus(_ status: ConnectionStatus) {
-        model.setConnectionState(status == .CONNECTED ? "" : String(describing: status) + " ...")
+        model.setConnectionState(status == .connected ? "" : String(describing: status) + " ...")
     }
 
     private init() {
@@ -236,7 +236,7 @@ class CallState: ObservableObject, WebRTCClientDelegate {
     }
 
     func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if model.startCall != nil, status == .CONNECTED {
+        if model.startCall != nil, status == .connected {
             callInquiry()
         }
     }

@@ -24,7 +24,7 @@ class CallParticipantsViewModel:ObservableObject{
     
     func getParticipantsIfConnected() {
         connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
-            if status == .CONNECTED && self.callId != -1{
+            if status == .connected && self.callId != -1{
                 self.getActiveParticipants()
             }
         }

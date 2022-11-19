@@ -216,7 +216,7 @@ struct HomeView_Previews: PreviewProvider {
             .environmentObject(appState)
             .environmentObject(callState)
             .onAppear {
-                AppState.shared.connectionStatus = .CONNECTED
+                AppState.shared.connectionStatus = .connected
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
             }
     }

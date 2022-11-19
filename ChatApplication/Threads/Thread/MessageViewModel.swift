@@ -71,6 +71,7 @@ class MessageViewModel: ObservableObject, MessageViewModelProtocol {
     func clearCacheFile(message: Message) {
         if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
             CacheFileManager.sharedInstance.delete(fileHashCode: fileHashCode)
+            NotificationCenter.default.post(.init(name: File_Deleted_From_Cache_Name, object: message))
         }
     }
 }

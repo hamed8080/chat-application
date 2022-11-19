@@ -22,7 +22,7 @@ class CallDetailViewModel:ObservableObject{
     init(call:Call) {
         model = CallDetailModel(call: call)
         connectionStatusCancelable = AppState.shared.$connectionStatus.sink { status in
-            if self.model.calls.count == 0 && status == .CONNECTED{
+            if self.model.calls.count == 0 && status == .connected{
                 self.getCallsHistory()
             }
         }

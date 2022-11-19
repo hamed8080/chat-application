@@ -18,7 +18,7 @@ class AppState: ObservableObject {
     var callLogs:[URL]? = nil
     
     @Published
-    var connectionStatus:ConnectionStatus = .Connecting{
+    var connectionStatus:ConnectionStatus = .connecting{
         didSet{
             setConnectionStatus(connectionStatus)
         }
@@ -33,7 +33,7 @@ class AppState: ObservableObject {
     var selectedThread:Conversation? = nil
     
     func setConnectionStatus(_ status:ConnectionStatus){
-        if status == .CONNECTED{
+        if status == .connected{
             connectionStatusString = ""
         }else{
             connectionStatusString = String(describing: status) + " ..."
