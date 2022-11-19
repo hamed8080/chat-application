@@ -178,14 +178,14 @@ struct ThreadView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 16, height: 16)
+                        .padding()
                         .foregroundColor(Color.gray)
                         .aspectRatio(contentMode: .fit)
+                        .contentShape(Rectangle())
                 }
-                .frame(width: 24, height: 24)
-                .padding(8)
+                .frame(width: 36, height: 36)
                 .background(Color.white)
                 .cornerRadius(36)
-                .contentShape(Rectangle())
             }
             .padding(.bottom, 16)
             .padding([.trailing], 8)

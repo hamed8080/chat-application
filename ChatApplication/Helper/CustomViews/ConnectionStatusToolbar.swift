@@ -10,13 +10,13 @@ import SwiftUI
 struct ConnectionStatusToolbar: View {
 
     @State
-    var connectionStatus: ConnectionStatus = .Connecting
+    var connectionStatus: ConnectionStatus = .connecting
 
     @EnvironmentObject
     var appstate: AppState
 
     var body: some View {
-        if connectionStatus != .CONNECTED {
+        if connectionStatus != .connected {
             Text("\(connectionStatus.stringValue) ...")
                 .font(.subheadline.bold())
                 .foregroundColor(Color(named: "text_color_blue"))

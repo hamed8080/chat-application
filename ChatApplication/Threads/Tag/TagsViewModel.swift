@@ -33,7 +33,7 @@ class TagsViewModel: ObservableObject {
     }
 
     func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if firstSuccessResponse == false, status == .CONNECTED {
+        if firstSuccessResponse == false, status == .connected {
             getTagList()
         }
     }
@@ -50,7 +50,7 @@ class TagsViewModel: ObservableObject {
         if let tags = tags {
             appendTags(tags: tags)
         }
-        if isLoading, AppState.shared.connectionStatus != .CONNECTED {
+        if isLoading, AppState.shared.connectionStatus != .connected {
             isLoading = false
         }
     }

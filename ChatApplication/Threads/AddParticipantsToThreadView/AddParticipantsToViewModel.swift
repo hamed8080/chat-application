@@ -21,7 +21,7 @@ class AddParticipantsToViewModel:ObservableObject{
     
     init() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
-            if self?.model.threads.count == 0 && status == .CONNECTED{
+            if self?.model.threads.count == 0 && status == .connected{
             }
         }
         .store(in: &cancellableSet)

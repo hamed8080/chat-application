@@ -119,7 +119,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
     @Published
     var exportMessagesVM: ExportMessagesViewModelProtocol
 
-    var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .CONNECTED }
+    var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
 
     init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.readOnly = readOnly

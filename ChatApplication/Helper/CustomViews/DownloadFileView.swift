@@ -139,10 +139,18 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     var fileURL: URL? { CacheFileManager.sharedInstance.getFileUrl(fileHashCode) }
     var downloadUniqueId: String?
     private(set) var message: Message
+    private var cancelable: Set<AnyCancellable> = []
 
     init(message: Message) {
         self.message = message
         getFromCache()
+        NotificationCenter.default.publisher(for: File_Deleted_From_Cache_Name)
+            .compactMap { $0.object as? Message }
+            .filter { $0.id == message.id }
+            .sink { [weak self] receivedValue in
+                self?.state = .UNDEFINED
+            }
+            .store(in: &cancelable)
     }
 
     func getFromCache() {

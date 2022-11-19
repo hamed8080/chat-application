@@ -24,7 +24,7 @@ struct MessageRow: View {
     @State
     private var isSelected = false
 
-    init(viewModel: MessageViewModel, isInEditMode: Binding<Bool>, isMeForPreView: Bool? = nil) {
+    init(viewModel: MessageViewModel, isInEditMode: Binding<Bool>) {
         self.viewModel = viewModel
         self._isInEditMode = isInEditMode
     }
@@ -359,9 +359,9 @@ struct MessageRow_Previews: PreviewProvider {
     static var previews: some View {
         List {
             let threadVM = ThreadViewModel(thread: MockData.thread)
-            MessageRow(viewModel: .init(message: MockData.message), isInEditMode: .constant(true), isMeForPreView: false)
+            MessageRow(viewModel: .init(message: MockData.message), isInEditMode: .constant(true))
                 .environmentObject(threadVM)
-            MessageRow(viewModel: .init(message: MockData.message), isInEditMode: .constant(true), isMeForPreView: true)
+            MessageRow(viewModel: .init(message: MockData.message), isInEditMode: .constant(true))
                 .environmentObject(threadVM)
             MessageRow(viewModel: .init(message: MockData.uploadMessage), isInEditMode: .constant(true))
                 .environmentObject(threadVM)
