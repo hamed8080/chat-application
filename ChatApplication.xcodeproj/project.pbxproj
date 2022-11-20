@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -721,6 +721,7 @@
 				AC1D2CA12661FFAC00AA351A /* Frameworks */,
 				AC1D2CA22661FFAC00AA351A /* Resources */,
 				AC924CBC274A6D7300E33BD1 /* Embed App Extensions */,
+				0503A6DB2929F51300CA10DC /* SwiftLint */,
 			);
 			buildRules = (
 			);
@@ -817,6 +818,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0503A6DB2929F51300CA10DC /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#if which swiftlint > /dev/null; then\n#   swiftlint /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/ChatApplication\n#   swiftlint /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/MyWidget\n#   ASYNC_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/FanapPodAsyncSDK/\"\n#   CHAT_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/FanapPodChatSDK/\"\n#   swiftlint --config \"${ASYNC_PATH}.swiftlint.yml\" \"${ASYNC_PATH}Sources\"\n#   swiftlint --config \"${CHAT_PATH}.swiftlint.yml\" \"${CHAT_PATH}Sources\"\n# else\n#   echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n# fi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AC1D2CA02661FFAC00AA351A /* Sources */ = {
