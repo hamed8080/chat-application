@@ -101,11 +101,7 @@ final class MockData{
         return message
     }
     
-    static var uploadMessage:UploadFileMessage{
-        let msg = UploadFileMessage(uploadFileRequest: UploadFileRequest(data: Data()), textMessage: "Test")
-        msg.message = "Film.mp4"
-        return msg
-    }
+    static var uploadMessage: UploadFileWithTextMessage{ UploadFileWithTextMessage(uploadFileRequest: UploadFileRequest(data: Data(), fileName: "Film.mp4")) }
     
     static func generateMessages(count:Int = 50)->[Message]{
         var messages:[Message] = mockDataModel.messages.map { message in
