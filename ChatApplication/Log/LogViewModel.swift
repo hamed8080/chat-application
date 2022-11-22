@@ -97,7 +97,7 @@ class LogViewModel:ObservableObject{
                 logs.removeAll(where: {$0 == log})
             }
         }
-        PSM.shared.save()
+        CacheFactory.save()
     }
     
     public class func addToLog(logResult:LogResult){
@@ -107,7 +107,7 @@ class LogViewModel:ObservableObject{
                 log.json = logResult.json
                 log.received = logResult.receive
                 log.createDate = Date()
-                PSM.shared.save()
+                CacheFactory.save()
                 NotificationCenter.default.post(name: NSNotification.Name.init(LogViewModel.NotificationKey), object: log)
             }
         }

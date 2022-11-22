@@ -30,6 +30,8 @@ struct ThreadDetailView: View {
 
     @State private var image: UIImage?
     @State private var assetResource: [PHAssetResource]?
+    @State
+    var searchText: String = ""
 
     var body: some View {
         let thread = viewModel.thread
@@ -75,7 +77,7 @@ struct ThreadDetailView: View {
                             })
 
                             ActionButton(iconSfSymbolName: "magnifyingglass", iconColor: .blue, taped: {
-                                viewModel.searchInsideThreadMessages("")
+                                viewModel.searchInsideThread(text: searchText)
                             })
 
                             if let type = thread.type{

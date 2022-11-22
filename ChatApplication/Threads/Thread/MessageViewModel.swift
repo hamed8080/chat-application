@@ -11,11 +11,6 @@ import Foundation
 protocol MessageViewModelProtocol {
     var message: Message { get set }
     var messageId: Int { get }
-    var isMe: Bool { get }
-    var type: MessageType? { get }
-    var isTextMessageType: Bool { get }
-    var isUploadMessage: Bool { get }
-    var isFileType: Bool { get }
     func togglePin()
     func pin()
     func unpin()
@@ -25,19 +20,6 @@ protocol MessageViewModelProtocol {
 class MessageViewModel: ObservableObject, MessageViewModelProtocol {
     @Published
     var message: Message
-
-    var currentUser: User? { Chat.sharedInstance.userInfo ?? AppState.shared.user }
-
-    var isMe: Bool { message.ownerId ?? 0 == currentUser?.id ?? 0 }
-
-    var type: MessageType? { message.messageType ?? .unknown }
-
-    var isTextMessageType: Bool { type == .text || isFileType }
-
-    var isFileType: Bool { type == .podSpacePicture || type == .picture || type == .podSpaceFile || type == .file }
-
-    var isUploadMessage: Bool { message is UploadFileMessage }
-
     var messageId: Int { message.id ?? 0 }
 
     init(message: Message) {

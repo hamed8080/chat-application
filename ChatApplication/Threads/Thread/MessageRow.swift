@@ -24,11 +24,6 @@ struct MessageRow: View {
     @State
     private var isSelected = false
 
-    init(viewModel: MessageViewModel, isInEditMode: Binding<Bool>) {
-        self.viewModel = viewModel
-        self._isInEditMode = isInEditMode
-    }
-
     var body: some View {
         HStack {
             if isInEditMode {
@@ -42,13 +37,13 @@ struct MessageRow: View {
                         threadViewModel.toggleSelectedMessage(viewModel.message, isSelected)
                     }
             }
-            if let type = viewModel.type {
-                if viewModel.isUploadMessage {
+            if let type = viewModel.message.type {
+                if viewModel.message.isUploadMessage {
                     UploadMessageType()
                         .environmentObject(viewModel)
                         .environmentObject(threadViewModel)
-                } else if viewModel.isTextMessageType {
-                    if viewModel.isMe {
+                } else if viewModel.message.isTextMessageType || viewModel.message.isUnsentMessage {
+                    if viewModel.message.isMe {
                         Spacer()
                     }
                     TextMessageType()
@@ -79,17 +74,17 @@ struct CallMessageType: View {
     var body: some View {
         HStack(alignment: .center) {
             if let time = message.time, let date = Date(milliseconds: Int64(time)) {
-                Text("Call \(viewModel.type == .endCall ? "ended" : "started") at \(date.timeAgoSinceDate())")
+                Text("Call \(viewModel.message.type == .endCall ? "ended" : "started") at \(date.timeAgoSinceDate())")
                     .foregroundColor(Color.primary.opacity(0.8))
                     .font(.subheadline)
                     .padding(2)
             }
 
-            Image(systemName: viewModel.type == .startCall ? "arrow.down.left" : "arrow.up.right")
+            Image(systemName: viewModel.message.type == .startCall ? "arrow.down.left" : "arrow.up.right")
                 .resizable()
                 .frame(width: 10, height: 10)
                 .scaledToFit()
-                .foregroundColor(viewModel.type == .startCall ? Color.green : Color.red)
+                .foregroundColor(viewModel.message.type == .startCall ? Color.green : Color.red)
         }
         .padding([.leading, .trailing])
         .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))
@@ -107,19 +102,12 @@ struct TextMessageType: View {
 
     var message: Message { viewModel.message }
 
-    var isSameUser: Bool {
-        if let previousMessage = threadViewModel.messages.first(where: { $0.id == message.previousId }) {
-            return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
-        }
-        return false
-    }
-
     var body: some View {
         HStack(spacing: 8) {
-            if viewModel.isMe {
+            if viewModel.message.isMe {
                 Spacer()
             }
-            if !viewModel.isMe {
+            if !viewModel.message.isMe {
                 SameUserAvatar
             }
             VStack {
@@ -127,18 +115,33 @@ struct TextMessageType: View {
                     ForwardMessageRow(forwardInfo: forwardInfo)
                 }
 
-                if viewModel.isFileType {
+                if viewModel.message.isFileType {
                     DownloadFileView(message: message)
                         .frame(maxHeight: 320)
                 }
 
                 // TODO: TEXT must be alignment and image muset be fit
-                Text(message.messageTitle)
+                Text(message.markdownTitle)
                     .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
                     .padding(.top, 8)
                     .padding([.leading, .trailing, .top])
                     .font(Font(UIFont.systemFont(ofSize: 18)))
                     .foregroundColor(.black)
+
+                if message.isUnsentMessage {
+                    HStack {
+                        Spacer()
+                        Button("Resend".uppercased()) {
+                            threadViewModel.resendUnsetMessage(message)
+                        }
+
+                        Button("Cancel".uppercased(), role: .destructive) {
+                            threadViewModel.cancelUnsentMessage(message.uniqueId ?? "")
+                        }
+                    }
+                    .padding()
+                    .font(.caption.bold())
+                }
 
                 MessageFooterView(viewModel: viewModel)
                     .padding(.bottom, 8)
@@ -147,7 +150,7 @@ struct TextMessageType: View {
             .frame(maxWidth: message.calculatedMaxAndMinWidth, alignment: .leading)
             .padding([.leading, .trailing], 0)
             .contentShape(Rectangle())
-            .background(viewModel.isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named: "chat_sender")!))
+            .background(viewModel.message.isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named: "chat_sender")!))
             .cornerRadius(12)
             .onTapGesture {
                 print("on tap gesture")
@@ -213,11 +216,11 @@ struct TextMessageType: View {
                 .disabled(viewModel.message.deletable == false)
             }
 
-            if viewModel.isMe {
+            if viewModel.message.isMe {
                 SameUserAvatar
             }
 
-            if !viewModel.isMe {
+            if !viewModel.message.isMe {
                 Spacer()
             }
         }
@@ -225,7 +228,7 @@ struct TextMessageType: View {
 
     @ViewBuilder
     var SameUserAvatar: some View {
-        if !isSameUser, let participant = message.participant {
+        if !threadViewModel.isSameUser(message: message), let participant = message.participant {
             let token = EnvironmentValues().isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
             Avatar(
                 url: participant.image,
@@ -286,31 +289,67 @@ struct UploadMessageType: View {
     @EnvironmentObject
     var threadViewModel: ThreadViewModel
 
-    var message: UploadFileMessage { viewModel.message as! UploadFileMessage }
+    var message: Message { viewModel.message }
 
     var body: some View {
         HStack(alignment: .top) {
             Spacer()
-            VStack {
-                UploadFileView(threadViewModel, message: message)
-                    .frame(width: 148, height: 148)
-                if let fileName = message.metaData?.name {
-                    Text(fileName)
-                        .foregroundColor(.black)
-                        .font(Font(UIFont.systemFont(ofSize: 18)))
+            VStack(spacing: 8) {
+                if message.isUnsentMessage == false {
+                    UploadFileView(message: message)
+                        .environmentObject(threadViewModel)
+                        .environmentObject(UploadFileViewModel(message: message, thread: threadViewModel.thread))
+                } else if let data = message.uploadFile?.uploadFileRequest.data {
+                    // Show cache version image if the sent was failed.
+                    if let image = UIImage(data: data) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: 320)
+                    } else if let iconName = message.iconName {
+                        Image(systemName: iconName)
+                            .resizable()
+                            .frame(width: 64, height: 64)
+                            .scaledToFit()
+                            .padding()
+                            .foregroundColor(Color(named: "icon_color").opacity(0.8))
+                    }
                 }
 
-                if let message = message.message {
+                if let fileName = message.fileName {
+                    Text("\(fileName)\(message.fileExtension ?? "")")
+                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .font(.caption)
+                }
+
+                if let message = message.messageTitle {
                     Text(message)
                         .foregroundColor(.black)
                         .font(Font(UIFont.systemFont(ofSize: 18)))
                 }
+
+                if message.isUnsentMessage {
+                    HStack {
+                        Spacer()
+                        Button("Resend".uppercased()) {
+                            threadViewModel.resendUnsetMessage(message)
+                        }
+
+                        Button("Cancel".uppercased(), role: .destructive) {
+                            threadViewModel.cancelUnsentMessage(message.uniqueId ?? "")
+                        }
+                    }
+                    .padding([.leading, .trailing])
+                    .font(.caption.bold())
+                }
             }
+            .frame(maxWidth: message.isImage ? 320 : 164)
             .padding()
             .contentShape(Rectangle())
             .background(Color(UIColor(named: "chat_me")!))
             .cornerRadius(12)
         }
+        .padding(.trailing, 42)
     }
 }
 
@@ -336,7 +375,7 @@ struct MessageFooterView: View {
                             .font(.subheadline)
                     }
 
-                    if viewModel.isMe {
+                    if viewModel.message.isMe {
                         Image(uiImage: UIImage(named: message.seen == true ? "double_checkmark" : "single_chekmark")!)
                             .resizable()
                             .frame(width: 14, height: 14)

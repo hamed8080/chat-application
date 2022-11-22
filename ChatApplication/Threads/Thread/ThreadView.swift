@@ -8,14 +8,6 @@
 import FanapPodChatSDK
 import SwiftUI
 
-struct ViewOffsetKey: PreferenceKey {
-    typealias Value = CGFloat
-    static var defaultValue = CGFloat.zero
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value += nextValue()
-    }
-}
-
 struct ThreadView: View {
     @ObservedObject
     var viewModel: ThreadViewModel
@@ -35,8 +27,6 @@ struct ThreadView: View {
     @State
     var showSelectThreadToForward: Bool = false
 
-    @Environment(\.colorScheme) var colorScheme
-
     @Environment(\.isPreview) var isPreview
 
     @State
@@ -49,25 +39,14 @@ struct ThreadView: View {
     var showExportFileURL = false
 
     @State
-    var scrollingUP = false
+    var searchMessageText: String = ""
 
     var body: some View {
         let _ = Self._printChanges()
         ZStack {
             VStack {
-                ScrollViewReader { scrollView in
-                    ZStack {
-                        threadMessages
-                            .background(
-                                background
-                            )
-                        goToBottomOfThread(scrollView: scrollView)
-                    }
-                }
-                .onTapGesture {
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                }
-
+                ThreadMessagesList(isInEditMode: $isInEditMode)
+                    .environmentObject(viewModel)
                 SendContainer(viewModel: viewModel,
                               showAttachmentDialog: $showAttachmentDialog,
                               showDeleteSelectedMessages: $showDeleteSelectedMessages,
@@ -105,11 +84,11 @@ struct ThreadView: View {
                 centerToolbarTitle
             }
         }
-        .onChange(of: viewModel.seachableText, perform: { _ in
-            viewModel.searchInsideThread()
-        })
-        .searchable(text: $viewModel.seachableText, placement: .toolbar, prompt: "Search inside this chat") {
-            if viewModel.searchedMessages.count == 0 {
+        .onChange(of: searchMessageText) { value in
+            viewModel.searchInsideThread(text: value)
+        }
+        .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat") {
+            if searchMessageText.count == 0 {
                 Text("Nothing found.")
                     .foregroundColor(.gray.opacity(0.9))
             } else {
@@ -117,7 +96,7 @@ struct ThreadView: View {
                     SearchMessageRow(message: message)
                         .onAppear {
                             if message == viewModel.searchedMessages.last {
-                                viewModel.searchInsideThread(offset: viewModel.searchedMessages.count)
+                                viewModel.searchInsideThread(text: searchMessageText, offset: viewModel.searchedMessages.count)
                             }
                         }
                 }
@@ -161,6 +140,116 @@ struct ThreadView: View {
         })
     }
 
+    var centerToolbarTitle: some View {
+        VStack(alignment: .center) {
+            Text(viewModel.thread.title ?? "")
+                .fixedSize()
+                .font(.headline)
+
+            if let signalMessageText = viewModel.signalMessageText {
+                Text(signalMessageText)
+                    .foregroundColor(Color(named: "text_color_blue"))
+                    .font(.subheadline.bold())
+            }
+
+            if let participantsCount = viewModel.thread.participantCount {
+                Text("Members \(participantsCount)")
+                    .fixedSize()
+                    .foregroundColor(Color.gray)
+                    .font(.footnote)
+            }
+
+            ConnectionStatusToolbar()
+        }
+    }
+
+    @ViewBuilder
+    var trailingToolbar: some View {
+        let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
+        Avatar(
+            url: viewModel.thread.image,
+            userName: viewModel.thread.inviter?.username?.uppercased(),
+            style: .init(size: 32),
+            size: .MEDIUM,
+            token: token
+        )
+        .onTapGesture {
+            showThreadDetailButton.toggle()
+        }
+        .cornerRadius(18)
+
+        Menu {
+            Button {
+                showDatePicker.toggle()
+            } label: {
+                Label {
+                    Text("Export")
+                } icon: {
+                    Image(systemName: "square.and.arrow.up")
+                        .resizable()
+                        .scaledToFit()
+                }
+            }
+        } label: {
+            Image(systemName: "ellipsis")
+        }
+    }
+}
+
+struct ThreadMessagesList: View {
+    @EnvironmentObject
+    var viewModel: ThreadViewModel
+    var isInEditMode: Binding<Bool>
+    @State
+    var scrollingUP = false
+    @Environment(\.colorScheme)
+    var colorScheme
+
+    var body: some View {
+        ScrollViewReader { scrollView in
+            ZStack {
+                ScrollView {
+                    LazyVStack(spacing: 8) {
+                        ListLoadingView(isLoading: $viewModel.isLoading)
+                        ForEach(viewModel.messages, id: \.uniqueId) { message in
+                            MessageRow(viewModel: .init(message: message), isInEditMode: isInEditMode)
+                                .environmentObject(viewModel)
+                                .onAppear {
+                                    viewModel.sendSeenMessageIfNeeded(message)
+                                }
+                        }
+                        ListLoadingView(isLoading: $viewModel.isLoading)
+                    }
+                    .background(
+                        GeometryReader {
+                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                        }
+                    )
+                    .padding(.bottom)
+                    .padding([.leading, .trailing])
+                }
+                .simultaneousGesture(
+                    DragGesture().onChanged { value in
+                        scrollingUP = value.translation.height > 0
+                    }
+                )
+                .coordinateSpace(name: "scroll")
+                .onPreferenceChange(ViewOffsetKey.self) { value in
+                    if value < 64, scrollingUP {
+                        viewModel.loadMoreMessage()
+                    }
+                }
+                .background(
+                    background
+                )
+                goToBottomOfThread(scrollView: scrollView)
+            }
+        }
+        .onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+    }
+
     @ViewBuilder
     func goToBottomOfThread(scrollView: ScrollViewProxy) -> some View {
         VStack {
@@ -192,62 +281,6 @@ struct ThreadView: View {
         }
     }
 
-    var centerToolbarTitle: some View {
-        VStack(alignment: .center) {
-            Text(viewModel.thread.title ?? "")
-                .fixedSize()
-                .font(.headline)
-
-            if let signalMessageText = viewModel.signalMessageText {
-                Text(signalMessageText)
-                    .foregroundColor(Color(named: "text_color_blue"))
-                    .font(.subheadline.bold())
-            }
-
-            if let participantsCount = viewModel.thread.participantCount {
-                Text("Members \(participantsCount)")
-                    .fixedSize()
-                    .foregroundColor(Color.gray)
-                    .font(.footnote)
-            }
-
-            ConnectionStatusToolbar()
-        }
-    }
-
-    @ViewBuilder
-    var trailingToolbar: some View {
-
-        let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
-        Avatar(
-            url: viewModel.thread.image,
-            userName: viewModel.thread.inviter?.username?.uppercased(),
-            style: .init(size: 32),
-            size: .MEDIUM,
-            token: token
-        )
-        .onTapGesture {
-            showThreadDetailButton.toggle()
-        }
-        .cornerRadius(18)
-
-        Menu {
-            Button {
-                showDatePicker.toggle()
-            } label: {
-                Label {
-                    Text("Export")
-                } icon: {
-                    Image(systemName: "square.and.arrow.up")
-                        .resizable()
-                        .scaledToFit()
-                }
-            }
-        } label: {
-            Image(systemName: "ellipsis")
-        }
-    }
-
     var background: some View {
         ZStack {
             Image("chat_bg")
@@ -263,40 +296,6 @@ struct ThreadView: View {
                            endPoint: .bottom)
         }
     }
-
-    var threadMessages: some View {
-        ScrollView {
-            LazyVStack(spacing: 8) {
-                ListLoadingView(isLoading: $viewModel.isLoading)
-                ForEach(viewModel.messages, id: \.uniqueId) { message in
-                    MessageRow(viewModel: .init(message: message), isInEditMode: $isInEditMode)
-                        .environmentObject(viewModel)
-                        .onAppear {
-                            viewModel.sendSeenMessageIfNeeded(message)
-                        }
-                }
-                ListLoadingView(isLoading: $viewModel.isLoading)
-            }
-            .background(
-                GeometryReader {
-                    Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                }
-            )
-            .padding(.bottom)
-            .padding([.leading, .trailing])
-        }
-        .simultaneousGesture(
-            DragGesture().onChanged { value in
-                scrollingUP = value.translation.height > 0
-            }
-        )
-        .coordinateSpace(name: "scroll")
-        .onPreferenceChange(ViewOffsetKey.self) { value in
-            if value < 64, scrollingUP {
-                viewModel.loadMoreMessage()
-            }
-        }
-    }
 }
 
 struct SendContainer: View {
@@ -310,6 +309,8 @@ struct SendContainer: View {
 
     @Binding
     var showSelectThreadToForward: Bool
+
+    @State var text: String = ""
 
     var body: some View {
         if viewModel.isInEditMode {
@@ -374,9 +375,10 @@ struct SendContainer: View {
                         .onTapGesture {
                             showAttachmentDialog.toggle()
                         }
-                    MultilineTextField(viewModel.textMessage == "" ? "Type message here ..." : "", text: $viewModel.textMessage, textColor: Color.black)
+
+                    MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black)
                         .cornerRadius(16)
-                        .onChange(of: viewModel.textMessage) { newValue in
+                        .onChange(of: viewModel.textMessage ?? "") { newValue in
                             viewModel.textChanged(newValue)
                         }
 
@@ -384,7 +386,7 @@ struct SendContainer: View {
 
                     if viewModel.audioRecoderVM.isRecording == false {
                         Button {
-                            viewModel.sendTextMessage(viewModel.textMessage)
+                            viewModel.sendTextMessage(text)
                         } label: {
                             Image(systemName: "arrow.up.circle.fill")
                                 .font(.system(size: 24))
@@ -395,6 +397,9 @@ struct SendContainer: View {
                 .padding(8)
                 .opacity(viewModel.thread.type == .channel ? 0.3 : 1.0)
                 .disabled(viewModel.thread.type == .channel)
+            }
+            .onChange(of: text) { newValue in
+                viewModel.textMessage = newValue
             }
         }
     }

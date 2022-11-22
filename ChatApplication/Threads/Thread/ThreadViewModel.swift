@@ -15,6 +15,7 @@ protocol ThreadViewModelProtocol {
     var thread: Conversation { get set }
     var messages: [Message] { get set }
     var editMessage: Message? { get set }
+    var textMessage: String? { get set }
     var threadId: Int { get }
     var readOnly: Bool { get }
     var canLoadNexPage: Bool { get }
@@ -39,7 +40,8 @@ protocol ThreadViewModelProtocol {
     func loadMoreMessage()
     func getHistory(_ toTime: UInt?)
     func sendSignal(_ signalMessage: SignalMessageType)
-    func sendFile(_ url: URL, textMessage: String?)
+    func sendPhotos(uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem)
+    func sendFile(_ url: URL)
     func toggleArchive()
     func archive()
     func unarchive()
@@ -53,6 +55,11 @@ protocol ThreadViewModelProtocol {
     func sendForwardMessage(_ destinationThread: Conversation)
     func sendSeenMessageIfNeeded(_ message: Message)
     func updateThread(_ thread: Conversation)
+    func resendUnsetMessage(_ message: Message)
+    func cancelUnsentMessage(_ uniqueId: String)
+    func threadName(_ threadId: Int) -> String?
+    func searchInsideThread(text: String, offset: Int)
+    func isSameUser(message: Message) -> Bool
 }
 
 class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, Hashable {
@@ -70,16 +77,12 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
     @Published
     var isLoading = false
 
-    @Published
-    var textMessage: String = ""
+    var textMessage: String? = nil
 
     var readOnly = false
 
     @Published
     var searchedMessages: [Message] = []
-
-    @Published
-    var seachableText = ""
 
     @Published
     var messages: [Message] = []
@@ -181,7 +184,19 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
             if let messages = messages {
                 self?.appendMessages(messages: messages)
             }
+        } textMessageNotSentRequests: { [weak self] messages, _, _ in
+            self?.appendMessages(messages: messages?.compactMap { SendTextMessage(from: $0) } ?? [])
+        } editMessageNotSentRequests: { [weak self] editMessages, _, _ in
+            self?.appendMessages(messages: editMessages?.compactMap { EditTextMessage(from: $0) } ?? [])
+        } forwardMessageNotSentRequests: { [weak self] forwardMessages, _, _ in
+            self?.appendMessages(messages: forwardMessages?.compactMap { ForwardMessage(from: $0, destinationThread: .init(id: $0.threadId, title: self?.threadName($0.threadId))) } ?? [])
+        } fileMessageNotSentRequests: { [weak self] fileMessages, _, _ in
+            self?.appendMessages(messages: fileMessages?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1) } ?? [])
         }
+    }
+
+    func threadName(_ threadId: Int) -> String? {
+        threadsViewModel?.threadsRowVM.first { $0.threadId == threadId }?.thread.title
     }
 
     func setupPreview() {
@@ -258,7 +273,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
     func sendForwardMessage(_ destinationThread: Conversation) {
         guard let destinationThreadId = destinationThread.id else { return }
         let messageIds = selectedMessages.compactMap { $0.id }
-        let req = ForwardMessageRequest(threadId: destinationThreadId, messageIds: messageIds)
+        let req = ForwardMessageRequest(fromThreadId: threadId, threadId: destinationThreadId, messageIds: messageIds)
         Chat.sharedInstance.forwardMessages(req) { _, _, _ in
 
         } onSeen: { _, _, _ in
@@ -278,11 +293,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
         }
     }
 
-    func searchInsideThreadMessages(_ text: String) {
-        // -FIXME: add when merger with serach branch
-        //        Chat.sharedInstance.searchThread
-    }
-
     func sendSeenMessageIfNeeded(_ message: Message) {
         guard let messageId = message.id else { return }
         if let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId {
@@ -293,7 +303,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image
-    func sendPhotos(uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem, textMessage: String = "") {
+    func sendPhotos(uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem) {
         guard let image = uiImage else { return }
         let width = Int(image.size.width)
         let height = Int(image.size.height)
@@ -304,19 +314,20 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
                                               fileName: fileName,
                                               mimeType: "image/jpg",
                                               userGroupHash: thread.userGroupHash)
-
-        appendMessage(UploadFileMessage(uploadFileRequest: imageRequest, textMessage: textMessage))
+        let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
+        appendMessages(messages: [UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest)])
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
-    func sendFile(_ url: URL, textMessage: String? = nil) {
+    func sendFile(_ url: URL) {
         guard let data = try? Data(contentsOf: url) else { return }
         let uploadRequest = UploadFileRequest(data: data,
                                               fileExtension: ".\(url.fileExtension)",
                                               fileName: url.fileName,
                                               mimeType: url.mimeType,
                                               userGroupHash: thread.userGroupHash)
-        appendMessage(UploadFileMessage(uploadFileRequest: uploadRequest, textMessage: textMessage ?? ""))
+        let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
+        appendMessages(messages: [UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest)])
     }
 
     func sendSignal(_ signalMessage: SignalMessageType) {
@@ -344,9 +355,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
 
     func setIsInEditMode(_ isInEditMode: Bool) {
         self.isInEditMode = isInEditMode
-        if isInEditMode == false {
-            textMessage = ""
-        }
     }
 
     func setEditMessage(_ message: Message) {
@@ -359,7 +367,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
 
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
     func updateThread(_ thread: Conversation) {
-        thread.updateValues(thread)        
+        thread.updateValues(thread)
     }
 
     func updateThreadInfo(_ title: String, _ description: String, image: UIImage?, assetResources: [PHAssetResource]?) {
@@ -386,10 +394,10 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
         }
     }
 
-    func searchInsideThread(offset: Int = 0) {
+    func searchInsideThread(text: String, offset: Int = 0) {
 //        searchedMessages.removeAll()
-        guard seachableText.count >= 2 else { return }
-        let req = GetHistoryRequest(threadId: threadId, count: 50, offset: offset, query: "\(seachableText)")
+        guard text.count >= 2 else { return }
+        let req = GetHistoryRequest(threadId: threadId, count: 50, offset: offset, query: "\(text)")
         Chat.sharedInstance.getHistory(req) { [weak self] messages, _, _, _ in
             if let messages = messages {
                 self?.searchedMessages.append(contentsOf: messages)
@@ -499,8 +507,10 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
         sort()
     }
 
-    func onDeleteMessage(_ message: Message?, _ uniqueId: String?, _ error: ChatError?) {
-        messages.removeAll(where: { $0.id == message?.id })
+    /// Delete a message with an Id is needed for when the message has persisted before.
+    /// Delete a message with a uniqueId is needed for when the message is sent to a request.
+    func onDeleteMessage(message: Message? = nil, uniqueId: String? = nil, error: ChatError? = nil) {
+        messages.removeAll(where: { $0.uniqueId == message?.uniqueId || message?.id == $0.id })
     }
 
     func setHasNext(_ hasNext: Bool) {
@@ -569,5 +579,46 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
             thread.isArchive?.toggle()
             objectWillChange.send()
         }
+    }
+
+    func resendUnsetMessage(_ message: Message) {
+        switch message {
+        case let req as SendTextMessage:
+            Chat.sharedInstance.sendTextMessage(req.sendTextMessageRequest, onSent: onUnSentResult)
+        case let req as EditTextMessage:
+            Chat.sharedInstance.editMessage(req.editMessageRequest, completion: onUnSentEditCompletionResult)
+        case let req as ForwardMessage:
+            Chat.sharedInstance.forwardMessages(req.forwardMessageRequest, onSent: onUnSentResult)
+        case let req as UploadFileWithTextMessage:
+            appendMessage(UploadFileWithTextMessage(uploadFileRequest: req.uploadFileRequest))
+        default:
+            print("Type not detected!")
+        }
+    }
+
+    func onUnSentEditCompletionResult(_ message: Message?, _ uniqueId: String?, _ error: ChatError?) {
+        if let message = message, threadId == message.conversation?.id {
+            onDeleteMessage(uniqueId: uniqueId)
+            appendMessages(messages: [message])
+        }
+    }
+
+    func onUnSentResult(_ message: SentMessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
+        if let uniqueId = uniqueId, message != nil {
+            onDeleteMessage(uniqueId: uniqueId)
+        }
+    }
+
+    func cancelUnsentMessage(_ uniqueId: String) {
+        CacheFactory.write(cacheType: .deleteQueue(uniqueId))
+        CacheFactory.save()
+        onDeleteMessage(uniqueId: uniqueId)
+    }
+
+    func isSameUser(message: Message) -> Bool {
+        if let previousMessage = messages.first(where: { $0.id == message.previousId }) {
+            return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
+        }
+        return false
     }
 }
