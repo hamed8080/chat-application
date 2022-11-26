@@ -13,13 +13,13 @@ struct ContactContentList: View {
     var viewModel: ContactsViewModel
 
     @State
-    var navigateToAddOrEditContact = false
+    var modifyContactSheet = false
 
     @State
     var isInSelectionMode = false
 
     @State
-    var showDeleteContactsDialog = false
+    var deleteDialog = false
 
     var body: some View {
         List {
@@ -64,7 +64,7 @@ struct ContactContentList: View {
             .padding(0)
             ListLoadingView(isLoading: $viewModel.isLoading)
         }
-        .sheet(isPresented: $navigateToAddOrEditContact) {
+        .sheet(isPresented: $modifyContactSheet) {
             AddOrEditContactView()
                 .environmentObject(viewModel)
         }
@@ -77,7 +77,7 @@ struct ContactContentList: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
-                    navigateToAddOrEditContact.toggle()
+                    modifyContactSheet.toggle()
                 } label: {
                     Label {
                         Text("Create new contacts")
@@ -100,7 +100,7 @@ struct ContactContentList: View {
                 }
 
                 Button {
-                    showDeleteContactsDialog.toggle()
+                    deleteDialog.toggle()
                 } label: {
                     Label {
                         Text("Delete")
@@ -117,7 +117,7 @@ struct ContactContentList: View {
                 ConnectionStatusToolbar()
             }
         }
-        .dialog(title: "Delete selected contacts", message: "Do you want to delete selected contacts?", iconName: "trash", isShowing: $showDeleteContactsDialog) { _ in
+        .dialog("Delete selected contacts", "Do you want to delete selected contacts?", "trash", $deleteDialog) { _ in
             viewModel.deleteSelectedItems()
         }
     }

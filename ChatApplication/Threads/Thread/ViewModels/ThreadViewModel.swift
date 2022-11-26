@@ -199,15 +199,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         threadsViewModel?.threadsRowVM.first { $0.threadId == threadId }?.thread.title
     }
 
-    func setupPreview() {
-        setupPreview()
-    }
-
-    func deleteMessages(_ messages: [Message]) {
-        let messagedIds = messages.compactMap { $0.id }
-        Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
-    }
-
     func sendStartTyping(_ newValue: String) {
         if newValue.isEmpty == false {
             Chat.sharedInstance.snedStartTyping(threadId: threadId)
@@ -329,6 +320,12 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         }
         sort()
         updateScrollToLastSeenUniqueId()
+    }
+
+    func deleteMessages(_ messages: [Message]) {
+        let messagedIds = messages.compactMap { $0.id }
+        Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
+        selectedMessages = []
     }
 
     /// Delete a message with an Id is needed for when the message has persisted before.

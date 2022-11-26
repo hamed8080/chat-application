@@ -22,7 +22,7 @@ struct ThreadView: View {
     var isInEditMode: Bool = false
 
     @State
-    var showDeleteSelectedMessages: Bool = false
+    var deleteDialaog: Bool = false
 
     @State
     var showSelectThreadToForward: Bool = false
@@ -49,7 +49,7 @@ struct ThreadView: View {
                 ThreadMessagesList(isInEditMode: $isInEditMode)
                     .environmentObject(viewModel)
                 SendContainer(showAttachmentDialog: $showAttachmentDialog,
-                              showDeleteSelectedMessages: $showDeleteSelectedMessages,
+                              deleteMessagesDialog: $deleteDialaog,
                               showSelectThreadToForward: $showSelectThreadToForward)
                     .environmentObject(viewModel)
 
@@ -58,12 +58,7 @@ struct ThreadView: View {
                 }
             }
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
-            .dialog(
-                title: "Delete selected messages",
-                message: "Are you sure you want to delete all selected messages?",
-                iconName: "trash.fill",
-                isShowing: $showDeleteSelectedMessages
-            ) { _ in
+            .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
                 viewModel.deleteMessages(viewModel.selectedMessages)
             }
             AttachmentDialog(showAttachmentDialog: $showAttachmentDialog, viewModel: ActionSheetViewModel(threadViewModel: viewModel))
@@ -119,9 +114,6 @@ struct ThreadView: View {
             showExportFileURL = filePath != nil
         })
         .onAppear {
-            if isPreview {
-                viewModel.setupPreview()
-            }
             viewModel.getHistory()
         }
         .sheet(isPresented: $showExportFileURL, onDismiss: {
@@ -334,7 +326,7 @@ struct SendContainer: View {
     var showAttachmentDialog: Bool
 
     @Binding
-    var showDeleteSelectedMessages: Bool
+    var deleteMessagesDialog: Bool
 
     @Binding
     var showSelectThreadToForward: Bool
@@ -361,7 +353,7 @@ struct SendContainer: View {
                         .foregroundColor(Color(named: "red_soft"))
                         .padding()
                         .onTapGesture {
-                            showDeleteSelectedMessages.toggle()
+                            deleteMessagesDialog.toggle()
                         }
 
                     Image(systemName: "arrowshape.turn.up.right.fill")
