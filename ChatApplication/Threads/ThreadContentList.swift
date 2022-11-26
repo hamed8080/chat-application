@@ -28,11 +28,11 @@ struct ThreadContentList: View {
             ListLoadingView(isLoading: $viewModel.isLoading)
             if let folder = folder {
                 ForEach(folder.tagParticipants ?? [], id: \.id) { tagParticipant in
-                    if let thread = tagParticipant.conversation, let threadVm = viewModel.threadsRowVM.first{$0.threadId == thread.id} ?? ThreadViewModel(thread: thread){
+                    if let thread = tagParticipant.conversation, let threadVM = viewModel.threadsRowVM.first{$0.threadId == thread.id} ?? ThreadViewModel(thread: thread){
                         NavigationLink {
-                            ThreadView(viewModel: threadVm)
+                            ThreadView(viewModel: threadVM)
                         } label: {
-                            ThreadRow(viewModel: threadVm)
+                            ThreadRow(viewModel: threadVM)
                         }
                     }
                 }

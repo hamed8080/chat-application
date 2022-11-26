@@ -12,6 +12,15 @@ struct ContactContentList: View {
     @EnvironmentObject
     var viewModel: ContactsViewModel
 
+    @State
+    var navigateToAddOrEditContact = false
+
+    @State
+    var isInSelectionMode = false
+
+    @State
+    var showDeleteContactsDialog = false
+
     var body: some View {
         List {
             ListLoadingView(isLoading: $viewModel.isLoading)
@@ -28,49 +37,47 @@ struct ContactContentList: View {
                 .noSeparators()
             }
 
-            if viewModel.searchedContacts.count > 0 {
+            if viewModel.searchedContactsVMS.count > 0 {
                 Text("Searched contacts")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                     .noSeparators()
-                ForEach(viewModel.searchedContacts, id: \.self) { contact in
-                    SearchContactRow(contact: contact, viewModel: viewModel)
+                ForEach(viewModel.searchedContactsVMS, id: \.self) { contactVM in
+                    SearchContactRow()
+                        .environmentObject(contactVM)
                         .noSeparators()
                 }
             }
 
-            ForEach(viewModel.contacts, id: \.id) { contact in
-                ContactRow(contact: contact, isInEditMode: $viewModel.isInEditMode)
+            ForEach(viewModel.contactsVMS, id: \.id) { contactVM in
+                ContactRow(isInSelectionMode: $isInSelectionMode, imageLoader: ImageLoader(url: contactVM.contact.image ?? contactVM.contact.linkedUser?.image ?? ""))
+                    .environmentObject(contactVM)
                     .noSeparators()
                     .onAppear {
-                        if viewModel.contacts.last == contact {
+                        if viewModel.contactsVMS.last?.contact == contactVM.contact {
                             viewModel.loadMore()
                         }
                     }
-                    .animation(.spring(), value: viewModel.isInEditMode)
+                    .animation(.spring(), value: isInSelectionMode)
             }
             .onDelete(perform: viewModel.delete)
             .padding(0)
             ListLoadingView(isLoading: $viewModel.isLoading)
         }
-        .background(
-            NavigationLink(destination: AddOrEditContactView().environmentObject(viewModel), isActive: $viewModel.navigateToAddOrEditContact) {
-                EmptyView()
-            }
-                .frame(width: 0, height: 0)
-                .hidden()
-                .noSeparators()
-        )
+        .sheet(isPresented: $navigateToAddOrEditContact) {
+            AddOrEditContactView()
+                .environmentObject(viewModel)
+        }
         .searchable(text: $viewModel.searchContactString, placement: .navigationBarDrawer, prompt: "Search...")
-        .animation(.easeInOut, value: viewModel.contacts)
-        .animation(.easeInOut, value: viewModel.searchedContacts)
+        .animation(.easeInOut, value: viewModel.contactsVMS)
+        .animation(.easeInOut, value: viewModel.searchedContactsVMS)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
         .navigationTitle(Text("Contacts"))
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
-                    viewModel.navigateToAddOrEditContact.toggle()
+                    navigateToAddOrEditContact.toggle()
                 } label: {
                     Label {
                         Text("Create new contacts")
@@ -82,18 +89,18 @@ struct ContactContentList: View {
 
             ToolbarItemGroup(placement: .navigationBarLeading) {
                 Button {
-                    viewModel.isInEditMode.toggle()
+                    isInSelectionMode.toggle()
                 } label: {
                     Label {
-                        Text("Edit")
+                        Text("Selection")
                     } icon: {
-                        Image(systemName: "list.bullet.rectangle.portrait")
+                        Image(systemName: "filemenu.and.selection")
                             .font(.body.bold())
                     }
                 }
 
                 Button {
-                    viewModel.navigateToAddOrEditContact.toggle()
+                    showDeleteContactsDialog.toggle()
                 } label: {
                     Label {
                         Text("Delete")
@@ -103,12 +110,15 @@ struct ContactContentList: View {
                             .font(.body.bold())
                     }
                 }
-                .opacity(viewModel.isInEditMode ? 1 : 0.5)
-                .disabled(!viewModel.isInEditMode)
+                .opacity(isInSelectionMode ? 1 : 0.5)
+                .disabled(!isInSelectionMode)
             }
             ToolbarItem(placement: .principal) {
                 ConnectionStatusToolbar()
             }
+        }
+        .dialog(title: "Delete selected contacts", message: "Do you want to delete selected contacts?", iconName: "trash", isShowing: $showDeleteContactsDialog) { _ in
+            viewModel.deleteSelectedItems()
         }
     }
 }
@@ -116,12 +126,8 @@ struct ContactContentList: View {
 struct ContactContentList_Previews: PreviewProvider {
     static var previews: some View {
         let vm = ContactsViewModel()
-
         ContactContentList()
             .environmentObject(vm)
-            .onAppear {
-                vm.setupPreview()
-            }
             .environmentObject(AppState.shared)
     }
 }

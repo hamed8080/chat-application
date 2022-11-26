@@ -11,12 +11,14 @@ import Foundation
 import Photos
 import SwiftUI
 
-protocol ThreadViewModelProtocol {
+protocol ThreadViewModelProtocol: AnyObject {
     var thread: Conversation { get set }
     var messages: [Message] { get set }
-    var editMessage: Message? { get set }
-    var textMessage: String? { get set }
     var threadId: Int { get }
+}
+
+protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
+    var isInEditMode: Bool { get set }
     var readOnly: Bool { get }
     var canLoadNexPage: Bool { get }
     var threadsViewModel: ThreadsViewModel? { get set }
@@ -26,43 +28,26 @@ protocol ThreadViewModelProtocol {
     var count: Int { get }
     func delete()
     func leave()
-    func togglePin()
-    func pin()
-    func unpin()
-    func onPinChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
     func clearHistory()
-    func toggleMute()
-    func mute()
-    func unmute()
-    func onMuteChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
     func spamPV()
     func deleteMessages(_ messages: [Message])
     func loadMoreMessage()
     func getHistory(_ toTime: UInt?)
     func sendSignal(_ signalMessage: SignalMessageType)
-    func sendPhotos(uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem)
-    func sendFile(_ url: URL)
-    func toggleArchive()
-    func archive()
-    func unarchive()
-    func onArchiveChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
     func onLastMessageChanged(_ thread: Conversation)
-    func onEditedMessage(_ editedMessage: Message?)
-    func sendEditMessage(_ textMessage: String)
-    func sendTextMessage(_ textMessage: String)
-    func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String)
-    func sendNormalMessage(_ textMessage: String)
-    func sendForwardMessage(_ destinationThread: Conversation)
-    func sendSeenMessageIfNeeded(_ message: Message)
-    func updateThread(_ thread: Conversation)
-    func resendUnsetMessage(_ message: Message)
-    func cancelUnsentMessage(_ uniqueId: String)
     func threadName(_ threadId: Int) -> String?
     func searchInsideThread(text: String, offset: Int)
     func isSameUser(message: Message) -> Bool
+    func sendStartTyping(_ text: String)
+    func appendMessages(messages: [Message])
+    func onDeleteMessage(message: Message?, uniqueId: String?, error: ChatError?)
+    func appendMessage(_ message: Message)
+    func updateThread(_ thread: Conversation)
+    func sendSeenMessageIfNeeded(_ message: Message)
 }
 
-class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, Hashable {
+class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable, Hashable {
+
     static func == (lhs: ThreadViewModel, rhs: ThreadViewModel) -> Bool {
         rhs.threadId == lhs.threadId
     }
@@ -77,8 +62,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
     @Published
     var isLoading = false
 
-    var textMessage: String? = nil
-
     var readOnly = false
 
     @Published
@@ -89,6 +72,27 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
 
     @Published
     var isTyping: Bool = false
+
+    var textMessage: String?
+
+    @Published
+    var selectedMessages: [Message] = []
+
+    @Published
+    var editMessage: Message?
+
+    @Published
+    var replyMessage: Message?
+
+    weak var forwardMessage: Message? {
+        didSet {
+            isInEditMode = true
+        }
+    }
+
+    @Published
+    var scrollToUniqueId: String?
+    var canScrollToBottomOfTheList: Bool = false
 
     private(set) var cancellableSet: Set<AnyCancellable> = []
 
@@ -107,17 +111,9 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
     var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
 
     var signalMessageText: String?
-    weak var replyMessage: Message?
-    weak var forwardMessage: Message?
 
     @Published
     var isInEditMode: Bool = false
-
-    @Published
-    var selectedMessages: [Message] = []
-
-    @Published
-    var editMessage: Message?
 
     @Published
     var exportMessagesVM: ExportMessagesViewModelProtocol
@@ -129,6 +125,10 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
         self.thread = thread
         self.exportMessagesVM = ExportMessagesViewModel(thread: thread)
         self.threadsViewModel = threadsViewModel
+        setupNotificationObservers()
+    }
+
+    private func setupNotificationObservers() {
         NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
             .compactMap { $0.object as? SystemEventTypes }
             .sink { [weak self] systemMessageEvent in
@@ -208,84 +208,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
         Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
     }
 
-    /// It triggers when send button tapped
-    func sendTextMessage(_ textMessage: String) {
-        if let replyMessage = replyMessage, let replyMessageId = replyMessage.id {
-            sendReplyMessage(replyMessageId, textMessage)
-        } else if editMessage != nil {
-            sendEditMessage(textMessage)
-        } else {
-            sendNormalMessage(textMessage)
-        }
-        setIsInEditMode(false) // close edit mode in ui
-    }
-
-    func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String) {
-        let req = ReplyMessageRequest(threadId: threadId,
-                                      repliedTo: replyMessageId,
-                                      textMessage: textMessage,
-                                      messageType: .text)
-        Chat.sharedInstance.replyMessage(req) { _ in
-
-        } onSent: { _, _, _ in
-
-        } onSeen: { _, _, _ in
-
-        } onDeliver: { _, _, _ in
-        }
-    }
-
-    func sendEditMessage(_ textMessage: String) {
-        guard let editMessage = editMessage, let messageId = editMessage.id else { return }
-        let req = EditMessageRequest(threadId: threadId,
-                                     messageType: .text,
-                                     messageId: messageId,
-                                     textMessage: textMessage)
-        self.editMessage = nil
-        isInEditMode = false
-        Chat.sharedInstance.editMessage(req) { [weak self] editedMessage, _, _ in
-            self?.onEditedMessage(editedMessage)
-        }
-    }
-
-    func onEditedMessage(_ editedMessage: Message?) {
-        if let editedMessage = editedMessage, let index = messages.firstIndex(where: { $0.id == editedMessage.id }) {
-            withAnimation(.easeInOut) {
-                messages[index] = editedMessage
-            }
-        }
-    }
-
-    func sendNormalMessage(_ textMessage: String) {
-        let req = SendTextMessageRequest(threadId: threadId,
-                                         textMessage: textMessage,
-                                         messageType: .text)
-        Chat.sharedInstance.sendTextMessage(req) { _ in
-
-        } onSent: { _, _, _ in
-
-        } onSeen: { _, _, _ in
-
-        } onDeliver: { _, _, _ in
-        }
-    }
-
-    func sendForwardMessage(_ destinationThread: Conversation) {
-        guard let destinationThreadId = destinationThread.id else { return }
-        let messageIds = selectedMessages.compactMap { $0.id }
-        let req = ForwardMessageRequest(fromThreadId: threadId, threadId: destinationThreadId, messageIds: messageIds)
-        Chat.sharedInstance.forwardMessages(req) { _, _, _ in
-
-        } onSeen: { _, _, _ in
-
-        } onDeliver: { _, _, _ in
-
-        } uniqueIdsResult: { _ in
-        }
-        setIsInEditMode(false) // close edit mode in ui
-    }
-
-    func textChanged(_ newValue: String) {
+    func sendStartTyping(_ newValue: String) {
         if newValue.isEmpty == false {
             Chat.sharedInstance.snedStartTyping(threadId: threadId)
         } else {
@@ -298,36 +221,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
         if let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId {
             Chat.sharedInstance.seen(.init(messageId: messageId))
             // update cache read count
-            //            CacheFactory.write(cacheType: .threads([thread]))
         }
-    }
-
-    /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image
-    func sendPhotos(uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem) {
-        guard let image = uiImage else { return }
-        let width = Int(image.size.width)
-        let height = Int(image.size.height)
-        let fileName = item.phAsset.originalFilename
-        let imageRequest = UploadImageRequest(data: image.jpegData(compressionQuality: 1.0) ?? Data(),
-                                              hC: height,
-                                              wC: width,
-                                              fileName: fileName,
-                                              mimeType: "image/jpg",
-                                              userGroupHash: thread.userGroupHash)
-        let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
-        appendMessages(messages: [UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest)])
-    }
-
-    /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
-    func sendFile(_ url: URL) {
-        guard let data = try? Data(contentsOf: url) else { return }
-        let uploadRequest = UploadFileRequest(data: data,
-                                              fileExtension: ".\(url.fileExtension)",
-                                              fileName: url.fileName,
-                                              mimeType: url.mimeType,
-                                              userGroupHash: thread.userGroupHash)
-        let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
-        appendMessages(messages: [UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest)])
     }
 
     func sendSignal(_ signalMessage: SignalMessageType) {
@@ -335,31 +229,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
     }
 
     func playAudio() {}
-
-    func setReplyMessage(_ message: Message?) {
-        replyMessage = message
-    }
-
-    func setForwardMessage(_ message: Message?) {
-        isInEditMode = message != nil
-        forwardMessage = message
-    }
-
-    func toggleSelectedMessage(_ message: Message, _ isSelected: Bool) {
-        if isSelected {
-            appendSelectedMessage(message)
-        } else {
-            removeSelectedMessage(message)
-        }
-    }
-
-    func setIsInEditMode(_ isInEditMode: Bool) {
-        self.isInEditMode = isInEditMode
-    }
-
-    func setEditMessage(_ message: Message) {
-        editMessage = message
-    }
 
     func setMessageEdited(_ message: Message) {
         messages.first(where: { $0.id == message.id })?.message = message.message
@@ -421,57 +290,11 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
         }
     }
 
-    func togglePin() {
-        if thread.pin == false {
-            pin()
-        } else {
-            unpin()
-        }
-    }
-
-    func pin() {
-        Chat.sharedInstance.pinThread(.init(subjectId: threadId), completion: onPinChanged)
-    }
-
-    func unpin() {
-        Chat.sharedInstance.unpinThread(.init(subjectId: threadId), completion: onPinChanged)
-    }
-
-    func onPinChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
-        if threadId != nil, error == nil {
-            thread.pin?.toggle()
-            objectWillChange.send()
-        }
-    }
-
     func clearHistory() {
         Chat.sharedInstance.clearHistory(.init(subjectId: threadId)) { [weak self] threadId, _, _ in
             if let _ = threadId {
                 self?.clear()
             }
-        }
-    }
-
-    func toggleMute() {
-        if thread.mute ?? false == false {
-            mute()
-        } else {
-            unmute()
-        }
-    }
-
-    func mute() {
-        Chat.sharedInstance.muteThread(.init(subjectId: threadId), completion: onMuteChanged)
-    }
-
-    func unmute() {
-        Chat.sharedInstance.unmuteThread(.init(subjectId: threadId), completion: onMuteChanged)
-    }
-
-    func onMuteChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
-        if threadId != nil, error == nil {
-            thread.mute?.toggle()
-            objectWillChange.send()
         }
     }
 
@@ -505,6 +328,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
             }
         }
         sort()
+        updateScrollToLastSeenUniqueId()
     }
 
     /// Delete a message with an Id is needed for when the message has persisted before.
@@ -524,6 +348,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
             thread.lastMessageVO = message
             thread.lastMessage = message.message
             sort()
+            scrollToLastMessageIfLastMessageIsVisible()
         }
     }
 
@@ -547,72 +372,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocol, Identifiable, 
                 return false
             }
         }
-    }
-
-    func appendSelectedMessage(_ message: Message) {
-        selectedMessages.append(message)
-    }
-
-    func removeSelectedMessage(_ message: Message) {
-        guard let index = selectedMessages.firstIndex(of: message) else { return }
-        selectedMessages.remove(at: index)
-    }
-
-    func toggleArchive() {
-        if thread.isArchive == false {
-            archive()
-        } else {
-            unarchive()
-        }
-    }
-
-    func archive() {
-        Chat.sharedInstance.archiveThread(.init(subjectId: threadId), onArchiveChanged)
-    }
-
-    func unarchive() {
-        Chat.sharedInstance.unarchiveThread(.init(subjectId: threadId), onArchiveChanged)
-    }
-
-    func onArchiveChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
-        if threadId != nil, error == nil {
-            thread.isArchive?.toggle()
-            objectWillChange.send()
-        }
-    }
-
-    func resendUnsetMessage(_ message: Message) {
-        switch message {
-        case let req as SendTextMessage:
-            Chat.sharedInstance.sendTextMessage(req.sendTextMessageRequest, onSent: onUnSentResult)
-        case let req as EditTextMessage:
-            Chat.sharedInstance.editMessage(req.editMessageRequest, completion: onUnSentEditCompletionResult)
-        case let req as ForwardMessage:
-            Chat.sharedInstance.forwardMessages(req.forwardMessageRequest, onSent: onUnSentResult)
-        case let req as UploadFileWithTextMessage:
-            appendMessage(UploadFileWithTextMessage(uploadFileRequest: req.uploadFileRequest))
-        default:
-            print("Type not detected!")
-        }
-    }
-
-    func onUnSentEditCompletionResult(_ message: Message?, _ uniqueId: String?, _ error: ChatError?) {
-        if let message = message, threadId == message.conversation?.id {
-            onDeleteMessage(uniqueId: uniqueId)
-            appendMessages(messages: [message])
-        }
-    }
-
-    func onUnSentResult(_ message: SentMessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
-        if let uniqueId = uniqueId, message != nil {
-            onDeleteMessage(uniqueId: uniqueId)
-        }
-    }
-
-    func cancelUnsentMessage(_ uniqueId: String) {
-        CacheFactory.write(cacheType: .deleteQueue(uniqueId))
-        CacheFactory.save()
-        onDeleteMessage(uniqueId: uniqueId)
     }
 
     func isSameUser(message: Message) -> Bool {

@@ -47,7 +47,7 @@ struct AddThreadToTagsView:View {
                 Spacer()
             }
         }
-        .customDialog(isShowing: $showAddNewFolderDialog, content: {
+        .customDialog(isShowing: $showAddNewFolderDialog) {
             PrimaryCustomDialog(title: "Add Folder",
                                 message: "Enter folder name to add threads to this folder you can manage folders from settings.",
                                 systemImageName: "folder.badge.plus",
@@ -59,7 +59,7 @@ struct AddThreadToTagsView:View {
             }
             .keyboardResponsive()
             .padding()
-        })
+        }
         .onAppear {
             viewModel.getOfflineTags()
         }

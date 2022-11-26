@@ -161,7 +161,7 @@ struct TextMessageType: View {
             .contextMenu {
                 Button {
                     withAnimation {
-                        threadViewModel.setReplyMessage(message)
+                        threadViewModel.replyMessage = message
                     }
                 } label: {
                     Label("Reply", systemImage: "arrowshape.turn.up.left")
@@ -169,7 +169,7 @@ struct TextMessageType: View {
 
                 Button {
                     withAnimation {
-                        threadViewModel.setForwardMessage(message)
+                        threadViewModel.forwardMessage = message
                     }
                 } label: {
                     Label("forward", systemImage: "arrowshape.turn.up.forward")
@@ -177,7 +177,7 @@ struct TextMessageType: View {
 
                 Button {
                     withAnimation {
-                        threadViewModel.setEditMessage(message)
+                        threadViewModel.editMessage = message
                     }
                 } label: {
                     Label("Edit", systemImage: "pencil.circle")
@@ -200,7 +200,7 @@ struct TextMessageType: View {
 
                 Button {
                     withAnimation {
-                        threadViewModel.setIsInEditMode(true)
+                        threadViewModel.isInEditMode = true
                     }
                 } label: {
                     Label("Select", systemImage: "checkmark.circle")

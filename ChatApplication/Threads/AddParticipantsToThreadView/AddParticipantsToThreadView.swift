@@ -5,22 +5,21 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
-import SwiftUI
 import FanapPodChatSDK
+import SwiftUI
 
-struct AddParticipantsToThreadView:View {
-
+struct AddParticipantsToThreadView: View {
     @StateObject
-    var viewModel:AddParticipantsToViewModel
+    var viewModel: AddParticipantsToViewModel
 
-    @StateObject
-    var contactsVM = ContactsViewModel()
-    
-    var onCompleted:([Contact])->()
+    @EnvironmentObject
+    var contactsVM: ContactsViewModel
 
-    var body: some View{
-        VStack(alignment:.leading,spacing: 0){
-            HStack{
+    var onCompleted: ([Contact]) -> ()
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
                 Spacer()
                 Button {
                     withAnimation {
@@ -37,10 +36,11 @@ struct AddParticipantsToThreadView:View {
             .ignoresSafeArea()
 
             List {
-                ForEach(contactsVM.contacts , id:\.id) { contact in
-                    StartThreadContactRow(contact: contact, isInMultiSelectMode: .constant(true), viewModel: contactsVM)
+                ForEach(contactsVM.contactsVMS, id: \.id) { contactVM in
+                    StartThreadContactRow(isInMultiSelectMode: .constant(true))
+                        .environmentObject(contactVM)
                         .onAppear {
-                            if contactsVM.contacts.last == contact{
+                            if contactsVM.contactsVMS.last == contactVM {
                                 contactsVM.loadMore()
                             }
                         }
@@ -54,19 +54,9 @@ struct AddParticipantsToThreadView:View {
 
 struct StartThreadResultModel_Previews: PreviewProvider {
     static var previews: some View {
-        let appState = AppState.shared
-        let vm = StartThreadContactPickerViewModel()
-        let contactVM = ContactsViewModel()
-        AddParticipantsToThreadView(viewModel: .init(),
-                                    contactsVM: contactVM)
-        { contacts in
-
+        AddParticipantsToThreadView(viewModel: .init()) { _ in
         }
+        .environmentObject(ContactsViewModel())
         .preferredColorScheme(.dark)
-        .onAppear(){
-            vm.setupPreview()
-            contactVM.setupPreview()
-        }
-        .environmentObject(appState)
     }
 }
