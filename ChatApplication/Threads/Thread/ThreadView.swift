@@ -45,26 +45,26 @@ struct ThreadView: View {
         let _ = Self._printChanges()
         ZStack {
             VStack {
+                ThreadPinMessage(message: viewModel.messages.filter{$0.pinned == true}.first)
                 ThreadMessagesList(isInEditMode: $isInEditMode)
                     .environmentObject(viewModel)
-                SendContainer(viewModel: viewModel,
-                              showAttachmentDialog: $showAttachmentDialog,
+                SendContainer(showAttachmentDialog: $showAttachmentDialog,
                               showDeleteSelectedMessages: $showDeleteSelectedMessages,
                               showSelectThreadToForward: $showSelectThreadToForward)
+                    .environmentObject(viewModel)
 
                 NavigationLink(destination: ThreadDetailView().environmentObject(viewModel), isActive: $showThreadDetailButton) {
                     EmptyView()
                 }
             }
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
-            .customDialog(isShowing: $showDeleteSelectedMessages) {
-                PrimaryCustomDialog(title: "Delete selected messages",
-                                    message: "Are you sure you want to delete all selected messages?",
-                                    systemImageName: "trash.fill",
-                                    hideDialog: $showDeleteSelectedMessages) { _ in
-                    viewModel.deleteMessages(viewModel.selectedMessages)
-                }
-                .padding()
+            .dialog(
+                title: "Delete selected messages",
+                message: "Are you sure you want to delete all selected messages?",
+                iconName: "trash.fill",
+                isShowing: $showDeleteSelectedMessages
+            ) { _ in
+                viewModel.deleteMessages(viewModel.selectedMessages)
             }
             AttachmentDialog(showAttachmentDialog: $showAttachmentDialog, viewModel: ActionSheetViewModel(threadViewModel: viewModel))
 
@@ -204,6 +204,9 @@ struct ThreadMessagesList: View {
     var scrollingUP = false
     @Environment(\.colorScheme)
     var colorScheme
+    @State private var scrollViewHeight = CGFloat.infinity
+
+    @Namespace var scrollViewNameSpace
 
     var body: some View {
         ScrollViewReader { scrollView in
@@ -213,9 +216,11 @@ struct ThreadMessagesList: View {
                         ListLoadingView(isLoading: $viewModel.isLoading)
                         ForEach(viewModel.messages, id: \.uniqueId) { message in
                             MessageRow(viewModel: .init(message: message), isInEditMode: isInEditMode)
+                                .id(message.uniqueId)
                                 .environmentObject(viewModel)
                                 .onAppear {
                                     viewModel.sendSeenMessageIfNeeded(message)
+                                    viewModel.setIfNeededToScrollToTheLastPosition(scrollingUP, message)
                                 }
                         }
                         ListLoadingView(isLoading: $viewModel.isLoading)
@@ -234,9 +239,15 @@ struct ThreadMessagesList: View {
                     }
                 )
                 .coordinateSpace(name: "scroll")
-                .onPreferenceChange(ViewOffsetKey.self) { value in
-                    if value < 64, scrollingUP {
+                .onPreferenceChange(ViewOffsetKey.self) { originY in
+                    if originY < 64, scrollingUP {
                         viewModel.loadMoreMessage()
+                    }
+                }
+                .onReceive(viewModel.$scrollToUniqueId) { uniqueId in
+                    guard let uniqueId = uniqueId else { return }
+                    withAnimation {
+                        scrollView.scrollTo(uniqueId, anchor: .bottom)
                     }
                 }
                 .background(
@@ -257,11 +268,7 @@ struct ThreadMessagesList: View {
             HStack {
                 Spacer()
                 Button {
-                    withAnimation(.easeInOut) {
-                        if let index = viewModel.messages.firstIndex(where: { $0.uniqueId == viewModel.messages.last?.uniqueId }) {
-                            scrollView.scrollTo(viewModel.messages[index].uniqueId, anchor: .top)
-                        }
-                    }
+                    viewModel.scrollToBottom()
                 } label: {
                     Image(systemName: "chevron.down")
                         .resizable()
@@ -298,8 +305,30 @@ struct ThreadMessagesList: View {
     }
 }
 
+struct ThreadPinMessage: View {
+    let message: Message?
+
+    var body: some View {
+        if let message = message {
+            HStack {
+                Text(message.messageTitle)
+                Spacer()
+                Image(systemName: "pin")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(.orange)
+            }
+            .frame(height: 64)
+        } else {
+             EmptyView()
+        }
+    }
+}
+
 struct SendContainer: View {
-    @StateObject var viewModel: ThreadViewModel
+    @EnvironmentObject
+    var viewModel: ThreadViewModel
 
     @Binding
     var showAttachmentDialog: Bool
@@ -310,7 +339,8 @@ struct SendContainer: View {
     @Binding
     var showSelectThreadToForward: Bool
 
-    @State var text: String = ""
+    @State
+    var text: String = ""
 
     var body: some View {
         if viewModel.isInEditMode {
@@ -320,7 +350,7 @@ struct SendContainer: View {
                         .font(.system(size: 24))
                         .foregroundColor(Color.blue)
                         .onTapGesture {
-                            viewModel.setIsInEditMode(false)
+                            viewModel.isInEditMode = false
                         }
 
                     Text("\(viewModel.selectedMessages.count) selected \(viewModel.forwardMessage != nil ? "to forward" : "")")
@@ -353,7 +383,7 @@ struct SendContainer: View {
                             .font(.system(size: 24))
                             .foregroundColor(Color.blue)
                             .onTapGesture {
-                                viewModel.setReplyMessage(nil)
+                                viewModel.replyMessage = nil
                             }
                         Text(replyMessage.message ?? replyMessage.metaData?.name ?? "")
                             .offset(x: 8)
@@ -364,7 +394,10 @@ struct SendContainer: View {
                         Image(systemName: "arrowshape.turn.up.left.fill")
                             .font(.system(size: 24))
                             .foregroundColor(Color.gray)
-                    }.padding(8)
+                    }
+                    .animation(.easeInOut, value: viewModel.replyMessage)
+                    .transition(.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .bottom)))
+                    .padding(8)
                     Divider()
                 }
 
@@ -379,7 +412,7 @@ struct SendContainer: View {
                     MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black)
                         .cornerRadius(16)
                         .onChange(of: viewModel.textMessage ?? "") { newValue in
-                            viewModel.textChanged(newValue)
+                            viewModel.sendStartTyping(newValue)
                         }
 
                     AudioRecordingView(viewModel: .init(threadViewModel: viewModel))
@@ -387,6 +420,7 @@ struct SendContainer: View {
                     if viewModel.audioRecoderVM.isRecording == false {
                         Button {
                             viewModel.sendTextMessage(text)
+                            text = ""
                         } label: {
                             Image(systemName: "arrow.up.circle.fill")
                                 .font(.system(size: 24))
@@ -397,6 +431,11 @@ struct SendContainer: View {
                 .padding(8)
                 .opacity(viewModel.thread.type == .channel ? 0.3 : 1.0)
                 .disabled(viewModel.thread.type == .channel)
+            }
+            .onReceive(viewModel.$editMessage) { editMessage in
+                if let editMessage = editMessage {
+                    text = editMessage.message ?? ""
+                }
             }
             .onChange(of: text) { newValue in
                 viewModel.textMessage = newValue
@@ -414,7 +453,7 @@ struct ThreadView_Previews: PreviewProvider {
 //                vm.toggleRecording()
 //                vm.setReplyMessage(MockData.message)
 //                vm.setForwardMessage(MockData.message)
-                vm.setIsInEditMode(false)
+                vm.isInEditMode = false
             }
     }
 }

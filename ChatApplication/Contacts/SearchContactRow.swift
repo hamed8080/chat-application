@@ -9,10 +9,10 @@ import SwiftUI
 import FanapPodChatSDK
 
 struct SearchContactRow: View {
-    
-    var contact:Contact
-    
-    public var viewModel:ContactsViewModel
+
+    @EnvironmentObject
+    var contactVM: ContactViewModel
+    var contact: Contact { contactVM.contact }
     
     var body: some View{
         HStack{
@@ -41,13 +41,14 @@ struct SearchContactRow: View {
         .contentShape(Rectangle())
         .autoNavigateToThread()
         .onTapGesture {
-            viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+            contactVM.contactsVM.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
         }
     }
 }
 
 struct SearchContactRow_Previews: PreviewProvider {
     static var previews: some View {
-        SearchContactRow(contact: MockData.contact,viewModel: ContactsViewModel())
+        SearchContactRow()
+            .environmentObject(ContactViewModel(contact: MockData.contact, contactsVM: ContactsViewModel()))
     }
 }

@@ -45,9 +45,9 @@ class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
 
     var recordingOutputPath: URL? { recordingOutputBasePath?.appendingPathComponent(recordingFileName) }
 
-    var threadViewModel: ThreadViewModelProtocol
+    var threadViewModel: ThreadViewModel
 
-    init (threadViewModel: ThreadViewModelProtocol) {
+    init (threadViewModel: ThreadViewModel) {
         self.threadViewModel = threadViewModel
     }
 

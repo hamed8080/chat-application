@@ -29,16 +29,16 @@ struct Avatar: View {
         var textSize: CGFloat = 24
     }
 
-    init(url: String?, userName: String? = nil, style: StyleConfig = .init(), size: ImageSize = .SMALL, metadata: String? = nil, token: String? = nil) {
+    init(imageLoader: ImageLoader? = nil, url: String?, userName: String? = nil, style: StyleConfig = .init(), size: ImageSize = .SMALL, metadata: String? = nil, token: String? = nil) {
         self.url = url
-        imageLoader = ImageLoader(url: url ?? "")
+        self.imageLoader = imageLoader ?? ImageLoader(url: url ?? "")
         self.metadata = metadata
         self.token = token
         self.size = size
         self.style = style
         self.userName = userName
         if url != nil {
-            imageLoader.fetch()
+            self.imageLoader.fetch()
         }
     }
 

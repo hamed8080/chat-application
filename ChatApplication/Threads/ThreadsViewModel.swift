@@ -52,6 +52,10 @@ class ThreadsViewModel: ObservableObject {
             .compactMap { $0.object as? ThreadEventTypes }
             .sink(receiveValue: onThreadEvent)
             .store(in: &cancellableSet)
+        NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
+            .compactMap { $0.object as? MessageEventTypes }
+            .sink(receiveValue: onNewMessage)
+            .store(in: &cancellableSet)
         getThreads()
     }
 
@@ -65,6 +69,13 @@ class ThreadsViewModel: ObservableObject {
             }
         default:
             break
+        }
+    }
+
+    func onNewMessage(_ event: MessageEventTypes) {
+        if case .messageNew(let message) = event, let threadVM = threadsRowVM.first(where: { $0.threadId == message.conversation?.id }) {
+            threadVM.thread.time = message.conversation?.time
+            sort()
         }
     }
 

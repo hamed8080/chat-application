@@ -15,7 +15,7 @@ struct CustomDialog<DialogContent: View>: ViewModifier {
     @Environment(\.colorScheme)
     var colorScheme
 
-    init(isShowing: Binding<Bool>, @ViewBuilder dialogContent: @escaping ()->DialogContent) {
+    init(isShowing: Binding<Bool>, @ViewBuilder dialogContent: @escaping ()-> DialogContent) {
         self._isShowing = isShowing
         self.dialogContent = dialogContent()
     }
@@ -71,5 +71,20 @@ struct CustomDialog_Previews: PreviewProvider {
 extension View {
     func customDialog<DialogContent: View>(isShowing: Binding<Bool>, @ViewBuilder content: @escaping ()->DialogContent)->some View {
         modifier(CustomDialog(isShowing: isShowing, dialogContent: content))
+    }
+
+    func dialog(title: String, message: String = "", iconName: String? = nil, isShowing: Binding<Bool>, onSubmit: @escaping (String)->(), onClose: (()->())? = nil)->some View {
+        let dialog = {
+            PrimaryCustomDialog(
+                title: title,
+                message: message,
+                systemImageName: iconName,
+                hideDialog: isShowing,
+                onSubmit: onSubmit,
+                onClose: onClose
+            )
+            .padding()
+        }
+        return modifier(CustomDialog(isShowing: isShowing, dialogContent: dialog ))
     }
 }

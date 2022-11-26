@@ -18,25 +18,18 @@ class ContactsViewModel: ObservableObject {
     private(set) var maxContactsCountInServer = 0
 
     @Published
-    private(set) var contacts: [Contact] = []
+    private(set) var contactsVMS: [ContactViewModel] = []
 
-    @Published
     private(set) var selectedContacts: [Contact] = []
 
     @Published
-    private(set) var searchedContacts: [Contact] = []
+    private(set) var searchedContactsVMS: [ContactViewModel] = []
 
     @Published
     var isLoading = false
 
     @Published
-    public var isInEditMode = false
-
-    @Published
-    public var navigateToAddOrEditContact = false
-
-    @Published
-    var searchContactString :String = "" {
+    var searchContactString: String = "" {
         didSet {
             searchContact()
         }
@@ -61,7 +54,7 @@ class ContactsViewModel: ObservableObject {
     func onServerResponse(_ contacts: [Contact]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
         if let contacts = contacts {
             firstSuccessResponse = true
-            appendContacts(contacts)
+            appendOrUpdateContact(contacts)
             hasNext = pagination?.hasNext ?? false
             setMaxContactsCountInServer(count: (pagination as? PaginationWithContentCount)?.totalCount ?? 0)
         }
@@ -70,7 +63,7 @@ class ContactsViewModel: ObservableObject {
 
     func onCacheResponse(_ contacts: [Contact]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
         if let contacts = contacts {
-            appendContacts(contacts)
+            appendOrUpdateContact(contacts)
             hasNext = pagination?.hasNext ?? false
         }
         if isLoading, AppState.shared.connectionStatus != .connected {
@@ -123,18 +116,14 @@ class ContactsViewModel: ObservableObject {
     func clear() {
         offset = 0
         count = 15
-        contacts = []
-    }
-
-    func setupPreview() {
-        self.contacts = MockData.generateContacts()
+        contactsVMS = []
     }
 
     func delete(indexSet: IndexSet) {
-        let contacts = contacts.enumerated().filter { indexSet.contains($0.offset) }.map { $0.element }
+        let contacts = contactsVMS.enumerated().filter { indexSet.contains($0.offset) }.map { $0.element }
         contacts.forEach { contact in
-            delete(contact)
-            reomve(contact)
+            delete(contact.contact)
+            reomve(contact.contact)
         }
     }
 
@@ -142,17 +131,9 @@ class ContactsViewModel: ObservableObject {
         if let contactId = contact.id {
             Chat.sharedInstance.removeContact(.init(contactId: contactId)) { [weak self] _, _, error in
                 if error != nil {
-                    self?.appendContacts([contact])
+                    self?.appendOrUpdateContact([contact])
                 }
             }
-        }
-    }
-
-    func toggleSelectedContact(_ contact: Contact, _ isSelected: Bool) {
-        if isSelected {
-            addToSelctedContacts(contact)
-        } else {
-            removeToSelctedContacts(contact)
         }
     }
 
@@ -163,30 +144,19 @@ class ContactsViewModel: ObservableObject {
         }
     }
 
-    func blockOrUnBlock(_ contact: Contact) {
-        if contact.blocked == false {
-            let req = BlockRequest(contactId: contact.id)
-            Chat.sharedInstance.blockContact(req, completion: onBlockUNBlockResponse)
-        } else {
-            let req = UnBlockRequest(contactId: contact.id)
-            Chat.sharedInstance.unBlockContact(req, completion: onBlockUNBlockResponse)
-        }
-    }
-
-    func onBlockUNBlockResponse(_ contact: BlockedContact?, _ uniqueId: String?, _ error: ChatError?) {
-        if let contact = contact, let index = contacts.firstIndex(where: { $0.id == contact.id }) {
-            contacts[index].blocked?.toggle()
-        }
-    }
-
-    func appendContacts(_ contacts: [Contact]) {
+    func appendOrUpdateContact(_ contacts: [Contact]) {
         // Remove all contacts that were cached, to prevent duplication.
-        self.contacts.removeAll(where: { contacts.compactMap{$0.id}.contains($0.id) })
-        self.contacts.append(contentsOf: contacts)
+        contacts.forEach { contact in
+            if let oldContactVM = contactsVMS.first(where: { $0.contact.id == contact.id }) {
+                oldContactVM.contact.update(contact)
+            } else {
+                contactsVMS.append(ContactViewModel(contact: contact, contactsVM: self))
+            }
+        }
     }
 
     func insertContactsAtTop(_ contacts: [Contact]) {
-        self.contacts.insert(contentsOf: contacts, at: 0)
+        self.contactsVMS.insert(contentsOf: contacts.map{.init(contact: $0, contactsVM: self)}, at: 0)
     }
 
     func setMaxContactsCountInServer(count: Int) {
@@ -194,8 +164,8 @@ class ContactsViewModel: ObservableObject {
     }
 
     func reomve(_ contact: Contact) {
-        guard let index = contacts.firstIndex(of: contact) else { return }
-        contacts.remove(at: index)
+        guard let index = contactsVMS.firstIndex(where: {$0.contact == contact}) else { return }
+        contactsVMS.remove(at: index)
     }
 
     func addToSelctedContacts(_ contact: Contact) {
@@ -209,6 +179,25 @@ class ContactsViewModel: ObservableObject {
 
     func setSearchedContacts(_ contacts: [Contact]) {
         isLoading = false
-        searchedContacts = contacts
+        searchedContactsVMS = contacts.map{ .init(contact: $0, contactsVM: self) }
+    }
+
+    func addContact(contactValue: String, firstName: String?, lastName: String?) {
+        let isPhone = validatePhone(value: contactValue)
+        let req: AddContactRequest = isPhone ?
+            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
+            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
+        Chat.sharedInstance.addContact(req) { [weak self] contacts, _, _ in
+            if let contacts = contacts {
+                self?.insertContactsAtTop(contacts)
+            }
+        }
+    }
+
+    func validatePhone(value: String) -> Bool {
+        let PHONE_REGEX = "^[0-9+]{0,1}+[0-9]{5,16}$"
+        let phoneTest = NSPredicate(format: "SELF MATCHES %@", PHONE_REGEX)
+        let result = phoneTest.evaluate(with: value)
+        return result
     }
 }
