@@ -73,7 +73,7 @@ extension View {
         modifier(CustomDialog(isShowing: isShowing, dialogContent: content))
     }
 
-    func dialog(title: String, message: String = "", iconName: String? = nil, isShowing: Binding<Bool>, onSubmit: @escaping (String)->(), onClose: (()->())? = nil)->some View {
+    func dialog(_ title: String, _ message: String = "", _ iconName: String? = nil, _ isShowing: Binding<Bool>, onSubmit: @escaping (String)->(), onClose: (()->())? = nil)->some View {
         let dialog = {
             PrimaryCustomDialog(
                 title: title,

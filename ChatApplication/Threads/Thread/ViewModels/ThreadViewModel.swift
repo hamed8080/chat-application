@@ -39,15 +39,14 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func searchInsideThread(text: String, offset: Int)
     func isSameUser(message: Message) -> Bool
     func sendStartTyping(_ text: String)
-    func appendMessages(messages: [Message])
+    func appendMessages(_ messages: [Message])
     func onDeleteMessage(message: Message?, uniqueId: String?, error: ChatError?)
-    func appendMessage(_ message: Message)
     func updateThread(_ thread: Conversation)
     func sendSeenMessageIfNeeded(_ message: Message)
+    func onMessageEvent(_ event: MessageEventTypes?)
 }
 
 class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable, Hashable {
-
     static func == (lhs: ThreadViewModel, rhs: ThreadViewModel) -> Bool {
         rhs.threadId == lhs.threadId
     }
@@ -143,11 +142,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
         NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
             .compactMap { $0.object as? MessageEventTypes }
-            .sink { [weak self] event in
-                if case .messageNew(let message) = event {
-                    self?.appendMessage(message)
-                }
-            }
+            .sink(receiveValue: onMessageEvent)
             .store(in: &cancellableSet)
     }
 
@@ -155,6 +150,30 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         switch event {
         case .lastMessageDeleted(let thread), .lastMessageEdited(let thread):
             onLastMessageChanged(thread)
+        default:
+            break
+        }
+    }
+
+    func onMessageEvent(_ event: MessageEventTypes?) {
+        switch event {
+        case .messageNew(let message):
+            if threadId == message.conversation?.id {
+                appendMessages([message])
+                scrollToLastMessageIfLastMessageIsVisible()
+            }
+        case .messageSent(let sentResponse):
+            if threadId == sentResponse.threadId {
+                onSent(sentResponse, nil, nil)
+            }
+        case .messageDelivery(let deliverResponse):
+            if threadId == deliverResponse.threadId {
+                onDeliver(deliverResponse, nil, nil)
+            }
+        case .messageSeen(let seenResponse):
+            if threadId == seenResponse.threadId {
+                onSeen(seenResponse, nil, nil)
+            }
         default:
             break
         }
@@ -177,35 +196,28 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         Chat.sharedInstance.getHistory(.init(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)) { [weak self] messages, _, pagination, _ in
             if let messages = messages {
                 self?.setHasNext(pagination?.hasNext ?? false)
-                self?.appendMessages(messages: messages)
+                self?.appendMessages(messages)
                 self?.isLoading = false
             }
         } cacheResponse: { [weak self] messages, _, _ in
             if let messages = messages {
-                self?.appendMessages(messages: messages)
+                self?.appendMessages(messages)
             }
         } textMessageNotSentRequests: { [weak self] messages, _, _ in
-            self?.appendMessages(messages: messages?.compactMap { SendTextMessage(from: $0) } ?? [])
+            self?.appendMessages(messages?.compactMap { SendTextMessage(from: $0, thread: self?.thread) } ?? [])
         } editMessageNotSentRequests: { [weak self] editMessages, _, _ in
-            self?.appendMessages(messages: editMessages?.compactMap { EditTextMessage(from: $0) } ?? [])
+            self?.appendMessages(editMessages?.compactMap { EditTextMessage(from: $0, thread: self?.thread) } ?? [])
         } forwardMessageNotSentRequests: { [weak self] forwardMessages, _, _ in
-            self?.appendMessages(messages: forwardMessages?.compactMap { ForwardMessage(from: $0, destinationThread: .init(id: $0.threadId, title: self?.threadName($0.threadId))) } ?? [])
+            self?.appendMessages(forwardMessages?.compactMap {
+                ForwardMessage(from: $0, destinationThread: .init(id: $0.threadId, title: self?.threadName($0.threadId)), thread: self?.thread) } ?? []
+            )
         } fileMessageNotSentRequests: { [weak self] fileMessages, _, _ in
-            self?.appendMessages(messages: fileMessages?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1) } ?? [])
+            self?.appendMessages(fileMessages?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: self?.thread) } ?? [])
         }
     }
 
     func threadName(_ threadId: Int) -> String? {
         threadsViewModel?.threadsRowVM.first { $0.threadId == threadId }?.thread.title
-    }
-
-    func setupPreview() {
-        setupPreview()
-    }
-
-    func deleteMessages(_ messages: [Message]) {
-        let messagedIds = messages.compactMap { $0.id }
-        Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
     }
 
     func sendStartTyping(_ newValue: String) {
@@ -217,10 +229,18 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func sendSeenMessageIfNeeded(_ message: Message) {
-        guard let messageId = message.id else { return }
-        if let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId {
-            Chat.sharedInstance.seen(.init(messageId: messageId))
-            // update cache read count
+        if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, message.isMe == false {
+            thread.lastSeenMessageId = messageId
+            print("send seen for message:\(message.messageTitle) with id:\(messageId)")
+            Chat.sharedInstance.seen(.init(threadId: threadId, messageId: messageId))
+            if let unreadCount = thread.unreadCount, unreadCount > 0 {
+                thread.unreadCount = unreadCount - 1
+                objectWillChange.send()
+            }
+        } else if thread.unreadCount ?? 0 > 0 {
+            print("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(thread.lastSeenMessageId ?? 0)")
+            thread.unreadCount = 0
+            objectWillChange.send()
         }
     }
 
@@ -319,16 +339,25 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         }
     }
 
-    func appendMessages(messages: [Message]) {
+    func appendMessages(_ messages: [Message]) {
         messages.forEach { message in
-            if let oldMessage = self.messages.first(where: { $0.id == message.id }) {
+            if let oldMessage = self.messages.first(where: { $0.uniqueId == message.uniqueId }) {
                 oldMessage.updateMessage(message: message)
-            } else {
+            } else if message.conversation?.id == threadId {
                 self.messages.append(message)
+                thread.unreadCount = message.conversation?.unreadCount ?? 1
+                thread.lastMessageVO = message
+                thread.lastMessage = message.message
             }
         }
         sort()
         updateScrollToLastSeenUniqueId()
+    }
+
+    func deleteMessages(_ messages: [Message]) {
+        let messagedIds = messages.compactMap { $0.id }
+        Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
+        selectedMessages = []
     }
 
     /// Delete a message with an Id is needed for when the message has persisted before.
@@ -339,17 +368,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func setHasNext(_ hasNext: Bool) {
         self.hasNext = hasNext
-    }
-
-    func appendMessage(_ message: Message) {
-        if message.conversation?.id == threadId {
-            messages.append(message)
-            thread.unreadCount = message.conversation?.unreadCount ?? 1
-            thread.lastMessageVO = message
-            thread.lastMessage = message.message
-            sort()
-            scrollToLastMessageIfLastMessageIsVisible()
-        }
     }
 
     func clear() {

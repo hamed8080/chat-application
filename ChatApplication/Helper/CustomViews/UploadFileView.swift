@@ -126,7 +126,7 @@ class UploadFileViewModel: ObservableObject {
 
 struct UploadFileView_Previews: PreviewProvider {
     static var previews: some View {
-        let message = UploadFileWithTextMessage(uploadFileRequest: UploadFileRequest(data: Data()))
+        let message = UploadFileWithTextMessage(uploadFileRequest: UploadFileRequest(data: Data()), thread: MockData.thread)
         let threadViewModel = ThreadViewModel(thread: MockData.thread)
         let uploadFileVM = UploadFileViewModel(message: message, thread: threadViewModel.thread)
         UploadFileView(message: message)

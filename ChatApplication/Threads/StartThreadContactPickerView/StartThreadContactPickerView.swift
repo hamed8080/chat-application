@@ -78,7 +78,7 @@ struct StartThreadContactPickerView: View {
                 List {
                     ForEach(contactsVM.contactsVMS, id: \.id) { contactVM in
                         StartThreadContactRow(isInMultiSelectMode: $isInMultiSelectMode)
-                            .environmentObject(contactsVM)
+                            .environmentObject(contactVM)
                             .onTapGesture {
                                 if isInMultiSelectMode == false {
                                     onCompletedConfigCreateThread(.init(selectedContacts: [contactVM.contact], type: .normal, title: ""))

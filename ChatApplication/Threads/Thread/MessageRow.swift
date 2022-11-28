@@ -152,6 +152,7 @@ struct TextMessageType: View {
             .contentShape(Rectangle())
             .background(viewModel.message.isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named: "chat_sender")!))
             .cornerRadius(12)
+            .animation(.easeInOut, value: message.isUnsentMessage)
             .onTapGesture {
                 print("on tap gesture")
             }
@@ -353,10 +354,14 @@ struct UploadMessageType: View {
     }
 }
 
+
+
 struct MessageFooterView: View {
     var viewModel: MessageViewModel
-
     var message: Message { viewModel.message }
+    static let clockImage = UIImage(named: "clock")
+    static let sentImage = UIImage(named: "single_chekmark")
+    static let seenImage = UIImage(named: "double_checkmark")
 
     var body: some View {
         HStack {
@@ -375,8 +380,8 @@ struct MessageFooterView: View {
                             .font(.subheadline)
                     }
 
-                    if viewModel.message.isMe {
-                        Image(uiImage: UIImage(named: message.seen == true ? "double_checkmark" : "single_chekmark")!)
+                    if viewModel.message.isMe, let image = message.seen == true ? MessageFooterView.seenImage : message.delivered == true ? MessageFooterView.sentImage : MessageFooterView.clockImage {
+                        Image(uiImage: image)
                             .resizable()
                             .frame(width: 14, height: 14)
                             .foregroundColor(Color(named: "dark_green").opacity(0.8))
@@ -390,6 +395,8 @@ struct MessageFooterView: View {
                 }
             }
         }
+        .animation(.easeInOut, value: message.delivered)
+        .animation(.easeInOut, value: message.seen)
         .padding([.top], 4)
     }
 }

@@ -60,12 +60,11 @@ struct CustomActionSheetView: View {
                                 VStack {
                                     HStack {
                                         Spacer()
-                                        Image(systemName: isSelected ? "checkmark.circle" : "circle")
+                                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle.fill")
                                             .resizable()
                                             .frame(width: 24, height: 24)
                                             .font(.title)
                                             .padding([.top, .trailing], 4)
-                                            .background(Color.white.blur(radius: 16))
                                             .foregroundColor(Color.blue)
                                     }
                                     Spacer()
@@ -121,7 +120,7 @@ struct CustomActionSheetView: View {
         })
         .padding(.top, 24)
         .padding(.bottom, ((UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.safeAreaInsets.bottom ?? 0) + 10)
-        .background(Color.white.ignoresSafeArea())
+        .background(.thinMaterial)
         .cornerRadius(16, corners: [.topLeft, .topRight])
     }
 }

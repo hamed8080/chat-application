@@ -167,8 +167,5 @@ struct ThreadDetailView_Previews: PreviewProvider {
         ThreadDetailView()
             .environmentObject(vm)
             .environmentObject(AppState.shared)
-            .onAppear {
-                vm.setupPreview()
-            }
     }
 }

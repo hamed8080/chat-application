@@ -23,13 +23,15 @@ protocol SendMessageThreadProtocol {
     func sendForwardMessage(_ destinationThread: Conversation)
     func sendPhotos(uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem)
     func sendFile(_ url: URL)
+    func onSent(_ sentResponse: SentMessageResponse?, _ uniqueId: String?, _ error: ChatError?)
+    func onDeliver(_ deliverResponse: DeliverMessageResponse?, _ uniqueId: String?, _ error: ChatError?)
+    func onSeen(_ seenResponse: SeenMessageResponse?, _ uniqueId: String?, _ error: ChatError?)
     func toggleSelectedMessage(_ message: Message, _ isSelected: Bool)
     func appendSelectedMessage(_ message: Message)
     func removeSelectedMessage(_ message: Message)
 
     func resendUnsetMessage(_ message: Message)
     func onUnSentEditCompletionResult(_ message: Message?, _ uniqueId: String?, _ error: ChatError?)
-    func onUnSentResult(_ message: SentMessageResponse?, _ uniqueId: String?, _ error: ChatError?)
     func cancelUnsentMessage(_ uniqueId: String)
 }
 
@@ -52,14 +54,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                       repliedTo: replyMessageId,
                                       textMessage: textMessage,
                                       messageType: .text)
-        Chat.sharedInstance.replyMessage(req) { _ in
-
-        } onSent: { _, _, _ in
-
-        } onSeen: { _, _, _ in
-
-        } onDeliver: { _, _, _ in
-        }
+        Chat.sharedInstance.replyMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
     }
 
     func sendNormalMessage(_ textMessage: String) {
@@ -67,14 +62,10 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         let req = SendTextMessageRequest(threadId: threadId,
                                          textMessage: textMessage,
                                          messageType: .text)
-        Chat.sharedInstance.sendTextMessage(req) { _ in
-
-        } onSent: { _, _, _ in
-
-        } onSeen: { _, _, _ in
-
-        } onDeliver: { _, _, _ in
-        }
+        let isMeId = (Chat.sharedInstance.userInfo ?? AppState.shared.user)?.id
+        let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, uniqueId: req.uniqueId, conversation: thread)
+        appendMessages([message])
+        Chat.sharedInstance.sendTextMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
     }
 
     func sendForwardMessage(_ destinationThread: Conversation) {
@@ -82,14 +73,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         canScrollToBottomOfTheList = true
         let messageIds = selectedMessages.compactMap { $0.id }
         let req = ForwardMessageRequest(fromThreadId: threadId, threadId: destinationThreadId, messageIds: messageIds)
-        Chat.sharedInstance.forwardMessages(req) { _, _, _ in
-
-        } onSeen: { _, _, _ in
-
-        } onDeliver: { _, _, _ in
-
-        } uniqueIdsResult: { _ in
-        }
+        Chat.sharedInstance.forwardMessages(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
         isInEditMode = false // close edit mode in ui
     }
 
@@ -107,7 +91,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                               mimeType: "image/jpg",
                                               userGroupHash: thread.userGroupHash)
         let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
-        appendMessages(messages: [UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest)])
+        appendMessages([UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: thread)])
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
@@ -120,7 +104,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                               mimeType: url.mimeType,
                                               userGroupHash: thread.userGroupHash)
         let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
-        appendMessages(messages: [UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest)])
+        appendMessages([UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)])
     }
 
     func sendEditMessage(_ textMessage: String) {
@@ -142,16 +126,36 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         }
     }
 
+    func onSent(_ sentResponse: SentMessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
+        if let index = messages.firstIndex(where: {$0.uniqueId == uniqueId}) {
+            messages[index].delivered = true
+            objectWillChange.send()
+        }
+    }
+
+    func onDeliver(_ deliverResponse: DeliverMessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
+
+    }
+
+    func onSeen(_ seenResponse: SeenMessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
+        messages.filter {$0.id ?? 0 <= seenResponse?.messageId ?? 0 && $0.seen == nil}.forEach{ message in
+            message.seen = true
+        }
+        objectWillChange.send()
+    }
+
     func resendUnsetMessage(_ message: Message) {
         switch message {
         case let req as SendTextMessage:
-            Chat.sharedInstance.sendTextMessage(req.sendTextMessageRequest, onSent: onUnSentResult)
+            Chat.sharedInstance.sendTextMessage(req.sendTextMessageRequest, onSent: onSent)
         case let req as EditTextMessage:
             Chat.sharedInstance.editMessage(req.editMessageRequest, completion: onUnSentEditCompletionResult)
         case let req as ForwardMessage:
-            Chat.sharedInstance.forwardMessages(req.forwardMessageRequest, onSent: onUnSentResult)
-        case let req as UploadFileWithTextMessage:
-            appendMessage(UploadFileWithTextMessage(uploadFileRequest: req.uploadFileRequest))
+            Chat.sharedInstance.forwardMessages(req.forwardMessageRequest, onSent: onSent)
+        case let req as UploadFileMessage:
+            //remove unset message type to start upload again the new one.
+            messages.removeAll(where: {$0.uniqueId == req.uniqueId})
+            appendMessages([UploadFileWithTextMessage(uploadFileRequest: req.uploadFileRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)])
         default:
             print("Type not detected!")
         }
@@ -160,13 +164,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
     func onUnSentEditCompletionResult(_ message: Message?, _ uniqueId: String?, _ error: ChatError?) {
         if let message = message, threadId == message.conversation?.id {
             onDeleteMessage(message: nil, uniqueId: uniqueId, error: nil)
-            appendMessages(messages: [message])
-        }
-    }
-
-    func onUnSentResult(_ message: SentMessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
-        if let uniqueId = uniqueId, message != nil {
-            onDeleteMessage(message: nil, uniqueId: uniqueId, error: nil)
+            appendMessages([message])
         }
     }
 

@@ -78,7 +78,6 @@
 		AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FE26998D4400B1C87B /* ParticipantRow.swift */; };
 		AC085F3B2692EA8A001492B2 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = AC085F3A2692EA8A001492B2 /* Config.json */; };
 		AC085F3E2692EC71001492B2 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC085F3D2692EC71001492B2 /* Config.swift */; };
-		AC0889AA2691C32F00FD4552 /* TestSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0889A92691C32F00FD4552 /* TestSwiftUI.swift */; };
 		AC0889AC2691D47E00FD4552 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0889AB2691D47E00FD4552 /* AppState.swift */; };
 		AC0889B02691E14500FD4552 /* CustomHostinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0889AF2691E14500FD4552 /* CustomHostinViewController.swift */; };
 		AC0FE1372755047A00C7A8DB /* IntEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0FE1362755047A00C7A8DB /* IntEX.swift */; };
@@ -269,7 +268,6 @@
 		AC0435FE26998D4400B1C87B /* ParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantRow.swift; sourceTree = "<group>"; };
 		AC085F3A2692EA8A001492B2 /* Config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Config.json; sourceTree = "<group>"; };
 		AC085F3D2692EC71001492B2 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
-		AC0889A92691C32F00FD4552 /* TestSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSwiftUI.swift; sourceTree = "<group>"; };
 		AC0889AB2691D47E00FD4552 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		AC0889AF2691E14500FD4552 /* CustomHostinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomHostinViewController.swift; sourceTree = "<group>"; };
 		AC0FE1362755047A00C7A8DB /* IntEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntEX.swift; sourceTree = "<group>"; };
@@ -814,7 +812,6 @@
 				05C0098C2931F760002ED678 /* ContactViewModel.swift */,
 				AC9DAC6E266CAD63009E4722 /* ContactRow.swift */,
 				AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */,
-				AC0889A92691C32F00FD4552 /* TestSwiftUI.swift */,
 				ACFBF1B826FCA51300DD27AE /* AddOrEditContactView.swift */,
 				AC23695527439478008195D7 /* SearchContactRow.swift */,
 			);
