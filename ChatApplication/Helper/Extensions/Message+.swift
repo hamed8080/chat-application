@@ -21,9 +21,10 @@ extension Message {
     var type: MessageType? { messageType ?? .unknown }
     var isTextMessageType: Bool { type == .text || isFileType }
     var currentUser: User? { Chat.sharedInstance.userInfo ?? AppState.shared.user }
-    var isMe: Bool { ownerId ?? 0 == currentUser?.id ?? 0 || isUnsentMessage }
+    var isMe: Bool { (ownerId ?? 0 == currentUser?.id ?? 0) || isUnsentMessage }
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol }
-    var isUnsentMessage: Bool { self is UnSentMessageProtocol }
+    /// Check id because we know that the message was successfully added in server chat.
+    var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil  }
 
     var calculatedMaxAndMinWidth: CGFloat {
         let minWidth: CGFloat = isUnsentMessage ? 148 : isFileType ? 164 : 128
@@ -39,7 +40,8 @@ extension Message {
 
     func updateMessage(message: Message) {
         deletable = message.deletable
-        delivered = message.delivered
+        delivered = message.delivered ?? delivered
+        seen = message.seen ?? seen
         editable = message.editable
         edited = message.edited
         id = message.id
@@ -50,7 +52,6 @@ extension Message {
         ownerId = message.ownerId
         pinned = message.pinned
         previousId = message.previousId
-        seen = message.seen
         systemMetadata = message.systemMetadata
         threadId = message.threadId
         time = message.time
