@@ -58,7 +58,7 @@ struct CallControlsContent: View {
                     CallStartedActionsView()
                 }
             }
-            RecieveCallActionsView()
+            StartCallActionsView()
             RecordingDotView()
         }
         .animation(.easeInOut(duration: 0.5), value: callState.model.usersRTC.count)
@@ -210,7 +210,9 @@ struct RecordingDotView: View {
     }
 }
 
-struct RecieveCallActionsView: View {
+
+/// When receive or start call to someone you will see this screen and it will show only if call is not started.
+struct StartCallActionsView: View {
     @EnvironmentObject
     var callState: CallState
 
@@ -218,7 +220,7 @@ struct RecieveCallActionsView: View {
     var viewModel: CallControlsViewModel
 
     var body: some View {
-        if callState.model.receiveCall != nil, callState.model.isCallStarted == false {
+        if callState.model.isCallStarted == false {
             VStack {
                 Spacer()
                 Text(callState.model.receiveCall?.creator.name != nil ? "Ringing..." : "Calling...")
@@ -518,8 +520,8 @@ struct CallControlsView_Previews: PreviewProvider {
         Group {
             CallControlsContent()
                 .previewDisplayName("CallControlsContent")
-            RecieveCallActionsView()
-                .previewDisplayName("RecieveCallActionsView")
+            StartCallActionsView()
+                .previewDisplayName("StartCallActionsView")
             CallControlItem(iconSfSymbolName: "trash", subtitle: "Delete")
                 .previewDisplayName("CallControlItem")
             CallStartedActionsView()
