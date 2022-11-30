@@ -40,7 +40,7 @@ extension Message {
 
     func updateMessage(message: Message) {
         deletable = message.deletable
-        delivered = message.delivered ?? delivered
+        delivered = message.delivered
         seen = message.seen ?? seen
         editable = message.editable
         edited = message.edited
