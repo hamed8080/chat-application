@@ -22,7 +22,6 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     var readOnly: Bool { get }
     var canLoadNexPage: Bool { get }
     var threadsViewModel: ThreadsViewModel? { get set }
-    var isTyping: Bool { get set }
     var canAddParticipant: Bool { get }
     var hasNext: Bool { get set }
     var count: Int { get }
@@ -38,7 +37,6 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func threadName(_ threadId: Int) -> String?
     func searchInsideThread(text: String, offset: Int)
     func isSameUser(message: Message) -> Bool
-    func sendStartTyping(_ text: String)
     func appendMessages(_ messages: [Message])
     func onDeleteMessage(message: Message?, uniqueId: String?, error: ChatError?)
     func updateThread(_ thread: Conversation)
@@ -69,9 +67,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     @Published
     var messages: [Message] = []
-
-    @Published
-    var isTyping: Bool = false
 
     var textMessage: String?
 
@@ -129,13 +124,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     private func setupNotificationObservers() {
-        NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
-            .compactMap { $0.object as? SystemEventTypes }
-            .sink { [weak self] systemMessageEvent in
-                self?.startTypingTimer(systemMessageEvent)
-            }
-            .store(in: &cancellableSet)
-
         NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink(receiveValue: onThreadEvent)
@@ -331,23 +319,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func spamPV() {
         Chat.sharedInstance.spamPvThread(.init(subjectId: threadId)) { _, _, _ in }
-    }
-
-    private var lastIsTypingTime = Date()
-
-    private func startTypingTimer(_ event: SystemEventTypes) {
-        if case .systemMessage(let message, _, let id) = event, message.smt == .isTyping, isTyping == false, thread.id == id {
-            lastIsTypingTime = Date()
-            isTyping = true
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
-                if let self = self, self.lastIsTypingTime.advanced(by: 1) < Date() {
-                    timer.invalidate()
-                    self.isTyping = false
-                }
-            }
-        } else {
-            lastIsTypingTime = Date()
-        }
     }
 
     func appendMessages(_ messages: [Message]) {

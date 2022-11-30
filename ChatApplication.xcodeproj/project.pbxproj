@@ -51,6 +51,8 @@
 		057977B72805548000FE5EA4 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057977B62805548000FE5EA4 /* UIColor.swift */; };
 		057977B82805551F00FE5EA4 /* ColorEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5411E3275631A90018C78D /* ColorEx.swift */; };
 		057977B92805552E00FE5EA4 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057977B62805548000FE5EA4 /* UIColor.swift */; };
+		057B9A9B293795A80089ACC9 /* ThreadIsTypingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9A293795A80089ACC9 /* ThreadIsTypingViewModel.swift */; };
+		057B9A9D293797600089ACC9 /* ThreadIsTypingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9C293797600089ACC9 /* ThreadIsTypingView.swift */; };
 		05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586497F282D40A200218ED0 /* LoadingViewAt.swift */; };
 		05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05962116280BF85B0036B3AA /* DateSelectionView.swift */; };
 		059914B029262FF60070BD89 /* Conversation+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059914AF29262FF60070BD89 /* Conversation+.swift */; };
@@ -218,6 +220,8 @@
 		05781CD72903492E0064BDC3 /* AudioRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordingView.swift; sourceTree = "<group>"; };
 		057977B42805449D00FE5EA4 /* MockDatas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDatas.swift; sourceTree = "<group>"; };
 		057977B62805548000FE5EA4 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		057B9A9A293795A80089ACC9 /* ThreadIsTypingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadIsTypingViewModel.swift; sourceTree = "<group>"; };
+		057B9A9C293797600089ACC9 /* ThreadIsTypingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadIsTypingView.swift; sourceTree = "<group>"; };
 		0586497F282D40A200218ED0 /* LoadingViewAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAt.swift; sourceTree = "<group>"; };
 		05962116280BF85B0036B3AA /* DateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSelectionView.swift; sourceTree = "<group>"; };
 		059914AF29262FF60070BD89 /* Conversation+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+.swift"; sourceTree = "<group>"; };
@@ -355,6 +359,7 @@
 				AC6D532126F1ADF000CBC059 /* ThreadViewModel.swift */,
 				05C2FDB129276F0A00040D10 /* MessageViewModel.swift */,
 				ACEAEDD4274CF87600EC8252 /* ActionSheetViewModel.swift */,
+				057B9A9A293795A80089ACC9 /* ThreadIsTypingViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -641,6 +646,7 @@
 				ACEAEDD6274CFA1100EC8252 /* AttachmentDialog.swift */,
 				ACF82E0E275230C3000330DB /* UnSentMessageTypes.swift */,
 				05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */,
+				057B9A9C293797600089ACC9 /* ThreadIsTypingView.swift */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -929,6 +935,7 @@
 				055EFCEE27C0BFA2006E0ABC /* AnimatingCellHeight.swift in Sources */,
 				05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */,
 				AC48ED6326F7051F00AB1A5D /* AuthorizeRequest.swift in Sources */,
+				057B9A9D293797600089ACC9 /* ThreadIsTypingView.swift in Sources */,
 				AC2E4747274B58880073E8E4 /* UserDefaultsEX.swift in Sources */,
 				059914B029262FF60070BD89 /* Conversation+.swift in Sources */,
 				AC1D2CCA2662016E00AA351A /* ImageLoader.swift in Sources */,
@@ -997,6 +1004,7 @@
 				0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */,
 				0555905529311C3E000D2407 /* SendMessageThreadProtocol.swift in Sources */,
 				05781CD62903466A0064BDC3 /* AudioRecordingViewModel.swift in Sources */,
+				057B9A9B293795A80089ACC9 /* ThreadIsTypingViewModel.swift in Sources */,
 				AC53261C2751F227003685E3 /* CircularProgressView.swift in Sources */,
 				05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */,
 				AC6D532226F1ADF000CBC059 /* ThreadViewModel.swift in Sources */,
