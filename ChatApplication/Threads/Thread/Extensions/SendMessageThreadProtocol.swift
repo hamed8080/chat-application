@@ -23,9 +23,9 @@ protocol SendMessageThreadProtocol {
     func sendForwardMessage(_ destinationThread: Conversation)
     func sendPhotos(uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem)
     func sendFile(_ url: URL)
-    func onSent(_ sentResponse: SentMessageResponse?, _ uniqueId: String?, _ error: ChatError?)
-    func onDeliver(_ deliverResponse: DeliverMessageResponse?, _ uniqueId: String?, _ error: ChatError?)
-    func onSeen(_ seenResponse: SeenMessageResponse?, _ uniqueId: String?, _ error: ChatError?)
+    func onSent(_ sentResponse: MessageResponse?, _ uniqueId: String?, _ error: ChatError?)
+    func onDeliver(_ deliverResponse: MessageResponse?, _ uniqueId: String?, _ error: ChatError?)
+    func onSeen(_ seenResponse: MessageResponse?, _ uniqueId: String?, _ error: ChatError?)
     func toggleSelectedMessage(_ message: Message, _ isSelected: Bool)
     func appendSelectedMessage(_ message: Message)
     func removeSelectedMessage(_ message: Message)
@@ -126,18 +126,21 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         }
     }
 
-    func onSent(_ sentResponse: SentMessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
+    func onSent(_ sentResponse: MessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
         if let index = messages.firstIndex(where: {$0.uniqueId == uniqueId}) {
             messages[index].delivered = true
             objectWillChange.send()
         }
     }
 
-    func onDeliver(_ deliverResponse: DeliverMessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
-
+    func onDeliver(_ deliverResponse: MessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
+        messages.filter {$0.id == deliverResponse?.messageId}.forEach{ message in
+            message.delivered = true
+            objectWillChange.send()
+        }
     }
 
-    func onSeen(_ seenResponse: SeenMessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
+    func onSeen(_ seenResponse: MessageResponse?, _ uniqueId: String?, _ error: ChatError?) {
         messages.filter {$0.id ?? 0 <= seenResponse?.messageId ?? 0 && $0.seen == nil}.forEach{ message in
             message.seen = true
         }

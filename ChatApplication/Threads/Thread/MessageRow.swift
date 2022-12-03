@@ -363,6 +363,35 @@ struct MessageFooterView: View {
     static let sentImage = UIImage(named: "single_chekmark")
     static let seenImage = UIImage(named: "double_checkmark")
 
+    @ViewBuilder
+    var image: some View {
+        if message.seen == true {
+           Image(uiImage: MessageFooterView.seenImage!)
+                .resizable()
+                .frame(width: 14, height: 14)
+                .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                .font(.subheadline)
+        } else if message.delivered == true {
+            Image(uiImage: MessageFooterView.seenImage!)
+                .resizable()
+                .frame(width: 14, height: 14)
+                .foregroundColor(.gray)
+                .font(.subheadline)
+        } else if message.id != nil {
+            Image(uiImage: MessageFooterView.sentImage!)
+                .resizable()
+                .frame(width: 14, height: 14)
+                .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                .font(.subheadline)
+        } else {
+            Image(uiImage: MessageFooterView.clockImage!)
+                .resizable()
+                .frame(width: 14, height: 14)
+                .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                .font(.subheadline)
+        }
+    }
+
     var body: some View {
         HStack {
             if let fileSize = message.metaData?.file?.size, let size = Int(fileSize) {
@@ -380,12 +409,8 @@ struct MessageFooterView: View {
                             .font(.subheadline)
                     }
 
-                    if viewModel.message.isMe, let image = message.seen == true ? MessageFooterView.seenImage : message.delivered == true ? MessageFooterView.sentImage : MessageFooterView.clockImage {
-                        Image(uiImage: image)
-                            .resizable()
-                            .frame(width: 14, height: 14)
-                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                            .font(.subheadline)
+                    if viewModel.message.isMe {
+                        image
                     }
                 }
                 if viewModel.message.edited == true {

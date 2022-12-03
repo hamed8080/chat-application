@@ -41,14 +41,7 @@ struct ThreadRow: View {
                             .lineLimit(1)
                             .font(.subheadline)
                     }
-
-                    if viewModel.isTyping {
-                        Text("is typing...")
-                            .frame(width: 72, alignment: .leading)
-                            .lineLimit(1)
-                            .font(.subheadline.bold())
-                            .foregroundColor(Color.orange)
-                    }
+                    ThreadIsTypingView(threadId: viewModel.threadId)
                 }
                 Spacer()
                 if let call = viewModel.threadsViewModel?.callsToJoin.first(where: {$0.conversation?.id == viewModel.threadId}) {
@@ -89,7 +82,6 @@ struct ThreadRow: View {
         .animation(.easeInOut, value: viewModel.thread.pin)
         .animation(.easeInOut, value: viewModel.thread.mute)
         .animation(.easeInOut, value: viewModel.thread.unreadCount)
-        .animation(.easeInOut, value: viewModel.isTyping)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
                 viewModel.delete()
