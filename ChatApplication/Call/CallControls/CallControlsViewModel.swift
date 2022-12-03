@@ -48,10 +48,10 @@ class CallControlsViewModel: ObservableObject {
             }
         }
         startCallCancelable = NotificationCenter.default.publisher(for: CALL_EVENT_NAME)
-            .compactMap { $0.object as? CallEventModel }
+            .compactMap { $0.object as? CallEventTypes }
             .sink { event in
                 // NOTICE: sink in init for firsttime is nil
-                if case .callStarted(let event) = event.type, let callId = event.callId {
+                if case .callStarted(let event) = event, let callId = event.callId {
                     self.callId = callId
                 }
             }

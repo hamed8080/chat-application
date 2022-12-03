@@ -25,6 +25,7 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     var canAddParticipant: Bool { get }
     var hasNext: Bool { get set }
     var count: Int { get }
+    var groupCallIdToJoin: Int? { get set }
     func delete()
     func leave()
     func clearHistory()
@@ -43,6 +44,8 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func sendSeenMessageIfNeeded(_ message: Message)
     func onMessageEvent(_ event: MessageEventTypes?)
     func updateUnreadCount(_ threadId: Int, _ unreadCount: Int)
+    func onCallEvent(_ event: CallEventTypes)
+    func joinToCall(_ callId: Int)
 }
 
 class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable, Hashable {
@@ -78,6 +81,12 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     @Published
     var replyMessage: Message?
+
+    var groupCallIdToJoin: Int? {
+        didSet {
+            objectWillChange.send()
+        }
+    }
 
     weak var forwardMessage: Message? {
         didSet {
@@ -133,6 +142,11 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             .compactMap { $0.object as? MessageEventTypes }
             .sink(receiveValue: onMessageEvent)
             .store(in: &cancellableSet)
+
+        NotificationCenter.default.publisher(for: CALL_EVENT_NAME)
+            .compactMap { $0.object as? CallEventTypes }
+            .sink(receiveValue: onCallEvent)
+            .store(in: &cancellableSet)
     }
 
     func onThreadEvent(_ event: ThreadEventTypes?) {
@@ -141,6 +155,28 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             onLastMessageChanged(thread)
         case .threadUnreadCountUpdated(let threadId, let unreadCount):
             updateUnreadCount(threadId, unreadCount)
+        default:
+            break
+        }
+    }
+
+    func onCallEvent(_ event: CallEventTypes) {
+        switch event {
+        case .callEnded(let callId):
+            if callId == groupCallIdToJoin {
+                groupCallIdToJoin = nil
+                objectWillChange.send()
+            }
+        case .groupCallCanceled(let call):
+            if call.callId == groupCallIdToJoin {
+                groupCallIdToJoin = call.callId
+                objectWillChange.send()
+            }
+        case .callReceived(let call):
+            if call.conversation?.id == threadId {
+                groupCallIdToJoin = call.callId
+                objectWillChange.send()
+            }
         default:
             break
         }
@@ -379,5 +415,16 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
         }
         return false
+    }
+
+    func joinToCall(_ callId: Int) {
+        let callState = CallState.shared
+        Chat.sharedInstance.acceptCall(.init(callId: callId, client: .init(mute: true, video: false)))
+        withAnimation(.spring()) {
+            callState.model.setIsJoinCall(true)
+            callState.model.setShowCallView(true)
+        }
+        CallState.shared.model.setAnswerWithVideo(answerWithVideo: false, micEnable: false)
+        AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
     }
 }

@@ -44,18 +44,8 @@ struct ThreadRow: View {
                     ThreadIsTypingView(threadId: viewModel.threadId)
                 }
                 Spacer()
-                if let call = viewModel.threadsViewModel?.callsToJoin.first(where: {$0.conversation?.id == viewModel.threadId}) {
-                    Button {
-                        viewModel.threadsViewModel?.joinToCall(call)
-                    } label: {
-                        Image(systemName: call.type == .videoCall ? "video.fill" : "phone.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 18, height: 18)
-                            .padding()
-                            .foregroundColor(Color.green)
-                    }
-                }
+                JoinToGroupCallView()
+                    .environmentObject(viewModel)
                 if viewModel.thread.pin == true {
                     Image(systemName: "pin.fill")
                         .foregroundColor(Color.orange)
@@ -82,6 +72,7 @@ struct ThreadRow: View {
         .animation(.easeInOut, value: viewModel.thread.pin)
         .animation(.easeInOut, value: viewModel.thread.mute)
         .animation(.easeInOut, value: viewModel.thread.unreadCount)
+        .animation(.easeInOut, value: viewModel.groupCallIdToJoin)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
                 viewModel.delete()
@@ -146,6 +137,60 @@ struct ThreadRow: View {
                 } label: {
                     Label("Invite", systemImage: "person.crop.circle.badge.plus")
                 }
+            }
+        }
+    }
+}
+
+struct JoinToGroupCallView: View {
+    @EnvironmentObject
+    var viewModel: ThreadViewModel
+
+    @State
+    var showCallToJoin: Bool = false
+
+    @State
+    private var variable = 0.0
+
+    @State
+    var timer: Timer?
+
+    var body: some View {
+        if let callIdToJoin = viewModel.groupCallIdToJoin {
+            Button {
+                viewModel.joinToCall(callIdToJoin)
+            } label: {
+                if #available(iOS 16.0, *) {
+                    Image(systemName: "phone.and.waveform.fill", variableValue: variable)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 26, height: 26)
+                        .padding(8)
+                        .foregroundColor(Color.green)
+                } else {
+                    Image(systemName: "phone.and.waveform.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 26, height: 26)
+                        .padding(8)
+                        .foregroundColor(Color.green)
+                }
+            }
+            .transition(.asymmetric(insertion: .scale, removal: .scale))
+            .onAppear {
+                timer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { timer in
+                    withAnimation(.easeInOut) {
+                        if variable >= 1 {
+                            variable = 0
+                        } else {
+                            variable += 0.15
+                        }
+                    }
+                }
+            }
+            .onDisappear {
+                timer?.invalidate()
+                timer = nil
             }
         }
     }

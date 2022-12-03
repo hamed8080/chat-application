@@ -242,7 +242,7 @@ class CallState: ObservableObject, WebRTCClientDelegate {
     }
 
     @objc func callEvent(_ notification: NSNotification) {
-        guard let type = (notification.object as? CallEventModel)?.type else { return }
+        guard let type = (notification.object as? CallEventTypes) else { return }
         switch type {
         case .callStarted(let startCall):
             onCallStarted(startCall)
@@ -254,6 +254,8 @@ class CallState: ObservableObject, WebRTCClientDelegate {
             break
         case .callEnded(let callId):
             onCallEnd(callId)
+        case .groupCallCanceled(let call):
+            onCallEnd(call.callId)
         case .callCanceled(let canceledCall):
             onCallCanceled(canceledCall)
         case .callRejected:

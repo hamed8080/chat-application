@@ -36,10 +36,6 @@ class ThreadsViewModel: ObservableObject {
     private(set) var count = 15
     private(set) var offset = 0
     var searchText: String = ""
-
-    @Published
-    private(set) var callsToJoin: [Call] = []
-
     var threadsRowVM: [ThreadViewModel] = []
 
     private(set) var hasNext: Bool = true
@@ -253,21 +249,10 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func getActiveCallsListToJoin(_ threadIds: [Int]) {
-        Chat.sharedInstance.getCallsToJoin(.init(threadIds: threadIds)) { calls, _, _ in
-            if let calls = calls {
-                self.callsToJoin.append(contentsOf: calls)
+        Chat.sharedInstance.getCallsToJoin(.init(threadIds: threadIds)) { [weak self] calls, _, _ in
+            calls?.forEach{ call in
+                self?.threadsRowVM.first{$0.threadId == call.conversation?.id}?.groupCallIdToJoin = call.id
             }
         }
-    }
-
-    func joinToCall(_ call: Call) {
-        let callState = CallState.shared
-        Chat.sharedInstance.acceptCall(.init(callId: call.id, client: .init(mute: true, video: false)))
-        withAnimation(.spring()) {
-            callState.model.setIsJoinCall(true)
-            callState.model.setShowCallView(true)
-        }
-        CallState.shared.model.setAnswerWithVideo(answerWithVideo: false, micEnable: false)
-        AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
     }
 }
