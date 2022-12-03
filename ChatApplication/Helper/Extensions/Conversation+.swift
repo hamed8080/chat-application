@@ -7,9 +7,8 @@
 
 import FanapPodChatSDK
 extension Conversation {
-
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
-    func updateValues(_ newThread: Conversation){
+    func updateValues(_ newThread: Conversation) {
         admin = newThread.admin
         canEditInfo = newThread.canEditInfo
         canSpam = newThread.canSpam
@@ -48,5 +47,19 @@ extension Conversation {
         participants = newThread.participants
         pinMessage = newThread.pinMessage
         isArchive = newThread.isArchive
+    }
+
+    var isCircleUnreadCount: Bool {
+        return unreadCount ?? 0 < 10
+    }
+
+    var unreadCountString: String? {
+        if let unreadCount = unreadCount, unreadCount > 0 {
+            let unreadCountString = String(unreadCount)
+            let computedString = unreadCount < 1000 ? unreadCountString : "\(unreadCount / 1000)K+"
+            return computedString
+        } else {
+            return nil
+        }
     }
 }

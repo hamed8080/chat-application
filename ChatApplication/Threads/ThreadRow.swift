@@ -5,9 +5,9 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Combine
 import FanapPodChatSDK
 import SwiftUI
-import Combine
 
 struct ThreadRow: View {
     @ObservedObject
@@ -40,25 +40,27 @@ struct ThreadRow: View {
                         Text(message)
                             .lineLimit(1)
                             .font(.subheadline)
+                            .clipped()
                     }
                     ThreadIsTypingView(threadId: viewModel.threadId)
                 }
                 Spacer()
                 if viewModel.thread.pin == true {
                     Image(systemName: "pin.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
                         .foregroundColor(Color.orange)
                 }
-                if let unreadCount = viewModel.thread.unreadCount, unreadCount > 0, let unreadCountString = String(unreadCount) {
-                    let isCircle = unreadCount < 10 // two number and More require oval shape
-                    let computedString = unreadCount < 1000 ? unreadCountString : "\(unreadCount / 1000)K+"
-                    Text(computedString)
+                if let unreadCountString = viewModel.thread.unreadCountString {
+                    Text(unreadCountString)
                         .font(.system(size: 13))
                         .padding(8)
                         .frame(height: 24)
                         .frame(minWidth: 24)
                         .foregroundColor(Color.white)
                         .background(Color.orange)
-                        .cornerRadius(isCircle ? 16 : 8, antialiased: true)
+                        .cornerRadius(viewModel.thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
                 }
             }
             .contentShape(Rectangle())
@@ -125,7 +127,7 @@ struct ThreadRow: View {
             Button {
                 viewModel.toggleArchive()
             } label: {
-                Label( viewModel.thread.isArchive == false ? "Archive" : "Unarchive", systemImage: viewModel.thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
+                Label(viewModel.thread.isArchive == false ? "Archive" : "Unarchive", systemImage: viewModel.thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
             }
 
             if viewModel.canAddParticipant {
@@ -140,8 +142,13 @@ struct ThreadRow: View {
 }
 
 struct ThreadRow_Previews: PreviewProvider {
-
     static var previews: some View {
-        ThreadRow(viewModel: ThreadViewModel(thread: MockData.thread))
+        let vm = ThreadViewModel(thread: MockData.thread)
+        ThreadRow(viewModel: vm)
+            .onAppear {
+                vm.thread.pin = true
+                vm.thread.unreadCount = 10
+                vm.objectWillChange.send()
+            }
     }
 }
