@@ -98,7 +98,7 @@
             "description":"Qualit Control",
             "lastMessage":"it didn't passed!"
         },
-        
+
         {
             "id":14,
             "title":"Network admin",
@@ -113,7 +113,7 @@
             "description":"Let me know if I can",
             "lastMessage":"Do not do that withouth my permission"
         }
-        
+
     ],
     "messages":[
         {
@@ -418,6 +418,7 @@
             "lastName":"Ping",
             "image":"avatar1",
             "online":false,
+            "name": "Adrain Ping",
             "notSeenDuration": 1500
         },
         {
@@ -428,6 +429,7 @@
             "lastName":"Paze",
             "image":"avatar2",
             "online":true,
+            "name": "Mathew Paze",
             "notSeenDuration": 22000000
         },
         {
@@ -438,6 +440,7 @@
             "lastName":"Anpic",
             "image":"avatar3",
             "online":false,
+            "name": "Json Anpic",
             "notSeenDuration": 220000000
         },
         {
@@ -448,6 +451,7 @@
             "lastName":"Tech",
             "image":"avatar4",
             "online":false,
+            "name": "Mason Tech",
             "notSeenDuration": 8457455
         },
         {
@@ -458,6 +462,7 @@
             "lastName":"Perri",
             "image":"avatar5",
             "online":true,
+            "name": "Liam Perri",
             "notSeenDuration": 45000
         },
         {
@@ -468,6 +473,7 @@
             "lastName":"Pawrrot",
             "image":"avatar6",
             "online":false,
+            "name": "Tesin Pawrrot",
             "notSeenDuration": 4578522
         },
         {
@@ -478,6 +484,7 @@
             "lastName":"Moshe",
             "image":"avatar7",
             "online":false,
+            "name": "Emiin Moshe",
             "notSeenDuration": 5481
         },
         {
@@ -488,6 +495,7 @@
             "lastName":"Tanchi",
             "image":"avatar8",
             "online":false,
+            "name": "Steve Tanchi",
             "notSeenDuration": 62222
         },
         {
@@ -498,6 +506,7 @@
             "lastName":"Pit",
             "image":"avatar9",
             "online":false,
+            "name": "Jane Pit",
             "notSeenDuration": 445555110011
         },
         {
@@ -508,6 +517,7 @@
             "lastName":"Lip",
             "image":"avatar10",
             "online":false,
+            "name": "Eshia Lip",
             "notSeenDuration": 664545555
         },
         {
@@ -518,6 +528,7 @@
             "lastName":"Akin",
             "image":"avatar11",
             "online":false,
+            "name": "Tanon Akin",
             "notSeenDuration": 5544444
         },
         {
@@ -528,6 +539,7 @@
             "lastName":"Cjo",
             "image":"avatar12",
             "online":false,
+            "name": "Liam Cjo",
             "notSeenDuration": 455522
         },
         {
@@ -538,6 +550,7 @@
             "lastName":"Sarfaraz",
             "image":"avatar1",
             "online":false,
+            "name": "Amin Sarfaraz",
             "notSeenDuration": 1504454450
         },
         {
@@ -548,6 +561,7 @@
             "lastName":"Tili",
             "image":"avatar2",
             "online":false,
+            "name": "Azar Tili",
             "notSeenDuration": 5545455
         },
         {
@@ -558,6 +572,7 @@
             "lastName":"Zxin",
             "image":"avatar3",
             "online":false,
+            "name": "Podin Zxin",
             "notSeenDuration": 5545888
         },
         {
@@ -568,6 +583,7 @@
             "lastName":"Jin",
             "image":"avatar4",
             "online":false,
+            "name": "Quror Jin",
             "notSeenDuration": 55220
         }
     ]
