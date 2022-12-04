@@ -88,7 +88,8 @@ struct CallControlsContent: View {
             MoreControlsView()
         }
         .sheet(isPresented: $viewModel.showCallParticipants) {
-            CallParticipantsContentList(callId: callState.model.startCall?.callId ?? 0)
+            CallParticipantsContentList()
+                .environmentObject(CallParticipantsViewModel(callId: callState.model.startCall?.callId ?? 0))
         }
     }
 
@@ -209,7 +210,6 @@ struct RecordingDotView: View {
         }
     }
 }
-
 
 /// When receive or start call to someone you will see this screen and it will show only if call is not started.
 struct StartCallActionsView: View {
@@ -403,13 +403,11 @@ struct CallControlItem: View {
             isActive.toggle()
             action?()
         }, label: {
-
             if vertical {
                 HStack {
                     content
                 }
-            }
-            else {
+            } else {
                 VStack {
                     content
                 }
@@ -509,14 +507,12 @@ struct UserRTCView: View {
 }
 
 struct CallControlsView_Previews: PreviewProvider {
-
     static let viewModel = CallControlsViewModel()
 
     @ObservedObject
     static var callState = CallState.shared
 
     static var previews: some View {
-
         Group {
             CallControlsContent()
                 .previewDisplayName("CallControlsContent")

@@ -255,7 +255,9 @@ class CallState: ObservableObject, WebRTCClientDelegate {
         case .callEnded(let callId):
             onCallEnd(callId)
         case .groupCallCanceled(let call):
-            onCallEnd(call.callId)
+            if call.participant?.id == AppState.shared.user?.id {
+                onCallEnd(call.callId)
+            }
         case .callCanceled(let canceledCall):
             onCallCanceled(canceledCall)
         case .callRejected:

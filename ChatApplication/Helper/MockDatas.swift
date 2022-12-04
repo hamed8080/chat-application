@@ -218,12 +218,21 @@ final class MockData{
     
     static var mockDataModel:MockDataModel = {
         guard let path = Bundle.main.path(forResource: "MockData", ofType: ".json") else{
-            return MockDataModel(threads:[], messages:[], contacts:[], tags:[], participants:[])
+            return MockDataModel(threads:[], messages:[], contacts:[], tags:[], participants:[], callParticipants: [])
         }
         let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
         return try! JSONDecoder().decode(MockDataModel.self, from: data)
     }()
-    
+
+    static func generateCallParticipant(count: Int = 5, callStatus: CallStatus = .accepted) -> [CallParticipant] {
+        var callPrticipants: [CallParticipant] = []
+        let participants = generateParticipants(count: count)
+        for i in 0...(count - 1) {
+            let callParticipant = CallParticipant(sendTopic: "Test", callStatus: callStatus, participant: participants[i])
+            callPrticipants.append(callParticipant)
+        }
+        return callPrticipants
+    }
 }
 
 struct MockDataModel :Decodable{
@@ -232,5 +241,6 @@ struct MockDataModel :Decodable{
     let contacts:[Contact]
     let tags:[Tag]
     let participants:[Participant]
+    let callParticipants: [CallParticipant]
 }
 
