@@ -10,13 +10,12 @@ import Foundation
 import UIKit
 
 class ImageLoader: ObservableObject {
-
     @Published
-    private(set) var image: UIImage = UIImage()
+    private(set) var image: UIImage = .init()
     private(set) var url: String
-    private(set) var fileMetadata: String? = nil
-    private(set) var size: ImageSize? = nil
-    private(set) var token: String? = nil
+    private(set) var fileMetadata: String?
+    private(set) var size: ImageSize?
+    private(set) var token: String?
 
     init(url: String) {
         self.url = url
@@ -26,11 +25,11 @@ class ImageLoader: ObservableObject {
         image.size.width > 0
     }
 
-    private func setImage(data: Data){
+    private func setImage(data: Data) {
         if size == nil {
-            self.image = UIImage(data: data) ?? UIImage()
+            image = UIImage(data: data) ?? UIImage()
         } else {
-            self.image = UIImage(data: data)?.preparingThumbnail(of: CGSize(width: size == .SMALL ? 128 : 256, height: size == .SMALL ? 128 : 256)) ?? UIImage()
+            image = UIImage(data: data)?.preparingThumbnail(of: CGSize(width: size == .SMALL ? 128 : 256, height: size == .SMALL ? 128 : 256)) ?? UIImage()
         }
     }
 
@@ -42,7 +41,10 @@ class ImageLoader: ObservableObject {
 
     private var cacheData: Data? { CacheFileManager.sharedInstance.getImageProfileCache(url: url, group: AppGroup.group) }
 
-    private var oldURLHash: String? { URLComponents(url: URLObject!, resolvingAgainstBaseURL: true)?.queryItems?.first(where: {$0.name == "hash"})?.value }
+    private var oldURLHash: String? {
+        guard let URLObject = URLObject else { return nil }
+        return URLComponents(url: URLObject, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "hash" })?.value
+    }
 
     private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
 
@@ -66,7 +68,7 @@ class ImageLoader: ObservableObject {
     }
 
     private func downloadFromAnyURL() {
-        guard let req = reqWithHeader else {return}
+        guard let req = reqWithHeader else { return }
         let task = URLSession.shared.dataTask(with: req) { [weak self] data, _, _ in
             self?.update(data: data)
             self?.storeInCache(data: data)
@@ -75,16 +77,16 @@ class ImageLoader: ObservableObject {
     }
 
     private func update(data: Data?) {
-        guard let data = data else {return}
-        if !isRealImage(data: data) {return}
+        guard let data = data else { return }
+        if !isRealImage(data: data) { return }
         DispatchQueue.main.async {
             self.setImage(data: data)
         }
     }
 
     private func storeInCache(data: Data?) {
-        guard let data = data else {return}
-        if !isRealImage(data: data) {return}
+        guard let data = data else { return }
+        if !isRealImage(data: data) { return }
         DispatchQueue.main.async {
             CacheFileManager.sharedInstance.saveImageProfile(url: self.url, data: data, group: AppGroup.group)
         }
@@ -95,16 +97,15 @@ class ImageLoader: ObservableObject {
         UIImage(data: data) != nil
     }
 
-    private var headers: [String:String] { token != nil ?  ["Authorization": "Bearer \(token ?? "")"] : [:] }
+    private var headers: [String: String] { token != nil ? ["Authorization": "Bearer \(token ?? "")"] : [:] }
 
     private var reqWithHeader: URLRequest? {
-        guard let URLObject else {return nil}
+        guard let URLObject else { return nil }
         let req = URLRequest(url: URLObject)
         var request = URLRequest(url: URLObject)
-        headers.forEach({ key ,value in
+        headers.forEach { key, value in
             request.addValue(value, forHTTPHeaderField: key)
-        })
+        }
         return req
     }
-
 }
