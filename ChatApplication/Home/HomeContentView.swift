@@ -12,9 +12,6 @@ struct HomeContentView: View {
     @EnvironmentObject
     var tokenManager: TokenManager
 
-    @EnvironmentObject
-    var callState:CallState
-
     @Environment(\.localStatusBarStyle)
     var statusBarStyle
 
@@ -41,9 +38,10 @@ struct HomeContentView: View {
 
                 DetailContentView()
             }
-            .fullScreenCover(isPresented: $showCallView, onDismiss: nil, content: {
-                CallControlsContent()
-            })
+            .fullScreenCover(isPresented: $showCallView, onDismiss: nil) {
+                CallView()
+                    .environmentObject(RecordingViewModel(callId: CallViewModel.shared.callId))
+            }
             .sheet(isPresented: $shareCallLogs, onDismiss: {
                 if let zipFile =  appState.callLogs?.first{
                     FileManager.default.deleteFile(urlPathToZip: zipFile)
@@ -55,16 +53,17 @@ struct HomeContentView: View {
                     EmptyView()
                 }
             })
-            .onReceive(appState.$callLogs , perform: { _ in
+            .onReceive(appState.$callLogs) { _ in
                 withAnimation {
                     shareCallLogs = appState.callLogs != nil
                 }
-            })
-            .onReceive(callState.$model , perform: { _ in
-                withAnimation {
-                    showCallView = callState.model.showCallView
+            }
+            .animation(.easeInOut, value: showCallView)
+            .onReceive(CallViewModel.shared.$showCallView) { newShowCallView in
+                if showCallView != newShowCallView {
+                    showCallView = newShowCallView
                 }
-            })
+            }
             .onAppear {
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }
@@ -211,7 +210,7 @@ struct DetailContentView: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
-        let callState = CallState.shared
+        let callState = CallViewModel.shared
         HomeContentView()
             .environmentObject(appState)
             .environmentObject(callState)

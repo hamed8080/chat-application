@@ -14,7 +14,7 @@ struct ThreadDetailView: View {
     var viewModel: ThreadViewModel
 
     @EnvironmentObject
-    var callState:CallState
+    var callViewModel: CallViewModel
 
     @State
     var threadTitle: String = ""
@@ -80,29 +80,17 @@ struct ThreadDetailView: View {
                                 viewModel.searchInsideThread(text: searchText)
                             })
 
-                            if let type = thread.type{
-                                ActionButton(iconSfSymbolName: "video",height: 16,taped:{
-                                    callState.model.setIsVideoCallRequest(true)
-                                    callState.model.setIsP2PCalling(type == .normal ? true : false)
-                                    callState.model.setSelectedThread(thread)
-                                    withAnimation(.spring()){
-                                        callState.model.setShowCallView(true)
-                                    }
-                                })
-                                
-                                ActionButton(iconSfSymbolName: "phone", taped:{
-                                    callState.model.setIsP2PCalling(type == .normal ? true : false)
-                                    callState.model.setSelectedThread(thread)
-                                    withAnimation(.spring()){
-                                        callState.model.setShowCallView(true)
-                                    }
-                                })
-
-                                if let type = thread.type, type == .normal {
-                                    ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: .blue, taped: {})
-                                }
+                            ActionButton(iconSfSymbolName: "video",height: 16) {
+                                callViewModel.startCall(thread: thread, isVideoOn: true)
                             }
 
+                            ActionButton(iconSfSymbolName: "phone") {
+                                callViewModel.startCall(thread: thread, isVideoOn: false)
+                            }
+
+                            if let type = thread.type, type == .normal {
+                                ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: .blue, taped: {})
+                            }
                             Spacer()
                         }
                         .padding(SwiftUI.EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))

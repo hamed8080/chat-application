@@ -7,50 +7,53 @@
 
 import FanapPodChatSDK
 import SwiftUI
+import WebRTC
 
 struct CallParticipantRow: View {
-    var participant: CallParticipant
+    var userRTC: CallParticipantUserRTC
 
     @EnvironmentObject
-    var viewModel: CallParticipantsViewModel
+    var viewModel: CallViewModel
 
     var body: some View {
-        HStack {
-            Avatar(url: participant.participant?.image ?? "", userName: participant.participant?.username ?? "")
+        HStack(spacing: 8) {
+            Avatar(url: userRTC.callParticipant.participant?.image,
+                   userName: userRTC.callParticipant.participant?.username,
+                   style: .init(size: 48, textSize: 18))
             VStack {
-                Text(participant.title ?? "")
+                Text(userRTC.callParticipant.title ?? "")
                     .font(.headline)
 
                 HStack(spacing: 0) {
-                    if participant.canRecall {
-                        Button {
-                            viewModel.recall(participant)
-                        } label: {
-                            Image(systemName: "phone.fill.badge.plus")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 22, height: 22)
-                                .padding(8)
-                        }
-                    }
-
-                    if let callStatusString = participant.callStatusString {
+                    if let callStatusString = userRTC.callParticipant.callStatusString {
                         Text(callStatusString)
-                            .foregroundColor(participant.callStatusStringColor)
+                            .foregroundColor(userRTC.callParticipant.callStatusStringColor)
                             .font(.caption.bold())
                     }
                 }
             }
             Spacer()
-            Circle()
-                .fill(participant.mute ? Color.gray : .green)
-                .shadow(color: .gray, radius: 5, x: 0, y: 0)
-                .overlay(
-                    Image(systemName: participant.mute ? "mic.slash.fill" : "mic.fill")
+            if userRTC.callParticipant.active == false {
+                Button {
+                    viewModel.recall(userRTC.callParticipant.participant)
+                } label: {
+                    Image(systemName: "phone.fill.badge.plus")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 16, height: 16)
+                        .foregroundColor(.blue)
+                        .frame(width: 24, height: 24)
+                        .padding(8)
+                }
+            }
+            Circle()
+                .fill(userRTC.callParticipant.mute == true ? Color.gray : .green)
+                .shadow(color: .gray.opacity(0.22), radius: 5, x: 0, y: 0)
+                .overlay(
+                    Image(systemName: userRTC.callParticipant.mute ? "mic.slash.fill" : "mic.fill")
+                        .resizable()
+                        .scaledToFit()
                         .foregroundColor(.white)
+                        .frame(width: 16, height: 16)
                         .padding(2)
                 )
                 .frame(width: 32, height: 32)
@@ -58,21 +61,55 @@ struct CallParticipantRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 8)
         .padding([.top, .bottom], 4)
-        .background(Color.white)
-        .cornerRadius(16)
     }
 }
 
-struct CallParticipantRow_Previews: PreviewProvider {
 
-    static var previews: some View {
-        let viewModel = CallParticipantsViewModel(callId: 1)
-        let callParticipants = MockData.generateCallParticipant(count: 1, callStatus: .accepted)
-        CallParticipantRow(participant: callParticipants.first!)
-            .environmentObject(viewModel)
-            .onAppear {                
-                viewModel.callParticipants = callParticipants
-                viewModel.objectWillChange.send()
+struct OfflineParticipantRow: View {
+    var participant: Participant
+
+    @EnvironmentObject
+    var viewModel: CallViewModel
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Avatar(url: participant.image,
+                   userName: participant.username,
+                   style: .init(size: 48, textSize: 18))
+            VStack {
+                Text(participant.name ?? "")
+                    .font(.headline)
             }
+            Spacer()
+            Button {
+                viewModel.recall(participant)
+            } label: {
+                Image(systemName: "phone.fill.badge.plus")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.blue)
+                    .frame(width: 24, height: 24)
+                    .padding(8)
+            }
+        }
+        .contentShape(Rectangle())
+        .padding([.leading, .trailing], 8)
+        .padding([.top, .bottom], 4)
     }
 }
+
+//struct CallParticipantRow_Previews: PreviewProvider {
+//
+//    static var previews: some View {
+//        let viewModel = CallViewModel.shared
+//        let callParticipants = MockData.generateCallParticipant(count: 1, callStatus: .accepted)
+//        let clientDTO = ClientDTO(clientId: "", topicReceive: "", topicSend: "", userId: 0, desc: "", sendKey: nil, video: true, mute: false)
+//        let dto = ChatDataDTO(sendMetaData: "", screenShare: "", reciveMetaData: "", turnAddress: "", brokerAddressWeb: "", kurentoAddress: "")
+//        let startCall = StartCall(certificateFile: "", clientDTO: clientDTO, chatDataDto: dto, callName: "", callImage: nil)
+//        CallParticipantRow(userRTC: CallParticipantUserRTC(callParticipant: callParticipants.first!, config: WebRTCConfig(startCall: startCall, isSendVideoEnabled: false), delegate: PreviewDelegate()))
+//        .environmentObject(viewModel)
+//        .onAppear {
+//            viewModel.objectWillChange.send()
+//        }
+//    }
+//}

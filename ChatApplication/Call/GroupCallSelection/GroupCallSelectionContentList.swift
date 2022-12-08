@@ -18,7 +18,7 @@ struct GroupCallSelectionContentList: View {
     var contactViewModel: ContactsViewModel = .init()
 
     @EnvironmentObject
-    var callState: CallState
+    var callViewModel: CallViewModel
 
     @State
     var groupTitle: String = ""
@@ -33,9 +33,6 @@ struct GroupCallSelectionContentList: View {
                         }
                         .cornerRadius(16)
                         .noSeparators()
-                        .onChange(of: groupTitle) { newValue in
-                            callState.model.setGroupName(name: newValue)
-                        }
 
                         ForEach(contactViewModel.contactsVMS, id: \.id) { contactVM in
                             ContactRow(isInSelectionMode: $isInSelectionMode, imageLoader: ImageLoader(url: contactVM.contact.image ?? contactVM.contact.linkedUser?.image ?? ""))
@@ -63,7 +60,7 @@ struct GroupCallSelectionContentList: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
-                    startCallRequest(isVideoCall: true)
+                    callViewModel.startCall(contacts: contactViewModel.selectedContacts, isVideoOn: true, groupName: groupTitle)
                 } label: {
                     Label {
                         Text("VIDEO")
@@ -73,7 +70,7 @@ struct GroupCallSelectionContentList: View {
                 }
 
                 Button {
-                    startCallRequest(isVideoCall: false)
+                    callViewModel.startCall(contacts: contactViewModel.selectedContacts, isVideoOn: false, groupName: groupTitle)
                 } label: {
                     Label {
                         Text("VOICE")
@@ -96,16 +93,6 @@ struct GroupCallSelectionContentList: View {
             Text(title.uppercased())
                 .font(.system(size: 16).bold())
         }
-    }
-
-    func startCallRequest(isVideoCall: Bool) {
-        if groupTitle.isEmpty {
-            callState.model.setGroupName(name: "group")
-        }
-        callState.model.setIsVideoCallRequest(isVideoCall)
-        callState.model.setIsP2PCalling(false)
-        callState.model.setSelectedContacts(contactViewModel.selectedContacts)
-        callState.model.setShowCallView(true)
     }
 }
 

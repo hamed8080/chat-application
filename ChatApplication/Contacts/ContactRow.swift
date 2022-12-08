@@ -13,8 +13,8 @@ struct ContactRow: View {
     public var isInSelectionMode: Bool
     @EnvironmentObject
     var viewModel: ContactViewModel
-    @State
-    var callState: CallState = CallState.shared
+    @EnvironmentObject
+    var callViewModel: CallViewModel
     @State
     var showActionViews: Bool = false
     var contact: Contact { viewModel.contact }
@@ -107,22 +107,13 @@ struct ContactRow: View {
                 viewModel.blockOrUnBlock(contact)
             }
 
-            ActionButton(iconSfSymbolName: "video",height: 16,taped:{
-                callState.model.setIsVideoCallRequest(true)
-                callState.model.setIsP2PCalling(true)
-                callState.model.setSelectedContacts([contact])
-                withAnimation(.spring()){
-                    callState.model.setShowCallView(true)
-                }
-            })
+            ActionButton(iconSfSymbolName: "video", height: 16) {
+                callViewModel.startCall(contacts: [contact], isVideoOn: true)
+            }
 
-            ActionButton(iconSfSymbolName: "phone", taped:{
-                callState.model.setIsP2PCalling(true)
-                callState.model.setSelectedContacts([contact])
-                withAnimation(.spring()){
-                    callState.model.setShowCallView(true)
-                }
-            })
+            ActionButton(iconSfSymbolName: "phone") {
+                callViewModel.startCall(contacts: [contact], isVideoOn: false)
+            }
 
             ActionButton(iconSfSymbolName: "pencil") {
                 navigateToAddOrEditContact.toggle()

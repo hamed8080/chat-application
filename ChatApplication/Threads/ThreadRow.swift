@@ -160,7 +160,7 @@ struct JoinToGroupCallView: View {
     var body: some View {
         if let callIdToJoin = viewModel.groupCallIdToJoin {
             Button {
-                viewModel.joinToCall(callIdToJoin)
+                CallViewModel.joinToCall(callIdToJoin)
             } label: {
                 if #available(iOS 16.0, *) {
                     Image(systemName: "phone.and.waveform.fill", variableValue: variable)

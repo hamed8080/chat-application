@@ -71,7 +71,7 @@ struct CallsHistoryContentList_Previews: PreviewProvider {
         CallsHistoryContentList()
             .environmentObject(viewModel)
             .environmentObject(AppState.shared)
-            .environmentObject(CallState.shared)
+            .environmentObject(CallViewModel.shared)
             .onAppear(){
                 viewModel.setupPreview()
             }

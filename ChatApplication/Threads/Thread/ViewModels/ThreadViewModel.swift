@@ -45,7 +45,6 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func onMessageEvent(_ event: MessageEventTypes?)
     func updateUnreadCount(_ threadId: Int, _ unreadCount: Int)
     func onCallEvent(_ event: CallEventTypes)
-    func joinToCall(_ callId: Int)
 }
 
 class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable, Hashable {
@@ -415,16 +414,5 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
         }
         return false
-    }
-
-    func joinToCall(_ callId: Int) {
-        let callState = CallState.shared
-        Chat.sharedInstance.acceptCall(.init(callId: callId, client: .init(mute: true, video: false)))
-        withAnimation(.spring()) {
-            callState.model.setIsJoinCall(true)
-            callState.model.setShowCallView(true)
-        }
-        CallState.shared.model.setAnswerWithVideo(answerWithVideo: false, micEnable: false)
-        AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
     }
 }

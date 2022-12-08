@@ -97,9 +97,9 @@ extension ProviderDelegate : CXProviderDelegate{
 //        configureAudioSession()
 
         // Trigger the call to be answered via the underlying network service.
-        let callState = CallState.shared
-        if let receiveCall = callState.model.receiveCall {
-            Chat.sharedInstance.acceptCall(.init(callId:receiveCall.callId, client: .init(mute: !callState.model.answerWithMicEnable , video: callState.model.answerWithVideo)))
+        let callState = CallViewModel.shared
+        if let receiveCall = callState.call {
+            Chat.sharedInstance.acceptCall(.init(callId:receiveCall.callId, client: .init(mute: !callState.answerType.mute, video: callState.answerType.video)))
         }
         call.answerIncomingCall()
 

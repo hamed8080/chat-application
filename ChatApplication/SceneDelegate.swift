@@ -31,10 +31,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var callsHistoryVM = CallsHistoryViewModel()
 
     @ObservedObject
-    var callControlsVM = CallControlsViewModel()
+    var appState = AppState.shared
 
-    @State var appState = AppState.shared
-    @State var callState = CallState.shared
+    @ObservedObject
+    var callViewModel = CallViewModel.shared
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -49,8 +49,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .environmentObject(contactsVM)
             .environmentObject(threadsVM)
             .environmentObject(appState)
-            .environmentObject(callControlsVM)
-            .environmentObject(callState)
+            .environmentObject(callViewModel)
             .environmentObject(loginModel)
             .environmentObject(tokenManager)
             .environmentObject(callsHistoryVM)
