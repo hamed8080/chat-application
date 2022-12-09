@@ -16,10 +16,10 @@ class SendTextMessage: Message, UnSentMessageProtocol {
         super.init(threadId: sendTextMessageRequest.threadId,
                    message: sendTextMessageRequest.textMessage,
                    uniqueId: sendTextMessageRequest.uniqueId)
-        self.conversation = thread
+        conversation = thread
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from _: Decoder) throws {
         fatalError("init(from:) has not been implemented")
     }
 }
@@ -32,10 +32,10 @@ class EditTextMessage: Message, UnSentMessageProtocol {
         super.init(threadId: editMessageRequest.threadId,
                    message: editMessageRequest.textMessage,
                    uniqueId: editMessageRequest.uniqueId)
-        self.conversation = thread
+        conversation = thread
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from _: Decoder) throws {
         fatalError("init(from:) has not been implemented")
     }
 }
@@ -48,10 +48,10 @@ class ForwardMessage: Message, UnSentMessageProtocol {
         self.forwardMessageRequest = forwardMessageRequest
         self.destinationThread = destinationThread
         super.init(uniqueId: forwardMessageRequest.uniqueId)
-        self.conversation = thread
+        conversation = thread
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from _: Decoder) throws {
         fatalError("init(from:) has not been implemented")
     }
 }
@@ -72,16 +72,16 @@ class UploadFileMessage: Message, UploadWithTextMessageProtocol {
         if let sendTextMessageRequest = sendTextMessageRequest {
             self.sendTextMessageRequest = sendTextMessageRequest
             self.uploadFileRequest = uploadFileRequest
-            self.message = sendTextMessageRequest.textMessage
-            self.messageType = sendTextMessageRequest.messageType
-            self.metadata = sendTextMessageRequest.metadata
-            self.systemMetadata = sendTextMessageRequest.systemMetadata
-            self.threadId = sendTextMessageRequest.threadId
+            message = sendTextMessageRequest.textMessage
+            messageType = sendTextMessageRequest.messageType
+            metadata = sendTextMessageRequest.metadata
+            systemMetadata = sendTextMessageRequest.systemMetadata
+            threadId = sendTextMessageRequest.threadId
         }
-        self.conversation = thread
+        conversation = thread
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from _: Decoder) throws {
         fatalError("init(from:) has not been implemented")
     }
 }

@@ -16,8 +16,7 @@ struct UploadFileView: View {
     @EnvironmentObject var threadViewModel: ThreadViewModel
     let message: Message
 
-    @ViewBuilder
-    var body: some View {
+    @ViewBuilder var body: some View {
         ZStack(alignment: .center) {
             switch viewModel.state {
             case .UPLOADING, .STARTED:
@@ -86,8 +85,8 @@ class UploadFileViewModel: ObservableObject {
         state = .STARTED
         guard let threadId = thread?.id else { return }
         let textMessageType: MessageType = uploadFileWithTextMessage.uploadFileRequest is UploadImageRequest ? .podSpacePicture : .podSpaceFile
-        let message = SendTextMessageRequest(threadId: threadId, textMessage: self.message.message ?? "", messageType: textMessageType)
-        uploadFile(message, self.uploadFileWithTextMessage.uploadFileRequest)
+        let message = SendTextMessageRequest(threadId: threadId, textMessage: message.message ?? "", messageType: textMessageType)
+        uploadFile(message, uploadFileWithTextMessage.uploadFileRequest)
     }
 
     func uploadFile(_ message: SendTextMessageRequest, _ uploadFileRequest: UploadFileRequest) {

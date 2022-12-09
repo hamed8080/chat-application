@@ -5,6 +5,7 @@
 //  Created by hamed on 11/18/22.
 //
 
+import Combine
 import FanapPodChatSDK
 import Foundation
 
@@ -18,12 +19,20 @@ protocol MessageViewModelProtocol {
 }
 
 class MessageViewModel: ObservableObject, MessageViewModelProtocol {
-    @Published
-    var message: Message
+    @Published var message: Message
     var messageId: Int { message.id ?? 0 }
+    @Published var imageLoader: ImageLoader
+    var cancellableSet: Set<AnyCancellable> = []
 
     init(message: Message) {
         self.message = message
+
+        imageLoader = ImageLoader(url: message.participant?.image ?? "", userName: message.participant?.name ?? message.participant?.username, size: .SMALL)
+        imageLoader.$image.sink { _ in
+            self.objectWillChange.send()
+        }
+        .store(in: &cancellableSet)
+        imageLoader.fetch()
     }
 
     func togglePin() {
@@ -53,7 +62,7 @@ class MessageViewModel: ObservableObject, MessageViewModelProtocol {
     func clearCacheFile(message: Message) {
         if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
             CacheFileManager.sharedInstance.delete(fileHashCode: fileHashCode)
-            NotificationCenter.default.post(.init(name: File_Deleted_From_Cache_Name, object: message))
+            NotificationCenter.default.post(.init(name: fileDeletedFromCacheName, object: message))
         }
     }
 }

@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct AudioRecordingView: View {
-
-    @ObservedObject
-    var viewModel: AudioRecordingViewModel
+    @ObservedObject var viewModel: AudioRecordingViewModel
 
     var body: some View {
         let scale = viewModel.isRecording ? 1.8 : 1

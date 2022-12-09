@@ -9,17 +9,13 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct ContactContentList: View {
-    @EnvironmentObject
-    var viewModel: ContactsViewModel
+    @EnvironmentObject var viewModel: ContactsViewModel
 
-    @State
-    var modifyContactSheet = false
+    @State var modifyContactSheet = false
 
-    @State
-    var isInSelectionMode = false
+    @State var isInSelectionMode = false
 
-    @State
-    var deleteDialog = false
+    @State var deleteDialog = false
 
     var body: some View {
         List {
@@ -50,7 +46,7 @@ struct ContactContentList: View {
             }
 
             ForEach(viewModel.contactsVMS, id: \.id) { contactVM in
-                ContactRow(isInSelectionMode: $isInSelectionMode, imageLoader: ImageLoader(url: contactVM.contact.image ?? contactVM.contact.linkedUser?.image ?? ""))
+                ContactRow(isInSelectionMode: $isInSelectionMode)
                     .environmentObject(contactVM)
                     .noSeparators()
                     .onAppear {

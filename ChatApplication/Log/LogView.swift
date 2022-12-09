@@ -8,19 +8,18 @@
 import SwiftUI
 
 struct LogView: View {
-    
     @StateObject var vm = LogViewModel()
-    
+
     var body: some View {
-        List(vm.filtered){
+        List(vm.filtered) {
             LogRow(log: $0)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
                 .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
         }
         .searchable(text: $vm.searchText, placement: .navigationBarDrawer, prompt: "Search inside Logs...") {
-            if vm.searchText.isEmpty == false && vm.filtered.count < 1{
-                HStack{
+            if vm.searchText.isEmpty == false, vm.filtered.count < 1 {
+                HStack {
                     Image(systemName: "doc.text.magnifyingglass")
                         .foregroundColor(.gray.opacity(0.8))
                     Text("Nothind has found.")
@@ -30,8 +29,8 @@ struct LogView: View {
         }
         .animation(.easeInOut, value: vm.filtered)
         .listStyle(.plain)
-        .toolbar{
-            ToolbarItemGroup{
+        .toolbar {
+            ToolbarItemGroup {
                 Button {
                     vm.clearLogs()
                 } label: {

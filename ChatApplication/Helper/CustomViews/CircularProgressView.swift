@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct CircularProgressView: View {
-    @Binding
-    var percent: Int64
+    @Binding var percent: Int64
 
     var body: some View {
         ZStack {

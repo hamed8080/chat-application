@@ -10,30 +10,14 @@ import SwiftUI
 import WebRTC
 
 struct CallView: View {
-
-    @EnvironmentObject
-    var viewModel: CallViewModel
-
-    @Environment(\.localStatusBarStyle)
-    var statusBarStyle: LocalStatusBarStyle
-
-    @Environment(\.presentationMode)
-    var presentationMode: Binding<PresentationMode>
-
-    @EnvironmentObject
-    var recordingViewModel: RecordingViewModel
-
-    @State
-    var showRecordingToast = false
-
-    @State
-    var location: CGPoint = .init(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height - 164)
-
-    @State
-    var showDetailPanel: Bool = false
-
-    @State
-    var showCallParticipants: Bool = false
+    @EnvironmentObject var viewModel: CallViewModel
+    @Environment(\.localStatusBarStyle) var statusBarStyle: LocalStatusBarStyle
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @EnvironmentObject var recordingViewModel: RecordingViewModel
+    @State var showRecordingToast = false
+    @State var location: CGPoint = .init(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height - 164)
+    @State var showDetailPanel: Bool = false
+    @State var showCallParticipants: Bool = false
 
     var gridColumns: [GridItem] {
         let videoCount = viewModel.activeUsers.count
@@ -48,7 +32,6 @@ struct CallView: View {
     }
 
     var body: some View {
-        let _ = Self._printChanges()
         ZStack {
             CenterAciveUserRTCView()
             if viewModel.isCallStarted, isIpad {
@@ -89,16 +72,8 @@ struct CallView: View {
         .toast(isShowing: $showRecordingToast,
                title: "The recording call is started.",
                message: "The session is recording by \(recordingViewModel.recorder?.name ?? "").",
-               image: AnyView(
-                Avatar(
-                    url: recordingViewModel.recorder?.image,
-                    userName: recordingViewModel.recorder?.username?.uppercased(),
-                    style: .init(cornerRadius: 32, size: 32, textSize: 32)
-                )
-                .cornerRadius(32)
-               )
-        )
-        .onChange(of: viewModel.showCallView) { newValue in
+               image: recordingViewModel.imageLoader?.imageView as? Image ?? Image(uiImage: UIImage()))
+        .onChange(of: viewModel.showCallView) { _ in
             if viewModel.showCallView == false {
                 presentationMode.wrappedValue.dismiss()
             }
@@ -111,8 +86,7 @@ struct CallView: View {
         }
     }
 
-    @ViewBuilder
-    var listLargeIpadParticipants: some View {
+    @ViewBuilder var listLargeIpadParticipants: some View {
         if viewModel.activeUsers.count <= 2 {
             HStack(spacing: 16) {
                 ForEach(viewModel.activeUsers) { userrtc in
@@ -134,8 +108,7 @@ struct CallView: View {
         }
     }
 
-    @ViewBuilder
-    var listSmallCallParticipants: some View {
+    @ViewBuilder var listSmallCallParticipants: some View {
         ScrollView(.horizontal) {
             LazyHGrid(rows: [GridItem(.flexible(), spacing: 0)], spacing: 0) {
                 ForEach(viewModel.activeUsers) { userrtc in
@@ -153,8 +126,7 @@ struct CallView: View {
 }
 
 struct CenterAciveUserRTCView: View {
-    @EnvironmentObject
-    var viewModel: CallViewModel
+    @EnvironmentObject var viewModel: CallViewModel
     var userRTC: CallParticipantUserRTC? { viewModel.activeLargeCall }
     var activeLargeRenderer = RTCMTLVideoView(frame: .zero)
 
@@ -185,12 +157,9 @@ struct CenterAciveUserRTCView: View {
                 }
             } else {
                 // only audio
-                Avatar(
-                    url: userRTC.callParticipant.participant?.image,
-                    userName: userRTC.callParticipant.participant?.username?.uppercased(),
-                    style: .init(cornerRadius: isIpad ? 64 : 32, size: isIpad ? 128 : 64, textSize: isIpad ? 48 : 24)
-                )
-                .cornerRadius(isIpad ? 64 : 32)
+                ImageLoader(url: userRTC.callParticipant.participant?.image ?? "", userName: userRTC.callParticipant.participant?.username?.uppercased()).imageView
+                    .frame(width: isIpad ? 64 : 32, height: isIpad ? 64 : 32)
+                    .cornerRadius(isIpad ? 64 : 32)
             }
         } else {
             EmptyView()
@@ -199,14 +168,11 @@ struct CenterAciveUserRTCView: View {
 }
 
 struct RecordingDotView: View {
-    @EnvironmentObject
-    var callState: CallViewModel
+    @EnvironmentObject var callState: CallViewModel
 
-    @EnvironmentObject
-    var recordingViewModel: RecordingViewModel
+    @EnvironmentObject var recordingViewModel: RecordingViewModel
 
-    @State
-    var showRecordingIndicator: Bool = false
+    @State var showRecordingIndicator: Bool = false
 
     var body: some View {
         if recordingViewModel.isRecording {
@@ -230,8 +196,7 @@ struct RecordingDotView: View {
 
 /// When receive or start call to someone you will see this screen and it will show only if call is not started.
 struct StartCallActionsView: View {
-    @EnvironmentObject
-    var viewModel: CallViewModel
+    @EnvironmentObject var viewModel: CallViewModel
 
     var body: some View {
         if viewModel.isCallStarted == false {
@@ -268,17 +233,10 @@ struct StartCallActionsView: View {
 }
 
 struct MoreControlsView: View {
-    @EnvironmentObject
-    var viewModel: CallViewModel
-
-    @EnvironmentObject
-    var recordingViewModel: RecordingViewModel
-
-    @Binding
-    var showDetailPanel: Bool
-
-    @Binding
-    var showCallParticipants: Bool
+    @EnvironmentObject var viewModel: CallViewModel
+    @EnvironmentObject var recordingViewModel: RecordingViewModel
+    @Binding var showDetailPanel: Bool
+    @Binding var showCallParticipants: Bool
 
     var body: some View {
         HStack {
@@ -321,11 +279,8 @@ struct MoreControlsView: View {
 }
 
 struct CallStartedActionsView: View {
-    @EnvironmentObject
-    var viewModel: CallViewModel
-
-    @Binding
-    var showDetailPanel: Bool
+    @EnvironmentObject var viewModel: CallViewModel
+    @Binding var showDetailPanel: Bool
 
     var body: some View {
         VStack {
@@ -356,13 +311,13 @@ struct CallStartedActionsView: View {
                     }
                 }
 
-                if let isMute = viewModel.usersRTC.first(where: {$0.isMe})?.callParticipant.mute {
+                if let isMute = viewModel.usersRTC.first(where: { $0.isMe })?.callParticipant.mute {
                     CallControlItem(iconSfSymbolName: isMute ? "mic.slash.fill" : "mic.fill", subtitle: "Mute", color: isMute ? .gray : .green) {
                         viewModel.toggleMute()
                     }
                 }
 
-                if let videoEnable = viewModel.activeUsers.first(where: {$0.isMe})?.callParticipant.video {
+                if let videoEnable = viewModel.activeUsers.first(where: { $0.isMe })?.callParticipant.video {
                     CallControlItem(iconSfSymbolName: videoEnable ? "video.fill" : "video.slash.fill", subtitle: "Video", color: videoEnable ? .green : .gray) {
                         viewModel.toggleCamera()
                     }
@@ -383,8 +338,7 @@ struct CallStartedActionsView: View {
         .cornerRadius(isIpad ? 16 : 0)
     }
 
-    @ViewBuilder
-    var controlBackground: some View {
+    @ViewBuilder var controlBackground: some View {
         if isIpad {
             Rectangle()
                 .fill(Color.clear)
@@ -398,9 +352,9 @@ struct CallStartedActionsView: View {
 struct CallControlItem: View {
     var iconSfSymbolName: String
     var subtitle: String
-    var color: Color? = nil
+    var color: Color?
     var vertical: Bool = false
-    var action: (()->Void)?
+    var action: (() -> Void)?
 
     @State var isActive = false
 
@@ -422,8 +376,7 @@ struct CallControlItem: View {
         .buttonStyle(DeepButtonStyle(backgroundColor: Color.clear, shadow: 12))
     }
 
-    @ViewBuilder
-    var content: some View {
+    @ViewBuilder var content: some View {
         Circle()
             .fill(color ?? .blue)
             .overlay(
@@ -445,8 +398,7 @@ struct CallControlItem: View {
 struct UserRTCView: View {
     let userRTC: CallParticipantUserRTC
 
-    @EnvironmentObject
-    var viewModel: CallViewModel
+    @EnvironmentObject var viewModel: CallViewModel
 
     var body: some View {
         if let rendererView = userRTC.videoRTC.renderer as? UIView {
@@ -455,12 +407,9 @@ struct UserRTCView: View {
                     RTCVideoReperesentable(renderer: rendererView)
                 } else {
                     // only audio
-                    Avatar(
-                        url: userRTC.callParticipant.participant?.image,
-                        userName: userRTC.callParticipant.participant?.username?.uppercased(),
-                        style: .init(cornerRadius: isIpad ? 64 : 32, size: isIpad ? 128 : 64, textSize: isIpad ? 48 : 24)
-                    )
-                    .cornerRadius(isIpad ? 64 : 32)
+                    ImageLoader(url: userRTC.callParticipant.participant?.image ?? "", userName: userRTC.callParticipant.participant?.username?.uppercased()).imageView
+                        .frame(width: isIpad ? 64 : 32, height: isIpad ? 64 : 32)
+                        .cornerRadius(isIpad ? 64 : 32)
                 }
 
                 HStack {
@@ -468,11 +417,11 @@ struct UserRTCView: View {
                         Spacer()
                         HStack {
                             Spacer()
-                            Image(systemName:userRTC.callParticipant.mute ? "mic.slash.fill" : "mic.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: isIpad ? 24 : 16, height: isIpad ? 24 : 16)
-                                    .foregroundColor(Color.primary)
+                            Image(systemName: userRTC.callParticipant.mute ? "mic.slash.fill" : "mic.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: isIpad ? 24 : 16, height: isIpad ? 24 : 16)
+                                .foregroundColor(Color.primary)
 
                             Image(systemName: userRTC.callParticipant.video == true ? "video" : "video.slash")
                                 .resizable()
@@ -506,15 +455,11 @@ struct UserRTCView: View {
 }
 
 struct CallControlsView_Previews: PreviewProvider {
+    @State static var showDetailPanel: Bool = false
 
-    @State
-    static var showDetailPanel: Bool = false
+    @State static var showCallParticipants: Bool = false
 
-    @State
-    static var showCallParticipants: Bool = false
-
-    @ObservedObject
-    static var viewModel = CallViewModel.shared
+    @ObservedObject static var viewModel = CallViewModel.shared
 
     static var recordingVM = RecordingViewModel(callId: 1)
 
@@ -555,7 +500,7 @@ struct CallControlsView_Previews: PreviewProvider {
         recordingVM.startRecordingTimer()
     }
 
-    static func fakeParticipant(count: Int)->[CallParticipant] {
+    static func fakeParticipant(count: Int) -> [CallParticipant] {
         var participants: [CallParticipant] = []
         for i in 1 ... count {
             let participant = MockData.participant

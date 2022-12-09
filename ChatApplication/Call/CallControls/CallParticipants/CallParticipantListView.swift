@@ -5,15 +5,13 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
-import SwiftUI
 import FanapPodChatSDK
+import SwiftUI
 
 struct CallParticipantListView: View {
-    @EnvironmentObject
-    var viewModel: CallViewModel
+    @EnvironmentObject var viewModel: CallViewModel
 
     var body: some View {
-        let _ = Self._printChanges()
         List {
             Section("Online") {
                 ForEach(viewModel.activeUsers, id: \.id) { userRTC in

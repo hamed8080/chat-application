@@ -8,15 +8,13 @@
 import SwiftUI
 
 struct NavigateToThreadModifier: ViewModifier {
+    @EnvironmentObject var appState: AppState
 
-    @EnvironmentObject
-    var appState: AppState
-    
     func body(content: Content) -> some View {
         ZStack {
             content
             if let thread = appState.selectedThread {
-                NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: thread)), isActive: $appState.showThreadView){
+                NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: thread)), isActive: $appState.showThreadView) {
                     EmptyView()
                         .frame(width: 0, height: 0)
                         .hidden()
@@ -30,6 +28,6 @@ struct NavigateToThreadModifier: ViewModifier {
 
 extension View {
     func autoNavigateToThread() -> ModifiedContent<Self, NavigateToThreadModifier> {
-        return modifier(NavigateToThreadModifier())
+        modifier(NavigateToThreadModifier())
     }
 }

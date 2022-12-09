@@ -10,17 +10,14 @@ import Photos
 import UIKit
 
 class ActionSheetViewModel: ObservableObject {
-    @Published
-    var allImageItems: [ImageItem] = []
-
-    @Published
-    var selectedImageItems: [ImageItem] = []
+    @Published var allImageItems: [ImageItem] = []
+    @Published var selectedImageItems: [ImageItem] = []
     let fetchCount = 10
     var totalCount = 0
     var offset = 0
 
     var hasNext: Bool {
-        return offset < totalCount
+        offset < totalCount
     }
 
     var indexSet: IndexSet {
@@ -34,11 +31,9 @@ class ActionSheetViewModel: ObservableObject {
         return IndexSet(offset + 1 ... lastIndex)
     }
 
-    @Published
-    var isLoading = false
+    @Published var isLoading = false
 
-    @Published
-    var selectedFileUrl: URL? {
+    @Published var selectedFileUrl: URL? {
         didSet {
             if selectedFileUrl != nil {
                 sendSelectedFile()
@@ -87,7 +82,7 @@ class ActionSheetViewModel: ObservableObject {
                     DispatchQueue.main.async {
                         self.isLoading = false
                     }
-                    self.offset = self.offset + self.fetchCount
+                    self.offset += self.fetchCount
                 }
             case .denied, .restricted:
                 print("Not allowed")

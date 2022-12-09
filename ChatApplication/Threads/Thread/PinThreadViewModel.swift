@@ -36,7 +36,7 @@ class ArchiveThreadViewModel: ObservableObject, ArchiveThreadViewModelProtocol {
         Chat.sharedInstance.unarchiveThread(.init(subjectId: threadId), onArchiveChanged)
     }
 
-    func onArchiveChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
+    func onArchiveChanged(_ threadId: Int?, _: String?, _ error: ChatError?) {
         if threadId != nil, error == nil {
             threadVM?.thread.isArchive?.toggle()
             objectWillChange.send()

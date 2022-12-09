@@ -5,31 +5,27 @@
 //  Created by hamed on 3/7/22.
 //
 
-import SwiftUI
 import FanapPodChatSDK
+import SwiftUI
 
 struct MediaView: View {
-    
-    var thread:Conversation
-    
-    @StateObject
-    var viewModel:AttachmentsViewModel = AttachmentsViewModel()
-    
-    
+    var thread: Conversation
+    @StateObject var viewModel: AttachmentsViewModel = .init()
+
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
         GridItem(.flexible()),
         GridItem(.flexible()),
     ]
-    
+
     var body: some View {
-        List{
-            LazyVGrid(columns: columns, alignment: .center, spacing: 4){
-                ForEach(viewModel.model.messages, id:\.id){ picture in
-                    item(picture: picture)
+        List {
+            LazyVGrid(columns: columns, alignment: .center, spacing: 4) {
+                ForEach(viewModel.model.messages, id: \.id) { picture in
+                    MediaPicture(picture: picture)
                         .onAppear {
-                            if viewModel.model.messages.last == picture{
+                            if viewModel.model.messages.last == picture {
                                 viewModel.loadMore()
                             }
                         }
@@ -44,114 +40,115 @@ struct MediaView: View {
             viewModel.getPictures()
         }
     }
-    
-    @ViewBuilder
-    func item(picture:Message)-> some View{
-        if let link = picture.metaData?.file?.link{
-            Avatar(
-                url: link,
-                userName: nil,
-                style: .init(cornerRadius: -1, size: (UIScreen.main.bounds.width / CGFloat(columns.count)) - 16),
-                metadata: picture.metadata
-            )
-        }
+}
+
+struct MediaPicture: View {
+    var picture: Message
+    @ObservedObject var imageLoader: ImageLoader
+
+    init(picture: Message) {
+        self.picture = picture
+        imageLoader = ImageLoader(url: picture.metaData?.file?.link ?? "", size: .SMALL)
+        imageLoader.fetch()
+    }
+
+    var body: some View {
+        imageLoader.imageView
+            .scaledToFit()
+            .frame(height: 128)
+            .foregroundColor(imageLoader.isImageReady ? .clear : .gray.opacity(0.5))
+            .padding(16)
     }
 }
 
-class AttachmentsViewModel: ObservableObject{
-    
-    var thread:Conversation? = nil
-    
-    @Published
-    var isLoading = false
-    
-    
-    @Published
-    var model = AttachmentModel()
-    
-    func getPictures(){
-        guard let threadId = thread?.id else {return}
-        
-        Chat.sharedInstance.getHistory(.init(threadId: threadId, count:model.count, messageType: MessageType.podSpacePicture.rawValue, offset: model.offset)) {[weak self] messages, uniqueId, pagination, error in
-            if let messages = messages{
+class AttachmentsViewModel: ObservableObject {
+    var thread: Conversation?
+
+    @Published var isLoading = false
+
+    @Published var model = AttachmentModel()
+
+    func getPictures() {
+        guard let threadId = thread?.id else { return }
+
+        Chat.sharedInstance.getHistory(.init(threadId: threadId, count: model.count, messageType: MessageType.podSpacePicture.rawValue, offset: model.offset)) { [weak self] messages, _, pagination, _ in
+            if let messages = messages {
                 self?.model.appendMessages(messages: messages)
                 self?.model.setHasNext(pagination?.hasNext ?? false)
             }
             self?.isLoading = false
-        }cacheResponse: { [weak self] messages, uniqueId, error in
-            if let messages = messages{
+        } cacheResponse: { [weak self] messages, _, _ in
+            if let messages = messages {
                 self?.model.setMessages(messages: messages)
             }
         }
     }
-    
-    func loadMore(){
-        if !model.hasNext || isLoading{return}
+
+    func loadMore() {
+        if !model.hasNext || isLoading { return }
         isLoading = true
         model.preparePaginiation()
         getPictures()
     }
 }
 
-
 struct AttachmentModel {
-    
-    private (set) var count                         = 50
-    private (set) var offset                        = 0
-    private (set) var totalCount                    = 0
-    private (set) var messages :[Message]           = []
-    private (set) var hasNext:Bool                  = false
-    
-    mutating func setHasNext(_ hasNext:Bool){
+    private(set) var count = 50
+    private(set) var offset = 0
+    private(set) var totalCount = 0
+    private(set) var messages: [Message] = []
+    private(set) var hasNext: Bool = false
+
+    mutating func setHasNext(_ hasNext: Bool) {
         self.hasNext = hasNext
     }
-    
-    mutating func preparePaginiation(){
+
+    mutating func preparePaginiation() {
         offset = messages.count
     }
-    
-    mutating func setContentCount(totalCount:Int){
+
+    mutating func setContentCount(totalCount: Int) {
         self.totalCount = totalCount
     }
-    
-    mutating func setMessages(messages:[Message]){
+
+    mutating func setMessages(messages: [Message]) {
         self.messages = messages
         sort()
     }
-    
-    mutating func appendMessages(messages:[Message]){
+
+    mutating func appendMessages(messages: [Message]) {
         self.messages.append(contentsOf: filterNewMessagesToAppend(serverMessages: messages))
         sort()
     }
-    
+
     /// Filter only new messages prevent conflict with cache messages
-    mutating func filterNewMessagesToAppend(serverMessages:[Message])->[Message]{
-        let ids = self.messages.map{$0.id}
+    mutating func filterNewMessagesToAppend(serverMessages: [Message]) -> [Message] {
+        let ids = messages.map(\.id)
         let newMessages = serverMessages.filter { message in
             !ids.contains { id in
-                return id == message.id
+                id == message.id
             }
         }
         return newMessages
     }
-    
-    mutating func appendMessage(_ message:Message){
-        self.messages.append(message)
+
+    mutating func appendMessage(_ message: Message) {
+        messages.append(message)
         sort()
     }
-    
-    mutating func clear(){
-        self.offset     = 0
-        self.count      = 15
-        self.totalCount = 0
-        self.messages   = []
+
+    mutating func clear() {
+        offset = 0
+        count = 15
+        totalCount = 0
+        messages = []
     }
-    
-    mutating func sort(){
+
+    mutating func sort() {
         messages = messages.sorted { m1, m2 in
-            if let t1 = m1.time , let t2 = m2.time{
+            if let t1 = m1.time, let t2 = m2.time {
                 return t1 < t2
-            }else{
+            } else {
                 return false
             }
         }

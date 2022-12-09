@@ -9,21 +9,20 @@ import Foundation
 import MobileCoreServices
 import UniformTypeIdentifiers
 
-extension URL{
-    
-    var mimeType:String{
-        let pathExtension = self.pathExtension
-        if let mimetype = UTType(filenameExtension: pathExtension)?.preferredMIMEType{
+extension URL {
+    var mimeType: String {
+        let pathExtension = pathExtension
+        if let mimetype = UTType(filenameExtension: pathExtension)?.preferredMIMEType {
             return mimetype as String
         }
         return "application/octet-stream"
     }
 
-    var fileName:String{
-        self.deletingPathExtension().lastPathComponent
+    var fileName: String {
+        deletingPathExtension().lastPathComponent
     }
 
-    var fileExtension:String{
-        self.pathExtension.lowercased()
+    var fileExtension: String {
+        pathExtension.lowercased()
     }
 }

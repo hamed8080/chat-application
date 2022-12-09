@@ -10,9 +10,9 @@ import FanapPodChatSDK
 import SwiftUI
 import WebRTC
 //
-//class ObservableCallParticipantUserRTC: CallParticipantUserRTC, ObservableObject {
+// class ObservableCallParticipantUserRTC: CallParticipantUserRTC, ObservableObject {
 //
-//}
+// }
 
 enum CameraType: String {
     case front
@@ -43,20 +43,20 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
     var uuid: UUID = .init()
     var startCall: StartCall?
-    @Published
-    var showCallView: Bool = false
+    @Published var isLoading = false
+    @Published var activeLargeCall: CallParticipantUserRTC?
+    @Published var showCallView: Bool = false
+    @Published var offlineParticipants: [Participant] = []
     var startCallDate: Date?
     var startCallTimer: Timer?
     var timerCallString: String?
     var isCallStarted: Bool { startCall != nil }
     var usersRTC: [CallParticipantUserRTC] { WebRTCClient.instance?.callParticipantsUserRTC ?? [] }
     var activeUsers: [CallParticipantUserRTC] { usersRTC.filter { $0.callParticipant.active == true } }
-    @Published
-    var offlineParticipants: [Participant] = []
     var call: CreateCall?
     var callId: Int? { call?.callId ?? startCall?.callId }
     var startCallRequest: StartCallRequest?
-    var answerType: AnswerType = AnswerType(video: false, mute: true)
+    var answerType: AnswerType = .init(video: false, mute: true)
     var isSpeakerOn: Bool = false
     var cameraType: CameraType = .unknown
     var cancellableSet: Set<AnyCancellable> = []
@@ -64,7 +64,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     var callTitle: String? { isReceiveCall ? call?.title : startCallRequest?.titleOfCalling }
 
     private init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(callEvent(_:)), name: CALL_EVENT_NAME, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(callEvent(_:)), name: callEventName, object: nil)
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)
@@ -97,7 +97,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         isLoading = true
         Chat.sharedInstance.activeCallParticipants(.init(subjectId: callId)) { [weak self] callParticipants, _, _ in
             callParticipants?.forEach { callParticipant in
-                if let callParticipantUserRTC = self?.usersRTC.first(where: {$0.callParticipant == callParticipant}){
+                if let callParticipantUserRTC = self?.usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                     callParticipantUserRTC.callParticipant.update(callParticipant)
                 }
             }
@@ -110,8 +110,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         guard let threadId = call?.conversation?.id else { return }
         isLoading = true
         Chat.sharedInstance.getThreadParticipants(.init(threadId: threadId)) { [weak self] participants, _, _, _ in
-            participants?.forEach{ participant in
-                if self?.activeUsers.contains(where: {$0.callParticipant.participant == participant}) == false {
+            participants?.forEach { participant in
+                if self?.activeUsers.contains(where: { $0.callParticipant.participant == participant }) == false {
                     self?.offlineParticipants.append(participant)
                 }
             }
@@ -120,7 +120,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     }
 
     // Create call don't mean the call realy started. CallStarted Event is real one when a call realy accepted by at least one participant.
-    private func initCreateCall(createCall: CreateCall?, uniqueId: String?, error: ChatError?) {
+    private func initCreateCall(createCall: CreateCall?, uniqueId _: String?, error _: ChatError?) {
         call = createCall
     }
 
@@ -138,43 +138,43 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     @objc func callEvent(_ notification: NSNotification) {
         guard let type = (notification.object as? CallEventTypes) else { return }
         switch type {
-        case .callStarted(let startCall):
+        case let .callStarted(startCall):
             onCallStarted(startCall)
-        case .callCreate(let createCall):
+        case let .callCreate(createCall):
             onCallCreated(createCall)
-        case .callReceived(let receieveCall):
+        case let .callReceived(receieveCall):
             onReceiveCall(receieveCall)
         case .callDelivered:
             break
-        case .callEnded(let callId):
+        case let .callEnded(callId):
             onCallEnd(callId)
-        case .groupCallCanceled(let call):
+        case let .groupCallCanceled(call):
             if call.participant?.id == AppState.shared.user?.id {
                 onCallEnd(call.callId)
             }
-        case .callCanceled(let canceledCall):
+        case let .callCanceled(canceledCall):
             onCallCanceled(canceledCall)
         case .callRejected:
             break
-        case .callParticipantJoined(let callParticipants):
+        case let .callParticipantJoined(callParticipants):
             onCallParticipantJoined(callParticipants)
-        case .callParticipantLeft(let callParticipants):
+        case let .callParticipantLeft(callParticipants):
             onCallParticipantLeft(callParticipants)
-        case .callParticipantMute(let callParticipants):
+        case let .callParticipantMute(callParticipants):
             onMute(callParticipants)
-        case .callParticipantUnmute(let callParticipants):
+        case let .callParticipantUnmute(callParticipants):
             onUNMute(callParticipants)
         case .callParticipantsRemoved:
             break
-        case .turnVideoOn(let callParticipants):
+        case let .turnVideoOn(callParticipants):
             onVideoOn(callParticipants)
-        case .turnVideoOff(let callParticipants):
+        case let .turnVideoOff(callParticipants):
             onVideoOff(callParticipants)
         case .callClientError:
             break
-        case .callParticipantStartSpeaking(_):
+        case .callParticipantStartSpeaking:
             objectWillChaneWithAnimation()
-        case .callParticipantStopSpeaking(_):
+        case .callParticipantStopSpeaking:
             objectWillChaneWithAnimation()
         default:
             break
@@ -192,7 +192,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     }
 
     // maybe reject or canceled after a time out
-    func onCallCanceled(_ canceledCall: Call) {
+    func onCallCanceled(_: Call) {
         // don't remove showCallView == true leads to show callViewControls again in receiver of call who rejected call
         if showCallView {
             endCallKitCall()
@@ -224,7 +224,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         guard let callId = startCall.callId else { return }
         Chat.sharedInstance.activeCallParticipants(.init(subjectId: callId)) { [weak self] callParticipants, _, _ in
             callParticipants?.forEach { callParticipant in
-                if let callParticipantUserRTC = self?.usersRTC.first(where: {$0.callParticipant == callParticipant}){
+                if let callParticipantUserRTC = self?.usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                     callParticipantUserRTC.callParticipant.update(callParticipant)
                 }
             }
@@ -236,7 +236,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         guard let callId = startCall?.callId else { return }
         Chat.sharedInstance.callInquery(.init(subjectId: callId)) { [weak self] callParticipants, _, _ in
             callParticipants?.forEach { callParticipant in
-                if let callParticipantUserRTC = self?.usersRTC.first(where: {$0.callParticipant == callParticipant}){
+                if let callParticipantUserRTC = self?.usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                     callParticipantUserRTC.callParticipant.update(callParticipant)
                 }
             }
@@ -244,7 +244,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         }
     }
 
-    func onCallEnd(_ callId: Int?) {
+    func onCallEnd(_: Int?) {
         resetCall()
     }
 
@@ -261,7 +261,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
     func onMute(_ callParticipants: [CallParticipant]) {
         callParticipants.forEach { callParticipant in
-            if let callParticipantUserRTC = usersRTC.first(where: {$0.callParticipant == callParticipant}){
+            if let callParticipantUserRTC = usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                 callParticipantUserRTC.callParticipant.mute = true
                 callParticipantUserRTC.audioRTC.setTrackEnable(false)
             }
@@ -271,7 +271,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
     func onUNMute(_ callParticipants: [CallParticipant]) {
         callParticipants.forEach { callParticipant in
-            if let callParticipantUserRTC = usersRTC.first(where: {$0.callParticipant == callParticipant}){
+            if let callParticipantUserRTC = usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                 callParticipantUserRTC.callParticipant.mute = false
                 callParticipantUserRTC.audioRTC.setTrackEnable(true)
             }
@@ -281,7 +281,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
     func onVideoOn(_ callParticipants: [CallParticipant]) {
         callParticipants.forEach { callParticipant in
-            if let callParticipantUserRTC = usersRTC.first(where: {$0.callParticipant == callParticipant}){
+            if let callParticipantUserRTC = usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                 callParticipantUserRTC.callParticipant.video = true
                 callParticipantUserRTC.videoRTC.setTrackEnable(true)
             }
@@ -291,7 +291,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
     func onVideoOff(_ callParticipants: [CallParticipant]) {
         callParticipants.forEach { callParticipant in
-            if let callParticipantUserRTC = usersRTC.first(where: {$0.callParticipant == callParticipant}){
+            if let callParticipantUserRTC = usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                 callParticipantUserRTC.callParticipant.video = false
                 callParticipantUserRTC.videoRTC.setTrackEnable(false)
             }
@@ -301,7 +301,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
     func onCallParticipantJoined(_ callParticipants: [CallParticipant]) {
         callParticipants.forEach { callParticipant in
-            offlineParticipants.removeAll(where: {$0.id == callParticipant.userId})
+            offlineParticipants.removeAll(where: { $0.id == callParticipant.userId })
         }
         addCallParicipants(callParticipants)
         objectWillChaneWithAnimation()
@@ -387,12 +387,6 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         endCallKitCall()
     }
 
-    @Published
-    var isLoading = false
-
-    @Published
-    var activeLargeCall: CallParticipantUserRTC? = nil
-
     func endCall() {
         endCallKitCall()
         if isCallStarted == false {
@@ -425,11 +419,11 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
 // Implement WebRTCClientDelegate
 extension CallViewModel: WebRTCClientDelegate {
-    func didIceConnectionStateChanged(iceConnectionState: RTCIceConnectionState) {}
+    func didIceConnectionStateChanged(iceConnectionState _: RTCIceConnectionState) {}
 
-    func didReceiveData(data: Data) {}
+    func didReceiveData(data _: Data) {}
 
-    func didReceiveMessage(message: String) {}
+    func didReceiveMessage(message _: String) {}
 
     func didConnectWebRTC() {}
 

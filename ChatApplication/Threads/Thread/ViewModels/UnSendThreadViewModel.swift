@@ -36,7 +36,7 @@ class MuteThreadViewModel: ObservableObject, MuteThreadViewModelProtocol {
         Chat.sharedInstance.unmuteThread(.init(subjectId: threadId), completion: onMuteChanged)
     }
 
-    func onMuteChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
+    func onMuteChanged(_ threadId: Int?, _: String?, _ error: ChatError?) {
         if threadId != nil, error == nil {
             threadVM?.thread.mute?.toggle()
             objectWillChange.send()

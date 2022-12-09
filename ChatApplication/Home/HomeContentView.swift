@@ -9,23 +9,15 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct HomeContentView: View {
-    @EnvironmentObject
-    var tokenManager: TokenManager
+    @EnvironmentObject var tokenManager: TokenManager
+    @Environment(\.localStatusBarStyle) var statusBarStyle
+    @Environment(\.colorScheme) var colorScheme
 
-    @Environment(\.localStatusBarStyle)
-    var statusBarStyle
+    @EnvironmentObject  var appState: AppState
 
-    @Environment(\.colorScheme)
-    var colorScheme
+    @State  var showCallView = false
 
-    @EnvironmentObject
-    var appState: AppState
-    
-    @State
-    var showCallView = false
-    
-    @State
-    var shareCallLogs = false
+    @State  var shareCallLogs = false
 
     var body: some View {
         if tokenManager.isLoggedIn == false {
@@ -43,13 +35,13 @@ struct HomeContentView: View {
                     .environmentObject(RecordingViewModel(callId: CallViewModel.shared.callId))
             }
             .sheet(isPresented: $shareCallLogs, onDismiss: {
-                if let zipFile =  appState.callLogs?.first{
+                if let zipFile = appState.callLogs?.first {
                     FileManager.default.deleteFile(urlPathToZip: zipFile)
                 }
-            }, content:{
-                if let zipUrl = appState.callLogs{
+            }, content: {
+                if let zipUrl = appState.callLogs {
                     ActivityViewControllerWrapper(activityItems: zipUrl)
-                }else{
+                } else {
                     EmptyView()
                 }
             })
@@ -149,8 +141,7 @@ struct SideBar: View {
 /// Separate this view to prevent redraw view in the sidebar and consequently redraw the whole applicaiton
 /// view multiple times and reinit the view models multiple times.
 struct TagContentList: View {
-    @EnvironmentObject
-    var threadsVM: ThreadsViewModel
+    @EnvironmentObject var threadsVM: ThreadsViewModel
 
     var body: some View {
         ForEach(threadsVM.tagViewModel.tags, id: \.id) { tag in
@@ -178,8 +169,7 @@ struct SecondSideBar: View {
 }
 
 struct DetailContentView: View {
-    @EnvironmentObject
-    var threadsVM: ThreadsViewModel
+    @EnvironmentObject var threadsVM: ThreadsViewModel
 
     var body: some View {
         VStack(spacing: 48) {

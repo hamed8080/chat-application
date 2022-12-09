@@ -10,28 +10,18 @@ import Photos
 import SwiftUI
 
 struct ThreadDetailView: View {
-    @EnvironmentObject
-    var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadViewModel
+    @EnvironmentObject var callViewModel: CallViewModel
+    @State var threadTitle: String = ""
+    @State var threadDescription: String = ""
 
-    @EnvironmentObject
-    var callViewModel: CallViewModel
+    @State var isInEditMode = false
 
-    @State
-    var threadTitle: String = ""
-
-    @State
-    var threadDescription: String = ""
-
-    @State
-    var isInEditMode = false
-
-    @State
-    var showImagePicker: Bool = false
+    @State var showImagePicker: Bool = false
 
     @State private var image: UIImage?
     @State private var assetResource: [PHAssetResource]?
-    @State
-    var searchText: String = ""
+    @State var searchText: String = ""
 
     var body: some View {
         let thread = viewModel.thread
@@ -40,17 +30,17 @@ struct ThreadDetailView: View {
             VStack {
                 List {
                     VStack {
-                        Avatar(
-                            url: thread.image,
-                            userName: thread.title?.uppercased(),
-                            style: .init(size: 128, textSize: 48),
-                            metadata: thread.metadata
-                        )
-                        .onTapGesture {
-                            if isInEditMode {
-                                showImagePicker = true
+                        viewModel.imageLoader.imageView
+                            .font(.system(size: 16).weight(.heavy))
+                            .foregroundColor(.white)
+                            .frame(width: 128, height: 128)
+                            .background(Color.blue.opacity(0.4))
+                            .cornerRadius(64)
+                            .onTapGesture {
+                                if isInEditMode {
+                                    showImagePicker = true
+                                }
                             }
-                        }
 
                         PrimaryTextField(title: "Title", textBinding: $threadTitle, keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.08))
                             .disabled(!isInEditMode)
@@ -80,7 +70,7 @@ struct ThreadDetailView: View {
                                 viewModel.searchInsideThread(text: searchText)
                             })
 
-                            ActionButton(iconSfSymbolName: "video",height: 16) {
+                            ActionButton(iconSfSymbolName: "video", height: 16) {
                                 callViewModel.startCall(thread: thread, isVideoOn: true)
                             }
 

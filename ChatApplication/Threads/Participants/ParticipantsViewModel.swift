@@ -16,14 +16,11 @@ class ParticipantsViewModel: ObservableObject {
     private var count = 15
     private var offset = 0
 
-    @Published
-    var isLoading = false
+    @Published var isLoading = false
 
-    @Published
-    private(set) var totalCount = 0
+    @Published private(set) var totalCount = 0
 
-    @Published
-    private(set) var participants: [Participant] = []
+    @Published private(set) var participants: [Participant] = []
 
     private(set) var firstSuccessResponse = false
     private(set) var cancellableSet: Set<AnyCancellable> = []
@@ -34,10 +31,10 @@ class ParticipantsViewModel: ObservableObject {
             .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)
 
-        NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
+        NotificationCenter.default.publisher(for: threadEventNotificationName)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] event in
-                if case .threadRemoveParticipants(let removedParticipants) = event {
+                if case let .threadRemoveParticipants(removedParticipants) = event {
                     withAnimation {
                         removedParticipants.forEach { participant in
                             self?.removeParticipant(participant)
@@ -67,7 +64,7 @@ class ParticipantsViewModel: ObservableObject {
         getParticipants()
     }
 
-    func onServerResponse(_ participants: [Participant]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+    func onServerResponse(_ participants: [Participant]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
         if let participants = participants {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
@@ -76,7 +73,7 @@ class ParticipantsViewModel: ObservableObject {
         isLoading = false
     }
 
-    func onCacheResponse(_ participants: [Participant]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+    func onCacheResponse(_ participants: [Participant]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
         if let participants = participants {
             appendParticipants(participants: participants)
             hasNext = pagination?.hasNext ?? false

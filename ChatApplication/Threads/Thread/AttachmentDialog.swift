@@ -8,11 +8,9 @@
 import SwiftUI
 
 struct AttachmentDialog: View {
-    @Binding
-    var showAttachmentDialog: Bool
+    @Binding var showAttachmentDialog: Bool
 
-    @StateObject
-    var viewModel: ActionSheetViewModel
+    @StateObject var viewModel: ActionSheetViewModel
 
     var body: some View {
         VStack {
@@ -34,14 +32,11 @@ struct AttachmentDialog: View {
 }
 
 struct CustomActionSheetView: View {
-    @StateObject
-    var viewModel: ActionSheetViewModel
+    @StateObject var viewModel: ActionSheetViewModel
 
-    @Binding
-    var showAttachmentDialog: Bool
+    @Binding var showAttachmentDialog: Bool
 
-    @State
-    var showDocumentPicker: Bool = false
+    @State var showDocumentPicker: Bool = false
 
     var body: some View {
         VStack(spacing: 24) {
@@ -129,7 +124,7 @@ struct AttachmentButton: View {
     let title: String
     let imageName: String
     var hideDivider = false
-    var action: () -> ()
+    var action: () -> Void
 
     var body: some View {
         Button {

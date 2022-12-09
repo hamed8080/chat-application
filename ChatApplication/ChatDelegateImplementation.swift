@@ -28,20 +28,20 @@ enum ConnectionStatus: Int {
     }
 }
 
-let File_Deleted_From_Cache_Name = Notification.Name("File_Deleted_From_Cache_Name")
-let CONNECT_NAME = Notification.Name("NotificationIdentifier")
-let MESSAGE_NOTIFICATION_NAME = Notification.Name("MESSAGE_NOTIFICATION_NAME")
-let SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME = Notification.Name("SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME")
-let THREAD_EVENT_NOTIFICATION_NAME = Notification.Name("THREAD_EVENT_NOTIFICATION_NAME")
-let CALL_EVENT_NAME = Notification.Name("CALL_EVENT_NAME")
+let fileDeletedFromCacheName = Notification.Name("fileDeletedFromCacheName")
+let connectName = Notification.Name("connectName")
+let messageNotificationName = Notification.Name("messageNotificationName")
+let systemMessageEventNotificationName = Notification.Name("systemMessageEventNotificationName")
+let threadEventNotificationName = Notification.Name("threadEventNotificationName")
+let callEventName = Notification.Name("callEventName")
 
 class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
-        if let config = Config.getConfig(.Main) {
+        if let config = Config.getConfig(.main) {
             if config.server == "Integeration" {
-                TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponse.Result(accessToken: config.debugToken, expiresIn: Int.max, idToken: nil, refreshToken: nil, scope: nil, tokenType: nil))
+                TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponseResult(accessToken: config.debugToken, expiresIn: Int.max))
             }
             TokenManager.shared.initSetIsLogin()
             let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken
@@ -59,7 +59,7 @@ class ChatDelegateImplementation: ChatDelegate {
                                                                platformHost: config.platformHost,
                                                                fileServer: config.fileServer,
                                                                enableCache: true,
-                                                               msgTTL: 800000, // for integeration server need to be long time
+                                                               msgTTL: 800_000, // for integeration server need to be long time
                                                                isDebuggingLogEnabled: true,
                                                                enableNotificationLogObserver: true,
                                                                callTimeout: 20))
@@ -92,7 +92,7 @@ class ChatDelegateImplementation: ChatDelegate {
         case .chatReady:
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .connected
-            NotificationCenter.default.post(name: CONNECT_NAME, object: nil)
+            NotificationCenter.default.post(name: connectName, object: nil)
         }
 
         if let error = error {
@@ -106,24 +106,24 @@ class ChatDelegateImplementation: ChatDelegate {
 
     func chatEvent(event: ChatEventType) {
         print(event)
-        if case .system(let event) = event {
-            NotificationCenter.default.post(name: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME, object: event)
+        if case let .system(event) = event {
+            NotificationCenter.default.post(name: systemMessageEventNotificationName, object: event)
         }
 
-        if case .thread(let event) = event {
-            NotificationCenter.default.post(name: THREAD_EVENT_NOTIFICATION_NAME, object: event)
+        if case let .thread(event) = event {
+            NotificationCenter.default.post(name: threadEventNotificationName, object: event)
         }
 
-        if case .message(let event) = event {
-            NotificationCenter.default.post(name: MESSAGE_NOTIFICATION_NAME, object: event)
+        if case let .message(event) = event {
+            NotificationCenter.default.post(name: messageNotificationName, object: event)
         }
 
-        if case .file(let event) = event {
+        if case let .file(event) = event {
             print("file Event:\(dump(event))")
         }
 
-        if case .call(let event) = event {
-            NotificationCenter.default.post(name: CALL_EVENT_NAME, object: event)
+        if case let .call(event) = event {
+            NotificationCenter.default.post(name: callEventName, object: event)
         }
     }
 }

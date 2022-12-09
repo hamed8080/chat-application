@@ -9,13 +9,11 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct AddParticipantsToThreadView: View {
-    @StateObject
-    var viewModel: AddParticipantsToViewModel
+    @StateObject var viewModel: AddParticipantsToViewModel
 
-    @EnvironmentObject
-    var contactsVM: ContactsViewModel
+    @EnvironmentObject var contactsVM: ContactsViewModel
 
-    var onCompleted: ([Contact]) -> ()
+    var onCompleted: ([Contact]) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

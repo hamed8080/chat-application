@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-fileprivate struct UITextViewWrapper: UIViewRepresentable {
+private struct UITextViewWrapper: UIViewRepresentable {
     typealias UIViewType = UITextView
 
     @Binding var text: String
     var textColor: Color
     @Binding var calculatedHeight: CGFloat
-    var keyboardReturnType:UIReturnKeyType = .done
+    var keyboardReturnType: UIReturnKeyType = .done
     var onDone: ((String?) -> Void)?
 
     func makeUIView(context: UIViewRepresentableContext<UITextViewWrapper>) -> UITextView {
@@ -32,9 +32,9 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         return textField
     }
 
-    func updateUIView(_ uiView: UITextView, context: UIViewRepresentableContext<UITextViewWrapper>) {
-        if uiView.text != self.text {
-            uiView.text = self.text
+    func updateUIView(_ uiView: UITextView, context _: UIViewRepresentableContext<UITextViewWrapper>) {
+        if uiView.text != text {
+            uiView.text = text
         }
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
     }
@@ -49,7 +49,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(text: $text, height: $calculatedHeight, onDone: onDone)
+        Coordinator(text: $text, height: $calculatedHeight, onDone: onDone)
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
@@ -59,7 +59,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
 
         init(text: Binding<String>, height: Binding<CGFloat>, onDone: ((String?) -> Void)? = nil) {
             self.text = text
-            self.calculatedHeight = height
+            calculatedHeight = height
             self.onDone = onDone
         }
 
@@ -68,8 +68,8 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             UITextViewWrapper.recalculateHeight(view: uiView, result: calculatedHeight)
         }
 
-        func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-            if let onDone = self.onDone, text == "\n" {
+        func textView(_ textView: UITextView, shouldChangeTextIn _: NSRange, replacementText text: String) -> Bool {
+            if let onDone = onDone, text == "\n" {
                 textView.resignFirstResponder()
                 onDone(textView.text)
                 return false
@@ -77,42 +77,43 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             return true
         }
     }
-
 }
 
 struct MultilineTextField: View {
-
     private var placeholder: String
     private var onDone: ((String?) -> Void)?
-    var backgroundColor:Color  = .white
-    var textColor:Color?  = nil
+    var backgroundColor: Color = .white
+    var textColor: Color?
     @Environment(\.colorScheme) var colorScheme
-    var keyboardReturnType:UIReturnKeyType = .done
-    
+    var keyboardReturnType: UIReturnKeyType = .done
+
     @Binding private var text: String
     private var internalText: Binding<String> {
-        Binding<String>(get: { self.text } ) {
-            self.text = $0
-            self.showingPlaceholder = $0.isEmpty
+        Binding {
+            self.text
+        } set: { newValue in
+            self.text = newValue
+            self.showingPlaceholder = newValue.isEmpty
         }
     }
 
     @State private var dynamicHeight: CGFloat = 64
     @State private var showingPlaceholder = false
 
-    init (_ placeholder: String = "",
-          text: Binding<String>,
-          textColor:Color? = nil,
-          backgroundColor:Color = .white,
-          keyboardReturnType:UIReturnKeyType = .done,
-          onDone: ((String?) -> Void)? = nil ) {
+    init(_ placeholder: String = "",
+         text: Binding<String>,
+         textColor: Color? = nil,
+         backgroundColor: Color = .white,
+         keyboardReturnType: UIReturnKeyType = .done,
+         onDone: ((String?) -> Void)? = nil)
+    {
         self.placeholder = placeholder
         self.onDone = onDone
         self.textColor = textColor
-        self._text = text
+        _text = text
         self.backgroundColor = backgroundColor
         self.keyboardReturnType = keyboardReturnType
-        self._showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
+        _showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
 
     var body: some View {
@@ -120,11 +121,10 @@ struct MultilineTextField: View {
                           textColor: textColor ?? (colorScheme == .dark ? Color.white : Color.black),
                           calculatedHeight: $dynamicHeight,
                           keyboardReturnType: keyboardReturnType,
-                          onDone:onDone)
+                          onDone: onDone)
             .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
             .background(placeholderView, alignment: .topLeading)
             .background(backgroundColor)
-            
     }
 
     var placeholderView: some View {
@@ -139,24 +139,25 @@ struct MultilineTextField: View {
 }
 
 #if DEBUG
-struct MultilineTextField_Previews: PreviewProvider {
-    static var test:String = ""//some very very very long description string to be initially wider than screen"
-    static var testBinding = Binding<String>(get: { test }, set: {
+    struct MultilineTextField_Previews: PreviewProvider {
+        static var test: String = "" // some very very very long description string to be initially wider than screen"
+        static var testBinding = Binding<String>(get: { test }, set: {
 //        print("New value: \($0)")
-        test = $0 } )
+            test = $0
+        })
 
-    static var previews: some View {
-        VStack(alignment: .leading) {
-            Text("Description:")
-            MultilineTextField("Enter some text here", text: testBinding, keyboardReturnType: .search, onDone: { value in
-                print("Final text: \(test)")
-            })
+        static var previews: some View {
+            VStack(alignment: .leading) {
+                Text("Description:")
+                MultilineTextField("Enter some text here", text: testBinding, keyboardReturnType: .search, onDone: { _ in
+                    print("Final text: \(test)")
+                })
                 .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.black))
-            Text("Something static here...")
-            Spacer()
-        }
+                Text("Something static here...")
+                Spacer()
+            }
 //        .preferredColorScheme(.dark)
-        .padding()
+            .padding()
+        }
     }
-}
 #endif

@@ -8,19 +8,17 @@
 import SwiftUI
 
 struct CustomDialog<DialogContent: View>: ViewModifier {
-    @Binding
-    private var isShowing: Bool
+    @Binding private var isShowing: Bool
     private var dialogContent: DialogContent
 
-    @Environment(\.colorScheme)
-    var colorScheme
+    @Environment(\.colorScheme) var colorScheme
 
-    init(isShowing: Binding<Bool>, @ViewBuilder dialogContent: @escaping ()-> DialogContent) {
-        self._isShowing = isShowing
+    init(isShowing: Binding<Bool>, @ViewBuilder dialogContent: @escaping () -> DialogContent) {
+        _isShowing = isShowing
         self.dialogContent = dialogContent()
     }
 
-    func body(content: Content)->some View {
+    func body(content: Content) -> some View {
         ZStack {
             content
             if isShowing {
@@ -69,11 +67,11 @@ struct CustomDialog_Previews: PreviewProvider {
 }
 
 extension View {
-    func customDialog<DialogContent: View>(isShowing: Binding<Bool>, @ViewBuilder content: @escaping ()->DialogContent)->some View {
+    func customDialog<DialogContent: View>(isShowing: Binding<Bool>, @ViewBuilder content: @escaping () -> DialogContent) -> some View {
         modifier(CustomDialog(isShowing: isShowing, dialogContent: content))
     }
 
-    func dialog(_ title: String, _ message: String = "", _ iconName: String? = nil, _ isShowing: Binding<Bool>, onSubmit: @escaping (String)->(), onClose: (()->())? = nil)->some View {
+    func dialog(_ title: String, _ message: String = "", _ iconName: String? = nil, _ isShowing: Binding<Bool>, onSubmit: @escaping (String) -> Void, onClose: (() -> Void)? = nil) -> some View {
         let dialog = {
             PrimaryCustomDialog(
                 title: title,
@@ -85,6 +83,6 @@ extension View {
             )
             .padding()
         }
-        return modifier(CustomDialog(isShowing: isShowing, dialogContent: dialog ))
+        return modifier(CustomDialog(isShowing: isShowing, dialogContent: dialog))
     }
 }

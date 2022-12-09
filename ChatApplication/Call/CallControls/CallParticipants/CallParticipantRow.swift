@@ -11,15 +11,13 @@ import WebRTC
 
 struct CallParticipantRow: View {
     var userRTC: CallParticipantUserRTC
-
-    @EnvironmentObject
-    var viewModel: CallViewModel
+    @EnvironmentObject var viewModel: CallViewModel
 
     var body: some View {
         HStack(spacing: 8) {
-            Avatar(url: userRTC.callParticipant.participant?.image,
-                   userName: userRTC.callParticipant.participant?.username,
-                   style: .init(size: 48, textSize: 18))
+            ImageLoader(url: userRTC.callParticipant.participant?.image ?? "", userName: userRTC.callParticipant.participant?.name?.uppercased()).imageView
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
             VStack {
                 Text(userRTC.callParticipant.title ?? "")
                     .font(.headline)
@@ -64,18 +62,15 @@ struct CallParticipantRow: View {
     }
 }
 
-
 struct OfflineParticipantRow: View {
     var participant: Participant
-
-    @EnvironmentObject
-    var viewModel: CallViewModel
+    @EnvironmentObject var viewModel: CallViewModel
 
     var body: some View {
         HStack(spacing: 8) {
-            Avatar(url: participant.image,
-                   userName: participant.username,
-                   style: .init(size: 48, textSize: 18))
+            ImageLoader(url: participant.image ?? "", userName: participant.name?.uppercased()).imageView
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
             VStack {
                 Text(participant.name ?? "")
                     .font(.headline)
@@ -98,7 +93,7 @@ struct OfflineParticipantRow: View {
     }
 }
 
-//struct CallParticipantRow_Previews: PreviewProvider {
+// struct CallParticipantRow_Previews: PreviewProvider {
 //
 //    static var previews: some View {
 //        let viewModel = CallViewModel.shared
@@ -112,4 +107,4 @@ struct OfflineParticipantRow: View {
 //            viewModel.objectWillChange.send()
 //        }
 //    }
-//}
+// }

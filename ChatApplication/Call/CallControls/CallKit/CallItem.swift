@@ -6,12 +6,11 @@
 //
 
 import Foundation
-class CallItem: ObservableObject{
-    
-    let uuid:UUID
-    let isOutgoing:Bool
+class CallItem: ObservableObject {
+    let uuid: UUID
+    let isOutgoing: Bool
     var handle: String?
-    
+
     // MARK: - Call State Properties
 
     @Published var connectingDate: Date? {
@@ -40,25 +39,24 @@ class CallItem: ObservableObject{
             stateDidChange?()
         }
     }
-    
+
     // MARK: - State Change Callbacks
 
     var stateDidChange: (() -> Void)?
     var hasStartedConnectingDidChange: (() -> Void)?
     var hasConnectedDidChange: (() -> Void)?
     var hasEndedDidChange: (() -> Void)?
-    
-    init(uuid:UUID, isOutgoing:Bool = false){
+
+    init(uuid: UUID, isOutgoing: Bool = false) {
         self.uuid = uuid
         self.isOutgoing = isOutgoing
     }
-    
-    
+
     // MARK: - Derived Properties
 
     var hasStartedConnecting: Bool {
         get {
-            return connectingDate != nil
+            connectingDate != nil
         }
         set {
             connectingDate = newValue ? Date() : nil
@@ -67,7 +65,7 @@ class CallItem: ObservableObject{
 
     var hasConnected: Bool {
         get {
-            return connectDate != nil
+            connectDate != nil
         }
         set {
             connectDate = newValue ? Date() : nil
@@ -76,7 +74,7 @@ class CallItem: ObservableObject{
 
     var hasEnded: Bool {
         get {
-            return endDate != nil
+            endDate != nil
         }
         set {
             endDate = newValue ? Date() : nil
@@ -90,7 +88,7 @@ class CallItem: ObservableObject{
 
         return Date().timeIntervalSince(connectDate)
     }
-    
+
     // MARK: - Actions
 
     /// Starts a new call with the specified completion handler to indicate if the call was successful.
@@ -120,7 +118,7 @@ class CallItem: ObservableObject{
          */
         hasConnected = true
     }
-    
+
     /// Ends the current call.
     func endCall() {
         /*

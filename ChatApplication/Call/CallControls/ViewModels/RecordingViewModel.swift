@@ -5,6 +5,7 @@
 //  Created by hamed on 12/4/22.
 //
 
+import Combine
 import FanapPodChatSDK
 import Foundation
 import SwiftUI
@@ -16,6 +17,8 @@ protocol RecordingProtocol {
     var isRecording: Bool { get set }
     var recordingTimerString: String? { get set }
     var recordingTimer: Timer? { get set }
+    var imageLoader: ImageLoader? { get set }
+    var cancellableSet: Set<AnyCancellable> { get set }
     func onCallStartRecording(_ recorder: Participant?, _ uniqueId: String?, _ error: ChatError?)
     func onCallStopRecording(_ recorder: Participant?, _ uniqueId: String?, _ error: ChatError?)
     func startRecordingTimer()
@@ -32,10 +35,12 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
     var startRecodrdingDate: Date?
     var recordingTimerString: String?
     var recordingTimer: Timer?
+    @Published var imageLoader: ImageLoader?
+    var cancellableSet: Set<AnyCancellable> = []
 
     init(callId: Int?) {
         self.callId = callId
-        NotificationCenter.default.addObserver(self, selector: #selector(callEvent(_:)), name: CALL_EVENT_NAME, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(callEvent(_:)), name: callEventName, object: nil)
     }
 
     @objc func callEvent(_ notification: NSNotification) {
@@ -73,16 +78,22 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
         Chat.sharedInstance.stopRecording(.init(subjectId: callId), onCallStopRecording)
     }
 
-    func onCallStartRecording(_ recorder: Participant?, _ uniqueId: String? = nil, _ error: ChatError? = nil) {
+    func onCallStartRecording(_ recorder: Participant?, _: String? = nil, _: ChatError? = nil) {
         self.recorder = recorder
         isRecording = true
         startRecodrdingDate = Date()
         startRecordingTimer()
+        imageLoader = ImageLoader(url: recorder?.image ?? "", userName: recorder?.firstName, size: .SMALL)
+        imageLoader?.$image.sink { _ in
+            self.objectWillChange.send()
+        }
+        .store(in: &cancellableSet)
+        imageLoader?.fetch()
     }
 
-    func onCallStopRecording(_ recorder: Participant?, _ uniqueId: String? = nil, _ error: ChatError? = nil) {
+    func onCallStopRecording(_: Participant?, _: String? = nil, _: ChatError? = nil) {
         isRecording = false
-        self.recorder = nil
+        recorder = nil
         startRecodrdingDate = nil
     }
 }

@@ -10,18 +10,10 @@ import FanapPodChatSDK
 import SwiftUI
 
 class TagsViewModel: ObservableObject {
-    @Published
-    var tags: [Tag] = []
-
-    @Published
-    var selectedTag: Tag? = nil
-
-    @Published
-    var isLoading = false
-
-    @Published
-    var showAddParticipants = false
-
+    @Published var tags: [Tag] = []
+    @Published var selectedTag: Tag?
+    @Published var isLoading = false
+    @Published var showAddParticipants = false
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private(set) var firstSuccessResponse = false
 
@@ -38,7 +30,7 @@ class TagsViewModel: ObservableObject {
         }
     }
 
-    func onServerResponse(_ tags: [Tag]?, _ uniqueId: String?, _ error: ChatError?) {
+    func onServerResponse(_ tags: [Tag]?, _: String?, _: ChatError?) {
         if let tags = tags {
             firstSuccessResponse = true
             appendTags(tags: tags)
@@ -46,7 +38,7 @@ class TagsViewModel: ObservableObject {
         isLoading = false
     }
 
-    func onCacheResponse(_ tags: [Tag]?, _ uniqueId: String?, _ error: ChatError?) {
+    func onCacheResponse(_ tags: [Tag]?, _: String?, _: ChatError?) {
         if let tags = tags {
             appendTags(tags: tags)
         }
@@ -99,7 +91,7 @@ class TagsViewModel: ObservableObject {
         }
     }
 
-    func addThreadToTag(tag: Tag, thread: Conversation, onComplete: @escaping (_ participants: [TagParticipant], _ success: Bool) -> ()) {
+    func addThreadToTag(tag: Tag, thread: Conversation, onComplete: @escaping (_ participants: [TagParticipant], _ success: Bool) -> Void) {
         if let threadId = thread.id {
             isLoading = true
             Chat.sharedInstance.addTagParticipants(.init(tagId: tag.id, threadIds: [threadId])) { [weak self] tagParticipants, _, error in
@@ -138,7 +130,7 @@ class TagsViewModel: ObservableObject {
         self.tags.append(contentsOf: tags)
     }
 
-    func setSelectedTag(tag: Tag?, isSelected: Bool) {
+    func setSelectedTag(tag: Tag?, isSelected _: Bool) {
         selectedTag = tag
     }
 

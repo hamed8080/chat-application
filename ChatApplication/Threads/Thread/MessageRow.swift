@@ -9,20 +9,15 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct MessageRow: View {
-    @ObservedObject
-    var viewModel: MessageViewModel
+    @ObservedObject var viewModel: MessageViewModel
 
-    @EnvironmentObject
-    var threadViewModel: ThreadViewModel
+    @EnvironmentObject var threadViewModel: ThreadViewModel
 
-    @State
-    private(set) var showParticipants: Bool = false
+    @State private(set) var showParticipants: Bool = false
 
-    @Binding
-    var isInEditMode: Bool
+    @Binding var isInEditMode: Bool
 
-    @State
-    private var isSelected = false
+    @State private var isSelected = false
 
     var body: some View {
         HStack {
@@ -60,14 +55,11 @@ struct MessageRow: View {
 }
 
 struct CallMessageType: View {
-    @EnvironmentObject
-    var viewModel: MessageViewModel
+    @EnvironmentObject var viewModel: MessageViewModel
 
-    @EnvironmentObject
-    var threadViewModel: ThreadViewModel
+    @EnvironmentObject var threadViewModel: ThreadViewModel
 
-    @Environment(\.colorScheme)
-    var colorScheme
+    @Environment(\.colorScheme) var colorScheme
 
     var message: Message { viewModel.message }
 
@@ -94,11 +86,9 @@ struct CallMessageType: View {
 }
 
 struct TextMessageType: View {
-    @EnvironmentObject
-    var viewModel: MessageViewModel
+    @EnvironmentObject var viewModel: MessageViewModel
 
-    @EnvironmentObject
-    var threadViewModel: ThreadViewModel
+    @EnvironmentObject var threadViewModel: ThreadViewModel
 
     var message: Message { viewModel.message }
 
@@ -108,7 +98,7 @@ struct TextMessageType: View {
                 Spacer()
             }
             if !viewModel.message.isMe {
-                SameUserAvatar
+                sameUserAvatar
             }
             VStack {
                 if let forwardInfo = message.forwardInfo {
@@ -218,7 +208,7 @@ struct TextMessageType: View {
             }
 
             if viewModel.message.isMe {
-                SameUserAvatar
+                sameUserAvatar
             }
 
             if !viewModel.message.isMe {
@@ -227,16 +217,14 @@ struct TextMessageType: View {
         }
     }
 
-    @ViewBuilder
-    var SameUserAvatar: some View {
-        if !threadViewModel.isSameUser(message: message), let participant = message.participant {
-            let token = EnvironmentValues().isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
-            Avatar(
-                url: participant.image,
-                userName: participant.username?.uppercased(),
-                style: .init(size: 36, textSize: 12),
-                token: token
-            )
+    @ViewBuilder var sameUserAvatar: some View {
+        if !threadViewModel.isSameUser(message: message), message.participant != nil {
+            viewModel.imageLoader.imageView
+                .font(.system(size: 16).weight(.heavy))
+                .foregroundColor(.white)
+                .frame(width: 36, height: 36)
+                .background(Color.blue.opacity(0.4))
+                .cornerRadius(18)
         } else {
             Rectangle()
                 .frame(width: 36, height: 36)
@@ -248,8 +236,7 @@ struct TextMessageType: View {
 struct ForwardMessageRow: View {
     var forwardInfo: ForwardInfo
 
-    @State
-    var showReadOnlyThreadView: Bool = false
+    @State var showReadOnlyThreadView: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -284,11 +271,9 @@ struct ForwardMessageRow: View {
 }
 
 struct UploadMessageType: View {
-    @EnvironmentObject
-    var viewModel: MessageViewModel
+    @EnvironmentObject var viewModel: MessageViewModel
 
-    @EnvironmentObject
-    var threadViewModel: ThreadViewModel
+    @EnvironmentObject var threadViewModel: ThreadViewModel
 
     var message: Message { viewModel.message }
 
@@ -354,8 +339,6 @@ struct UploadMessageType: View {
     }
 }
 
-
-
 struct MessageFooterView: View {
     var viewModel: MessageViewModel
     var message: Message { viewModel.message }
@@ -363,10 +346,9 @@ struct MessageFooterView: View {
     static let sentImage = UIImage(named: "single_chekmark")
     static let seenImage = UIImage(named: "double_checkmark")
 
-    @ViewBuilder
-    var image: some View {
+    @ViewBuilder var image: some View {
         if message.seen == true {
-           Image(uiImage: MessageFooterView.seenImage!)
+            Image(uiImage: MessageFooterView.seenImage!)
                 .resizable()
                 .frame(width: 14, height: 14)
                 .foregroundColor(Color(named: "dark_green").opacity(0.8))

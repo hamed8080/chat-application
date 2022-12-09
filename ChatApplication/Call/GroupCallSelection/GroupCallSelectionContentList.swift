@@ -9,19 +9,15 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct GroupCallSelectionContentList: View {
-    @StateObject
-    var viewModel: CallsHistoryViewModel
+    @StateObject var viewModel: CallsHistoryViewModel
 
     @State var isInSelectionMode: Bool = true
 
-    @StateObject
-    var contactViewModel: ContactsViewModel = .init()
+    @StateObject var contactViewModel: ContactsViewModel = .init()
 
-    @EnvironmentObject
-    var callViewModel: CallViewModel
+    @EnvironmentObject var callViewModel: CallViewModel
 
-    @State
-    var groupTitle: String = ""
+    @State var groupTitle: String = ""
 
     var body: some View {
         GeometryReader { reader in
@@ -35,7 +31,7 @@ struct GroupCallSelectionContentList: View {
                         .noSeparators()
 
                         ForEach(contactViewModel.contactsVMS, id: \.id) { contactVM in
-                            ContactRow(isInSelectionMode: $isInSelectionMode, imageLoader: ImageLoader(url: contactVM.contact.image ?? contactVM.contact.linkedUser?.image ?? ""))
+                            ContactRow(isInSelectionMode: $isInSelectionMode)
                                 .environmentObject(contactVM)
                                 .noSeparators()
                                 .onAppear {

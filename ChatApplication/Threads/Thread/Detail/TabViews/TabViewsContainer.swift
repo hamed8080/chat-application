@@ -11,8 +11,7 @@ import SwiftUI
 struct TabViewsContainer: View {
     var thread: Conversation
 
-    @State
-    var selectedTabIndex: Int
+    @State var selectedTabIndex: Int
 
     var body: some View {
         VStack(spacing: 0) {
@@ -49,8 +48,7 @@ struct TabViewsContainer: View {
 }
 
 struct Tabs: View {
-    @Binding
-    var selectedTabIndex: Int
+    @Binding var selectedTabIndex: Int
 
     let tabs: [Tab]
 

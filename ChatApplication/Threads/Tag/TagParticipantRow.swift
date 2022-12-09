@@ -5,30 +5,35 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import SwiftUI
 import FanapPodChatSDK
+import SwiftUI
 
 struct TagParticipantRow: View {
-	
-	var tag:Tag
-    var tagParticipant:TagParticipant
-    
-    @StateObject var viewModel:TagsViewModel
-    
+    var tag: Tag
+    var tagParticipant: TagParticipant
+    @ObservedObject var viewModel: TagsViewModel
+    @ObservedObject var imageLoader: ImageLoader
+
+    init(tag: Tag, tagParticipant: TagParticipant, viewModel: TagsViewModel) {
+        self.tag = tag
+        self.tagParticipant = tagParticipant
+        self.viewModel = viewModel
+        imageLoader = ImageLoader(url: tagParticipant.conversation?.image ?? "", userName: tagParticipant.conversation?.title, size: .SMALL)
+        imageLoader.fetch()
+    }
+
     var body: some View {
-        HStack{
-            VStack(alignment: .leading, spacing:8){
-                HStack{
-                    let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
-                    if let thread = tagParticipant.conversation{
-                        Avatar(
-                            url: thread.image,
-                            userName: thread.inviter?.username?.uppercased(),
-                            style: .init(size: 28, textSize: 12),
-                            metadata: thread.metadata,
-                            token: token
-                        )
-                        VStack(alignment:.leading){
+        HStack {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    if let thread = tagParticipant.conversation {
+                        imageLoader.imageView
+                            .font(.system(size: 16).weight(.heavy))
+                            .foregroundColor(.white)
+                            .frame(width: 28, height: 28)
+                            .background(Color.blue.opacity(0.4))
+                            .cornerRadius(14)
+                        VStack(alignment: .leading) {
                             Text(thread.title ?? "")
                                 .font(.headline)
                                 .foregroundColor(Color.gray)
@@ -40,14 +45,13 @@ struct TagParticipantRow: View {
             Spacer()
         }
         .contentShape(Rectangle())
-        .padding([.leading , .trailing] , 8)
-        .padding([.top , .bottom] , 4)
+        .padding([.leading, .trailing], 8)
+        .padding([.top, .bottom], 4)
     }
 }
 
 struct TagParticipantRow_Previews: PreviewProvider {
-	
-	static var previews: some View {
-        TagParticipantRow(tag: MockData.tag, tagParticipant: MockData.tag.tagParticipants!.first! ,viewModel: TagsViewModel())
-	}
+    static var previews: some View {
+        TagParticipantRow(tag: MockData.tag, tagParticipant: MockData.tag.tagParticipants!.first!, viewModel: TagsViewModel())
+    }
 }

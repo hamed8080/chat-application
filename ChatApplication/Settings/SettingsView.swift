@@ -9,8 +9,7 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject
-    var viewModel: SettingViewModel
+    @EnvironmentObject var viewModel: SettingViewModel
 
     var body: some View {
         VStack(spacing: 0) {
@@ -23,11 +22,12 @@ struct SettingsView: View {
                             .frame(width: 128, height: 128)
                             .shadow(color: .black, radius: 20, x: 0, y: 0)
                             .overlay(
-                                Avatar(
-                                    url: viewModel.currentUser?.image,
-                                    userName: viewModel.currentUser?.username?.uppercased() ?? "",
-                                    style: .init(size: 128, textSize: 64)
-                                )
+                                viewModel.imageLoader.imageView
+                                    .font(.system(size: 16).weight(.heavy))
+                                    .foregroundColor(.white)
+                                    .frame(width: 128, height: 128)
+                                    .background(Color.blue.opacity(0.4))
+                                    .cornerRadius(64)
                             )
                             .gesture(
                                 DragGesture(minimumDistance: 0, coordinateSpace: .local)
@@ -109,23 +109,22 @@ struct SettingsView: View {
 }
 
 struct TokenExpireView: View {
-    @EnvironmentObject
-    var viewModel: TokenManager
+    @EnvironmentObject var viewModel: TokenManager
 
     var body: some View {
-#if DEBUG
-        HStack {
-            Image(systemName: "key.fill")
-                .foregroundColor(Color.yellow)
-                .frame(width: 24, height: 24)
-            Text("Token expire in: \(String(format: "%.0f", viewModel.secondToExpire))")
-                .foregroundColor(Color.gray)
-            Spacer()
-        }
-        .onAppear {
-            viewModel.startTokenTimer()
-        }
-#endif
+        #if DEBUG
+            HStack {
+                Image(systemName: "key.fill")
+                    .foregroundColor(Color.yellow)
+                    .frame(width: 24, height: 24)
+                Text("Token expire in: \(String(format: "%.0f", viewModel.secondToExpire))")
+                    .foregroundColor(Color.gray)
+                Spacer()
+            }
+            .onAppear {
+                viewModel.startTokenTimer()
+            }
+        #endif
     }
 }
 
@@ -133,7 +132,7 @@ struct GroupItemInSlideMenu<DestinationView: View>: View {
     var name: String
     var title: String
     var color: Color
-    var destinationView: DestinationView? = nil
+    var destinationView: DestinationView?
 
     @State var isActive = false
 

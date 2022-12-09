@@ -8,19 +8,20 @@
 import SwiftUI
 
 struct TopNotifyViewModifire: ViewModifier {
-    @Binding
-    private var isShowing: Bool
+    @Binding private var isShowing: Bool
     let title: String?
     let message: String
-    let image: AnyView?
+    let image: Image?
     let duration: TimeInterval
+    let backgroundColor: Color
 
-    internal init(isShowing: Binding<Bool>, title: String? = nil, message: String, image: AnyView? = nil, duration: TimeInterval) {
-        self._isShowing = isShowing
+    internal init(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval, backgroundColor: Color) {
+        _isShowing = isShowing
         self.title = title
         self.message = message
         self.duration = duration
         self.image = image
+        self.backgroundColor = backgroundColor
     }
 
     func body(content: Content) -> some View {
@@ -80,28 +81,20 @@ struct TopNotifyViewModifire: ViewModifier {
 }
 
 extension View {
-    func toast(isShowing: Binding<Bool>, title: String? = nil, message: String, image: AnyView? = nil, duration: TimeInterval = 3) -> some View {
-        modifier(TopNotifyViewModifire(isShowing: isShowing, title: title, message: message, image: image, duration: duration))
+    func toast(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval = 3, backgroundColor: Color = Color(named: "background")) -> some View {
+        modifier(TopNotifyViewModifire(isShowing: isShowing, title: title, message: message, image: image, duration: duration, backgroundColor: backgroundColor))
     }
 }
 
 struct TestView: View {
-    @State
-    var isShowing = false
+    @State var isShowing = false
 
     var body: some View {
         Text("hello")
             .toast(isShowing: $isShowing,
                    title: "Test Title",
                    message: "Test message",
-                   image: AnyView(
-                    Image(systemName: "record.circle")
-                        .resizable()
-                        .frame(width: 32, height: 32)
-                        .foregroundColor(.red)
-                        .cornerRadius(4)
-                   )
-            )
+                   image: Image(uiImage: UIImage(named: "avatar.png")!))
             .onTapGesture {
                 isShowing = true
             }

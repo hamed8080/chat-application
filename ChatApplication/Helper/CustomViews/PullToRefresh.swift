@@ -6,24 +6,24 @@
 //
 
 import SwiftUI
-protocol PullToRefreshDelegate {
+protocol PullToRefreshDelegate: AnyObject {
     func refreshed()
 }
+
 struct PullToRefresh: View {
-    
     var coordinateSpaceName: String
     var delegate: PullToRefreshDelegate
-    
+
     @State var needRefresh: Bool = false
-    
+
     var body: some View {
         GeometryReader { geo in
-            if (geo.frame(in: .named(coordinateSpaceName)).midY > 50) {
+            if geo.frame(in: .named(coordinateSpaceName)).midY > 50 {
                 Spacer()
                     .onAppear {
                         needRefresh = true
                     }
-            } else if (geo.frame(in: .named(coordinateSpaceName)).maxY < 10) {
+            } else if geo.frame(in: .named(coordinateSpaceName)).maxY < 10 {
                 Spacer()
                     .onAppear {
                         if needRefresh {

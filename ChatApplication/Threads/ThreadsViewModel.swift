@@ -11,46 +11,33 @@ import Foundation
 import SwiftUI
 
 class ThreadsViewModel: ObservableObject {
-    @Published
-    var isLoading = false
-
-    @Published
-    var centerIsLoading = false
-
+    @Published var isLoading = false
+    @Published var centerIsLoading = false
     @Published var toggleThreadContactPicker = false
-
     @AppStorage("Threads", store: UserDefaults.group) var threadsData: Data?
-
-    @Published
-    var showAddParticipants = false
-
-    @Published
-    var showAddToTags = false
-
+    @Published var showAddParticipants = false
+    @Published var showAddToTags = false
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private(set) var firstSuccessResponse = false
-
-    @Published
-    private(set) var tagViewModel = TagsViewModel()
-
+    @Published private(set) var tagViewModel = TagsViewModel()
     private(set) var count = 15
     private(set) var offset = 0
     var searchText: String = ""
-    var threadsRowVM: [ThreadViewModel] = []
-
+    @Published var threadsRowVM: [ThreadViewModel] = []
     private(set) var hasNext: Bool = true
     let archived: Bool
+    var selectedThraed: Conversation?
 
     init(archived: Bool = false) {
         self.archived = archived
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)
-        NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
+        NotificationCenter.default.publisher(for: threadEventNotificationName)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink(receiveValue: onThreadEvent)
             .store(in: &cancellableSet)
-        NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
+        NotificationCenter.default.publisher(for: messageNotificationName)
             .compactMap { $0.object as? MessageEventTypes }
             .sink(receiveValue: onNewMessage)
             .store(in: &cancellableSet)
@@ -59,7 +46,7 @@ class ThreadsViewModel: ObservableObject {
 
     func onThreadEvent(_ event: ThreadEventTypes?) {
         switch event {
-        case .threadNew(let newThreads):
+        case let .threadNew(newThreads):
             appendThreads(threads: [newThreads])
         case .threadDeleted(threadId: let threadId, participant: _):
             if let thread = threadsRowVM.first(where: { $0.thread.id == threadId }) {
@@ -71,7 +58,7 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func onNewMessage(_ event: MessageEventTypes) {
-        if case .messageNew(let message) = event, let threadVM = threadsRowVM.first(where: { $0.threadId == message.conversation?.id }) {
+        if case let .messageNew(message) = event, let threadVM = threadsRowVM.first(where: { $0.threadId == message.conversation?.id }) {
             threadVM.thread.time = message.conversation?.time
             sort()
         }
@@ -91,9 +78,9 @@ class ThreadsViewModel: ObservableObject {
 
     var filtered: [ThreadViewModel] {
         if searchText.isEmpty {
-            return threadsRowVM.filter{ $0.thread.isArchive == archived }
+            return threadsRowVM.filter { $0.thread.isArchive == archived }
         } else {
-            return threadsRowVM.filter{ $0.thread.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.thread.isArchive == archived }
+            return threadsRowVM.filter { $0.thread.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.thread.isArchive == archived }
         }
     }
 
@@ -103,19 +90,18 @@ class ThreadsViewModel: ObservableObject {
         getThreads()
     }
 
-    func onServerResponse(_ threads: [Conversation]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+    func onServerResponse(_ threads: [Conversation]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
         if let threads = threads {
             firstSuccessResponse = true
             appendThreads(threads: threads)
             hasNext(pagination?.hasNext ?? false)
             updateWidgetPreferenceThreads(threads)
-            getActiveCallsListToJoin(threads.compactMap{$0.id})
+            getActiveCallsListToJoin(threads.compactMap(\.id))
         }
         isLoading = false
-
     }
 
-    func onCacheResponse(_ threads: [Conversation]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+    func onCacheResponse(_ threads: [Conversation]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
         if let threads = threads {
             appendThreads(threads: threads)
             hasNext(pagination?.hasNext ?? false)
@@ -126,11 +112,10 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func updateWidgetPreferenceThreads(_ threads: [Conversation]) {
-        guard let threadsData = threadsData else { return }
-        var storageThreads = (try? JSONDecoder().decode([Conversation].self, from: threadsData)) ?? []
+        var storageThreads = (try? JSONDecoder().decode([Conversation].self, from: threadsData ?? Data())) ?? []
         storageThreads.append(contentsOf: threads)
         let data = try? JSONEncoder().encode(Array(Set(storageThreads)))
-        self.threadsData = data
+        threadsData = data
     }
 
     func refresh() {
@@ -155,12 +140,11 @@ class ThreadsViewModel: ObservableObject {
         }
     }
 
-    func searchInsideAllThreads(text: String) {
+    func searchInsideAllThreads(text _: String) {
         // not implemented yet
         //        Chat.sharedInstance.
     }
 
-    var selectedThraed: Conversation?
     func showAddParticipants(_ thread: Conversation) {
         selectedThraed = thread
         showAddParticipants.toggle()
@@ -172,7 +156,7 @@ class ThreadsViewModel: ObservableObject {
             return
         }
 
-        let contactIds = contacts.compactMap{ $0.id }
+        let contactIds = contacts.compactMap(\.id)
         let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)
 
         Chat.sharedInstance.addParticipant(req) { [weak self] thread, _, _ in
@@ -242,7 +226,7 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func removeThreadVM(_ threadVM: ThreadViewModel) {
-        guard let index = threadsRowVM.firstIndex(where: {$0.threadId == threadVM.threadId}) else { return }
+        guard let index = threadsRowVM.firstIndex(where: { $0.threadId == threadVM.threadId }) else { return }
         withAnimation {
             _ = threadsRowVM.remove(at: index)
         }
@@ -250,8 +234,8 @@ class ThreadsViewModel: ObservableObject {
 
     func getActiveCallsListToJoin(_ threadIds: [Int]) {
         Chat.sharedInstance.getCallsToJoin(.init(threadIds: threadIds)) { [weak self] calls, _, _ in
-            calls?.forEach{ call in
-                self?.threadsRowVM.first{$0.threadId == call.conversation?.id}?.groupCallIdToJoin = call.id
+            calls?.forEach { call in
+                self?.threadsRowVM.first { $0.threadId == call.conversation?.id }?.groupCallIdToJoin = call.id
             }
         }
     }

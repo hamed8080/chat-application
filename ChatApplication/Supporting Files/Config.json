@@ -6,7 +6,7 @@
         "fileServer": "http://172.16.110.76:8080",
         "serverName": "chatlocal",
         "debugToken": "9c627a9125d04ebf8455bf57bb33d2a9",
-        "server": "Integeration"
+        "server": "integeration"
     },
     {
         "socketAddresss": "wss://chat-sandbox.pod.ir/ws",
@@ -15,7 +15,7 @@
         "fileServer": "http://sandbox.podspace.ir:8080",
         "serverName": "chat-server",
         "debugToken": "5a6e4623162f4d28ad55e7c5e9400afc",
-        "server": "Sandbox"
+        "server": "sandbox"
     },
     {
         "socketAddresss": "wss://msg.pod.ir/ws",
@@ -24,6 +24,6 @@
         "fileServer": "https://podspace.podland.ir",
         "serverName": "chat-server",
         "debugToken": "328dc4bd717f4f3a9559320d92dac06e",
-        "server": "Main"
+        "server": "main"
     }
 ]

@@ -19,9 +19,7 @@ protocol ThreadIsTypingViewModelProtocol {
 }
 
 class ThreadIsTypingViewModel: ObservableObject {
-
-    @Published
-    var isTyping: Bool = false
+    @Published var isTyping: Bool = false
     var threadId: Int
 
     init(threadId: Int) {
@@ -31,7 +29,7 @@ class ThreadIsTypingViewModel: ObservableObject {
 
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private func setupNotificationObservers() {
-        NotificationCenter.default.publisher(for: SYSTEM_MESSAGE_EVENT_NOTIFICATION_NAME)
+        NotificationCenter.default.publisher(for: systemMessageEventNotificationName)
             .compactMap { $0.object as? SystemEventTypes }
             .sink { [weak self] systemMessageEvent in
                 self?.startTypingTimer(systemMessageEvent)
@@ -42,7 +40,7 @@ class ThreadIsTypingViewModel: ObservableObject {
     private var lastIsTypingTime = Date()
 
     private func startTypingTimer(_ event: SystemEventTypes) {
-        if case .systemMessage(let message, _, let id) = event, message.smt == .isTyping, isTyping == false, threadId == id {
+        if case let .systemMessage(message, _, id) = event, message.smt == .isTyping, isTyping == false, threadId == id {
             lastIsTypingTime = Date()
             isTyping = true
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in

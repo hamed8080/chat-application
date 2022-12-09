@@ -8,25 +8,22 @@
 import SwiftUI
 
 struct CallsHistoryContentList: View {
-    
-    @EnvironmentObject
-    var viewModel: CallsHistoryViewModel
-    
-    @EnvironmentObject var appState:AppState
-    
-    @State
-    var navigateToGroupCallSelction = false
-    
+    @EnvironmentObject  var viewModel: CallsHistoryViewModel
+
+    @EnvironmentObject var appState: AppState
+
+    @State  var navigateToGroupCallSelction = false
+
     var body: some View {
-        VStack(spacing:0){
-            ZStack{
+        VStack(spacing: 0) {
+            ZStack {
                 List {
-                    ForEach(viewModel.model.calls , id:\.id) { call in
-                        NavigationLink(destination: CallDetails(viewModel: .init(call: call))){
-                            CallRow(call: call,viewModel: viewModel)
-                                .frame(minHeight:64)
+                    ForEach(viewModel.model.calls, id: \.id) { call in
+                        NavigationLink(destination: CallDetails(viewModel: .init(call: call))) {
+                            CallRow(call: call, viewModel: viewModel)
+                                .frame(minHeight: 64)
                                 .onAppear {
-                                    if viewModel.model.calls.last == call{
+                                    if viewModel.model.calls.last == call {
                                         viewModel.loadMore()
                                     }
                                 }
@@ -34,10 +31,10 @@ struct CallsHistoryContentList: View {
                     }
                 }
                 .listStyle(.plain)
-                
-                VStack{
-                    GeometryReader{ reader in
-                        LoadingViewAt(isLoading:viewModel.isLoading, reader: reader)
+
+                VStack {
+                    GeometryReader { reader in
+                        LoadingViewAt(isLoading: viewModel.isLoading, reader: reader)
                     }
                 }
             }
@@ -45,23 +42,23 @@ struct CallsHistoryContentList: View {
         .navigationTitle(Text("Calls"))
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Button {
-                        navigateToGroupCallSelction.toggle()
-                    } label: {
-                        Label {
-                            Text("Start Call")
-                        } icon: {
-                            Image(systemName: "video.fill")
-                        }
+                Button {
+                    navigateToGroupCallSelction.toggle()
+                } label: {
+                    Label {
+                        Text("Start Call")
+                    } icon: {
+                        Image(systemName: "video.fill")
                     }
+                }
             }
         }
         NavigationLink(
             destination: GroupCallSelectionContentList(viewModel: viewModel),
-            isActive: $navigateToGroupCallSelction){
-                EmptyView()
-            }
-        
+            isActive: $navigateToGroupCallSelction
+        ) {
+            EmptyView()
+        }
     }
 }
 
@@ -72,7 +69,7 @@ struct CallsHistoryContentList_Previews: PreviewProvider {
             .environmentObject(viewModel)
             .environmentObject(AppState.shared)
             .environmentObject(CallViewModel.shared)
-            .onAppear(){
+            .onAppear {
                 viewModel.setupPreview()
             }
     }

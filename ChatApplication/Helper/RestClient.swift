@@ -19,29 +19,27 @@ extension Encodable {
     }
 }
 
-typealias OnRestClientError = (Data?, Error?) -> ()
+typealias OnRestClientError = (Data?, Error?) -> Void
 
 class RestClient<D: Codable> {
     // MARK: - Variables
 
     /***************************************************/
     var config: URLSessionConfiguration
-    let GET_TOKEN_REQ_CODE = 80000
-
+    let getTokenReqCode = 80000
     var encoder = JSONEncoder()
     var decoder = JSONDecoder()
-
     var req: URLRequest!
-    var url: String? = nil
+    var url: String?
     var method: HTTPMethod = .get
     var useMiladiDecoder: Bool = true
     var noBodyReq: Bool? = false
     var noBodyRes: Bool? = false
     var contentType: String? = "Application/Json"
     var dateEncodingStrategy: JSONEncoder.DateEncodingStrategy = .iso8601
-    var onError: OnRestClientError? = nil
-    var onCompleted: (() -> ())? = nil
-    var task: URLSessionTask? = nil
+    var onError: OnRestClientError?
+    var onCompleted: (() -> Void)?
+    var task: URLSessionTask?
     var enablePrint: Bool = false
     /***************************************************/
 
@@ -57,7 +55,7 @@ class RestClient<D: Codable> {
 
     /***************************************************/
 
-    public class func getConfiguration(timeout: Double? = 40000, isBackground: Bool = false) -> URLSessionConfiguration {
+    public class func getConfiguration(timeout: Double? = 40000, isBackground _: Bool = false) -> URLSessionConfiguration {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = timeout ?? 40000
         configuration.timeoutIntervalForResource = timeout ?? 40000
@@ -91,7 +89,7 @@ class RestClient<D: Codable> {
 
     func setParams<T: Encodable>(_ params: T? = nil) -> RestClient {
         if noBodyRes != nil, !noBodyRes!, method == .post {
-            req?.httpBody = try! encoder.encode(params)
+            req?.httpBody = try? encoder.encode(params)
         }
         return self
     }
@@ -126,7 +124,7 @@ class RestClient<D: Codable> {
         return self
     }
 
-    func setOnCompleted(_ completedHandler: (() -> ())?) -> RestClient {
+    func setOnCompleted(_ completedHandler: (() -> Void)?) -> RestClient {
         onCompleted = completedHandler
         return self
     }
@@ -147,7 +145,7 @@ class RestClient<D: Codable> {
         req?.addValue(value, forHTTPHeaderField: "Authorization")
     }
 
-    public func request(completionHandler: ((D) -> ())? = nil) {
+    public func request(completionHandler: ((D) -> Void)? = nil) {
         guard url != nil else { print("url cant be null"); return }
         req?.setValue("Application/Json", forHTTPHeaderField: "Accept")
         req?.setValue(contentType, forHTTPHeaderField: "Content-Type")
@@ -163,7 +161,7 @@ class RestClient<D: Codable> {
                 self.onError?(data, error)
                 return
             }
-            if D.Type.self == VoidCodable.Type.self && code == 200 {
+            if D.Type.self == VoidCodable.Type.self, code == 200 {
                 DispatchQueue.main.async {
                     completionHandler?(VoidCodable() as! D)
                 }
@@ -180,12 +178,11 @@ class RestClient<D: Codable> {
         task?.resume()
     }
 
-    private func decodeResponse(_ data: Data?, code: Int) -> D? {
+    private func decodeResponse(_ data: Data?, code _: Int) -> D? {
         guard let data = data else { return nil }
         if D.Type.self == String.Type.self {
             let value = String(data: data, encoding: .utf8)?.replacingOccurrences(of: "\"", with: "")
-            if value == "" { return nil }
-            else { return value as? D }
+            if value == "" { return nil } else { return value as? D }
         }
         do {
             let decoded = try decoder.decode(D.self, from: data)
@@ -218,7 +215,7 @@ class RestClient<D: Codable> {
         }
     }
 
-    private func printResponse(_ data: Data?, _ response: URLResponse?, _ error: Error?) {
+    private func printResponse(_ data: Data?, _ response: URLResponse?, _: Error?) {
         if enablePrint {
             // header url data method status code
             var log = "\n"

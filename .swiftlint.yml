@@ -9,6 +9,8 @@ disabled_rules: # rule identifiers turned on by default to exclude from running
   - todo
   - file_length
   - trailing_comma
+  - force_cast
+  - force_try
 
 line_length: 250
 

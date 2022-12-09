@@ -9,14 +9,11 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct StartThreadContactRow: View {
-    @State
-    private var isSelected = false
+    @State private var isSelected = false
 
-    @Binding
-    public var isInMultiSelectMode: Bool
+    @Binding public var isInMultiSelectMode: Bool
 
-    @EnvironmentObject
-    var viewModel: ContactViewModel
+    @EnvironmentObject var viewModel: ContactViewModel
     var contact: Contact { viewModel.contact }
 
     var body: some View {
@@ -35,11 +32,12 @@ struct StartThreadContactRow: View {
                             }
                     }
 
-                    Avatar(
-                        url: contact.image ?? contact.linkedUser?.image,
-                        userName: contact.firstName?.uppercased(),
-                        style: .init(size: 32, textSize: 14)
-                    )
+                    viewModel.imageLoader.imageView
+                        .font(.system(size: 16).weight(.heavy))
+                        .foregroundColor(.white)
+                        .frame(width: 32, height: 32)
+                        .background(Color.blue.opacity(0.4))
+                        .cornerRadius(16)
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")

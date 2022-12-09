@@ -6,7 +6,6 @@
 //
 
 import Foundation
-extension UserDefaults{
-    
+extension UserDefaults {
     static let group = UserDefaults(suiteName: AppGroup.group)
 }

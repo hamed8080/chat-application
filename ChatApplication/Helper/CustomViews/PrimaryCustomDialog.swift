@@ -9,16 +9,15 @@ import SwiftUI
 
 struct PrimaryCustomDialog: View {
     var title: String
-    var message: String? = nil
-    var systemImageName: String? = nil
-    var textBinding: Binding<String>? = nil
-    @Binding
-    var hideDialog: Bool
-    var textPlaceholder: String? = nil
+    var message: String?
+    var systemImageName: String?
+    var textBinding: Binding<String>?
+    @Binding var hideDialog: Bool
+    var textPlaceholder: String?
     var submitTitle: String = "Submit"
     var cancelTitle: String = "Cancel"
-    var onSubmit: ((String)->())? = nil
-    var onClose: (()->())? = nil
+    var onSubmit: ((String) -> Void)?
+    var onClose: (() -> Void)?
 
     @Environment(\.colorScheme) var colorScheme
 

@@ -9,44 +9,36 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct ContactRow: View {
-    @Binding
-    public var isInSelectionMode: Bool
-    @EnvironmentObject
-    var viewModel: ContactViewModel
-    @EnvironmentObject
-    var callViewModel: CallViewModel
-    @State
-    var showActionViews: Bool = false
+    @Binding public var isInSelectionMode: Bool
+    @EnvironmentObject var viewModel: ContactViewModel
+    @State public var showActionViews: Bool = false
+    @EnvironmentObject  var callViewModel: CallViewModel
     var contact: Contact { viewModel.contact }
     var contactImageURL: String? { contact.image ?? contact.linkedUser?.image }
-    @State
-    var navigateToAddOrEditContact = false
-    @State
-    var imageLoader: ImageLoader
+    @State var navigateToAddOrEditContact = false
 
     var body: some View {
         VStack {
             VStack {
                 HStack(spacing: 0) {
-                        Image(systemName: viewModel.isSelected ? "checkmark.circle" : "circle")
-                            .font(.title)
-                            .frame(width: 22, height: 22, alignment: .center)
-                            .foregroundColor(Color.blue)
-                            .padding(24)
-                            .offset(x: isInSelectionMode ? 0 : -64 )
-                            .frame(width: isInSelectionMode ? 48 : 0 )
-                            .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-                            .onTapGesture {
-                                viewModel.toggleSelectedContact()
-                            }
+                    Image(systemName: viewModel.isSelected ? "checkmark.circle" : "circle")
+                        .font(.title)
+                        .frame(width: 22, height: 22, alignment: .center)
+                        .foregroundColor(Color.blue)
+                        .padding(24)
+                        .offset(x: isInSelectionMode ? 0 : -64)
+                        .frame(width: isInSelectionMode ? 48 : 0)
+                        .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                        .onTapGesture {
+                            viewModel.toggleSelectedContact()
+                        }
+                    viewModel.imageLoader.imageView
+                        .font(.system(size: 16).weight(.heavy))
+                        .foregroundColor(.white)
+                        .frame(width: 64, height: 64)
+                        .background(Color.blue.opacity(0.4))
+                        .cornerRadius(32)
 
-                    let token = EnvironmentValues().isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
-                    Avatar(
-                        imageLoader: imageLoader,
-                        url: contactImageURL,
-                        userName: contact.firstName?.uppercased(),
-                        token: token
-                    )
                     VStack(alignment: .leading, spacing: 8) {
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                             .padding(.leading, 16)
@@ -95,8 +87,7 @@ struct ContactRow: View {
         }
     }
 
-    @ViewBuilder
-    var actionsViews: some View {
+    @ViewBuilder var actionsViews: some View {
         Divider()
         HStack(spacing: 12) {
             ActionButton(iconSfSymbolName: "message") {
@@ -157,7 +148,7 @@ struct ContactRow_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            ContactRow(isInSelectionMode: $isInSelectionMode, imageLoader: ImageLoader(url: ""))
+            ContactRow(isInSelectionMode: $isInSelectionMode)
                 .environmentObject(ContactViewModel(contact: MockData.contact, contactsVM: ContactsViewModel()))
                 .preferredColorScheme(.dark)
         }

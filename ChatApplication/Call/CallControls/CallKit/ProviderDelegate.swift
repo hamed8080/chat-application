@@ -5,42 +5,40 @@
 //  Created by Hamed Hosseini on 10/16/21.
 //
 
-import Foundation
-import CallKit
-import UIKit
 import AVFAudio
+import CallKit
 import FanapPodChatSDK
+import Foundation
+import UIKit
 
-class ProviderDelegate: NSObject{
+class ProviderDelegate: NSObject {
+    private let provider: CXProvider
+    private let callManager: CallManager
 
-    private let provider:CXProvider
-    private let callManager:CallManager
-    
-    static let providerConfiguration:CXProviderConfiguration = {
+    static let providerConfiguration: CXProviderConfiguration = {
         let appName = "CHATS"
         let config = CXProviderConfiguration()
         config.maximumCallsPerCallGroup = 1
         config.iconTemplateImageData = UIImage(named: "IconMask")?.pngData()
-        config.ringtoneSound =  "Ringtone.aif"
+        config.ringtoneSound = "Ringtone.aif"
         config.supportedHandleTypes = [.phoneNumber]
         config.supportsVideo = true
         return config
     }()
-    
-    init(callManager:CallManager) {
+
+    init(callManager: CallManager) {
         self.callManager = callManager
         provider = CXProvider(configuration: type(of: self).providerConfiguration)
         super.init()
         provider.setDelegate(self, queue: nil)
     }
-    
-    
-    func reportIncomingCall(uuid:UUID, handle: String, hasVideo:Bool, completion: ((Error?) -> Void)? = nil){
+
+    func reportIncomingCall(uuid: UUID, handle: String, hasVideo: Bool, completion: ((Error?) -> Void)? = nil) {
         let callUpdate = CXCallUpdate()
         callUpdate.hasVideo = hasVideo
         callUpdate.remoteHandle = CXHandle(type: .phoneNumber, value: handle)
         provider.reportNewIncomingCall(with: uuid, update: callUpdate) { error in
-            if error == nil{
+            if error == nil {
                 let call = CallItem(uuid: uuid)
                 call.handle = handle
 
@@ -51,24 +49,21 @@ class ProviderDelegate: NSObject{
     }
 }
 
-extension ProviderDelegate : CXProviderDelegate{
-    
-    func providerDidReset(_ provider: CXProvider) {
-        
-    }
-    
-    func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
+extension ProviderDelegate: CXProviderDelegate {
+    func providerDidReset(_: CXProvider) {}
+
+    func provider(_: CXProvider, perform action: CXStartCallAction) {
         let call = CallItem(uuid: action.callUUID, isOutgoing: true)
         call.handle = action.handle.value
 //        configureAudioSession()
-        
+
         call.hasStartedConnectingDidChange = { [weak self] in
             self?.provider.reportOutgoingCall(with: call.uuid, startedConnectingAt: call.connectingDate)
         }
         call.hasConnectedDidChange = { [weak self] in
             self?.provider.reportOutgoingCall(with: call.uuid, connectedAt: call.connectDate)
         }
-        call.startCall{ success in
+        call.startCall { success in
             if success {
                 // Signal to the system that the action was successfully performed.
                 action.fulfill()
@@ -81,8 +76,8 @@ extension ProviderDelegate : CXProviderDelegate{
             }
         }
     }
-    
-    func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
+
+    func provider(_: CXProvider, perform action: CXAnswerCallAction) {
         // Retrieve the CallItem instance corresponding to the action's call UUID.
         guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
             action.fail()
@@ -99,15 +94,15 @@ extension ProviderDelegate : CXProviderDelegate{
         // Trigger the call to be answered via the underlying network service.
         let callState = CallViewModel.shared
         if let receiveCall = callState.call {
-            Chat.sharedInstance.acceptCall(.init(callId:receiveCall.callId, client: .init(mute: !callState.answerType.mute, video: callState.answerType.video)))
+            Chat.sharedInstance.acceptCall(.init(callId: receiveCall.callId, client: .init(mute: !callState.answerType.mute, video: callState.answerType.video)))
         }
         call.answerIncomingCall()
 
         // Signal to the system that the action was successfully performed.
         action.fulfill()
     }
-    
-    func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+
+    func provider(_: CXProvider, perform action: CXEndCallAction) {
         // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID
         guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
             action.fail()
@@ -126,8 +121,8 @@ extension ProviderDelegate : CXProviderDelegate{
         // Remove the ended call from the app's list of calls.
         callManager.removeCall(call)
     }
-    
-    func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
+
+    func provider(_: CXProvider, perform action: CXSetHeldCallAction) {
         // Retrieve the SpeakerboxCall instance corresponding to the action's call UUID
         guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
             action.fail()
@@ -147,18 +142,17 @@ extension ProviderDelegate : CXProviderDelegate{
         // Signal to the system that the action has been successfully performed.
         action.fulfill()
     }
-    
-    func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
+
+    func provider(_: CXProvider, didActivate _: AVAudioSession) {
         print("Received", #function)
 //        startAudio()
     }
-    
-    func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
+
+    func provider(_: CXProvider, didDeactivate _: AVAudioSession) {
         print("Received", #function)
     }
-    
-    func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
+
+    func provider(_: CXProvider, timedOutPerforming _: CXAction) {
         print("Timed out", #function)
     }
-    
 }

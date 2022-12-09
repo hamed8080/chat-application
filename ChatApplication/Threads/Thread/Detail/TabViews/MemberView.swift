@@ -9,15 +9,13 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct MemberView: View {
-
-    @EnvironmentObject
-    var viewModel: ParticipantsViewModel
+    @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
         List {
             ListLoadingView(isLoading: $viewModel.isLoading)
             ForEach(viewModel.participants, id: \.id) { participant in
-                ParticipantRow(participant: participant, style: .init(avatarConfig: .init(size: 32, textSize: 16), textFont: .headline))
+                ParticipantRow(participant: participant)
                     .onAppear {
                         if viewModel.participants.last == participant {
                             viewModel.loadMore()

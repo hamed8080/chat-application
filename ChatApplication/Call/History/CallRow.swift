@@ -5,43 +5,43 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import SwiftUI
 import FanapPodChatSDK
+import SwiftUI
 
 struct CallRow: View {
-    
-    private (set) var call:Call
-    private var viewModel:CallsHistoryViewModel
-    
-    init(call: Call , viewModel:CallsHistoryViewModel) {
+    private(set) var call: Call
+    private var viewModel: CallsHistoryViewModel
+
+    init(call: Call, viewModel: CallsHistoryViewModel) {
         self.call = call
         self.viewModel = viewModel
     }
-    
+
     var body: some View {
-        
-        HStack{
-            Avatar(url: call.partnerParticipant?.image, userName: call.partnerParticipant?.name, style: .init(size: 48,textSize: 18))
-            VStack(alignment: .leading){
+        HStack {
+            ImageLoader(url: call.partnerParticipant?.image ?? "", userName: call.partnerParticipant?.name?.uppercased()).imageView
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
+            VStack(alignment: .leading) {
                 Text(call.conversation?.title ?? call.partnerParticipant?.name ?? "")
-                
-                HStack{
+
+                HStack {
                     Image(systemName: call.isIncomingCall ? "arrow.down.left" : "arrow.up.right")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 12, height: 12)
-                        .foregroundColor( call.isIncomingCall ? Color.red : Color.green)
-                    
-                    if let createTime = call.createTime, let date = Date(milliseconds: Int64(createTime)){
+                        .foregroundColor(call.isIncomingCall ? Color.red : Color.green)
+
+                    if let createTime = call.createTime, let date = Date(milliseconds: Int64(createTime)) {
                         Text(date.getShortFormatOfDate())
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                     }
                 }
             }
-            
+
             Spacer()
-            
+
             Image(systemName: call.type == .videoCall ? "video.fill" : "phone.fill")
                 .resizable()
                 .scaledToFit()
@@ -50,19 +50,19 @@ struct CallRow: View {
                 .foregroundColor(.blue.opacity(0.9))
         }
         .contentShape(Rectangle())
-        .padding([.leading , .trailing] , 16)
-        .padding([.top , .bottom] , 4)
+        .padding([.leading, .trailing], 16)
+        .padding([.top, .bottom], 4)
     }
 }
 
 struct CallRow_Previews: PreviewProvider {
-    static var call:Call{
-        let partnerParticipant = Participant(admin:nil,
-                                             auditor:nil,
+    static var call: Call {
+        let partnerParticipant = Participant(admin: nil,
+                                             auditor: nil,
                                              blocked: false,
                                              cellphoneNumber: nil,
                                              contactFirstName: "Hamed",
-                                             contactId:nil,
+                                             contactId: nil,
                                              contactName: nil,
                                              contactLastName: nil,
                                              coreUserId: nil,
@@ -85,16 +85,16 @@ struct CallRow_Previews: PreviewProvider {
                         creatorId: 18478,
                         type: .voiceCall,
                         isGroup: false,
-                        createTime: 1626173608000,
+                        createTime: 1_626_173_608_000,
                         startTime: nil,
-                        endTime: 1612076779373,
+                        endTime: 1_612_076_779_373,
                         status: .accepted,
                         callParticipants: nil,
                         partnerParticipant: partnerParticipant)
         return call
     }
-    
+
     static var previews: some View {
-        CallRow(call: call,viewModel: CallsHistoryViewModel())
+        CallRow(call: call, viewModel: CallsHistoryViewModel())
     }
 }

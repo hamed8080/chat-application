@@ -7,18 +7,40 @@
 
 import FanapPodChatSDK
 import Foundation
+import SwiftUI
 import UIKit
 
+private var token: String? {
+    guard let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey),
+          let ssoToken = try? JSONDecoder().decode(SSOTokenResponseResult.self, from: data)
+    else {
+        return nil
+    }
+    return ssoToken.accessToken
+}
+
 class ImageLoader: ObservableObject {
-    @Published
-    private(set) var image: UIImage = .init()
+    @Published private(set) var image: UIImage = .init()
     private(set) var url: String
     private(set) var fileMetadata: String?
     private(set) var size: ImageSize?
-    private(set) var token: String?
-
-    init(url: String) {
+    private(set) var userName: String?
+    init(url: String, userName: String? = nil, size: ImageSize? = nil) {
+        self.userName = userName
         self.url = url
+        self.size = size
+    }
+
+    @ViewBuilder var imageView: some View {
+        if !isImageReady, let userName = userName {
+            Text(String(userName.first ?? " "))
+        } else if isImageReady {
+            Image(uiImage: image)
+                .resizable()
+        } else {
+            Image(systemName: "photo.fill")
+                .resizable()
+        }
     }
 
     var isImageReady: Bool {
@@ -59,9 +81,10 @@ class ImageLoader: ObservableObject {
     }
 
     private func getFromSDK() {
-        Chat.sharedInstance.getImage(req: .init(hashCode: hashCode, size: size ?? .SMALL)) { _ in
+        Chat.sharedInstance.getImage(req: .init(hashCode: hashCode, size: size ?? .LARG)) { _ in
         } completion: { [weak self] data, _, _ in
             self?.update(data: data)
+            self?.storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
         } cacheResponse: { [weak self] data, _, _ in
             self?.update(data: data)
         }

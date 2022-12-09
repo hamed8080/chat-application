@@ -14,4 +14,3 @@ struct ViewOffsetKey: PreferenceKey {
         value += nextValue()
     }
 }
-

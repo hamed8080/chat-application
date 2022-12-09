@@ -56,30 +56,30 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         hasher.combine(threadId)
     }
 
-    @Published
-    var thread: Conversation
-
-    @Published
-    var isLoading = false
-
+    @Published var thread: Conversation
+    @Published var isLoading = false
+    @Published var searchedMessages: [Message] = []
+    @Published var messages: [Message] = []
+    @Published var selectedMessages: [Message] = []
+    @Published var editMessage: Message?
+    @Published var replyMessage: Message?
+    @Published var scrollToUniqueId: String?
+    @Published var imageLoader: ImageLoader
+    @Published var isInEditMode: Bool = false
+    @Published var exportMessagesVM: ExportMessagesViewModelProtocol
     var readOnly = false
-
-    @Published
-    var searchedMessages: [Message] = []
-
-    @Published
-    var messages: [Message] = []
-
     var textMessage: String?
-
-    @Published
-    var selectedMessages: [Message] = []
-
-    @Published
-    var editMessage: Message?
-
-    @Published
-    var replyMessage: Message?
+    var canScrollToBottomOfTheList: Bool = false
+    private(set) var cancellableSet: Set<AnyCancellable> = []
+    private var typingTimerStarted = false
+    lazy var audioRecoderVM: AudioRecordingViewModel = .init(threadViewModel: self)
+    var hasNext = true
+    var count: Int { 15 }
+    var threadId: Int { thread.id ?? 0 }
+    weak var threadsViewModel: ThreadsViewModel?
+    var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
+    var signalMessageText: String?
+    var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
 
     var groupCallIdToJoin: Int? {
         didSet {
@@ -93,66 +93,43 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         }
     }
 
-    @Published
-    var scrollToUniqueId: String?
-    var canScrollToBottomOfTheList: Bool = false
-
-    private(set) var cancellableSet: Set<AnyCancellable> = []
-
-    private var typingTimerStarted = false
-
-    lazy var audioRecoderVM: AudioRecordingViewModel = .init(threadViewModel: self)
-
-    var hasNext = true
-
-    var count: Int { 15 }
-
-    var threadId: Int { thread.id ?? 0 }
-
-    weak var threadsViewModel: ThreadsViewModel?
-
-    var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
-
-    var signalMessageText: String?
-
-    @Published
-    var isInEditMode: Bool = false
-
-    @Published
-    var exportMessagesVM: ExportMessagesViewModelProtocol
-
-    var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
-
     init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.readOnly = readOnly
         self.thread = thread
-        self.exportMessagesVM = ExportMessagesViewModel(thread: thread)
+        exportMessagesVM = ExportMessagesViewModel(thread: thread)
         self.threadsViewModel = threadsViewModel
+        imageLoader = ImageLoader(url: thread.image ?? "", userName: thread.title, size: .SMALL)
         setupNotificationObservers()
+        imageLoader.fetch()
     }
 
     private func setupNotificationObservers() {
-        NotificationCenter.default.publisher(for: THREAD_EVENT_NOTIFICATION_NAME)
+        NotificationCenter.default.publisher(for: threadEventNotificationName)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink(receiveValue: onThreadEvent)
             .store(in: &cancellableSet)
 
-        NotificationCenter.default.publisher(for: MESSAGE_NOTIFICATION_NAME)
+        NotificationCenter.default.publisher(for: messageNotificationName)
             .compactMap { $0.object as? MessageEventTypes }
             .sink(receiveValue: onMessageEvent)
             .store(in: &cancellableSet)
 
-        NotificationCenter.default.publisher(for: CALL_EVENT_NAME)
+        NotificationCenter.default.publisher(for: callEventName)
             .compactMap { $0.object as? CallEventTypes }
             .sink(receiveValue: onCallEvent)
             .store(in: &cancellableSet)
+
+        imageLoader.$image.sink { _ in
+            self.objectWillChange.send()
+        }
+        .store(in: &cancellableSet)
     }
 
     func onThreadEvent(_ event: ThreadEventTypes?) {
         switch event {
-        case .lastMessageDeleted(let thread), .lastMessageEdited(let thread):
+        case let .lastMessageDeleted(thread), let .lastMessageEdited(thread):
             onLastMessageChanged(thread)
-        case .threadUnreadCountUpdated(let threadId, let unreadCount):
+        case let .threadUnreadCountUpdated(threadId, unreadCount):
             updateUnreadCount(threadId, unreadCount)
         default:
             break
@@ -161,17 +138,17 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func onCallEvent(_ event: CallEventTypes) {
         switch event {
-        case .callEnded(let callId):
+        case let .callEnded(callId):
             if callId == groupCallIdToJoin {
                 groupCallIdToJoin = nil
                 objectWillChange.send()
             }
-        case .groupCallCanceled(let call):
+        case let .groupCallCanceled(call):
             if call.callId == groupCallIdToJoin {
                 groupCallIdToJoin = call.callId
                 objectWillChange.send()
             }
-        case .callReceived(let call):
+        case let .callReceived(call):
             if call.conversation?.id == threadId {
                 groupCallIdToJoin = call.callId
                 objectWillChange.send()
@@ -183,20 +160,20 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
-        case .messageNew(let message):
+        case let .messageNew(message):
             if threadId == message.conversation?.id {
                 appendMessages([message])
                 scrollToLastMessageIfLastMessageIsVisible()
             }
-        case .messageSent(let sentResponse):
+        case let .messageSent(sentResponse):
             if threadId == sentResponse.threadId {
                 onSent(sentResponse, nil, nil)
             }
-        case .messageDelivery(let deliverResponse):
+        case let .messageDelivery(deliverResponse):
             if threadId == deliverResponse.threadId {
                 onDeliver(deliverResponse, nil, nil)
             }
-        case .messageSeen(let seenResponse):
+        case let .messageSeen(seenResponse):
             if threadId == seenResponse.threadId {
                 onSeen(seenResponse, nil, nil)
             }
@@ -243,7 +220,8 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             self?.appendMessages(editMessages?.compactMap { EditTextMessage(from: $0, thread: self?.thread) } ?? [])
         } forwardMessageNotSentRequests: { [weak self] forwardMessages, _, _ in
             self?.appendMessages(forwardMessages?.compactMap {
-                ForwardMessage(from: $0, destinationThread: .init(id: $0.threadId, title: self?.threadName($0.threadId)), thread: self?.thread) } ?? []
+                ForwardMessage(from: $0, destinationThread: .init(id: $0.threadId, title: self?.threadName($0.threadId)), thread: self?.thread)
+            } ?? []
             )
         } fileMessageNotSentRequests: { [weak self] fileMessages, _, _ in
             self?.appendMessages(fileMessages?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: self?.thread) } ?? [])
@@ -346,7 +324,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func clearHistory() {
         Chat.sharedInstance.clearHistory(.init(subjectId: threadId)) { [weak self] threadId, _, _ in
-            if let _ = threadId {
+            if threadId != nil {
                 self?.clear()
             }
         }
@@ -372,14 +350,14 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func deleteMessages(_ messages: [Message]) {
-        let messagedIds = messages.compactMap { $0.id }
+        let messagedIds = messages.compactMap(\.id)
         Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
         selectedMessages = []
     }
 
     /// Delete a message with an Id is needed for when the message has persisted before.
     /// Delete a message with a uniqueId is needed for when the message is sent to a request.
-    func onDeleteMessage(message: Message? = nil, uniqueId: String? = nil, error: ChatError? = nil) {
+    func onDeleteMessage(message: Message? = nil, uniqueId _: String? = nil, error _: ChatError? = nil) {
         messages.removeAll(where: { $0.uniqueId == message?.uniqueId || message?.id == $0.id })
     }
 

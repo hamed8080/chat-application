@@ -18,7 +18,6 @@ protocol ScrollToPositionProtocol {
 }
 
 extension ThreadViewModel: ScrollToPositionProtocol {
-
     func updateScrollToLastSeenUniqueId() {
         if scrollToUniqueId == nil, let uniqueId = messages.first(where: { $0.id == thread.lastSeenMessageId })?.uniqueId {
             setScrollToUniqueId(uniqueId)

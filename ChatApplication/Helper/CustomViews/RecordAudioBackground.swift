@@ -8,32 +8,29 @@
 import SwiftUI
 
 struct RecordAudioBackground: View {
-    
-    @StateObject
-    var viewModel: AudioRecordingViewModel
-    
-    @State
-    var degrees:[CGFloat] = [270,40,70,90,120,160,220,260,290,360]
-    var scale:CGFloat = 6
-    var cornerRadius:CGFloat = 24
+    @StateObject var viewModel: AudioRecordingViewModel
+
+    @State var degrees: [CGFloat] = [270, 40, 70, 90, 120, 160, 220, 260, 290, 360]
+    var scale: CGFloat = 6
+    var cornerRadius: CGFloat = 24
     var blurRadius = 1
-        
+
     var body: some View {
         if viewModel.isRecording {
-            ZStack{
-                ForEach(1...10, id:\.self){ item in
+            ZStack {
+                ForEach(1 ... 10, id: \.self) { item in
                     createRectangle(index: item - 1)
                 }
             }
             .animation(
-                    .easeInOut(duration: 0.5)
+                .easeInOut(duration: 0.5)
                     .speed(0.099)
                     .repeatForever(autoreverses: true)
                     .delay(0.0),
-                     value: 0
+                value: 0
             )
             .onAppear {
-                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { timer in
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
                     withAnimation {
                         degrees.enumerated().forEach { element in
                             degrees[element.offset] = element.element + (element.element * 80 / 100)
@@ -41,21 +38,20 @@ struct RecordAudioBackground: View {
                     }
                 }
             }
-        }
-        else{
+        } else {
             Circle()
                 .scale()
                 .foregroundColor(Color.clear)
         }
     }
-    
+
     @ViewBuilder
-    func createRectangle(index:Int)->some View{
+    func createRectangle(index: Int) -> some View {
         RoundedRectangle(cornerRadius: cornerRadius)
             .scale(x: scale, y: scale)
             .rotation(Angle(degrees: degrees[index]))
-            .foregroundColor(Color(named: "text_color_blue").opacity((Double(index) * 80/100)))
-            .blur(radius: CGFloat(index) * 80/100 )
+            .foregroundColor(Color(named: "text_color_blue").opacity(Double(index) * 80 / 100))
+            .blur(radius: CGFloat(index) * 80 / 100)
     }
 }
 

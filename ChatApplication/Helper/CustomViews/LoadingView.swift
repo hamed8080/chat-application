@@ -8,25 +8,22 @@
 import SwiftUI
 
 struct LoadingView: View {
+    @State public var isAnimating: Bool = true
+    public var width: CGFloat = 4
+    public var color: Color = .orange
 
-    @State
-    public  var isAnimating          : Bool    = true
-    public  var width                : CGFloat = 4
-    public  var color                : Color   = Color.orange
-    
-    public init(isAnimating:Bool = false, width: CGFloat = 4, color: Color = Color.orange) {
+    public init(isAnimating: Bool = false, width: CGFloat = 4, color: Color = Color.orange) {
         self.isAnimating = isAnimating
-        self.width       = width
-        self.color       = color
+        self.width = width
+        self.color = color
     }
-    
+
     var body: some View {
-        
-        GeometryReader{ reader in
+        GeometryReader { reader in
             Circle()
                 .trim(from: 0, to: $isAnimating.wrappedValue ? 1 : 0.1)
                 .stroke(style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round, miterLimit: 10))
-                .fill(AngularGradient(colors: [color, .random,.random , .teal], center: .top))
+                .fill(AngularGradient(colors: [color, .random, .random, .teal], center: .top))
                 .frame(width: reader.size.width, height: reader.size.height)
                 .rotationEffect(Angle(degrees: $isAnimating.wrappedValue ? 360 : 0))
                 .onAppear {
@@ -40,16 +37,14 @@ struct LoadingView: View {
     }
 }
 
-
 struct LoadingView_Previews: PreviewProvider {
-    
     @State static var isAnimating = true
-    
+
     static var previews: some View {
-        if isAnimating{
+        if isAnimating {
             LoadingView(width: 3)
                 .frame(width: 36, height: 36)
-        }else{
+        } else {
             Color.orange
                 .ignoresSafeArea()
         }

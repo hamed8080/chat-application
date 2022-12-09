@@ -8,30 +8,28 @@
 import SwiftUI
 
 struct CallDetails: View {
-    
     @Environment(\.presentationMode) var presentationMode
-    
-    @StateObject
-    var viewModel:CallDetailViewModel
-    
+
+    @StateObject  var viewModel: CallDetailViewModel
+
     var body: some View {
-        GeometryReader{ reader in
-            VStack(spacing:0){
-                CustomNavigationBar(title: "Call Detail"){
+        GeometryReader { reader in
+            VStack(spacing: 0) {
+                CustomNavigationBar(title: "Call Detail") {
                     presentationMode.wrappedValue.dismiss()
                 }
-                ZStack{
-                    VStack(spacing:12){
-                        VStack(alignment:.leading, spacing:8){
-                            if let startTime = viewModel.model.call.createTime, let date = Date(milliseconds: Int64(startTime)){
+                ZStack {
+                    VStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            if let startTime = viewModel.model.call.createTime, let date = Date(milliseconds: Int64(startTime)) {
                                 Text("Start: \(date.getShortFormatOfDate())")
                             }
-                            
-                            if let endTime = viewModel.model.call.endTime, let date = Date(milliseconds: Int64(endTime)){
+
+                            if let endTime = viewModel.model.call.endTime, let date = Date(milliseconds: Int64(endTime)) {
                                 Text("End: \(date.getShortFormatOfDate())")
                             }
                             Text(viewModel.model.call.isIncomingCall ? "Incoming call" : "Outgoing call")
-                            if let status = viewModel.model.call.status{
+                            if let status = viewModel.model.call.status {
                                 Text("Status: \(String(describing: status))")
                             }
                         }
@@ -39,20 +37,20 @@ struct CallDetails: View {
                         .frame(width: reader.size.width - 36)
                         .background(Color.white)
                         .cornerRadius(12)
-                        
+
                         List {
                             Text("Call History")
                                 .fontWeight(.bold)
                                 .foregroundColor(Color.blue)
-                            ForEach(viewModel.model.calls , id:\.id) { call in
-                                CallDetailRow(call: call,viewModel: viewModel)
-                                    .frame(minHeight:64)
+                            ForEach(viewModel.model.calls, id: \.id) { call in
+                                CallDetailRow(call: call, viewModel: viewModel)
+                                    .frame(minHeight: 64)
                                     .onAppear {
-                                        if viewModel.model.calls.last == call{
+                                        if viewModel.model.calls.last == call {
                                             viewModel.loadMore()
                                         }
                                     }
-                            }.onDelete(perform: { indexSet in
+                            }.onDelete(perform: { _ in
                                 print("on delete")
                             })
                         }
@@ -62,16 +60,15 @@ struct CallDetails: View {
                         .padding(.init(top: 1, leading: 0, bottom: 1, trailing: 0))
                         .listStyle(PlainListStyle())
                     }.padding(.top)
-                    
                 }
                 .ignoresSafeArea()
-                LoadingViewAt(isLoading:viewModel.isLoading ,reader:reader)
+                LoadingViewAt(isLoading: viewModel.isLoading, reader: reader)
             }
         }
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         .background(Color.gray.opacity(0.2)
-                        .edgesIgnoringSafeArea(.all)
+            .edgesIgnoringSafeArea(.all)
         )
     }
 }
@@ -79,10 +76,10 @@ struct CallDetails: View {
 struct CallDetails_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = CallDetailViewModel(call: CallRow_Previews.call)
-        CallDetails(viewModel:viewModel)
+        CallDetails(viewModel: viewModel)
             .environmentObject(AppState.shared)
             .environmentObject(CallViewModel.shared)
-            .onAppear(){
+            .onAppear {
                 viewModel.setupPreview()
                 viewModel.setupPreview()
                 viewModel.setupPreview()

@@ -9,24 +9,13 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct AddOrEditContactView: View {
-    @State
-    var contactValue: String = ""
-
-    @State
-    var firstName: String = ""
-
-    @State
-    var lastName: String = ""
-
-    @Environment(\.dismiss)
-    var dismiss
-
-    @EnvironmentObject
-    var viewModel: ContactViewModel
-
-    @EnvironmentObject
-    var contactsViewModel: ContactsViewModel
-    var editContact: Contact? = nil
+    @State var contactValue: String = ""
+    @State var firstName: String = ""
+    @State var lastName: String = ""
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var viewModel: ContactViewModel
+    @EnvironmentObject var contactsViewModel: ContactsViewModel
+    var editContact: Contact?
 
     var body: some View {
         NavigationView {

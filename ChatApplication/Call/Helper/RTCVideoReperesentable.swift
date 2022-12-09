@@ -15,7 +15,7 @@ struct RTCVideoReperesentable: UIViewRepresentable {
         self.renderer = renderer
     }
 
-    func makeUIView(context: Context) -> UIView {
+    func makeUIView(context _: Context) -> UIView {
         let view = UIView()
         if TARGET_OS_SIMULATOR != 0 {
             // its simulator
@@ -30,5 +30,5 @@ struct RTCVideoReperesentable: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    func updateUIView(_: UIView, context _: Context) {}
 }
