@@ -7,43 +7,42 @@
 
 import SwiftUI
 
-enum LoadingViewPosition{
+enum LoadingViewPosition {
     case TOP
     case CENTER
     case BOTTOM
 }
+
 struct LoadingViewAt: View {
-    
-    var at:LoadingViewPosition = .BOTTOM
-    var isLoading:Bool
-    var reader:GeometryProxy
-    var size:CGFloat{
-        return isIpad ? 36 : 28
+    var at: LoadingViewPosition = .BOTTOM
+    var isLoading: Bool
+    var reader: GeometryProxy
+    var size: CGFloat {
+        isIpad ? 36 : 28
     }
-    
+
     var body: some View {
-        if isLoading{
+        if isLoading {
             LoadingView(width: 3)
                 .frame(width: size, height: size, alignment: .center)
                 .offset(x: reader.size.width / 2 - (size / 2), y: reader.size.height - position(reader: reader))
         }
     }
-    
-    func position(reader:GeometryProxy) -> CGFloat{
+
+    func position(reader: GeometryProxy) -> CGFloat {
         switch at {
         case .TOP:
-            return reader.size.height 
+            return reader.size.height
         case .CENTER:
             return reader.size.height / 2
         case .BOTTOM:
-            return reader.safeAreaInsets.bottom > 0 ? max(size, reader.safeAreaInsets.bottom ) : size
+            return reader.safeAreaInsets.bottom > 0 ? max(size, reader.safeAreaInsets.bottom) : size
         }
     }
 }
 
 struct ListLoadingView: View {
-    @Binding
-    var isLoading: Bool
+    @Binding var isLoading: Bool
 
     var body: some View {
         if isLoading {

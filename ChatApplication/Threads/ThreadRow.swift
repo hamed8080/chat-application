@@ -10,19 +10,17 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct ThreadRow: View {
-    @ObservedObject
-    var viewModel: ThreadViewModel
+    @ObservedObject var viewModel: ThreadViewModel
 
     var body: some View {
-        let _ = Self._printChanges()
         Button(action: {}, label: {
             HStack {
-                let token = EnvironmentValues().isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
-                Avatar(
-                    url: viewModel.thread.image,
-                    userName: viewModel.thread.inviter?.username?.uppercased(),
-                    token: token
-                )
+                viewModel.imageLoader.imageView
+                    .font(.system(size: 16).weight(.heavy))
+                    .foregroundColor(.white)
+                    .frame(width: 64, height: 64)
+                    .background(Color.blue.opacity(0.4))
+                    .cornerRadius(32)
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text(viewModel.thread.title ?? "")

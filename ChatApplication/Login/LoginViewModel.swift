@@ -10,17 +10,13 @@ import Foundation
 import UIKit
 
 class LoginViewModel: ObservableObject {
-    @Published
-    var model = LoginModel()
-    
-    @Published
-    var isLoading = false
-    
+    @Published var model = LoginModel()
+    @Published var isLoading = false
     weak var tokenManager: TokenManager? = TokenManager.shared
     let handshakeClient = RestClient<HandshakeResponse>()
     let authorizationClient = RestClient<AuthorizeResponse>()
     let ssoClient = RestClient<SSOTokenResponse>()
-    
+
     func login() {
         isLoading = true
         let req = HandshakeRequest(deviceName: UIDevice.current.name,
@@ -29,14 +25,14 @@ class LoginViewModel: ObservableObject {
                                    deviceType: "MOBILE_PHONE",
                                    deviceUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
         handshakeClient
-            .setUrl(Routes.HANDSHAKE)
+            .setUrl(Routes.handshake)
             .setMethod(.post)
             .enablePrint(enable: true)
             .setParamsAsQueryString(req)
             .setOnError { [weak self] _, error in
                 print("error on login:\(error.debugDescription)")
                 self?.isLoading = false
-                self?.model.setState(.FAILED)
+                self?.model.setState(.failed)
             }
             .request { [weak self] response in
                 self?.isLoading = false
@@ -44,13 +40,13 @@ class LoginViewModel: ObservableObject {
                 self.requestOTP(identity: self.model.phoneNumber, handskahe: response)
             }
     }
-    
+
     func requestOTP(identity: String, handskahe: HandshakeResponse) {
         guard let keyId = handskahe.result?.keyId else { return }
         let req = AuthorizeRequest(identity: identity, keyId: keyId)
         isLoading = true
         authorizationClient
-            .setUrl(Routes.AUTHORIZE)
+            .setUrl(Routes.authorize)
             .setMethod(.post)
             .enablePrint(enable: true)
             .setParamsAsQueryString(req)
@@ -58,25 +54,25 @@ class LoginViewModel: ObservableObject {
             .setOnError { [weak self] _, error in
                 print("error on requestOTP:\(error.debugDescription)")
                 self?.isLoading = false
-                self?.model.setState(.FAILED)
+                self?.model.setState(.failed)
             }
             .request { [weak self] response in
                 self?.isLoading = false
                 guard let self = self else { return }
-                if let _ = response.result?.identity {
+                if response.result?.identity != nil {
                     self.model.setIsInVerifyState(true)
                     self.model.setKeyId(keyId)
                 }
             }
     }
-    
+
     func verifyCode() {
         guard let keyId = model.keyId else { return }
-        
+
         let req = VerifyRequest(identity: model.phoneNumber, keyId: keyId, otp: model.verifyCode)
         isLoading = true
         ssoClient
-            .setUrl(Routes.VERIFY)
+            .setUrl(Routes.verify)
             .setMethod(.post)
             .enablePrint(enable: true)
             .setParamsAsQueryString(req)
@@ -84,14 +80,14 @@ class LoginViewModel: ObservableObject {
             .setOnError { [weak self] _, error in
                 print("error on verifyCode:\(error.debugDescription)")
                 self?.isLoading = false
-                self?.model.setState(.VERIFICATION_CODE_INCORRECT)
+                self?.model.setState(.verificationCodeIncorrect)
             }
             .request { [weak self] response in
                 self?.isLoading = false
                 guard let self = self else { return }
                 // save refresh token
                 if let ssoToken = response.result {
-                    self.model.setState(.SUCCESS_LOGGED_IN)
+                    self.model.setState(.successLoggedIn)
                     Chat.sharedInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: true)
                     self.tokenManager?.saveSSOToken(ssoToken: ssoToken)
                 }
@@ -102,25 +98,21 @@ class LoginViewModel: ObservableObject {
 class TokenManager: ObservableObject {
     static let shared = TokenManager()
     private let refreshTokenClient = RestClient<SSOTokenResponse>()
+    @Published var secondToExpire: Double = 0
+    @Published private(set) var isLoggedIn = false // to update login logout ui
+    private weak var timer: Timer?
+    static let ssoTokenKey = "ssoTokenKey"
+    static let ssoTokenCreateDate = "ssoTokenCreateDate"
 
-    @Published
-    var secondToExpire: Double = 0
-
-    @Published
-    private(set) var isLoggedIn = false // to update login logout ui
     private init() {
         _ = getSSOTokenFromUserDefaults() // need first time app luanch to set hasToken
     }
-    
-    private weak var timer: Timer?
-    private static let SSO_TOKEN_KEY = "SSO_TOKEN"
-    private static let SSO_TOKEN_CREATE_DATE = "SSO_TOKEN_CREATE_DATE"
-    
+
     func getNewTokenWithRefreshToken() {
         if let refreshToken = getSSOTokenFromUserDefaults()?.refreshToken {
             refreshTokenClient
                 .enablePrint(enable: true)
-                .setUrl(Routes.REFRESH_TOKEN + "?refreshToken=\(refreshToken)")
+                .setUrl(Routes.refreshToken + "?refreshToken=\(refreshToken)")
                 .setOnError { _, error in
                     print("error on getNewTokenWithRefreshToken:\(error.debugDescription)")
                 }
@@ -135,8 +127,8 @@ class TokenManager: ObservableObject {
         }
     }
 
-    func getSSOTokenFromUserDefaults()->SSOTokenResponse.Result? {
-        if let data = UserDefaults.standard.data(forKey: TokenManager.SSO_TOKEN_KEY), let ssoToken = try? JSONDecoder().decode(SSOTokenResponse.Result.self, from: data) {
+    func getSSOTokenFromUserDefaults() -> SSOTokenResponseResult? {
+        if let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey), let ssoToken = try? JSONDecoder().decode(SSOTokenResponseResult.self, from: data) {
             return ssoToken
         } else {
             return nil
@@ -148,27 +140,27 @@ class TokenManager: ObservableObject {
         setIsLoggedIn(isLoggedIn: getSSOTokenFromUserDefaults() != nil)
     }
 
-    func saveSSOToken(ssoToken: SSOTokenResponse.Result) {
+    func saveSSOToken(ssoToken: SSOTokenResponseResult) {
         let data = (try? JSONEncoder().encode(ssoToken)) ?? Data()
         let str = String(data: data, encoding: .utf8)
         print("save token:\n\(str ?? "")")
         refreshCreateTokenDate()
         startTimerToGetNewToken()
         if let encodedData = try? JSONEncoder().encode(ssoToken) {
-            UserDefaults.standard.set(encodedData, forKey: TokenManager.SSO_TOKEN_KEY)
+            UserDefaults.standard.set(encodedData, forKey: TokenManager.ssoTokenKey)
             UserDefaults.standard.synchronize()
         }
         setIsLoggedIn(isLoggedIn: true)
     }
-    
+
     func refreshCreateTokenDate() {
-        UserDefaults.standard.set(Date(), forKey: TokenManager.SSO_TOKEN_CREATE_DATE)
+        UserDefaults.standard.set(Date(), forKey: TokenManager.ssoTokenCreateDate)
     }
-    
-    func getCreateTokenDate()->Date? {
-        UserDefaults.standard.value(forKey: TokenManager.SSO_TOKEN_CREATE_DATE) as? Date
+
+    func getCreateTokenDate() -> Date? {
+        UserDefaults.standard.value(forKey: TokenManager.ssoTokenCreateDate) as? Date
     }
-    
+
     func startTimerToGetNewToken() {
         if let ssoToken = getSSOTokenFromUserDefaults(), let createDate = getCreateTokenDate() {
             timer?.invalidate()
@@ -180,14 +172,14 @@ class TokenManager: ObservableObject {
             }
         }
     }
-    
+
     func setIsLoggedIn(isLoggedIn: Bool) {
         self.isLoggedIn = isLoggedIn
     }
-    
+
     func clearToken() {
-        UserDefaults.standard.removeObject(forKey: TokenManager.SSO_TOKEN_KEY)
-        UserDefaults.standard.removeObject(forKey: TokenManager.SSO_TOKEN_CREATE_DATE)
+        UserDefaults.standard.removeObject(forKey: TokenManager.ssoTokenKey)
+        UserDefaults.standard.removeObject(forKey: TokenManager.ssoTokenCreateDate)
         UserDefaults.standard.synchronize()
         setIsLoggedIn(isLoggedIn: false)
     }

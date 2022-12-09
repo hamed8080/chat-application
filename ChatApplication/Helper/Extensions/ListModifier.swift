@@ -7,20 +7,18 @@
 
 import SwiftUI
 
-extension View{
+extension View {
     @ViewBuilder func noSeparators() -> some View {
         if #available(iOS 15.0, *) { // iOS 14
             self.listRowSeparator(.hidden)
-        }
-        else if #available(iOS 14.0, *) { // iOS 14
+        } else if #available(iOS 14.0, *) { // iOS 14
             self
                 .accentColor(Color.secondary)
                 .onAppear {
                     UITableView.appearance().backgroundColor = UIColor.clear
                 }
         } else { // iOS 13
-            self
-                .listStyle(PlainListStyle())
+            listStyle(.plain)
                 .onAppear {
                     UITableView.appearance().separatorStyle = .none
                 }

@@ -10,6 +10,6 @@ import Photos
 
 extension PHAsset {
     var originalFilename: String? {
-        return  PHAssetResource.assetResources(for: self).first?.originalFilename
+        PHAssetResource.assetResources(for: self).first?.originalFilename
     }
 }

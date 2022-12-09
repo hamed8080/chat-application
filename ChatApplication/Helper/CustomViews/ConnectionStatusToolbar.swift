@@ -8,12 +8,9 @@
 import SwiftUI
 
 struct ConnectionStatusToolbar: View {
+    @State var connectionStatus: ConnectionStatus = .connecting
 
-    @State
-    var connectionStatus: ConnectionStatus = .connecting
-
-    @EnvironmentObject
-    var appstate: AppState
+    @EnvironmentObject var appstate: AppState
 
     var body: some View {
         if connectionStatus != .connected {
@@ -33,7 +30,6 @@ struct ConnectionStatusToolbar: View {
         }
     }
 }
-
 
 struct ConnectionStatusToolbar_Previews: PreviewProvider {
     static var previews: some View {

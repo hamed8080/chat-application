@@ -13,7 +13,7 @@ extension Message {
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
     var forwardTitle: String? { forwardMessage != nil ? "Forward **\(forwardCount ?? 0)** messages to **\(forwardMessage?.destinationThread.title ?? "")**" : nil }
-    var messageTitle: String { return message ?? metaData?.name ?? forwardTitle ?? "" }
+    var messageTitle: String { message ?? metaData?.name ?? forwardTitle ?? "" }
     var markdownTitle: AttributedString { (try? AttributedString(markdown: messageTitle)) ?? AttributedString(messageTitle) }
     var uploadFile: UploadWithTextMessageProtocol? { self as? UploadWithTextMessageProtocol }
     var fileExtension: String? { uploadFile?.uploadFileRequest.fileExtension }
@@ -24,7 +24,7 @@ extension Message {
     var isMe: Bool { (ownerId ?? 0 == currentUser?.id ?? 0) || isUnsentMessage }
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol }
     /// Check id because we know that the message was successfully added in server chat.
-    var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil  }
+    var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
 
     var calculatedMaxAndMinWidth: CGFloat {
         let minWidth: CGFloat = isUnsentMessage ? 148 : isFileType ? 164 : 128

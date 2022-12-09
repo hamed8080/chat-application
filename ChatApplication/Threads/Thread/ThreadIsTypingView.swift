@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct ThreadIsTypingView: View {
-    @ObservedObject
-    var viewModel: ThreadIsTypingViewModel
+    @ObservedObject var viewModel: ThreadIsTypingViewModel
 
     init(threadId: Int) {
-        self.viewModel = ThreadIsTypingViewModel(threadId: threadId)
+        viewModel = ThreadIsTypingViewModel(threadId: threadId)
     }
 
     var body: some View {
@@ -20,7 +19,7 @@ struct ThreadIsTypingView: View {
             .lineLimit(1)
             .font(.subheadline.bold())
             .foregroundColor(Color.orange)
-            .scaleEffect(x: viewModel.isTyping ? 1 : 0 , y: viewModel.isTyping ? 1 : 0 )
+            .scaleEffect(x: viewModel.isTyping ? 1 : 0, y: viewModel.isTyping ? 1 : 0)
             .animation(.easeInOut, value: viewModel.isTyping)
     }
 }

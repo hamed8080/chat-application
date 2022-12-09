@@ -32,7 +32,7 @@ extension ThreadViewModel: PinThreadViewModelProtocol {
         Chat.sharedInstance.unpinThread(.init(subjectId: threadId), completion: onPinChanged)
     }
 
-    func onPinChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
+    func onPinChanged(_ threadId: Int?, _: String?, _ error: ChatError?) {
         if threadId != nil, error == nil {
             thread.pin?.toggle()
             objectWillChange.send()

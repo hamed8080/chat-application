@@ -32,7 +32,7 @@ extension ThreadViewModel: ArchiveThreadProtocol {
         Chat.sharedInstance.unarchiveThread(.init(subjectId: threadId), onArchiveChanged)
     }
 
-    func onArchiveChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?) {
+    func onArchiveChanged(_ threadId: Int?, _: String?, _ error: ChatError?) {
         if threadId != nil, error == nil {
             thread.isArchive?.toggle()
             threadsViewModel?.sort()

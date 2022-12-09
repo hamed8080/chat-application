@@ -10,14 +10,14 @@ import SwiftUI
 
 struct ActivityViewControllerWrapper: UIViewControllerRepresentable {
     var activityItems: [URL]
-    var applicationActivities: [UIActivity]? = nil
+    var applicationActivities: [UIActivity]?
 
-    func makeUIViewController(context: Context) -> some UIActivityViewController {
+    func makeUIViewController(context _: Context) -> some UIActivityViewController {
         let vc = UIActivityViewController(activityItems: [LinkMetaDataManager(url: activityItems.first!)], applicationActivities: nil)
         return vc
     }
 
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+    func updateUIViewController(_: UIViewControllerType, context _: Context) {}
 }
 
 class LinkMetaDataManager: NSObject, UIActivityItemSource {
@@ -27,15 +27,15 @@ class LinkMetaDataManager: NSObject, UIActivityItemSource {
         self.url = url
     }
 
-    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        return ""
+    func activityViewControllerPlaceholderItem(_: UIActivityViewController) -> Any {
+        ""
     }
 
-    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        return url
+    func activityViewController(_: UIActivityViewController, itemForActivityType _: UIActivity.ActivityType?) -> Any? {
+        url
     }
 
-    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+    func activityViewControllerLinkMetadata(_: UIActivityViewController) -> LPLinkMetadata? {
         let image = UIImage(named: "global_app_icon")
         let imageProvider = NSItemProvider(object: image!)
         let metadata = LPLinkMetadata()

@@ -6,6 +6,6 @@
 //
 
 import Foundation
-class AppGroup{
+class AppGroup {
     static let group = "group.ir.test.ChatApplication"
 }

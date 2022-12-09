@@ -6,12 +6,10 @@
 //
 
 import Foundation
-struct HandshakeRequest:Encodable{
-    
-    let deviceName      : String
-    let deviceOs        : String
-    let deviceOsVersion : String
-    let deviceType      : String
-    let deviceUID       : String
-    
+struct HandshakeRequest: Encodable {
+    let deviceName: String
+    let deviceOs: String
+    let deviceOsVersion: String
+    let deviceType: String
+    let deviceUID: String
 }

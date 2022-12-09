@@ -9,36 +9,22 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct StartThreadResultModel {
-    var selectedContacts: [Contact]? = nil
-
+    var selectedContacts: [Contact]?
     var type: ThreadTypes = .normal
-
     var title: String = ""
 }
 
 struct StartThreadContactPickerView: View {
-    @StateObject
-    var viewModel: StartThreadContactPickerViewModel
-
-    @StateObject
-    var contactsVM = ContactsViewModel()
-
+    @StateObject var viewModel: StartThreadContactPickerViewModel
+    @StateObject var contactsVM = ContactsViewModel()
     @EnvironmentObject var appState: AppState
-
     @State var title: String = "New Message"
     @State var subtitle: String = ""
     @State var isInMultiSelectMode = false
-
-    var onCompletedConfigCreateThread: (StartThreadResultModel)->Void
-
-    @State
-    var startThreadModel: StartThreadResultModel = .init()
-
-    @State
-    var showGroupTitleView: Bool = false
-
+    var onCompletedConfigCreateThread: (StartThreadResultModel) -> Void
+    @State var startThreadModel: StartThreadResultModel = .init()
+    @State var showGroupTitleView: Bool = false
     @State var showEnterGroupNameError: Bool = false
-
     @State var groupTitle: String = ""
 
     var body: some View {
@@ -101,7 +87,7 @@ struct StartThreadContactPickerView: View {
     }
 
     @ViewBuilder
-    func backButton()-> some View {
+    func backButton() -> some View {
         if showGroupTitleView {
             Button {
                 withAnimation {
@@ -114,7 +100,7 @@ struct StartThreadContactPickerView: View {
     }
 
     @ViewBuilder
-    func nextButton()->some View {
+    func nextButton() -> some View {
         if isInMultiSelectMode {
             Button {
                 withAnimation {
@@ -139,7 +125,7 @@ struct StartThreadButton: View {
     var name: String
     var title: String
     var color: Color
-    var action: (()->Void)?
+    var action: (() -> Void)?
 
     @State var isActive = false
 

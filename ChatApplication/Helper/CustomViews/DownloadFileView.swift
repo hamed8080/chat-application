@@ -10,20 +10,16 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct DownloadFileView: View {
-    @ObservedObject
-    var downloadFileVM: DownloadFileViewModel
+    @ObservedObject var downloadFileVM: DownloadFileViewModel
 
-    @State
-    var data: Data = .init()
+    @State var data: Data = .init()
 
-    @State
-    var percent: Int64 = 0
+    @State var percent: Int64 = 0
 
-    @State
-    var shareDownloadedFile: Bool = false
+    @State var shareDownloadedFile: Bool = false
 
     init(message: Message, placeHolder: Data? = nil) {
-        self.downloadFileVM = .init(message: message)
+        downloadFileVM = .init(message: message)
         if let placeHolder = placeHolder {
             downloadFileVM.data = placeHolder
         }
@@ -134,7 +130,7 @@ protocol DownloadFileViewModelProtocol {
 class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     @Published var downloadPercent: Int64 = 0
     @Published var state: DownloadFileState = .UNDEFINED
-    @Published var data: Data? = nil
+    @Published var data: Data?
     var fileHashCode: String { message.metaData?.fileHash ?? "" }
     var fileURL: URL? { CacheFileManager.sharedInstance.getFileUrl(fileHashCode) }
     var downloadUniqueId: String?
@@ -144,10 +140,10 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     init(message: Message) {
         self.message = message
         getFromCache()
-        NotificationCenter.default.publisher(for: File_Deleted_From_Cache_Name)
+        NotificationCenter.default.publisher(for: fileDeletedFromCacheName)
             .compactMap { $0.object as? Message }
             .filter { $0.id == message.id }
-            .sink { [weak self] receivedValue in
+            .sink { [weak self] _ in
                 self?.state = .UNDEFINED
             }
             .store(in: &cancelable)
@@ -198,7 +194,7 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
         }
     }
 
-    private func getImageIfExistInCache(isThumbnail: Bool = true) {
+    private func getImageIfExistInCache(isThumbnail _: Bool = true) {
         if CacheFileManager.sharedInstance.getImage(hashCode: fileHashCode) != nil {
             let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: false, isThumbnail: false, size: .ACTUAL)
             Chat.sharedInstance.getImage(req: req) { _ in

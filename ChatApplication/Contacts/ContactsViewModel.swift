@@ -13,23 +13,12 @@ class ContactsViewModel: ObservableObject {
     private var count = 15
     private var offset = 0
     private var hasNext: Bool = true
-
-    @Published
-    private(set) var maxContactsCountInServer = 0
-
-    @Published
-    private(set) var contactsVMS: [ContactViewModel] = []
-
+    @Published private(set) var maxContactsCountInServer = 0
+    @Published private(set) var contactsVMS: [ContactViewModel] = []
     private(set) var selectedContacts: [Contact] = []
-
-    @Published
-    private(set) var searchedContactsVMS: [ContactViewModel] = []
-
-    @Published
-    var isLoading = false
-
-    @Published
-    var searchContactString: String = "" {
+    @Published private(set) var searchedContactsVMS: [ContactViewModel] = []
+    @Published var isLoading = false
+    @Published var searchContactString: String = "" {
         didSet {
             searchContact()
         }
@@ -51,7 +40,7 @@ class ContactsViewModel: ObservableObject {
         getContacts()
     }
 
-    func onServerResponse(_ contacts: [Contact]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+    func onServerResponse(_ contacts: [Contact]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
         if let contacts = contacts {
             firstSuccessResponse = true
             appendOrUpdateContact(contacts)
@@ -61,7 +50,7 @@ class ContactsViewModel: ObservableObject {
         isLoading = false
     }
 
-    func onCacheResponse(_ contacts: [Contact]?, _ uniqueId: String?, _ pagination: Pagination?, _ error: ChatError?) {
+    func onCacheResponse(_ contacts: [Contact]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
         if let contacts = contacts {
             appendOrUpdateContact(contacts)
             hasNext = pagination?.hasNext ?? false
@@ -120,7 +109,7 @@ class ContactsViewModel: ObservableObject {
     }
 
     func delete(indexSet: IndexSet) {
-        let contacts = contactsVMS.enumerated().filter { indexSet.contains($0.offset) }.map { $0.element }
+        let contacts = contactsVMS.enumerated().filter { indexSet.contains($0.offset) }.map(\.element)
         contacts.forEach { contact in
             delete(contact.contact)
             reomve(contact.contact)
@@ -156,7 +145,7 @@ class ContactsViewModel: ObservableObject {
     }
 
     func insertContactsAtTop(_ contacts: [Contact]) {
-        self.contactsVMS.insert(contentsOf: contacts.map{.init(contact: $0, contactsVM: self)}, at: 0)
+        contactsVMS.insert(contentsOf: contacts.map { .init(contact: $0, contactsVM: self) }, at: 0)
     }
 
     func setMaxContactsCountInServer(count: Int) {
@@ -164,7 +153,7 @@ class ContactsViewModel: ObservableObject {
     }
 
     func reomve(_ contact: Contact) {
-        guard let index = contactsVMS.firstIndex(where: {$0.contact == contact}) else { return }
+        guard let index = contactsVMS.firstIndex(where: { $0.contact == contact }) else { return }
         contactsVMS.remove(at: index)
     }
 
@@ -179,7 +168,7 @@ class ContactsViewModel: ObservableObject {
 
     func setSearchedContacts(_ contacts: [Contact]) {
         isLoading = false
-        searchedContactsVMS = contacts.map{ .init(contact: $0, contactsVM: self) }
+        searchedContactsVMS = contacts.map { .init(contact: $0, contactsVM: self) }
     }
 
     func addContact(contactValue: String, firstName: String?, lastName: String?) {
@@ -195,8 +184,8 @@ class ContactsViewModel: ObservableObject {
     }
 
     func validatePhone(value: String) -> Bool {
-        let PHONE_REGEX = "^[0-9+]{0,1}+[0-9]{5,16}$"
-        let phoneTest = NSPredicate(format: "SELF MATCHES %@", PHONE_REGEX)
+        let phoneRegex = "^[0-9+]{0,1}+[0-9]{5,16}$"
+        let phoneTest = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
         let result = phoneTest.evaluate(with: value)
         return result
     }

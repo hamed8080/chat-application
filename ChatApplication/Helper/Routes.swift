@@ -7,12 +7,11 @@
 
 import Foundation
 
-class Routes{
-
-    static var AUTH_BASE_URL = "https://podspace.pod.ir/api/oauth2/"
-    static var HANDSHAKE     = AUTH_BASE_URL + "otp/handshake"
-    static var AUTHORIZE     = AUTH_BASE_URL + "otp/authorize"
-    static var VERIFY        = AUTH_BASE_URL + "otp/verify"
-    static var OTP_TOKEN     = AUTH_BASE_URL + "accessToken/"
-    static var REFRESH_TOKEN = AUTH_BASE_URL + "refresh/"
+class Routes {
+    static var authBaseUrl = "https://podspace.pod.ir/api/oauth2/"
+    static var handshake = authBaseUrl + "otp/handshake"
+    static var authorize = authBaseUrl + "otp/authorize"
+    static var verify = authBaseUrl + "otp/verify"
+    static var otpToken = authBaseUrl + "accessToken/"
+    static var refreshToken = authBaseUrl + "refresh/"
 }

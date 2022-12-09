@@ -6,12 +6,11 @@
 //
 
 import Foundation
-struct AuthorizeRequest:Encodable{
-    
-    let identity      : String
-    let keyId         : String
-    
-    private enum CodingKeys : String,CodingKey{
-        case identity = "identity"
+struct AuthorizeRequest: Encodable {
+    let identity: String
+    let keyId: String
+
+    private enum CodingKeys: String, CodingKey {
+        case identity
     }
 }

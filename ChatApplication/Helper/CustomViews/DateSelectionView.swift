@@ -8,30 +8,25 @@
 import Foundation
 import SwiftUI
 
-struct DateSelectionView:View{
-    
-    @State
-    var startDate:Date = Date()
+struct DateSelectionView: View {
+    @State var startDate: Date = .init()
 
-    @State
-    var endDate:Date = Date()
-    
-    @State
-    var showEndDate = false
-    
-    @Binding
-    var showDialog:Bool
-    
-    var completion:(Date,Date)->()
-    
-    var body: some View{
-        HStack{
+    @State var endDate: Date = .init()
+
+    @State var showEndDate = false
+
+    @Binding var showDialog: Bool
+
+    var completion: (Date, Date) -> Void
+
+    var body: some View {
+        HStack {
             Spacer()
-            VStack{
+            VStack {
                 Spacer()
                 if !showEndDate {
-                    VStack{
-                        HStack{
+                    VStack {
+                        HStack {
                             Text("Start Date")
                                 .foregroundColor(Color("text_color_blue"))
                                 .font(.title.bold())
@@ -45,24 +40,24 @@ struct DateSelectionView:View{
                                     showDialog = false
                                 }
                         }
-                        
+
                         DatePicker("", selection: $startDate)
                             .labelsHidden()
                             .padding(16)
                         Button {
                             showEndDate.toggle()
                         } label: {
-                                Text("Next")
+                            Text("Next")
                         }
-                        .buttonStyle(PrimaryButtonStyle(bgColor:Color(named: "icon_color")))
+                        .buttonStyle(PrimaryButtonStyle(bgColor: Color(named: "icon_color")))
                     }
                     .frame(maxWidth: isIpad ? 420 : .infinity)
                     .padding()
                     .background(Color(named: "background"))
                     .cornerRadius(12)
-                }else{
-                    VStack{
-                        HStack{
+                } else {
+                    VStack {
+                        HStack {
                             Text("End Date")
                                 .foregroundColor(Color("text_color_blue"))
                                 .font(.title.bold())
@@ -76,26 +71,26 @@ struct DateSelectionView:View{
                                     showDialog = false
                                 }
                         }
-                        
+
                         DatePicker("", selection: $endDate)
                             .labelsHidden()
                             .padding(16)
-                        
-                        HStack{
+
+                        HStack {
                             Button {
                                 showEndDate.toggle()
                             } label: {
                                 Text("Back")
                             }
-                            .buttonStyle(PrimaryButtonStyle(bgColor:Color(named: "icon_color")))
-                            
+                            .buttonStyle(PrimaryButtonStyle(bgColor: Color(named: "icon_color")))
+
                             Button {
                                 showEndDate.toggle()
-                                completion(startDate,endDate)
+                                completion(startDate, endDate)
                             } label: {
                                 Text("Export")
                             }
-                            .buttonStyle(PrimaryButtonStyle(bgColor:Color(named: "icon_color")))
+                            .buttonStyle(PrimaryButtonStyle(bgColor: Color(named: "icon_color")))
                         }
                     }
                     .frame(maxWidth: isIpad ? 420 : .infinity)
@@ -114,16 +109,12 @@ struct DateSelectionView:View{
     }
 }
 
-
 struct DateSelectionView_Previews: PreviewProvider {
-    
     static var previews: some View {
-        DateSelectionView(showDialog:.constant(true)){ startDate, endDate in
-            
+        DateSelectionView(showDialog: .constant(true)) { _, _ in
         }
         .preferredColorScheme(.dark)
         .environmentObject(AppState.shared)
-        .onAppear(){
-        }
+        .onAppear {}
     }
 }

@@ -5,53 +5,52 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import SwiftUI
+import Combine
 import FanapPodChatSDK
+import SwiftUI
 
 struct ParticipantRow: View {
-    
-    private (set) var participant:Participant
-    var style:StyleConfig
-    
-    init(participant: Participant, style:StyleConfig = StyleConfig()) {
+    private(set) var participant: Participant
+
+    @ObservedObject var imageLoader: ImageLoader
+
+    init(participant: Participant) {
         self.participant = participant
-        self.style = style
+        imageLoader = ImageLoader(url: participant.image ?? "", userName: participant.name ?? participant.username, size: .SMALL)
+        imageLoader.fetch()
     }
-    
-    struct StyleConfig{
-        var avatarConfig: Avatar.StyleConfig = Avatar.StyleConfig()
-        var textFont:Font = .subheadline
-    }
-    
+
     var body: some View {
-        
         Button(action: {}, label: {
-            HStack{
-                Avatar(
-                    url: participant.image,
-                    userName: participant.username?.uppercased()
-                )
-                HStack(alignment: .center, spacing:8){
-                    VStack(alignment:.leading, spacing:6){
+            HStack {
+                imageLoader.imageView
+                    .font(.system(size: 16).weight(.heavy))
+                    .foregroundColor(.white)
+                    .frame(width: 48, height: 48)
+                    .background(Color.blue.opacity(0.4))
+                    .cornerRadius(24)
+
+                HStack(alignment: .center, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 6) {
                         Text(participant.contactName ?? participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")
-                            .font(style.textFont)
+                            .font(.headline)
                         Text(participant.cellphoneNumber ?? "")
                             .font(.caption2)
                             .foregroundColor(.primary.opacity(0.5))
-                        if participant.online == true{
+                        if participant.online == true {
                             Text("online")
                                 .font(.caption2)
                                 .foregroundColor(.blue)
                         }
                     }
-                    
-                    if participant.admin == true{
+
+                    if participant.admin == true {
                         Spacer()
-                        
+
                         Text("Admin")
                             .padding(4)
                             .foregroundColor(Color.blue)
-                            .font(style.textFont)
+                            .font(.headline)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
                                     .stroke(Color.blue, lineWidth: 1)
@@ -61,14 +60,13 @@ struct ParticipantRow: View {
                 Spacer()
             }
             .contentShape(Rectangle())
-            .padding([.leading , .trailing] , 8)
-            .padding([.top , .bottom] , 4)
+            .padding([.leading, .trailing], 8)
+            .padding([.top, .bottom], 4)
         })
     }
 }
 
 struct ParticipantRow_Previews: PreviewProvider {
-    
     static var previews: some View {
         ParticipantRow(participant: MockData.participant)
     }

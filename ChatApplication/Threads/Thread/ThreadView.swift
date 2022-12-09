@@ -9,43 +9,22 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct ThreadView: View {
-    @ObservedObject
-    var viewModel: ThreadViewModel
-
-    @State
-    var showThreadDetailButton = false
-
-    @State
-    var showAttachmentDialog: Bool = false
-
-    @State
-    var isInEditMode: Bool = false
-
-    @State
-    var deleteDialaog: Bool = false
-
-    @State
-    var showSelectThreadToForward: Bool = false
-
+    @ObservedObject var viewModel: ThreadViewModel
+    @State var showThreadDetailButton = false
+    @State var showAttachmentDialog: Bool = false
+    @State var isInEditMode: Bool = false
+    @State var deleteDialaog: Bool = false
+    @State var showSelectThreadToForward: Bool = false
     @Environment(\.isPreview) var isPreview
-
-    @State
-    var showMoreButton = false
-
-    @State
-    var showDatePicker = false
-
-    @State
-    var showExportFileURL = false
-
-    @State
-    var searchMessageText: String = ""
+    @State var showMoreButton = false
+    @State var showDatePicker = false
+    @State var showExportFileURL = false
+    @State var searchMessageText: String = ""
 
     var body: some View {
-        let _ = Self._printChanges()
         ZStack {
             VStack {
-                ThreadPinMessage(message: viewModel.messages.filter{$0.pinned == true}.first)
+                ThreadPinMessage(message: viewModel.messages.filter { $0.pinned == true }.first)
                 ThreadMessagesList(isInEditMode: $isInEditMode)
                     .environmentObject(viewModel)
                 SendContainer(showAttachmentDialog: $showAttachmentDialog,
@@ -110,9 +89,9 @@ struct ThreadView: View {
         .onChange(of: viewModel.editMessage) { _ in
             viewModel.textMessage = viewModel.editMessage?.message ?? ""
         }
-        .onReceive((viewModel.exportMessagesVM as! ExportMessagesViewModel).$filePath, perform: { filePath in
+        .onReceive((viewModel.exportMessagesVM as! ExportMessagesViewModel).$filePath) { filePath in
             showExportFileURL = filePath != nil
-        })
+        }
         .onAppear {
             viewModel.getHistory()
         }
@@ -125,11 +104,11 @@ struct ThreadView: View {
                 EmptyView()
             }
         })
-        .sheet(isPresented: $showSelectThreadToForward, onDismiss: nil, content: {
+        .sheet(isPresented: $showSelectThreadToForward, onDismiss: nil) {
             SelectThreadContentList { selectedThread in
                 viewModel.sendForwardMessage(selectedThread)
             }
-        })
+        }
     }
 
     var centerToolbarTitle: some View {
@@ -155,20 +134,17 @@ struct ThreadView: View {
         }
     }
 
-    @ViewBuilder
-    var trailingToolbar: some View {
-        let token = isPreview ? "FAKE_TOKEN" : TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken
-        Avatar(
-            url: viewModel.thread.image,
-            userName: viewModel.thread.inviter?.username?.uppercased(),
-            style: .init(size: 32),
-            size: .MEDIUM,
-            token: token
-        )
-        .onTapGesture {
-            showThreadDetailButton.toggle()
-        }
-        .cornerRadius(18)
+    @ViewBuilder var trailingToolbar: some View {
+        viewModel.imageLoader.imageView
+            .font(.system(size: 16).weight(.heavy))
+            .foregroundColor(.white)
+            .frame(width: 32, height: 32)
+            .background(Color.blue.opacity(0.4))
+            .cornerRadius(16)
+            .onTapGesture {
+                showThreadDetailButton.toggle()
+            }
+            .cornerRadius(18)
 
         Menu {
             Button {
@@ -189,13 +165,10 @@ struct ThreadView: View {
 }
 
 struct ThreadMessagesList: View {
-    @EnvironmentObject
-    var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadViewModel
     var isInEditMode: Binding<Bool>
-    @State
-    var scrollingUP = false
-    @Environment(\.colorScheme)
-    var colorScheme
+    @State var scrollingUP = false
+    @Environment(\.colorScheme) var colorScheme
     @State private var scrollViewHeight = CGFloat.infinity
 
     @Namespace var scrollViewNameSpace
@@ -254,7 +227,7 @@ struct ThreadMessagesList: View {
     }
 
     @ViewBuilder
-    func goToBottomOfThread(scrollView: ScrollViewProxy) -> some View {
+    func goToBottomOfThread(scrollView _: ScrollViewProxy) -> some View {
         VStack {
             Spacer()
             HStack {
@@ -313,26 +286,21 @@ struct ThreadPinMessage: View {
             }
             .frame(height: 64)
         } else {
-             EmptyView()
+            EmptyView()
         }
     }
 }
 
 struct SendContainer: View {
-    @EnvironmentObject
-    var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadViewModel
 
-    @Binding
-    var showAttachmentDialog: Bool
+    @Binding var showAttachmentDialog: Bool
 
-    @Binding
-    var deleteMessagesDialog: Bool
+    @Binding var deleteMessagesDialog: Bool
 
-    @Binding
-    var showSelectThreadToForward: Bool
+    @Binding var showSelectThreadToForward: Bool
 
-    @State
-    var text: String = ""
+    @State var text: String = ""
 
     var body: some View {
         if viewModel.isInEditMode {

@@ -5,26 +5,24 @@
 //  Created by hamed on 10/22/22.
 //
 
-import Foundation
 import FanapPodChatSDK
+import Foundation
 
 protocol ExportMessagesViewModelProtocol {
     init(thread: Conversation)
-    var thread: Conversation {get}
-    var filePath: URL?{get set}
-    var threadId: Int {get}
+    var thread: Conversation { get }
+    var filePath: URL? { get set }
+    var threadId: Int { get }
     func exportChats(startDate: Date, endDate: Date)
     func deleteFile()
 }
 
 class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol {
-
     let thread: Conversation
 
-    @Published
-    var filePath: URL?
+    @Published var filePath: URL?
 
-    var threadId: Int {thread.id ?? 0}
+    var threadId: Int { thread.id ?? 0 }
 
     required init(thread: Conversation) {
         self.thread = thread
@@ -37,7 +35,7 @@ class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol
     }
 
     func deleteFile() {
-        guard let url = filePath else {return}
+        guard let url = filePath else { return }
         try? FileManager.default.removeItem(at: url)
     }
 }

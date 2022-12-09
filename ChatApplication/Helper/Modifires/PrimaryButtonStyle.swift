@@ -6,22 +6,21 @@
 //
 
 import SwiftUI
-struct PrimaryButtonStyle:ButtonStyle{
-    
+struct PrimaryButtonStyle: ButtonStyle {
     let bgColor: Color
-    let cornerRadius:CGFloat
-    let textColor:Color
-    let minHeight:CGFloat
-    
-    init(bgColor:Color = Color(named: "primary_button_bg_color"),textColor:Color = Color.white,minHeight:CGFloat = 56, cornerRadius:CGFloat = 8){
-        self.bgColor      = bgColor
+    let cornerRadius: CGFloat
+    let textColor: Color
+    let minHeight: CGFloat
+
+    init(bgColor: Color = Color(named: "primary_button_bg_color"), textColor: Color = Color.white, minHeight: CGFloat = 56, cornerRadius: CGFloat = 8) {
+        self.bgColor = bgColor
         self.cornerRadius = cornerRadius
-        self.textColor    = textColor
-        self.minHeight    = minHeight
+        self.textColor = textColor
+        self.minHeight = minHeight
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
-        GeometryReader{ reader in
+        GeometryReader { reader in
             configuration.label
                 .frame(minWidth: reader.size.width, minHeight: minHeight, alignment: .center)
                 .foregroundColor(configuration.isPressed ? textColor.opacity(0.90) : textColor)

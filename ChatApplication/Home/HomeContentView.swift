@@ -9,14 +9,9 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct HomeContentView: View {
-    @EnvironmentObject
-    var tokenManager: TokenManager
-
-    @Environment(\.localStatusBarStyle)
-    var statusBarStyle
-
-    @Environment(\.colorScheme)
-    var colorScheme
+    @EnvironmentObject var tokenManager: TokenManager
+    @Environment(\.localStatusBarStyle) var statusBarStyle
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         if tokenManager.isLoggedIn == false {
@@ -101,8 +96,7 @@ struct SideBar: View {
 /// Separate this view to prevent redraw view in the sidebar and consequently redraw the whole applicaiton
 /// view multiple times and reinit the view models multiple times.
 struct TagContentList: View {
-    @EnvironmentObject
-    var threadsVM: ThreadsViewModel
+    @EnvironmentObject var threadsVM: ThreadsViewModel
 
     var body: some View {
         ForEach(threadsVM.tagViewModel.tags, id: \.id) { tag in
@@ -130,8 +124,7 @@ struct SecondSideBar: View {
 }
 
 struct DetailContentView: View {
-    @EnvironmentObject
-    var threadsVM: ThreadsViewModel
+    @EnvironmentObject var threadsVM: ThreadsViewModel
 
     var body: some View {
         VStack(spacing: 48) {

@@ -6,8 +6,8 @@
 //
 
 import AVFoundation
-import Foundation
 import FanapPodChatSDK
+import Foundation
 
 protocol AudioRecordingViewModelprotocol: ObservableObject {
     var audioRecorder: AVAudioRecorder { get set }
@@ -31,11 +31,9 @@ class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
     lazy var audioRecorder = AVAudioRecorder()
     var startDate: Date = .init()
 
-    @Published
-    var timerString: String = ""
+    @Published var timerString: String = ""
 
-    @Published
-    var isRecording: Bool = false
+    @Published var isRecording: Bool = false
 
     var isPermissionGranted: Bool { AVAudioSession.sharedInstance().recordPermission == .granted }
 
@@ -47,7 +45,7 @@ class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
 
     var threadViewModel: ThreadViewModel
 
-    init (threadViewModel: ThreadViewModel) {
+    init(threadViewModel: ThreadViewModel) {
         self.threadViewModel = threadViewModel
     }
 
@@ -70,7 +68,7 @@ class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
                 AVSampleRateKey: 12000,
                 AVNumberOfChannelsKey: 1,
-                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
             ]
             audioRecorder = try AVAudioRecorder(url: url, settings: settings)
             audioRecorder.record()

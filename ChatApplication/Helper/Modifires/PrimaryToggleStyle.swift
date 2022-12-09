@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-struct PrimaryToggleStyle:ToggleStyle{
-    
+struct PrimaryToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack {
             configuration.label
@@ -29,7 +28,7 @@ struct PrimaryToggleStyle:ToggleStyle{
                         )
                         .offset(x: configuration.isOn ? 11 : -11, y: 0)
                         .animation(.easeInOut, value: configuration.isOn)
-                    
+
                 ).cornerRadius(20)
                 .onTapGesture { configuration.isOn.toggle() }
         }
