@@ -53,6 +53,7 @@ struct CallView: View {
                     CallStartedActionsView(showDetailPanel: $showDetailPanel)
                 }
             }
+            CenterArriveStickerView()
             StartCallActionsView()
             RecordingDotView()
         }
@@ -305,6 +306,23 @@ struct CallStartedActionsView: View {
             .padding([.leading, .trailing])
 
             HStack(spacing: 16) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(CallSticker.allCases, id: \.self) { sticker in
+                            Button {
+                                viewModel.sendSticker(sticker)
+                            } label: {
+                                sticker.systemImage
+                                    .resizable()
+                                    .scaledToFit()
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 48, height: 48)
+                            }
+                        }
+                    }
+                }
+                .frame(width: 48)
+
                 CallControlItem(iconSfSymbolName: "ellipsis", subtitle: "More", color: .gray) {
                     withAnimation {
                         showDetailPanel.toggle()
@@ -392,6 +410,39 @@ struct CallControlItem: View {
             .fontWeight(.bold)
             .font(.system(size: 10))
             .fixedSize()
+    }
+}
+
+struct CenterArriveStickerView: View {
+    @EnvironmentObject var viewModel: CallViewModel
+    @State var animate = false
+    @State var imageLoader: ImageLoader?
+
+    var body: some View {
+        if let sticker = viewModel.newSticker {
+            HStack(spacing: 4) {
+                Text(sticker.participant.name ?? "")
+                    .font(.caption2)
+                imageLoader?.imageView
+                    .frame(width: 28, height: 28)
+                    .cornerRadius(18)
+                sticker.sticker.systemImage
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 48, height: 48)
+                    .foregroundColor(.yellow)
+                    .scaleEffect(x: animate ? 1 : 0.8, y: animate ? 1 : 0.8)
+                    .animation(.easeInOut, value: viewModel.newSticker != nil)
+                    .transition(.scale)
+                    .onAppear {
+                        imageLoader = ImageLoader(url: sticker.participant.image ?? "", userName: sticker.participant.name ?? "")
+                        imageLoader?.fetch()
+                        withAnimation(.spring().repeatForever(autoreverses: true)) {
+                            animate.toggle()
+                        }
+                    }
+            }
+        }
     }
 }
 

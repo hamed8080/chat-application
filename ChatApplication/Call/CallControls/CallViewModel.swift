@@ -34,8 +34,10 @@ protocol CallStateProtocol {
     var callId: Int? { get }
     var callTitle: String? { get }
     var isCallStarted: Bool { get }
+    var newSticker: StickerResponse? { get set }
     static func joinToCall(_ callId: Int)
     func startCall(thread: Conversation?, contacts: [Contact]?, isVideoOn: Bool, groupName: String)
+    func sendSticker(_ sticker: CallSticker)
 }
 
 class CallViewModel: ObservableObject, CallStateProtocol {
@@ -47,6 +49,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     @Published var activeLargeCall: CallParticipantUserRTC?
     @Published var showCallView: Bool = false
     @Published var offlineParticipants: [Participant] = []
+    @Published var newSticker: StickerResponse?
     var startCallDate: Date?
     var startCallTimer: Timer?
     var timerCallString: String?
@@ -176,6 +179,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
             objectWillChaneWithAnimation()
         case .callParticipantStopSpeaking:
             objectWillChaneWithAnimation()
+        case let .sticker(sticker):
+            onCallSticker(sticker)
         default:
             break
         }
@@ -414,6 +419,20 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         CallViewModel.shared.toggleCallView(show: true)
         CallViewModel.shared.answerType = AnswerType(video: false, mute: true)
         AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
+    }
+
+    func sendSticker(_ sticker: CallSticker) {
+        guard let callId = callId else { return }
+        Chat.sharedInstance.sendCallSticker(.init(callId: callId, stickers: [sticker]))
+    }
+
+    func onCallSticker(_ sticker: StickerResponse) {
+        if sticker.participant.id != AppState.shared.user?.id {
+            newSticker = sticker
+            Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] _ in
+                self?.newSticker = nil
+            }
+        }
     }
 }
 

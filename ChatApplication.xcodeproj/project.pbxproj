@@ -63,6 +63,7 @@
 		05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586497F282D40A200218ED0 /* LoadingViewAt.swift */; };
 		05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05962116280BF85B0036B3AA /* DateSelectionView.swift */; };
 		059914B029262FF60070BD89 /* Conversation+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059914AF29262FF60070BD89 /* Conversation+.swift */; };
+		05A559FB294463820096DB43 /* CallSticker+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A559FA294463820096DB43 /* CallSticker+.swift */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
 		05B80E94293C81E4008A0F29 /* CallParticipant+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B80E93293C81E4008A0F29 /* CallParticipant+.swift */; };
@@ -249,6 +250,7 @@
 		0586497F282D40A200218ED0 /* LoadingViewAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAt.swift; sourceTree = "<group>"; };
 		05962116280BF85B0036B3AA /* DateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSelectionView.swift; sourceTree = "<group>"; };
 		059914AF29262FF60070BD89 /* Conversation+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+.swift"; sourceTree = "<group>"; };
+		05A559FA294463820096DB43 /* CallSticker+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallSticker+.swift"; sourceTree = "<group>"; };
 		05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifire.swift; sourceTree = "<group>"; };
 		05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
 		05B80E93293C81E4008A0F29 /* CallParticipant+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallParticipant+.swift"; sourceTree = "<group>"; };
@@ -630,6 +632,7 @@
 				059914AF29262FF60070BD89 /* Conversation+.swift */,
 				05C0098A2931F61D002ED678 /* Contact+.swift */,
 				05B80E93293C81E4008A0F29 /* CallParticipant+.swift */,
+				05A559FA294463820096DB43 /* CallSticker+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1043,7 +1046,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACFADE8027675BB6007C555F /* PrimaryButtonStyle.swift in Sources */,
-				AC90B25526FB838D00477E03 /* PageWithNavigationBarView.swift in Sources */,
 				05743AD327F02FA70061C901 /* CallViewModel.swift in Sources */,
 				AC10007326F4674500C3AD67 /* SSOTokenResponse.swift in Sources */,
 				AC989210275E3D48007973F7 /* CallManager.swift in Sources */,
@@ -1077,6 +1079,7 @@
 				05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */,
 				ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */,
 				055B26A027D5FA0F0098D585 /* VoiceView.swift in Sources */,
+				05A559FB294463820096DB43 /* CallSticker+.swift in Sources */,
 				ACC306AD2701DFED0035CCB9 /* StartThreadContactPickerViewModel.swift in Sources */,
 				055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */,
 				AC5646A027006DF600DE9805 /* UINavigationontroller.swift in Sources */,
