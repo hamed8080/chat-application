@@ -39,7 +39,7 @@ struct Provider: IntentTimelineProvider {
         var entries: [SimpleEntry] = []
         var threadsWithImage: [ThreadWithImageData] = []
         threads.sorted(by: { $0.time ?? 0 > $1.time ?? 0 }).forEach { thread in
-            let imageData = CacheFileManager.sharedInstance.getImageProfileCache(url: thread.image ?? "", group: AppGroup.group)
+            let imageData = CacheFileManager(enableCache: true).getImageProfileCache(url: thread.image ?? "", group: AppGroup.group)
             threadsWithImage.append(.init(thread: thread, imageData: imageData))
         }
         let entry = SimpleEntry(threads: threadsWithImage)

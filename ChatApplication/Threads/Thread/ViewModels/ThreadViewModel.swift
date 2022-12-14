@@ -38,7 +38,7 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func searchInsideThread(text: String, offset: Int)
     func isSameUser(message: Message) -> Bool
     func appendMessages(_ messages: [Message])
-    func onDeleteMessage(message: Message?, uniqueId: String?, error: ChatError?)
+    func onDeleteMessage(_ response: ChatResponse<Message>)
     func updateThread(_ thread: Conversation)
     func sendSeenMessageIfNeeded(_ message: Message)
     func onMessageEvent(_ event: MessageEventTypes?)
@@ -169,27 +169,27 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func getHistory(_ toTime: UInt? = nil) {
-        Chat.sharedInstance.getHistory(.init(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)) { [weak self] messages, _, pagination, _ in
-            if let messages = messages {
-                self?.setHasNext(pagination?.hasNext ?? false)
+        ChatManager.activeInstance.getHistory(.init(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)) { [weak self] response in
+            if let messages = response.result {
+                self?.setHasNext(response.pagination?.hasNext ?? false)
                 self?.appendMessages(messages)
                 self?.isLoading = false
             }
-        } cacheResponse: { [weak self] messages, _, _ in
-            if let messages = messages {
+        } cacheResponse: { [weak self] response in
+            if let messages = response.result {
                 self?.appendMessages(messages)
             }
-        } textMessageNotSentRequests: { [weak self] messages, _, _ in
-            self?.appendMessages(messages?.compactMap { SendTextMessage(from: $0, thread: self?.thread) } ?? [])
-        } editMessageNotSentRequests: { [weak self] editMessages, _, _ in
-            self?.appendMessages(editMessages?.compactMap { EditTextMessage(from: $0, thread: self?.thread) } ?? [])
-        } forwardMessageNotSentRequests: { [weak self] forwardMessages, _, _ in
-            self?.appendMessages(forwardMessages?.compactMap {
+        } textMessageNotSentRequests: { [weak self] response in
+            self?.appendMessages(response.result?.compactMap { SendTextMessage(from: $0, thread: self?.thread) } ?? [])
+        } editMessageNotSentRequests: { [weak self] response in
+            self?.appendMessages(response.result?.compactMap { EditTextMessage(from: $0, thread: self?.thread) } ?? [])
+        } forwardMessageNotSentRequests: { [weak self] response in
+            self?.appendMessages(response.result?.compactMap {
                 ForwardMessage(from: $0, destinationThread: .init(id: $0.threadId, title: self?.threadName($0.threadId)), thread: self?.thread)
             } ?? []
             )
-        } fileMessageNotSentRequests: { [weak self] fileMessages, _, _ in
-            self?.appendMessages(fileMessages?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: self?.thread) } ?? [])
+        } fileMessageNotSentRequests: { [weak self] response in
+            self?.appendMessages(response.result?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: self?.thread) } ?? [])
         }
     }
 
@@ -199,9 +199,9 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func sendStartTyping(_ newValue: String) {
         if newValue.isEmpty == false {
-            Chat.sharedInstance.snedStartTyping(threadId: threadId)
+            ChatManager.activeInstance.snedStartTyping(threadId: threadId)
         } else {
-            Chat.sharedInstance.sendStopTyping()
+            ChatManager.activeInstance.sendStopTyping()
         }
     }
 
@@ -209,7 +209,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, message.isMe == false {
             thread.lastSeenMessageId = messageId
             print("send seen for message:\(message.messageTitle) with id:\(messageId)")
-            Chat.sharedInstance.seen(.init(threadId: threadId, messageId: messageId))
+            ChatManager.activeInstance.seen(.init(threadId: threadId, messageId: messageId))
             if let unreadCount = thread.unreadCount, unreadCount > 0 {
                 thread.unreadCount = unreadCount - 1
                 objectWillChange.send()
@@ -222,7 +222,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func sendSignal(_ signalMessage: SignalMessageType) {
-        Chat.sharedInstance.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
+        ChatManager.activeInstance.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
     }
 
     func playAudio() {}
@@ -252,51 +252,46 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         }
 
         let req = UpdateThreadInfoRequest(description: description, threadId: threadId, threadImage: imageRequest, title: title)
-        Chat.sharedInstance.updateThreadInfo(req) { _ in
-
-        } uploadProgress: { _, _ in
-
-        } completion: { _, _, _ in
-        }
+        ChatManager.activeInstance.updateThreadInfo(req) { _ in } uploadProgress: { _, _ in } completion: { _ in }
     }
 
     func searchInsideThread(text: String, offset: Int = 0) {
 //        searchedMessages.removeAll()
         guard text.count >= 2 else { return }
         let req = GetHistoryRequest(threadId: threadId, count: 50, offset: offset, query: "\(text)")
-        Chat.sharedInstance.getHistory(req) { [weak self] messages, _, _, _ in
-            if let messages = messages {
+        ChatManager.activeInstance.getHistory(req) { [weak self] response in
+            if let messages = response.result {
                 self?.searchedMessages.append(contentsOf: messages)
             }
         }
     }
 
     func delete() {
-        Chat.sharedInstance.deleteThread(.init(subjectId: threadId)) { [weak self] threadId, _, error in
-            if let self = self, threadId != nil, error == nil {
+        ChatManager.activeInstance.deleteThread(.init(subjectId: threadId)) { [weak self] response in
+            if let self = self, response.result != nil, response.error == nil {
                 self.threadsViewModel?.removeThreadVM(self)
             }
         }
     }
 
     func leave() {
-        Chat.sharedInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { [weak self] user, _, error in
-            if let self = self, user != nil, error == nil {
+        ChatManager.activeInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { [weak self] response in
+            if let self = self, response.result != nil, response.error == nil {
                 self.threadsViewModel?.removeThreadVM(self)
             }
         }
     }
 
     func clearHistory() {
-        Chat.sharedInstance.clearHistory(.init(subjectId: threadId)) { [weak self] threadId, _, _ in
-            if threadId != nil {
+        ChatManager.activeInstance.clearHistory(.init(subjectId: threadId)) { [weak self] response in
+            if response.result != nil {
                 self?.clear()
             }
         }
     }
 
     func spamPV() {
-        Chat.sharedInstance.spamPvThread(.init(subjectId: threadId)) { _, _, _ in }
+        ChatManager.activeInstance.spamPvThread(.init(subjectId: threadId)) { _ in }
     }
 
     func appendMessages(_ messages: [Message]) {
@@ -316,14 +311,14 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func deleteMessages(_ messages: [Message]) {
         let messagedIds = messages.compactMap(\.id)
-        Chat.sharedInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
+        ChatManager.activeInstance.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
         selectedMessages = []
     }
 
     /// Delete a message with an Id is needed for when the message has persisted before.
     /// Delete a message with a uniqueId is needed for when the message is sent to a request.
-    func onDeleteMessage(message: Message? = nil, uniqueId _: String? = nil, error _: ChatError? = nil) {
-        messages.removeAll(where: { $0.uniqueId == message?.uniqueId || message?.id == $0.id })
+    func onDeleteMessage(_ response: ChatResponse<Message>) {
+        messages.removeAll(where: { $0.uniqueId == response.uniqueId || response.result?.id == $0.id })
     }
 
     func setHasNext(_ hasNext: Bool) {

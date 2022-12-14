@@ -88,7 +88,7 @@ class LoginViewModel: ObservableObject {
                 // save refresh token
                 if let ssoToken = response.result {
                     self.model.setState(.successLoggedIn)
-                    Chat.sharedInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: true)
+                    ChatManager.activeInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: true)
                     self.tokenManager?.saveSSOToken(ssoToken: ssoToken)
                 }
             }
@@ -121,7 +121,7 @@ class TokenManager: ObservableObject {
                     // save refresh token
                     if let ssoToken = response.result {
                         self.saveSSOToken(ssoToken: ssoToken)
-                        Chat.sharedInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
+                        ChatManager.activeInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
                     }
                 }
         }

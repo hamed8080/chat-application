@@ -17,13 +17,13 @@ class ThreadsViewModel: ObservableObject {
     @AppStorage("Threads", store: UserDefaults.group) var threadsData: Data?
     @Published var showAddParticipants = false
     @Published var showAddToTags = false
+    @Published var threadsRowVM: [ThreadViewModel] = []
+    @Published private(set) var tagViewModel = TagsViewModel()
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private(set) var firstSuccessResponse = false
-    @Published private(set) var tagViewModel = TagsViewModel()
     private(set) var count = 15
     private(set) var offset = 0
     var searchText: String = ""
-    @Published var threadsRowVM: [ThreadViewModel] = []
     private(set) var hasNext: Bool = true
     let archived: Bool
     var selectedThraed: Conversation?
@@ -73,7 +73,7 @@ class ThreadsViewModel: ObservableObject {
 
     func getThreads() {
         isLoading = true
-        Chat.sharedInstance.getThreads(.init(count: count, offset: offset, archived: archived), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance.getThreads(.init(count: count, offset: offset, archived: archived), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     var filtered: [ThreadViewModel] {
@@ -90,20 +90,20 @@ class ThreadsViewModel: ObservableObject {
         getThreads()
     }
 
-    func onServerResponse(_ threads: [Conversation]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
-        if let threads = threads {
+    func onServerResponse(_ response: ChatResponse<[Conversation]>) {
+        if let threads = response.result {
             firstSuccessResponse = true
             appendThreads(threads: threads)
-            hasNext(pagination?.hasNext ?? false)
+            hasNext(response.pagination?.hasNext ?? false)
             updateWidgetPreferenceThreads(threads)
         }
         isLoading = false
     }
 
-    func onCacheResponse(_ threads: [Conversation]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
-        if let threads = threads {
+    func onCacheResponse(_ response: ChatResponse<[Conversation]>) {
+        if let threads = response.result {
             appendThreads(threads: threads)
-            hasNext(pagination?.hasNext ?? false)
+            hasNext(response.pagination?.hasNext ?? false)
         }
         if isLoading, AppState.shared.connectionStatus != .connected {
             isLoading = false
@@ -122,17 +122,13 @@ class ThreadsViewModel: ObservableObject {
         getThreads()
     }
 
-    func setupPreview() {
-        appendThreads(threads: MockData.generateThreads(count: 10))
-    }
-
     func createThread(_ model: StartThreadResultModel) {
         centerIsLoading = true
         let invitees = model.selectedContacts?.map { contact in
             Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
         }
-        Chat.sharedInstance.createThread(.init(invitees: invitees, title: model.title, type: model.type)) { [weak self] thread, _, _ in
-            if let thread = thread {
+        ChatManager.activeInstance.createThread(.init(invitees: invitees, title: model.title, type: model.type)) { [weak self] response in
+            if let thread = response.result {
                 AppState.shared.selectedThread = thread
             }
             self?.centerIsLoading = false
@@ -141,7 +137,7 @@ class ThreadsViewModel: ObservableObject {
 
     func searchInsideAllThreads(text _: String) {
         // not implemented yet
-        //        Chat.sharedInstance.
+        //        ChatManager.activeInstance.
     }
 
     func showAddParticipants(_ thread: Conversation) {
@@ -158,8 +154,8 @@ class ThreadsViewModel: ObservableObject {
         let contactIds = contacts.compactMap(\.id)
         let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)
 
-        Chat.sharedInstance.addParticipant(req) { [weak self] thread, _, _ in
-            if let thread = thread {
+        ChatManager.activeInstance.addParticipant(req) { [weak self] response in
+            if let thread = response.result {
                 // To navigate to the thread immediately after adding participants
                 AppState.shared.selectedThread = thread
             }

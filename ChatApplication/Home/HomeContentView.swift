@@ -154,12 +154,16 @@ struct DetailContentView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        let appState = AppState.shared
+        let threadsVM = ThreadsViewModel()
         HomeContentView()
-            .environmentObject(appState)
+            .environmentObject(threadsVM)
+            .environmentObject(TokenManager.shared)
+            .environmentObject(LoginViewModel())
             .onAppear {
                 AppState.shared.connectionStatus = .connected
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
+                threadsVM.appendThreads(threads: MockData.generateThreads(count: 10))
+                threadsVM.objectWillChange.send()
             }
     }
 }

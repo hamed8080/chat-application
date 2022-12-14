@@ -30,8 +30,8 @@ class TagsViewModel: ObservableObject {
         }
     }
 
-    func onServerResponse(_ tags: [Tag]?, _: String?, _: ChatError?) {
-        if let tags = tags {
+    func onServerResponse(_ response: ChatResponse<[Tag]>) {
+        if let tags = response.result {
             firstSuccessResponse = true
             appendTags(tags: tags)
         }
@@ -48,20 +48,20 @@ class TagsViewModel: ObservableObject {
     }
 
     func getTagList() {
-        Chat.sharedInstance.tagList(completion: onServerResponse)
+        ChatManager.activeInstance.tagList(completion: onServerResponse)
     }
 
     func getOfflineTags() {
-        CacheFactory.get(useCache: true, cacheType: .tags) { [weak self] response in
-            if let tags = response.cacheResponse as? [Tag] {
+        AppState.shared.cache.get(useCache: true, cacheType: .tags) { [weak self] (response: ChatResponse<[Tag]>) in
+            if let tags = response.result {
                 self?.appendTags(tags: tags)
             }
         }
     }
 
     func deleteTag(_ tag: Tag) {
-        Chat.sharedInstance.deleteTag(.init(id: tag.id)) { [weak self] tag, _, _ in
-            if let tag = tag, let self = self {
+        ChatManager.activeInstance.deleteTag(.init(id: tag.id)) { [weak self] response in
+            if let tag = response.result, let self = self {
                 self.removeTag(tag)
             }
         }
@@ -83,8 +83,8 @@ class TagsViewModel: ObservableObject {
 
     func createTag(name: String) {
         isLoading = true
-        Chat.sharedInstance.createTag(.init(tagName: name)) { [weak self] tag, _, _ in
-            if let tag = tag, let self = self {
+        ChatManager.activeInstance.createTag(.init(tagName: name)) { [weak self] response in
+            if let tag = response.result, let self = self {
                 self.appendTags(tags: [tag])
             }
             self?.isLoading = false
@@ -94,10 +94,10 @@ class TagsViewModel: ObservableObject {
     func addThreadToTag(tag: Tag, thread: Conversation, onComplete: @escaping (_ participants: [TagParticipant], _ success: Bool) -> Void) {
         if let threadId = thread.id {
             isLoading = true
-            Chat.sharedInstance.addTagParticipants(.init(tagId: tag.id, threadIds: [threadId])) { [weak self] tagParticipants, _, error in
-                if let tagParticipants = tagParticipants, let self = self {
+            ChatManager.activeInstance.addTagParticipants(.init(tagId: tag.id, threadIds: [threadId])) { [weak self] response in
+                if let tagParticipants = response.result, let self = self {
                     self.addParticipant(tag.id, tagParticipants)
-                    onComplete(tagParticipants, error == nil)
+                    onComplete(tagParticipants, response.error == nil)
                 }
                 self?.isLoading = false
             }
@@ -109,16 +109,16 @@ class TagsViewModel: ObservableObject {
     }
 
     func editTag(tag: Tag) {
-        Chat.sharedInstance.editTag(.init(id: tag.id, tagName: tag.name)) { [weak self] tag, _, _ in
-            if let tag = tag, let self = self {
+        ChatManager.activeInstance.editTag(.init(id: tag.id, tagName: tag.name)) { [weak self] response in
+            if let tag = response.result, let self = self {
                 self.editedTag(tag)
             }
         }
     }
 
     func deleteTagParticipant(_ tagId: Int, _ tagParticipant: TagParticipant) {
-        Chat.sharedInstance.removeTagParticipants(.init(tagId: tagId, tagParticipants: [tagParticipant])) { [weak self] tagParticipants, _, _ in
-            if let tagParticipants = tagParticipants, let self = self {
+        ChatManager.activeInstance.removeTagParticipants(.init(tagId: tagId, tagParticipants: [tagParticipant])) { [weak self] response in
+            if let tagParticipants = response.result, let self = self {
                 self.removeParticipants(tagId, tagParticipants)
             }
         }

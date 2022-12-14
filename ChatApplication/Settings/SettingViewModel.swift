@@ -17,7 +17,7 @@ class SettingViewModel: ObservableObject {
     @Published var imageLoader: ImageLoader
 
     init() {
-        let currentUser = Chat.sharedInstance.userInfo ?? AppState.shared.user
+        let currentUser = ChatManager.activeInstance.userInfo ?? AppState.shared.user
         imageLoader = ImageLoader(url: currentUser?.image ?? "", userName: currentUser?.username ?? currentUser?.name, size: .LARG)
         self.currentUser = currentUser
         AppState.shared.$connectionStatus

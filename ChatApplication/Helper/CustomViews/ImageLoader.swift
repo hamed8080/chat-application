@@ -61,7 +61,7 @@ class ImageLoader: ObservableObject {
 
     private var fileMetadataModel: FileMetaData? { try? JSONDecoder().decode(FileMetaData.self, from: fileMetadata?.data(using: .utf8) ?? Data()) }
 
-    private var cacheData: Data? { CacheFileManager.sharedInstance.getImageProfileCache(url: url, group: AppGroup.group) }
+    private var cacheData: Data? { AppState.shared.cache.cacheFileManager.getImageProfileCache(url: url, group: AppGroup.group) }
 
     private var oldURLHash: String? {
         guard let URLObject = URLObject else { return nil }
@@ -81,7 +81,7 @@ class ImageLoader: ObservableObject {
     }
 
     private func getFromSDK() {
-        Chat.sharedInstance.getImage(req: .init(hashCode: hashCode, size: size ?? .LARG)) { _ in
+        ChatManager.activeInstance.getImage(req: .init(hashCode: hashCode, size: size ?? .LARG)) { _ in
         } completion: { [weak self] data, _, _ in
             self?.update(data: data)
             self?.storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
@@ -111,7 +111,7 @@ class ImageLoader: ObservableObject {
         guard let data = data else { return }
         if !isRealImage(data: data) { return }
         DispatchQueue.main.async {
-            CacheFileManager.sharedInstance.saveImageProfile(url: self.url, data: data, group: AppGroup.group)
+            AppState.shared.cache.cacheFileManager.saveImageProfile(url: self.url, data: data, group: AppGroup.group)
         }
     }
 

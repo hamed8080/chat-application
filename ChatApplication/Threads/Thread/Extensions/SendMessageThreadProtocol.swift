@@ -31,7 +31,7 @@ protocol SendMessageThreadProtocol {
     func removeSelectedMessage(_ message: Message)
 
     func resendUnsetMessage(_ message: Message)
-    func onUnSentEditCompletionResult(_ message: Message?, _ uniqueId: String?, _ error: ChatError?)
+    func onUnSentEditCompletionResult(_ response: ChatResponse<Message>)
     func cancelUnsentMessage(_ uniqueId: String)
 }
 
@@ -54,7 +54,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                       repliedTo: replyMessageId,
                                       textMessage: textMessage,
                                       messageType: .text)
-        Chat.sharedInstance.replyMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
+        ChatManager.activeInstance.replyMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
     }
 
     func sendNormalMessage(_ textMessage: String) {
@@ -62,10 +62,10 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         let req = SendTextMessageRequest(threadId: threadId,
                                          textMessage: textMessage,
                                          messageType: .text)
-        let isMeId = (Chat.sharedInstance.userInfo ?? AppState.shared.user)?.id
+        let isMeId = (ChatManager.activeInstance.userInfo ?? AppState.shared.user)?.id
         let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, uniqueId: req.uniqueId, conversation: thread)
         appendMessages([message])
-        Chat.sharedInstance.sendTextMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
+        ChatManager.activeInstance.sendTextMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
     }
 
     func sendForwardMessage(_ destinationThread: Conversation) {
@@ -73,7 +73,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         canScrollToBottomOfTheList = true
         let messageIds = selectedMessages.compactMap(\.id)
         let req = ForwardMessageRequest(fromThreadId: threadId, threadId: destinationThreadId, messageIds: messageIds)
-        Chat.sharedInstance.forwardMessages(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
+        ChatManager.activeInstance.forwardMessages(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
         isInEditMode = false // close edit mode in ui
     }
 
@@ -115,8 +115,8 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                      textMessage: textMessage)
         self.editMessage = nil
         isInEditMode = false
-        Chat.sharedInstance.editMessage(req) { [weak self] editedMessage, _, _ in
-            self?.onEditedMessage(editedMessage)
+        ChatManager.activeInstance.editMessage(req) { [weak self] response in
+            self?.onEditedMessage(response.result)
         }
     }
 
@@ -150,11 +150,11 @@ extension ThreadViewModel: SendMessageThreadProtocol {
     func resendUnsetMessage(_ message: Message) {
         switch message {
         case let req as SendTextMessage:
-            Chat.sharedInstance.sendTextMessage(req.sendTextMessageRequest, onSent: onSent)
+            ChatManager.activeInstance.sendTextMessage(req.sendTextMessageRequest, onSent: onSent)
         case let req as EditTextMessage:
-            Chat.sharedInstance.editMessage(req.editMessageRequest, completion: onUnSentEditCompletionResult)
+            ChatManager.activeInstance.editMessage(req.editMessageRequest, completion: onUnSentEditCompletionResult)
         case let req as ForwardMessage:
-            Chat.sharedInstance.forwardMessages(req.forwardMessageRequest, onSent: onSent)
+            ChatManager.activeInstance.forwardMessages(req.forwardMessageRequest, onSent: onSent)
         case let req as UploadFileMessage:
             // remove unset message type to start upload again the new one.
             messages.removeAll(where: { $0.uniqueId == req.uniqueId })
@@ -164,17 +164,17 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         }
     }
 
-    func onUnSentEditCompletionResult(_ message: Message?, _ uniqueId: String?, _: ChatError?) {
-        if let message = message, threadId == message.conversation?.id {
-            onDeleteMessage(message: nil, uniqueId: uniqueId, error: nil)
+    func onUnSentEditCompletionResult(_ response: ChatResponse<Message>) {
+        if let message = response.result, threadId == message.conversation?.id {
+            onDeleteMessage(response)
             appendMessages([message])
         }
     }
 
     func cancelUnsentMessage(_ uniqueId: String) {
-        CacheFactory.write(cacheType: .deleteQueue(uniqueId))
-        CacheFactory.save()
-        onDeleteMessage(message: nil, uniqueId: uniqueId, error: nil)
+        AppState.shared.cache.write(cacheType: .deleteQueue(uniqueId))
+        AppState.shared.cache.save()
+        onDeleteMessage(ChatResponse(uniqueId: uniqueId))
     }
 
     func toggleSelectedMessage(_ message: Message, _ isSelected: Bool) {

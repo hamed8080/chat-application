@@ -20,8 +20,8 @@ protocol MessageViewModelProtocol {
 
 class MessageViewModel: ObservableObject, MessageViewModelProtocol {
     @Published var message: Message
-    var messageId: Int { message.id ?? 0 }
     @Published var imageLoader: ImageLoader
+    var messageId: Int { message.id ?? 0 }
     var cancellableSet: Set<AnyCancellable> = []
 
     init(message: Message) {
@@ -44,16 +44,16 @@ class MessageViewModel: ObservableObject, MessageViewModelProtocol {
     }
 
     func pin() {
-        Chat.sharedInstance.pinMessage(.init(messageId: messageId)) { [weak self] messageId, _, error in
-            if error == nil, messageId != nil {
+        ChatManager.activeInstance.pinMessage(.init(messageId: messageId)) { [weak self] response in
+            if response.error == nil, response.result != nil {
                 self?.message.pinned = true
             }
         }
     }
 
     func unpin() {
-        Chat.sharedInstance.unpinMessage(.init(messageId: messageId)) { [weak self] messageId, _, error in
-            if error == nil, messageId != nil {
+        ChatManager.activeInstance.unpinMessage(.init(messageId: messageId)) { [weak self] response in
+            if response.error == nil, response.result != nil {
                 self?.message.pinned = false
             }
         }
@@ -61,7 +61,7 @@ class MessageViewModel: ObservableObject, MessageViewModelProtocol {
 
     func clearCacheFile(message: Message) {
         if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
-            CacheFileManager.sharedInstance.delete(fileHashCode: fileHashCode)
+            AppState.shared.cache.cacheFileManager.delete(fileHashCode: fileHashCode)
             NotificationCenter.default.post(.init(name: fileDeletedFromCacheName, object: message))
         }
     }

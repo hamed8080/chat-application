@@ -50,9 +50,7 @@ struct SelectThreadContentList_Previews: PreviewProvider {
         let vm = ThreadsViewModel()
         SelectThreadContentList { _ in
         }
-        .onAppear {
-            vm.setupPreview()
-        }
+        .onAppear {}
         .environmentObject(vm)
         .environmentObject(appState)
     }

@@ -12,7 +12,7 @@ protocol PinThreadViewModelProtocol {
     func togglePin()
     func pin(_ threadId: Int)
     func unpin(_ threadId: Int)
-    func onPinChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
+    func onPinChanged(_ response: ChatResponse<Int>)
 }
 
 extension ThreadViewModel: PinThreadViewModelProtocol {
@@ -25,15 +25,15 @@ extension ThreadViewModel: PinThreadViewModelProtocol {
     }
 
     func pin(_ threadId: Int) {
-        Chat.sharedInstance.pinThread(.init(subjectId: threadId), completion: onPinChanged)
+        ChatManager.activeInstance.pinThread(.init(subjectId: threadId), completion: onPinChanged)
     }
 
     func unpin(_ threadId: Int) {
-        Chat.sharedInstance.unpinThread(.init(subjectId: threadId), completion: onPinChanged)
+        ChatManager.activeInstance.unpinThread(.init(subjectId: threadId), completion: onPinChanged)
     }
 
-    func onPinChanged(_ threadId: Int?, _: String?, _ error: ChatError?) {
-        if threadId != nil, error == nil {
+    func onPinChanged(_ response: ChatResponse<Int>) {
+        if response.result != nil, response.error == nil {
             thread.pin?.toggle()
             objectWillChange.send()
             threadsViewModel?.sort()

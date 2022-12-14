@@ -43,23 +43,6 @@ struct ThreadContentList: View {
                 }
             }
         }
-//        .onReceive(AppState.shared.selectedThread) { selectedThread in
-//
-//        }
-//        .background(
-//            NavigationLink(isActive: Binding(get: {viewModel.selectedThraed != nil}, set: {val in})) {
-//                if let threadId = viewModel.selectedThraed?.id {
-//                    ThreadView(viewModel: viewModel.threadsRowVM.first{$0.threadId == threadId}!)
-//                        .onDisappear {
-//                            viewModel.selectedThraed = nil
-//                        }
-//                }
-//            } label: {
-//                EmptyView()
-//                    .frame(width: 0, height: 0)
-//                    .hidden()
-//            }
-//        )
         .autoNavigateToThread()
         .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search...")
         .onChange(of: searchText) { searchText in
@@ -109,12 +92,13 @@ struct ThreadContentList: View {
 }
 
 struct ThreadContentList_Previews: PreviewProvider {
+    @State static var vm = ThreadsViewModel()
     static var previews: some View {
         let appState = AppState.shared
-        let vm = ThreadsViewModel()
+
         ThreadContentList()
             .onAppear {
-                vm.setupPreview()
+                vm.appendThreads(threads: MockData.generateThreads(count: 5))
             }
             .environmentObject(vm)
             .environmentObject(appState)

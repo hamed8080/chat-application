@@ -66,8 +66,9 @@ struct SettingsView: View {
                         GroupItemInSlideMenu<AnyView>(name: "note.text", title: "Logs", color: Color.yellow, destinationView: AnyView(LogView()))
 
                         Button(action: {
-                            Chat.sharedInstance.logOut()
-                            CacheFactory.write(cacheType: .deleteAllCacheData)
+                            ChatManager.activeInstance.logOut()
+                            AppState.shared.cache.write(cacheType: .deleteAllCacheData)
+                            AppState.shared.cache.save()
                             TokenManager.shared.clearToken()
                         }, label: {
                             HStack {

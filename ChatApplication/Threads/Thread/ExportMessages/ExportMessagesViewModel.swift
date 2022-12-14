@@ -19,18 +19,16 @@ protocol ExportMessagesViewModelProtocol {
 
 class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol {
     let thread: Conversation
-
-    @Published var filePath: URL?
-
     var threadId: Int { thread.id ?? 0 }
+    @Published var filePath: URL?
 
     required init(thread: Conversation) {
         self.thread = thread
     }
 
     func exportChats(startDate: Date, endDate: Date) {
-        Chat.sharedInstance.exportChat(.init(threadId: threadId, fromTime: UInt(startDate.millisecondsSince1970), toTime: UInt(endDate.millisecondsSince1970))) { [weak self] fileUrl, _, _ in
-            self?.filePath = fileUrl
+        ChatManager.activeInstance.exportChat(.init(threadId: threadId, fromTime: UInt(startDate.millisecondsSince1970), toTime: UInt(endDate.millisecondsSince1970))) { [weak self] response in
+            self?.filePath = response.result
         }
     }
 

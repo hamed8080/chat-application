@@ -20,7 +20,7 @@ extension Message {
     var fileName: String? { uploadFile?.uploadFileRequest.fileName }
     var type: MessageType? { messageType ?? .unknown }
     var isTextMessageType: Bool { type == .text || isFileType }
-    var currentUser: User? { Chat.sharedInstance.userInfo ?? AppState.shared.user }
+    var currentUser: User? { ChatManager.activeInstance.userInfo ?? AppState.shared.user }
     var isMe: Bool { (ownerId ?? 0 == currentUser?.id ?? 0) || isUnsentMessage }
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol }
     /// Check id because we know that the message was successfully added in server chat.

@@ -49,7 +49,7 @@ struct UploadFileView: View {
         })
         .onReceive(viewModel.$state, perform: { state in
             if state == .COMPLETED {
-                threadViewModel.onDeleteMessage(message: message)
+                threadViewModel.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId))
             }
         })
         .onReceive(viewModel.$uploadPercent) { percent in
@@ -90,7 +90,7 @@ class UploadFileViewModel: ObservableObject {
     }
 
     func uploadFile(_ message: SendTextMessageRequest, _ uploadFileRequest: UploadFileRequest) {
-        Chat.sharedInstance.sendFileMessage(textMessage: message, uploadFile: uploadFileRequest) { uploadFileProgress, _ in
+        ChatManager.activeInstance.sendFileMessage(textMessage: message, uploadFile: uploadFileRequest) { uploadFileProgress, _ in
             self.uploadPercent = uploadFileProgress?.percent ?? 0
         } onSent: { sentResponse, _, error in
             print(sentResponse ?? "")
@@ -110,14 +110,14 @@ class UploadFileViewModel: ObservableObject {
 
     func pauseUpload() {
         guard let uploadUniqueId = uploadUniqueId else { return }
-        Chat.sharedInstance.manageUpload(uniqueId: uploadUniqueId, action: .suspend, isImage: true) { _, _ in
+        ChatManager.activeInstance.manageUpload(uniqueId: uploadUniqueId, action: .suspend) { _, _ in
             self.state = .PAUSED
         }
     }
 
     func resumeUpload() {
         guard let uploadUniqueId = uploadUniqueId else { return }
-        Chat.sharedInstance.manageUpload(uniqueId: uploadUniqueId, action: .resume, isImage: true) { _, _ in
+        ChatManager.activeInstance.manageUpload(uniqueId: uploadUniqueId, action: .resume) { _, _ in
             self.state = .UPLOADING
         }
     }
