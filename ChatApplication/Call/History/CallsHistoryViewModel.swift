@@ -10,9 +10,9 @@ import FanapPodChatSDK
 import Foundation
 
 class CallsHistoryViewModel: ObservableObject {
-    @Published  var isLoading = false
+    @Published var isLoading = false
 
-    @Published  private(set) var model = CallsHistoryModel()
+    @Published private(set) var model = CallsHistoryModel()
 
     private(set) var connectionStatusCancelable: AnyCancellable?
 
@@ -25,10 +25,10 @@ class CallsHistoryViewModel: ObservableObject {
     }
 
     func getCallsHistory() {
-        Chat.sharedInstance.callsHistory(.init(count: model.count, offset: model.offset)) { [weak self] calls, _, pagination, _ in
-            if let calls = calls {
+        ChatManager.activeInstance.callsHistory(.init(count: model.count, offset: model.offset)) { [weak self] response in
+            if let calls = response.result {
                 self?.model.setCalls(calls: calls)
-                self?.model.setHasNext(pagination?.hasNext ?? false)
+                self?.model.setHasNext(response.pagination?.hasNext ?? false)
             }
         }
     }
@@ -37,8 +37,8 @@ class CallsHistoryViewModel: ObservableObject {
         if !model.hasNext || isLoading { return }
         isLoading = true
         model.preparePaginiation()
-        Chat.sharedInstance.callsHistory(.init(count: model.count, offset: model.offset)) { [weak self] calls, _, _, _ in
-            if let calls = calls {
+        ChatManager.activeInstance.callsHistory(.init(count: model.count, offset: model.offset)) { [weak self] response in
+            if let calls = response.result {
                 self?.model.appendCalls(calls: calls)
                 self?.isLoading = false
             }

@@ -19,8 +19,8 @@ protocol RecordingProtocol {
     var recordingTimer: Timer? { get set }
     var imageLoader: ImageLoader? { get set }
     var cancellableSet: Set<AnyCancellable> { get set }
-    func onCallStartRecording(_ recorder: Participant?, _ uniqueId: String?, _ error: ChatError?)
-    func onCallStopRecording(_ recorder: Participant?, _ uniqueId: String?, _ error: ChatError?)
+    func onCallStartRecording(_ response: ChatResponse<Participant>)
+    func onCallStopRecording(_ response: ChatResponse<Participant>)
     func startRecordingTimer()
     func callEvent(_ notification: NSNotification)
     func toggleRecording()
@@ -46,9 +46,9 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
     @objc func callEvent(_ notification: NSNotification) {
         guard let type = (notification.object as? CallEventTypes) else { return }
         if case let .startCallRecording(participant) = type {
-            onCallStartRecording(participant)
+            onCallStartRecording(ChatResponse(result: participant))
         } else if case let .stopCallRecording(participant) = type {
-            onCallStopRecording(participant)
+            onCallStopRecording(ChatResponse(result: participant))
         }
     }
 
@@ -71,15 +71,15 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
     }
 
     func startRecording(_ callId: Int) {
-        Chat.sharedInstance.startRecording(.init(subjectId: callId), onCallStartRecording)
+        ChatManager.activeInstance.startRecording(.init(subjectId: callId), onCallStartRecording)
     }
 
     func stopRecording(_ callId: Int) {
-        Chat.sharedInstance.stopRecording(.init(subjectId: callId), onCallStopRecording)
+        ChatManager.activeInstance.stopRecording(.init(subjectId: callId), onCallStopRecording)
     }
 
-    func onCallStartRecording(_ recorder: Participant?, _: String? = nil, _: ChatError? = nil) {
-        self.recorder = recorder
+    func onCallStartRecording(_ response: ChatResponse<Participant>) {
+        recorder = response.result
         isRecording = true
         startRecodrdingDate = Date()
         startRecordingTimer()
@@ -91,7 +91,7 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
         imageLoader?.fetch()
     }
 
-    func onCallStopRecording(_: Participant?, _: String? = nil, _: ChatError? = nil) {
+    func onCallStopRecording(_: ChatResponse<Participant>) {
         isRecording = false
         recorder = nil
         startRecodrdingDate = nil

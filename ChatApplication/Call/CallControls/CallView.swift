@@ -170,9 +170,7 @@ struct CenterAciveUserRTCView: View {
 
 struct RecordingDotView: View {
     @EnvironmentObject var callState: CallViewModel
-
     @EnvironmentObject var recordingViewModel: RecordingViewModel
-
     @State var showRecordingIndicator: Bool = false
 
     var body: some View {
@@ -316,7 +314,7 @@ struct CallStartedActionsView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .foregroundColor(.accentColor)
-                                    .frame(width: 48, height: 48)
+                                    .frame(width: 36, height: 36)
                             }
                         }
                     }
@@ -373,7 +371,6 @@ struct CallControlItem: View {
     var color: Color?
     var vertical: Bool = false
     var action: (() -> Void)?
-
     @State var isActive = false
 
     var body: some View {
@@ -448,7 +445,6 @@ struct CenterArriveStickerView: View {
 
 struct UserRTCView: View {
     let userRTC: CallParticipantUserRTC
-
     @EnvironmentObject var viewModel: CallViewModel
 
     var body: some View {
@@ -467,7 +463,6 @@ struct UserRTCView: View {
                     VStack {
                         Spacer()
                         HStack {
-                            Spacer()
                             Image(systemName: userRTC.callParticipant.mute ? "mic.slash.fill" : "mic.fill")
                                 .resizable()
                                 .scaledToFit()
@@ -484,22 +479,32 @@ struct UserRTCView: View {
                                 .foregroundColor(Color.primary)
                                 .font(isIpad ? .body : .caption2)
                                 .opacity(0.8)
-                            Spacer()
+                            if userRTC.isMe, userRTC.callParticipant.video == true {
+                                Button {
+                                    viewModel.switchCamera()
+                                } label: {
+                                    Image(systemName: "arrow.triangle.2.circlepath")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: isIpad ? 36 : 28, height: isIpad ? 36 : 28)
+                                        .foregroundColor(Color.primary)
+                                }
+                            }
                         }
-                        .fixedSize()
-                        .padding(4)
+                        .padding(.all, isIpad ? 8 : 4)
                         .background(.ultraThinMaterial)
                         .cornerRadius(4)
                     }
-                    Spacer()
+                    if isIpad {
+                        Spacer()
+                    }
                 }
-                .padding()
             }
             .frame(height: viewModel.defaultCellHieght)
             .background(Color(named: "call_item_background").opacity(0.7))
             .border(Color(named: "border_speaking"), width: userRTC.audioRTC.isSpeaking ? 3 : 0)
             .cornerRadius(8)
-            .scaleEffect(x: userRTC.audioRTC.isSpeaking ? 1.05 : 1, y: userRTC.audioRTC.isSpeaking ? 1.05 : 1)
+            .scaleEffect(x: userRTC.audioRTC.isSpeaking ? 1.02 : 1, y: userRTC.audioRTC.isSpeaking ? 1.02 : 1)
             .animation(.easeInOut, value: userRTC.audioRTC.isSpeaking)
         }
     }
@@ -507,11 +512,8 @@ struct UserRTCView: View {
 
 struct CallControlsView_Previews: PreviewProvider {
     @State static var showDetailPanel: Bool = false
-
     @State static var showCallParticipants: Bool = false
-
     @ObservedObject static var viewModel = CallViewModel.shared
-
     static var recordingVM = RecordingViewModel(callId: 1)
 
     static var previews: some View {
@@ -545,6 +547,7 @@ struct CallControlsView_Previews: PreviewProvider {
         let chatDataDto = ChatDataDTO(sendMetaData: "", screenShare: "", reciveMetaData: "", turnAddress: "", brokerAddressWeb: "", kurentoAddress: "")
         let startedCall = StartCall(certificateFile: "", clientDTO: clientDto, chatDataDto: chatDataDto, callName: nil, callImage: nil)
         viewModel.call = receiveCall
+        ChatManager.activeInstance.initWebRTC(startedCall)
         viewModel.onCallStarted(startedCall)
         recordingVM.isRecording = true
         recordingVM.startRecodrdingDate = Date()

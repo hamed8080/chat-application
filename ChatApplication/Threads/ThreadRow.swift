@@ -143,13 +143,13 @@ struct ThreadRow: View {
 }
 
 struct JoinToGroupCallView: View {
-    @EnvironmentObject  var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadViewModel
 
-    @State  var showCallToJoin: Bool = false
+    @State var showCallToJoin: Bool = false
 
-    @State  private var variable = 0.0
+    @State private var variable = 0.0
 
-    @State  var timer: Timer?
+    @State var timer: Timer?
 
     var body: some View {
         if let callIdToJoin = viewModel.groupCallIdToJoin {

@@ -94,7 +94,7 @@ extension ProviderDelegate: CXProviderDelegate {
         // Trigger the call to be answered via the underlying network service.
         let callState = CallViewModel.shared
         if let receiveCall = callState.call {
-            Chat.sharedInstance.acceptCall(.init(callId: receiveCall.callId, client: .init(mute: !callState.answerType.mute, video: callState.answerType.video)))
+            ChatManager.activeInstance.acceptCall(.init(callId: receiveCall.callId, client: .init(mute: !callState.answerType.mute, video: callState.answerType.video)))
         }
         call.answerIncomingCall()
 

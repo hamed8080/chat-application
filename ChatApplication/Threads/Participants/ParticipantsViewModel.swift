@@ -15,15 +15,11 @@ class ParticipantsViewModel: ObservableObject {
     private var hasNext = true
     private var count = 15
     private var offset = 0
-
-    @Published var isLoading = false
-
-    @Published private(set) var totalCount = 0
-
-    @Published private(set) var participants: [Participant] = []
-
     private(set) var firstSuccessResponse = false
     private(set) var cancellableSet: Set<AnyCancellable> = []
+    @Published var isLoading = false
+    @Published private(set) var totalCount = 0
+    @Published private(set) var participants: [Participant] = []
 
     init(thread: Conversation) {
         self.thread = thread
@@ -55,7 +51,7 @@ class ParticipantsViewModel: ObservableObject {
 
     func getParticipants() {
         isLoading = true
-        Chat.sharedInstance.getThreadParticipants(.init(threadId: thread.id ?? 0, offset: offset, count: count), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance.getThreadParticipants(.init(threadId: thread.id ?? 0, offset: offset, count: count), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     func loadMore() {
@@ -64,19 +60,19 @@ class ParticipantsViewModel: ObservableObject {
         getParticipants()
     }
 
-    func onServerResponse(_ participants: [Participant]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
-        if let participants = participants {
+    func onServerResponse(_ response: ChatResponse<[Participant]>) {
+        if let participants = response.result {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
-            hasNext = pagination?.hasNext ?? false
+            hasNext = response.pagination?.hasNext ?? false
         }
         isLoading = false
     }
 
-    func onCacheResponse(_ participants: [Participant]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
-        if let participants = participants {
+    func onCacheResponse(_ response: ChatResponse<[Participant]>) {
+        if let participants = response.result {
             appendParticipants(participants: participants)
-            hasNext = pagination?.hasNext ?? false
+            hasNext = response.pagination?.hasNext ?? false
         }
         if isLoading, AppState.shared.connectionStatus != .connected {
             isLoading = false
@@ -101,8 +97,8 @@ class ParticipantsViewModel: ObservableObject {
 
     func removePartitipant(_ participant: Participant) {
         guard let id = participant.id else { return }
-        Chat.sharedInstance.removeParticipants(.init(participantId: id, threadId: thread.id ?? 0)) { [weak self] participant, _, error in
-            if error == nil, let participant = participant?.first {
+        ChatManager.activeInstance.removeParticipants(.init(participantId: id, threadId: thread.id ?? 0)) { [weak self] response in
+            if response.error == nil, let participant = response.result?.first {
                 self?.removeParticipant(participant)
             }
         }

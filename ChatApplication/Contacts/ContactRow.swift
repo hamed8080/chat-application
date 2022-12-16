@@ -12,7 +12,7 @@ struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
     @EnvironmentObject var viewModel: ContactViewModel
     @State public var showActionViews: Bool = false
-    @EnvironmentObject  var callViewModel: CallViewModel
+    @EnvironmentObject var callViewModel: CallViewModel
     var contact: Contact { viewModel.contact }
     var contactImageURL: String? { contact.image ?? contact.linkedUser?.image }
     @State var navigateToAddOrEditContact = false

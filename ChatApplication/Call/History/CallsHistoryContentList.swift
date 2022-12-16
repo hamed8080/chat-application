@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct CallsHistoryContentList: View {
-    @EnvironmentObject  var viewModel: CallsHistoryViewModel
+    @EnvironmentObject var viewModel: CallsHistoryViewModel
 
     @EnvironmentObject var appState: AppState
 
-    @State  var navigateToGroupCallSelction = false
+    @State var navigateToGroupCallSelction = false
 
     var body: some View {
         VStack(spacing: 0) {

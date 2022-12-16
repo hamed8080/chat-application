@@ -13,9 +13,12 @@ class ContactsViewModel: ObservableObject {
     private var count = 15
     private var offset = 0
     private var hasNext: Bool = true
+    private(set) var selectedContacts: [Contact] = []
+    private(set) var canceableSet: Set<AnyCancellable> = []
+    private(set) var firstSuccessResponse = false
+    private var canLoadNextPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
     @Published private(set) var maxContactsCountInServer = 0
     @Published private(set) var contactsVMS: [ContactViewModel] = []
-    private(set) var selectedContacts: [Contact] = []
     @Published private(set) var searchedContactsVMS: [ContactViewModel] = []
     @Published var isLoading = false
     @Published var searchContactString: String = "" {
@@ -23,12 +26,6 @@ class ContactsViewModel: ObservableObject {
             searchContact()
         }
     }
-
-    private(set) var canceableSet: Set<AnyCancellable> = []
-
-    private(set) var firstSuccessResponse = false
-
-    private var canLoadNextPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
 
     init() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
@@ -40,20 +37,20 @@ class ContactsViewModel: ObservableObject {
         getContacts()
     }
 
-    func onServerResponse(_ contacts: [Contact]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
-        if let contacts = contacts {
+    func onServerResponse(_ response: ChatResponse<[Contact]>) {
+        if let contacts = response.result {
             firstSuccessResponse = true
             appendOrUpdateContact(contacts)
-            hasNext = pagination?.hasNext ?? false
-            setMaxContactsCountInServer(count: (pagination as? PaginationWithContentCount)?.totalCount ?? 0)
+            hasNext = response.pagination?.hasNext ?? false
+            setMaxContactsCountInServer(count: (response.pagination as? PaginationWithContentCount)?.totalCount ?? 0)
         }
         isLoading = false
     }
 
-    func onCacheResponse(_ contacts: [Contact]?, _: String?, _ pagination: Pagination?, _: ChatError?) {
-        if let contacts = contacts {
+    func onCacheResponse(_ response: ChatResponse<[Contact]>) {
+        if let contacts = response.result {
             appendOrUpdateContact(contacts)
-            hasNext = pagination?.hasNext ?? false
+            hasNext = response.pagination?.hasNext ?? false
         }
         if isLoading, AppState.shared.connectionStatus != .connected {
             isLoading = false
@@ -62,7 +59,7 @@ class ContactsViewModel: ObservableObject {
 
     func getContacts() {
         isLoading = true
-        Chat.sharedInstance.getContacts(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance.getContacts(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     func searchContact() {
@@ -71,16 +68,16 @@ class ContactsViewModel: ObservableObject {
             return
         }
         isLoading = true
-        Chat.sharedInstance.searchContacts(.init(query: searchContactString)) { [weak self] contacts, _, _, _ in
-            if let contacts = contacts {
+        ChatManager.activeInstance.searchContacts(.init(query: searchContactString)) { [weak self] response in
+            if let contacts = response.result {
                 self?.setSearchedContacts(contacts)
             }
         }
     }
 
     func createThread(invitees: [Invitee]) {
-        Chat.sharedInstance.createThread(.init(invitees: invitees, title: "", type: .normal)) { thread, _, _ in
-            if let thread = thread {
+        ChatManager.activeInstance.createThread(.init(invitees: invitees, title: "", type: .normal)) { response in
+            if let thread = response.result {
                 AppState.shared.selectedThread = thread
                 AppState.shared.showThreadView = true
             }
@@ -118,8 +115,8 @@ class ContactsViewModel: ObservableObject {
 
     func delete(_ contact: Contact) {
         if let contactId = contact.id {
-            Chat.sharedInstance.removeContact(.init(contactId: contactId)) { [weak self] _, _, error in
-                if error != nil {
+            ChatManager.activeInstance.removeContact(.init(contactId: contactId)) { [weak self] response in
+                if response.error != nil {
                     self?.appendOrUpdateContact([contact])
                 }
             }
@@ -176,8 +173,8 @@ class ContactsViewModel: ObservableObject {
         let req: AddContactRequest = isPhone ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
-        Chat.sharedInstance.addContact(req) { [weak self] contacts, _, _ in
-            if let contacts = contacts {
+        ChatManager.activeInstance.addContact(req) { [weak self] response in
+            if let contacts = response.result {
                 self?.insertContactsAtTop(contacts)
             }
         }

@@ -10,9 +10,9 @@ import FanapPodChatSDK
 import Foundation
 
 class CallDetailViewModel: ObservableObject {
-    @Published  var isLoading = false
+    @Published var isLoading = false
 
-    @Published  private(set) var model: CallDetailModel
+    @Published private(set) var model: CallDetailModel
 
     private(set) var connectionStatusCancelable: AnyCancellable?
 
@@ -27,10 +27,10 @@ class CallDetailViewModel: ObservableObject {
 
     func getCallsHistory() {
         guard let threadId = model.call.conversation?.id else { return }
-        Chat.sharedInstance.callsHistory(.init(count: 10, offset: 1, threadId: threadId)) { [weak self] calls, _, pagination, _ in
-            if let calls = calls {
+        ChatManager.activeInstance.callsHistory(.init(count: 10, offset: 1, threadId: threadId)) { [weak self] response in
+            if let calls = response.result {
                 self?.model.setCalls(calls: calls)
-                self?.model.setHasNext(pagination?.hasNext ?? false)
+                self?.model.setHasNext(response.pagination?.hasNext ?? false)
             }
         }
     }
@@ -40,8 +40,8 @@ class CallDetailViewModel: ObservableObject {
         if !model.hasNext || isLoading { return }
         isLoading = true
         model.preparePaginiation()
-        Chat.sharedInstance.callsHistory(.init(count: model.count, offset: model.offset, threadId: threadId)) { [weak self] calls, _, _, _ in
-            if let calls = calls {
+        ChatManager.activeInstance.callsHistory(.init(count: model.count, offset: model.offset, threadId: threadId)) { [weak self] response in
+            if let calls = response.result {
                 self?.model.appendCalls(calls: calls)
                 self?.isLoading = false
             }

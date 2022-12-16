@@ -16,7 +16,7 @@ protocol ContactViewModelProtocol {
     var contactsVM: ContactsViewModel { get set }
     init(contact: Contact, contactsVM: ContactsViewModel)
     func blockOrUnBlock(_ contact: Contact)
-    func onBlockUNBlockResponse(_ contact: BlockedContact?, _ uniqueId: String?, _ error: ChatError?)
+    func onBlockUNBlockResponse(_ response: ChatResponse<BlockedContact>)
     func toggleSelectedContact()
     func updateContact(contactValue: String, firstName: String?, lastName: String?)
 }
@@ -51,16 +51,16 @@ class ContactViewModel: ObservableObject, ContactViewModelProtocol, Identifiable
     func blockOrUnBlock(_ contact: Contact) {
         if contact.blocked == false {
             let req = BlockRequest(contactId: contact.id)
-            Chat.sharedInstance.blockContact(req, completion: onBlockUNBlockResponse)
+            ChatManager.activeInstance.blockContact(req, completion: onBlockUNBlockResponse)
         } else {
             let req = UnBlockRequest(contactId: contact.id)
-            Chat.sharedInstance.unBlockContact(req, completion: onBlockUNBlockResponse)
+            ChatManager.activeInstance.unBlockContact(req, completion: onBlockUNBlockResponse)
         }
     }
 
-    func onBlockUNBlockResponse(_ contact: BlockedContact?, _: String?, _: ChatError?) {
-        if contact != nil {
-            self.contact.blocked?.toggle()
+    func onBlockUNBlockResponse(_ response: ChatResponse<BlockedContact>) {
+        if response.result != nil {
+            contact.blocked?.toggle()
             objectWillChange.send()
         }
     }
@@ -77,8 +77,8 @@ class ContactViewModel: ObservableObject, ContactViewModelProtocol, Identifiable
     func updateContact(contactValue: String, firstName: String?, lastName: String?) {
         guard let contactId = contactId else { return }
         let req: UpdateContactRequest = .init(cellphoneNumber: contactValue, email: contact.email ?? "", firstName: firstName ?? "", id: contactId, lastName: lastName ?? "", username: contact.linkedUser?.username ?? "")
-        Chat.sharedInstance.updateContact(req) { [weak self] contacts, _, _ in
-            contacts?.forEach { updatedContact in
+        ChatManager.activeInstance.updateContact(req) { [weak self] response in
+            response.result?.forEach { updatedContact in
                 if updatedContact.id == contactId {
                     self?.contact.update(updatedContact)
                     self?.objectWillChange.send()

@@ -12,7 +12,7 @@ protocol MuteThreadProtocol {
     func toggleMute()
     func mute(_ threadId: Int)
     func unmute(_ threadId: Int)
-    func onMuteChanged(_ threadId: Int?, _ uniqueId: String?, _ error: ChatError?)
+    func onMuteChanged(_ response: ChatResponse<Int>)
 }
 
 extension ThreadViewModel: MuteThreadProtocol {
@@ -25,15 +25,15 @@ extension ThreadViewModel: MuteThreadProtocol {
     }
 
     func mute(_ threadId: Int) {
-        Chat.sharedInstance.muteThread(.init(subjectId: threadId), completion: onMuteChanged)
+        ChatManager.activeInstance.muteThread(.init(subjectId: threadId), completion: onMuteChanged)
     }
 
     func unmute(_ threadId: Int) {
-        Chat.sharedInstance.unmuteThread(.init(subjectId: threadId), completion: onMuteChanged)
+        ChatManager.activeInstance.unmuteThread(.init(subjectId: threadId), completion: onMuteChanged)
     }
 
-    func onMuteChanged(_ threadId: Int?, _: String?, _ error: ChatError?) {
-        if threadId != nil, error == nil {
+    func onMuteChanged(_ response: ChatResponse<Int>) {
+        if response.result != nil, response.error == nil {
             thread.mute?.toggle()
             objectWillChange.send()
         }

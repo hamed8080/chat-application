@@ -26,11 +26,11 @@ struct CallRow: View {
                 Text(call.conversation?.title ?? call.partnerParticipant?.name ?? "")
 
                 HStack {
-                    Image(systemName: call.isIncomingCall ? "arrow.down.left" : "arrow.up.right")
+                    Image(systemName: call.isIncomingCall(currentUserId: AppState.shared.user?.id) ? "arrow.down.left" : "arrow.up.right")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 12, height: 12)
-                        .foregroundColor(call.isIncomingCall ? Color.red : Color.green)
+                        .foregroundColor(call.isIncomingCall(currentUserId: AppState.shared.user?.id) ? Color.red : Color.green)
 
                     if let createTime = call.createTime, let date = Date(milliseconds: Int64(createTime)) {
                         Text(date.getShortFormatOfDate())

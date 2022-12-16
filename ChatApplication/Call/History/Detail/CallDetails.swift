@@ -10,7 +10,7 @@ import SwiftUI
 struct CallDetails: View {
     @Environment(\.presentationMode) var presentationMode
 
-    @StateObject  var viewModel: CallDetailViewModel
+    @StateObject var viewModel: CallDetailViewModel
 
     var body: some View {
         GeometryReader { reader in
@@ -28,7 +28,7 @@ struct CallDetails: View {
                             if let endTime = viewModel.model.call.endTime, let date = Date(milliseconds: Int64(endTime)) {
                                 Text("End: \(date.getShortFormatOfDate())")
                             }
-                            Text(viewModel.model.call.isIncomingCall ? "Incoming call" : "Outgoing call")
+                            Text(viewModel.model.call.isIncomingCall(currentUserId: AppState.shared.user?.id) ? "Incoming call" : "Outgoing call")
                             if let status = viewModel.model.call.status {
                                 Text("Status: \(String(describing: status))")
                             }

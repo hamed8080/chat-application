@@ -13,11 +13,11 @@ struct HomeContentView: View {
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @Environment(\.colorScheme) var colorScheme
 
-    @EnvironmentObject  var appState: AppState
+    @EnvironmentObject var appState: AppState
 
-    @State  var showCallView = false
+    @State var showCallView = false
 
-    @State  var shareCallLogs = false
+    @State var shareCallLogs = false
 
     var body: some View {
         if tokenManager.isLoggedIn == false {
@@ -201,12 +201,18 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
         let callState = CallViewModel.shared
+        let threadsVM = ThreadsViewModel()
         HomeContentView()
             .environmentObject(appState)
             .environmentObject(callState)
+            .environmentObject(threadsVM)
+            .environmentObject(TokenManager.shared)
+            .environmentObject(LoginViewModel())
             .onAppear {
                 AppState.shared.connectionStatus = .connected
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
+                threadsVM.appendThreads(threads: MockData.generateThreads(count: 10))
+                threadsVM.objectWillChange.send()
             }
     }
 }

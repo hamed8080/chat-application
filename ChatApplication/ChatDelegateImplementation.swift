@@ -53,17 +53,19 @@ class ChatDelegateImplementation: ChatDelegate {
                                           reconnectCount: Int.max,
                                           reconnectOnClose: true,
                                           isDebuggingLogEnabled: false)
-            Chat.sharedInstance.createChatObject(config: .init(asyncConfig: asyncConfig,
-                                                               token: token,
-                                                               ssoHost: config.ssoHost,
-                                                               platformHost: config.platformHost,
-                                                               fileServer: config.fileServer,
-                                                               enableCache: true,
-                                                               msgTTL: 800_000, // for integeration server need to be long time
-                                                               isDebuggingLogEnabled: true,
-                                                               enableNotificationLogObserver: true,
-                                                               callTimeout: 20))
-            Chat.sharedInstance.delegate = self
+            let chatConfig = ChatConfig(asyncConfig: asyncConfig,
+                                        token: token,
+                                        ssoHost: config.ssoHost,
+                                        platformHost: config.platformHost,
+                                        fileServer: config.fileServer,
+                                        enableCache: true,
+                                        msgTTL: 800_000, // for integeration server need to be long time
+                                        isDebuggingLogEnabled: true,
+                                        enableNotificationLogObserver: true,
+                                        callTimeout: 20)
+            ChatManager.instance.createInstance(config: chatConfig)
+            ChatManager.activeInstance.delegate = self
+            ChatManager.activeInstance.connect()
             AppState.shared.setCachedUser()
         }
     }

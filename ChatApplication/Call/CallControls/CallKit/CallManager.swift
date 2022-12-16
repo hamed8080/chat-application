@@ -12,7 +12,7 @@ import Foundation
 class CallManager: NSObject, ObservableObject {
     var callController = CXCallController()
 
-    @Published  var calls: [CallItem] = []
+    @Published var calls: [CallItem] = []
 
     func addCall(_ call: CallItem) {
         calls.append(call)
@@ -62,7 +62,7 @@ class CallManager: NSObject, ObservableObject {
             // Trigger the call to be answered via the underlying network service.
             let callState = CallViewModel.shared
             if let receiveCall = callState.call {
-                Chat.sharedInstance.acceptCall(.init(callId: receiveCall.callId, client: .init(mute: !callState.answerType.mute, video: callState.answerType.video)))
+                ChatManager.activeInstance.acceptCall(.init(callId: receiveCall.callId, client: .init(mute: !callState.answerType.mute, video: callState.answerType.video)))
             }
         } else {
             let uuid = CallViewModel.shared.uuid

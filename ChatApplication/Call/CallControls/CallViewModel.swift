@@ -8,11 +8,6 @@
 import Combine
 import FanapPodChatSDK
 import SwiftUI
-import WebRTC
-//
-// class ObservableCallParticipantUserRTC: CallParticipantUserRTC, ObservableObject {
-//
-// }
 
 enum CameraType: String {
     case front
@@ -42,7 +37,6 @@ protocol CallStateProtocol {
 
 class CallViewModel: ObservableObject, CallStateProtocol {
     public static let shared: CallViewModel = .init()
-
     var uuid: UUID = .init()
     var startCall: StartCall?
     @Published var isLoading = false
@@ -54,7 +48,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     var startCallTimer: Timer?
     var timerCallString: String?
     var isCallStarted: Bool { startCall != nil }
-    var usersRTC: [CallParticipantUserRTC] { WebRTCClient.instance?.callParticipantsUserRTC ?? [] }
+    var usersRTC: [CallParticipantUserRTC] { ChatManager.activeInstance.webrtc?.callParticipantsUserRTC ?? [] }
     var activeUsers: [CallParticipantUserRTC] { usersRTC.filter { $0.callParticipant.active == true } }
     var call: CreateCall?
     var callId: Int? { call?.callId ?? startCall?.callId }
@@ -78,16 +72,16 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         guard let req = startCallRequest else { return }
         toggleCallView(show: true)
         if req.isGroupCall {
-            Chat.sharedInstance.requestGroupCall(req, initCreateCall)
+            ChatManager.activeInstance.requestGroupCall(req, initCreateCall)
         } else {
-            Chat.sharedInstance.requestCall(req, initCreateCall)
+            ChatManager.activeInstance.requestCall(req, initCreateCall)
         }
         AppDelegate.shared?.callMananger.startCall(req.titleOfCalling, video: req.isVideoOn, uuid: uuid)
     }
 
     func recall(_ participant: Participant?) {
         guard let participant = participant, let callId = callId, let coreUserId = participant.coreUserId else { return }
-        Chat.sharedInstance.renewCallRequest(.init(invitees: [.init(id: "\(coreUserId)", idType: .coreUserId)], callId: callId)) { _, _, _ in }
+        ChatManager.activeInstance.renewCallRequest(.init(invitees: [.init(id: "\(coreUserId)", idType: .coreUserId)], callId: callId)) { _ in }
     }
 
     func getParticipants() {
@@ -98,8 +92,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     func getActiveParticipants() {
         guard let callId = callId else { return }
         isLoading = true
-        Chat.sharedInstance.activeCallParticipants(.init(subjectId: callId)) { [weak self] callParticipants, _, _ in
-            callParticipants?.forEach { callParticipant in
+        ChatManager.activeInstance.activeCallParticipants(.init(subjectId: callId)) { [weak self] response in
+            response.result?.forEach { callParticipant in
                 if let callParticipantUserRTC = self?.usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                     callParticipantUserRTC.callParticipant.update(callParticipant)
                 }
@@ -112,9 +106,11 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     func getThreadParticipants() {
         guard let threadId = call?.conversation?.id else { return }
         isLoading = true
-        Chat.sharedInstance.getThreadParticipants(.init(threadId: threadId)) { [weak self] participants, _, _, _ in
-            participants?.forEach { participant in
-                if self?.activeUsers.contains(where: { $0.callParticipant.participant == participant }) == false {
+        ChatManager.activeInstance.getThreadParticipants(.init(threadId: threadId)) { [weak self] response in
+            response.result?.forEach { participant in
+                let isInAcitveUsers = self?.activeUsers.contains(where: { $0.callParticipant.participant == participant }) ?? false
+                let isInOfflineUsers = self?.offlineParticipants.contains(where: { $0.id == participant.id }) ?? false
+                if !isInAcitveUsers, !isInOfflineUsers {
                     self?.offlineParticipants.append(participant)
                 }
             }
@@ -123,8 +119,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     }
 
     // Create call don't mean the call realy started. CallStarted Event is real one when a call realy accepted by at least one participant.
-    private func initCreateCall(createCall: CreateCall?, uniqueId _: String?, error _: ChatError?) {
-        call = createCall
+    private func initCreateCall(_ response: ChatResponse<CreateCall>) {
+        call = response.result
     }
 
     func toggleCallView(show: Bool) {
@@ -209,26 +205,14 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         self.startCall = startCall
         startCallDate = Date()
         startTimer()
-        /// simulator File name
-        let smFileName = TARGET_OS_SIMULATOR != 0 ? "webrtc_user_a.mp4" : nil
-        let config = WebRTCConfig(startCall: startCall, isSendVideoEnabled: answerType.video || startCallRequest?.isVideoOn ?? false, fileName: smFileName)
-        WebRTCClient.instance = WebRTCClient(config: config, delegate: self)
-        let me = CallParticipant(sendTopic: config.topicSend ?? "", userId: AppState.shared.user?.id, mute: startCall.clientDTO.mute, video: startCall.clientDTO.video, participant: .init(name: "ME"))
-        var users = [me]
-        let otherUsers = startCall.otherClientDtoList?.filter { $0.userId != AppState.shared.user?.id }.compactMap { clientDTO in
-            CallParticipant(sendTopic: clientDTO.topicSend, userId: clientDTO.userId, mute: clientDTO.mute, video: clientDTO.video)
-        }
-        users.append(contentsOf: otherUsers ?? [])
-        addCallParicipants(users)
-        WebRTCClient.instance?.createSession()
         fetchCallParticipants(startCall)
         objectWillChaneWithAnimation()
     }
 
     func fetchCallParticipants(_ startCall: StartCall) {
         guard let callId = startCall.callId else { return }
-        Chat.sharedInstance.activeCallParticipants(.init(subjectId: callId)) { [weak self] callParticipants, _, _ in
-            callParticipants?.forEach { callParticipant in
+        ChatManager.activeInstance.activeCallParticipants(.init(subjectId: callId)) { [weak self] response in
+            response.result?.forEach { callParticipant in
                 if let callParticipantUserRTC = self?.usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                     callParticipantUserRTC.callParticipant.update(callParticipant)
                 }
@@ -239,8 +223,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
     func callInquiry() {
         guard let callId = startCall?.callId else { return }
-        Chat.sharedInstance.callInquery(.init(subjectId: callId)) { [weak self] callParticipants, _, _ in
-            callParticipants?.forEach { callParticipant in
+        ChatManager.activeInstance.callInquery(.init(subjectId: callId)) { [weak self] response in
+            response.result?.forEach { callParticipant in
                 if let callParticipantUserRTC = self?.usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                     callParticipantUserRTC.callParticipant.update(callParticipant)
                 }
@@ -256,7 +240,6 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     /// Setup UI and WEBRCT for new participant joined to the call
     func onCallParticipantLeft(_ callParticipants: [CallParticipant]) {
         callParticipants.forEach { callParticipant in
-            WebRTCClient.instance?.removeCallParticipant(callParticipant)
             if let participant = callParticipant.participant {
                 offlineParticipants.append(participant)
             }
@@ -326,39 +309,34 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         startCallTimer = nil
         startCallRequest = nil
         endCallKitCall()
-        WebRTCClient.instance?.clearResourceAndCloseConnection()
-        WebRTCClient.instance = nil
         LogViewModel.printCallLogsFile()
     }
 
     func toggleSpeaker() {
-        WebRTCClient.instance?.toggleSpeaker()
+        ChatManager.activeInstance.webrtc?.toggleSpeaker()
         isSpeakerOn.toggle()
     }
 
     func toggleMute() {
-        guard let currentUserId = Chat.sharedInstance.userInfo?.id, let callId = startCall?.callId else { return }
+        guard let currentUserId = ChatManager.activeInstance.userInfo?.id, let callId = startCall?.callId else { return }
         if usersRTC.first(where: { $0.isMe })?.callParticipant.mute == true {
-            Chat.sharedInstance.unmuteCall(.init(callId: callId, userIds: [currentUserId]))
+            ChatManager.activeInstance.unmuteCall(.init(callId: callId, userIds: [currentUserId]))
         } else {
-            Chat.sharedInstance.muteCall(.init(callId: callId, userIds: [currentUserId]))
+            ChatManager.activeInstance.muteCall(.init(callId: callId, userIds: [currentUserId]))
         }
-        WebRTCClient.instance?.toggle()
     }
 
     func toggleCamera() {
         guard let callId = startCall?.callId else { return }
         if usersRTC.first(where: { $0.isMe })?.callParticipant.video == true {
-            Chat.sharedInstance.turnOffVideoCall(.init(subjectId: callId))
+            ChatManager.activeInstance.turnOffVideoCall(.init(subjectId: callId))
         } else {
-            Chat.sharedInstance.turnOnVideoCall(.init(subjectId: callId))
+            ChatManager.activeInstance.turnOnVideoCall(.init(subjectId: callId))
         }
-        WebRTCClient.instance?.toggleCamera()
     }
 
     func switchCamera() {
-//        guard let localVideoRenderer = localVideoRenderer else{return}
-//        WebRTCClient.instance?.switchCameraPosition(renderer: localVideoRenderer)
+        ChatManager.activeInstance.webrtc?.switchCamera()
     }
 
     func startTimer() {
@@ -376,7 +354,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
     func addCallParicipants(_ callParticipants: [CallParticipant]? = nil) {
         guard let callParticipants = callParticipants else { return }
-        WebRTCClient.instance?.addCallParticipants(callParticipants)
+        ChatManager.activeInstance.webrtc?.addCallParticipants(callParticipants)
         objectWillChaneWithAnimation()
     }
 
@@ -388,7 +366,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
               let type = call?.type,
               let isGroup = call?.group else { return }
         let cancelCall = Call(id: callId, creatorId: creatorId, type: type, isGroup: isGroup)
-        Chat.sharedInstance.cancelCall(.init(call: cancelCall))
+        ChatManager.activeInstance.cancelCall(.init(call: cancelCall))
         endCallKitCall()
     }
 
@@ -399,8 +377,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         } else {
             // TODO: realease microphone and camera at the moument and dont need to wait and get response from server
             if let callId = callId {
-                Chat.sharedInstance.endCall(.init(subjectId: callId)) { _, _, _ in
-                }
+                ChatManager.activeInstance.endCall(.init(subjectId: callId)) { _ in }
             }
         }
         resetCall()
@@ -415,7 +392,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     }
 
     static func joinToCall(_ callId: Int) {
-        Chat.sharedInstance.acceptCall(.init(callId: callId, client: .init(mute: true, video: false)))
+        ChatManager.activeInstance.acceptCall(.init(callId: callId, client: .init(mute: true, video: false)))
         CallViewModel.shared.toggleCallView(show: true)
         CallViewModel.shared.answerType = AnswerType(video: false, mute: true)
         AppDelegate.shared.callMananger.callAnsweredFromCusomUI()
@@ -423,7 +400,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
 
     func sendSticker(_ sticker: CallSticker) {
         guard let callId = callId else { return }
-        Chat.sharedInstance.sendCallSticker(.init(callId: callId, stickers: [sticker]))
+        ChatManager.activeInstance.sendCallSticker(.init(callId: callId, stickers: [sticker]))
     }
 
     func onCallSticker(_ sticker: StickerResponse) {
@@ -434,19 +411,6 @@ class CallViewModel: ObservableObject, CallStateProtocol {
             }
         }
     }
-}
-
-// Implement WebRTCClientDelegate
-extension CallViewModel: WebRTCClientDelegate {
-    func didIceConnectionStateChanged(iceConnectionState _: RTCIceConnectionState) {}
-
-    func didReceiveData(data _: Data) {}
-
-    func didReceiveMessage(message _: String) {}
-
-    func didConnectWebRTC() {}
-
-    func didDisconnectWebRTC() {}
 }
 
 /// Size of the each cell in different size like iPad vs iPhone.
