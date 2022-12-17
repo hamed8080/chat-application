@@ -137,63 +137,63 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     @objc func callEvent(_ notification: NSNotification) {
         guard let type = (notification.object as? CallEventTypes) else { return }
         switch type {
-        case let .callStarted(startCall):
-            onCallStarted(startCall)
-        case let .callCreate(createCall):
-            onCallCreated(createCall)
-        case let .callReceived(receieveCall):
-            onReceiveCall(receieveCall)
+        case let .callStarted(response):
+            onCallStarted(response.result)
+        case let .callCreate(response):
+            onCallCreated(response.result)
+        case let .callReceived(response):
+            onReceiveCall(response.result)
         case .callDelivered:
             break
-        case let .callEnded(callId):
-            onCallEnd(callId)
-        case let .groupCallCanceled(call):
-            if call.participant?.id == AppState.shared.user?.id {
-                onCallEnd(call.callId)
+        case let .callEnded(response):
+            onCallEnd(response?.result ?? 0)
+        case let .groupCallCanceled(response):
+            if response.result?.participant?.id == AppState.shared.user?.id {
+                onCallEnd(response.result?.callId)
             }
-        case let .callCanceled(canceledCall):
-            onCallCanceled(canceledCall)
+        case let .callCanceled(response):
+            onCallCanceled(response.result)
         case .callRejected:
             break
-        case let .callParticipantJoined(callParticipants):
-            onCallParticipantJoined(callParticipants)
-        case let .callParticipantLeft(callParticipants):
-            onCallParticipantLeft(callParticipants)
-        case let .callParticipantMute(callParticipants):
-            onMute(callParticipants)
-        case let .callParticipantUnmute(callParticipants):
-            onUNMute(callParticipants)
+        case let .callParticipantJoined(response):
+            onCallParticipantJoined(response.result)
+        case let .callParticipantLeft(response):
+            onCallParticipantLeft(response.result)
+        case let .callParticipantMute(response):
+            onMute(response.result)
+        case let .callParticipantUnmute(response):
+            onUNMute(response.result)
         case .callParticipantsRemoved:
             break
-        case let .turnVideoOn(callParticipants):
-            onVideoOn(callParticipants)
-        case let .turnVideoOff(callParticipants):
-            onVideoOff(callParticipants)
+        case let .turnVideoOn(response):
+            onVideoOn(response.result)
+        case let .turnVideoOff(response):
+            onVideoOff(response.result)
         case .callClientError:
             break
         case .callParticipantStartSpeaking:
             objectWillChaneWithAnimation()
         case .callParticipantStopSpeaking:
             objectWillChaneWithAnimation()
-        case let .sticker(sticker):
-            onCallSticker(sticker)
+        case let .sticker(response):
+            onCallSticker(response.result)
         default:
             break
         }
     }
 
-    func onCallCreated(_ createCall: CreateCall) {
+    func onCallCreated(_ createCall: CreateCall?) {
         call = createCall
     }
 
-    func onReceiveCall(_ createCall: CreateCall) {
+    func onReceiveCall(_ createCall: CreateCall?) {
         toggleCallView(show: true)
         call = createCall
-        AppDelegate.shared.providerDelegate?.reportIncomingCall(uuid: uuid, handle: createCall.title ?? "", hasVideo: createCall.type == .videoCall, completion: nil)
+        AppDelegate.shared.providerDelegate?.reportIncomingCall(uuid: uuid, handle: createCall?.title ?? "", hasVideo: createCall?.type == .videoCall, completion: nil)
     }
 
     // maybe reject or canceled after a time out
-    func onCallCanceled(_: Call) {
+    func onCallCanceled(_: Call?) {
         // don't remove showCallView == true leads to show callViewControls again in receiver of call who rejected call
         if showCallView {
             endCallKitCall()
@@ -201,7 +201,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         }
     }
 
-    func onCallStarted(_ startCall: StartCall) {
+    func onCallStarted(_ startCall: StartCall?) {
         self.startCall = startCall
         startCallDate = Date()
         startTimer()
@@ -209,8 +209,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         objectWillChaneWithAnimation()
     }
 
-    func fetchCallParticipants(_ startCall: StartCall) {
-        guard let callId = startCall.callId else { return }
+    func fetchCallParticipants(_ startCall: StartCall?) {
+        guard let callId = startCall?.callId else { return }
         ChatManager.activeInstance.activeCallParticipants(.init(subjectId: callId)) { [weak self] response in
             response.result?.forEach { callParticipant in
                 if let callParticipantUserRTC = self?.usersRTC.first(where: { $0.callParticipant == callParticipant }) {
@@ -238,8 +238,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     }
 
     /// Setup UI and WEBRCT for new participant joined to the call
-    func onCallParticipantLeft(_ callParticipants: [CallParticipant]) {
-        callParticipants.forEach { callParticipant in
+    func onCallParticipantLeft(_ callParticipants: [CallParticipant]?) {
+        callParticipants?.forEach { callParticipant in
             if let participant = callParticipant.participant {
                 offlineParticipants.append(participant)
             }
@@ -247,8 +247,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         objectWillChaneWithAnimation()
     }
 
-    func onMute(_ callParticipants: [CallParticipant]) {
-        callParticipants.forEach { callParticipant in
+    func onMute(_ callParticipants: [CallParticipant]?) {
+        callParticipants?.forEach { callParticipant in
             if let callParticipantUserRTC = usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                 callParticipantUserRTC.callParticipant.mute = true
                 callParticipantUserRTC.audioRTC.setTrackEnable(false)
@@ -257,8 +257,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         objectWillChaneWithAnimation()
     }
 
-    func onUNMute(_ callParticipants: [CallParticipant]) {
-        callParticipants.forEach { callParticipant in
+    func onUNMute(_ callParticipants: [CallParticipant]?) {
+        callParticipants?.forEach { callParticipant in
             if let callParticipantUserRTC = usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                 callParticipantUserRTC.callParticipant.mute = false
                 callParticipantUserRTC.audioRTC.setTrackEnable(true)
@@ -267,8 +267,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         objectWillChaneWithAnimation()
     }
 
-    func onVideoOn(_ callParticipants: [CallParticipant]) {
-        callParticipants.forEach { callParticipant in
+    func onVideoOn(_ callParticipants: [CallParticipant]?) {
+        callParticipants?.forEach { callParticipant in
             if let callParticipantUserRTC = usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                 callParticipantUserRTC.callParticipant.video = true
                 callParticipantUserRTC.videoRTC.setTrackEnable(true)
@@ -277,8 +277,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         objectWillChaneWithAnimation()
     }
 
-    func onVideoOff(_ callParticipants: [CallParticipant]) {
-        callParticipants.forEach { callParticipant in
+    func onVideoOff(_ callParticipants: [CallParticipant]?) {
+        callParticipants?.forEach { callParticipant in
             if let callParticipantUserRTC = usersRTC.first(where: { $0.callParticipant == callParticipant }) {
                 callParticipantUserRTC.callParticipant.video = false
                 callParticipantUserRTC.videoRTC.setTrackEnable(false)
@@ -287,8 +287,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         objectWillChaneWithAnimation()
     }
 
-    func onCallParticipantJoined(_ callParticipants: [CallParticipant]) {
-        callParticipants.forEach { callParticipant in
+    func onCallParticipantJoined(_ callParticipants: [CallParticipant]?) {
+        callParticipants?.forEach { callParticipant in
             offlineParticipants.removeAll(where: { $0.id == callParticipant.userId })
         }
         addCallParicipants(callParticipants)
@@ -403,8 +403,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         ChatManager.activeInstance.sendCallSticker(.init(callId: callId, stickers: [sticker]))
     }
 
-    func onCallSticker(_ sticker: StickerResponse) {
-        if sticker.participant.id != AppState.shared.user?.id {
+    func onCallSticker(_ sticker: StickerResponse?) {
+        if sticker?.participant.id != AppState.shared.user?.id {
             newSticker = sticker
             Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] _ in
                 self?.newSticker = nil

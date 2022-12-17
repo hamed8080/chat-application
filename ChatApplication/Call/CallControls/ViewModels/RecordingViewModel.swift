@@ -45,10 +45,10 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
 
     @objc func callEvent(_ notification: NSNotification) {
         guard let type = (notification.object as? CallEventTypes) else { return }
-        if case let .startCallRecording(participant) = type {
-            onCallStartRecording(ChatResponse(result: participant))
-        } else if case let .stopCallRecording(participant) = type {
-            onCallStopRecording(ChatResponse(result: participant))
+        if case let .startCallRecording(response) = type {
+            onCallStartRecording(response)
+        } else if case let .stopCallRecording(response) = type {
+            onCallStopRecording(response)
         }
     }
 

@@ -142,19 +142,19 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func onCallEvent(_ event: CallEventTypes) {
         switch event {
-        case let .callEnded(callId):
-            if callId == groupCallIdToJoin {
+        case let .callEnded(response):
+            if response?.result == groupCallIdToJoin {
                 groupCallIdToJoin = nil
                 objectWillChange.send()
             }
-        case let .groupCallCanceled(call):
-            if call.callId == groupCallIdToJoin {
-                groupCallIdToJoin = call.callId
+        case let .groupCallCanceled(response):
+            if response.result?.callId == groupCallIdToJoin {
+                groupCallIdToJoin = response.result?.callId
                 objectWillChange.send()
             }
-        case let .callReceived(call):
-            if call.conversation?.id == threadId {
-                groupCallIdToJoin = call.callId
+        case let .callReceived(response):
+            if response.result?.conversation?.id == threadId {
+                groupCallIdToJoin = response.result?.callId
                 objectWillChange.send()
             }
         default:
