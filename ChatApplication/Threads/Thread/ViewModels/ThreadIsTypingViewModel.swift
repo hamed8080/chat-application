@@ -40,7 +40,7 @@ class ThreadIsTypingViewModel: ObservableObject {
     private var lastIsTypingTime = Date()
 
     private func startTypingTimer(_ event: SystemEventTypes) {
-        if case let .systemMessage(message, _, id) = event, message.smt == .isTyping, isTyping == false, threadId == id {
+        if case let .systemMessage(response) = event, response.result?.smt == .isTyping, isTyping == false, threadId == response.subjectId {
             lastIsTypingTime = Date()
             isTyping = true
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
