@@ -46,10 +46,12 @@ class ThreadsViewModel: ObservableObject {
 
     func onThreadEvent(_ event: ThreadEventTypes?) {
         switch event {
-        case let .threadNew(newThreads):
-            appendThreads(threads: [newThreads])
-        case .threadDeleted(threadId: let threadId, participant: _):
-            if let thread = threadsRowVM.first(where: { $0.thread.id == threadId }) {
+        case let .threadNew(response):
+            if let newThreads = response.result {
+                appendThreads(threads: [newThreads])
+            }
+        case let .threadDeleted(response):
+            if let threadId = response.subjectId, let thread = threadsRowVM.first(where: { $0.thread.id == threadId }) {
                 removeThreadVM(thread)
             }
         default:
@@ -58,8 +60,8 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func onNewMessage(_ event: MessageEventTypes) {
-        if case let .messageNew(message) = event, let threadVM = threadsRowVM.first(where: { $0.threadId == message.conversation?.id }) {
-            threadVM.thread.time = message.conversation?.time
+        if case let .messageNew(response) = event, let threadVM = threadsRowVM.first(where: { $0.threadId == response.result?.conversation?.id }) {
+            threadVM.thread.time = response.result?.conversation?.time
             sort()
         }
     }

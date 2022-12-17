@@ -81,7 +81,7 @@ class ImageLoader: ObservableObject {
     }
 
     private func getFromSDK() {
-        ChatManager.activeInstance.getImage(req: .init(hashCode: hashCode, size: size ?? .LARG)) { _ in
+        ChatManager.activeInstance.getImage(.init(hashCode: hashCode, size: size ?? .LARG)) { _ in
         } completion: { [weak self] data, _, _ in
             self?.update(data: data)
             self?.storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.

@@ -30,9 +30,9 @@ class ParticipantsViewModel: ObservableObject {
         NotificationCenter.default.publisher(for: threadEventNotificationName)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] event in
-                if case let .threadRemoveParticipants(removedParticipants) = event {
+                if case let .threadRemoveParticipants(response) = event {
                     withAnimation {
-                        removedParticipants.forEach { participant in
+                        response.result?.forEach { participant in
                             self?.removeParticipant(participant)
                         }
                     }

@@ -170,7 +170,7 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
 
     private func downloadFile() {
         let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: true)
-        ChatManager.activeInstance.getFile(req: req) { downloadProgress in
+        ChatManager.activeInstance.getFile(req) { downloadProgress in
             self.downloadPercent = downloadProgress.percent
         } completion: { [weak self] data, _, _ in
             self?.onResponse(data: data)
@@ -183,7 +183,7 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
 
     private func downloadImage() {
         let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true, isThumbnail: false, size: .ACTUAL)
-        ChatManager.activeInstance.getImage(req: req) { [weak self] downloadProgress in
+        ChatManager.activeInstance.getImage(req) { [weak self] downloadProgress in
             self?.downloadPercent = downloadProgress.percent
         } completion: { [weak self] data, _, _ in
             self?.onResponse(data: data)
@@ -197,7 +197,7 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     private func getImageIfExistInCache(isThumbnail _: Bool = true) {
         if AppState.shared.cache.cacheFileManager.getImage(hashCode: fileHashCode) != nil {
             let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: false, isThumbnail: false, size: .ACTUAL)
-            ChatManager.activeInstance.getImage(req: req) { _ in
+            ChatManager.activeInstance.getImage(req) { _ in
             } completion: { _, _, _ in
             } cacheResponse: { [weak self] data, _, _ in
                 self?.onResponse(data: data)
@@ -216,7 +216,7 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     private func getFileIfExistInCache() {
         if AppState.shared.cache.cacheFileManager.getFile(hashCode: fileHashCode) != nil {
             let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: false)
-            ChatManager.activeInstance.getFile(req: req) { _ in
+            ChatManager.activeInstance.getFile(req) { _ in
             } completion: { _, _, _ in
             } cacheResponse: { [weak self] data, _, _ in
                 self?.onResponse(data: data)

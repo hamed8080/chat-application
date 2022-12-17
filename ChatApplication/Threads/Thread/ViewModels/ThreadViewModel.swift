@@ -114,10 +114,14 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func onThreadEvent(_ event: ThreadEventTypes?) {
         switch event {
-        case let .lastMessageDeleted(thread), let .lastMessageEdited(thread):
-            onLastMessageChanged(thread)
-        case let .threadUnreadCountUpdated(threadId, unreadCount):
-            updateUnreadCount(threadId, unreadCount)
+        case let .lastMessageDeleted(response), let .lastMessageEdited(response):
+            if let thread = response.result {
+                onLastMessageChanged(thread)
+            }
+        case let .threadUnreadCountUpdated(response):
+            if let threadId = response.subjectId, let unreadCount = response.result?.unreadCount {
+                updateUnreadCount(threadId, unreadCount)
+            }
         default:
             break
         }
@@ -125,22 +129,22 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
-        case let .messageNew(message):
-            if threadId == message.conversation?.id {
+        case let .messageNew(response):
+            if threadId == response.subjectId, let message = response.result {
                 appendMessages([message])
                 scrollToLastMessageIfLastMessageIsVisible()
             }
-        case let .messageSent(sentResponse):
-            if threadId == sentResponse.threadId {
-                onSent(sentResponse, nil, nil)
+        case let .messageSent(response):
+            if threadId == response.result?.threadId, let message = response.result {
+                onSent(message, nil, nil)
             }
-        case let .messageDelivery(deliverResponse):
-            if threadId == deliverResponse.threadId {
-                onDeliver(deliverResponse, nil, nil)
+        case let .messageDelivery(response):
+            if threadId == response.result?.threadId, let message = response.result {
+                onDeliver(message, nil, nil)
             }
-        case let .messageSeen(seenResponse):
-            if threadId == seenResponse.threadId {
-                onSeen(seenResponse, nil, nil)
+        case let .messageSeen(response):
+            if threadId == response.result?.threadId, let message = response.result {
+                onSeen(message, nil, nil)
             }
         default:
             break
