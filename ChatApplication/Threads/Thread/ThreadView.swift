@@ -25,8 +25,15 @@ struct ThreadView: View {
         ZStack {
             VStack {
                 ThreadPinMessage(message: viewModel.messages.filter { $0.pinned == true }.first)
-                ThreadMessagesList(isInEditMode: $isInEditMode)
-                    .environmentObject(viewModel)
+                ZStack {
+                    ThreadMessagesList(isInEditMode: $isInEditMode)
+                        .environmentObject(viewModel)
+                    ThreadSearchList(searchMessageText: $searchMessageText)
+                        .environmentObject(viewModel)
+                        .zIndex(1)
+                }
+                .animation(.easeInOut, value: searchMessageText.count)
+                .animation(.easeInOut, value: viewModel.searchedMessages.count)
                 SendContainer(showAttachmentDialog: $showAttachmentDialog,
                               deleteMessagesDialog: $deleteDialaog,
                               showSelectThreadToForward: $showSelectThreadToForward)
@@ -61,21 +68,7 @@ struct ThreadView: View {
         .onChange(of: searchMessageText) { value in
             viewModel.searchInsideThread(text: value)
         }
-        .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat") {
-            if searchMessageText.count == 0 {
-                Text("Nothing found.")
-                    .foregroundColor(.gray.opacity(0.9))
-            } else {
-                ForEach(viewModel.searchedMessages, id: \.self) { message in
-                    SearchMessageRow(message: message)
-                        .onAppear {
-                            if message == viewModel.searchedMessages.last {
-                                viewModel.searchInsideThread(text: searchMessageText, offset: viewModel.searchedMessages.count)
-                            }
-                        }
-                }
-            }
-        }
+        .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
         .animation(.easeInOut, value: showDatePicker)
         .animation(.easeInOut, value: viewModel.messages)
         .animation(.easeInOut, value: viewModel.messages.count)
@@ -170,7 +163,6 @@ struct ThreadMessagesList: View {
     @State var scrollingUP = false
     @Environment(\.colorScheme) var colorScheme
     @State private var scrollViewHeight = CGFloat.infinity
-
     @Namespace var scrollViewNameSpace
 
     var body: some View {
@@ -270,6 +262,39 @@ struct ThreadMessagesList: View {
     }
 }
 
+struct ThreadSearchList: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+    @Binding var searchMessageText: String
+
+    var body: some View {
+        if searchMessageText.count > 0, viewModel.searchedMessages.count > 0 {
+            ScrollView {
+                LazyVStack {
+                    ForEach(viewModel.searchedMessages, id: \.id) { message in
+                        SearchMessageRow(message: message)
+                            .onAppear {
+                                if message == viewModel.searchedMessages.last {
+                                    viewModel.searchInsideThread(text: searchMessageText, offset: viewModel.searchedMessages.count)
+                                }
+                            }
+                    }
+                }
+            }
+            .padding()
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+            .transition(.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .bottom)))
+            .background(.ultraThickMaterial)
+        } else if searchMessageText.count > 0 {
+            ZStack {
+                Text("Nothing found.")
+                    .font(.title2.bold())
+            }
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+            .background(.ultraThickMaterial)
+        }
+    }
+}
+
 struct ThreadPinMessage: View {
     let message: Message?
 
@@ -293,13 +318,9 @@ struct ThreadPinMessage: View {
 
 struct SendContainer: View {
     @EnvironmentObject var viewModel: ThreadViewModel
-
     @Binding var showAttachmentDialog: Bool
-
     @Binding var deleteMessagesDialog: Bool
-
     @Binding var showSelectThreadToForward: Bool
-
     @State var text: String = ""
 
     var body: some View {
@@ -405,15 +426,29 @@ struct SendContainer: View {
 }
 
 struct ThreadView_Previews: PreviewProvider {
-    static var previews: some View {
+    static var searchMessageText: Binding<String> {
+        Binding(get: { "Hello" }, set: { _ in })
+    }
+
+    static var vm: ThreadViewModel {
         let vm = ThreadViewModel(thread: MockData.thread)
-        ThreadView(viewModel: vm, showAttachmentDialog: false)
+        vm.searchedMessages = MockData.generateMessages(count: 15)
+        vm.objectWillChange.send()
+        return vm
+    }
+
+    static var previews: some View {
+        ThreadView(viewModel: vm, showAttachmentDialog: false, searchMessageText: "s")
             .environmentObject(AppState.shared)
             .onAppear {
-//                vm.toggleRecording()
-//                vm.setReplyMessage(MockData.message)
-//                vm.setForwardMessage(MockData.message)
+                //                vm.toggleRecording()
+                //                vm.setReplyMessage(MockData.message)
+                //                vm.setForwardMessage(MockData.message)
                 vm.isInEditMode = false
             }
+
+        ThreadSearchList(searchMessageText: searchMessageText)
+            .previewDisplayName("ThreadSearchList")
+            .environmentObject(vm)
     }
 }

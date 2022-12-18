@@ -25,6 +25,7 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     var canAddParticipant: Bool { get }
     var hasNext: Bool { get set }
     var count: Int { get }
+    var searchTextTimer: Timer? { get set }
     func delete()
     func leave()
     func clearHistory()
@@ -56,7 +57,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     @Published var thread: Conversation
     @Published var isLoading = false
-    @Published var searchedMessages: [Message] = []
     @Published var messages: [Message] = []
     @Published var selectedMessages: [Message] = []
     @Published var editMessage: Message?
@@ -65,6 +65,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     @Published var imageLoader: ImageLoader
     @Published var isInEditMode: Bool = false
     @Published var exportMessagesVM: ExportMessagesViewModelProtocol
+    var searchedMessages: [Message] = []
     var readOnly = false
     var textMessage: String?
     var canScrollToBottomOfTheList: Bool = false
@@ -78,6 +79,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
     var signalMessageText: String?
     var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
+    var searchTextTimer: Timer?
 
     weak var forwardMessage: Message? {
         didSet {
@@ -260,12 +262,25 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func searchInsideThread(text: String, offset: Int = 0) {
-//        searchedMessages.removeAll()
+        searchTextTimer?.invalidate()
+        searchTextTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
+            if offset == 0 {
+                self?.searchedMessages.removeAll()
+                self?.objectWillChange.send()
+            }
+            self?.doSearch(text: text, offset: offset)
+        }
+    }
+
+    func doSearch(text: String, offset: Int = 0) {
         guard text.count >= 2 else { return }
         let req = GetHistoryRequest(threadId: threadId, count: 50, offset: offset, query: "\(text)")
         ChatManager.activeInstance.getHistory(req) { [weak self] response in
-            if let messages = response.result {
-                self?.searchedMessages.append(contentsOf: messages)
+            response.result?.forEach { message in
+                if !(self?.searchedMessages.contains(where: { $0.id == message.id }) ?? false) {
+                    self?.searchedMessages.append(message)
+                    self?.objectWillChange.send()
+                }
             }
         }
     }
