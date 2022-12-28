@@ -45,22 +45,25 @@ class ChatDelegateImplementation: ChatDelegate {
             TokenManager.shared.initSetIsLogin()
             let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken
             print("token is: \(token)")
+            let asyncConfig = AsyncConfigBuilder()
+                .socketAddress(config.socketAddresss)
+                .reconnectCount(Int.max)
+                .reconnectOnClose(true)
+                .appId("PodChat")
+                .serverName(config.serverName)
+                .isDebuggingLogEnabled(true)
+                .build()
 
-            let asyncConfig = AsyncConfig(socketAddress: config.socketAddresss,
-                                          serverName: config.serverName,
-                                          appId: "PodChat",
-                                          reconnectCount: Int.max,
-                                          reconnectOnClose: true,
-                                          isDebuggingLogEnabled: false)
-            let chatConfig = ChatConfig(asyncConfig: asyncConfig,
-                                        token: token,
-                                        ssoHost: config.ssoHost,
-                                        platformHost: config.platformHost,
-                                        fileServer: config.fileServer,
-                                        enableCache: true,
-                                        msgTTL: 800_000, // for integeration server need to be long time
-                                        isDebuggingLogEnabled: true,
-                                        enableNotificationLogObserver: true)
+            let chatConfig = ChatConfigBuilder(asyncConfig)
+                .token(token)
+                .ssoHost(config.ssoHost)
+                .platformHost(config.platformHost)
+                .fileServer(config.fileServer)
+                .enableCache(true)
+                .msgTTL(800_000) // for integeration server need to be long time
+                .isDebuggingLogEnabled(true)
+                .enableNotificationLogObserver(true)
+                .build()
             ChatManager.instance.createInstance(config: chatConfig)
             ChatManager.activeInstance.delegate = self
             ChatManager.activeInstance.connect()
@@ -68,15 +71,7 @@ class ChatDelegateImplementation: ChatDelegate {
         }
     }
 
-    func chatError(errorCode: Int, errorMessage: String, errorResult: Any?) {
-        if errorCode == 21 || errorCode == 401 {
-            TokenManager.shared.getNewTokenWithRefreshToken()
-            AppState.shared.connectionStatus = .unauthorized
-        }
-        LogViewModel.addToLog(logResult: LogResult(json: "Error just happened: code\(errorCode) message:\(errorMessage) errorContent:\(errorResult.debugDescription)", receive: true))
-    }
-
-    func chatState(state: ChatState, currentUser: User?, error: ChatError?) {
+    func chatState(state: ChatState, currentUser: User?, error _: ChatError?) {
         switch state {
         case .connecting:
             print("🔄 chat connecting")
@@ -94,13 +89,14 @@ class ChatDelegateImplementation: ChatDelegate {
             AppState.shared.connectionStatus = .connected
             NotificationCenter.default.post(name: connectName, object: nil)
         }
-
-        if let error = error {
-            LogViewModel.addToLog(logResult: LogResult(json: "Error just happened chat state changed: code\(error.code) message:\(error.message ?? "nil") errorContent:\(error.content ?? "nil")", receive: true))
-        }
     }
 
     func chatError(error: ChatError) {
+        if error.code == 21 || error.code == 401 {
+            TokenManager.shared.getNewTokenWithRefreshToken()
+            AppState.shared.connectionStatus = .unauthorized
+        }
+        LogViewModel.addToLog(logResult: LogResult(json: "Error just happened: code\(error.code ?? 0) message:\(error.message ?? "") errorContent:\(error.message ?? "")", receive: true))
         print(error)
     }
 

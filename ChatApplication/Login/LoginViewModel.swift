@@ -105,7 +105,7 @@ class TokenManager: ObservableObject {
     static let ssoTokenCreateDate = "ssoTokenCreateDate"
 
     private init() {
-        _ = getSSOTokenFromUserDefaults() // need first time app luanch to set hasToken
+        getSSOTokenFromUserDefaults() // need first time app luanch to set hasToken
     }
 
     func getNewTokenWithRefreshToken() {
@@ -127,6 +127,7 @@ class TokenManager: ObservableObject {
         }
     }
 
+    @discardableResult
     func getSSOTokenFromUserDefaults() -> SSOTokenResponseResult? {
         if let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey), let ssoToken = try? JSONDecoder().decode(SSOTokenResponseResult.self, from: data) {
             return ssoToken
