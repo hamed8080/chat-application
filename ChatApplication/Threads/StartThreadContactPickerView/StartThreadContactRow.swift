@@ -10,9 +10,7 @@ import SwiftUI
 
 struct StartThreadContactRow: View {
     @State private var isSelected = false
-
     @Binding public var isInMultiSelectMode: Bool
-
     @EnvironmentObject var viewModel: ContactViewModel
     var contact: Contact { viewModel.contact }
 

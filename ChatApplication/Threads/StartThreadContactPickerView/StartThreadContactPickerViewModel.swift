@@ -11,9 +11,7 @@ import Foundation
 
 class StartThreadContactPickerViewModel: ObservableObject {
     @Published var isLoading = false
-
     @Published private(set) var model = StartThreadModel()
-
     private(set) var cancellableSet: Set<AnyCancellable> = []
 
     init() {

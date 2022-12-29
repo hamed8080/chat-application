@@ -13,7 +13,6 @@ class SettingViewModel: ObservableObject {
     @Published var currentUser: User?
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private(set) var firstSuccessResponse = false
-
     @Published var imageLoader: ImageLoader
 
     init() {

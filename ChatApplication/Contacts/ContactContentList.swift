@@ -10,11 +10,8 @@ import SwiftUI
 
 struct ContactContentList: View {
     @EnvironmentObject var viewModel: ContactsViewModel
-
     @State var modifyContactSheet = false
-
     @State var isInSelectionMode = false
-
     @State var deleteDialog = false
 
     var body: some View {

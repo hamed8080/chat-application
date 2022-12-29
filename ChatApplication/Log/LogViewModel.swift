@@ -13,13 +13,9 @@ import SwiftUI
 
 class LogViewModel: ObservableObject {
     @Published var logs: [Log] = []
-
     @Published var viewContext: NSManagedObjectContext
-
     @Published var searchText: String = ""
-
     fileprivate static let NotificationKey = "InsertLog"
-
     private(set) var cancellableSet: Set<AnyCancellable> = []
 
     init(isPreview: Bool = false) {

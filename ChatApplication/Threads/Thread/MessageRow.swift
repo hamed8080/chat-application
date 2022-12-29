@@ -10,13 +10,9 @@ import SwiftUI
 
 struct MessageRow: View {
     @ObservedObject var viewModel: MessageViewModel
-
     @EnvironmentObject var threadViewModel: ThreadViewModel
-
     @State private(set) var showParticipants: Bool = false
-
     @Binding var isInEditMode: Bool
-
     @State private var isSelected = false
 
     var body: some View {
@@ -56,11 +52,8 @@ struct MessageRow: View {
 
 struct CallMessageType: View {
     @EnvironmentObject var viewModel: MessageViewModel
-
     @EnvironmentObject var threadViewModel: ThreadViewModel
-
     @Environment(\.colorScheme) var colorScheme
-
     var message: Message { viewModel.message }
 
     var body: some View {
@@ -87,9 +80,7 @@ struct CallMessageType: View {
 
 struct TextMessageType: View {
     @EnvironmentObject var viewModel: MessageViewModel
-
     @EnvironmentObject var threadViewModel: ThreadViewModel
-
     var message: Message { viewModel.message }
 
     var body: some View {
@@ -235,7 +226,6 @@ struct TextMessageType: View {
 
 struct ForwardMessageRow: View {
     var forwardInfo: ForwardInfo
-
     @State var showReadOnlyThreadView: Bool = false
 
     var body: some View {
@@ -272,9 +262,7 @@ struct ForwardMessageRow: View {
 
 struct UploadMessageType: View {
     @EnvironmentObject var viewModel: MessageViewModel
-
     @EnvironmentObject var threadViewModel: ThreadViewModel
-
     var message: Message { viewModel.message }
 
     var body: some View {

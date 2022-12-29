@@ -11,15 +11,10 @@ import SwiftUI
 
 struct ThreadDetailView: View {
     @EnvironmentObject var viewModel: ThreadViewModel
-
     @State var threadTitle: String = ""
-
     @State var threadDescription: String = ""
-
     @State var isInEditMode = false
-
     @State var showImagePicker: Bool = false
-
     @State private var image: UIImage?
     @State private var assetResource: [PHAssetResource]?
     @State var searchText: String = ""

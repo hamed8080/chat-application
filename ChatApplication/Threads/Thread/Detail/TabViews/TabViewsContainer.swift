@@ -10,7 +10,6 @@ import SwiftUI
 
 struct TabViewsContainer: View {
     var thread: Conversation
-
     @State var selectedTabIndex: Int
 
     var body: some View {

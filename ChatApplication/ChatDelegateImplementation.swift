@@ -38,13 +38,11 @@ class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
-        if let config = Config.getConfig(.main) {
+        if let config = Config.getConfig(.sandbox) {
             if config.server == "Integeration" {
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponseResult(accessToken: config.debugToken, expiresIn: Int.max))
             }
             TokenManager.shared.initSetIsLogin()
-            let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken
-            print("token is: \(token)")
             let asyncConfig = AsyncConfigBuilder()
                 .socketAddress(config.socketAddresss)
                 .reconnectCount(Int.max)
@@ -53,9 +51,8 @@ class ChatDelegateImplementation: ChatDelegate {
                 .serverName(config.serverName)
                 .isDebuggingLogEnabled(true)
                 .build()
-
             let chatConfig = ChatConfigBuilder(asyncConfig)
-                .token(token)
+                .token("")
                 .ssoHost(config.ssoHost)
                 .platformHost(config.platformHost)
                 .fileServer(config.fileServer)
@@ -66,8 +63,12 @@ class ChatDelegateImplementation: ChatDelegate {
                 .build()
             ChatManager.instance.createInstance(config: chatConfig)
             ChatManager.activeInstance.delegate = self
-            ChatManager.activeInstance.connect()
             AppState.shared.setCachedUser()
+            if let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken {
+                print("token is: \(token)")
+                ChatManager.activeInstance.setToken(newToken: token)
+                ChatManager.activeInstance.connect()
+            }
         }
     }
 
@@ -88,6 +89,8 @@ class ChatDelegateImplementation: ChatDelegate {
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .connected
             NotificationCenter.default.post(name: connectName, object: nil)
+        case .uninitialized:
+            print("Chat object is not initialized.")
         }
     }
 

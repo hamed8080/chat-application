@@ -9,7 +9,6 @@ import SwiftUI
 
 struct AttachmentDialog: View {
     @Binding var showAttachmentDialog: Bool
-
     @StateObject var viewModel: ActionSheetViewModel
 
     var body: some View {

@@ -11,7 +11,6 @@ import SwiftUI
 
 struct ParticipantRow: View {
     private(set) var participant: Participant
-
     @ObservedObject var imageLoader: ImageLoader
 
     init(participant: Participant) {

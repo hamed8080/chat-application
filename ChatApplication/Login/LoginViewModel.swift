@@ -87,9 +87,12 @@ class LoginViewModel: ObservableObject {
                 guard let self = self else { return }
                 // save refresh token
                 if let ssoToken = response.result {
-                    self.model.setState(.successLoggedIn)
                     ChatManager.activeInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: true)
                     self.tokenManager?.saveSSOToken(ssoToken: ssoToken)
+                    if ChatManager.activeInstance.state != .chatReady {
+                        ChatManager.activeInstance.connect()
+                    }
+                    self.model.setState(.successLoggedIn)
                 }
             }
     }
@@ -122,6 +125,7 @@ class TokenManager: ObservableObject {
                     if let ssoToken = response.result {
                         self.saveSSOToken(ssoToken: ssoToken)
                         ChatManager.activeInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
+                        AppState.shared.connectionStatus = .connected
                     }
                 }
         }

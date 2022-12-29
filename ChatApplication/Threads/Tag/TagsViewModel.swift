@@ -139,7 +139,7 @@ class TagsViewModel: ObservableObject {
     }
 
     func editedTag(_ tag: Tag) {
-        let tag = Tag(id: tag.id, name: tag.name, owner: tag.owner, active: tag.active, tagParticipants: tags.first(where: { $0.id == tag.id })?.tagParticipants)
+        let tag = Tag(id: tag.id, name: tag.name, active: tag.active, tagParticipants: tags.first(where: { $0.id == tag.id })?.tagParticipants)
         removeTag(tag)
         appendTags(tags: [tag])
     }
@@ -148,7 +148,7 @@ class TagsViewModel: ObservableObject {
         if var tag = tags.first(where: { $0.id == tagId }) {
             tag.tagParticipants?.removeAll(where: { cached in tagParticipants.contains(where: { cached.id == $0.id }) })
             let tagParticipants = tag.tagParticipants
-            let tag = Tag(id: tagId, name: tag.name, owner: tag.owner, active: tag.active, tagParticipants: tagParticipants)
+            let tag = Tag(id: tagId, name: tag.name, active: tag.active, tagParticipants: tagParticipants)
             removeTag(tag)
             appendTags(tags: [tag])
         }

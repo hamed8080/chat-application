@@ -23,7 +23,7 @@ struct Config: Codable {
     var platformHost: String
     var fileServer: String
     var serverName: String
-    var debugToken: String
+    var debugToken: String?
     var server: String
 }
 

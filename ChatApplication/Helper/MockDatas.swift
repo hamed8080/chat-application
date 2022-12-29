@@ -161,11 +161,9 @@ final class MockData {
 
     /// TAG
     static var tag: Tag {
-        let owner = participant
         let tag = Tag(
             id: 0,
             name: "Social",
-            owner: owner,
             active: true,
             tagParticipants: generateTagParticipant()
         )

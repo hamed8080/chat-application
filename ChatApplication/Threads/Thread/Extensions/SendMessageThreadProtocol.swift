@@ -29,7 +29,6 @@ protocol SendMessageThreadProtocol {
     func toggleSelectedMessage(_ message: Message, _ isSelected: Bool)
     func appendSelectedMessage(_ message: Message)
     func removeSelectedMessage(_ message: Message)
-
     func resendUnsetMessage(_ message: Message)
     func onUnSentEditCompletionResult(_ response: ChatResponse<Message>)
     func cancelUnsentMessage(_ uniqueId: String)

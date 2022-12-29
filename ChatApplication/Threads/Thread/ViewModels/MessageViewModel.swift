@@ -28,8 +28,8 @@ class MessageViewModel: ObservableObject, MessageViewModelProtocol {
         self.message = message
 
         imageLoader = ImageLoader(url: message.participant?.image ?? "", userName: message.participant?.name ?? message.participant?.username, size: .SMALL)
-        imageLoader.$image.sink { _ in
-            self.objectWillChange.send()
+        imageLoader.$image.sink { [weak self] _ in
+            self?.objectWillChange.send()
         }
         .store(in: &cancellableSet)
         imageLoader.fetch()
