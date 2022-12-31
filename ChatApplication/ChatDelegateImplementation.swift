@@ -38,7 +38,7 @@ class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
-        if let config = Config.getConfig(.sandbox) {
+        if let config = Config.getConfig(.main) {
             if config.server == "Integeration" {
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponseResult(accessToken: config.debugToken, expiresIn: Int.max))
             }
@@ -60,6 +60,7 @@ class ChatDelegateImplementation: ChatDelegate {
                 .msgTTL(800_000) // for integeration server need to be long time
                 .isDebuggingLogEnabled(true)
                 .enableNotificationLogObserver(true)
+                .appGroup(AppGroup.group)
                 .build()
             ChatManager.instance.createInstance(config: chatConfig)
             ChatManager.activeInstance.delegate = self

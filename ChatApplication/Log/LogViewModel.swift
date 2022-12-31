@@ -88,7 +88,7 @@ class LogViewModel: ObservableObject {
                 logs.removeAll(where: { $0 == log })
             }
         }
-        AppState.shared.cache.save()
+        AppState.shared.cache?.save()
     }
 
     public class func addToLog(logResult: LogResult) {
@@ -98,7 +98,7 @@ class LogViewModel: ObservableObject {
                 log.json = logResult.json
                 log.received = logResult.receive
                 log.createDate = Date()
-                AppState.shared.cache.save()
+                AppState.shared.cache?.save()
                 NotificationCenter.default.post(name: NSNotification.Name(LogViewModel.NotificationKey), object: log)
             }
         }

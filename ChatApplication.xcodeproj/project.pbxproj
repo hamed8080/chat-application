@@ -20,6 +20,10 @@
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
+		05238719295F52CC00650241 /* URL+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05238718295F52CC00650241 /* URL+.swift */; };
+		0523871A295F531B00650241 /* URL+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05238718295F52CC00650241 /* URL+.swift */; };
+		0523871C295F7EBD00650241 /* Image+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0523871B295F7EBD00650241 /* Image+.swift */; };
+		0523871D295F7F3A00650241 /* Image+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0523871B295F7EBD00650241 /* Image+.swift */; };
 		0525CDBC292CA06B004E1C7B /* ViewOffsetKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */; };
 		052D57362795323C0075BF8F /* ManageTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D57352795323C0075BF8F /* ManageTagView.swift */; };
 		052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D5737279539840075BF8F /* TagParticipantRow.swift */; };
@@ -61,6 +65,7 @@
 		05C0098B2931F61D002ED678 /* Contact+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C0098A2931F61D002ED678 /* Contact+.swift */; };
 		05C0098D2931F760002ED678 /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C0098C2931F760002ED678 /* ContactViewModel.swift */; };
 		05C2FDB229276F0A00040D10 /* MessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C2FDB129276F0A00040D10 /* MessageViewModel.swift */; };
+		05C42B0F29606F4000A870B3 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C42B0E29606F4000A870B3 /* Data+.swift */; };
 		05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */; };
 		05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */; };
 		05DED7662904281400C8236D /* ExportMessagesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DED7652904281400C8236D /* ExportMessagesViewModel.swift */; };
@@ -190,6 +195,8 @@
 		051C8EF9292235300078AD7E /* FanapPodAsyncSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FanapPodAsyncSDK; path = ../FanapPodAsyncSDK; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
+		05238718295F52CC00650241 /* URL+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+.swift"; sourceTree = "<group>"; };
+		0523871B295F7EBD00650241 /* Image+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+.swift"; sourceTree = "<group>"; };
 		0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOffsetKey.swift; sourceTree = "<group>"; };
 		052D57352795323C0075BF8F /* ManageTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagView.swift; sourceTree = "<group>"; };
 		052D5737279539840075BF8F /* TagParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagParticipantRow.swift; sourceTree = "<group>"; };
@@ -227,6 +234,7 @@
 		05C0098A2931F61D002ED678 /* Contact+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Contact+.swift"; sourceTree = "<group>"; };
 		05C0098C2931F760002ED678 /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
 		05C2FDB129276F0A00040D10 /* MessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewModel.swift; sourceTree = "<group>"; };
+		05C42B0E29606F4000A870B3 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
 		05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryToggleStyle.swift; sourceTree = "<group>"; };
 		05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToViewModel.swift; sourceTree = "<group>"; };
 		05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToThreadView.swift; sourceTree = "<group>"; };
@@ -570,6 +578,9 @@
 				05F6C70F2808BB1800C2EEF4 /* Message+.swift */,
 				059914AF29262FF60070BD89 /* Conversation+.swift */,
 				05C0098A2931F61D002ED678 /* Contact+.swift */,
+				05238718295F52CC00650241 /* URL+.swift */,
+				0523871B295F7EBD00650241 /* Image+.swift */,
+				05C42B0E29606F4000A870B3 /* Data+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -922,6 +933,7 @@
 				AC122EC2266B82A000C0630F /* ThreadContentList.swift in Sources */,
 				05781CCE2902B0040064BDC3 /* ConnectionStatusToolbar.swift in Sources */,
 				057977B72805548000FE5EA4 /* UIColor.swift in Sources */,
+				05C42B0F29606F4000A870B3 /* Data+.swift in Sources */,
 				ACA6DA79271ABB2200286563 /* ActivityViewControllerWrapper.swift in Sources */,
 				0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */,
 				05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */,
@@ -974,6 +986,7 @@
 				055B26A227D5FA180098D585 /* LinkView.swift in Sources */,
 				AC6291992750E29600190975 /* UrlEX.swift in Sources */,
 				ACEAEDD7274CFA1100EC8252 /* AttachmentDialog.swift in Sources */,
+				05238719295F52CC00650241 /* URL+.swift in Sources */,
 				AC5411E4275631A90018C78D /* ColorEx.swift in Sources */,
 				050B1BE1292F8DEC0025D4ED /* ScrollToPositionProtocol.swift in Sources */,
 				051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */,
@@ -989,6 +1002,7 @@
 				AC5E388926F5B3D70016EFAA /* ListModifier.swift in Sources */,
 				05DED7662904281400C8236D /* ExportMessagesViewModel.swift in Sources */,
 				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
+				0523871C295F7EBD00650241 /* Image+.swift in Sources */,
 				AC0435FD26998D3E00B1C87B /* ParticipantsViewModel.swift in Sources */,
 				052D57362795323C0075BF8F /* ManageTagView.swift in Sources */,
 				AC48ED5E26F6F6AE00AB1A5D /* Routes.swift in Sources */,
@@ -1031,11 +1045,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC2E4748274B58EB0073E8E4 /* UserDefaultsEX.swift in Sources */,
+				0523871A295F531B00650241 /* URL+.swift in Sources */,
 				057977B82805551F00FE5EA4 /* ColorEx.swift in Sources */,
 				05F1E2322941D50100421C17 /* SSOTokenResponse.swift in Sources */,
 				AC2E474B274B6FB70073E8E4 /* AppGroup.swift in Sources */,
 				AC924CB8274A6D7300E33BD1 /* MyWidget.intentdefinition in Sources */,
 				057977B92805552E00FE5EA4 /* UIColor.swift in Sources */,
+				0523871D295F7F3A00650241 /* Image+.swift in Sources */,
 				AC924CB3274A6D7200E33BD1 /* MyWidget.swift in Sources */,
 				05781CCA29018F3C0064BDC3 /* EnvironmentEX.swift in Sources */,
 			);

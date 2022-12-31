@@ -13,9 +13,10 @@ import WidgetKit
 var previewThreads: [ThreadWithImageData] {
     var threads: [ThreadWithImageData] = []
     for i in 1 ... 12 {
-        threads.append(.init(thread: Conversation(id: i, title: "Ashly peterson"), imageData: UIImage(named: "avatar\(i).png")?.pngData()))
+        let imageURL = Bundle.main.url(forResource: "avatar\(i)", withExtension: "jpeg")
+        threads.append(.init(thread: Conversation(id: i, title: "Ashly peterson"), imageURL: imageURL))
     }
-    threads.append(.init(thread: Conversation(id: 12, title: "Ashly peterson"), imageData: nil))
+    threads.append(.init(thread: Conversation(id: 12, title: "Ashly peterson"), imageURL: nil))
     return threads
 }
 
@@ -38,9 +39,10 @@ struct Provider: IntentTimelineProvider {
         }
         var entries: [SimpleEntry] = []
         var threadsWithImage: [ThreadWithImageData] = []
+        let cache = CacheFileManager(group: AppGroup.group)
         threads.sorted(by: { $0.time ?? 0 > $1.time ?? 0 }).forEach { thread in
-            let imageData = CacheFileManager(enableCache: true).getImageProfileCache(url: thread.image ?? "", group: AppGroup.group)
-            threadsWithImage.append(.init(thread: thread, imageData: imageData))
+            let url = cache.filePathInGroup(url: URL(string: thread.image ?? "")!)
+            threadsWithImage.append(.init(thread: thread, imageURL: url))
         }
         let entry = SimpleEntry(threads: threadsWithImage)
         entries.append(entry)
@@ -52,7 +54,7 @@ struct Provider: IntentTimelineProvider {
 struct ThreadWithImageData: Identifiable {
     var id: Int { thread.id ?? 0 }
     let thread: Conversation
-    var imageData: Data?
+    var imageURL: URL?
 }
 
 struct SimpleEntry: TimelineEntry {
@@ -105,11 +107,11 @@ struct BlurNameWidgetView: View {
     }
 
     @ViewBuilder var smallView: some View {
-        if let thread = entry.threads.sorted(by: { $0.imageData?.count ?? 0 > $1.imageData?.count ?? 0 }).first {
+        if let thread = entry.threads.sorted(by: { $0.imageURL?.absoluteString.count ?? 0 > $1.imageURL?.absoluteString.count ?? 0 }).first {
             Link(destination: URL(string: "Widget://link-\(thread.thread.id ?? 0)")!) {
                 ZStack {
-                    if let data = thread.imageData {
-                        Image(uiImage: UIImage(data: data) ?? .init())
+                    if let imageURL = thread.imageURL, let cgImage = imageURL.imageScale(width: 128)?.image {
+                        Image(cgImage: cgImage)
                             .resizable()
                             .scaledToFill()
                     }
@@ -165,8 +167,8 @@ struct BlurNameWidgetView: View {
     func item(thread: ThreadWithImageData) -> some View {
         Link(destination: URL(string: "Widget://link-\(thread.thread.id ?? 0)")!) {
             ZStack {
-                if let data = thread.imageData {
-                    Image(uiImage: UIImage(data: data) ?? .init())
+                if let imageURL = thread.imageURL, let cgImage = imageURL.imageScale(width: 128)?.image {
+                    Image(cgImage: cgImage)
                         .resizable()
                         .scaledToFill()
 
@@ -246,11 +248,11 @@ struct SimpleWidgetView: View {
     }
 
     @ViewBuilder var smallView: some View {
-        if let thread = entry.threads.sorted(by: { $0.imageData?.count ?? 0 > $1.imageData?.count ?? 0 }).first {
+        if let thread = entry.threads.sorted(by: { $0.imageURL?.absoluteString.count ?? 0 > $1.imageURL?.absoluteString.count ?? 0 }).first {
             Link(destination: URL(string: "Widget://link-\(thread.thread.id ?? 0)")!) {
                 ZStack {
-                    if let data = thread.imageData {
-                        Image(uiImage: UIImage(data: data) ?? .init())
+                    if let imageURL = thread.imageURL, let cgImage = imageURL.imageScale(width: 128)?.image {
+                        Image(cgImage: cgImage)
                             .resizable()
                             .scaledToFill()
                     }
@@ -304,9 +306,9 @@ struct SimpleWidgetView: View {
 
     @ViewBuilder
     func item(thread: ThreadWithImageData) -> some View {
-        if let data = thread.imageData {
+        if let imageURL = thread.imageURL, let cgImage = imageURL.imageScale(width: 128)?.image {
             VStack(spacing: 4) {
-                Image(uiImage: UIImage(data: data) ?? .init())
+                Image(uiImage: UIImage(cgImage: cgImage))
                     .resizable()
                     .scaledToFit()
                     .frame(width: 52, height: 52)

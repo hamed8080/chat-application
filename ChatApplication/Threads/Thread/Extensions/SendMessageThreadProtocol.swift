@@ -171,8 +171,8 @@ extension ThreadViewModel: SendMessageThreadProtocol {
     }
 
     func cancelUnsentMessage(_ uniqueId: String) {
-        AppState.shared.cache.write(cacheType: .deleteQueue(uniqueId))
-        AppState.shared.cache.save()
+        AppState.shared.cache?.write(cacheType: .deleteQueue(uniqueId))
+        AppState.shared.cache?.save()
         onDeleteMessage(ChatResponse(uniqueId: uniqueId))
     }
 

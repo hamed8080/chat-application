@@ -12,7 +12,8 @@ class AppState: ObservableObject {
     static let shared = AppState()
     var user: User?
     var selectedThread: Conversation?
-    var cache: CacheFactory { CacheFactory(config: ChatManager.activeInstance.config) }
+    var cache: CacheFactory? { ChatManager.activeInstance.cache }
+    var cacheFileManager: CacheFileManagerProtocol? { ChatManager.activeInstance.cacheFileManager }
     @Published var callLogs: [URL]?
     @Published var connectionStatusString = ""
     @Published var showThreadView = false
@@ -34,7 +35,7 @@ class AppState: ObservableObject {
 
     // get cahe user from databse for working fast with something like showing message rows
     func setCachedUser() {
-        cache.get(useCache: true, cacheType: .userInfo) { (response: ChatResponse<User>) in
+        cache?.get(cacheType: .userInfo) { (response: ChatResponse<User>) in
             self.user = response.result
         }
     }

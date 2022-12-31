@@ -13,8 +13,8 @@ protocol ContactViewModelProtocol {
     var contact: Contact { get set }
     var contactId: Int? { get }
     var isSelected: Bool { get set }
-    var contactsVM: ContactsViewModel { get set }
-    init(contact: Contact, contactsVM: ContactsViewModel)
+    var contactsVM: ContactsViewModel? { get set }
+    init(contact: Contact, contactsVM: ContactsViewModel?)
     func blockOrUnBlock(_ contact: Contact)
     func onBlockUNBlockResponse(_ response: ChatResponse<BlockedContact>)
     func toggleSelectedContact()
@@ -25,7 +25,7 @@ class ContactViewModel: ObservableObject, ContactViewModelProtocol, Identifiable
     @Published var isSelected = false
     @Published var imageLoader: ImageLoader
     @Published var contact: Contact
-    var contactsVM: ContactsViewModel
+    weak var contactsVM: ContactsViewModel?
     var contactId: Int? { contact.id }
     var cancellableSet: Set<AnyCancellable> = []
 
@@ -37,12 +37,12 @@ class ContactViewModel: ObservableObject, ContactViewModelProtocol, Identifiable
         hasher.combine(contactId)
     }
 
-    required init(contact: Contact, contactsVM: ContactsViewModel) {
+    required init(contact: Contact, contactsVM: ContactsViewModel?) {
         self.contactsVM = contactsVM
         self.contact = contact
         imageLoader = ImageLoader(url: contact.image ?? contact.linkedUser?.image ?? "", userName: contact.firstName, size: .SMALL)
-        imageLoader.$image.sink { _ in
-            self.objectWillChange.send()
+        imageLoader.$image.sink { [weak self] _ in
+            self?.objectWillChange.send()
         }
         .store(in: &cancellableSet)
         imageLoader.fetch()
@@ -68,9 +68,9 @@ class ContactViewModel: ObservableObject, ContactViewModelProtocol, Identifiable
     func toggleSelectedContact() {
         isSelected.toggle()
         if isSelected {
-            contactsVM.addToSelctedContacts(contact)
+            contactsVM?.addToSelctedContacts(contact)
         } else {
-            contactsVM.removeToSelctedContacts(contact)
+            contactsVM?.removeToSelctedContacts(contact)
         }
     }
 

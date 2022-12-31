@@ -52,7 +52,7 @@ class TagsViewModel: ObservableObject {
     }
 
     func getOfflineTags() {
-        AppState.shared.cache.get(useCache: true, cacheType: .tags) { [weak self] (response: ChatResponse<[Tag]>) in
+        AppState.shared.cache?.get(cacheType: .tags) { [weak self] (response: ChatResponse<[Tag]>) in
             if let tags = response.result {
                 self?.appendTags(tags: tags)
             }
