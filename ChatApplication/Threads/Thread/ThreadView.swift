@@ -382,6 +382,8 @@ struct SendContainer: View {
                     Divider()
                 }
 
+                MentionList()
+
                 HStack {
                     Image(systemName: "paperclip")
                         .font(.system(size: 24))
@@ -413,14 +415,36 @@ struct SendContainer: View {
                 .opacity(viewModel.thread.type == .channel ? 0.3 : 1.0)
                 .disabled(viewModel.thread.type == .channel)
             }
+            .animation(.easeInOut, value: viewModel.mentionList.count)
             .onReceive(viewModel.$editMessage) { editMessage in
                 if let editMessage = editMessage {
                     text = editMessage.message ?? ""
                 }
             }
             .onChange(of: text) { newValue in
+                viewModel.searchForMention(newValue)
                 viewModel.textMessage = newValue
             }
+        }
+    }
+}
+
+struct MentionList: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+
+    var body: some View {
+        if viewModel.mentionList.count > 0 {
+            List(viewModel.mentionList) { participant in
+                ParticipantRow(participant: participant)
+                    .onTapGesture {
+                        viewModel.addToMentionList(participant)
+                    }
+            }
+            .listStyle(.plain)
+            .background(.ultraThickMaterial)
+            .transition(.asymmetric(insertion: .opacity, removal: .move(edge: .bottom)))
+        } else {
+            EmptyView()
         }
     }
 }
