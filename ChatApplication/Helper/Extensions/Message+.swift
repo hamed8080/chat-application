@@ -97,6 +97,10 @@ extension Message {
             return "face.smiling.fill"
         case .location:
             return "map.fill"
+        case .participantJoin:
+            return "person.crop.rectangle.badge.plus"
+        case .participantLeft:
+            return "door.right.hand.open"
         case .none:
             return "paperclip.circle.fill"
         case .some(.unknown):

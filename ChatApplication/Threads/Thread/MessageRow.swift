@@ -40,6 +40,10 @@ struct MessageRow: View {
                     TextMessageType()
                         .environmentObject(viewModel)
                         .environmentObject(threadViewModel)
+                } else if type == .participantJoin || type == .participantLeft {
+                    ParticipantMessageType()
+                        .environmentObject(viewModel)
+                        .environmentObject(threadViewModel)
                 } else if type == .endCall || type == .startCall {
                     CallMessageType()
                         .environmentObject(viewModel)
@@ -70,6 +74,37 @@ struct CallMessageType: View {
                 .frame(width: 10, height: 10)
                 .scaledToFit()
                 .foregroundColor(viewModel.message.type == .startCall ? Color.green : Color.red)
+        }
+        .padding([.leading, .trailing])
+        .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))
+        .cornerRadius(6)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct ParticipantMessageType: View {
+    @EnvironmentObject var viewModel: MessageViewModel
+    @EnvironmentObject var threadViewModel: ThreadViewModel
+    @Environment(\.colorScheme) var colorScheme
+    var message: Message { viewModel.message }
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 0) {
+            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDate()
+            let name = message.participant?.name ?? ""
+            let isJoined = message.type == .participantJoin ? "joined" : "left"
+            var markdownText = try! AttributedString(markdown: "\(name) **\(isJoined)** - \(date)")
+            Text(markdownText)
+                .foregroundColor(Color.primary.opacity(0.8))
+                .font(.subheadline)
+                .padding(2)
+
+            Image(systemName: message.iconName)
+                .resizable()
+                .frame(width: 12, height: 12)
+                .scaledToFit()
+                .foregroundColor(message.type == .participantJoin ? Color.green : Color.red)
+                .padding([.leading, .trailing], 6)
         }
         .padding([.leading, .trailing])
         .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))

@@ -49,10 +49,10 @@ class ChatDelegateImplementation: ChatDelegate {
                 .reconnectOnClose(true)
                 .appId("PodChat")
                 .serverName(config.serverName)
-                .isDebuggingLogEnabled(true)
+                .isDebuggingLogEnabled(false)
                 .build()
             let chatConfig = ChatConfigBuilder(asyncConfig)
-                .token("")
+                .token(TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken ?? "")
                 .ssoHost(config.ssoHost)
                 .platformHost(config.platformHost)
                 .fileServer(config.fileServer)
@@ -67,7 +67,6 @@ class ChatDelegateImplementation: ChatDelegate {
             AppState.shared.setCachedUser()
             if let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken {
                 print("token is: \(token)")
-                ChatManager.activeInstance.setToken(newToken: token)
                 ChatManager.activeInstance.connect()
             }
         }
