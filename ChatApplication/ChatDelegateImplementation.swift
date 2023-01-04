@@ -60,6 +60,7 @@ class ChatDelegateImplementation: ChatDelegate {
                 .msgTTL(800_000) // for integeration server need to be long time
                 .isDebuggingLogEnabled(true)
                 .enableNotificationLogObserver(true)
+                .persistLogsOnServer(true)
                 .appGroup(AppGroup.group)
                 .build()
             ChatManager.instance.createInstance(config: chatConfig)

@@ -389,7 +389,7 @@ struct SendContainer: View {
                         .font(.system(size: 24))
                         .foregroundColor(Color.gray)
                         .onTapGesture {
-                             showAttachmentDialog.toggle()
+                            showAttachmentDialog.toggle()
                         }
 
                     MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black, mention: true)
