@@ -48,14 +48,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        if URLContexts.first?.url.absoluteString.contains("Widget") == true,
-           let threadIdString = URLContexts.first?.url.absoluteString.replacingOccurrences(of: "Widget://link-", with: ""),
-           let threadId = Int(threadIdString)
-        {
-            if let thread = threadsVM.threadsRowVM.first(where: { $0.threadId == threadId })?.thread {
-                AppState.shared.selectedThread = thread
-                AppState.shared.showThreadView = true
-            }
+        guard let url = URLContexts.first?.url else { return }
+        if url.absoluteString.contains("Widget") == true {
+            let threadIdString = url.absoluteString.replacingOccurrences(of: "Widget://link-", with: "")
+            let threadId = Int(threadIdString) ?? 0
+            AppState.shared.showThread(threadId: threadId)
+        }
+
+        if let userName = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "userName" })?.value {
+            AppState.shared.showThread(userName: userName)
         }
     }
 

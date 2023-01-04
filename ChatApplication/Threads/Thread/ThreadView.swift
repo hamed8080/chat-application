@@ -382,17 +382,17 @@ struct SendContainer: View {
                     Divider()
                 }
 
-                MentionList()
+                MentionList(text: $text)
 
                 HStack {
                     Image(systemName: "paperclip")
                         .font(.system(size: 24))
                         .foregroundColor(Color.gray)
                         .onTapGesture {
-                            showAttachmentDialog.toggle()
+                             showAttachmentDialog.toggle()
                         }
 
-                    MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black)
+                    MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black, mention: true)
                         .cornerRadius(16)
                         .onChange(of: viewModel.textMessage ?? "") { newValue in
                             viewModel.sendStartTyping(newValue)
@@ -430,6 +430,7 @@ struct SendContainer: View {
 }
 
 struct MentionList: View {
+    @Binding var text: String
     @EnvironmentObject var viewModel: ThreadViewModel
 
     var body: some View {
@@ -437,7 +438,11 @@ struct MentionList: View {
             List(viewModel.mentionList) { participant in
                 ParticipantRow(participant: participant)
                     .onTapGesture {
-                        viewModel.addToMentionList(participant)
+                        if let lastMatch = text.matches(char: "@")?.last {
+                            let removeRange = text.last == "@" ? NSRange(text.index(text.endIndex, offsetBy: -1)..., in: text) : lastMatch.range
+                            let removedText = text.remove(in: removeRange) ?? ""
+                            text = removedText + "@" + (participant.username ?? "")
+                        }
                     }
             }
             .listStyle(.plain)

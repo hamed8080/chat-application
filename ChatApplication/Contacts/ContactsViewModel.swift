@@ -76,12 +76,7 @@ class ContactsViewModel: ObservableObject {
     }
 
     func createThread(invitees: [Invitee]) {
-        ChatManager.activeInstance.createThread(.init(invitees: invitees, title: "", type: .normal)) { response in
-            if let thread = response.result {
-                AppState.shared.selectedThread = thread
-                AppState.shared.showThreadView = true
-            }
-        }
+        AppState.shared.showThread(invitees: invitees)
     }
 
     func loadMore() {

@@ -99,7 +99,7 @@
 		AC1D2CD22662016E00AA351A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1D2CC82662016D00AA351A /* AppDelegate.swift */; };
 		AC1D2CD32662016E00AA351A /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */; };
 		AC20FBA4266CC4B500187B47 /* DateEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC20FBA3266CC4B500187B47 /* DateEX.swift */; };
-		AC21DA40273BF7D700DC86E6 /* StringEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC21DA3F273BF7D700DC86E6 /* StringEX.swift */; };
+		AC21DA40273BF7D700DC86E6 /* String+.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC21DA3F273BF7D700DC86E6 /* String+.swift */; };
 		AC23695627439478008195D7 /* SearchContactRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC23695527439478008195D7 /* SearchContactRow.swift */; };
 		AC2D31C326EF75BC008FF43F /* webrtc_user_a.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */; };
 		AC2D31C426EF75BC008FF43F /* webrtc_user_b.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */; };
@@ -271,7 +271,7 @@
 		AC1D2CC82662016D00AA351A /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatDelegateImplementation.swift; sourceTree = "<group>"; };
 		AC20FBA3266CC4B500187B47 /* DateEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEX.swift; sourceTree = "<group>"; };
-		AC21DA3F273BF7D700DC86E6 /* StringEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringEX.swift; sourceTree = "<group>"; };
+		AC21DA3F273BF7D700DC86E6 /* String+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+.swift"; sourceTree = "<group>"; };
 		AC23695527439478008195D7 /* SearchContactRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchContactRow.swift; sourceTree = "<group>"; };
 		AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_a.mp4; sourceTree = "<group>"; };
 		AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_b.mp4; sourceTree = "<group>"; };
@@ -566,7 +566,7 @@
 				ACAB96D127030F9A005FB9AA /* ShapeExtension.swift */,
 				ACAB96D327030FBE005FB9AA /* ViewExtension.swift */,
 				AC91591C2718390D00437517 /* FileManagerExtension.swift */,
-				AC21DA3F273BF7D700DC86E6 /* StringEX.swift */,
+				AC21DA3F273BF7D700DC86E6 /* String+.swift */,
 				AC2E4746274B58880073E8E4 /* UserDefaultsEX.swift */,
 				AC2E4749274B6FB40073E8E4 /* AppGroup.swift */,
 				AC94B099274E0BC200199B35 /* PHAssetEX.swift */,
@@ -1014,7 +1014,7 @@
 				AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */,
 				051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */,
 				05384A8A2792F3FC00D85A92 /* KeyboardResponsiveModifier.swift in Sources */,
-				AC21DA40273BF7D700DC86E6 /* StringEX.swift in Sources */,
+				AC21DA40273BF7D700DC86E6 /* String+.swift in Sources */,
 				050B1BE5292F91640025D4ED /* PinThreadProtocol.swift in Sources */,
 				055B269E27D5FA070098D585 /* MusicView.swift in Sources */,
 				AC20FBA4266CC4B500187B47 /* DateEX.swift in Sources */,

@@ -14,7 +14,16 @@ extension Message {
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
     var forwardTitle: String? { forwardMessage != nil ? "Forward **\(forwardCount ?? 0)** messages to **\(forwardMessage?.destinationThread.title ?? "")**" : nil }
     var messageTitle: String { message ?? metaData?.name ?? forwardTitle ?? "" }
-    var markdownTitle: AttributedString { (try? AttributedString(markdown: messageTitle)) ?? AttributedString(messageTitle) }
+    var markdownTitle: AttributedString {
+        guard let attributedString = try? NSMutableAttributedString(markdown: messageTitle) else { return AttributedString() }
+        messageTitle.matches(char: "@")?.forEach { match in
+            let userName = messageTitle[Range(match.range, in: messageTitle)!]
+            let sanitizedUserName = String(userName).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "@", with: "")
+            attributedString.addAttributes([NSAttributedString.Key.link: NSURL(string: "ShowUser:User?userName=\(sanitizedUserName)")!], range: match.range)
+        }
+        return AttributedString(attributedString)
+    }
+
     var uploadFile: UploadWithTextMessageProtocol? { self as? UploadWithTextMessageProtocol }
     var fileExtension: String? { uploadFile?.uploadFileRequest.fileExtension }
     var fileName: String? { uploadFile?.uploadFileRequest.fileName }

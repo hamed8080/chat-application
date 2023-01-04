@@ -93,7 +93,7 @@ struct ParticipantMessageType: View {
             let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDate()
             let name = message.participant?.name ?? ""
             let isJoined = message.type == .participantJoin ? "joined" : "left"
-            var markdownText = try! AttributedString(markdown: "\(name) **\(isJoined)** - \(date)")
+            let markdownText = try! AttributedString(markdown: "\(name) **\(isJoined)** - \(date)")
             Text(markdownText)
                 .foregroundColor(Color.primary.opacity(0.8))
                 .font(.subheadline)
@@ -200,6 +200,12 @@ struct TextMessageType: View {
                     Label("Edit", systemImage: "pencil.circle")
                 }
                 .disabled(viewModel.message.editable == false)
+
+                Button {
+                    UIPasteboard.general.string = message.message
+                } label: {
+                    Label("Copy", systemImage: "doc.on.doc")
+                }
 
                 if viewModel.message.isFileType == true {
                     Button {

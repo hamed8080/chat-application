@@ -27,7 +27,6 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     var count: Int { get }
     var searchTextTimer: Timer? { get set }
     var mentionList: [Participant] { get set }
-    var selectedMentions: [Participant] { get set }
     func delete()
     func leave()
     func clearHistory()
@@ -46,8 +45,6 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func sendSeenMessageIfNeeded(_ message: Message)
     func onMessageEvent(_ event: MessageEventTypes?)
     func updateUnreadCount(_ threadId: Int, _ unreadCount: Int)
-    func addToMentionList(_ participant: Participant)
-    func removeToMentionList(_ participant: Participant)
 }
 
 class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable, Hashable {
@@ -71,7 +68,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     @Published var exportMessagesVM: ExportMessagesViewModelProtocol
     @Published var mentionList: [Participant] = []
     var searchedMessages: [Message] = []
-    var selectedMentions: [Participant] = []
     var readOnly = false
     var textMessage: String?
     var canScrollToBottomOfTheList: Bool = false
@@ -380,20 +376,13 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func searchForMention(_ text: String) {
-        if text.count > 0, text.last == "@" {
-            ChatManager.activeInstance.getThreadParticipants(.init(threadId: threadId, name: text.replacingOccurrences(of: "@", with: ""))) { response in
+        if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
+            let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
+            ChatManager.activeInstance.getThreadParticipants(.init(threadId: threadId, name: rangeText)) { response in
                 self.mentionList = response.result ?? []
             }
         } else {
             mentionList = []
         }
-    }
-
-    func addToMentionList(_ participant: Participant) {
-        selectedMentions.append(participant)
-    }
-
-    func removeToMentionList(_ participant: Participant) {
-        selectedMentions.removeAll(where: { $0 == participant })
     }
 }

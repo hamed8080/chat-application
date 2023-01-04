@@ -1,5 +1,5 @@
 //
-//  StringEX.swift
+//  String+.swift
 //  ChatApplication
 //
 //  Created by Hamed Hosseini on 11/10/21.
@@ -84,5 +84,15 @@ extension String {
     func widthOfString(usingFont font: UIFont) -> CGFloat {
         let fontAttributes = [NSAttributedString.Key.font: font]
         return NSString(string: self).size(withAttributes: fontAttributes).width
+    }
+
+    func remove(in range: NSRange) -> String? {
+        guard let range = Range(range, in: self) else { return nil }
+        return replacingCharacters(in: range, with: "")
+    }
+
+    func matches(char: Character) -> [NSTextCheckingResult]? {
+        let range = NSRange(startIndex..., in: self)
+        return try? NSRegularExpression(pattern: "\(char)[0-9a-zA-Z\\-](\\.?[0-9a-zA-Z\\-])*").matches(in: self, range: range)
     }
 }

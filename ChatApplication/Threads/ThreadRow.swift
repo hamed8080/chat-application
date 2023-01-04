@@ -60,6 +60,13 @@ struct ThreadRow: View {
                         .background(Color.orange)
                         .cornerRadius(viewModel.thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
                 }
+
+                if viewModel.thread.mentioned == true {
+                    Image(systemName: "at.circle.fill")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(Color.orange)
+                }
             }
             .contentShape(Rectangle())
             .padding([.leading, .trailing], 8)
