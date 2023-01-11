@@ -241,7 +241,8 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
     func updateThread(_ thread: Conversation) {
-        thread.updateValues(thread)
+        self.thread.updateValues(thread)
+        objectWillChange.send()
     }
 
     func updateThreadInfo(_ title: String, _ description: String, image: UIImage?, assetResources: [PHAssetResource]?) {

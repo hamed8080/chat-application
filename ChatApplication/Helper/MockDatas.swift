@@ -58,9 +58,9 @@ final class MockData {
             id: 0,
             image: "avatar4",
             lastName: "Hosseini",
-            linkedUser: nil,
+            user: nil,
             notSeenDuration: 1_622_969_881,
-            timeStamp: nil,
+            time: nil,
             userId: nil
         )
         return contact
@@ -173,7 +173,7 @@ final class MockData {
     static func generateTags(count: Int = 50) -> [Tag] {
         var tags: [Tag] = []
         for index in 0 ... count {
-            var tag = tag
+            let tag = tag
             tag.name = "Tag Name \(index)"
             tag.id = index
             tag.active = Bool.random()

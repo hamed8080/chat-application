@@ -80,7 +80,7 @@ struct AddThreadToTagsView: View {
                 }
             }
             .onAppear {
-                viewModel.getOfflineTags()
+                viewModel.getTagList()
             }
         }
     }

@@ -67,8 +67,6 @@ struct SettingsView: View {
 
                         Button(action: {
                             ChatManager.activeInstance.logOut()
-                            AppState.shared.cache?.write(cacheType: .deleteAllCacheData)
-                            AppState.shared.cache?.save()
                             TokenManager.shared.clearToken()
                         }, label: {
                             HStack {

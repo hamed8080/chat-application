@@ -61,10 +61,11 @@ class ImageLoader: ObservableObject {
     private var fileMetadataModel: FileMetaData? { try? JSONDecoder().decode(FileMetaData.self, from: fileMetadata?.data(using: .utf8) ?? Data()) }
     private var fileURL: URL? {
         guard let URLObject = URLObject else { return nil }
-        if AppState.shared.cacheFileManager?.isFileExist(url: URLObject) == true {
-            return AppState.shared.cacheFileManager?.filePath(url: URLObject)
-        } else if AppState.shared.cacheFileManager?.isFileExistInGroup(url: URLObject) == true {
-            return AppState.shared.cacheFileManager?.filePathInGroup(url: URLObject)
+        let cf = AppState.shared.cacheFileManager
+        if cf?.isFileExist(url: URLObject) == true {
+            return cf?.filePath(url: URLObject)
+        } else if cf?.isFileExistInGroup(url: URLObject) == true {
+            return cf?.filePathInGroup(url: URLObject)
         }
         return nil
     }

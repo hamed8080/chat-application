@@ -24,7 +24,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
         // Create the SwiftUI view that provides the window contents.
-        NotificationCenter.default.addObserver(self, selector: #selector(addLog), name: NSNotification.Name("log"), object: nil)
         let contentView = HomeContentView()
             .environmentObject(settingsVM)
             .environmentObject(contactsVM)
@@ -57,12 +56,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if let userName = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "userName" })?.value {
             AppState.shared.showThread(userName: userName)
-        }
-    }
-
-    @objc func addLog(notification: NSNotification) {
-        if let log = notification.object as? LogResult {
-            LogViewModel.addToLog(logResult: log)
         }
     }
 

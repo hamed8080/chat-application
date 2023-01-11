@@ -16,7 +16,7 @@ protocol ContactViewModelProtocol {
     var contactsVM: ContactsViewModel? { get set }
     init(contact: Contact, contactsVM: ContactsViewModel?)
     func blockOrUnBlock(_ contact: Contact)
-    func onBlockUNBlockResponse(_ response: ChatResponse<BlockedContact>)
+    func onBlockUNBlockResponse(_ response: ChatResponse<Contact>)
     func toggleSelectedContact()
     func updateContact(contactValue: String, firstName: String?, lastName: String?)
 }
@@ -40,7 +40,7 @@ class ContactViewModel: ObservableObject, ContactViewModelProtocol, Identifiable
     required init(contact: Contact, contactsVM: ContactsViewModel?) {
         self.contactsVM = contactsVM
         self.contact = contact
-        imageLoader = ImageLoader(url: contact.image ?? contact.linkedUser?.image ?? "", userName: contact.firstName, size: .SMALL)
+        imageLoader = ImageLoader(url: contact.image ?? contact.user?.image ?? "", userName: contact.firstName, size: .SMALL)
         imageLoader.$image.sink { [weak self] _ in
             self?.objectWillChange.send()
         }
@@ -58,7 +58,7 @@ class ContactViewModel: ObservableObject, ContactViewModelProtocol, Identifiable
         }
     }
 
-    func onBlockUNBlockResponse(_ response: ChatResponse<BlockedContact>) {
+    func onBlockUNBlockResponse(_ response: ChatResponse<Contact>) {
         if response.result != nil {
             contact.blocked?.toggle()
             objectWillChange.send()
@@ -76,7 +76,7 @@ class ContactViewModel: ObservableObject, ContactViewModelProtocol, Identifiable
 
     func updateContact(contactValue: String, firstName: String?, lastName: String?) {
         guard let contactId = contactId else { return }
-        let req: UpdateContactRequest = .init(cellphoneNumber: contactValue, email: contact.email ?? "", firstName: firstName ?? "", id: contactId, lastName: lastName ?? "", username: contact.linkedUser?.username ?? "")
+        let req: UpdateContactRequest = .init(cellphoneNumber: contactValue, email: contact.email ?? "", firstName: firstName ?? "", id: contactId, lastName: lastName ?? "", username: contact.user?.username ?? "")
         ChatManager.activeInstance.updateContact(req) { [weak self] response in
             response.result?.forEach { updatedContact in
                 if updatedContact.id == contactId {

@@ -45,7 +45,7 @@ extension Conversation {
         inviter = newThread.inviter
         lastMessageVO = newThread.lastMessageVO
         participants = newThread.participants
-        pinMessage = newThread.pinMessage
+        pinMessages = newThread.pinMessages
         isArchive = newThread.isArchive
     }
 

@@ -18,10 +18,20 @@ struct ThreadDetailView: View {
     @State private var image: UIImage?
     @State private var assetResource: [PHAssetResource]?
     @State var searchText: String = ""
+    @State var addToContactSheet: Bool = false
+    var thread: Conversation { viewModel.thread }
+    var partner: Participant? {
+        let participants = thread.participants ?? []
+        let partnerParticipant = participants.first(where: { $0.contactId != AppState.shared.user?.id })
+        return partnerParticipant
+    }
+
+    var isInMyContact: Bool {
+        if thread.group == true || partner?.contactId != nil { return true }
+        return false
+    }
 
     var body: some View {
-        let thread = viewModel.thread
-
         GeometryReader { reader in
             VStack {
                 List {
@@ -58,16 +68,22 @@ struct ThreadDetailView: View {
 
                         HStack {
                             Spacer()
-                            ActionButton(iconSfSymbolName: "bell", iconColor: .blue, taped: {
+                            ActionButton(iconSfSymbolName: "bell", iconColor: .blue) {
                                 viewModel.toggleMute()
-                            })
+                            }
 
-                            ActionButton(iconSfSymbolName: "magnifyingglass", iconColor: .blue, taped: {
+                            ActionButton(iconSfSymbolName: "magnifyingglass", iconColor: .blue) {
                                 viewModel.searchInsideThread(text: searchText)
-                            })
+                            }
 
                             if let type = thread.type, type == .normal {
-                                ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: .blue, taped: {})
+                                ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: .blue) {}
+                            }
+
+                            if !isInMyContact {
+                                ActionButton(iconSfSymbolName: "person.badge.plus", iconColor: .blue) {
+                                    addToContactSheet.toggle()
+                                }
                             }
                             Spacer()
                         }
@@ -100,6 +116,9 @@ struct ThreadDetailView: View {
         .onAppear {
             threadTitle = viewModel.thread.title ?? ""
             threadDescription = viewModel.thread.description ?? ""
+        }
+        .sheet(isPresented: $addToContactSheet) {
+            AddOrEditContactView()
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {

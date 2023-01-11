@@ -13,7 +13,7 @@ struct ContactRow: View {
     @EnvironmentObject var viewModel: ContactViewModel
     @State public var showActionViews: Bool = false
     var contact: Contact { viewModel.contact }
-    var contactImageURL: String? { contact.image ?? contact.linkedUser?.image }
+    var contactImageURL: String? { contact.image ?? contact.user?.image }
     @State var navigateToAddOrEditContact = false
 
     var body: some View {

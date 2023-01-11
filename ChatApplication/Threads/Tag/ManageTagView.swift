@@ -92,7 +92,7 @@ struct ManageTagView: View {
                 }
             }
             .onAppear {
-                viewModel.getOfflineTags()
+                viewModel.getTagList()
             }
         }
     }

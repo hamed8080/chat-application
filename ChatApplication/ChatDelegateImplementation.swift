@@ -59,13 +59,12 @@ class ChatDelegateImplementation: ChatDelegate {
                 .enableCache(true)
                 .msgTTL(800_000) // for integeration server need to be long time
                 .isDebuggingLogEnabled(true)
-                .enableNotificationLogObserver(true)
                 .persistLogsOnServer(true)
                 .appGroup(AppGroup.group)
+                .sendLogInterval(15)
                 .build()
             ChatManager.instance.createInstance(config: chatConfig)
             ChatManager.activeInstance.delegate = self
-            AppState.shared.setCachedUser()
             if let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken {
                 print("token is: \(token)")
                 ChatManager.activeInstance.connect()
@@ -100,7 +99,6 @@ class ChatDelegateImplementation: ChatDelegate {
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .unauthorized
         }
-        LogViewModel.addToLog(logResult: LogResult(json: "Error just happened: code\(error.code ?? 0) message:\(error.message ?? "") errorContent:\(error.message ?? "")", receive: true))
         print(error)
     }
 
