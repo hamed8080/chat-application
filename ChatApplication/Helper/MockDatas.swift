@@ -15,6 +15,7 @@ final class MockData {
             message: "Hi hamed how are you? are you ok? and what are you ding now. And i was thinking you are sad for my behavoi last night."
         )
         let thread = Conversation(
+            canEditInfo: true,
             description: "description",
             id: 123,
             image: "avatar1",
@@ -32,15 +33,13 @@ final class MockData {
             return thread
         }
         if threads.count < count {
-            var lastIndex = threads.count + 1
-            for _ in 0 ... count {
+            for i in 0 ... count {
                 let thread = thread
                 thread.title = mockDataModel.threads[Int.random(in: 1 ... 15)].title
                 thread.description = mockDataModel.threads[Int.random(in: 1 ... 15)].description
                 thread.image = mockDataModel.threads[Int.random(in: 1 ... 15)].image
                 thread.lastMessageVO = Message(message: mockDataModel.threads[Int.random(in: 1 ... 15)].lastMessage ?? "")
-                thread.id = lastIndex
-                lastIndex += 1
+                thread.id = i
                 threads.append(thread)
             }
         }

@@ -58,17 +58,48 @@ struct SettingsView: View {
                 }
                 .padding()
 
-                Section(header: Text("Manage Calls")) {
-                    Group {
-                        GroupItemInSlideMenu<EmptyView>(name: "gear", title: "Setting", color: .blue, destinationView: EmptyView())
-                        GroupItemInSlideMenu<EmptyView>(name: "phone", title: "Calls", color: .green, destinationView: EmptyView())
-                        GroupItemInSlideMenu<EmptyView>(name: "bookmark", title: "Saved Messages", color: Color.purple, destinationView: EmptyView())
-                        GroupItemInSlideMenu<AnyView>(name: "note.text", title: "Logs", color: Color.yellow, destinationView: AnyView(LogView()))
+                Group {
+                    Section {
+                        NavigationLink {} label: {
+                            HStack {
+                                Image(systemName: "gear")
+                                    .foregroundColor(.blue)
+                                Text("Setting")
+                            }
+                        }
+                    }
 
-                        Button(action: {
+                    Section {
+                        NavigationLink {} label: {
+                            HStack {
+                                Image(systemName: "phone")
+                                    .foregroundColor(.green)
+                                Text("Calls")
+                            }
+                        }
+                    }
+
+                    NavigationLink {} label: {
+                        HStack {
+                            Image(systemName: "bookmark")
+                                .foregroundColor(.purple)
+                            Text("Saved Messages")
+                        }
+                    }
+
+                    NavigationLink {} label: {
+                        HStack {
+                            Image(systemName: "note.text")
+                                .foregroundColor(.purple)
+                            Text("Logs")
+                        }
+                    }
+
+                    Section(header: Text("Manage Calls").font(.headline)) {
+                        Button {
                             ChatManager.activeInstance.logOut()
                             TokenManager.shared.clearToken()
-                        }, label: {
+                        } label: {
                             HStack {
                                 Image(systemName: "arrow.backward.circle")
                                     .foregroundColor(.red)
@@ -77,14 +108,16 @@ struct SettingsView: View {
                                     .fontWeight(.bold)
                                     .foregroundColor(Color.red)
                                 Spacer()
-                            }.padding([.top, .bottom], 12)
-                        })
+                            }
+                        }
                         TokenExpireView()
                     }
                 }
-                .noSeparators()
+                .font(.title3)
+                .padding(8)
             }
         }
+        .listStyle(.insetGrouped)
         .toolbar {
             ToolbarItemGroup {
                 Button {
@@ -127,28 +160,6 @@ struct TokenExpireView: View {
     }
 }
 
-struct GroupItemInSlideMenu<DestinationView: View>: View {
-    var name: String
-    var title: String
-    var color: Color
-    var destinationView: DestinationView?
-
-    @State var isActive = false
-
-    var body: some View {
-        NavigationLink(destination: destinationView) {
-            HStack {
-                Image(systemName: name)
-                    .font(.body)
-                    .foregroundColor(color)
-                Text(title)
-                    .font(.body)
-            }.padding([.top, .bottom], 12)
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 struct SettingsMenu_Previews: PreviewProvider {
     @State static var dark: Bool = false
     @State static var show: Bool = false
@@ -156,9 +167,10 @@ struct SettingsMenu_Previews: PreviewProvider {
     static var vm = SettingViewModel()
 
     static var previews: some View {
-        Group {
+        NavigationView {
             SettingsView()
                 .environmentObject(vm)
+                .environmentObject(TokenManager.shared)
                 .environmentObject(AppState.shared)
                 .onAppear {
                     vm.currentUser = User(

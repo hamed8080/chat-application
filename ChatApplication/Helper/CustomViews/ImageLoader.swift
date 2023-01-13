@@ -31,6 +31,10 @@ class ImageLoader: ObservableObject {
         self.size = size
     }
 
+    public func setURL(url: String) {
+        self.url = url
+    }
+
     @ViewBuilder var imageView: some View {
         if !isImageReady, let userName = userName {
             Text(String(userName.first ?? " "))

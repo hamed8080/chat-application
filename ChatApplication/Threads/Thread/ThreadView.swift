@@ -10,7 +10,6 @@ import SwiftUI
 
 struct ThreadView: View {
     @ObservedObject var viewModel: ThreadViewModel
-    @State var showThreadDetailButton = false
     @State var showAttachmentDialog: Bool = false
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
@@ -38,10 +37,6 @@ struct ThreadView: View {
                               deleteMessagesDialog: $deleteDialaog,
                               showSelectThreadToForward: $showSelectThreadToForward)
                     .environmentObject(viewModel)
-
-                NavigationLink(destination: ThreadDetailView().environmentObject(viewModel), isActive: $showThreadDetailButton) {
-                    EmptyView()
-                }
             }
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
@@ -128,16 +123,18 @@ struct ThreadView: View {
     }
 
     @ViewBuilder var trailingToolbar: some View {
-        viewModel.imageLoader.imageView
-            .font(.system(size: 16).weight(.heavy))
-            .foregroundColor(.white)
-            .frame(width: 32, height: 32)
-            .background(Color.blue.opacity(0.4))
-            .cornerRadius(16)
-            .onTapGesture {
-                showThreadDetailButton.toggle()
-            }
-            .cornerRadius(18)
+        NavigationLink {
+            DetailView()
+                .environmentObject(DetailViewModel(thread: viewModel.thread))
+        } label: {
+            viewModel.imageLoader.imageView
+                .font(.system(size: 16).weight(.heavy))
+                .foregroundColor(.white)
+                .frame(width: 32, height: 32)
+                .background(Color.blue.opacity(0.4))
+                .cornerRadius(16)
+                .cornerRadius(18)
+        }
 
         Menu {
             Button {

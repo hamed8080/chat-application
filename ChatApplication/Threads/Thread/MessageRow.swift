@@ -251,12 +251,17 @@ struct TextMessageType: View {
 
     @ViewBuilder var sameUserAvatar: some View {
         if !threadViewModel.isSameUser(message: message), message.participant != nil {
-            viewModel.imageLoader.imageView
-                .font(.system(size: 16).weight(.heavy))
-                .foregroundColor(.white)
-                .frame(width: 36, height: 36)
-                .background(Color.blue.opacity(0.4))
-                .cornerRadius(18)
+            NavigationLink {
+                DetailView()
+                    .environmentObject(DetailViewModel(user: message.participant))
+            } label: {
+                viewModel.imageLoader.imageView
+                    .font(.system(size: 16).weight(.heavy))
+                    .foregroundColor(.white)
+                    .frame(width: 36, height: 36)
+                    .background(Color.blue.opacity(0.4))
+                    .cornerRadius(18)
+            }
         } else {
             Rectangle()
                 .frame(width: 36, height: 36)

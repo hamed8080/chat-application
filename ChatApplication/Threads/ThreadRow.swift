@@ -43,13 +43,6 @@ struct ThreadRow: View {
                     ThreadIsTypingView(threadId: viewModel.threadId)
                 }
                 Spacer()
-                if viewModel.thread.pin == true {
-                    Image(systemName: "pin.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(Color.orange)
-                }
                 if let unreadCountString = viewModel.thread.unreadCountString {
                     Text(unreadCountString)
                         .font(.system(size: 13))
@@ -67,6 +60,14 @@ struct ThreadRow: View {
                         .frame(width: 24, height: 24)
                         .foregroundColor(Color.orange)
                 }
+
+                if viewModel.thread.pin == true {
+                    Image(systemName: "pin.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(Color.orange)
+                }
             }
             .contentShape(Rectangle())
             .padding([.leading, .trailing], 8)
@@ -77,6 +78,7 @@ struct ThreadRow: View {
         .animation(.easeInOut, value: viewModel.thread.pin)
         .animation(.easeInOut, value: viewModel.thread.mute)
         .animation(.easeInOut, value: viewModel.thread.unreadCount)
+        .animation(.easeInOut, value: viewModel.thread.title)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
                 viewModel.delete()

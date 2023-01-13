@@ -94,8 +94,12 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         self.thread = thread
         exportMessagesVM = ExportMessagesViewModel(thread: thread)
         self.threadsViewModel = threadsViewModel
-        imageLoader = ImageLoader(url: thread.image ?? "", userName: thread.title, size: .SMALL)
+        imageLoader = ImageLoader(url: thread.computedImageURL ?? "", userName: thread.title, size: .SMALL)
         setupNotificationObservers()
+        fetchImage()
+    }
+
+    private func fetchImage() {
         imageLoader.fetch()
     }
 
@@ -125,6 +129,10 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         case let .threadUnreadCountUpdated(response):
             if let threadId = response.subjectId, let unreadCount = response.result?.unreadCount {
                 updateUnreadCount(threadId, unreadCount)
+            }
+        case let .threadInfoUpdated(response):
+            if let thread = response.result {
+                updateThreadInfo(thread)
             }
         default:
             break
@@ -158,6 +166,24 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     func updateUnreadCount(_ threadId: Int, _ unreadCount: Int) {
         if threadId == self.threadId {
             thread.unreadCount = unreadCount
+            objectWillChange.send()
+        }
+    }
+
+    func updateThreadInfo(_ thread: Conversation) {
+        if thread.id == threadId {
+            self.thread.title = thread.title
+            if thread.computedImageURL != self.thread.computedImageURL {
+                imageLoader.setURL(url: thread.computedImageURL ?? "")
+                fetchImage()
+            }
+            self.thread.image = thread.image
+            self.thread.metadata = thread.metadata
+            self.thread.description = thread.description
+            self.thread.type = thread.type
+            self.thread.userGroupHash = thread.userGroupHash
+            self.thread.time = thread.time
+            self.thread.group = thread.group
             objectWillChange.send()
         }
     }
@@ -243,25 +269,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     func updateThread(_ thread: Conversation) {
         self.thread.updateValues(thread)
         objectWillChange.send()
-    }
-
-    func updateThreadInfo(_ title: String, _ description: String, image: UIImage?, assetResources: [PHAssetResource]?) {
-        var imageRequest: UploadImageRequest?
-        if let image = image {
-            let width = Int(image.size.width)
-            let height = Int(image.size.height)
-            imageRequest = UploadImageRequest(data: image.pngData() ?? Data(),
-                                              hC: height,
-                                              wC: width,
-                                              fileExtension: "png",
-                                              fileName: assetResources?.first?.originalFilename,
-                                              mimeType: "image/png",
-                                              originalName: assetResources?.first?.originalFilename,
-                                              isPublic: true)
-        }
-
-        let req = UpdateThreadInfoRequest(description: description, threadId: threadId, threadImage: imageRequest, title: title)
-        ChatManager.activeInstance.updateThreadInfo(req) { _ in } uploadProgress: { _, _ in } completion: { _ in }
     }
 
     func searchInsideThread(text: String, offset: Int = 0) {

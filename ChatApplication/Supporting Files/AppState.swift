@@ -58,5 +58,9 @@ class AppState: ObservableObject {
         }
     }
 
-    private init() {}
+    private init() {
+        if let user: User = UserDefaults.standard.codableValue(forKey: "USER") {
+            self.user = user
+        }
+    }
 }

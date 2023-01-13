@@ -89,6 +89,7 @@ class ChatDelegateImplementation: ChatDelegate {
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .connected
             NotificationCenter.default.post(name: connectName, object: nil)
+            UserDefaults.standard.setValue(codable: ChatManager.activeInstance.userInfo, forKey: "USER")
         case .uninitialized:
             print("Chat object is not initialized.")
         }

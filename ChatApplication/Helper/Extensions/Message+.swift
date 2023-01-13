@@ -16,8 +16,9 @@ extension Message {
     var messageTitle: String { message ?? metaData?.name ?? forwardTitle ?? "" }
     var markdownTitle: AttributedString {
         guard let attributedString = try? NSMutableAttributedString(markdown: messageTitle) else { return AttributedString() }
-        messageTitle.matches(char: "@")?.forEach { match in
-            let userName = messageTitle[Range(match.range, in: messageTitle)!]
+        let title = attributedString.string
+        title.matches(char: "@")?.forEach { match in
+            let userName = title[Range(match.range, in: title)!]
             let sanitizedUserName = String(userName).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "@", with: "")
             attributedString.addAttributes([NSAttributedString.Key.link: NSURL(string: "ShowUser:User?userName=\(sanitizedUserName)")!], range: match.range)
         }
