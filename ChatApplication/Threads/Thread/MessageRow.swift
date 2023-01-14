@@ -102,9 +102,9 @@ struct ParticipantMessageType: View {
             Image(systemName: message.iconName)
                 .resizable()
                 .frame(width: 12, height: 12)
-                .scaledToFit()
                 .foregroundColor(message.type == .participantJoin ? Color.green : Color.red)
                 .padding([.leading, .trailing], 6)
+                .scaledToFit()
         }
         .padding([.leading, .trailing])
         .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))
