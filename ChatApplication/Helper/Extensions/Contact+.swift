@@ -18,9 +18,9 @@ extension Contact {
         id = newContact.id
         image = newContact.image
         lastName = newContact.lastName
-        linkedUser = newContact.linkedUser
+        user = newContact.user
         notSeenDuration = newContact.notSeenDuration
-        timeStamp = newContact.timeStamp
+        time = newContact.time
         userId = newContact.userId
     }
 }

@@ -13,13 +13,9 @@ import SwiftUI
 
 class LogViewModel: ObservableObject {
     @Published var logs: [Log] = []
-
     @Published var viewContext: NSManagedObjectContext
-
     @Published var searchText: String = ""
-
     fileprivate static let NotificationKey = "InsertLog"
-
     private(set) var cancellableSet: Set<AnyCancellable> = []
 
     init(isPreview: Bool = false) {
@@ -55,55 +51,11 @@ class LogViewModel: ObservableObject {
         }
     }
 
-    class func printCallLogsFile() {
-        if let appSupportDir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
-            let logFileDir = "WEBRTC-LOG"
-            let url = appSupportDir.appendingPathComponent(logFileDir)
-            let contentsOfDir = try? FileManager.default.contentsOfDirectory(atPath: url.path)
-
-            DispatchQueue.global(qos: .background).async {
-                let df = DateFormatter()
-                df.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-                let dateString = df.string(from: Date())
-                FileManager.default.zipFile(urlPathToZip: url, zipName: "WEBRTC-Logs-\(dateString)") { zipFile in
-                    if let zipFile = zipFile {
-                        AppState.shared.callLogs = [zipFile]
-                    }
-                }
-            }
-
-            contentsOfDir?.forEach { file in
-                DispatchQueue.global(qos: .background).async {
-                    if let data = try? Data(contentsOf: url.appendingPathComponent(file)), let string = String(data: data, encoding: .utf8) {
-                        print("data of log file '\(file)' is:\n")
-                        print(string)
-                        let log = LogResult(json: string, receive: false)
-                        LogViewModel.addToLog(logResult: log)
-                    }
-                }
-            }
-        }
-    }
-
     public func clearLogs() {
         logs.forEach { log in
             viewContext.delete(log)
             withAnimation {
                 logs.removeAll(where: { $0 == log })
-            }
-        }
-        AppState.shared.cache.save()
-    }
-
-    public class func addToLog(logResult: LogResult) {
-        DispatchQueue.main.async {
-            withAnimation {
-                let log = Log(context: PSM.shared.context)
-                log.json = logResult.json
-                log.received = logResult.receive
-                log.createDate = Date()
-                AppState.shared.cache.save()
-                NotificationCenter.default.post(name: NSNotification.Name(LogViewModel.NotificationKey), object: log)
             }
         }
     }

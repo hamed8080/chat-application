@@ -28,8 +28,8 @@ class MessageViewModel: ObservableObject, MessageViewModelProtocol {
         self.message = message
 
         imageLoader = ImageLoader(url: message.participant?.image ?? "", userName: message.participant?.name ?? message.participant?.username, size: .SMALL)
-        imageLoader.$image.sink { _ in
-            self.objectWillChange.send()
+        imageLoader.$image.sink { [weak self] _ in
+            self?.objectWillChange.send()
         }
         .store(in: &cancellableSet)
         imageLoader.fetch()
@@ -61,7 +61,8 @@ class MessageViewModel: ObservableObject, MessageViewModelProtocol {
 
     func clearCacheFile(message: Message) {
         if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
-            AppState.shared.cache.cacheFileManager.delete(fileHashCode: fileHashCode)
+            let url = "\(ChatManager.activeInstance.config.fileServer)\(FanapPodChatSDK.Routes.files.rawValue)/\(fileHashCode)"
+            AppState.shared.cacheFileManager?.deleteFile(at: URL(string: url)!)
             NotificationCenter.default.post(.init(name: fileDeletedFromCacheName, object: message))
         }
     }

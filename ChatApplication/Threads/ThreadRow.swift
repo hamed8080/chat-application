@@ -43,15 +43,6 @@ struct ThreadRow: View {
                     ThreadIsTypingView(threadId: viewModel.threadId)
                 }
                 Spacer()
-                JoinToGroupCallView()
-                    .environmentObject(viewModel)
-                if viewModel.thread.pin == true {
-                    Image(systemName: "pin.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(Color.orange)
-                }
                 if let unreadCountString = viewModel.thread.unreadCountString {
                     Text(unreadCountString)
                         .font(.system(size: 13))
@@ -61,6 +52,21 @@ struct ThreadRow: View {
                         .foregroundColor(Color.white)
                         .background(Color.orange)
                         .cornerRadius(viewModel.thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
+                }
+
+                if viewModel.thread.mentioned == true {
+                    Image(systemName: "at.circle.fill")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(Color.orange)
+                }
+
+                if viewModel.thread.pin == true {
+                    Image(systemName: "pin.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(Color.orange)
                 }
             }
             .contentShape(Rectangle())
@@ -73,6 +79,7 @@ struct ThreadRow: View {
         .animation(.easeInOut, value: viewModel.thread.mute)
         .animation(.easeInOut, value: viewModel.thread.unreadCount)
         .animation(.easeInOut, value: viewModel.groupCallIdToJoin)
+        .animation(.easeInOut, value: viewModel.thread.title)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
                 viewModel.delete()

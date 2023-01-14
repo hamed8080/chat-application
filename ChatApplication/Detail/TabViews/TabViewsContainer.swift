@@ -10,46 +10,43 @@ import SwiftUI
 
 struct TabViewsContainer: View {
     var thread: Conversation
-
     @State var selectedTabIndex: Int
-
+    let tabs: [Tab] = [
+        .init(title: "Members", icon: "person"),
+        .init(title: "Media", icon: "play.tv"),
+        .init(title: "File", icon: "doc"),
+        .init(title: "Music", icon: "music.note"),
+        .init(title: "Voice", icon: "mic"),
+        .init(title: "Link", icon: "link"),
+        .init(title: "Gif", icon: "text.below.photo"),
+    ]
     var body: some View {
-        VStack(spacing: 0) {
-            Tabs(selectedTabIndex: $selectedTabIndex, tabs: [
-                .init(title: "Members", icon: "person"),
-                .init(title: "Media", icon: "play.tv"),
-                .init(title: "File", icon: "doc"),
-                .init(title: "Music", icon: "music.note"),
-                .init(title: "Voice", icon: "mic"),
-                .init(title: "Link", icon: "link"),
-                .init(title: "Gif", icon: "text.below.photo"),
-            ])
-
-            TabView(selection: $selectedTabIndex) {
-                MemberView()
-                    .environmentObject(ParticipantsViewModel(thread: thread))
-                    .tag(0)
-                MediaView(thread: thread)
-                    .tag(1)
-                FileView(thread: thread)
-                    .tag(2)
-                MusicView(thread: thread)
-                    .tag(3)
-                VoiceView(thread: thread)
-                    .tag(4)
-                LinkView(thread: thread)
-                    .tag(5)
-                GIFView(thread: thread)
-                    .tag(6)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+        Tabs(selectedTabIndex: $selectedTabIndex, tabs: tabs)
+        switch selectedTabIndex {
+        case 0:
+            MemberView()
+                .ignoresSafeArea(.all)
+                .environmentObject(ParticipantsViewModel(thread: thread))
+        case 1:
+            MediaView(thread: thread)
+        case 2:
+            FileView(thread: thread)
+        case 3:
+            MusicView(thread: thread)
+        case 4:
+            VoiceView(thread: thread)
+        case 5:
+            LinkView(thread: thread)
+        case 6:
+            GIFView(thread: thread)
+        default:
+            EmptyView()
         }
     }
 }
 
 struct Tabs: View {
     @Binding var selectedTabIndex: Int
-
     let tabs: [Tab]
 
     var body: some View {

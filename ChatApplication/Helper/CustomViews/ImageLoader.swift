@@ -31,6 +31,10 @@ class ImageLoader: ObservableObject {
         self.size = size
     }
 
+    public func setURL(url: String) {
+        self.url = url
+    }
+
     @ViewBuilder var imageView: some View {
         if !isImageReady, let userName = userName {
             Text(String(userName.first ?? " "))
@@ -51,17 +55,24 @@ class ImageLoader: ObservableObject {
         if size == nil {
             image = UIImage(data: data) ?? UIImage()
         } else {
-            image = UIImage(data: data)?.preparingThumbnail(of: CGSize(width: size == .SMALL ? 128 : 256, height: size == .SMALL ? 128 : 256)) ?? UIImage()
+            guard let cgImage = data.imageScale(width: size == .SMALL ? 128 : 256)?.image else { return }
+            image = UIImage(cgImage: cgImage)
         }
     }
 
     private var URLObject: URL? { URL(string: url) }
-
     private var isSDKImage: Bool { hashCode != "" }
-
     private var fileMetadataModel: FileMetaData? { try? JSONDecoder().decode(FileMetaData.self, from: fileMetadata?.data(using: .utf8) ?? Data()) }
-
-    private var cacheData: Data? { AppState.shared.cache.cacheFileManager.getImageProfileCache(url: url, group: AppGroup.group) }
+    private var fileURL: URL? {
+        guard let URLObject = URLObject else { return nil }
+        let cf = AppState.shared.cacheFileManager
+        if cf?.isFileExist(url: URLObject) == true {
+            return cf?.filePath(url: URLObject)
+        } else if cf?.isFileExistInGroup(url: URLObject) == true {
+            return cf?.filePathInGroup(url: URLObject)
+        }
+        return nil
+    }
 
     private var oldURLHash: String? {
         guard let URLObject = URLObject else { return nil }
@@ -73,8 +84,9 @@ class ImageLoader: ObservableObject {
     func fetch() {
         if isSDKImage {
             getFromSDK()
-        } else if let data = cacheData {
-            update(data: data)
+        } else if let fileURL = fileURL {
+            guard let cgImage = fileURL.imageScale(width: 128)?.image else { return }
+            image = UIImage(cgImage: cgImage)
         } else {
             downloadFromAnyURL()
         }
@@ -82,11 +94,12 @@ class ImageLoader: ObservableObject {
 
     private func getFromSDK() {
         ChatManager.activeInstance.getImage(.init(hashCode: hashCode, size: size ?? .LARG)) { _ in
-        } completion: { [weak self] data, _, _ in
+        } completion: { [weak self] data, _, _, _ in
             self?.update(data: data)
             self?.storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
-        } cacheResponse: { [weak self] data, _, _ in
-            self?.update(data: data)
+        } cacheResponse: { [weak self] _, fileURL, _, _ in
+            guard let cgImage = fileURL?.imageScale(width: 128)?.image else { return }
+            self?.image = UIImage(cgImage: cgImage)
         }
     }
 
@@ -110,8 +123,9 @@ class ImageLoader: ObservableObject {
     private func storeInCache(data: Data?) {
         guard let data = data else { return }
         if !isRealImage(data: data) { return }
-        DispatchQueue.main.async {
-            AppState.shared.cache.cacheFileManager.saveImageProfile(url: self.url, data: data, group: AppGroup.group)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, let url = URL(string: self.url) else { return }
+            AppState.shared.cacheFileManager?.saveFileInGroup(url: url, data: data)
         }
     }
 

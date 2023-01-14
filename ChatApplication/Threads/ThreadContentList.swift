@@ -97,10 +97,10 @@ struct ThreadContentList_Previews: PreviewProvider {
         let appState = AppState.shared
 
         ThreadContentList()
+            .environmentObject(vm)
+            .environmentObject(appState)
             .onAppear {
                 vm.appendThreads(threads: MockData.generateThreads(count: 5))
             }
-            .environmentObject(vm)
-            .environmentObject(appState)
     }
 }

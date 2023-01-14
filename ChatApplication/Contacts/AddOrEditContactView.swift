@@ -41,7 +41,7 @@ struct AddOrEditContactView: View {
             .onAppear {
                 firstName = editContact?.firstName ?? ""
                 lastName = editContact?.lastName ?? ""
-                contactValue = editContact?.cellphoneNumber ?? editContact?.email ?? editContact?.linkedUser?.username ?? ""
+                contactValue = editContact?.cellphoneNumber ?? editContact?.email ?? editContact?.user?.username ?? ""
             }
         }
     }

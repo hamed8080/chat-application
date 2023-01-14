@@ -10,9 +10,7 @@ import SwiftUI
 
 struct AddParticipantsToThreadView: View {
     @StateObject var viewModel: AddParticipantsToViewModel
-
     @EnvironmentObject var contactsVM: ContactsViewModel
-
     var onCompleted: ([Contact]) -> Void
 
     var body: some View {

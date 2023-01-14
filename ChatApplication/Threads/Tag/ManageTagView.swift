@@ -10,15 +10,10 @@ import SwiftUI
 
 struct ManageTagView: View {
     var tag: Tag
-
     @StateObject var viewModel: TagsViewModel
-
     @EnvironmentObject var appState: AppState
-
     @State var showAddNewFolderDialog = false
-
     var onCompleted: (Tag) -> Void
-
     @State var tagName: String = ""
 
     var body: some View {
@@ -80,7 +75,7 @@ struct ManageTagView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         withAnimation {
-                            let tag = Tag(id: tag.id, name: tagName, owner: tag.owner, active: tag.active, tagParticipants: tag.tagParticipants)
+                            let tag = Tag(id: tag.id, name: tagName, active: tag.active, tagParticipants: tag.tagParticipants)
                             viewModel.editTag(tag: tag)
                         }
                     } label: {
@@ -97,7 +92,7 @@ struct ManageTagView: View {
                 }
             }
             .onAppear {
-                viewModel.getOfflineTags()
+                viewModel.getTagList()
             }
         }
     }

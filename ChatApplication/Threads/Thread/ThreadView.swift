@@ -10,7 +10,6 @@ import SwiftUI
 
 struct ThreadView: View {
     @ObservedObject var viewModel: ThreadViewModel
-    @State var showThreadDetailButton = false
     @State var showAttachmentDialog: Bool = false
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
@@ -38,10 +37,6 @@ struct ThreadView: View {
                               deleteMessagesDialog: $deleteDialaog,
                               showSelectThreadToForward: $showSelectThreadToForward)
                     .environmentObject(viewModel)
-
-                NavigationLink(destination: ThreadDetailView().environmentObject(viewModel), isActive: $showThreadDetailButton) {
-                    EmptyView()
-                }
             }
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
@@ -128,16 +123,18 @@ struct ThreadView: View {
     }
 
     @ViewBuilder var trailingToolbar: some View {
-        viewModel.imageLoader.imageView
-            .font(.system(size: 16).weight(.heavy))
-            .foregroundColor(.white)
-            .frame(width: 32, height: 32)
-            .background(Color.blue.opacity(0.4))
-            .cornerRadius(16)
-            .onTapGesture {
-                showThreadDetailButton.toggle()
-            }
-            .cornerRadius(18)
+        NavigationLink {
+            DetailView()
+                .environmentObject(DetailViewModel(thread: viewModel.thread))
+        } label: {
+            viewModel.imageLoader.imageView
+                .font(.system(size: 16).weight(.heavy))
+                .foregroundColor(.white)
+                .frame(width: 32, height: 32)
+                .background(Color.blue.opacity(0.4))
+                .cornerRadius(16)
+                .cornerRadius(18)
+        }
 
         Menu {
             Button {
@@ -382,6 +379,8 @@ struct SendContainer: View {
                     Divider()
                 }
 
+                MentionList(text: $text)
+
                 HStack {
                     Image(systemName: "paperclip")
                         .font(.system(size: 24))
@@ -390,7 +389,7 @@ struct SendContainer: View {
                             showAttachmentDialog.toggle()
                         }
 
-                    MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black)
+                    MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black, mention: true)
                         .cornerRadius(16)
                         .onChange(of: viewModel.textMessage ?? "") { newValue in
                             viewModel.sendStartTyping(newValue)
@@ -413,14 +412,41 @@ struct SendContainer: View {
                 .opacity(viewModel.thread.type == .channel ? 0.3 : 1.0)
                 .disabled(viewModel.thread.type == .channel)
             }
+            .animation(.easeInOut, value: viewModel.mentionList.count)
             .onReceive(viewModel.$editMessage) { editMessage in
                 if let editMessage = editMessage {
                     text = editMessage.message ?? ""
                 }
             }
             .onChange(of: text) { newValue in
+                viewModel.searchForMention(newValue)
                 viewModel.textMessage = newValue
             }
+        }
+    }
+}
+
+struct MentionList: View {
+    @Binding var text: String
+    @EnvironmentObject var viewModel: ThreadViewModel
+
+    var body: some View {
+        if viewModel.mentionList.count > 0 {
+            List(viewModel.mentionList) { participant in
+                ParticipantRow(participant: participant)
+                    .onTapGesture {
+                        if let lastMatch = text.matches(char: "@")?.last {
+                            let removeRange = text.last == "@" ? NSRange(text.index(text.endIndex, offsetBy: -1)..., in: text) : lastMatch.range
+                            let removedText = text.remove(in: removeRange) ?? ""
+                            text = removedText + "@" + (participant.username ?? "")
+                        }
+                    }
+            }
+            .listStyle(.plain)
+            .background(.ultraThickMaterial)
+            .transition(.asymmetric(insertion: .opacity, removal: .move(edge: .bottom)))
+        } else {
+            EmptyView()
         }
     }
 }

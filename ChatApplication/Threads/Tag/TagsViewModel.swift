@@ -38,8 +38,8 @@ class TagsViewModel: ObservableObject {
         isLoading = false
     }
 
-    func onCacheResponse(_ tags: [Tag]?, _: String?, _: ChatError?) {
-        if let tags = tags {
+    func onCacheResponse(_ response: ChatResponse<[Tag]>) {
+        if let tags = response.result {
             appendTags(tags: tags)
         }
         if isLoading, AppState.shared.connectionStatus != .connected {
@@ -48,15 +48,7 @@ class TagsViewModel: ObservableObject {
     }
 
     func getTagList() {
-        ChatManager.activeInstance.tagList(completion: onServerResponse)
-    }
-
-    func getOfflineTags() {
-        AppState.shared.cache.get(useCache: true, cacheType: .tags) { [weak self] (response: ChatResponse<[Tag]>) in
-            if let tags = response.result {
-                self?.appendTags(tags: tags)
-            }
-        }
+        ChatManager.activeInstance.tagList(completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     func deleteTag(_ tag: Tag) {
@@ -139,16 +131,16 @@ class TagsViewModel: ObservableObject {
     }
 
     func editedTag(_ tag: Tag) {
-        let tag = Tag(id: tag.id, name: tag.name, owner: tag.owner, active: tag.active, tagParticipants: tags.first(where: { $0.id == tag.id })?.tagParticipants)
+        let tag = Tag(id: tag.id, name: tag.name, active: tag.active, tagParticipants: tags.first(where: { $0.id == tag.id })?.tagParticipants)
         removeTag(tag)
         appendTags(tags: [tag])
     }
 
     func removeParticipants(_ tagId: Int, _ tagParticipants: [TagParticipant]) {
-        if var tag = tags.first(where: { $0.id == tagId }) {
+        if let tag = tags.first(where: { $0.id == tagId }) {
             tag.tagParticipants?.removeAll(where: { cached in tagParticipants.contains(where: { cached.id == $0.id }) })
             let tagParticipants = tag.tagParticipants
-            let tag = Tag(id: tagId, name: tag.name, owner: tag.owner, active: tag.active, tagParticipants: tagParticipants)
+            let tag = Tag(id: tagId, name: tag.name, active: tag.active, tagParticipants: tagParticipants)
             removeTag(tag)
             appendTags(tags: [tag])
         }

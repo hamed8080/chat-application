@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "sentry-cocoa",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/getsentry/sentry-cocoa.git",
-      "state" : {
-        "revision" : "fb4b4be84ae61f9e306348a65600c9dd93977e6f",
-        "version" : "4.5.0"
-      }
-    },
-    {
       "identity" : "starscream",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/daltoniam/Starscream.git",

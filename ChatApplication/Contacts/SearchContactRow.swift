@@ -40,7 +40,7 @@ struct SearchContactRow: View {
         .contentShape(Rectangle())
         .autoNavigateToThread()
         .onTapGesture {
-            contactVM.contactsVM.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+            contactVM.contactsVM?.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
         }
     }
 }

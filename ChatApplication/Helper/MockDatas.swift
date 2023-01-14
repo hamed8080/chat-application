@@ -15,6 +15,7 @@ final class MockData {
             message: "Hi hamed how are you? are you ok? and what are you ding now. And i was thinking you are sad for my behavoi last night."
         )
         let thread = Conversation(
+            canEditInfo: true,
             description: "description",
             id: 123,
             image: "avatar1",
@@ -32,15 +33,13 @@ final class MockData {
             return thread
         }
         if threads.count < count {
-            var lastIndex = threads.count + 1
-            for _ in 0 ... count {
+            for i in 0 ... count {
                 let thread = thread
                 thread.title = mockDataModel.threads[Int.random(in: 1 ... 15)].title
                 thread.description = mockDataModel.threads[Int.random(in: 1 ... 15)].description
                 thread.image = mockDataModel.threads[Int.random(in: 1 ... 15)].image
                 thread.lastMessageVO = Message(message: mockDataModel.threads[Int.random(in: 1 ... 15)].lastMessage ?? "")
-                thread.id = lastIndex
-                lastIndex += 1
+                thread.id = i
                 threads.append(thread)
             }
         }
@@ -58,9 +57,9 @@ final class MockData {
             id: 0,
             image: "avatar4",
             lastName: "Hosseini",
-            linkedUser: nil,
+            user: nil,
             notSeenDuration: 1_622_969_881,
-            timeStamp: nil,
+            time: nil,
             userId: nil
         )
         return contact
@@ -161,11 +160,9 @@ final class MockData {
 
     /// TAG
     static var tag: Tag {
-        let owner = participant
         let tag = Tag(
             id: 0,
             name: "Social",
-            owner: owner,
             active: true,
             tagParticipants: generateTagParticipant()
         )
@@ -175,7 +172,7 @@ final class MockData {
     static func generateTags(count: Int = 50) -> [Tag] {
         var tags: [Tag] = []
         for index in 0 ... count {
-            var tag = tag
+            let tag = tag
             tag.name = "Tag Name \(index)"
             tag.id = index
             tag.active = Bool.random()

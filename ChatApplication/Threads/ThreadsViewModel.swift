@@ -200,8 +200,9 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func sort() {
-        threadsRowVM.sort(by: { $0.thread.time ?? 0 > $1.thread.time ?? 0 })
-        threadsRowVM.sort(by: { $0.thread.pin == true && $1.thread.pin == false })
+        threadsRowVM = threadsRowVM
+            .sorted(by: { $0.thread.time ?? 0 > $1.thread.time ?? 0 })
+            .sorted(by: { $0.thread.pin == true && $1.thread.pin == false })
     }
 
     func clear() {

@@ -39,7 +39,6 @@ class ParticipantsViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellableSet)
-        getParticipants()
     }
 
     func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
@@ -89,10 +88,6 @@ class ParticipantsViewModel: ObservableObject {
         count = 15
         totalCount = 0
         participants = []
-    }
-
-    func setupPreview() {
-        appendParticipants(participants: MockData.generateParticipants())
     }
 
     func removePartitipant(_ participant: Participant) {

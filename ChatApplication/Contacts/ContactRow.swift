@@ -14,7 +14,7 @@ struct ContactRow: View {
     @State public var showActionViews: Bool = false
     @EnvironmentObject var callViewModel: CallViewModel
     var contact: Contact { viewModel.contact }
-    var contactImageURL: String? { contact.image ?? contact.linkedUser?.image }
+    var contactImageURL: String? { contact.image ?? contact.user?.image }
     @State var navigateToAddOrEditContact = false
 
     var body: some View {
@@ -91,7 +91,7 @@ struct ContactRow: View {
         Divider()
         HStack(spacing: 12) {
             ActionButton(iconSfSymbolName: "message") {
-                viewModel.contactsVM.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+                viewModel.contactsVM?.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
             }
 
             ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue) {

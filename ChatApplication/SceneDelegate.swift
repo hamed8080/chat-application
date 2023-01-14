@@ -26,7 +26,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
         // Create the SwiftUI view that provides the window contents.
-        NotificationCenter.default.addObserver(self, selector: #selector(addLog), name: NSNotification.Name("log"), object: nil)
         let contentView = HomeContentView()
             .environmentObject(settingsVM)
             .environmentObject(contactsVM)
@@ -52,20 +51,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        if URLContexts.first?.url.absoluteString.contains("Widget") == true,
-           let threadIdString = URLContexts.first?.url.absoluteString.replacingOccurrences(of: "Widget://link-", with: ""),
-           let threadId = Int(threadIdString)
-        {
-            if let thread = threadsVM.threadsRowVM.first(where: { $0.threadId == threadId })?.thread {
-                AppState.shared.selectedThread = thread
-                AppState.shared.showThreadView = true
-            }
+        guard let url = URLContexts.first?.url else { return }
+        if url.absoluteString.contains("Widget") == true {
+            let threadIdString = url.absoluteString.replacingOccurrences(of: "Widget://link-", with: "")
+            let threadId = Int(threadIdString) ?? 0
+            AppState.shared.showThread(threadId: threadId)
         }
-    }
 
-    @objc func addLog(notification: NSNotification) {
-        if let log = notification.object as? LogResult {
-            LogViewModel.addToLog(logResult: log)
+        if let userName = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "userName" })?.value {
+            AppState.shared.showThread(userName: userName)
         }
     }
 

@@ -10,11 +10,8 @@ import SwiftUI
 
 struct SelectThreadContentList: View {
     @EnvironmentObject var viewModel: ThreadsViewModel
-
     @State var searechInsideThread: String = ""
-
     var onSelect: (Conversation) -> Void
-
     @Environment(\.dismiss) var dismiss
 
     var body: some View {

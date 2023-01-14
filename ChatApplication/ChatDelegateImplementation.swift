@@ -39,36 +39,38 @@ class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
-        if let config = Config.getConfig(.main) {
+        if let config = Config.getConfig(.sandbox) {
             if config.server == "Integeration" {
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponseResult(accessToken: config.debugToken, expiresIn: Int.max))
             }
             TokenManager.shared.initSetIsLogin()
-            let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken
-            print("token is: \(token)")
             let asyncConfig = AsyncConfigBuilder()
                 .socketAddress(config.socketAddresss)
                 .reconnectCount(Int.max)
                 .reconnectOnClose(true)
                 .appId("PodChat")
                 .serverName(config.serverName)
-                .isDebuggingLogEnabled(true)
+                .isDebuggingLogEnabled(false)
                 .build()
             let chatConfig = ChatConfigBuilder(asyncConfig)
-                .token(token)
+                .token(TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken ?? "")
                 .ssoHost(config.ssoHost)
                 .platformHost(config.platformHost)
                 .fileServer(config.fileServer)
                 .enableCache(true)
                 .msgTTL(800_000) // for integeration server need to be long time
                 .isDebuggingLogEnabled(true)
-                .enableNotificationLogObserver(true)
                 .callTimeout(20)
+                .persistLogsOnServer(true)
+                .appGroup(AppGroup.group)
+                .sendLogInterval(15)
                 .build()
             ChatManager.instance.createInstance(config: chatConfig)
             ChatManager.activeInstance.delegate = self
-            ChatManager.activeInstance.connect()
-            AppState.shared.setCachedUser()
+            if let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken {
+                print("token is: \(token)")
+                ChatManager.activeInstance.connect()
+            }
         }
     }
 
@@ -89,6 +91,9 @@ class ChatDelegateImplementation: ChatDelegate {
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .connected
             NotificationCenter.default.post(name: connectName, object: nil)
+            UserDefaults.standard.setValue(codable: ChatManager.activeInstance.userInfo, forKey: "USER")
+        case .uninitialized:
+            print("Chat object is not initialized.")
         }
     }
 
@@ -97,7 +102,6 @@ class ChatDelegateImplementation: ChatDelegate {
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .unauthorized
         }
-        LogViewModel.addToLog(logResult: LogResult(json: "Error just happened: code\(error.code ?? 0) message:\(error.message ?? "") errorContent:\(error.message ?? "")", receive: true))
         print(error)
     }
 

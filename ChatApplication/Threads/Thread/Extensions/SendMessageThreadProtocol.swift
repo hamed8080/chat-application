@@ -29,7 +29,6 @@ protocol SendMessageThreadProtocol {
     func toggleSelectedMessage(_ message: Message, _ isSelected: Bool)
     func appendSelectedMessage(_ message: Message)
     func removeSelectedMessage(_ message: Message)
-
     func resendUnsetMessage(_ message: Message)
     func onUnSentEditCompletionResult(_ response: ChatResponse<Message>)
     func cancelUnsentMessage(_ uniqueId: String)
@@ -172,8 +171,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
     }
 
     func cancelUnsentMessage(_ uniqueId: String) {
-        AppState.shared.cache.write(cacheType: .deleteQueue(uniqueId))
-        AppState.shared.cache.save()
+        ChatManager.activeInstance.cancelMessage(uniqueId: uniqueId) { _ in }
         onDeleteMessage(ChatResponse(uniqueId: uniqueId))
     }
 

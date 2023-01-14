@@ -6,6 +6,8 @@
 //
 
 import FanapPodChatSDK
+import Foundation
+
 extension Conversation {
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
     func updateValues(_ newThread: Conversation) {
@@ -45,7 +47,7 @@ extension Conversation {
         inviter = newThread.inviter
         lastMessageVO = newThread.lastMessageVO
         participants = newThread.participants
-        pinMessage = newThread.pinMessage
+        pinMessages = newThread.pinMessages
         isArchive = newThread.isArchive
     }
 
@@ -62,4 +64,12 @@ extension Conversation {
             return nil
         }
     }
+
+    public var metaData: FileMetaData? {
+        guard let metadata = metadata?.data(using: .utf8),
+              let metaData = try? JSONDecoder().decode(FileMetaData.self, from: metadata) else { return nil }
+        return metaData
+    }
+
+    public var computedImageURL: String? { image ?? metaData?.file?.link }
 }

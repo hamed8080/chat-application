@@ -73,7 +73,7 @@ struct CallView: View {
         .toast(isShowing: $showRecordingToast,
                title: "The recording call is started.",
                message: "The session is recording by \(recordingViewModel.recorder?.name ?? "").",
-               image: recordingViewModel.imageLoader?.imageView as? Image ?? Image(uiImage: UIImage()))
+               image: recordingViewModel.imageLoader?.imageView as? SwiftUI.Image ?? SwiftUI.Image(uiImage: UIImage()))
         .onChange(of: viewModel.showCallView) { _ in
             if viewModel.showCallView == false {
                 presentationMode.wrappedValue.dismiss()

@@ -11,6 +11,11 @@ extension View {
     @ViewBuilder func noSeparators() -> some View {
         if #available(iOS 15.0, *) { // iOS 14
             self.listRowSeparator(.hidden)
+        } else { // iOS 13
+            listStyle(.plain)
+                .onAppear {
+                    UITableView.appearance().separatorStyle = .none
+                }
         }
     }
 }

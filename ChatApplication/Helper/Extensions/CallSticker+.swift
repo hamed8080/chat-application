@@ -10,28 +10,28 @@ import Foundation
 import SwiftUI
 
 extension CallSticker {
-    var systemImage: Image {
+    var systemImage: SwiftUI.Image {
         switch self {
         case .raiseHand:
-            return Image(systemName: "hand.raised.fill")
+            return SwiftUI.Image(systemName: "hand.raised.fill")
         case .like:
-            return Image(systemName: "hand.thumbsup.fill")
+            return SwiftUI.Image(systemName: "hand.thumbsup.fill")
         case .dislike:
-            return Image(systemName: "hand.thumbsdown.fill")
+            return SwiftUI.Image(systemName: "hand.thumbsdown.fill")
         case .clap:
-            return Image(systemName: "hands.clap.fill")
+            return SwiftUI.Image(systemName: "hands.clap.fill")
         case .heart:
-            return Image(systemName: "heart.fill")
+            return SwiftUI.Image(systemName: "heart.fill")
         case .happy:
-            return Image(systemName: "face.smiling.inverse")
+            return SwiftUI.Image(systemName: "face.smiling.inverse")
         case .angry:
-            return Image("angry")
+            return SwiftUI.Image("angry")
         case .cry:
-            return Image("crying")
+            return SwiftUI.Image("crying")
         case .power:
-            return Image(systemName: "bolt.fill")
+            return SwiftUI.Image(systemName: "bolt.fill")
         case .bored:
-            return Image("bored")
+            return SwiftUI.Image("bored")
         }
     }
 }

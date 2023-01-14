@@ -10,13 +10,9 @@ import SwiftUI
 
 struct MessageRow: View {
     @ObservedObject var viewModel: MessageViewModel
-
     @EnvironmentObject var threadViewModel: ThreadViewModel
-
     @State private(set) var showParticipants: Bool = false
-
     @Binding var isInEditMode: Bool
-
     @State private var isSelected = false
 
     var body: some View {
@@ -44,6 +40,10 @@ struct MessageRow: View {
                     TextMessageType()
                         .environmentObject(viewModel)
                         .environmentObject(threadViewModel)
+                } else if type == .participantJoin || type == .participantLeft {
+                    ParticipantMessageType()
+                        .environmentObject(viewModel)
+                        .environmentObject(threadViewModel)
                 } else if type == .endCall || type == .startCall {
                     CallMessageType()
                         .environmentObject(viewModel)
@@ -56,11 +56,8 @@ struct MessageRow: View {
 
 struct CallMessageType: View {
     @EnvironmentObject var viewModel: MessageViewModel
-
     @EnvironmentObject var threadViewModel: ThreadViewModel
-
     @Environment(\.colorScheme) var colorScheme
-
     var message: Message { viewModel.message }
 
     var body: some View {
@@ -85,11 +82,40 @@ struct CallMessageType: View {
     }
 }
 
+struct ParticipantMessageType: View {
+    @EnvironmentObject var viewModel: MessageViewModel
+    @EnvironmentObject var threadViewModel: ThreadViewModel
+    @Environment(\.colorScheme) var colorScheme
+    var message: Message { viewModel.message }
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 0) {
+            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDate()
+            let name = message.participant?.name ?? ""
+            let isJoined = message.type == .participantJoin ? "joined" : "left"
+            let markdownText = try! AttributedString(markdown: "\(name) **\(isJoined)** - \(date)")
+            Text(markdownText)
+                .foregroundColor(Color.primary.opacity(0.8))
+                .font(.subheadline)
+                .padding(2)
+
+            Image(systemName: message.iconName)
+                .resizable()
+                .frame(width: 12, height: 12)
+                .scaledToFit()
+                .foregroundColor(message.type == .participantJoin ? Color.green : Color.red)
+                .padding([.leading, .trailing], 6)
+        }
+        .padding([.leading, .trailing])
+        .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))
+        .cornerRadius(6)
+        .frame(maxWidth: .infinity)
+    }
+}
+
 struct TextMessageType: View {
     @EnvironmentObject var viewModel: MessageViewModel
-
     @EnvironmentObject var threadViewModel: ThreadViewModel
-
     var message: Message { viewModel.message }
 
     var body: some View {
@@ -175,6 +201,12 @@ struct TextMessageType: View {
                 }
                 .disabled(viewModel.message.editable == false)
 
+                Button {
+                    UIPasteboard.general.string = message.message
+                } label: {
+                    Label("Copy", systemImage: "doc.on.doc")
+                }
+
                 if viewModel.message.isFileType == true {
                     Button {
                         viewModel.clearCacheFile(message: message)
@@ -219,12 +251,17 @@ struct TextMessageType: View {
 
     @ViewBuilder var sameUserAvatar: some View {
         if !threadViewModel.isSameUser(message: message), message.participant != nil {
-            viewModel.imageLoader.imageView
-                .font(.system(size: 16).weight(.heavy))
-                .foregroundColor(.white)
-                .frame(width: 36, height: 36)
-                .background(Color.blue.opacity(0.4))
-                .cornerRadius(18)
+            NavigationLink {
+                DetailView()
+                    .environmentObject(DetailViewModel(user: message.participant))
+            } label: {
+                viewModel.imageLoader.imageView
+                    .font(.system(size: 16).weight(.heavy))
+                    .foregroundColor(.white)
+                    .frame(width: 36, height: 36)
+                    .background(Color.blue.opacity(0.4))
+                    .cornerRadius(18)
+            }
         } else {
             Rectangle()
                 .frame(width: 36, height: 36)
@@ -235,7 +272,6 @@ struct TextMessageType: View {
 
 struct ForwardMessageRow: View {
     var forwardInfo: ForwardInfo
-
     @State var showReadOnlyThreadView: Bool = false
 
     var body: some View {
@@ -272,9 +308,7 @@ struct ForwardMessageRow: View {
 
 struct UploadMessageType: View {
     @EnvironmentObject var viewModel: MessageViewModel
-
     @EnvironmentObject var threadViewModel: ThreadViewModel
-
     var message: Message { viewModel.message }
 
     var body: some View {

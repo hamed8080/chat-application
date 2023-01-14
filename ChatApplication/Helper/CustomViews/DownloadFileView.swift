@@ -11,11 +11,8 @@ import SwiftUI
 
 struct DownloadFileView: View {
     @ObservedObject var downloadFileVM: DownloadFileViewModel
-
     @State var data: Data = .init()
-
     @State var percent: Int64 = 0
-
     @State var shareDownloadedFile: Bool = false
 
     init(message: Message, placeHolder: Data? = nil) {
@@ -132,7 +129,13 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     @Published var state: DownloadFileState = .UNDEFINED
     @Published var data: Data?
     var fileHashCode: String { message.metaData?.fileHash ?? "" }
-    var fileURL: URL? { AppState.shared.cache.cacheFileManager.getFileUrl(fileHashCode) }
+
+    var fileURL: URL? {
+        let url = "\(ChatManager.activeInstance.config.fileServer)\(FanapPodChatSDK.Routes.files.rawValue)/\(fileHashCode)"
+        guard let url = URL(string: url) else { return nil }
+        return AppState.shared.cacheFileManager?.filePath(url: url)
+    }
+
     var downloadUniqueId: String?
     private(set) var message: Message
     private var cancelable: Set<AnyCancellable> = []
@@ -150,10 +153,9 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     }
 
     func getFromCache() {
-        if message.isImage {
-            getImageIfExistInCache()
-        } else {
-            getFileIfExistInCache()
+        let url = "\(ChatManager.activeInstance.config.fileServer)\(FanapPodChatSDK.Routes.files.rawValue)/\(fileHashCode)"
+        if let url = URL(string: url), let data = AppState.shared.cacheFileManager?.getData(url: url) {
+            onResponse(data: data)
         }
     }
 
@@ -172,36 +174,29 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
         let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: true)
         ChatManager.activeInstance.getFile(req) { downloadProgress in
             self.downloadPercent = downloadProgress.percent
-        } completion: { [weak self] data, _, _ in
+        } completion: { [weak self] data, _, _, _ in
             self?.onResponse(data: data)
-        } cacheResponse: { [weak self] data, _, _ in
-            self?.onResponse(data: data)
+        } cacheResponse: { [weak self] _, url, _, _ in
+            if let url = url, let data = AppState.shared.cacheFileManager?.getData(url: url) {
+                self?.onResponse(data: data)
+            }
         } uniqueIdResult: { uniqueId in
             self.downloadUniqueId = uniqueId
         }
     }
 
     private func downloadImage() {
-        let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true, isThumbnail: false, size: .ACTUAL)
+        let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true, size: .ACTUAL)
         ChatManager.activeInstance.getImage(req) { [weak self] downloadProgress in
             self?.downloadPercent = downloadProgress.percent
-        } completion: { [weak self] data, _, _ in
+        } completion: { [weak self] data, _, _, _ in
             self?.onResponse(data: data)
-        } cacheResponse: { [weak self] data, _, _ in
-            self?.onResponse(data: data)
-        } uniqueIdResult: { [weak self] uniqueId in
-            self?.downloadUniqueId = uniqueId
-        }
-    }
-
-    private func getImageIfExistInCache(isThumbnail _: Bool = true) {
-        if AppState.shared.cache.cacheFileManager.getImage(hashCode: fileHashCode) != nil {
-            let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: false, isThumbnail: false, size: .ACTUAL)
-            ChatManager.activeInstance.getImage(req) { _ in
-            } completion: { _, _, _ in
-            } cacheResponse: { [weak self] data, _, _ in
+        } cacheResponse: { [weak self] _, url, _, _ in
+            if let url = url, let data = AppState.shared.cacheFileManager?.getData(url: url) {
                 self?.onResponse(data: data)
             }
+        } uniqueIdResult: { [weak self] uniqueId in
+            self?.downloadUniqueId = uniqueId
         }
     }
 
@@ -210,17 +205,6 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
             state = .COMPLETED
             downloadPercent = 100
             self.data = data
-        }
-    }
-
-    private func getFileIfExistInCache() {
-        if AppState.shared.cache.cacheFileManager.getFile(hashCode: fileHashCode) != nil {
-            let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: false)
-            ChatManager.activeInstance.getFile(req) { _ in
-            } completion: { _, _, _ in
-            } cacheResponse: { [weak self] data, _, _ in
-                self?.onResponse(data: data)
-            }
         }
     }
 

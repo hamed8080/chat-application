@@ -14,6 +14,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
     var textColor: Color
     @Binding var calculatedHeight: CGFloat
     var keyboardReturnType: UIReturnKeyType = .done
+    var mention: Bool = false
     var onDone: ((String?) -> Void)?
 
     func makeUIView(context: UIViewRepresentableContext<UITextViewWrapper>) -> UITextView {
@@ -34,7 +35,16 @@ private struct UITextViewWrapper: UIViewRepresentable {
 
     func updateUIView(_ uiView: UITextView, context _: UIViewRepresentableContext<UITextViewWrapper>) {
         if uiView.text != text {
-            uiView.text = text
+            let attributes = NSMutableAttributedString(string: text)
+            if mention {
+                text.matches(char: "@")?.forEach { match in
+                    attributes.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.systemBlue, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)], range: match.range)
+                }
+                uiView.attributedText = attributes
+            } else {
+                uiView.text = text
+            }
+            uiView.font = UIFont.systemFont(ofSize: 16)
         }
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
     }
@@ -86,6 +96,7 @@ struct MultilineTextField: View {
     var textColor: Color?
     @Environment(\.colorScheme) var colorScheme
     var keyboardReturnType: UIReturnKeyType = .done
+    var mention: Bool = false
 
     @Binding private var text: String
     private var internalText: Binding<String> {
@@ -105,6 +116,7 @@ struct MultilineTextField: View {
          textColor: Color? = nil,
          backgroundColor: Color = .white,
          keyboardReturnType: UIReturnKeyType = .done,
+         mention: Bool = false,
          onDone: ((String?) -> Void)? = nil)
     {
         self.placeholder = placeholder
@@ -113,6 +125,7 @@ struct MultilineTextField: View {
         _text = text
         self.backgroundColor = backgroundColor
         self.keyboardReturnType = keyboardReturnType
+        self.mention = mention
         _showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
 
@@ -121,6 +134,7 @@ struct MultilineTextField: View {
                           textColor: textColor ?? (colorScheme == .dark ? Color.white : Color.black),
                           calculatedHeight: $dynamicHeight,
                           keyboardReturnType: keyboardReturnType,
+                          mention: mention,
                           onDone: onDone)
             .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
             .background(placeholderView, alignment: .topLeading)

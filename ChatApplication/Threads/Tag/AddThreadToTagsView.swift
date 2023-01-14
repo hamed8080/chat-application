@@ -10,11 +10,8 @@ import SwiftUI
 
 struct AddThreadToTagsView: View {
     @StateObject var viewModel: TagsViewModel
-
     @State var showAddNewFolderDialog = false
-
     var onCompleted: (Tag) -> Void
-
     @State var tagName: String = ""
 
     var body: some View {
@@ -83,7 +80,7 @@ struct AddThreadToTagsView: View {
                 }
             }
             .onAppear {
-                viewModel.getOfflineTags()
+                viewModel.getTagList()
             }
         }
     }

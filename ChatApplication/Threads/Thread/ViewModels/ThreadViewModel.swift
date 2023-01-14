@@ -27,6 +27,7 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     var count: Int { get }
     var groupCallIdToJoin: Int? { get set }
     var searchTextTimer: Timer? { get set }
+    var mentionList: [Participant] { get set }
     func delete()
     func leave()
     func clearHistory()
@@ -67,6 +68,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     @Published var imageLoader: ImageLoader
     @Published var isInEditMode: Bool = false
     @Published var exportMessagesVM: ExportMessagesViewModelProtocol
+    @Published var mentionList: [Participant] = []
     var searchedMessages: [Message] = []
     var readOnly = false
     var textMessage: String?
@@ -100,8 +102,12 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         self.thread = thread
         exportMessagesVM = ExportMessagesViewModel(thread: thread)
         self.threadsViewModel = threadsViewModel
-        imageLoader = ImageLoader(url: thread.image ?? "", userName: thread.title, size: .SMALL)
+        imageLoader = ImageLoader(url: thread.computedImageURL ?? "", userName: thread.title, size: .SMALL)
         setupNotificationObservers()
+        fetchImage()
+    }
+
+    private func fetchImage() {
         imageLoader.fetch()
     }
 
@@ -134,8 +140,12 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
                 onLastMessageChanged(thread)
             }
         case let .threadUnreadCountUpdated(response):
-            if let threadId = response.subjectId, let unreadCount = response.result?.unreadCount {
-                updateUnreadCount(threadId, unreadCount)
+            if let unreadCountModel = response.result {
+                updateUnreadCount(unreadCountModel.threadId ?? -1, unreadCountModel.unreadCount ?? -1)
+            }
+        case let .threadInfoUpdated(response):
+            if let thread = response.result {
+                updateThreadInfo(thread)
             }
         default:
             break
@@ -195,11 +205,30 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         }
     }
 
+    func updateThreadInfo(_ thread: Conversation) {
+        if thread.id == threadId {
+            self.thread.title = thread.title
+            if thread.computedImageURL != self.thread.computedImageURL {
+                imageLoader.setURL(url: thread.computedImageURL ?? "")
+                fetchImage()
+            }
+            self.thread.image = thread.image
+            self.thread.metadata = thread.metadata
+            self.thread.description = thread.description
+            self.thread.type = thread.type
+            self.thread.userGroupHash = thread.userGroupHash
+            self.thread.time = thread.time
+            self.thread.group = thread.group
+            objectWillChange.send()
+        }
+    }
+
     func onLastMessageChanged(_ thread: Conversation) {
         if thread.id == threadId {
             self.thread.lastMessage = thread.lastMessage
             self.thread.lastMessageVO = thread.lastMessageVO
             self.thread.unreadCount = thread.unreadCount
+            objectWillChange.send()
         }
     }
 
@@ -274,26 +303,8 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
     func updateThread(_ thread: Conversation) {
-        thread.updateValues(thread)
-    }
-
-    func updateThreadInfo(_ title: String, _ description: String, image: UIImage?, assetResources: [PHAssetResource]?) {
-        var imageRequest: UploadImageRequest?
-        if let image = image {
-            let width = Int(image.size.width)
-            let height = Int(image.size.height)
-            imageRequest = UploadImageRequest(data: image.pngData() ?? Data(),
-                                              hC: height,
-                                              wC: width,
-                                              fileExtension: "png",
-                                              fileName: assetResources?.first?.originalFilename,
-                                              mimeType: "image/png",
-                                              originalName: assetResources?.first?.originalFilename,
-                                              isPublic: true)
-        }
-
-        let req = UpdateThreadInfoRequest(description: description, threadId: threadId, threadImage: imageRequest, title: title)
-        ChatManager.activeInstance.updateThreadInfo(req) { _ in } uploadProgress: { _, _ in } completion: { _ in }
+        self.thread.updateValues(thread)
+        objectWillChange.send()
     }
 
     func searchInsideThread(text: String, offset: Int = 0) {
@@ -406,5 +417,16 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
         }
         return false
+    }
+
+    func searchForMention(_ text: String) {
+        if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
+            let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
+            ChatManager.activeInstance.getThreadParticipants(.init(threadId: threadId, name: rangeText)) { response in
+                self.mentionList = response.result ?? []
+            }
+        } else {
+            mentionList = []
+        }
     }
 }
