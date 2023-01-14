@@ -55,7 +55,7 @@ struct CustomNavigationBar: View {
             if showDivider == true {
                 Rectangle()
                     .fill(Color.gray.opacity(0.5))
-                    .frame(width: .infinity, height: 0.5)
+                    .frame(height: 0.5)
                     .padding(.top, 8)
             }
         }

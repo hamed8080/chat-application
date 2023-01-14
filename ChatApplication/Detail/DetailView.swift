@@ -108,19 +108,25 @@ struct DetailView: View {
                     Section {
                         if let bio = viewModel.bio {
                             Text(bio)
-                            Divider()
+                            if !viewModel.isInMyContact {
+                                Divider()
+                            }
                         }
                         if !viewModel.isInMyContact {
                             SectionItem(title: "Add To contacts", systemName: "person.badge.plus") {
                                 addToContactSheet.toggle()
                             }
-                            Divider()
+                            if viewModel.cellPhoneNumber != nil {
+                                Divider()
+                            }
                         }
                         if let phone = viewModel.cellPhoneNumber {
                             SectionItem(title: phone, systemName: "doc.on.doc") {
                                 viewModel.copyPhone()
                             }
-                            Divider()
+                            if viewModel.canBlock {
+                                Divider()
+                            }
                         }
 
                         if viewModel.canBlock {
@@ -143,7 +149,7 @@ struct DetailView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarTitle("Info")
-        .listStyle(.inset)
+        .listStyle(.plain)
         .sheet(isPresented: $addToContactSheet) {
             AddOrEditContactView()
         }

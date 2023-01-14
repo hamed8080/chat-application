@@ -127,8 +127,8 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
                 onLastMessageChanged(thread)
             }
         case let .threadUnreadCountUpdated(response):
-            if let threadId = response.subjectId, let unreadCount = response.result?.unreadCount {
-                updateUnreadCount(threadId, unreadCount)
+            if let unreadCountModel = response.result {
+                updateUnreadCount(unreadCountModel.threadId ?? -1, unreadCountModel.unreadCount ?? -1)
             }
         case let .threadInfoUpdated(response):
             if let thread = response.result {
@@ -193,6 +193,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             self.thread.lastMessage = thread.lastMessage
             self.thread.lastMessageVO = thread.lastMessageVO
             self.thread.unreadCount = thread.unreadCount
+            objectWillChange.send()
         }
     }
 
