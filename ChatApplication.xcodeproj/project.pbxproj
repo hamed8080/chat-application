@@ -526,10 +526,6 @@
 		AC1D2CA62661FFAC00AA351A /* ChatApplication */ = {
 			isa = PBXGroup;
 			children = (
-				AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */,
-				AC924CC2274A77BC00E33BD1 /* ChatApplication.entitlements */,
-				AC1D2CB52661FFAD00AA351A /* Info.plist */,
-				AC1D2CC22662016D00AA351A /* SceneDelegate.swift */,
 				0505C4F02869AC620034A9F0 /* Cache */,
 				AC9DAC6B266CAD44009E4722 /* Contacts */,
 				AC1D2CBC2662016D00AA351A /* Helper */,
@@ -541,6 +537,10 @@
 				AC085F3C2692EC2E001492B2 /* Supporting Files */,
 				AC1D2CC32662016D00AA351A /* Threads */,
 				050C5A9F297082A700CD5702 /* Detail */,
+				AC1D2CC92662016E00AA351A /* ChatDelegateImplementation.swift */,
+				AC924CC2274A77BC00E33BD1 /* ChatApplication.entitlements */,
+				AC1D2CB52661FFAD00AA351A /* Info.plist */,
+				AC1D2CC22662016D00AA351A /* SceneDelegate.swift */,
 			);
 			path = ChatApplication;
 			sourceTree = "<group>";
