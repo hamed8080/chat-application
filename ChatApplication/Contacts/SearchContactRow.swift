@@ -9,12 +9,13 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct SearchContactRow: View {
-    @EnvironmentObject var contactVM: ContactViewModel
-    var contact: Contact { contactVM.contact }
+    @EnvironmentObject var contactsVM: ContactsViewModel
+    var contact: Contact
+    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         HStack {
-            contactVM.imageLoader.imageView
+            imageLoader.imageView
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 24, height: 24)
@@ -34,20 +35,26 @@ struct SearchContactRow: View {
 
                 Rectangle()
                     .fill(Color.gray.opacity(0.2))
-                    .frame(width: .infinity, height: 1)
+                    .frame(height: 1)
             }
         }
         .contentShape(Rectangle())
         .autoNavigateToThread()
         .onTapGesture {
-            contactVM.contactsVM?.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+            contactsVM.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+        }
+        .onAppear {
+            imageLoader.setURL(url: contact.image ?? contact.user?.image)
+            imageLoader.setUserName(userName: contact.firstName)
+            imageLoader.setSize(size: .SMALL)
+            imageLoader.fetch()
         }
     }
 }
 
 struct SearchContactRow_Previews: PreviewProvider {
     static var previews: some View {
-        SearchContactRow()
-            .environmentObject(ContactViewModel(contact: MockData.contact, contactsVM: ContactsViewModel()))
+        SearchContactRow(contact: MockData.contact)
+            .environmentObject(ContactsViewModel())
     }
 }

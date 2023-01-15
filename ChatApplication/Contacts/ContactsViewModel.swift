@@ -18,8 +18,8 @@ class ContactsViewModel: ObservableObject {
     private(set) var firstSuccessResponse = false
     private var canLoadNextPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
     @Published private(set) var maxContactsCountInServer = 0
-    @Published private(set) var contactsVMS: [ContactViewModel] = []
-    @Published private(set) var searchedContactsVMS: [ContactViewModel] = []
+    @Published private(set) var contacts: [Contact] = []
+    @Published private(set) var searchedContacts: [Contact] = []
     @Published var isLoading = false
     @Published var searchContactString: String = "" {
         didSet {
@@ -97,14 +97,14 @@ class ContactsViewModel: ObservableObject {
     func clear() {
         offset = 0
         count = 15
-        contactsVMS = []
+        contacts = []
     }
 
     func delete(indexSet: IndexSet) {
-        let contacts = contactsVMS.enumerated().filter { indexSet.contains($0.offset) }.map(\.element)
+        let contacts = contacts.enumerated().filter { indexSet.contains($0.offset) }.map(\.element)
         contacts.forEach { contact in
-            delete(contact.contact)
-            reomve(contact.contact)
+            delete(contact)
+            reomve(contact)
         }
     }
 
@@ -128,16 +128,16 @@ class ContactsViewModel: ObservableObject {
     func appendOrUpdateContact(_ contacts: [Contact]) {
         // Remove all contacts that were cached, to prevent duplication.
         contacts.forEach { contact in
-            if let oldContactVM = contactsVMS.first(where: { $0.contact.id == contact.id }) {
-                oldContactVM.contact.update(contact)
+            if let oldContact = self.contacts.first(where: { $0.id == contact.id }) {
+                oldContact.update(contact)
             } else {
-                contactsVMS.append(ContactViewModel(contact: contact, contactsVM: self))
+                self.contacts.append(contact)
             }
         }
     }
 
     func insertContactsAtTop(_ contacts: [Contact]) {
-        contactsVMS.insert(contentsOf: contacts.map { .init(contact: $0, contactsVM: self) }, at: 0)
+        self.contacts.insert(contentsOf: contacts, at: 0)
     }
 
     func setMaxContactsCountInServer(count: Int) {
@@ -145,8 +145,8 @@ class ContactsViewModel: ObservableObject {
     }
 
     func reomve(_ contact: Contact) {
-        guard let index = contactsVMS.firstIndex(where: { $0.contact == contact }) else { return }
-        contactsVMS.remove(at: index)
+        guard let index = contacts.firstIndex(where: { $0 == contact }) else { return }
+        contacts.remove(at: index)
     }
 
     func addToSelctedContacts(_ contact: Contact) {
@@ -160,7 +160,7 @@ class ContactsViewModel: ObservableObject {
 
     func setSearchedContacts(_ contacts: [Contact]) {
         isLoading = false
-        searchedContactsVMS = contacts.map { .init(contact: $0, contactsVM: self) }
+        searchedContacts = contacts
     }
 
     func addContact(contactValue: String, firstName: String?, lastName: String?) {
@@ -175,10 +175,71 @@ class ContactsViewModel: ObservableObject {
         }
     }
 
+    func firstContact(_ contact: Contact) -> Contact? {
+        contacts.first { $0.id == contact.id }
+    }
+
     func validatePhone(value: String) -> Bool {
         let phoneRegex = "^[0-9+]{0,1}+[0-9]{5,16}$"
         let phoneTest = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
         let result = phoneTest.evaluate(with: value)
         return result
+    }
+
+    func blockOrUnBlock(_ contact: Contact) {
+        let findedContact = firstContact(contact)
+        if findedContact?.blocked == false {
+            let req = BlockRequest(contactId: contact.id)
+            ChatManager.activeInstance.blockContact(req, completion: onBlockUNBlockResponse)
+        } else {
+            let req = UnBlockRequest(contactId: contact.id)
+            ChatManager.activeInstance.unBlockContact(req, completion: onBlockUNBlockResponse)
+        }
+    }
+
+    func onBlockUNBlockResponse(_ response: ChatResponse<Contact>) {
+        if let result = response.result {
+            let findedContact = contacts.first(where: { $0.id == result.id })
+            findedContact?.blocked?.toggle()
+            objectWillChange.send()
+        }
+    }
+
+    func isSelected(contact: Contact) -> Bool {
+        selectedContacts.contains(contact)
+    }
+
+    func toggleSelectedContact(contact: Contact) {
+        if isSelected(contact: contact) {
+            removeToSelctedContacts(contact)
+        } else {
+            addToSelctedContacts(contact)
+        }
+    }
+
+    func updateContact(contact _: Contact, contactValue: String, firstName: String?, lastName: String?) {
+        let isPhone = validatePhone(value: contactValue)
+        let req: AddContactRequest = isPhone ?
+            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
+            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
+        ChatManager.activeInstance.addContact(req) { [weak self] response in
+            if let updatedContact = response.result?.first {
+                if let index = self?.contacts.firstIndex(where: { $0.id == updatedContact.id }) {
+                    self?.contacts[index].update(updatedContact)
+                    self?.objectWillChange.send()
+                }
+            }
+        }
+
+//        ChatManager.activeInstance.updateContact(req) { [weak self] response in
+//            response.result?.forEach { updatedContact in
+//                if updatedContact.id == contactId {
+//                    if let index = self?.contacts.firstIndex(where: { $0.id == updatedContact.id }) {
+//                        self?.contacts[index].update(updatedContact)
+//                        self?.objectWillChange.send()
+//                    }
+//                }
+//            }
+//        }
     }
 }
