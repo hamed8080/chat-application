@@ -1,5 +1,5 @@
 //
-//  ScrollToPositionProtocol.swift
+//  ThreadViewModel+ScrollToPosition.swift
 //  ChatApplication
 //
 //  Created by hamed on 11/24/22.
@@ -19,7 +19,7 @@ protocol ScrollToPositionProtocol {
 
 extension ThreadViewModel: ScrollToPositionProtocol {
     func updateScrollToLastSeenUniqueId() {
-        if scrollToUniqueId == nil, let uniqueId = messages.first(where: { $0.id == thread.lastSeenMessageId })?.uniqueId {
+        if scrollToUniqueId == nil, let uniqueId = messages.first(where: { $0.id == thread?.lastSeenMessageId })?.uniqueId {
             setScrollToUniqueId(uniqueId)
         }
     }

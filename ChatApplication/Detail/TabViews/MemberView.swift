@@ -13,7 +13,7 @@ struct MemberView: View {
 
     var body: some View {
         ListLoadingView(isLoading: $viewModel.isLoading)
-        ForEach(viewModel.participants, id: \.id) { participant in
+        ForEach(viewModel.participants) { participant in
             ParticipantRow(participant: participant)
                 .onAppear {
                     if viewModel.participants.last == participant {

@@ -62,7 +62,7 @@ struct StartThreadContactPickerView: View {
                     startThreadModel.type = .channel
                 }
                 List {
-                    ForEach(contactsVM.contacts, id: \.id) { contact in
+                    ForEach(contactsVM.contacts) { contact in
                         StartThreadContactRow(isInMultiSelectMode: $isInMultiSelectMode, contact: contact)
                             .onTapGesture {
                                 if isInMultiSelectMode == false {

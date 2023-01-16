@@ -14,7 +14,7 @@ struct NavigateToThreadModifier: ViewModifier {
         ZStack {
             content
             if let thread = appState.selectedThread {
-                NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: thread)), isActive: $appState.showThreadView) {
+                NavigationLink(destination: ThreadView(thread: thread), isActive: $appState.showThreadView) {
                     EmptyView()
                         .frame(width: 0, height: 0)
                         .hidden()

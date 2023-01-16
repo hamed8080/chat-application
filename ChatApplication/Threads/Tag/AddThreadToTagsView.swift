@@ -17,7 +17,7 @@ struct AddThreadToTagsView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(viewModel.tags, id: \.id) { tag in
+                ForEach(viewModel.tags) { tag in
                     TagRow(tag: tag, viewModel: viewModel)
                         .swipeActions(edge: .trailing, allowsFullSwipe: true, content: {
                             Button(role: .destructive) {

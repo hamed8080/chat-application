@@ -32,7 +32,7 @@ struct AddParticipantsToThreadView: View {
             .ignoresSafeArea()
 
             List {
-                ForEach(contactsVM.contacts, id: \.id) { contact in
+                ForEach(contactsVM.contacts) { contact in
                     StartThreadContactRow(isInMultiSelectMode: .constant(true), contact: contact)
                         .onAppear {
                             if contactsVM.contacts.last == contact {

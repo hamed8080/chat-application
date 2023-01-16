@@ -19,23 +19,24 @@ struct ThreadContentList: View {
         List {
             ListLoadingView(isLoading: $viewModel.isLoading)
             if let folder = folder {
-                ForEach(folder.tagParticipants ?? [], id: \.id) { tagParticipant in
-                    if let thread = tagParticipant.conversation, let threadVM = viewModel.threadsRowVM.first { $0.threadId == thread.id } ?? ThreadViewModel(thread: thread) {
+                ForEach(folder.tagParticipants ?? []) { tagParticipant in
+                    if let tagParticipant = tagParticipant.conversation, let thread = viewModel.threads.first { $0.id == tagParticipant.id } ?? tagParticipant {
                         NavigationLink {
-                            ThreadView(viewModel: threadVM)
+                            ThreadView(thread: thread)
                         } label: {
-                            ThreadRow(viewModel: threadVM)
+                            ThreadRow(thread: thread)
+                                .environmentObject(viewModel) // wen need to inject viewmodel here because inside threadRow we are using the global viewmodel injection
                         }
                     }
                 }
             } else {
-                ForEach(viewModel.filtered, id: \.self) { threadVM in
+                ForEach(viewModel.filtered) { thread in
                     NavigationLink {
-                        ThreadView(viewModel: threadVM)
+                        ThreadView(thread: thread)
                     } label: {
-                        ThreadRow(viewModel: threadVM)
+                        ThreadRow(thread: thread)
                             .onAppear {
-                                if self.viewModel.filtered.last == threadVM {
+                                if self.viewModel.filtered.last == thread {
                                     viewModel.loadMore()
                                 }
                             }

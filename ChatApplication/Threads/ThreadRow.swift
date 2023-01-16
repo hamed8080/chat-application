@@ -10,12 +10,15 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct ThreadRow: View {
-    @ObservedObject var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadsViewModel
+    var thread: Conversation
+    @StateObject var imageLoader = ImageLoader()
+    var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
 
     var body: some View {
         Button(action: {}, label: {
             HStack {
-                viewModel.imageLoader.imageView
+                imageLoader.imageView
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
                     .frame(width: 64, height: 64)
@@ -23,9 +26,9 @@ struct ThreadRow: View {
                     .cornerRadius(32)
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text(viewModel.thread.title ?? "")
+                        Text(thread.title ?? "")
                             .font(.headline)
-                        if viewModel.thread.mute == true {
+                        if thread.mute == true {
                             Image(systemName: "speaker.slash.fill")
                                 .resizable()
                                 .frame(width: 12, height: 12)
@@ -34,16 +37,16 @@ struct ThreadRow: View {
                         }
                     }
 
-                    if let message = viewModel.thread.lastMessageVO?.message?.prefix(100) {
+                    if let message = thread.lastMessageVO?.message?.prefix(100) {
                         Text(message)
                             .lineLimit(1)
                             .font(.subheadline)
                             .clipped()
                     }
-                    ThreadIsTypingView(threadId: viewModel.threadId)
+                    ThreadIsTypingView(threadId: thread.id ?? -1)
                 }
                 Spacer()
-                if let unreadCountString = viewModel.thread.unreadCountString {
+                if let unreadCountString = thread.unreadCountString {
                     Text(unreadCountString)
                         .font(.system(size: 13))
                         .padding(8)
@@ -51,17 +54,17 @@ struct ThreadRow: View {
                         .frame(minWidth: 24)
                         .foregroundColor(Color.white)
                         .background(Color.orange)
-                        .cornerRadius(viewModel.thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
+                        .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
                 }
 
-                if viewModel.thread.mentioned == true {
+                if thread.mentioned == true {
                     Image(systemName: "at.circle.fill")
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(Color.orange)
                 }
 
-                if viewModel.thread.pin == true {
+                if thread.pin == true {
                     Image(systemName: "pin.fill")
                         .resizable()
                         .scaledToFit()
@@ -73,88 +76,96 @@ struct ThreadRow: View {
             .padding([.leading, .trailing], 8)
             .padding([.top, .bottom], 4)
         })
-        .animation(.easeInOut, value: viewModel.thread.lastMessageVO?.message)
-        .animation(.easeInOut, value: viewModel.thread)
-        .animation(.easeInOut, value: viewModel.thread.pin)
-        .animation(.easeInOut, value: viewModel.thread.mute)
-        .animation(.easeInOut, value: viewModel.thread.unreadCount)
-        .animation(.easeInOut, value: viewModel.thread.title)
+        .animation(.easeInOut, value: thread.lastMessageVO?.message)
+        .animation(.easeInOut, value: thread)
+        .animation(.easeInOut, value: thread.pin)
+        .animation(.easeInOut, value: thread.mute)
+        .animation(.easeInOut, value: thread.unreadCount)
+        .animation(.easeInOut, value: thread.title)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
-                viewModel.delete()
+                viewModel.delete(thread)
             } label: {
                 Label("Delete", systemImage: "trash")
             }
         }
         .contextMenu {
             Button {
-                viewModel.togglePin()
+                viewModel.togglePin(thread)
             } label: {
-                Label((viewModel.thread.pin ?? false) ? "UnPin" : "Pin", systemImage: "pin")
+                Label((thread.pin ?? false) ? "UnPin" : "Pin", systemImage: "pin")
             }
 
             Button {
-                viewModel.clearHistory()
+                viewModel.clearHistory(thread)
             } label: {
                 Label("Clear History", systemImage: "clock")
             }
 
             Button {
-                viewModel.toggleMute()
+                viewModel.toggleMute(thread)
             } label: {
-                Label((viewModel.thread.mute ?? false) ? "Unmute" : "Mute", systemImage: "speaker.slash")
+                Label((thread.mute ?? false) ? "Unmute" : "Mute", systemImage: "speaker.slash")
             }
 
             Button {
-                viewModel.threadsViewModel?.showAddThreadToTag(viewModel.thread)
+                viewModel.showAddThreadToTag(thread)
             } label: {
                 Label("Add To Folder", systemImage: "folder.badge.plus")
             }
 
             Button {
-                viewModel.spamPV()
+                viewModel.spamPV(thread)
             } label: {
                 Label("Spam", systemImage: "ladybug")
             }
 
             Button(role: .destructive) {
-                viewModel.leave()
+                viewModel.leave(thread)
             } label: {
                 Label("Leave", systemImage: "rectangle.portrait.and.arrow.right")
             }
 
-            if viewModel.thread.admin == true {
+            if thread.admin == true {
                 Button(role: .destructive) {
-                    viewModel.delete()
+                    viewModel.delete(thread)
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
             }
 
             Button {
-                viewModel.toggleArchive()
+                viewModel.toggleArchive(thread)
             } label: {
-                Label(viewModel.thread.isArchive == false ? "Archive" : "Unarchive", systemImage: viewModel.thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
+                Label(thread.isArchive == false ? "Archive" : "Unarchive", systemImage: thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
             }
 
-            if viewModel.canAddParticipant {
+            if canAddParticipant {
                 Button {
-                    viewModel.threadsViewModel?.showAddParticipants(viewModel.thread)
+                    viewModel.showAddParticipants(thread)
                 } label: {
                     Label("Invite", systemImage: "person.crop.circle.badge.plus")
                 }
             }
+        }
+        .onAppear {
+            imageLoader.setURL(url: thread.computedImageURL)
+            imageLoader.setUserName(userName: thread.title)
+            imageLoader.setSize(size: .SMALL)
+            imageLoader.fetch()
         }
     }
 }
 
 struct ThreadRow_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = ThreadViewModel(thread: MockData.thread)
-        ThreadRow(viewModel: vm)
+        let vm = ThreadViewModel()
+        ThreadRow(thread: MockData.thread)
+            .environmentObject(vm)
             .onAppear {
-                vm.thread.pin = true
-                vm.thread.unreadCount = 10
+                vm.setup(thread: MockData.thread)
+                vm.thread?.pin = true
+                vm.thread?.unreadCount = 10
                 vm.objectWillChange.send()
             }
     }

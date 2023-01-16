@@ -32,9 +32,7 @@ struct AttachmentDialog: View {
 
 struct CustomActionSheetView: View {
     @StateObject var viewModel: ActionSheetViewModel
-
     @Binding var showAttachmentDialog: Bool
-
     @State var showDocumentPicker: Bool = false
 
     var body: some View {
@@ -42,7 +40,7 @@ struct CustomActionSheetView: View {
             if viewModel.allImageItems.count > 0 {
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 8) {
-                        ForEach(viewModel.allImageItems, id: \.self) { item in
+                        ForEach(viewModel.allImageItems) { item in
                             ZStack {
                                 Image(uiImage: item.image)
                                     .resizable()
@@ -142,7 +140,11 @@ struct AttachmentButton: View {
 
 struct AttachmentDialog_Previews: PreviewProvider {
     static var previews: some View {
+        let vm = ThreadViewModel()
         AttachmentDialog(showAttachmentDialog: .constant(true),
-                         viewModel: ActionSheetViewModel(threadViewModel: ThreadViewModel(thread: MockData.thread)))
+                         viewModel: ActionSheetViewModel(threadViewModel: vm))
+            .onAppear {
+                vm.setup(thread: MockData.thread)
+            }
     }
 }

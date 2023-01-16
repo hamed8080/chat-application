@@ -40,6 +40,10 @@ struct AudioRecordingView: View {
 
 struct AudioRecordingView_Previews: PreviewProvider {
     static var previews: some View {
-        AudioRecordingView(viewModel: .init(threadViewModel: ThreadViewModel(thread: MockData.thread)))
+        let vm = ThreadViewModel()
+        AudioRecordingView(viewModel: .init(threadViewModel: vm))
+            .onAppear {
+                vm.setup(thread: MockData.thread)
+            }
     }
 }

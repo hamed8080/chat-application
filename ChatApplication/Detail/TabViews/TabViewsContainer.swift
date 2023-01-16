@@ -52,7 +52,7 @@ struct Tabs: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 24) {
-                ForEach(tabs, id: \.title) { tab in
+                ForEach(tabs) { tab in
                     let index = tabs.firstIndex(where: { $0.title == tab.title })
 
                     Button {
@@ -85,7 +85,8 @@ struct Tabs: View {
     }
 }
 
-struct Tab {
+struct Tab: Identifiable {
+    var id: String { title }
     let title: String
     let icon: String
 }

@@ -11,7 +11,7 @@ extension View {
     func compatibleConfirmationDialog(_ isPresented: Binding<Bool>, message: String? = nil, title: String? = nil, _ buttons: [DialogButton]) -> some View {
         if #available(iOS 15, *) {
             self.confirmationDialog(title ?? "", isPresented: isPresented, titleVisibility: (title?.isEmpty ?? false) ? .hidden : .visible) {
-                ForEach(buttons, id: \.self) { button in
+                ForEach(buttons) { button in
                     Button {
                         withAnimation {
                             button.action()
@@ -30,7 +30,7 @@ extension View {
     }
 }
 
-struct DialogButton: Hashable {
+struct DialogButton: Hashable, Identifiable {
     static func == (lhs: DialogButton, rhs: DialogButton) -> Bool {
         lhs.id == rhs.id
     }

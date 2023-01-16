@@ -35,13 +35,13 @@ struct ContactContentList: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                     .noSeparators()
-                ForEach(viewModel.searchedContacts, id: \.self) { contact in
+                ForEach(viewModel.searchedContacts) { contact in
                     SearchContactRow(contact: contact)
                         .noSeparators()
                 }
             }
 
-            ForEach(viewModel.contacts, id: \.id) { contact in
+            ForEach(viewModel.contacts) { contact in
                 ContactRow(isInSelectionMode: $isInSelectionMode, contact: contact)
                     .noSeparators()
                     .onAppear {
