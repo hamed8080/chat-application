@@ -10,13 +10,9 @@ import SwiftUI
 
 struct GroupCallSelectionContentList: View {
     @StateObject var viewModel: CallsHistoryViewModel
-
     @State var isInSelectionMode: Bool = true
-
     @StateObject var contactViewModel: ContactsViewModel = .init()
-
     @EnvironmentObject var callViewModel: CallViewModel
-
     @State var groupTitle: String = ""
 
     var body: some View {
@@ -30,12 +26,11 @@ struct GroupCallSelectionContentList: View {
                         .cornerRadius(16)
                         .noSeparators()
 
-                        ForEach(contactViewModel.contactsVMS, id: \.id) { contactVM in
-                            ContactRow(isInSelectionMode: $isInSelectionMode)
-                                .environmentObject(contactVM)
+                        ForEach(contactViewModel.contacts, id: \.id) { contact in
+                            ContactRow(isInSelectionMode: $isInSelectionMode, contact: contact)
                                 .noSeparators()
                                 .onAppear {
-                                    if contactViewModel.contactsVMS.last == contactVM {
+                                    if contactViewModel.contacts.last == contact {
                                         viewModel.loadMore()
                                     }
                                 }

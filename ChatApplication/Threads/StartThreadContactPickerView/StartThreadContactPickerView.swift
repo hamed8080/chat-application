@@ -16,7 +16,7 @@ struct StartThreadResultModel {
 
 struct StartThreadContactPickerView: View {
     @StateObject var viewModel: StartThreadContactPickerViewModel
-    @StateObject var contactsVM = ContactsViewModel()
+    @EnvironmentObject var contactsVM: ContactsViewModel
     @EnvironmentObject var appState: AppState
     @State var title: String = "New Message"
     @State var subtitle: String = ""
@@ -62,16 +62,15 @@ struct StartThreadContactPickerView: View {
                     startThreadModel.type = .channel
                 }
                 List {
-                    ForEach(contactsVM.contactsVMS, id: \.id) { contactVM in
-                        StartThreadContactRow(isInMultiSelectMode: $isInMultiSelectMode)
-                            .environmentObject(contactVM)
+                    ForEach(contactsVM.contacts) { contact in
+                        StartThreadContactRow(isInMultiSelectMode: $isInMultiSelectMode, contact: contact)
                             .onTapGesture {
                                 if isInMultiSelectMode == false {
-                                    onCompletedConfigCreateThread(.init(selectedContacts: [contactVM.contact], type: .normal, title: ""))
+                                    onCompletedConfigCreateThread(.init(selectedContacts: [contact], type: .normal, title: ""))
                                 }
                             }
                             .onAppear {
-                                if contactsVM.contactsVMS.last == contactVM {
+                                if contactsVM.contacts.last == contact {
                                     contactsVM.loadMore()
                                 }
                             }
@@ -149,8 +148,9 @@ struct StartThreadContactPickerView_Previews: PreviewProvider {
         let appState = AppState.shared
         let vm = StartThreadContactPickerViewModel()
         let contactVM = ContactsViewModel()
-        StartThreadContactPickerView(viewModel: vm, contactsVM: contactVM, onCompletedConfigCreateThread: { _ in
+        StartThreadContactPickerView(viewModel: vm, onCompletedConfigCreateThread: { _ in
         })
+        .environmentObject(contactVM)
         .preferredColorScheme(.dark)
         .environmentObject(appState)
     }

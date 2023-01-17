@@ -57,11 +57,12 @@ struct RecordAudioBackground: View {
 
 struct RecordAudioBackground_Previews: PreviewProvider {
     static var previews: some View {
-        let threadVM = ThreadViewModel(thread: MockData.thread)
+        let threadVM = ThreadViewModel()
         let vm = AudioRecordingViewModel(threadViewModel: threadVM)
         RecordAudioBackground(viewModel: vm, scale: 2)
             .frame(width: 128, height: 128)
             .onAppear {
+                threadVM.setup(thread: MockData.thread)
                 vm.toggle()
             }
     }

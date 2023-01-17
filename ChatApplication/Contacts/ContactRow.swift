@@ -10,18 +10,19 @@ import SwiftUI
 
 struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
-    @EnvironmentObject var viewModel: ContactViewModel
+    @EnvironmentObject var viewModel: ContactsViewModel
     @State public var showActionViews: Bool = false
     @EnvironmentObject var callViewModel: CallViewModel
-    var contact: Contact { viewModel.contact }
+    var contact: Contact
     var contactImageURL: String? { contact.image ?? contact.user?.image }
     @State var navigateToAddOrEditContact = false
+    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         VStack {
             VStack {
                 HStack(spacing: 0) {
-                    Image(systemName: viewModel.isSelected ? "checkmark.circle" : "circle")
+                    Image(systemName: viewModel.isSelected(contact: contact) ? "checkmark.circle" : "circle")
                         .font(.title)
                         .frame(width: 22, height: 22, alignment: .center)
                         .foregroundColor(Color.blue)
@@ -30,9 +31,9 @@ struct ContactRow: View {
                         .frame(width: isInSelectionMode ? 48 : 0)
                         .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
                         .onTapGesture {
-                            viewModel.toggleSelectedContact()
+                            viewModel.toggleSelectedContact(contact: contact)
                         }
-                    viewModel.imageLoader.imageView
+                    imageLoader.imageView
                         .font(.system(size: 16).weight(.heavy))
                         .foregroundColor(.white)
                         .frame(width: 64, height: 64)
@@ -75,15 +76,21 @@ struct ContactRow: View {
             .cornerRadius(16)
         }
         .animation(.easeInOut, value: showActionViews)
-        .animation(.easeInOut, value: viewModel.contact.blocked)
+        .animation(.easeInOut, value: contact.blocked)
         .animation(.easeInOut, value: navigateToAddOrEditContact)
-        .animation(.easeInOut, value: viewModel.contact)
+        .animation(.easeInOut, value: contact)
         .autoNavigateToThread()
         .onTapGesture {
             showActionViews.toggle()
         }
         .sheet(isPresented: $navigateToAddOrEditContact) {
-            AddOrEditContactView(editContact: viewModel.contact).environmentObject(viewModel)
+            AddOrEditContactView(editContact: contact).environmentObject(viewModel)
+        }
+        .onAppear {
+            imageLoader.setURL(url: contact.image ?? contact.user?.image)
+            imageLoader.setUserName(userName: contact.firstName)
+            imageLoader.setSize(size: .SMALL)
+            imageLoader.fetch()
         }
     }
 
@@ -91,7 +98,7 @@ struct ContactRow: View {
         Divider()
         HStack(spacing: 12) {
             ActionButton(iconSfSymbolName: "message") {
-                viewModel.contactsVM?.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+                viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
             }
 
             ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue) {
@@ -148,8 +155,8 @@ struct ContactRow_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            ContactRow(isInSelectionMode: $isInSelectionMode)
-                .environmentObject(ContactViewModel(contact: MockData.contact, contactsVM: ContactsViewModel()))
+            ContactRow(isInSelectionMode: $isInSelectionMode, contact: MockData.contact)
+                .environmentObject(ContactsViewModel())
                 .preferredColorScheme(.dark)
         }
     }

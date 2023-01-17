@@ -133,7 +133,8 @@ class ActionSheetViewModel: ObservableObject {
     }
 }
 
-struct ImageItem: Hashable {
+struct ImageItem: Hashable, Identifiable {
+    let id = UUID()
     var image: UIImage
     var phAsset: PHAsset
 }

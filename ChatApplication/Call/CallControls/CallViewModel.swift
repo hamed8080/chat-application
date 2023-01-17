@@ -316,15 +316,15 @@ class CallViewModel: ObservableObject, CallStateProtocol {
         if let appSupportDir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
             let logFileDir = "WEBRTC-LOG"
             let url = appSupportDir.appendingPathComponent(logFileDir)
-            let contentsOfDir = try? FileManager.default.contentsOfDirectory(atPath: url.path)
-
             DispatchQueue.global(qos: .background).async {
                 let df = DateFormatter()
                 df.dateFormat = "yyyy-MM-dd-HH-mm-ss"
                 let dateString = df.string(from: Date())
                 FileManager.default.zipFile(urlPathToZip: url, zipName: "WEBRTC-Logs-\(dateString)") { zipFile in
                     if let zipFile = zipFile {
-                        AppState.shared.callLogs = [zipFile]
+                        DispatchQueue.main.async {
+                            AppState.shared.callLogs = [zipFile]
+                        }
                     }
                 }
             }

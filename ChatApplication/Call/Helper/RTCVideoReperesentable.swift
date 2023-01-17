@@ -15,14 +15,14 @@ struct RTCVideoReperesentable: UIViewRepresentable {
         self.renderer = renderer
     }
 
-    func makeUIView(context _: Context) -> UIView {
+    func makeUIView(context: Context) -> UIView {
         let view = UIView()
         if TARGET_OS_SIMULATOR != 0 {
             // its simulator
         } else {
-            (renderer as! RTCMTLVideoView).videoContentMode = .scaleAspectFill
+            (renderer as! RTCMTLVideoView).videoContentMode = .scaleAspectFit
+            (renderer as! RTCMTLVideoView).delegate = context.coordinator
         }
-
         renderer.frame = view.frame
         renderer.transform = CGAffineTransform(scaleX: -1.0, y: 1.0) // mirror view to show correct
         renderer.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -30,5 +30,17 @@ struct RTCVideoReperesentable: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_: UIView, context _: Context) {}
+    func updateUIView(_: UIView, context _: Context) {
+//        view.layoutIfNeeded()
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    final class Coordinator: NSObject, RTCVideoViewDelegate {
+        func videoView(_: RTCVideoRenderer, didChangeVideoSize _: CGSize) {
+//            (renderer as? UIView)?.layoutIfNeeded()
+        }
+    }
 }

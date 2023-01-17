@@ -1,5 +1,5 @@
 //
-//  ArchiveThreadProtocol.swift
+//  ThreadsViewModel+ArchiveThread.swift
 //  ChatApplication
 //
 //  Created by hamed on 11/24/22.
@@ -9,14 +9,15 @@ import FanapPodChatSDK
 import Foundation
 
 protocol ArchiveThreadProtocol {
-    func toggleArchive()
+    func toggleArchive(_ thread: Conversation)
     func archive(_ threadId: Int)
     func unarchive(_ threadId: Int)
     func onArchiveChanged(_ response: ChatResponse<Int>)
 }
 
-extension ThreadViewModel: ArchiveThreadProtocol {
-    func toggleArchive() {
+extension ThreadsViewModel: ArchiveThreadProtocol {
+    func toggleArchive(_ thread: Conversation) {
+        guard let threadId = thread.id else { return }
         if thread.isArchive == false {
             archive(threadId)
         } else {
@@ -33,9 +34,9 @@ extension ThreadViewModel: ArchiveThreadProtocol {
     }
 
     func onArchiveChanged(_ response: ChatResponse<Int>) {
-        if response.result != nil, response.error == nil {
-            thread.isArchive?.toggle()
-            threadsViewModel?.sort()
+        if response.result != nil, response.error == nil, let threadIndex = firstIndex(response.result) {
+            threads[threadIndex].isArchive?.toggle()
+            sort()
         }
     }
 }

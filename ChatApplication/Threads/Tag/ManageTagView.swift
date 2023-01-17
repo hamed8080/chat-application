@@ -52,7 +52,7 @@ struct ManageTagView: View {
 
                     if let tagParticipants = tag.tagParticipants {
                         List {
-                            ForEach(tagParticipants, id: \.id) { tagParticipant in
+                            ForEach(tagParticipants) { tagParticipant in
                                 TagParticipantRow(tag: tag, tagParticipant: tagParticipant, viewModel: viewModel)
                                     .swipeActions(edge: .trailing, allowsFullSwipe: true, content: {
                                         Button(role: .destructive) {

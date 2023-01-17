@@ -9,8 +9,8 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct MessageRow: View {
-    @ObservedObject var viewModel: MessageViewModel
-    @EnvironmentObject var threadViewModel: ThreadViewModel
+    var message: Message
+    @EnvironmentObject var viewModel: ThreadViewModel
     @State private(set) var showParticipants: Bool = false
     @Binding var isInEditMode: Bool
     @State private var isSelected = false
@@ -25,29 +25,21 @@ struct MessageRow: View {
                     .padding(24)
                     .onTapGesture {
                         isSelected.toggle()
-                        threadViewModel.toggleSelectedMessage(viewModel.message, isSelected)
+                        viewModel.toggleSelectedMessage(message, isSelected)
                     }
             }
-            if let type = viewModel.message.type {
-                if viewModel.message.isUploadMessage {
-                    UploadMessageType()
-                        .environmentObject(viewModel)
-                        .environmentObject(threadViewModel)
-                } else if viewModel.message.isTextMessageType || viewModel.message.isUnsentMessage {
-                    if viewModel.message.isMe {
+            if let type = message.type {
+                if message.isUploadMessage {
+                    UploadMessageType(message: message)
+                } else if message.isTextMessageType || message.isUnsentMessage {
+                    if message.isMe {
                         Spacer()
                     }
-                    TextMessageType()
-                        .environmentObject(viewModel)
-                        .environmentObject(threadViewModel)
+                    TextMessageType(message: message)
                 } else if type == .participantJoin || type == .participantLeft {
-                    ParticipantMessageType()
-                        .environmentObject(viewModel)
-                        .environmentObject(threadViewModel)
+                    ParticipantMessageType(message: message)
                 } else if type == .endCall || type == .startCall {
-                    CallMessageType()
-                        .environmentObject(viewModel)
-                        .environmentObject(threadViewModel)
+                    CallMessageType(message: message)
                 }
             }
         }
@@ -55,25 +47,24 @@ struct MessageRow: View {
 }
 
 struct CallMessageType: View {
-    @EnvironmentObject var viewModel: MessageViewModel
+    var message: Message
     @EnvironmentObject var threadViewModel: ThreadViewModel
     @Environment(\.colorScheme) var colorScheme
-    var message: Message { viewModel.message }
 
     var body: some View {
         HStack(alignment: .center) {
             if let time = message.time, let date = Date(milliseconds: Int64(time)) {
-                Text("Call \(viewModel.message.type == .endCall ? "ended" : "started") at \(date.timeAgoSinceDate())")
+                Text("Call \(message.type == .endCall ? "ended" : "started") at \(date.timeAgoSinceDate())")
                     .foregroundColor(Color.primary.opacity(0.8))
                     .font(.subheadline)
                     .padding(2)
             }
 
-            Image(systemName: viewModel.message.type == .startCall ? "arrow.down.left" : "arrow.up.right")
+            Image(systemName: message.type == .startCall ? "arrow.down.left" : "arrow.up.right")
                 .resizable()
                 .frame(width: 10, height: 10)
                 .scaledToFit()
-                .foregroundColor(viewModel.message.type == .startCall ? Color.green : Color.red)
+                .foregroundColor(message.type == .startCall ? Color.green : Color.red)
         }
         .padding([.leading, .trailing])
         .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))
@@ -83,10 +74,9 @@ struct CallMessageType: View {
 }
 
 struct ParticipantMessageType: View {
-    @EnvironmentObject var viewModel: MessageViewModel
+    var message: Message
     @EnvironmentObject var threadViewModel: ThreadViewModel
     @Environment(\.colorScheme) var colorScheme
-    var message: Message { viewModel.message }
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
@@ -102,9 +92,9 @@ struct ParticipantMessageType: View {
             Image(systemName: message.iconName)
                 .resizable()
                 .frame(width: 12, height: 12)
-                .scaledToFit()
                 .foregroundColor(message.type == .participantJoin ? Color.green : Color.red)
                 .padding([.leading, .trailing], 6)
+                .scaledToFit()
         }
         .padding([.leading, .trailing])
         .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))
@@ -114,16 +104,16 @@ struct ParticipantMessageType: View {
 }
 
 struct TextMessageType: View {
-    @EnvironmentObject var viewModel: MessageViewModel
-    @EnvironmentObject var threadViewModel: ThreadViewModel
-    var message: Message { viewModel.message }
+    var message: Message
+    @EnvironmentObject var viewModel: ThreadViewModel
+    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         HStack(spacing: 8) {
-            if viewModel.message.isMe {
+            if message.isMe {
                 Spacer()
             }
-            if !viewModel.message.isMe {
+            if !message.isMe {
                 sameUserAvatar
             }
             VStack {
@@ -131,7 +121,7 @@ struct TextMessageType: View {
                     ForwardMessageRow(forwardInfo: forwardInfo)
                 }
 
-                if viewModel.message.isFileType {
+                if message.isFileType {
                     DownloadFileView(message: message)
                         .frame(maxHeight: 320)
                 }
@@ -148,25 +138,25 @@ struct TextMessageType: View {
                     HStack {
                         Spacer()
                         Button("Resend".uppercased()) {
-                            threadViewModel.resendUnsetMessage(message)
+                            viewModel.resendUnsetMessage(message)
                         }
 
                         Button("Cancel".uppercased(), role: .destructive) {
-                            threadViewModel.cancelUnsentMessage(message.uniqueId ?? "")
+                            viewModel.cancelUnsentMessage(message.uniqueId ?? "")
                         }
                     }
                     .padding()
                     .font(.caption.bold())
                 }
 
-                MessageFooterView(viewModel: viewModel)
+                MessageFooterView(message: message)
                     .padding(.bottom, 8)
                     .padding([.leading, .trailing])
             }
             .frame(maxWidth: message.calculatedMaxAndMinWidth, alignment: .leading)
             .padding([.leading, .trailing], 0)
             .contentShape(Rectangle())
-            .background(viewModel.message.isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named: "chat_sender")!))
+            .background(message.isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named: "chat_sender")!))
             .cornerRadius(12)
             .animation(.easeInOut, value: message.isUnsentMessage)
             .onTapGesture {
@@ -178,7 +168,7 @@ struct TextMessageType: View {
             .contextMenu {
                 Button {
                     withAnimation {
-                        threadViewModel.replyMessage = message
+                        viewModel.replyMessage = message
                     }
                 } label: {
                     Label("Reply", systemImage: "arrowshape.turn.up.left")
@@ -186,7 +176,7 @@ struct TextMessageType: View {
 
                 Button {
                     withAnimation {
-                        threadViewModel.forwardMessage = message
+                        viewModel.forwardMessage = message
                     }
                 } label: {
                     Label("forward", systemImage: "arrowshape.turn.up.forward")
@@ -194,12 +184,12 @@ struct TextMessageType: View {
 
                 Button {
                     withAnimation {
-                        threadViewModel.editMessage = message
+                        viewModel.editMessage = message
                     }
                 } label: {
                     Label("Edit", systemImage: "pencil.circle")
                 }
-                .disabled(viewModel.message.editable == false)
+                .disabled(message.editable == false)
 
                 Button {
                     UIPasteboard.general.string = message.message
@@ -207,7 +197,7 @@ struct TextMessageType: View {
                     Label("Copy", systemImage: "doc.on.doc")
                 }
 
-                if viewModel.message.isFileType == true {
+                if message.isFileType == true {
                     Button {
                         viewModel.clearCacheFile(message: message)
                     } label: {
@@ -216,14 +206,14 @@ struct TextMessageType: View {
                 }
 
                 Button {
-                    viewModel.togglePin()
+                    viewModel.togglePinMessage(message)
                 } label: {
                     Label((message.pinned ?? false) ? "UnPin" : "Pin", systemImage: "pin")
                 }
 
                 Button {
                     withAnimation {
-                        threadViewModel.isInEditMode = true
+                        viewModel.isInEditMode = true
                     }
                 } label: {
                     Label("Select", systemImage: "checkmark.circle")
@@ -231,31 +221,37 @@ struct TextMessageType: View {
 
                 Button(role: .destructive) {
                     withAnimation {
-                        threadViewModel.deleteMessages([viewModel.message])
+                        viewModel.deleteMessages([message])
                     }
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
-                .disabled(viewModel.message.deletable == false)
+                .disabled(message.deletable == false)
             }
 
-            if viewModel.message.isMe {
+            if message.isMe {
                 sameUserAvatar
             }
 
-            if !viewModel.message.isMe {
+            if !message.isMe {
                 Spacer()
             }
+        }
+        .onAppear {
+            imageLoader.setURL(url: message.participant?.image)
+            imageLoader.setUserName(userName: message.participant?.name ?? message.participant?.username)
+            imageLoader.setSize(size: .SMALL)
+            imageLoader.fetch()
         }
     }
 
     @ViewBuilder var sameUserAvatar: some View {
-        if !threadViewModel.isSameUser(message: message), message.participant != nil {
+        if !viewModel.isSameUser(message: message), message.participant != nil {
             NavigationLink {
                 DetailView()
                     .environmentObject(DetailViewModel(user: message.participant))
             } label: {
-                viewModel.imageLoader.imageView
+                imageLoader.imageView
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
                     .frame(width: 36, height: 36)
@@ -294,7 +290,7 @@ struct ForwardMessageRow: View {
                 .frame(height: 1)
                 .padding([.top], 4)
             if let forwardThread = forwardInfo.conversation {
-                NavigationLink(destination: ThreadView(viewModel: ThreadViewModel(thread: forwardThread, readOnly: true)), isActive: $showReadOnlyThreadView) {
+                NavigationLink(destination: ThreadView(thread: forwardThread), isActive: $showReadOnlyThreadView) {
                     EmptyView()
                 }
                 .frame(width: 0)
@@ -307,9 +303,8 @@ struct ForwardMessageRow: View {
 }
 
 struct UploadMessageType: View {
-    @EnvironmentObject var viewModel: MessageViewModel
+    var message: Message
     @EnvironmentObject var threadViewModel: ThreadViewModel
-    var message: Message { viewModel.message }
 
     var body: some View {
         HStack(alignment: .top) {
@@ -374,8 +369,9 @@ struct UploadMessageType: View {
 }
 
 struct MessageFooterView: View {
-    var viewModel: MessageViewModel
-    var message: Message { viewModel.message }
+    var message: Message
+    // We never use this viewModel but it will refresh view when a event on this message happened such as onSent, onDeliver,onSeen.
+    @EnvironmentObject var viewModel: ThreadViewModel
     static let clockImage = UIImage(named: "clock")
     static let sentImage = UIImage(named: "single_chekmark")
     static let seenImage = UIImage(named: "double_checkmark")
@@ -425,11 +421,11 @@ struct MessageFooterView: View {
                             .font(.subheadline)
                     }
 
-                    if viewModel.message.isMe {
+                    if message.isMe {
                         image
                     }
                 }
-                if viewModel.message.edited == true {
+                if message.edited == true {
                     Text("Edited")
                         .foregroundColor(Color(named: "dark_green").opacity(0.8))
                         .font(.caption2)
@@ -444,20 +440,22 @@ struct MessageFooterView: View {
 
 struct MessageRow_Previews: PreviewProvider {
     static var previews: some View {
+        let threadVM = ThreadViewModel()
         List {
-            let threadVM = ThreadViewModel(thread: MockData.thread)
-            MessageRow(viewModel: .init(message: MockData.message), isInEditMode: .constant(true))
+            MessageRow(message: MockData.message, isInEditMode: .constant(true))
                 .environmentObject(threadVM)
-            MessageRow(viewModel: .init(message: MockData.message), isInEditMode: .constant(true))
+            MessageRow(message: MockData.message, isInEditMode: .constant(true))
                 .environmentObject(threadVM)
-            MessageRow(viewModel: .init(message: MockData.uploadMessage), isInEditMode: .constant(true))
+            MessageRow(message: MockData.message, isInEditMode: .constant(true))
                 .environmentObject(threadVM)
 
-            ForEach(MockData.generateMessages(count: 5), id: \.self) { message in
-                TextMessageType()
+            ForEach(MockData.generateMessages(count: 5)) { _ in
+                TextMessageType(message: MockData.message)
                     .environmentObject(threadVM)
-                    .environmentObject(MessageViewModel(message: message))
             }
+        }
+        .onAppear {
+            threadVM.setup(thread: MockData.thread)
         }
         .listStyle(.plain)
     }

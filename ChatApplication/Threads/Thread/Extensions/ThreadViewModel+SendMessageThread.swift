@@ -1,5 +1,5 @@
 //
-//  SendMessageThreadProtocol.swift
+//  ThreadViewModel+SendMessageThread.swift
 //  ChatApplication
 //
 //  Created by hamed on 11/24/22.
@@ -88,7 +88,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                               wC: width,
                                               fileName: fileName,
                                               mimeType: "image/jpg",
-                                              userGroupHash: thread.userGroupHash)
+                                              userGroupHash: thread?.userGroupHash)
         let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
         appendMessages([UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: thread)])
     }
@@ -101,7 +101,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                               fileExtension: ".\(url.fileExtension)",
                                               fileName: url.fileName,
                                               mimeType: url.mimeType,
-                                              userGroupHash: thread.userGroupHash)
+                                              userGroupHash: thread?.userGroupHash)
         let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
         appendMessages([UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)])
     }
@@ -125,25 +125,27 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         }
     }
 
-    func onSent(_: MessageResponse?, _ uniqueId: String?, _: ChatError?) {
+    func onSent(_ response: MessageResponse?, _ uniqueId: String?, _: ChatError?) {
         if let index = messages.firstIndex(where: { $0.uniqueId == uniqueId }) {
+            messages[index].id = response?.messageId
             messages[index].delivered = true
             objectWillChange.send()
         }
     }
 
-    func onDeliver(_ deliverResponse: MessageResponse?, _: String?, _: ChatError?) {
-        messages.filter { $0.id == deliverResponse?.messageId }.forEach { message in
-            message.delivered = true
+    func onDeliver(_ response: MessageResponse?, _ uniqueId: String?, _: ChatError?) {
+        if let index = messages.firstIndex(where: { $0.id == response?.messageId || $0.uniqueId == uniqueId }) {
+            messages[index].delivered = true
             objectWillChange.send()
         }
     }
 
-    func onSeen(_ seenResponse: MessageResponse?, _: String?, _: ChatError?) {
-        messages.filter { $0.id ?? 0 <= seenResponse?.messageId ?? 0 && $0.seen == nil }.forEach { message in
-            message.seen = true
+    func onSeen(_ response: MessageResponse?, _ uniqueId: String?, _: ChatError?) {
+        if let index = messages.firstIndex(where: { ($0.id ?? 0 <= response?.messageId ?? 0 && $0.seen == nil) || $0.uniqueId == uniqueId }) {
+            messages[index].delivered = true
+            messages[index].seen = true
+            objectWillChange.send()
         }
-        objectWillChange.send()
     }
 
     func resendUnsetMessage(_ message: Message) {

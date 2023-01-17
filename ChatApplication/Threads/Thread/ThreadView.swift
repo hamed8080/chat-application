@@ -5,11 +5,14 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
+import Combine
 import FanapPodChatSDK
 import SwiftUI
 
 struct ThreadView: View {
-    @ObservedObject var viewModel: ThreadViewModel
+    let thread: Conversation
+    @StateObject var viewModel = ThreadViewModel()
+    @EnvironmentObject var threadsVM: ThreadsViewModel
     @State var showAttachmentDialog: Bool = false
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
@@ -19,6 +22,7 @@ struct ThreadView: View {
     @State var showDatePicker = false
     @State var showExportFileURL = false
     @State var searchMessageText: String = ""
+    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         ZStack {
@@ -81,7 +85,12 @@ struct ThreadView: View {
             showExportFileURL = filePath != nil
         }
         .onAppear {
+            viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
             viewModel.getHistory()
+            imageLoader.setURL(url: viewModel.thread?.computedImageURL)
+            imageLoader.setUserName(userName: viewModel.thread?.title)
+            imageLoader.setSize(size: .SMALL)
+            imageLoader.fetch()
         }
         .sheet(isPresented: $showExportFileURL, onDismiss: {
             viewModel.exportMessagesVM.deleteFile()
@@ -101,7 +110,7 @@ struct ThreadView: View {
 
     var centerToolbarTitle: some View {
         VStack(alignment: .center) {
-            Text(viewModel.thread.title ?? "")
+            Text(viewModel.thread?.title ?? "")
                 .fixedSize()
                 .font(.headline)
 
@@ -111,7 +120,7 @@ struct ThreadView: View {
                     .font(.subheadline.bold())
             }
 
-            if let participantsCount = viewModel.thread.participantCount {
+            if let participantsCount = viewModel.thread?.participantCount {
                 Text("Members \(participantsCount)")
                     .fixedSize()
                     .foregroundColor(Color.gray)
@@ -127,7 +136,7 @@ struct ThreadView: View {
             DetailView()
                 .environmentObject(DetailViewModel(thread: viewModel.thread))
         } label: {
-            viewModel.imageLoader.imageView
+            imageLoader.imageView
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 32, height: 32)
@@ -168,8 +177,8 @@ struct ThreadMessagesList: View {
                 ScrollView {
                     LazyVStack(spacing: 8) {
                         ListLoadingView(isLoading: $viewModel.isLoading)
-                        ForEach(viewModel.messages, id: \.uniqueId) { message in
-                            MessageRow(viewModel: .init(message: message), isInEditMode: isInEditMode)
+                        ForEach(viewModel.messages) { message in
+                            MessageRow(message: message, isInEditMode: isInEditMode)
                                 .id(message.uniqueId)
                                 .environmentObject(viewModel)
                                 .onAppear {
@@ -267,7 +276,7 @@ struct ThreadSearchList: View {
         if searchMessageText.count > 0, viewModel.searchedMessages.count > 0 {
             ScrollView {
                 LazyVStack {
-                    ForEach(viewModel.searchedMessages, id: \.id) { message in
+                    ForEach(viewModel.searchedMessages) { message in
                         SearchMessageRow(message: message)
                             .onAppear {
                                 if message == viewModel.searchedMessages.last {
@@ -409,8 +418,8 @@ struct SendContainer: View {
                     }
                 }
                 .padding(8)
-                .opacity(viewModel.thread.type == .channel ? 0.3 : 1.0)
-                .disabled(viewModel.thread.type == .channel)
+                .opacity(viewModel.thread?.type == .channel ? 0.3 : 1.0)
+                .disabled(viewModel.thread?.type == .channel)
             }
             .animation(.easeInOut, value: viewModel.mentionList.count)
             .onReceive(viewModel.$editMessage) { editMessage in
@@ -457,16 +466,17 @@ struct ThreadView_Previews: PreviewProvider {
     }
 
     static var vm: ThreadViewModel {
-        let vm = ThreadViewModel(thread: MockData.thread)
+        let vm = ThreadViewModel()
         vm.searchedMessages = MockData.generateMessages(count: 15)
         vm.objectWillChange.send()
         return vm
     }
 
     static var previews: some View {
-        ThreadView(viewModel: vm, showAttachmentDialog: false, searchMessageText: "s")
+        ThreadView(thread: MockData.thread, showAttachmentDialog: false, searchMessageText: "s")
             .environmentObject(AppState.shared)
             .onAppear {
+                vm.setup(thread: MockData.thread)
                 //                vm.toggleRecording()
                 //                vm.setReplyMessage(MockData.message)
                 //                vm.setForwardMessage(MockData.message)

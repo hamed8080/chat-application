@@ -126,11 +126,14 @@ class UploadFileViewModel: ObservableObject {
 struct UploadFileView_Previews: PreviewProvider {
     static var previews: some View {
         let message = UploadFileWithTextMessage(uploadFileRequest: UploadFileRequest(data: Data()), thread: MockData.thread)
-        let threadViewModel = ThreadViewModel(thread: MockData.thread)
+        let threadViewModel = ThreadViewModel()
         let uploadFileVM = UploadFileViewModel(message: message, thread: threadViewModel.thread)
         UploadFileView(message: message)
             .environmentObject(threadViewModel)
             .environmentObject(uploadFileVM)
             .background(Color.black.ignoresSafeArea())
+            .onAppear {
+                threadViewModel.setup(thread: MockData.thread)
+            }
     }
 }

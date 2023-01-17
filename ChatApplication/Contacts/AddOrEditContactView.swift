@@ -13,7 +13,7 @@ struct AddOrEditContactView: View {
     @State var firstName: String = ""
     @State var lastName: String = ""
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var viewModel: ContactViewModel
+    @EnvironmentObject var viewModel: ContactsViewModel
     @EnvironmentObject var contactsViewModel: ContactsViewModel
     var editContact: Contact?
 
@@ -24,8 +24,8 @@ struct AddOrEditContactView: View {
                 PrimaryTextField(title: "first name", textBinding: $firstName, keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
                 PrimaryTextField(title: "last name", textBinding: $lastName, keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
                 Button(action: {
-                    if editContact != nil {
-                        viewModel.updateContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
+                    if let editContact = editContact {
+                        viewModel.updateContact(contact: editContact, contactValue: contactValue, firstName: firstName, lastName: lastName)
                     } else {
                         contactsViewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
                     }
@@ -41,7 +41,7 @@ struct AddOrEditContactView: View {
             .onAppear {
                 firstName = editContact?.firstName ?? ""
                 lastName = editContact?.lastName ?? ""
-                contactValue = editContact?.cellphoneNumber ?? editContact?.email ?? editContact?.user?.username ?? ""
+                contactValue = editContact?.computedUserIdentifire ?? ""
             }
         }
     }

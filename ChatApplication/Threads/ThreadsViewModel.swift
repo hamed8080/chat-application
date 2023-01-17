@@ -17,8 +17,9 @@ class ThreadsViewModel: ObservableObject {
     @AppStorage("Threads", store: UserDefaults.group) var threadsData: Data?
     @Published var showAddParticipants = false
     @Published var showAddToTags = false
-    @Published var threadsRowVM: [ThreadViewModel] = []
+    @Published var threads: [Conversation] = []
     @Published private(set) var tagViewModel = TagsViewModel()
+    @Published var activeCallThreads: [CallToJoin] = []
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private(set) var firstSuccessResponse = false
     private(set) var count = 15
@@ -41,6 +42,10 @@ class ThreadsViewModel: ObservableObject {
             .compactMap { $0.object as? MessageEventTypes }
             .sink(receiveValue: onNewMessage)
             .store(in: &cancellableSet)
+        NotificationCenter.default.publisher(for: callEventName)
+            .compactMap { $0.object as? CallEventTypes }
+            .sink(receiveValue: onCallEvent)
+            .store(in: &cancellableSet)
         getThreads()
     }
 
@@ -51,17 +56,30 @@ class ThreadsViewModel: ObservableObject {
                 appendThreads(threads: [newThreads])
             }
         case let .threadDeleted(response):
-            if let threadId = response.subjectId, let thread = threadsRowVM.first(where: { $0.thread.id == threadId }) {
-                removeThreadVM(thread)
+            if let threadId = response.subjectId, let thread = threads.first(where: { $0.id == threadId }) {
+                removeThread(thread)
             }
         default:
             break
         }
     }
 
+    func onCallEvent(_ event: CallEventTypes) {
+        switch event {
+        case let .callEnded(response):
+            activeCallThreads.removeAll(where: { $0.callId == response?.result })
+        case let .groupCallCanceled(response):
+            activeCallThreads.append(.init(threadId: response.subjectId ?? -1, callId: response.result?.callId ?? -1))
+        case let .callReceived(response):
+            activeCallThreads.append(.init(threadId: response.result?.conversation?.id ?? -1, callId: response.result?.callId ?? -1))
+        default:
+            break
+        }
+    }
+
     func onNewMessage(_ event: MessageEventTypes) {
-        if case let .messageNew(response) = event, let threadVM = threadsRowVM.first(where: { $0.threadId == response.result?.conversation?.id }) {
-            threadVM.thread.time = response.result?.conversation?.time
+        if case let .messageNew(response) = event, let thread = threads.first(where: { $0.id == response.result?.conversation?.id }) {
+            thread.time = response.result?.conversation?.time
             sort()
         }
     }
@@ -78,11 +96,11 @@ class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance.getThreads(.init(count: count, offset: offset, archived: archived), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
-    var filtered: [ThreadViewModel] {
+    var filtered: [Conversation] {
         if searchText.isEmpty {
-            return threadsRowVM.filter { $0.thread.isArchive == archived }
+            return threads.filter { $0.isArchive == archived }
         } else {
-            return threadsRowVM.filter { $0.thread.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.thread.isArchive == archived }
+            return threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == archived }
         }
     }
 
@@ -190,52 +208,93 @@ class ThreadsViewModel: ObservableObject {
 
     func appendThreads(threads: [Conversation]) {
         threads.forEach { thread in
-            if let oldThreadVM = threadsRowVM.first(where: { $0.threadId == thread.id }) {
-                oldThreadVM.updateThread(thread)
+            if let oldThread = self.threads.first(where: { $0.id == thread.id }) {
+                oldThread.updateValues(thread)
             } else {
-                threadsRowVM.append(ThreadViewModel(thread: thread, threadsViewModel: self))
+                self.threads.append(thread)
             }
         }
         sort()
     }
 
     func sort() {
-        threadsRowVM = threadsRowVM
-            .sorted(by: { $0.thread.time ?? 0 > $1.thread.time ?? 0 })
-            .sorted(by: { $0.thread.pin == true && $1.thread.pin == false })
+        threads = threads
+            .sorted(by: { $0.time ?? 0 > $1.time ?? 0 })
+            .sorted(by: { $0.pin == true && $1.pin == false })
     }
 
     func clear() {
         offset = 0
-        threadsRowVM = []
+        threads = []
     }
 
     func pinThread(_ thread: Conversation) {
-        threadsRowVM.first(where: { $0.thread.id == thread.id })?.thread.pin = true
+        threads.first(where: { $0.id == thread.id })?.pin = true
     }
 
     func unpinThread(_ thread: Conversation) {
-        threadsRowVM.first(where: { $0.thread.id == thread.id })?.thread.pin = false
+        threads.first(where: { $0.id == thread.id })?.pin = false
     }
 
     func muteUnMuteThread(_ threadId: Int?, isMute: Bool) {
-        if let threadId = threadId, let index = threadsRowVM.firstIndex(where: { $0.threadId == threadId }) {
-            threadsRowVM[index].thread.mute = isMute
+        if let threadId = threadId, let index = threads.firstIndex(where: { $0.id == threadId }) {
+            threads[index].mute = isMute
         }
     }
 
-    func removeThreadVM(_ threadVM: ThreadViewModel) {
-        guard let index = threadsRowVM.firstIndex(where: { $0.threadId == threadVM.threadId }) else { return }
+    func removeThread(_ thread: Conversation) {
+        guard let index = threads.firstIndex(where: { $0.id == thread.id }) else { return }
         withAnimation {
-            _ = threadsRowVM.remove(at: index)
+            _ = threads.remove(at: index)
         }
     }
 
     func getActiveCallsListToJoin(_ threadIds: [Int]) {
         ChatManager.activeInstance.getCallsToJoin(.init(threadIds: threadIds)) { [weak self] response in
             response.result?.forEach { call in
-                self?.threadsRowVM.first { $0.threadId == call.conversation?.id }?.groupCallIdToJoin = call.id
+                self?.activeCallThreads.append(CallToJoin(threadId: call.conversation?.id ?? -1, callId: call.id))
             }
         }
     }
+
+    func delete(_ thread: Conversation) {
+        guard let threadId = thread.id else { return }
+        ChatManager.activeInstance.deleteThread(.init(subjectId: threadId)) { [weak self] response in
+            if response.error == nil {
+                self?.removeThread(thread)
+            }
+        }
+    }
+
+    func leave(_ thread: Conversation) {
+        guard let threadId = thread.id else { return }
+        ChatManager.activeInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { [weak self] response in
+            if response.error == nil {
+                self?.removeThread(thread)
+            }
+        }
+    }
+
+    func clearHistory(_ thread: Conversation) {
+        guard let threadId = thread.id else { return }
+        ChatManager.activeInstance.clearHistory(.init(subjectId: threadId)) { [weak self] response in
+            if response.result != nil {
+                self?.clear()
+            }
+        }
+    }
+
+    func spamPV(_ thread: Conversation) {
+        guard let threadId = thread.id else { return }
+        ChatManager.activeInstance.spamPvThread(.init(subjectId: threadId)) { _ in }
+    }
+
+    func firstIndex(_ threadId: Int?) -> Array<Conversation>.Index? {
+        threads.firstIndex(where: { $0.id == threadId ?? -1 })
+    }
+}
+
+struct CallToJoin {
+    let threadId: Int
+    let callId: Int
 }

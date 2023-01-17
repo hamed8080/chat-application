@@ -9,8 +9,8 @@ import FanapPodChatSDK
 import Foundation
 
 protocol ExportMessagesViewModelProtocol {
-    init(thread: Conversation)
-    var thread: Conversation { get }
+    func setup(_ thread: Conversation)
+    var thread: Conversation? { get }
     var filePath: URL? { get set }
     var threadId: Int { get }
     func exportChats(startDate: Date, endDate: Date)
@@ -18,17 +18,20 @@ protocol ExportMessagesViewModelProtocol {
 }
 
 class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol {
-    let thread: Conversation
-    var threadId: Int { thread.id ?? 0 }
+    var thread: Conversation?
+    var threadId: Int { thread?.id ?? 0 }
     @Published var filePath: URL?
 
-    required init(thread: Conversation) {
+    init() {}
+
+    func setup(_ thread: Conversation) {
         self.thread = thread
     }
 
     func exportChats(startDate: Date, endDate: Date) {
         ChatManager.activeInstance.exportChat(.init(threadId: threadId, fromTime: UInt(startDate.millisecondsSince1970), toTime: UInt(endDate.millisecondsSince1970))) { [weak self] response in
             self?.filePath = response.result
+            self?.objectWillChange.send()
         }
     }
 

@@ -144,7 +144,7 @@ struct TagContentList: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
 
     var body: some View {
-        ForEach(threadsVM.tagViewModel.tags, id: \.id) { tag in
+        ForEach(threadsVM.tagViewModel.tags) { tag in
             NavigationLink {
                 ThreadContentList(folder: tag)
             } label: {

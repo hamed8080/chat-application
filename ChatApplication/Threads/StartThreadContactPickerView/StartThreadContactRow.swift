@@ -11,8 +11,9 @@ import SwiftUI
 struct StartThreadContactRow: View {
     @State private var isSelected = false
     @Binding public var isInMultiSelectMode: Bool
-    @EnvironmentObject var viewModel: ContactViewModel
-    var contact: Contact { viewModel.contact }
+    @EnvironmentObject var viewModel: ContactsViewModel
+    var contact: Contact
+    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         VStack {
@@ -26,11 +27,11 @@ struct StartThreadContactRow: View {
                             .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
                             .onTapGesture {
                                 isSelected.toggle()
-                                viewModel.toggleSelectedContact()
+                                viewModel.toggleSelectedContact(contact: contact)
                             }
                     }
 
-                    viewModel.imageLoader.imageView
+                    imageLoader.imageView
                         .font(.system(size: 16).weight(.heavy))
                         .foregroundColor(.white)
                         .frame(width: 32, height: 32)
@@ -66,6 +67,12 @@ struct StartThreadContactRow: View {
         .animation(.spring(), value: isInMultiSelectMode)
         .animation(.easeInOut, value: isSelected)
         .contentShape(Rectangle())
+        .onAppear {
+            imageLoader.setURL(url: contact.image ?? contact.user?.image)
+            imageLoader.setUserName(userName: contact.firstName)
+            imageLoader.setSize(size: .SMALL)
+            imageLoader.fetch()
+        }
     }
 
     func getDate(contact: Contact) -> String? {
@@ -82,8 +89,8 @@ struct StartThreadContactRow_Previews: PreviewProvider {
     @State static var isInMultiSelectMode = true
     static var previews: some View {
         Group {
-            StartThreadContactRow(isInMultiSelectMode: $isInMultiSelectMode)
-                .environmentObject(ContactViewModel(contact: MockData.contact, contactsVM: ContactsViewModel()))
+            StartThreadContactRow(isInMultiSelectMode: $isInMultiSelectMode, contact: MockData.contact)
+                .environmentObject(ContactsViewModel())
                 .preferredColorScheme(.dark)
         }
     }

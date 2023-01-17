@@ -39,11 +39,17 @@ class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
-        if let config = Config.getConfig(.sandbox) {
+        if let config = Config.getConfig(.main) {
             if config.server == "Integeration" {
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponseResult(accessToken: config.debugToken, expiresIn: Int.max))
             }
             TokenManager.shared.initSetIsLogin()
+            let callConfig = CallConfigBuilder()
+                .callTimeout(20)
+                .targetVideoWidth(640)
+                .targetVideoHeight(480)
+                .targetFPS(15)
+                .build()
             let asyncConfig = AsyncConfigBuilder()
                 .socketAddress(config.socketAddresss)
                 .reconnectCount(Int.max)
@@ -53,6 +59,7 @@ class ChatDelegateImplementation: ChatDelegate {
                 .isDebuggingLogEnabled(false)
                 .build()
             let chatConfig = ChatConfigBuilder(asyncConfig)
+                .callConfig(callConfig)
                 .token(TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken ?? "")
                 .ssoHost(config.ssoHost)
                 .platformHost(config.platformHost)
@@ -60,7 +67,6 @@ class ChatDelegateImplementation: ChatDelegate {
                 .enableCache(true)
                 .msgTTL(800_000) // for integeration server need to be long time
                 .isDebuggingLogEnabled(true)
-                .callTimeout(20)
                 .persistLogsOnServer(true)
                 .appGroup(AppGroup.group)
                 .sendLogInterval(15)

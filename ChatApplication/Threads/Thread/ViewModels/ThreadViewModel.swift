@@ -12,7 +12,7 @@ import Photos
 import SwiftUI
 
 protocol ThreadViewModelProtocol: AnyObject {
-    var thread: Conversation { get set }
+    var thread: Conversation? { get set }
     var messages: [Message] { get set }
     var threadId: Int { get }
 }
@@ -22,16 +22,10 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     var readOnly: Bool { get }
     var canLoadNexPage: Bool { get }
     var threadsViewModel: ThreadsViewModel? { get set }
-    var canAddParticipant: Bool { get }
     var hasNext: Bool { get set }
     var count: Int { get }
-    var groupCallIdToJoin: Int? { get set }
     var searchTextTimer: Timer? { get set }
     var mentionList: [Participant] { get set }
-    func delete()
-    func leave()
-    func clearHistory()
-    func spamPV()
     func deleteMessages(_ messages: [Message])
     func loadMoreMessage()
     func getHistory(_ toTime: UInt?)
@@ -46,7 +40,6 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func sendSeenMessageIfNeeded(_ message: Message)
     func onMessageEvent(_ event: MessageEventTypes?)
     func updateUnreadCount(_ threadId: Int, _ unreadCount: Int)
-    func onCallEvent(_ event: CallEventTypes)
 }
 
 class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable, Hashable {
@@ -58,16 +51,15 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         hasher.combine(threadId)
     }
 
-    @Published var thread: Conversation
+    @Published var thread: Conversation?
     @Published var isLoading = false
     @Published var messages: [Message] = []
     @Published var selectedMessages: [Message] = []
     @Published var editMessage: Message?
     @Published var replyMessage: Message?
     @Published var scrollToUniqueId: String?
-    @Published var imageLoader: ImageLoader
     @Published var isInEditMode: Bool = false
-    @Published var exportMessagesVM: ExportMessagesViewModelProtocol
+    @Published var exportMessagesVM: ExportMessagesViewModelProtocol = ExportMessagesViewModel()
     @Published var mentionList: [Participant] = []
     var searchedMessages: [Message] = []
     var readOnly = false
@@ -78,18 +70,11 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     lazy var audioRecoderVM: AudioRecordingViewModel = .init(threadViewModel: self)
     var hasNext = true
     var count: Int { 15 }
-    var threadId: Int { thread.id ?? 0 }
+    var threadId: Int { thread?.id ?? 0 }
     weak var threadsViewModel: ThreadsViewModel?
-    var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
     var signalMessageText: String?
     var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
     var searchTextTimer: Timer?
-
-    var groupCallIdToJoin: Int? {
-        didSet {
-            objectWillChange.send()
-        }
-    }
 
     weak var forwardMessage: Message? {
         didSet {
@@ -97,18 +82,14 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         }
     }
 
-    init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
+    init() {}
+
+    func setup(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.readOnly = readOnly
         self.thread = thread
-        exportMessagesVM = ExportMessagesViewModel(thread: thread)
         self.threadsViewModel = threadsViewModel
-        imageLoader = ImageLoader(url: thread.computedImageURL ?? "", userName: thread.title, size: .SMALL)
         setupNotificationObservers()
-        fetchImage()
-    }
-
-    private func fetchImage() {
-        imageLoader.fetch()
+        exportMessagesVM.setup(thread)
     }
 
     private func setupNotificationObservers() {
@@ -121,16 +102,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             .compactMap { $0.object as? MessageEventTypes }
             .sink(receiveValue: onMessageEvent)
             .store(in: &cancellableSet)
-
-        NotificationCenter.default.publisher(for: callEventName)
-            .compactMap { $0.object as? CallEventTypes }
-            .sink(receiveValue: onCallEvent)
-            .store(in: &cancellableSet)
-
-        imageLoader.$image.sink { _ in
-            self.objectWillChange.send()
-        }
-        .store(in: &cancellableSet)
     }
 
     func onThreadEvent(_ event: ThreadEventTypes?) {
@@ -152,28 +123,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         }
     }
 
-    func onCallEvent(_ event: CallEventTypes) {
-        switch event {
-        case let .callEnded(response):
-            if response?.result == groupCallIdToJoin {
-                groupCallIdToJoin = nil
-                objectWillChange.send()
-            }
-        case let .groupCallCanceled(response):
-            if response.result?.callId == groupCallIdToJoin {
-                groupCallIdToJoin = response.result?.callId
-                objectWillChange.send()
-            }
-        case let .callReceived(response):
-            if response.result?.conversation?.id == threadId {
-                groupCallIdToJoin = response.result?.callId
-                objectWillChange.send()
-            }
-        default:
-            break
-        }
-    }
-
     func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
         case let .messageNew(response):
@@ -183,15 +132,15 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             }
         case let .messageSent(response):
             if threadId == response.result?.threadId, let message = response.result {
-                onSent(message, nil, nil)
+                onSent(message, response.uniqueId, response.error)
             }
         case let .messageDelivery(response):
             if threadId == response.result?.threadId, let message = response.result {
-                onDeliver(message, nil, nil)
+                onDeliver(message, response.uniqueId, response.error)
             }
         case let .messageSeen(response):
             if threadId == response.result?.threadId, let message = response.result {
-                onSeen(message, nil, nil)
+                onSeen(message, response.uniqueId, response.error)
             }
         default:
             break
@@ -200,34 +149,30 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func updateUnreadCount(_ threadId: Int, _ unreadCount: Int) {
         if threadId == self.threadId {
-            thread.unreadCount = unreadCount
+            thread?.unreadCount = unreadCount
             objectWillChange.send()
         }
     }
 
     func updateThreadInfo(_ thread: Conversation) {
         if thread.id == threadId {
-            self.thread.title = thread.title
-            if thread.computedImageURL != self.thread.computedImageURL {
-                imageLoader.setURL(url: thread.computedImageURL ?? "")
-                fetchImage()
-            }
-            self.thread.image = thread.image
-            self.thread.metadata = thread.metadata
-            self.thread.description = thread.description
-            self.thread.type = thread.type
-            self.thread.userGroupHash = thread.userGroupHash
-            self.thread.time = thread.time
-            self.thread.group = thread.group
+            self.thread?.title = thread.title
+            self.thread?.image = thread.image
+            self.thread?.metadata = thread.metadata
+            self.thread?.description = thread.description
+            self.thread?.type = thread.type
+            self.thread?.userGroupHash = thread.userGroupHash
+            self.thread?.time = thread.time
+            self.thread?.group = thread.group
             objectWillChange.send()
         }
     }
 
     func onLastMessageChanged(_ thread: Conversation) {
         if thread.id == threadId {
-            self.thread.lastMessage = thread.lastMessage
-            self.thread.lastMessageVO = thread.lastMessageVO
-            self.thread.unreadCount = thread.unreadCount
+            self.thread?.lastMessage = thread.lastMessage
+            self.thread?.lastMessageVO = thread.lastMessageVO
+            self.thread?.unreadCount = thread.unreadCount
             objectWillChange.send()
         }
     }
@@ -264,7 +209,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func threadName(_ threadId: Int) -> String? {
-        threadsViewModel?.threadsRowVM.first { $0.threadId == threadId }?.thread.title
+        threadsViewModel?.threads.first { $0.id == threadId }?.title
     }
 
     func sendStartTyping(_ newValue: String) {
@@ -276,17 +221,17 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func sendSeenMessageIfNeeded(_ message: Message) {
-        if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, message.isMe == false {
-            thread.lastSeenMessageId = messageId
+        if let messageId = message.id, let lastMsgId = thread?.lastSeenMessageId, messageId > lastMsgId, message.isMe == false {
+            thread?.lastSeenMessageId = messageId
             print("send seen for message:\(message.messageTitle) with id:\(messageId)")
             ChatManager.activeInstance.seen(.init(threadId: threadId, messageId: messageId))
-            if let unreadCount = thread.unreadCount, unreadCount > 0 {
-                thread.unreadCount = unreadCount - 1
+            if let unreadCount = thread?.unreadCount, unreadCount > 0 {
+                thread?.unreadCount = unreadCount - 1
                 objectWillChange.send()
             }
-        } else if thread.unreadCount ?? 0 > 0 {
-            print("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(thread.lastSeenMessageId ?? 0)")
-            thread.unreadCount = 0
+        } else if thread?.unreadCount ?? 0 > 0 {
+            print("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(thread?.lastSeenMessageId ?? 0)")
+            thread?.unreadCount = 0
             objectWillChange.send()
         }
     }
@@ -303,7 +248,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
     func updateThread(_ thread: Conversation) {
-        self.thread.updateValues(thread)
+        self.thread?.updateValues(thread)
         objectWillChange.send()
     }
 
@@ -331,43 +276,15 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         }
     }
 
-    func delete() {
-        ChatManager.activeInstance.deleteThread(.init(subjectId: threadId)) { [weak self] response in
-            if let self = self, response.result != nil, response.error == nil {
-                self.threadsViewModel?.removeThreadVM(self)
-            }
-        }
-    }
-
-    func leave() {
-        ChatManager.activeInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { [weak self] response in
-            if let self = self, response.result != nil, response.error == nil {
-                self.threadsViewModel?.removeThreadVM(self)
-            }
-        }
-    }
-
-    func clearHistory() {
-        ChatManager.activeInstance.clearHistory(.init(subjectId: threadId)) { [weak self] response in
-            if response.result != nil {
-                self?.clear()
-            }
-        }
-    }
-
-    func spamPV() {
-        ChatManager.activeInstance.spamPvThread(.init(subjectId: threadId)) { _ in }
-    }
-
     func appendMessages(_ messages: [Message]) {
         messages.forEach { message in
             if let oldMessage = self.messages.first(where: { $0.uniqueId == message.uniqueId }) {
                 oldMessage.updateMessage(message: message)
             } else if message.conversation?.id == threadId {
                 self.messages.append(message)
-                thread.unreadCount = message.conversation?.unreadCount ?? 1
-                thread.lastMessageVO = message
-                thread.lastMessage = message.message
+                thread?.unreadCount = message.conversation?.unreadCount ?? 1
+                thread?.lastMessageVO = message
+                thread?.lastMessage = message.message
             }
         }
         sort()
@@ -427,6 +344,43 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             }
         } else {
             mentionList = []
+        }
+    }
+
+    func togglePinMessage(_ message: Message) {
+        guard let messageId = message.id else { return }
+        if message.pinned == false {
+            pin(messageId)
+        } else {
+            unpin(messageId)
+        }
+    }
+
+    func firstMessageIndex(_ messageId: Int?) -> Array<Message>.Index? {
+        messages.firstIndex(where: { $0.id == messageId })
+    }
+
+    func pin(_ messageId: Int) {
+        ChatManager.activeInstance.pinMessage(.init(messageId: messageId)) { [weak self] _ in
+            if let index = self?.firstMessageIndex(messageId) {
+                self?.messages[index].pinned = true
+            }
+        }
+    }
+
+    func unpin(_ messageId: Int) {
+        ChatManager.activeInstance.unpinMessage(.init(messageId: messageId)) { [weak self] _ in
+            if let index = self?.firstMessageIndex(messageId) {
+                self?.messages[index].pinned = false
+            }
+        }
+    }
+
+    func clearCacheFile(message: Message) {
+        if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
+            let url = "\(ChatManager.activeInstance.config.fileServer)\(FanapPodChatSDK.Routes.files.rawValue)/\(fileHashCode)"
+            AppState.shared.cacheFileManager?.deleteFile(at: URL(string: url)!)
+            NotificationCenter.default.post(.init(name: fileDeletedFromCacheName, object: message))
         }
     }
 }

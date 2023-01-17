@@ -22,7 +22,7 @@ struct MediaView: View {
     var body: some View {
         List {
             LazyVGrid(columns: columns, alignment: .center, spacing: 4) {
-                ForEach(viewModel.model.messages, id: \.id) { picture in
+                ForEach(viewModel.model.messages) { picture in
                     MediaPicture(picture: picture)
                         .onAppear {
                             if viewModel.model.messages.last == picture {
@@ -63,9 +63,7 @@ struct MediaPicture: View {
 
 class AttachmentsViewModel: ObservableObject {
     var thread: Conversation?
-
     @Published var isLoading = false
-
     @Published var model = AttachmentModel()
 
     func getPictures() {

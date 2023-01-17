@@ -21,28 +21,33 @@ private var token: String? {
 
 class ImageLoader: ObservableObject {
     @Published private(set) var image: UIImage = .init()
-    private(set) var url: String
+    private(set) var url: String?
     private(set) var fileMetadata: String?
     private(set) var size: ImageSize?
     private(set) var userName: String?
-    init(url: String, userName: String? = nil, size: ImageSize? = nil) {
+    init(url: String? = nil, userName: String? = nil, size: ImageSize? = nil) {
         self.userName = userName
         self.url = url
         self.size = size
     }
 
-    public func setURL(url: String) {
+    public func setURL(url: String?) {
         self.url = url
     }
 
+    public func setUserName(userName: String?) {
+        self.userName = userName
+    }
+
+    public func setSize(size: ImageSize?) {
+        self.size = size
+    }
+
     @ViewBuilder var imageView: some View {
-        if !isImageReady, let userName = userName {
-            Text(String(userName.first ?? " "))
+        if !isImageReady {
+            Text(String(userName?.first ?? " "))
         } else if isImageReady {
             Image(uiImage: image)
-                .resizable()
-        } else {
-            Image(systemName: "photo.fill")
                 .resizable()
         }
     }
@@ -60,7 +65,7 @@ class ImageLoader: ObservableObject {
         }
     }
 
-    private var URLObject: URL? { URL(string: url) }
+    private var URLObject: URL? { URL(string: url ?? "") }
     private var isSDKImage: Bool { hashCode != "" }
     private var fileMetadataModel: FileMetaData? { try? JSONDecoder().decode(FileMetaData.self, from: fileMetadata?.data(using: .utf8) ?? Data()) }
     private var fileURL: URL? {
@@ -82,6 +87,10 @@ class ImageLoader: ObservableObject {
     private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
 
     func fetch() {
+        if url == nil {
+            objectWillChange.send()
+            return
+        }
         if isSDKImage {
             getFromSDK()
         } else if let fileURL = fileURL {
@@ -124,7 +133,7 @@ class ImageLoader: ObservableObject {
         guard let data = data else { return }
         if !isRealImage(data: data) { return }
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, let url = URL(string: self.url) else { return }
+            guard let self = self, let url = URL(string: self.url ?? "") else { return }
             AppState.shared.cacheFileManager?.saveFileInGroup(url: url, data: data)
         }
     }

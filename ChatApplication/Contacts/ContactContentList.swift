@@ -30,24 +30,22 @@ struct ContactContentList: View {
                 .noSeparators()
             }
 
-            if viewModel.searchedContactsVMS.count > 0 {
+            if viewModel.searchedContacts.count > 0 {
                 Text("Searched contacts")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                     .noSeparators()
-                ForEach(viewModel.searchedContactsVMS, id: \.self) { contactVM in
-                    SearchContactRow()
-                        .environmentObject(contactVM)
+                ForEach(viewModel.searchedContacts) { contact in
+                    SearchContactRow(contact: contact)
                         .noSeparators()
                 }
             }
 
-            ForEach(viewModel.contactsVMS, id: \.id) { contactVM in
-                ContactRow(isInSelectionMode: $isInSelectionMode)
-                    .environmentObject(contactVM)
+            ForEach(viewModel.contacts) { contact in
+                ContactRow(isInSelectionMode: $isInSelectionMode, contact: contact)
                     .noSeparators()
                     .onAppear {
-                        if viewModel.contactsVMS.last?.contact == contactVM.contact {
+                        if viewModel.contacts.last == contact {
                             viewModel.loadMore()
                         }
                     }
@@ -62,8 +60,8 @@ struct ContactContentList: View {
                 .environmentObject(viewModel)
         }
         .searchable(text: $viewModel.searchContactString, placement: .navigationBarDrawer, prompt: "Search...")
-        .animation(.easeInOut, value: viewModel.contactsVMS)
-        .animation(.easeInOut, value: viewModel.searchedContactsVMS)
+        .animation(.easeInOut, value: viewModel.contacts)
+        .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
         .navigationTitle(Text("Contacts"))
