@@ -12,14 +12,12 @@ struct TagParticipantRow: View {
     var tag: Tag
     var tagParticipant: TagParticipant
     @ObservedObject var viewModel: TagsViewModel
-    @ObservedObject var imageLoader: ImageLoader
+    @StateObject var imageLoader = ImageLoader()
 
     init(tag: Tag, tagParticipant: TagParticipant, viewModel: TagsViewModel) {
         self.tag = tag
         self.tagParticipant = tagParticipant
         self.viewModel = viewModel
-        imageLoader = ImageLoader(url: tagParticipant.conversation?.image ?? "", userName: tagParticipant.conversation?.title, size: .SMALL)
-        imageLoader.fetch()
     }
 
     var body: some View {
@@ -47,6 +45,9 @@ struct TagParticipantRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 8)
         .padding([.top, .bottom], 4)
+        .onAppear {
+            imageLoader.fetch(url: tagParticipant.conversation?.computedImageURL, userName: tagParticipant.conversation?.title)
+        }
     }
 }
 

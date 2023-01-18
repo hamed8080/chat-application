@@ -11,12 +11,6 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    @ObservedObject var loginModel = LoginViewModel()
-    @ObservedObject var contactsVM = ContactsViewModel()
-    @ObservedObject var threadsVM = ThreadsViewModel()
-    @ObservedObject var settingsVM = SettingViewModel()
-    @ObservedObject var tokenManager = TokenManager.shared
-    @State var appState = AppState.shared
 
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -25,12 +19,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Create the SwiftUI view that provides the window contents.
         let contentView = HomeContentView()
-            .environmentObject(settingsVM)
-            .environmentObject(contactsVM)
-            .environmentObject(threadsVM)
-            .environmentObject(appState)
-            .environmentObject(loginModel)
-            .environmentObject(tokenManager)
 
         if #available(iOS 15.0, *) {
             let appearance = UITabBarAppearance()

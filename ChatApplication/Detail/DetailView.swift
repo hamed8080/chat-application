@@ -10,7 +10,7 @@ import Photos
 import SwiftUI
 
 struct DetailView: View {
-    @EnvironmentObject var viewModel: DetailViewModel
+    @StateObject var viewModel: DetailViewModel
     @State var addToContactSheet: Bool = false
     @State var title: String = ""
     @State var threadDescription: String = ""
@@ -19,11 +19,12 @@ struct DetailView: View {
     @State private var image: UIImage?
     @State private var assetResource: [PHAssetResource]?
     @State var searchText: String = ""
+    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         List {
             VStack(alignment: .center, spacing: 12) {
-                viewModel.imageLoader?.imageView
+                imageLoader.imageView
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
                     .frame(width: 128, height: 128)
@@ -177,6 +178,9 @@ struct DetailView: View {
             }
         }
         .animation(.interactiveSpring(), value: isInEditMode)
+        .onAppear {
+            imageLoader.fetch(url: viewModel.url, userName: viewModel.title)
+        }
     }
 }
 
@@ -217,7 +221,6 @@ struct SectionItem: View {
 
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
-        DetailView()
-            .environmentObject(DetailViewModel(thread: MockData.thread, contact: MockData.contact, user: nil))
+        DetailView(viewModel: DetailViewModel(thread: MockData.thread, contact: MockData.contact, user: nil))
     }
 }

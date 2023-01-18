@@ -68,10 +68,7 @@ struct StartThreadContactRow: View {
         .animation(.easeInOut, value: isSelected)
         .contentShape(Rectangle())
         .onAppear {
-            imageLoader.setURL(url: contact.image ?? contact.user?.image)
-            imageLoader.setUserName(userName: contact.firstName)
-            imageLoader.setSize(size: .SMALL)
-            imageLoader.fetch()
+            imageLoader.fetch(url: contact.image ?? contact.user?.image, userName: contact.firstName)
         }
     }
 

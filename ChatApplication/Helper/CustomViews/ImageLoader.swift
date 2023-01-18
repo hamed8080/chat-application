@@ -25,23 +25,7 @@ class ImageLoader: ObservableObject {
     private(set) var fileMetadata: String?
     private(set) var size: ImageSize?
     private(set) var userName: String?
-    init(url: String? = nil, userName: String? = nil, size: ImageSize? = nil) {
-        self.userName = userName
-        self.url = url
-        self.size = size
-    }
-
-    public func setURL(url: String?) {
-        self.url = url
-    }
-
-    public func setUserName(userName: String?) {
-        self.userName = userName
-    }
-
-    public func setSize(size: ImageSize?) {
-        self.size = size
-    }
+    init() {}
 
     @ViewBuilder var imageView: some View {
         if !isImageReady {
@@ -86,7 +70,10 @@ class ImageLoader: ObservableObject {
 
     private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
 
-    func fetch() {
+    func fetch(url: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
+        self.url = url
+        self.userName = userName
+        self.size = size
         if url == nil {
             objectWillChange.send()
             return

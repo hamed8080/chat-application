@@ -11,13 +11,11 @@ import SwiftUI
 
 struct SelectThreadRow: View {
     var thread: Conversation
-    @ObservedObject var imageLoader: ImageLoader
+    @StateObject var imageLoader = ImageLoader()
     var cancellableSet: Set<AnyCancellable> = []
 
     init(thread: Conversation) {
         self.thread = thread
-        imageLoader = ImageLoader(url: thread.image ?? "", userName: thread.title ?? thread.inviter?.username, size: .SMALL)
-        imageLoader.fetch()
     }
 
     var body: some View {
@@ -35,6 +33,9 @@ struct SelectThreadRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 8)
         .padding([.top, .bottom], 4)
+        .onAppear {
+            imageLoader.fetch(url: thread.computedImageURL, userName: thread.title)
+        }
     }
 }
 

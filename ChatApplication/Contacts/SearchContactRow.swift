@@ -44,10 +44,7 @@ struct SearchContactRow: View {
             contactsVM.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
         }
         .onAppear {
-            imageLoader.setURL(url: contact.image ?? contact.user?.image)
-            imageLoader.setUserName(userName: contact.firstName)
-            imageLoader.setSize(size: .SMALL)
-            imageLoader.fetch()
+            imageLoader.fetch(url: contact.image ?? contact.user?.image, userName: contact.firstName)
         }
     }
 }

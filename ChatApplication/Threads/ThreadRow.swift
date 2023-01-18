@@ -149,10 +149,7 @@ struct ThreadRow: View {
             }
         }
         .onAppear {
-            imageLoader.setURL(url: thread.computedImageURL)
-            imageLoader.setUserName(userName: thread.title)
-            imageLoader.setSize(size: .SMALL)
-            imageLoader.fetch()
+            imageLoader.fetch(url: thread.computedImageURL, userName: thread.title)
         }
     }
 }

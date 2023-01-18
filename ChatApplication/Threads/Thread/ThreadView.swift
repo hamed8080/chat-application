@@ -87,10 +87,7 @@ struct ThreadView: View {
         .onAppear {
             viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
             viewModel.getHistory()
-            imageLoader.setURL(url: viewModel.thread?.computedImageURL)
-            imageLoader.setUserName(userName: viewModel.thread?.title)
-            imageLoader.setSize(size: .SMALL)
-            imageLoader.fetch()
+            imageLoader.fetch(url: viewModel.thread?.computedImageURL, userName: viewModel.thread?.title)
         }
         .sheet(isPresented: $showExportFileURL, onDismiss: {
             viewModel.exportMessagesVM.deleteFile()
@@ -133,8 +130,7 @@ struct ThreadView: View {
 
     @ViewBuilder var trailingToolbar: some View {
         NavigationLink {
-            DetailView()
-                .environmentObject(DetailViewModel(thread: viewModel.thread))
+            DetailView(viewModel: DetailViewModel(thread: viewModel.thread))
         } label: {
             imageLoader.imageView
                 .font(.system(size: 16).weight(.heavy))

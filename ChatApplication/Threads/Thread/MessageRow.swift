@@ -238,18 +238,14 @@ struct TextMessageType: View {
             }
         }
         .onAppear {
-            imageLoader.setURL(url: message.participant?.image)
-            imageLoader.setUserName(userName: message.participant?.name ?? message.participant?.username)
-            imageLoader.setSize(size: .SMALL)
-            imageLoader.fetch()
+            imageLoader.fetch(url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
         }
     }
 
     @ViewBuilder var sameUserAvatar: some View {
         if !viewModel.isSameUser(message: message), message.participant != nil {
             NavigationLink {
-                DetailView()
-                    .environmentObject(DetailViewModel(user: message.participant))
+                DetailView(viewModel: DetailViewModel(user: message.participant))
             } label: {
                 imageLoader.imageView
                     .font(.system(size: 16).weight(.heavy))
@@ -372,37 +368,6 @@ struct MessageFooterView: View {
     var message: Message
     // We never use this viewModel but it will refresh view when a event on this message happened such as onSent, onDeliver,onSeen.
     @EnvironmentObject var viewModel: ThreadViewModel
-    static let clockImage = UIImage(named: "clock")
-    static let sentImage = UIImage(named: "single_chekmark")
-    static let seenImage = UIImage(named: "double_checkmark")
-
-    @ViewBuilder var image: some View {
-        if message.seen == true {
-            Image(uiImage: MessageFooterView.seenImage!)
-                .resizable()
-                .frame(width: 14, height: 14)
-                .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                .font(.subheadline)
-        } else if message.delivered == true {
-            Image(uiImage: MessageFooterView.seenImage!)
-                .resizable()
-                .frame(width: 14, height: 14)
-                .foregroundColor(.gray)
-                .font(.subheadline)
-        } else if message.id != nil {
-            Image(uiImage: MessageFooterView.sentImage!)
-                .resizable()
-                .frame(width: 14, height: 14)
-                .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                .font(.subheadline)
-        } else {
-            Image(uiImage: MessageFooterView.clockImage!)
-                .resizable()
-                .frame(width: 14, height: 14)
-                .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                .font(.subheadline)
-        }
-    }
 
     var body: some View {
         HStack {
@@ -422,7 +387,11 @@ struct MessageFooterView: View {
                     }
 
                     if message.isMe {
-                        image
+                        Image(uiImage: message.footerStatus.image)
+                            .resizable()
+                            .frame(width: 14, height: 14)
+                            .foregroundColor(message.footerStatus.fgColor)
+                            .font(.subheadline)
                     }
                 }
                 if message.edited == true {

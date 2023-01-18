@@ -14,35 +14,32 @@ struct ThreadContentList: View {
     @State var searchText: String = ""
     @State var folder: Tag?
     @State var archived: Bool = false
+    @AppStorage("selectedThread") var selectedThread: Int?
+    var threads: [Conversation] {
+        if let folder = folder {
+            return folder.tagParticipants?
+                .compactMap(\.conversation?.id)
+                .compactMap { id in viewModel.threads.first { $0.id == id } }
+                ?? []
+        } else {
+            return viewModel.filtered
+        }
+    }
 
     var body: some View {
-        List {
-            ListLoadingView(isLoading: $viewModel.isLoading)
-            if let folder = folder {
-                ForEach(folder.tagParticipants ?? []) { tagParticipant in
-                    if let tagParticipant = tagParticipant.conversation, let thread = viewModel.threads.first { $0.id == tagParticipant.id } ?? tagParticipant {
-                        NavigationLink {
-                            ThreadView(thread: thread)
-                        } label: {
-                            ThreadRow(thread: thread)
-                                .environmentObject(viewModel) // wen need to inject viewmodel here because inside threadRow we are using the global viewmodel injection
+        List(threads) { thread in
+            NavigationLink(destination: ThreadView(thread: thread), tag: thread.id ?? -1, selection: $selectedThread) {
+                ThreadRow(thread: thread)
+                    .environmentObject(viewModel) // wen need to inject viewmodel here because inside threadRow we are using the global viewmodel injection
+                    .onAppear {
+                        if self.viewModel.filtered.last == thread {
+                            viewModel.loadMore()
                         }
                     }
-                }
-            } else {
-                ForEach(viewModel.filtered) { thread in
-                    NavigationLink {
-                        ThreadView(thread: thread)
-                    } label: {
-                        ThreadRow(thread: thread)
-                            .onAppear {
-                                if self.viewModel.filtered.last == thread {
-                                    viewModel.loadMore()
-                                }
-                            }
-                    }
-                }
             }
+        }
+        .overlay(alignment: .bottom) {
+            ListLoadingView(isLoading: $viewModel.isLoading)
         }
         .autoNavigateToThread()
         .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search...")
@@ -87,6 +84,13 @@ struct ThreadContentList: View {
             StartThreadContactPickerView(viewModel: .init()) { model in
                 viewModel.createThread(model)
                 viewModel.toggleThreadContactPicker.toggle()
+            }
+        }.onAppear {
+            if let selectedThread = selectedThread {
+                viewModel.getThreadsWith([selectedThread])
+            }
+            if let threadIdsInFolder = folder?.tagParticipants?.compactMap(\.conversation?.id) {
+                viewModel.getThreadsWith(threadIdsInFolder)
             }
         }
     }

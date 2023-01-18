@@ -8,11 +8,8 @@
 import SwiftUI
 
 struct ThreadIsTypingView: View {
-    @ObservedObject var viewModel: ThreadIsTypingViewModel
-
-    init(threadId: Int) {
-        viewModel = ThreadIsTypingViewModel(threadId: threadId)
-    }
+    let threadId: Int
+    @StateObject var viewModel = ThreadIsTypingViewModel()
 
     var body: some View {
         Text("is typing...")
@@ -21,6 +18,9 @@ struct ThreadIsTypingView: View {
             .foregroundColor(Color.orange)
             .scaleEffect(x: viewModel.isTyping ? 1 : 0, y: viewModel.isTyping ? 1 : 0)
             .animation(.easeInOut, value: viewModel.isTyping)
+            .onAppear {
+                viewModel.setThread(threadId: threadId)
+            }
     }
 }
 

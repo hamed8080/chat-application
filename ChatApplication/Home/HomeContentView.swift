@@ -9,13 +9,21 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct HomeContentView: View {
-    @EnvironmentObject var tokenManager: TokenManager
+    @StateObject var loginModel = LoginViewModel()
+    @StateObject var contactsVM = ContactsViewModel()
+    @StateObject var threadsVM = ThreadsViewModel()
+    @StateObject var settingsVM = SettingViewModel()
+    @StateObject var tokenManager = TokenManager.shared
+    @StateObject var appState = AppState.shared
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         if tokenManager.isLoggedIn == false {
             LoginView()
+                .environmentObject(loginModel)
+                .environmentObject(tokenManager)
+                .environmentObject(appState)
         } else {
             NavigationView {
                 SideBar()
@@ -24,6 +32,12 @@ struct HomeContentView: View {
 
                 DetailContentView()
             }
+            .environmentObject(settingsVM)
+            .environmentObject(contactsVM)
+            .environmentObject(threadsVM)
+            .environmentObject(appState)
+            .environmentObject(loginModel)
+            .environmentObject(tokenManager)
             .onAppear {
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }

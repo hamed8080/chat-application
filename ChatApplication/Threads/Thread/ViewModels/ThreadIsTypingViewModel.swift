@@ -10,19 +10,20 @@ import FanapPodChatSDK
 import Foundation
 
 protocol ThreadIsTypingViewModelProtocol {
-    var threadId: Int { get set }
-    init(threadId: Int)
+    var threadId: Int? { get set }
     var lastIsTypingTime: Date { get set }
     var isTyping: Bool { get set }
     var cancellableSet: Set<AnyCancellable> { get set }
     func onStartTyping(thread: Int)
+    func setThread(threadId: Int)
 }
 
 class ThreadIsTypingViewModel: ObservableObject {
     @Published var isTyping: Bool = false
-    var threadId: Int
+    var threadId: Int?
+    init() {}
 
-    init(threadId: Int) {
+    func setThread(threadId: Int) {
         self.threadId = threadId
         setupNotificationObservers()
     }
