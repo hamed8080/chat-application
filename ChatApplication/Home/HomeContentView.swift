@@ -9,19 +9,25 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct HomeContentView: View {
-    @EnvironmentObject var tokenManager: TokenManager
+    @StateObject var loginModel = LoginViewModel()
+    @StateObject var contactsVM = ContactsViewModel()
+    @StateObject var threadsVM = ThreadsViewModel()
+    @StateObject var settingsVM = SettingViewModel()
+    @StateObject var tokenManager = TokenManager.shared
+    @StateObject var appState = AppState.shared
+    @StateObject var callsHistoryVM = CallsHistoryViewModel()
+    @StateObject var callViewModel = CallViewModel.shared
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @Environment(\.colorScheme) var colorScheme
-
-    @EnvironmentObject var appState: AppState
-
     @State var showCallView = false
-
     @State var shareCallLogs = false
 
     var body: some View {
         if tokenManager.isLoggedIn == false {
             LoginView()
+                .environmentObject(loginModel)
+                .environmentObject(tokenManager)
+                .environmentObject(appState)
         } else {
             NavigationView {
                 SideBar()
@@ -30,8 +36,18 @@ struct HomeContentView: View {
 
                 DetailContentView()
             }
+            .environmentObject(settingsVM)
+            .environmentObject(contactsVM)
+            .environmentObject(threadsVM)
+            .environmentObject(appState)
+            .environmentObject(loginModel)
+            .environmentObject(tokenManager)
+            .environmentObject(callViewModel)
+            .environmentObject(callsHistoryVM)
             .fullScreenCover(isPresented: $showCallView, onDismiss: nil) {
                 CallView()
+                    .environmentObject(appState)
+                    .environmentObject(callViewModel)
                     .environmentObject(RecordingViewModel(callId: CallViewModel.shared.callId))
             }
             .sheet(isPresented: $shareCallLogs, onDismiss: {

@@ -19,4 +19,12 @@ extension View {
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
+
+    var canImportWebRTC: Bool {
+        var canImoprt = false
+        #if canImport(WebRTC)
+            canImoprt = true
+        #endif
+        return canImoprt
+    }
 }

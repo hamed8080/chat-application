@@ -12,7 +12,6 @@ import Photos
 import SwiftUI
 
 class DetailViewModel: ObservableObject {
-    @Published var imageLoader: ImageLoader?
     private(set) var cancellableSet: Set<AnyCancellable> = []
     var user: Participant?
     var contact: Contact?
@@ -25,14 +24,12 @@ class DetailViewModel: ObservableObject {
     var isBlock: Bool { contact?.blocked == true || user?.blocked == true }
     var bio: String? { contact?.user?.chatProfileVO?.bio ?? user?.chatProfileVO?.bio }
     var showInfoGroupBox: Bool { bio != nil || cellPhoneNumber != nil || canBlock == true }
+    var url: String? { thread?.computedImageURL ?? user?.image ?? contact?.image }
 
     init(thread: Conversation? = nil, contact: Contact? = nil, user: Participant? = nil) {
         self.user = user
         self.thread = thread
         self.contact = contact
-        let url = thread?.computedImageURL ?? user?.image ?? contact?.image
-        imageLoader = ImageLoader(url: url ?? "", userName: title, size: .SMALL)
-        imageLoader?.fetch()
     }
 
     func createThread() {

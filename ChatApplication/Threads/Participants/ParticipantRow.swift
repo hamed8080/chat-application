@@ -10,14 +10,8 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct ParticipantRow: View {
-    private(set) var participant: Participant
-    @ObservedObject var imageLoader: ImageLoader
-
-    init(participant: Participant) {
-        self.participant = participant
-        imageLoader = ImageLoader(url: participant.image ?? "", userName: participant.name ?? participant.username, size: .SMALL)
-        imageLoader.fetch()
-    }
+    let participant: Participant
+    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         Button(action: {}, label: {
@@ -62,6 +56,9 @@ struct ParticipantRow: View {
             .padding([.leading, .trailing], 8)
             .padding([.top, .bottom], 4)
         })
+        .onAppear {
+            imageLoader.fetch(url: participant.image, userName: participant.name ?? participant.username)
+        }
     }
 }
 

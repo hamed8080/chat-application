@@ -137,4 +137,20 @@ extension Message {
         let fileTypes: [MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice]
         return fileTypes.contains(messageType ?? .unknown)
     }
+
+    static let clockImage = UIImage(named: "clock")
+    static let sentImage = UIImage(named: "single_chekmark")
+    static let seenImage = UIImage(named: "double_checkmark")
+
+    var footerStatus: (image: UIImage, fgColor: Color) {
+        if seen == true {
+            return (Message.seenImage!, Color(named: "dark_green").opacity(0.8))
+        } else if delivered == true {
+            return (Message.seenImage!, Color.gray)
+        } else if id != nil {
+            return (Message.sentImage!, Color(named: "dark_green").opacity(0.8))
+        } else {
+            return (Message.clockImage!, Color(named: "dark_green").opacity(0.8))
+        }
+    }
 }

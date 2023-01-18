@@ -17,7 +17,6 @@ protocol RecordingProtocol {
     var isRecording: Bool { get set }
     var recordingTimerString: String? { get set }
     var recordingTimer: Timer? { get set }
-    var imageLoader: ImageLoader? { get set }
     var cancellableSet: Set<AnyCancellable> { get set }
     func onCallStartRecording(_ response: ChatResponse<Participant>)
     func onCallStopRecording(_ response: ChatResponse<Participant>)
@@ -35,7 +34,6 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
     var startRecodrdingDate: Date?
     var recordingTimerString: String?
     var recordingTimer: Timer?
-    @Published var imageLoader: ImageLoader?
     var cancellableSet: Set<AnyCancellable> = []
 
     init(callId: Int?) {
@@ -83,12 +81,6 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
         isRecording = true
         startRecodrdingDate = Date()
         startRecordingTimer()
-        imageLoader = ImageLoader(url: recorder?.image ?? "", userName: recorder?.firstName, size: .SMALL)
-        imageLoader?.$image.sink { _ in
-            self.objectWillChange.send()
-        }
-        .store(in: &cancellableSet)
-        imageLoader?.fetch()
     }
 
     func onCallStopRecording(_: ChatResponse<Participant>) {

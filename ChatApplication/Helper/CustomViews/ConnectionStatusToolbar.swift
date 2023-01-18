@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ConnectionStatusToolbar: View {
     @State var connectionStatus: ConnectionStatus = .connecting
-
     @EnvironmentObject var appstate: AppState
 
     var body: some View {

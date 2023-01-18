@@ -23,6 +23,7 @@ struct ThreadView: View {
     @State var showExportFileURL = false
     @State var searchMessageText: String = ""
     @StateObject var imageLoader = ImageLoader()
+    @EnvironmentObject var callViewModel: CallViewModel
 
     var body: some View {
         ZStack {
@@ -87,10 +88,7 @@ struct ThreadView: View {
         .onAppear {
             viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
             viewModel.getHistory()
-            imageLoader.setURL(url: viewModel.thread?.computedImageURL)
-            imageLoader.setUserName(userName: viewModel.thread?.title)
-            imageLoader.setSize(size: .SMALL)
-            imageLoader.fetch()
+            imageLoader.fetch(url: viewModel.thread?.computedImageURL, userName: viewModel.thread?.title)
         }
         .sheet(isPresented: $showExportFileURL, onDismiss: {
             viewModel.exportMessagesVM.deleteFile()
@@ -133,8 +131,7 @@ struct ThreadView: View {
 
     @ViewBuilder var trailingToolbar: some View {
         NavigationLink {
-            DetailView()
-                .environmentObject(DetailViewModel(thread: viewModel.thread))
+            DetailView(viewModel: DetailViewModel(thread: viewModel.thread))
         } label: {
             imageLoader.imageView
                 .font(.system(size: 16).weight(.heavy))
@@ -147,15 +144,19 @@ struct ThreadView: View {
 
         Menu {
             Button {
+                callViewModel.startCall(thread: thread, isVideoOn: false)
+            } label: {
+                Label("Voice-Call", systemImage: "phone.and.waveform.fill")
+            }
+            Button {
+                callViewModel.startCall(thread: thread, isVideoOn: true)
+            } label: {
+                Label("Video-Call", systemImage: "video.fill")
+            }
+            Button {
                 showDatePicker.toggle()
             } label: {
-                Label {
-                    Text("Export")
-                } icon: {
-                    Image(systemName: "square.and.arrow.up")
-                        .resizable()
-                        .scaledToFit()
-                }
+                Label("Export", systemImage: "square.and.arrow.up.fill")
             }
         } label: {
             Image(systemName: "ellipsis")

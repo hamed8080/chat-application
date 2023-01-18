@@ -96,6 +96,12 @@ class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance.getThreads(.init(count: count, offset: offset, archived: archived), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
+    func getThreadsWith(_ threadIds: [Int]) {
+        if threadIds.count == 0 { return }
+        isLoading = true
+        ChatManager.activeInstance.getThreads(.init(threadIds: threadIds), completion: onServerResponse, cacheResponse: onCacheResponse)
+    }
+
     var filtered: [Conversation] {
         if searchText.isEmpty {
             return threads.filter { $0.isArchive == archived }
