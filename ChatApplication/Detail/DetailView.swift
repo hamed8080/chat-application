@@ -76,16 +76,6 @@ struct DetailView: View {
                             ActionImage(systemName: "message.fill")
                         }
                     }
-                    Button {
-                        viewModel.createThread()
-                    } label: {
-                        ActionImage(systemName: "phone.fill")
-                    }
-                    Button {
-                        viewModel.createThread()
-                    } label: {
-                        ActionImage(systemName: "video.fill")
-                    }
 
                     Button {
                         viewModel.toggleMute()
