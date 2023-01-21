@@ -21,11 +21,11 @@ struct LoginView: View {
                             Spacer()
                             if viewModel.model.isInVerifyState == false {
                                 LoginContentView(viewModel: viewModel)
-                                    .frame(width: isIpad ? reader.size.width * 50 / 100 : .infinity)
+                                    .frame(width: isIpad ? reader.size.width * 50 / 100 : reader.size.width)
 
                             } else {
                                 VerifyContentView(viewModel: viewModel)
-                                    .frame(width: isIpad ? reader.size.width * 50 / 100 : .infinity)
+                                    .frame(width: isIpad ? reader.size.width * 50 / 100 : reader.size.width)
                             }
                             Spacer()
                         }

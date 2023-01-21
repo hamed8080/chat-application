@@ -17,7 +17,7 @@ struct ManageTagView: View {
     @State var tagName: String = ""
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.gray.opacity(0.2)
                     .edgesIgnoringSafeArea(.all)

@@ -15,7 +15,7 @@ struct AddThreadToTagsView: View {
     @State var tagName: String = ""
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 ForEach(viewModel.tags) { tag in
                     TagRow(tag: tag, viewModel: viewModel)

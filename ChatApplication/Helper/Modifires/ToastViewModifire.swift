@@ -14,13 +14,15 @@ struct TopNotifyViewModifire: ViewModifier {
     let image: Image?
     let duration: TimeInterval
     let backgroundColor: Color
+    let imageColor: Color
 
-    internal init(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval, backgroundColor: Color) {
+    internal init(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval, backgroundColor: Color, imageColor: Color = .clear) {
         _isShowing = isShowing
         self.title = title
         self.message = message
         self.duration = duration
         self.image = image
+        self.imageColor = imageColor
         self.backgroundColor = backgroundColor
     }
 
@@ -30,24 +32,19 @@ struct TopNotifyViewModifire: ViewModifier {
                 .animation(.easeInOut, value: isShowing)
                 .blur(radius: isShowing ? 5 : 0)
             if isShowing {
-                Rectangle()
-                    .foregroundColor(Color.black.opacity(0.6))
-                    .ignoresSafeArea()
-
                 VStack {
                     toast
-                        .background(
-                            Rectangle()
-                                .cornerRadius(24, corners: [.bottomRight, .bottomLeft])
-                                .ignoresSafeArea()
-                                .foregroundColor(backgroundColor)
-                        )
+                        .ignoresSafeArea()
+                        .background(.ultraThickMaterial)
+                        .cornerRadius(24, corners: [.bottomRight, .bottomLeft])
                     Spacer()
                 }
+                .background(.clear)
                 .transition(.move(edge: .top))
             }
         }
-        .onChange(of: isShowing, perform: { newValue in
+        .ignoresSafeArea()
+        .onChange(of: isShowing) { newValue in
             if newValue == true {
                 DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
                     withAnimation {
@@ -55,7 +52,7 @@ struct TopNotifyViewModifire: ViewModifier {
                     }
                 }
             }
-        })
+        }
         .animation(.spring(response: isShowing ? 0.5 : 2, dampingFraction: isShowing ? 0.85 : 1, blendDuration: 1), value: isShowing)
     }
 
@@ -64,19 +61,18 @@ struct TopNotifyViewModifire: ViewModifier {
             if let title = title {
                 Text(title)
                     .font(.title2.bold())
-                    .foregroundColor(Color.black)
             }
             HStack(spacing: 0) {
                 if let image = image {
                     image
                         .resizable()
-                        .frame(width: 48, height: 48)
+                        .frame(width: 36, height: 36)
                         .cornerRadius(4)
+                        .foregroundColor(imageColor)
                 }
                 Text(message)
                     .font(.subheadline)
                     .padding()
-                    .foregroundColor(Color(named: "text_color_blue"))
                 Spacer()
             }
         }
@@ -85,8 +81,18 @@ struct TopNotifyViewModifire: ViewModifier {
 }
 
 extension View {
-    func toast(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval = 3, backgroundColor: Color = Color(named: "background")) -> some View {
-        modifier(TopNotifyViewModifire(isShowing: isShowing, title: title, message: message, image: image, duration: duration, backgroundColor: backgroundColor))
+    func toast(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval = 3, backgroundColor: Color = Color(named: "background"), imageColor: Color = .clear) -> some View {
+        modifier(
+            TopNotifyViewModifire(
+                isShowing: isShowing,
+                title: title,
+                message: message,
+                image: image,
+                duration: duration,
+                backgroundColor: backgroundColor,
+                imageColor: imageColor
+            )
+        )
     }
 }
 

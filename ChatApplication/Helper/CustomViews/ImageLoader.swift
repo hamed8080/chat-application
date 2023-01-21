@@ -7,7 +7,6 @@
 
 import FanapPodChatSDK
 import Foundation
-import SwiftUI
 import UIKit
 
 private var token: String? {
@@ -26,15 +25,6 @@ class ImageLoader: ObservableObject {
     private(set) var size: ImageSize?
     private(set) var userName: String?
     init() {}
-
-    @ViewBuilder var imageView: some View {
-        if !isImageReady {
-            Text(String(userName?.first ?? " "))
-        } else if isImageReady {
-            Image(uiImage: image)
-                .resizable()
-        }
-    }
 
     var isImageReady: Bool {
         image.size.width > 0
@@ -121,7 +111,7 @@ class ImageLoader: ObservableObject {
         if !isRealImage(data: data) { return }
         DispatchQueue.main.async { [weak self] in
             guard let self = self, let url = URL(string: self.url ?? "") else { return }
-            AppState.shared.cacheFileManager?.saveFileInGroup(url: url, data: data)
+            AppState.shared.cacheFileManager?.saveFileInGroup(url: url, data: data) { _ in }
         }
     }
 

@@ -100,6 +100,7 @@ class ChatDelegateImplementation: ChatDelegate {
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .unauthorized
         }
+        AppState.shared.animateAndShowError(error)
         print(error)
     }
 

@@ -11,11 +11,10 @@ import SwiftUI
 struct SearchContactRow: View {
     @EnvironmentObject var contactsVM: ContactsViewModel
     var contact: Contact
-    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         HStack {
-            imageLoader.imageView
+            ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 24, height: 24)
@@ -39,12 +38,8 @@ struct SearchContactRow: View {
             }
         }
         .contentShape(Rectangle())
-        .autoNavigateToThread()
         .onTapGesture {
             contactsVM.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
-        }
-        .onAppear {
-            imageLoader.fetch(url: contact.image ?? contact.user?.image, userName: contact.firstName)
         }
     }
 }

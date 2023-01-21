@@ -10,13 +10,12 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct DownloadFileView: View {
-    @ObservedObject var downloadFileVM: DownloadFileViewModel
-    @State var data: Data = .init()
-    @State var percent: Int64 = 0
+    @StateObject var downloadFileVM = DownloadFileViewModel()
     @State var shareDownloadedFile: Bool = false
+    let message: Message
 
     init(message: Message, placeHolder: Data? = nil) {
-        downloadFileVM = .init(message: message)
+        self.message = message
         if let placeHolder = placeHolder {
             downloadFileVM.data = placeHolder
         }
@@ -27,12 +26,12 @@ struct DownloadFileView: View {
             ZStack(alignment: .center) {
                 switch downloadFileVM.state {
                 case .COMPLETED:
-                    if downloadFileVM.message.isImage, let uiImage = UIImage(data: data) {
-                        Image(uiImage: uiImage)
+                    if let fileURL = downloadFileVM.fileURL, let scaledImage = fileURL.imageScale(width: 420)?.image {
+                        Image(cgImage: scaledImage)
                             .resizable()
                             .scaledToFit()
                     } else {
-                        Image(systemName: downloadFileVM.message.iconName)
+                        Image(systemName: message.iconName)
                             .resizable()
                             .padding()
                             .foregroundColor(Color(named: "icon_color").opacity(0.8))
@@ -43,7 +42,7 @@ struct DownloadFileView: View {
                             }
                     }
                 case .DOWNLOADING, .STARTED:
-                    CircularProgressView(percent: $percent)
+                    CircularProgressView(percent: $downloadFileVM.downloadPercent)
                         .padding()
                         .frame(maxWidth: 128)
                         .onTapGesture {
@@ -82,21 +81,18 @@ struct DownloadFileView: View {
             }
         }
         .animation(.easeInOut, value: downloadFileVM.state)
-        .animation(.easeInOut, value: data)
-        .animation(.easeInOut, value: percent)
+        .animation(.easeInOut, value: downloadFileVM.data)
+        .animation(.easeInOut, value: downloadFileVM.downloadPercent)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onReceive(downloadFileVM.$data) { data in
-            self.data = data ?? Data()
-        }
-        .onReceive(downloadFileVM.$downloadPercent) { percent in
-            self.percent = percent
-        }
         .sheet(isPresented: $shareDownloadedFile) {
             if let fileURL = downloadFileVM.fileURL {
                 ActivityViewControllerWrapper(activityItems: [fileURL])
             } else {
                 EmptyView()
             }
+        }
+        .onAppear {
+            downloadFileVM.setMessage(message: message)
         }
     }
 }
@@ -111,14 +107,15 @@ enum DownloadFileState {
 }
 
 protocol DownloadFileViewModelProtocol {
-    var message: Message { get }
+    var message: Message? { get }
     var fileHashCode: String { get }
     var data: Data? { get }
     var state: DownloadFileState { get }
     var downloadUniqueId: String? { get }
     var downloadPercent: Int64 { get }
+    var url: URL? { get }
     var fileURL: URL? { get }
-    func getFromCache()
+    func setMessage(message: Message)
     func startDownload()
     func pauseDownload()
     func resumeDownload()
@@ -128,21 +125,31 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     @Published var downloadPercent: Int64 = 0
     @Published var state: DownloadFileState = .UNDEFINED
     @Published var data: Data?
-    var fileHashCode: String { message.metaData?.fileHash ?? "" }
+    var fileHashCode: String { message?.metaData?.fileHash ?? message?.metaData?.file?.hashCode ?? "" }
+    let cm: CacheFileManagerProtocol? = AppState.shared.cacheFileManager
 
     var fileURL: URL? {
-        let url = "\(ChatManager.activeInstance.config.fileServer)\(FanapPodChatSDK.Routes.files.rawValue)/\(fileHashCode)"
-        guard let url = URL(string: url) else { return nil }
-        return AppState.shared.cacheFileManager?.filePath(url: url)
+        guard let url = url else { return nil }
+        return cm?.filePath(url: url) ?? cm?.filePathInGroup(url: url)
+    }
+
+    var url: URL? {
+        let path = message?.isImage == true ? FanapPodChatSDK.Routes.images.rawValue : FanapPodChatSDK.Routes.files.rawValue
+        let url = "\(ChatManager.activeInstance.config.fileServer)\(path)/\(fileHashCode)"
+        return URL(string: url)
     }
 
     var downloadUniqueId: String?
-    private(set) var message: Message
+    private(set) var message: Message?
     private var cancelable: Set<AnyCancellable> = []
 
-    init(message: Message) {
+    init() {}
+
+    func setMessage(message: Message) {
         self.message = message
-        getFromCache()
+        if isInCache {
+            state = .COMPLETED
+        }
         NotificationCenter.default.publisher(for: fileDeletedFromCacheName)
             .compactMap { $0.object as? Message }
             .filter { $0.id == message.id }
@@ -152,18 +159,13 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
             .store(in: &cancelable)
     }
 
-    func getFromCache() {
-        let url = "\(ChatManager.activeInstance.config.fileServer)\(FanapPodChatSDK.Routes.files.rawValue)/\(fileHashCode)"
-        if let url = URL(string: url), let data = AppState.shared.cacheFileManager?.getData(url: url) {
-            onResponse(data: data)
-        }
+    var isInCache: Bool {
+        guard let url = url else { return false }
+        return cm?.isFileExist(url: url) ?? false || cm?.isFileExistInGroup(url: url) ?? false
     }
 
     func startDownload() {
-        // It retrieved from cache
-        if state == .COMPLETED { return }
-        state = .DOWNLOADING
-        if message.isImage {
+        if !isInCache, message?.isImage == true {
             downloadImage()
         } else {
             downloadFile()
@@ -171,13 +173,14 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     }
 
     private func downloadFile() {
+        state = .DOWNLOADING
         let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: true)
         ChatManager.activeInstance.getFile(req) { downloadProgress in
             self.downloadPercent = downloadProgress.percent
         } completion: { [weak self] data, _, _, _ in
             self?.onResponse(data: data)
         } cacheResponse: { [weak self] _, url, _, _ in
-            if let url = url, let data = AppState.shared.cacheFileManager?.getData(url: url) {
+            if let url = url, let data = self?.cm?.getData(url: url) {
                 self?.onResponse(data: data)
             }
         } uniqueIdResult: { uniqueId in
@@ -186,13 +189,14 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     }
 
     private func downloadImage() {
+        state = .DOWNLOADING
         let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true, size: .ACTUAL)
         ChatManager.activeInstance.getImage(req) { [weak self] downloadProgress in
             self?.downloadPercent = downloadProgress.percent
         } completion: { [weak self] data, _, _, _ in
             self?.onResponse(data: data)
         } cacheResponse: { [weak self] _, url, _, _ in
-            if let url = url, let data = AppState.shared.cacheFileManager?.getData(url: url) {
+            if let url = url, let data = self?.cm?.getData(url: url) {
                 self?.onResponse(data: data)
             }
         } uniqueIdResult: { [weak self] uniqueId in

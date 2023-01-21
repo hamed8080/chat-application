@@ -57,7 +57,8 @@ class ActionSheetViewModel: ObservableObject {
 
     func loadImages() {
         isLoading = true
-        PHPhotoLibrary.requestAuthorization { status in
+        PHPhotoLibrary.requestAuthorization { [weak self] status in
+            guard let self = self else { return }
             switch status {
             case .authorized:
                 let fetchOptions = PHFetchOptions()
@@ -68,7 +69,7 @@ class ActionSheetViewModel: ObservableObject {
                 DispatchQueue.global(qos: .background).async {
                     fetchResults.enumerateObjects(at: self.indexSet, options: .concurrent) { [weak self] object, _, _ in
                         let options = PHImageRequestOptions()
-                        options.isSynchronous = true
+                        options.isSynchronous = false
                         options.deliveryMode = .fastFormat
                         let imageSize = CGSize(width: 96, height: 96)
                         PHImageManager.default().requestImage(for: object, targetSize: imageSize, contentMode: .aspectFit, options: options) { [weak self] image, _ in
@@ -105,14 +106,15 @@ class ActionSheetViewModel: ObservableObject {
     }
 
     func sendSelectedPhotos() {
-        selectedImageItems.forEach { item in
+        for index in selectedImageItems.indices {
+            let item = selectedImageItems[index]
             let option = PHImageRequestOptions()
             option.isSynchronous = true
             option.deliveryMode = .highQualityFormat
             option.resizeMode = .exact
             option.isNetworkAccessAllowed = true
             PHImageManager.default().requestImage(for: item.phAsset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: option) { [weak self] uiImage, info in
-                self?.threadViewModel.sendPhotos(uiImage: uiImage, info: info, item: item)
+                self?.threadViewModel.sendPhotos(index: index, uiImage: uiImage, info: info, item: item)
             }
         }
     }

@@ -12,10 +12,10 @@ struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
     @EnvironmentObject var viewModel: ContactsViewModel
     @State public var showActionViews: Bool = false
+    @EnvironmentObject var appState: AppState
     var contact: Contact
     var contactImageURL: String? { contact.image ?? contact.user?.image }
     @State var navigateToAddOrEditContact = false
-    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         VStack {
@@ -32,7 +32,7 @@ struct ContactRow: View {
                         .onTapGesture {
                             viewModel.toggleSelectedContact(contact: contact)
                         }
-                    imageLoader.imageView
+                    ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
                         .font(.system(size: 16).weight(.heavy))
                         .foregroundColor(.white)
                         .frame(width: 64, height: 64)
@@ -70,7 +70,7 @@ struct ContactRow: View {
                 }
             }
             .modifier(AnimatingCellHeight(height: self.showActionViews ? 148 : 64))
-            .padding(SwiftUI.EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
+            .padding(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
             .background(Color.primary.opacity(0.08))
             .cornerRadius(16)
         }
@@ -78,23 +78,25 @@ struct ContactRow: View {
         .animation(.easeInOut, value: contact.blocked)
         .animation(.easeInOut, value: navigateToAddOrEditContact)
         .animation(.easeInOut, value: contact)
-        .autoNavigateToThread()
         .onTapGesture {
-            showActionViews.toggle()
+            withAnimation {
+                showActionViews.toggle()
+            }
         }
         .sheet(isPresented: $navigateToAddOrEditContact) {
             AddOrEditContactView(editContact: contact).environmentObject(viewModel)
-        }
-        .onAppear {
-            imageLoader.fetch(url: contact.image ?? contact.user?.image, userName: contact.firstName)
         }
     }
 
     @ViewBuilder var actionsViews: some View {
         Divider()
         HStack(spacing: 48) {
-            ActionButton(iconSfSymbolName: "message") {
-                viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+            if appState.isLoading {
+                ProgressView()
+            } else {
+                ActionButton(iconSfSymbolName: "message") {
+                    viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+                }
             }
 
             ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue) {

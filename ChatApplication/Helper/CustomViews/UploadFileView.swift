@@ -11,47 +11,50 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct UploadFileView: View {
-    @EnvironmentObject var viewModel: UploadFileViewModel
+    @StateObject var viewModel = UploadFileViewModel()
     @State var percent: Int64 = 0
     @EnvironmentObject var threadViewModel: ThreadViewModel
     let message: Message
 
     @ViewBuilder var body: some View {
-        ZStack(alignment: .center) {
-            switch viewModel.state {
-            case .UPLOADING, .STARTED:
-                CircularProgressView(percent: $percent)
-                    .padding()
-                    .frame(maxWidth: 128)
-                    .onTapGesture {
-                        viewModel.pauseUpload()
-                    }
-            case .PAUSED:
-                Image(systemName: "pause.circle")
-                    .resizable()
-                    .padding()
-                    .font(.headline.weight(.thin))
-                    .foregroundColor(.indigo)
-                    .scaledToFit()
-                    .frame(width: 64, height: 64)
-                    .frame(maxWidth: 128)
-                    .onTapGesture {
-                        viewModel.resumeUpload()
-                    }
-            default:
-                EmptyView()
+        HStack {
+            ZStack(alignment: .center) {
+                switch viewModel.state {
+                case .UPLOADING, .STARTED:
+                    CircularProgressView(percent: $percent)
+                        .padding()
+                        .frame(maxWidth: 128)
+                        .onTapGesture {
+                            viewModel.pauseUpload()
+                        }
+                case .PAUSED:
+                    Image(systemName: "pause.circle")
+                        .resizable()
+                        .padding()
+                        .font(.headline.weight(.thin))
+                        .foregroundColor(.indigo)
+                        .scaledToFit()
+                        .frame(width: 64, height: 64)
+                        .frame(maxWidth: 128)
+                        .onTapGesture {
+                            viewModel.resumeUpload()
+                        }
+                default:
+                    EmptyView()
+                }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeInOut, value: viewModel.state)
         .animation(.easeInOut, value: percent)
-        .onAppear(perform: {
-            viewModel.startUpload()
-        })
-        .onReceive(viewModel.$state, perform: { state in
+        .onAppear {
+            viewModel.startUpload(message: message, thread: threadViewModel.thread)
+        }
+        .onReceive(viewModel.$state) { state in
             if state == .COMPLETED {
                 threadViewModel.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId))
             }
-        })
+        }
         .onReceive(viewModel.$uploadPercent) { percent in
             DispatchQueue.main.async {
                 self.percent = percent
@@ -71,17 +74,16 @@ enum UploadFileState {
 class UploadFileViewModel: ObservableObject {
     @Published private(set) var uploadPercent: Int64 = 0
     @Published var state: UploadFileState = .STARTED
-    var message: Message
+    var message: Message?
     var uploadFileWithTextMessage: UploadWithTextMessageProtocol { message as! UploadWithTextMessageProtocol }
     var thread: Conversation?
     var uploadUniqueId: String?
 
-    init(message: Message, thread: Conversation?) {
+    init() {}
+
+    func startUpload(message: Message, thread: Conversation?) {
         self.message = message
         self.thread = thread
-    }
-
-    func startUpload() {
         state = .STARTED
         guard let threadId = thread?.id else { return }
         let textMessageType: MessageType = uploadFileWithTextMessage.uploadFileRequest is UploadImageRequest ? .podSpacePicture : .podSpaceFile
@@ -92,15 +94,15 @@ class UploadFileViewModel: ObservableObject {
     func uploadFile(_ message: SendTextMessageRequest, _ uploadFileRequest: UploadFileRequest) {
         ChatManager.activeInstance.sendFileMessage(textMessage: message, uploadFile: uploadFileRequest) { uploadFileProgress, _ in
             self.uploadPercent = uploadFileProgress?.percent ?? 0
-        } onSent: { sentResponse, _, error in
-            print(sentResponse ?? "")
-            if error == nil {
+        } onSent: { response in
+            print(response.result ?? "")
+            if response.error == nil {
                 self.state = .COMPLETED
             }
-        } onSeen: { seenResponse, _, _ in
-            print(seenResponse ?? "")
-        } onDeliver: { deliverResponse, _, _ in
-            print(deliverResponse ?? "")
+        } onSeen: { response in
+            print(response.result ?? "")
+        } onDeliver: { response in
+            print(response.result ?? "")
         } uploadUniqueIdResult: { uploadUniqueId in
             self.uploadUniqueId = uploadUniqueId
         } messageUniqueIdResult: { messageUniqueId in
@@ -127,12 +129,13 @@ struct UploadFileView_Previews: PreviewProvider {
     static var previews: some View {
         let message = UploadFileWithTextMessage(uploadFileRequest: UploadFileRequest(data: Data()), thread: MockData.thread)
         let threadViewModel = ThreadViewModel()
-        let uploadFileVM = UploadFileViewModel(message: message, thread: threadViewModel.thread)
+        let uploadFileVM = UploadFileViewModel()
         UploadFileView(message: message)
             .environmentObject(threadViewModel)
             .environmentObject(uploadFileVM)
             .background(Color.black.ignoresSafeArea())
             .onAppear {
+                uploadFileVM.startUpload(message: message, thread: threadViewModel.thread)
                 threadViewModel.setup(thread: MockData.thread)
             }
     }

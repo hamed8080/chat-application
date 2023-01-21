@@ -11,11 +11,12 @@ import SwiftUI
 class AppState: ObservableObject {
     static let shared = AppState()
     var user: User?
-    var selectedThread: Conversation?
+    var navViewModel: NavigationModel?
+    @Published var error: ChatError?
+    @Published var isLoading: Bool = false
     var cacheFileManager: CacheFileManagerProtocol? { ChatManager.activeInstance.cacheFileManager }
     @Published var callLogs: [URL]?
     @Published var connectionStatusString = ""
-    @Published var showThreadView = false
     @Published var connectionStatus: ConnectionStatus = .connecting {
         didSet {
             setConnectionStatus(connectionStatus)
@@ -31,6 +32,7 @@ class AppState: ObservableObject {
     }
 
     func showThread(threadId: Int) {
+        isLoading = true
         ChatManager.activeInstance.getThreads(.init(threadIds: [threadId])) { [weak self] response in
             if let thraed = response.result?.first {
                 self?.animateAndShowThread(thread: thraed)
@@ -39,9 +41,12 @@ class AppState: ObservableObject {
     }
 
     func showThread(invitees: [Invitee]) {
+        isLoading = true
         ChatManager.activeInstance.createThread(.init(invitees: invitees, title: "", type: .normal)) { [weak self] response in
             if let thread = response.result {
                 self?.animateAndShowThread(thread: thread)
+            } else if let error = response.error {
+                self?.animateAndShowError(error)
             }
         }
     }
@@ -53,8 +58,19 @@ class AppState: ObservableObject {
 
     func animateAndShowThread(thread: Conversation) {
         withAnimation {
-            selectedThread = thread
-            showThreadView = true
+            isLoading = false
+            navViewModel?.selectedSideBarId = "chats"
+            navViewModel?.selectedThreadId = thread.id
+        }
+    }
+
+    func animateAndShowError(_ error: ChatError) {
+        withAnimation {
+            isLoading = false
+            self.error = error
+            Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+                self?.error = nil
+            }
         }
     }
 
