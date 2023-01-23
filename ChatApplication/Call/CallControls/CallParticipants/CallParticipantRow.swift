@@ -12,11 +12,10 @@ import WebRTC
 struct CallParticipantRow: View {
     var userRTC: CallParticipantUserRTC
     @EnvironmentObject var viewModel: CallViewModel
-    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         HStack(spacing: 8) {
-            imageLoader.imageView
+            ImageLaoderView(url: userRTC.callParticipant.participant?.image, userName: userRTC.callParticipant.participant?.name?.uppercased())
                 .frame(width: 48, height: 48)
                 .cornerRadius(24)
             VStack {
@@ -60,9 +59,6 @@ struct CallParticipantRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 8)
         .padding([.top, .bottom], 4)
-        .onAppear {
-            imageLoader.fetch(url: userRTC.callParticipant.participant?.image, userName: userRTC.callParticipant.participant?.name?.uppercased())
-        }
     }
 }
 
@@ -73,7 +69,7 @@ struct OfflineParticipantRow: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            imageLoader.imageView
+            ImageLaoderView(url: participant.image, userName: participant.name?.uppercased())
                 .frame(width: 48, height: 48)
                 .cornerRadius(24)
             VStack {
@@ -95,9 +91,6 @@ struct OfflineParticipantRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 8)
         .padding([.top, .bottom], 4)
-        .onAppear {
-            imageLoader.fetch(url: participant.image, userName: participant.name?.uppercased())
-        }
     }
 }
 

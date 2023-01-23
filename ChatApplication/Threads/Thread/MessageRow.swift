@@ -29,9 +29,7 @@ struct MessageRow: View {
                     }
             }
             if let type = message.type {
-                if message.isUploadMessage {
-                    UploadMessageType(message: message)
-                } else if message.isTextMessageType || message.isUnsentMessage {
+                if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
                     if message.isMe {
                         Spacer()
                     }
@@ -69,7 +67,6 @@ struct CallMessageType: View {
         .padding([.leading, .trailing])
         .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))
         .cornerRadius(6)
-        .frame(maxWidth: .infinity)
     }
 }
 
@@ -106,7 +103,6 @@ struct ParticipantMessageType: View {
 struct TextMessageType: View {
     var message: Message
     @EnvironmentObject var viewModel: ThreadViewModel
-    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         HStack(spacing: 8) {
@@ -121,9 +117,20 @@ struct TextMessageType: View {
                     ForwardMessageRow(forwardInfo: forwardInfo)
                 }
 
-                if message.isFileType {
+                if message.isUploadMessage {
+                    UploadMessageType(message: message)
+                        .frame(maxHeight: 320)
+                }
+
+                if message.isFileType, message.id ?? 0 > 0 {
                     DownloadFileView(message: message)
                         .frame(maxHeight: 320)
+                }
+
+                if let fileName = message.fileName {
+                    Text("\(fileName)\(message.fileExtension ?? "")")
+                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .font(.caption)
                 }
 
                 // TODO: TEXT must be alignment and image muset be fit
@@ -237,9 +244,6 @@ struct TextMessageType: View {
                 Spacer()
             }
         }
-        .onAppear {
-            imageLoader.fetch(url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
-        }
     }
 
     @ViewBuilder var sameUserAvatar: some View {
@@ -247,7 +251,7 @@ struct TextMessageType: View {
             NavigationLink {
                 DetailView(viewModel: DetailViewModel(user: message.participant))
             } label: {
-                imageLoader.imageView
+                ImageLaoderView(url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
                     .frame(width: 36, height: 36)
@@ -303,64 +307,27 @@ struct UploadMessageType: View {
     @EnvironmentObject var threadViewModel: ThreadViewModel
 
     var body: some View {
-        HStack(alignment: .top) {
-            Spacer()
-            VStack(spacing: 8) {
-                if message.isUnsentMessage == false {
-                    UploadFileView(message: message)
-                        .environmentObject(threadViewModel)
-                        .environmentObject(UploadFileViewModel(message: message, thread: threadViewModel.thread))
-                } else if let data = message.uploadFile?.uploadFileRequest.data {
-                    // Show cache version image if the sent was failed.
-                    if let image = UIImage(data: data) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxWidth: 320)
-                    } else if let iconName = message.iconName {
-                        Image(systemName: iconName)
-                            .resizable()
-                            .frame(width: 64, height: 64)
-                            .scaledToFit()
-                            .padding()
-                            .foregroundColor(Color(named: "icon_color").opacity(0.8))
-                    }
-                }
-
-                if let fileName = message.fileName {
-                    Text("\(fileName)\(message.fileExtension ?? "")")
-                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                        .font(.caption)
-                }
-
-                if let message = message.messageTitle {
-                    Text(message)
-                        .foregroundColor(.black)
-                        .font(Font(UIFont.systemFont(ofSize: 18)))
-                }
-
-                if message.isUnsentMessage {
-                    HStack {
-                        Spacer()
-                        Button("Resend".uppercased()) {
-                            threadViewModel.resendUnsetMessage(message)
-                        }
-
-                        Button("Cancel".uppercased(), role: .destructive) {
-                            threadViewModel.cancelUnsentMessage(message.uniqueId ?? "")
-                        }
-                    }
-                    .padding([.leading, .trailing])
-                    .font(.caption.bold())
+        VStack(spacing: 8) {
+            if message.isUnsentMessage == false {
+                UploadFileView(message: message)
+                    .environmentObject(threadViewModel)
+            } else if let data = message.uploadFile?.uploadFileRequest.data {
+                // Show cache version image if the sent was failed.
+                if let image = UIImage(data: data) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: 320)
+                } else if let iconName = message.iconName {
+                    Image(systemName: iconName)
+                        .resizable()
+                        .frame(width: 64, height: 64)
+                        .scaledToFit()
+                        .padding()
+                        .foregroundColor(Color(named: "icon_color").opacity(0.8))
                 }
             }
-            .frame(maxWidth: message.isImage ? 320 : 164)
-            .padding()
-            .contentShape(Rectangle())
-            .background(Color(UIColor(named: "chat_me")!))
-            .cornerRadius(12)
         }
-        .padding(.trailing, 42)
     }
 }
 
@@ -403,6 +370,7 @@ struct MessageFooterView: View {
         }
         .animation(.easeInOut, value: message.delivered)
         .animation(.easeInOut, value: message.seen)
+        .animation(.easeInOut, value: message.edited)
         .padding([.top], 4)
     }
 }

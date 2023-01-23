@@ -9,6 +9,7 @@ import FanapPodChatSDK
 import SwiftUI
 
 struct HomeContentView: View {
+    @StateObject var navModel = NavigationModel()
     @StateObject var loginModel = LoginViewModel()
     @StateObject var contactsVM = ContactsViewModel()
     @StateObject var threadsVM = ThreadsViewModel()
@@ -29,13 +30,29 @@ struct HomeContentView: View {
                 .environmentObject(tokenManager)
                 .environmentObject(appState)
         } else {
-            NavigationView {
+            NavigationSplitView {
                 SideBar()
-
-                SecondSideBar()
-
-                DetailContentView()
+            } content: {
+                if navModel.isThreadType {
+                    ThreadContentList()
+                } else if navModel.selectedSideBarId == "contacts" {
+                    ContactContentList()
+                } else if navModel.selectedSideBarId == "settings" {
+                    SettingsView()
+                } else if navModel.selectedSideBarId == "calls" {
+                    CallsHistoryContentList()
+                }
+            } detail: {
+                NavigationStack {
+                    if let thread = navModel.selectedThread {
+                        ThreadView(thread: thread)
+                            .id(thread.id) // don't remove this from here it leads to never change in view
+                    } else {
+                        DetailContentView()
+                    }
+                }
             }
+            .environmentObject(navModel)
             .environmentObject(settingsVM)
             .environmentObject(contactsVM)
             .environmentObject(threadsVM)
@@ -72,7 +89,21 @@ struct HomeContentView: View {
                     showCallView = newShowCallView
                 }
             }
+            .onReceive(threadsVM.tagViewModel.$tags) { tags in
+                navModel.addTags(tags)
+            }
+            .toast(
+                isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
+                title: "Error happened with code: \(appState.error?.code ?? 0)",
+                message: appState.error?.message ?? "",
+                image: Image(systemName: "xmark.square.fill"),
+                imageColor: .red.opacity(0.5)
+            )
             .onAppear {
+                appState.navViewModel = navModel
+                navModel.threadViewModel = threadsVM
+                threadsVM.title = "chats"
+                navModel.contactsViewModel = contactsVM
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }
         }
@@ -80,107 +111,20 @@ struct HomeContentView: View {
 }
 
 struct SideBar: View {
+    @EnvironmentObject var navModel: NavigationModel
     var body: some View {
-        List {
-            NavigationLink {
-                ContactContentList()
-            } label: {
-                Label {
-                    Text("Contacts")
-                } icon: {
-                    Image(systemName: "person.icloud")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color.blue)
-                }
-            }
-
-            NavigationLink {
-                ThreadContentList()
-            } label: {
-                Label {
-                    Text("Chats")
-                } icon: {
-                    Image(systemName: "captions.bubble")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color.blue)
-                }
-            }
-
-            NavigationLink {
-                CallsHistoryContentList()
-            } label: {
-                Label {
-                    Text("Calls")
-                } icon: {
-                    Image(systemName: "phone")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color.blue)
-                }
-            }
-
-            NavigationLink {
-                ThreadContentList()
-                    .environmentObject(ThreadsViewModel(archived: true))
-            } label: {
-                Label {
-                    Text("Archive")
-                } icon: {
-                    Image(systemName: "tray.and.arrow.down")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color.blue)
-                }
-            }
-
-            TagContentList()
-
-            NavigationLink {
-                SettingsView()
-            } label: {
-                Label {
-                    Text("Setting")
-                } icon: {
-                    Image(systemName: "gear")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color.blue)
+        List(navModel.sections, selection: $navModel.selectedSideBarId) { section in
+            Section(section.title) {
+                ForEach(section.items) { item in
+                    NavigationLink(value: item.id) {
+                        Label(item.title, systemImage: item.icon)
+                    }
                 }
             }
         }
-        .listStyle(.plain)
-    }
-}
-
-/// Separate this view to prevent redraw view in the sidebar and consequently redraw the whole applicaiton
-/// view multiple times and reinit the view models multiple times.
-struct TagContentList: View {
-    @EnvironmentObject var threadsVM: ThreadsViewModel
-
-    var body: some View {
-        ForEach(threadsVM.tagViewModel.tags) { tag in
-            NavigationLink {
-                ThreadContentList(folder: tag)
-            } label: {
-                Label {
-                    Text(tag.name)
-                } icon: {
-                    Image(systemName: "folder")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(Color.blue)
-                }
-            }
-        }
-    }
-}
-
-/// This view only render once when view created to show list of threads after that all views are created by SideBar from list
-struct SecondSideBar: View {
-    var body: some View {
-        ThreadContentList()
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Chat Application")
+        .listStyle(.insetGrouped)
     }
 }
 

@@ -9,13 +9,35 @@ import FanapPodChatSDK
 import Foundation
 import UIKit
 
+enum LoginState: String, Identifiable, Hashable {
+    var id: Self { self }
+    case handshake
+    case login
+    case verify
+    case failed
+    case refreshToken
+    case successLoggedIn
+    case verificationCodeIncorrect
+}
+
 class LoginViewModel: ObservableObject {
-    @Published var model = LoginModel()
     @Published var isLoading = false
     weak var tokenManager: TokenManager? = TokenManager.shared
     let handshakeClient = RestClient<HandshakeResponse>()
     let authorizationClient = RestClient<AuthorizeResponse>()
     let ssoClient = RestClient<SSOTokenResponse>()
+
+    // this two variable need to be set from Binding so public setter needed
+    @Published var phoneNumber: String = ""
+    @Published var verifyCodes: [String] = ["", "", "", "", "", ""]
+    private(set) var isValidPhoneNumber: Bool?
+    @Published var state: LoginState = .login
+    private(set) var keyId: String?
+
+    func isPhoneNumberValid() -> Bool {
+        isValidPhoneNumber = !phoneNumber.isEmpty
+        return !phoneNumber.isEmpty
+    }
 
     func login() {
         isLoading = true
@@ -30,14 +52,16 @@ class LoginViewModel: ObservableObject {
             .enablePrint(enable: true)
             .setParamsAsQueryString(req)
             .setOnError { [weak self] _, error in
-                print("error on login:\(error.debugDescription)")
-                self?.isLoading = false
-                self?.model.setState(.failed)
+                DispatchQueue.main.async {
+                    print("error on login:\(error.debugDescription)")
+                    self?.isLoading = false
+                    self?.state = .failed
+                }
             }
             .request { [weak self] response in
                 self?.isLoading = false
                 guard let self = self else { return }
-                self.requestOTP(identity: self.model.phoneNumber, handskahe: response)
+                self.requestOTP(identity: self.phoneNumber, handskahe: response)
             }
     }
 
@@ -52,24 +76,26 @@ class LoginViewModel: ObservableObject {
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
             .setOnError { [weak self] _, error in
-                print("error on requestOTP:\(error.debugDescription)")
-                self?.isLoading = false
-                self?.model.setState(.failed)
+                DispatchQueue.main.async {
+                    print("error on requestOTP:\(error.debugDescription)")
+                    self?.isLoading = false
+                    self?.state = .failed
+                }
             }
             .request { [weak self] response in
                 self?.isLoading = false
                 guard let self = self else { return }
                 if response.result?.identity != nil {
-                    self.model.setIsInVerifyState(true)
-                    self.model.setKeyId(keyId)
+                    self.state = .verify
+                    self.keyId = keyId
                 }
             }
     }
 
     func verifyCode() {
-        guard let keyId = model.keyId else { return }
+        guard let keyId = keyId else { return }
 
-        let req = VerifyRequest(identity: model.phoneNumber, keyId: keyId, otp: model.verifyCode)
+        let req = VerifyRequest(identity: phoneNumber, keyId: keyId, otp: verifyCodes.joined())
         isLoading = true
         ssoClient
             .setUrl(Routes.verify)
@@ -78,9 +104,11 @@ class LoginViewModel: ObservableObject {
             .setParamsAsQueryString(req)
             .addRequestHeader(key: "keyId", value: req.keyId)
             .setOnError { [weak self] _, error in
-                print("error on verifyCode:\(error.debugDescription)")
-                self?.isLoading = false
-                self?.model.setState(.verificationCodeIncorrect)
+                DispatchQueue.main.async {
+                    print("error on verifyCode:\(error.debugDescription)")
+                    self?.isLoading = false
+                    self?.state = .verificationCodeIncorrect
+                }
             }
             .request { [weak self] response in
                 self?.isLoading = false
@@ -92,7 +120,7 @@ class LoginViewModel: ObservableObject {
                     if ChatManager.activeInstance.state != .chatReady {
                         ChatManager.activeInstance.connect()
                     }
-                    self.model.setState(.successLoggedIn)
+                    self.state = .successLoggedIn
                 }
             }
     }

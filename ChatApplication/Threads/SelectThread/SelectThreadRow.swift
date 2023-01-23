@@ -11,7 +11,6 @@ import SwiftUI
 
 struct SelectThreadRow: View {
     var thread: Conversation
-    @StateObject var imageLoader = ImageLoader()
     var cancellableSet: Set<AnyCancellable> = []
 
     init(thread: Conversation) {
@@ -20,7 +19,7 @@ struct SelectThreadRow: View {
 
     var body: some View {
         HStack {
-            imageLoader.imageView
+            ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 36, height: 36)
@@ -33,9 +32,6 @@ struct SelectThreadRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 8)
         .padding([.top, .bottom], 4)
-        .onAppear {
-            imageLoader.fetch(url: thread.computedImageURL, userName: thread.title)
-        }
     }
 }
 

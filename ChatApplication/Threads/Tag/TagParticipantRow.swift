@@ -12,7 +12,6 @@ struct TagParticipantRow: View {
     var tag: Tag
     var tagParticipant: TagParticipant
     @ObservedObject var viewModel: TagsViewModel
-    @StateObject var imageLoader = ImageLoader()
 
     init(tag: Tag, tagParticipant: TagParticipant, viewModel: TagsViewModel) {
         self.tag = tag
@@ -25,7 +24,7 @@ struct TagParticipantRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     if let thread = tagParticipant.conversation {
-                        imageLoader.imageView
+                        ImageLaoderView(url: tagParticipant.conversation?.computedImageURL, userName: tagParticipant.conversation?.title)
                             .font(.system(size: 16).weight(.heavy))
                             .foregroundColor(.white)
                             .frame(width: 28, height: 28)
@@ -45,9 +44,6 @@ struct TagParticipantRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 8)
         .padding([.top, .bottom], 4)
-        .onAppear {
-            imageLoader.fetch(url: tagParticipant.conversation?.computedImageURL, userName: tagParticipant.conversation?.title)
-        }
     }
 }
 

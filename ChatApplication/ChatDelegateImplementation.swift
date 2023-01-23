@@ -39,7 +39,7 @@ class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
-        if let config = Config.getConfig(.main) {
+        if let config = Config.getConfig(.sandbox) {
             if config.server == "Integeration" {
                 TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponseResult(accessToken: config.debugToken, expiresIn: Int.max))
             }
@@ -108,6 +108,7 @@ class ChatDelegateImplementation: ChatDelegate {
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .unauthorized
         }
+        AppState.shared.animateAndShowError(error)
         print(error)
     }
 

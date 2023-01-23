@@ -11,7 +11,6 @@ import SwiftUI
 struct CallDetailRow: View {
     private(set) var call: Call
     private var viewModel: CallDetailViewModel
-    @StateObject var imageLoader = ImageLoader()
 
     init(call: Call, viewModel: CallDetailViewModel) {
         self.call = call
@@ -21,7 +20,7 @@ struct CallDetailRow: View {
     var body: some View {
         Button(action: {}, label: {
             HStack {
-                imageLoader.imageView
+                ImageLaoderView(url: call.partnerParticipant?.image, userName: call.partnerParticipant?.name?.uppercased())
                     .frame(width: 48, height: 48)
                     .cornerRadius(24)
                 VStack(alignment: .leading) {
@@ -55,9 +54,6 @@ struct CallDetailRow: View {
             .padding([.leading, .trailing], 16)
             .padding([.top, .bottom], 4)
         })
-        .onAppear {
-            imageLoader.fetch(url: call.partnerParticipant?.image, userName: call.partnerParticipant?.name?.uppercased())
-        }
     }
 }
 

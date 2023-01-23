@@ -22,7 +22,6 @@ struct ThreadView: View {
     @State var showDatePicker = false
     @State var showExportFileURL = false
     @State var searchMessageText: String = ""
-    @StateObject var imageLoader = ImageLoader()
     @EnvironmentObject var callViewModel: CallViewModel
 
     var body: some View {
@@ -88,7 +87,6 @@ struct ThreadView: View {
         .onAppear {
             viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
             viewModel.getHistory()
-            imageLoader.fetch(url: viewModel.thread?.computedImageURL, userName: viewModel.thread?.title)
         }
         .sheet(isPresented: $showExportFileURL, onDismiss: {
             viewModel.exportMessagesVM.deleteFile()
@@ -133,7 +131,7 @@ struct ThreadView: View {
         NavigationLink {
             DetailView(viewModel: DetailViewModel(thread: viewModel.thread))
         } label: {
-            imageLoader.imageView
+            ImageLaoderView(url: viewModel.thread?.computedImageURL, userName: viewModel.thread?.title)
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 32, height: 32)
@@ -180,8 +178,8 @@ struct ThreadMessagesList: View {
                         ListLoadingView(isLoading: $viewModel.isLoading)
                         ForEach(viewModel.messages) { message in
                             MessageRow(message: message, isInEditMode: isInEditMode)
-                                .id(message.uniqueId)
                                 .environmentObject(viewModel)
+                                .transition(.asymmetric(insertion: .opacity, removal: .slide))
                                 .onAppear {
                                     viewModel.sendSeenMessageIfNeeded(message)
                                     viewModel.setIfNeededToScrollToTheLastPosition(scrollingUP, message)
@@ -474,7 +472,7 @@ struct ThreadView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadView(thread: MockData.thread, showAttachmentDialog: false, searchMessageText: "s")
+        ThreadView(thread: MockData.thread)
             .environmentObject(AppState.shared)
             .onAppear {
                 vm.setup(thread: MockData.thread)

@@ -21,11 +21,11 @@ protocol SendMessageThreadProtocol {
     func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String)
     func sendNormalMessage(_ textMessage: String)
     func sendForwardMessage(_ destinationThread: Conversation)
-    func sendPhotos(uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem)
+    func sendPhotos(index: Int, uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem)
     func sendFile(_ url: URL)
-    func onSent(_ sentResponse: MessageResponse?, _ uniqueId: String?, _ error: ChatError?)
-    func onDeliver(_ deliverResponse: MessageResponse?, _ uniqueId: String?, _ error: ChatError?)
-    func onSeen(_ seenResponse: MessageResponse?, _ uniqueId: String?, _ error: ChatError?)
+    func onSent(_ response: ChatResponse<MessageResponse>?)
+    func onDeliver(_ response: ChatResponse<MessageResponse>?)
+    func onSeen(_ response: ChatResponse<MessageResponse>?)
     func toggleSelectedMessage(_ message: Message, _ isSelected: Bool)
     func appendSelectedMessage(_ message: Message)
     func removeSelectedMessage(_ message: Message)
@@ -77,7 +77,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image
-    func sendPhotos(uiImage: UIImage?, info _: [AnyHashable: Any]?, item: ImageItem) {
+    func sendPhotos(index: Int, uiImage: UIImage?, info _: [AnyHashable: Any]?, item: ImageItem) {
         guard let image = uiImage else { return }
         canScrollToBottomOfTheList = true
         let width = Int(image.size.width)
@@ -89,8 +89,10 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                               fileName: fileName,
                                               mimeType: "image/jpg",
                                               userGroupHash: thread?.userGroupHash)
-        let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
-        appendMessages([UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: thread)])
+        let textRequest = SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
+        let fakeMessage = UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: thread)
+        fakeMessage.id = -index
+        appendMessages([fakeMessage])
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
@@ -125,23 +127,23 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         }
     }
 
-    func onSent(_ response: MessageResponse?, _ uniqueId: String?, _: ChatError?) {
-        if let index = messages.firstIndex(where: { $0.uniqueId == uniqueId }) {
-            messages[index].id = response?.messageId
+    func onSent(_ response: ChatResponse<MessageResponse>?) {
+        if let index = messages.firstIndex(where: { $0.uniqueId == response?.uniqueId }) {
+            messages[index].id = response?.result?.messageId
             messages[index].delivered = true
             objectWillChange.send()
         }
     }
 
-    func onDeliver(_ response: MessageResponse?, _ uniqueId: String?, _: ChatError?) {
-        if let index = messages.firstIndex(where: { $0.id == response?.messageId || $0.uniqueId == uniqueId }) {
+    func onDeliver(_ response: ChatResponse<MessageResponse>?) {
+        if let index = messages.firstIndex(where: { $0.id == response?.result?.messageId || $0.uniqueId == response?.uniqueId }) {
             messages[index].delivered = true
             objectWillChange.send()
         }
     }
 
-    func onSeen(_ response: MessageResponse?, _ uniqueId: String?, _: ChatError?) {
-        if let index = messages.firstIndex(where: { ($0.id ?? 0 <= response?.messageId ?? 0 && $0.seen == nil) || $0.uniqueId == uniqueId }) {
+    func onSeen(_ response: ChatResponse<MessageResponse>?) {
+        if let index = messages.firstIndex(where: { ($0.id ?? 0 <= response?.result?.messageId ?? 0 && $0.seen == nil) || $0.uniqueId == response?.uniqueId }) {
             messages[index].delivered = true
             messages[index].seen = true
             objectWillChange.send()
@@ -151,11 +153,11 @@ extension ThreadViewModel: SendMessageThreadProtocol {
     func resendUnsetMessage(_ message: Message) {
         switch message {
         case let req as SendTextMessage:
-            ChatManager.activeInstance.sendTextMessage(req.sendTextMessageRequest, onSent: onSent)
+            ChatManager.activeInstance.sendTextMessage(req.sendTextMessageRequest, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
         case let req as EditTextMessage:
             ChatManager.activeInstance.editMessage(req.editMessageRequest, completion: onUnSentEditCompletionResult)
         case let req as ForwardMessage:
-            ChatManager.activeInstance.forwardMessages(req.forwardMessageRequest, onSent: onSent)
+            ChatManager.activeInstance.forwardMessages(req.forwardMessageRequest, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
         case let req as UploadFileMessage:
             // remove unset message type to start upload again the new one.
             messages.removeAll(where: { $0.uniqueId == req.uniqueId })

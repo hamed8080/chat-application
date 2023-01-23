@@ -10,11 +10,8 @@ import SwiftUI
 
 struct DateSelectionView: View {
     @State var startDate: Date = .init()
-
     @State var endDate: Date = .init()
-
     @State var showEndDate = false
-
     @Binding var showDialog: Bool
 
     var completion: (Date, Date) -> Void
@@ -93,7 +90,7 @@ struct DateSelectionView: View {
                             .buttonStyle(PrimaryButtonStyle(bgColor: Color(named: "icon_color")))
                         }
                     }
-                    .frame(maxWidth: isIpad ? 420 : .infinity)
+                    .frame(maxWidth: 420)
                     .padding()
                     .background(Color(named: "background"))
                     .cornerRadius(12)

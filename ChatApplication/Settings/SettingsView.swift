@@ -10,7 +10,6 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var viewModel: SettingViewModel
-    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -23,7 +22,7 @@ struct SettingsView: View {
                             .frame(width: 128, height: 128)
                             .shadow(color: .black, radius: 20, x: 0, y: 0)
                             .overlay(
-                                imageLoader.imageView
+                                ImageLaoderView(url: viewModel.currentUser?.image, userName: viewModel.currentUser?.username ?? viewModel.currentUser?.name, size: .LARG)
                                     .font(.system(size: 16).weight(.heavy))
                                     .foregroundColor(.white)
                                     .frame(width: 128, height: 128)
@@ -138,9 +137,6 @@ struct SettingsView: View {
             }
         }
         .navigationTitle(Text("Settings"))
-        .onAppear {
-            imageLoader.fetch(url: viewModel.currentUser?.image, userName: viewModel.currentUser?.username ?? viewModel.currentUser?.name, size: .LARG)
-        }
     }
 }
 
@@ -171,7 +167,7 @@ struct SettingsMenu_Previews: PreviewProvider {
     static var vm = SettingViewModel()
 
     static var previews: some View {
-        NavigationView {
+        NavigationStack {
             SettingsView()
                 .environmentObject(vm)
                 .environmentObject(TokenManager.shared)

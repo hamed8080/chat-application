@@ -215,6 +215,7 @@ class ContactsViewModel: ObservableObject {
         } else {
             addToSelctedContacts(contact)
         }
+        objectWillChange.send()
     }
 
     func updateContact(contact _: Contact, contactValue: String, firstName: String?, lastName: String?) {

@@ -19,7 +19,7 @@ struct AttachmentDialog: View {
                 .animation(.spring(), value: showAttachmentDialog)
                 .animation(.spring(), value: viewModel.selectedImageItems.count)
         }
-        .frame(width: showAttachmentDialog ? .infinity : 0, height: showAttachmentDialog ? .infinity : 0) // frame must be set to zero because textview will be coverd with auto correction on keyboard
+        .frame(maxWidth: showAttachmentDialog ? .infinity : 0, maxHeight: showAttachmentDialog ? .infinity : 0) // frame must be set to zero because textview will be coverd with auto correction on keyboard
         .background((showAttachmentDialog ? Color.gray.opacity(0.3).ignoresSafeArea() : Color.clear.ignoresSafeArea())
             .onTapGesture {
                 viewModel.clearSelectedPhotos()
@@ -107,9 +107,12 @@ struct CustomActionSheetView: View {
         }
         .sheet(isPresented: $showDocumentPicker, onDismiss: nil) {
             DocumentPicker(fileUrl: $viewModel.selectedFileUrl, showDocumentPicker: $showDocumentPicker)
-        }.onAppear(perform: {
-            viewModel.loadImages()
-        })
+        }
+        .onChange(of: showAttachmentDialog) { newValue in
+            if newValue {
+                viewModel.loadImages()
+            }
+        }
         .padding(.top, 24)
         .padding(.bottom, ((UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.safeAreaInsets.bottom ?? 0) + 10)
         .background(.thinMaterial)

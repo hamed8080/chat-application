@@ -130,7 +130,6 @@ struct CallView: View {
 
 struct CenterAciveUserRTCView: View {
     @EnvironmentObject var viewModel: CallViewModel
-    @StateObject var imageLoader = ImageLoader()
     var userRTC: CallParticipantUserRTC? { viewModel.activeLargeCall }
     var activeLargeRenderer = RTCMTLVideoView(frame: .zero)
 
@@ -161,12 +160,9 @@ struct CenterAciveUserRTCView: View {
                 }
             } else {
                 // only audio
-                imageLoader.imageView
+                ImageLaoderView(url: userRTC.callParticipant.participant?.image, userName: userRTC.callParticipant.participant?.username?.uppercased())
                     .frame(width: isIpad ? 64 : 32, height: isIpad ? 64 : 32)
                     .cornerRadius(isIpad ? 64 : 32)
-                    .onAppear {
-                        imageLoader.fetch(url: userRTC.callParticipant.participant?.image, userName: userRTC.callParticipant.participant?.username?.uppercased())
-                    }
             }
         } else {
             EmptyView()
@@ -426,7 +422,7 @@ struct CenterArriveStickerView: View {
             HStack(spacing: 4) {
                 Text(sticker.participant.name ?? "")
                     .font(.caption2)
-                imageLoader.imageView
+                ImageLaoderView(url: sticker.participant.image, userName: sticker.participant.name)
                     .frame(width: 28, height: 28)
                     .cornerRadius(18)
                 sticker.sticker.systemImage
@@ -443,9 +439,6 @@ struct CenterArriveStickerView: View {
                         }
                     }
             }
-            .onAppear {
-                imageLoader.fetch(url: sticker.participant.image, userName: sticker.participant.name)
-            }
         }
     }
 }
@@ -453,7 +446,6 @@ struct CenterArriveStickerView: View {
 struct UserRTCView: View {
     let userRTC: CallParticipantUserRTC
     @EnvironmentObject var viewModel: CallViewModel
-    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         if let rendererView = userRTC.videoRTC.renderer as? UIView {
@@ -462,7 +454,7 @@ struct UserRTCView: View {
                     RTCVideoReperesentable(renderer: rendererView)
                 } else {
                     // only audio
-                    imageLoader.imageView
+                    ImageLaoderView(url: userRTC.callParticipant.participant?.image, userName: userRTC.callParticipant.participant?.username?.uppercased())
                         .frame(width: isIpad ? 64 : 32, height: isIpad ? 64 : 32)
                         .cornerRadius(isIpad ? 64 : 32)
                 }
@@ -514,9 +506,6 @@ struct UserRTCView: View {
             .cornerRadius(8)
             .scaleEffect(x: userRTC.audioRTC.isSpeaking ? 1.02 : 1, y: userRTC.audioRTC.isSpeaking ? 1.02 : 1)
             .animation(.easeInOut, value: userRTC.audioRTC.isSpeaking)
-            .onAppear {
-                imageLoader.fetch(url: userRTC.callParticipant.participant?.image, userName: userRTC.callParticipant.participant?.username?.uppercased())
-            }
         }
     }
 }

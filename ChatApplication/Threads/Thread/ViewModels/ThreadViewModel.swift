@@ -9,7 +9,6 @@ import Combine
 import FanapPodChatSDK
 import Foundation
 import Photos
-import SwiftUI
 
 protocol ThreadViewModelProtocol: AnyObject {
     var thread: Conversation? { get set }
@@ -131,16 +130,16 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
                 scrollToLastMessageIfLastMessageIsVisible()
             }
         case let .messageSent(response):
-            if threadId == response.result?.threadId, let message = response.result {
-                onSent(message, response.uniqueId, response.error)
+            if threadId == response.result?.threadId {
+                onSent(response)
             }
         case let .messageDelivery(response):
-            if threadId == response.result?.threadId, let message = response.result {
-                onDeliver(message, response.uniqueId, response.error)
+            if threadId == response.result?.threadId {
+                onDeliver(response)
             }
         case let .messageSeen(response):
-            if threadId == response.result?.threadId, let message = response.result {
-                onSeen(message, response.uniqueId, response.error)
+            if threadId == response.result?.threadId {
+                onSeen(response)
             }
         default:
             break
@@ -278,6 +277,9 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func appendMessages(_ messages: [Message]) {
         messages.forEach { message in
+            if let oldUploadFileIndex = self.messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == message.uniqueId }) {
+                self.messages.remove(at: oldUploadFileIndex)
+            }
             if let oldMessage = self.messages.first(where: { $0.uniqueId == message.uniqueId }) {
                 oldMessage.updateMessage(message: message)
             } else if message.conversation?.id == threadId {

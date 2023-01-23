@@ -44,21 +44,12 @@ struct MediaView: View {
 
 struct MediaPicture: View {
     var picture: Message
-    @StateObject var imageLoader = ImageLoader()
-
-    init(picture: Message) {
-        self.picture = picture
-    }
 
     var body: some View {
-        imageLoader.imageView
+        ImageLaoderView(url: picture.metaData?.file?.link)
             .scaledToFit()
             .frame(height: 128)
-            .foregroundColor(imageLoader.isImageReady ? .clear : .gray.opacity(0.5))
             .padding(16)
-            .onAppear {
-                imageLoader.fetch(url: picture.metaData?.file?.link)
-            }
     }
 }
 

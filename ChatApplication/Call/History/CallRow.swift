@@ -11,7 +11,6 @@ import SwiftUI
 struct CallRow: View {
     private(set) var call: Call
     private var viewModel: CallsHistoryViewModel
-    @StateObject var imageLoader = ImageLoader()
 
     init(call: Call, viewModel: CallsHistoryViewModel) {
         self.call = call
@@ -20,7 +19,7 @@ struct CallRow: View {
 
     var body: some View {
         HStack {
-            imageLoader.imageView
+            ImageLaoderView(url: call.conversation?.computedImageURL ?? call.partnerParticipant?.image, userName: call.conversation?.title ?? call.partnerParticipant?.name?.uppercased())
                 .frame(width: 48, height: 48)
                 .cornerRadius(24)
             VStack(alignment: .leading) {
@@ -53,9 +52,6 @@ struct CallRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 16)
         .padding([.top, .bottom], 4)
-        .onAppear {
-            imageLoader.fetch(url: call.partnerParticipant?.image, userName: call.partnerParticipant?.name?.uppercased())
-        }
     }
 }
 

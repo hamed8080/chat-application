@@ -26,11 +26,13 @@ class ThreadsViewModel: ObservableObject {
     private(set) var offset = 0
     var searchText: String = ""
     private(set) var hasNext: Bool = true
-    let archived: Bool
+    var archivedOffset: Int = 0
     var selectedThraed: Conversation?
+    var archived: Bool = false
+    var folder: Tag?
+    var title: String = ""
 
-    init(archived: Bool = false) {
-        self.archived = archived
+    init() {
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)
@@ -78,8 +80,9 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func onNewMessage(_ event: MessageEventTypes) {
-        if case let .messageNew(response) = event, let thread = threads.first(where: { $0.id == response.result?.conversation?.id }) {
-            thread.time = response.result?.conversation?.time
+        if case let .messageNew(response) = event, let index = threads.firstIndex(where: { $0.id == response.result?.conversation?.id }) {
+            threads[index].time = response.result?.conversation?.time
+            threads[index].unreadCount = (threads[index].unreadCount ?? 0) + 1
             sort()
         }
     }
@@ -88,12 +91,40 @@ class ThreadsViewModel: ObservableObject {
         if firstSuccessResponse == false, status == .connected {
             offset = 0
             getThreads()
+        } else if status == .connected, firstSuccessResponse == true {
+            // After connecting again
+            refreshThreadsUnreadCount()
         }
     }
 
     func getThreads() {
         isLoading = true
-        ChatManager.activeInstance.getThreads(.init(count: count, offset: offset, archived: archived), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance.getThreads(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
+    }
+
+    func getArchivedThreads() {
+        archived = true
+        isLoading = true
+        ChatManager.activeInstance.getThreads(.init(count: count, offset: archivedOffset, archived: true), completion: onServerResponse, cacheResponse: onCacheResponse)
+    }
+
+    func resetArchiveSettings() {
+        archived = false
+        archivedOffset = 0
+        hasNext = true
+        objectWillChange.send()
+    }
+
+    func resetFolderSettings() {
+        folder = nil
+        hasNext = true
+        objectWillChange.send()
+    }
+
+    func getThreadsInsideFolder(_ folder: Tag) {
+        self.folder = folder
+        let threadIds = folder.tagParticipants?.compactMap(\.conversation?.id) ?? []
+        getThreadsWith(threadIds)
     }
 
     func getThreadsWith(_ threadIds: [Int]) {
@@ -103,7 +134,12 @@ class ThreadsViewModel: ObservableObject {
     }
 
     var filtered: [Conversation] {
-        if searchText.isEmpty {
+        if let folder = folder {
+            return folder.tagParticipants?
+                .compactMap(\.conversation?.id)
+                .compactMap { id in threads.first { $0.id == id } }
+                ?? []
+        } else if searchText.isEmpty {
             return threads.filter { $0.isArchive == archived }
         } else {
             return threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == archived }
@@ -156,7 +192,7 @@ class ThreadsViewModel: ObservableObject {
         }
         ChatManager.activeInstance.createThread(.init(invitees: invitees, title: model.title, type: model.type)) { [weak self] response in
             if let thread = response.result {
-                AppState.shared.selectedThread = thread
+                AppState.shared.animateAndShowThread(thread: thread)
             }
             self?.centerIsLoading = false
         }
@@ -184,7 +220,7 @@ class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance.addParticipant(req) { [weak self] response in
             if let thread = response.result {
                 // To navigate to the thread immediately after adding participants
-                AppState.shared.selectedThread = thread
+                AppState.shared.animateAndShowThread(thread: thread)
             }
             self?.centerIsLoading = false
         }
@@ -285,7 +321,7 @@ class ThreadsViewModel: ObservableObject {
         guard let threadId = thread.id else { return }
         ChatManager.activeInstance.clearHistory(.init(subjectId: threadId)) { [weak self] response in
             if response.result != nil {
-                self?.clear()
+                self?.removeThread(thread)
             }
         }
     }
@@ -297,6 +333,20 @@ class ThreadsViewModel: ObservableObject {
 
     func firstIndex(_ threadId: Int?) -> Array<Conversation>.Index? {
         threads.firstIndex(where: { $0.id == threadId ?? -1 })
+    }
+
+    func refreshThreadsUnreadCount() {
+        let threadsIds = threads.compactMap(\.id)
+        ChatManager.activeInstance.getThreadsUnreadCount(.init(threadIds: threadsIds)) { [weak self] response in
+            response.result?.forEach { key, value in
+                if let index = self?.threads.firstIndex(where: { $0.id == Int(key) ?? -1 }) {
+                    self?.threads[index].unreadCount = value
+                }
+                withAnimation {
+                    self?.objectWillChange.send()
+                }
+            }
+        }
     }
 }
 

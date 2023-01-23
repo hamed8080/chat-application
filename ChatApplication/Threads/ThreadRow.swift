@@ -12,71 +12,67 @@ import SwiftUI
 struct ThreadRow: View {
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
-    @StateObject var imageLoader = ImageLoader()
     var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
 
     var body: some View {
-        Button(action: {}, label: {
-            HStack {
-                imageLoader.imageView
-                    .font(.system(size: 16).weight(.heavy))
-                    .foregroundColor(.white)
-                    .frame(width: 64, height: 64)
-                    .background(Color.blue.opacity(0.4))
-                    .cornerRadius(32)
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text(thread.title ?? "")
-                            .font(.headline)
-                        if thread.mute == true {
-                            Image(systemName: "speaker.slash.fill")
-                                .resizable()
-                                .frame(width: 12, height: 12)
-                                .scaledToFit()
-                                .foregroundColor(Color.gray)
-                        }
+        HStack {
+            ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
+                .font(.system(size: 16).weight(.heavy))
+                .foregroundColor(.white)
+                .frame(width: 64, height: 64)
+                .background(Color.blue.opacity(0.4))
+                .cornerRadius(32)
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(thread.title ?? "")
+                        .font(.headline)
+                    if thread.mute == true {
+                        Image(systemName: "speaker.slash.fill")
+                            .resizable()
+                            .frame(width: 12, height: 12)
+                            .scaledToFit()
+                            .foregroundColor(Color.gray)
                     }
-
-                    if let message = thread.lastMessageVO?.message?.prefix(100) {
-                        Text(message)
-                            .lineLimit(1)
-                            .font(.subheadline)
-                            .clipped()
-                    }
-                    ThreadIsTypingView(threadId: thread.id ?? -1)
-                }
-                Spacer()
-                JoinToGroupCallView(thread: thread)
-                if let unreadCountString = thread.unreadCountString {
-                    Text(unreadCountString)
-                        .font(.system(size: 13))
-                        .padding(8)
-                        .frame(height: 24)
-                        .frame(minWidth: 24)
-                        .foregroundColor(Color.white)
-                        .background(Color.orange)
-                        .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
                 }
 
-                if thread.mentioned == true {
-                    Image(systemName: "at.circle.fill")
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(Color.orange)
+                if let message = thread.lastMessageVO?.message?.prefix(100) {
+                    Text(message)
+                        .lineLimit(1)
+                        .font(.subheadline)
+                        .clipped()
                 }
-
-                if thread.pin == true {
-                    Image(systemName: "pin.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(Color.orange)
-                }
+                ThreadIsTypingView(threadId: thread.id ?? -1)
             }
-            .contentShape(Rectangle())
-            .padding([.leading, .trailing], 8)
-            .padding([.top, .bottom], 4)
-        })
+            Spacer()
+            JoinToGroupCallView(thread: thread)
+            if let unreadCountString = thread.unreadCountString {
+                Text(unreadCountString)
+                    .font(.system(size: 13))
+                    .padding(8)
+                    .frame(height: 24)
+                    .frame(minWidth: 24)
+                    .foregroundColor(Color.white)
+                    .background(Color.orange)
+                    .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
+            }
+
+            if thread.mentioned == true {
+                Image(systemName: "at.circle.fill")
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(Color.orange)
+            }
+
+            if thread.pin == true {
+                Image(systemName: "pin.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(Color.orange)
+            }
+        }
+        .padding([.leading, .trailing], 8)
+        .padding([.top, .bottom], 4)
         .animation(.easeInOut, value: thread.lastMessageVO?.message)
         .animation(.easeInOut, value: thread)
         .animation(.easeInOut, value: thread.pin)
@@ -149,9 +145,6 @@ struct ThreadRow: View {
                     Label("Invite", systemImage: "person.crop.circle.badge.plus")
                 }
             }
-        }
-        .onAppear {
-            imageLoader.fetch(url: thread.computedImageURL, userName: thread.title)
         }
     }
 }

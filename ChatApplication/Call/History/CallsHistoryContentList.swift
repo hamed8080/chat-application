@@ -9,9 +9,7 @@ import SwiftUI
 
 struct CallsHistoryContentList: View {
     @EnvironmentObject var viewModel: CallsHistoryViewModel
-
     @EnvironmentObject var appState: AppState
-
     @State var navigateToGroupCallSelction = false
 
     var body: some View {
@@ -45,11 +43,15 @@ struct CallsHistoryContentList: View {
                 Button {
                     navigateToGroupCallSelction.toggle()
                 } label: {
-                    Label {
-                        Text("Start Call")
-                    } icon: {
-                        Image(systemName: "video.fill")
-                    }
+//                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+//                        NavigationLink(value: "navigateToList") {
+//                            Label("Start Call", systemImage: "video.fill")
+//                        }
+//                        .navigationDestination(for: String.self) { _ in
+//                            GroupCallSelectionContentList(viewModel: viewModel)
+//                        }
+//                    }
+                    Label("Start Call", systemImage: "video")
                 }
             }
         }

@@ -13,7 +13,6 @@ struct StartThreadContactRow: View {
     @Binding public var isInMultiSelectMode: Bool
     @EnvironmentObject var viewModel: ContactsViewModel
     var contact: Contact
-    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         VStack {
@@ -31,7 +30,7 @@ struct StartThreadContactRow: View {
                             }
                     }
 
-                    imageLoader.imageView
+                    ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
                         .font(.system(size: 16).weight(.heavy))
                         .foregroundColor(.white)
                         .frame(width: 32, height: 32)
@@ -67,9 +66,6 @@ struct StartThreadContactRow: View {
         .animation(.spring(), value: isInMultiSelectMode)
         .animation(.easeInOut, value: isSelected)
         .contentShape(Rectangle())
-        .onAppear {
-            imageLoader.fetch(url: contact.image ?? contact.user?.image, userName: contact.firstName)
-        }
     }
 
     func getDate(contact: Contact) -> String? {

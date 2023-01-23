@@ -11,12 +11,11 @@ import SwiftUI
 
 struct ParticipantRow: View {
     let participant: Participant
-    @StateObject var imageLoader = ImageLoader()
 
     var body: some View {
         Button(action: {}, label: {
             HStack {
-                imageLoader.imageView
+                ImageLaoderView(url: participant.image, userName: participant.name ?? participant.username)
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
                     .frame(width: 48, height: 48)
@@ -56,9 +55,6 @@ struct ParticipantRow: View {
             .padding([.leading, .trailing], 8)
             .padding([.top, .bottom], 4)
         })
-        .onAppear {
-            imageLoader.fetch(url: participant.image, userName: participant.name ?? participant.username)
-        }
     }
 }
 

@@ -31,7 +31,7 @@ extension Message {
     var type: MessageType? { messageType ?? .unknown }
     var isTextMessageType: Bool { type == .text || isFileType }
     var currentUser: User? { ChatManager.activeInstance.userInfo ?? AppState.shared.user }
-    var isMe: Bool { (ownerId ?? 0 == currentUser?.id ?? 0) || isUnsentMessage }
+    var isMe: Bool { (ownerId ?? 0 == currentUser?.id ?? 0) || isUnsentMessage || isUploadMessage }
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol }
     /// Check id because we know that the message was successfully added in server chat.
     var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
