@@ -58,6 +58,7 @@
 		057977B92805552E00FE5EA4 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057977B62805548000FE5EA4 /* UIColor.swift */; };
 		057B9A9B293795A80089ACC9 /* ThreadIsTypingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9A293795A80089ACC9 /* ThreadIsTypingViewModel.swift */; };
 		057B9A9D293797600089ACC9 /* ThreadIsTypingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9C293797600089ACC9 /* ThreadIsTypingView.swift */; };
+		05851BB8297DB1E300F7B64B /* BorderedTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */; };
 		05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586497F282D40A200218ED0 /* LoadingViewAt.swift */; };
 		05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05962116280BF85B0036B3AA /* DateSelectionView.swift */; };
 		0596654B297C44B400A0ABDA /* NavigationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0596654A297C44B400A0ABDA /* NavigationModel.swift */; };
@@ -128,7 +129,6 @@
 		AC7EBFF4266CAF2500984E81 /* ContactContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */; };
 		AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6E266CAD63009E4722 /* ContactRow.swift */; };
 		AC7EBFF6266CAF2E00984E81 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6D266CAD63009E4722 /* ContactsViewModel.swift */; };
-		AC826E3626F47A1F00551578 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC826E3526F47A1F00551578 /* LoginModel.swift */; };
 		AC91591D2718390D00437517 /* FileManagerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC91591C2718390D00437517 /* FileManagerExtension.swift */; };
 		AC924CB3274A6D7200E33BD1 /* MyWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC924CB2274A6D7200E33BD1 /* MyWidget.swift */; };
 		AC924CB6274A6D7300E33BD1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC924CB5274A6D7300E33BD1 /* Assets.xcassets */; };
@@ -227,6 +227,7 @@
 		057977B62805548000FE5EA4 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		057B9A9A293795A80089ACC9 /* ThreadIsTypingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadIsTypingViewModel.swift; sourceTree = "<group>"; };
 		057B9A9C293797600089ACC9 /* ThreadIsTypingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadIsTypingView.swift; sourceTree = "<group>"; };
+		05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextFieldStyle.swift; sourceTree = "<group>"; };
 		0586497F282D40A200218ED0 /* LoadingViewAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAt.swift; sourceTree = "<group>"; };
 		05962116280BF85B0036B3AA /* DateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSelectionView.swift; sourceTree = "<group>"; };
 		0596654A297C44B400A0ABDA /* NavigationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationModel.swift; sourceTree = "<group>"; };
@@ -294,7 +295,6 @@
 		AC6D531F26F1ADA500CBC059 /* ThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadView.swift; sourceTree = "<group>"; };
 		AC6D532126F1ADF000CBC059 /* ThreadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadViewModel.swift; sourceTree = "<group>"; };
 		AC6D532326F1AE8C00CBC059 /* MessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRow.swift; sourceTree = "<group>"; };
-		AC826E3526F47A1F00551578 /* LoginModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
 		AC91591C2718390D00437517 /* FileManagerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerExtension.swift; sourceTree = "<group>"; };
 		AC924CAC274A6D7200E33BD1 /* MyWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MyWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC924CB2274A6D7200E33BD1 /* MyWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWidget.swift; sourceTree = "<group>"; };
@@ -714,7 +714,6 @@
 				ACC3C5EB26F4630600AEE578 /* DTO */,
 				AC10007826F46B4100C3AD67 /* LoginView.swift */,
 				AC10007A26F46EC900C3AD67 /* LoginViewModel.swift */,
-				AC826E3526F47A1F00551578 /* LoginModel.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -755,6 +754,7 @@
 				ACFADE8327675DA5007C555F /* DeepButtonStyle.swift */,
 				05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */,
 				ACFADE7F27675BB6007C555F /* PrimaryButtonStyle.swift */,
+				05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */,
 				05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */,
 				055EFCED27C0BFA2006E0ABC /* AnimatingCellHeight.swift */,
 				05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */,
@@ -986,6 +986,7 @@
 				055B269C27D5F9F90098D585 /* FileView.swift in Sources */,
 				AC48ED6026F6F9E300AB1A5D /* RestClient.swift in Sources */,
 				05FE518927899554004F44B5 /* AddParticipantsToViewModel.swift in Sources */,
+				05851BB8297DB1E300F7B64B /* BorderedTextFieldStyle.swift in Sources */,
 				AC0889B02691E14500FD4552 /* CustomHostinViewController.swift in Sources */,
 				AC91591D2718390D00437517 /* FileManagerExtension.swift in Sources */,
 				AC6D532426F1AE8C00CBC059 /* MessageRow.swift in Sources */,
@@ -1004,7 +1005,6 @@
 				ACFADE7E27674DDF007C555F /* CustomNavigationBar.swift in Sources */,
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
 				ACAB96D227030F9A005FB9AA /* ShapeExtension.swift in Sources */,
-				AC826E3626F47A1F00551578 /* LoginModel.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
 				AC7EBFF6266CAF2E00984E81 /* ContactsViewModel.swift in Sources */,
 				ACFADE8427675DA5007C555F /* DeepButtonStyle.swift in Sources */,

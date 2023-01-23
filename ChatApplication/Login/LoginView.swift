@@ -7,53 +7,50 @@
 
 import SwiftUI
 
+enum ServerTypes: String, CaseIterable, Identifiable {
+    var id: Self { self }
+    case main
+    case sandbox
+    case integration
+}
+
 struct LoginView: View {
     @EnvironmentObject var viewModel: LoginViewModel
+    @State var path: NavigationPath = .init()
 
     var body: some View {
-        ZStack {
-            Color.gray.opacity(0.2)
-                .edgesIgnoringSafeArea(.all)
-            VStack(spacing: 12) {
-                GeometryReader { reader in
-                    VStack {
-                        HStack {
-                            Spacer()
-                            if viewModel.model.isInVerifyState == false {
-                                LoginContentView(viewModel: viewModel)
-                                    .frame(width: isIpad ? reader.size.width * 50 / 100 : reader.size.width)
-
-                            } else {
-                                VerifyContentView(viewModel: viewModel)
-                                    .frame(width: isIpad ? reader.size.width * 50 / 100 : reader.size.width)
-                            }
-                            Spacer()
-                        }
-                        Spacer()
-                    }
+        NavigationStack(path: $path) {
+            LoginContentView()
+                .padding()
+                .navigationDestination(for: LoginState.self) { _ in
+                    VerifyContentView()
+                        .padding()
                 }
-                if viewModel.isLoading {
-                    LoadingView()
-                        .frame(width: 36, height: 36)
-                }
-                Spacer()
-            }
-            .padding()
-            .padding()
         }
-        .animation(.easeInOut, value: viewModel.model.isInVerifyState)
+        .onReceive(viewModel.$state) { newState in
+            if newState == .verify {
+                path.append(newState)
+            }
+        }
+        .animation(.easeOut, value: viewModel.state)
     }
 }
 
+enum VerifyFocusFileds: Int, Hashable, CaseIterable {
+    case first = 0
+    case second = 1
+    case third = 2
+    case fourth = 3
+    case fifth = 4
+    case sixth = 5
+}
+
 struct VerifyContentView: View {
-    @StateObject var viewModel: LoginViewModel
+    @EnvironmentObject var viewModel: LoginViewModel
+    @FocusState var focusField: VerifyFocusFileds?
 
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
-            CustomNavigationBar(title: "Verification") {
-                viewModel.model.setIsInVerifyState(false)
-            }
-            .padding([.bottom], 48)
             Image("global_app_icon")
                 .resizable()
                 .frame(width: 72, height: 72)
@@ -63,41 +60,77 @@ struct VerifyContentView: View {
                 .font(.title.weight(.medium))
                 .foregroundColor(Color(named: "text_color_blue"))
 
-            Text("Verification code sent to:")
+            Text("Verification code sent to: **\(viewModel.phoneNumber)**")
                 .font(.subheadline.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
-                + Text(" \(viewModel.model.phoneNumber)")
-                .font(.subheadline.weight(.bold))
-            PrimaryTextField(title: "Enter Verification Code", textBinding: $viewModel.model.verifyCode, backgroundColor: Color.primary.opacity(0.1)) {
-                viewModel.verifyCode()
-            }
-            Button("Verify".uppercased()) {
-                viewModel.verifyCode()
-            }
-            .buttonStyle(PrimaryButtonStyle())
+                .foregroundColor(Color(named: "text_color_blue"))
 
-            if viewModel.model.state == .failed || viewModel.model.state == .verificationCodeIncorrect {
-                let error = viewModel.model.state == .verificationCodeIncorrect ? "An error occured! Try again." : "Your verification code is incorrect."
-                Text(error.uppercased())
-                    .font(.footnote.weight(.bold))
-                    .foregroundColor(.red.opacity(0.8))
+            HStack(spacing: 16) {
+                ForEach(0 ..< VerifyFocusFileds.allCases.endIndex, id: \.self) { i in
+                    TextField("", text: $viewModel.verifyCodes[i])
+                        .frame(maxWidth: 42, minHeight: 64)
+                        .textFieldStyle(.customBordered)
+                        .keyboardType(.numberPad)
+                        .multilineTextAlignment(.center)
+                        .fontDesign(.rounded)
+                        .font(.system(.largeTitle).weight(.medium))
+                        .focused($focusField, equals: VerifyFocusFileds.allCases.first(where: { i == $0.rawValue })!)
+                        .onChange(of: viewModel.verifyCodes[i]) { _ in
+                            if viewModel.verifyCodes[i].count == 1 {
+                                focusField = VerifyFocusFileds.allCases.first(where: { $0.rawValue == i + 1 })
+                            }
+                            if viewModel.verifyCodes[i].count > 1 {
+                                let firstChar = viewModel.verifyCodes[i][viewModel.verifyCodes[i].startIndex]
+                                viewModel.verifyCodes[i] = String(firstChar)
+                            }
+                            if viewModel.verifyCodes[i].count == 1, i == VerifyFocusFileds.allCases.count - 1 {
+                                // Submit automatically
+                                viewModel.verifyCode()
+                            }
+                        }
+                }
+            }
+            .transition(.asymmetric(insertion: .scale(scale: 1), removal: .scale(scale: 0)))
+
+            Button {
+                viewModel.verifyCode()
+            } label: {
+                HStack(spacing: 8) {
+                    if viewModel.isLoading {
+                        ProgressView()
+                    }
+                    Label("Verify".uppercased(), systemImage: "checkmark.shield")
+                }
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
+            }
+            .disabled(viewModel.isLoading)
+            .fontWeight(.medium)
+            .buttonStyle(.bordered)
+
+            if viewModel.state == .failed || viewModel.state == .verificationCodeIncorrect {
+                let error = viewModel.state == .verificationCodeIncorrect ? "An error occured! try again." : "Your verification code is incorrect."
+                ErrorView(error: error)
             }
         }
-        .onChange(of: viewModel.model.state, perform: { newState in
+        .onChange(of: viewModel.state) { newState in
             if newState == .failed || newState == .verificationCodeIncorrect {
                 hideKeyboard()
             }
-        })
+        }
         .onTapGesture {
             hideKeyboard()
         }
-        .animation(.easeInOut, value: viewModel.model.state)
+        .animation(.easeInOut, value: viewModel.state)
         .transition(.move(edge: .trailing))
+        .onAppear {
+            focusField = VerifyFocusFileds.first
+        }
     }
 }
 
 struct LoginContentView: View {
-    @StateObject var viewModel: LoginViewModel
+    @EnvironmentObject var viewModel: LoginViewModel
+    @State var selectedServer: ServerTypes = .main
+    @FocusState var isFocused
 
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
@@ -109,60 +142,109 @@ struct LoginContentView: View {
             Text("Login")
                 .font(.title.weight(.medium))
                 .foregroundColor(Color(named: "text_color_blue"))
-            Text("Welcome to Fanap Chats")
+            Text("**Welcome** to Fanap Chats")
                 .font(.headline.weight(.medium))
                 .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
-            Text(viewModel.model.state?.rawValue ?? "")
 
-            PrimaryTextField(title: "Phone number", textBinding: $viewModel.model.phoneNumber, backgroundColor: Color.primary.opacity(0.1)) {}
+            TextField("Enter your Phone number here", text: $viewModel.phoneNumber)
+                .keyboardType(.phonePad)
+                .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 8))
+                .focused($isFocused)
 
-            if viewModel.model.isValidPhoneNumber == false {
-                Text("Please input correct phone number")
-                    .foregroundColor(.init("red_soft"))
+            if viewModel.isValidPhoneNumber == false {
+                ErrorView(error: "Please input correct phone number")
             }
 
-            Button("Login".uppercased()) {
-                if viewModel.model.isPhoneNumberValid() {
+            Button {
+                if viewModel.isPhoneNumberValid() {
                     viewModel.login()
                 }
+            } label: {
+                HStack(spacing: 8) {
+                    if viewModel.isLoading {
+                        ProgressView()
+                    }
+                    Label("Login".uppercased(), systemImage: "door.left.hand.open")
+                }
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
             }
-            .buttonStyle(PrimaryButtonStyle())
+            .disabled(viewModel.isLoading)
+            .fontWeight(.medium)
+            .buttonStyle(.bordered)
 
-            if viewModel.model.state == .failed {
-                Text("An error occured! Try again.".uppercased())
-                    .font(.footnote.weight(.bold))
-                    .foregroundColor(.red.opacity(0.8))
-                    .transition(.slide)
+            if viewModel.state == .failed {
+                ErrorView(error: "An error occured! try again.")
             }
 
             Text("If you get in trouble with the login, contact the support team.")
                 .multilineTextAlignment(.center)
                 .font(.subheadline.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
+                .fixedSize(horizontal: false, vertical: true)
+                .foregroundColor(.gray.opacity(1))
+
+            Picker("Server", selection: $selectedServer) {
+                ForEach(ServerTypes.allCases) { server in
+                    Text(server.rawValue)
+                }
+            }
+            .pickerStyle(.menu)
         }
-        .onChange(of: viewModel.model.state, perform: { newState in
+        .onChange(of: viewModel.state) { newState in
             if newState != .failed {
                 hideKeyboard()
             }
-        })
+        }
         .onTapGesture {
             hideKeyboard()
         }
-        .animation(.easeInOut, value: viewModel.model.state)
         .transition(.move(edge: .trailing))
+        .onAppear {
+            isFocused = true
+        }
+    }
+}
+
+struct ErrorView: View {
+    var error: String
+
+    var body: some View {
+        HStack {
+            Text(error.capitalizingFirstLetter())
+                .font(.footnote.weight(.medium))
+                .foregroundColor(.red.opacity(0.7))
+        }
+        .padding()
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+        .background(.red.opacity(0.2))
+        .cornerRadius(8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.red.opacity(0.7), lineWidth: 1)
+        )
     }
 }
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = LoginViewModel()
+        NavigationStack {
+            let vm = LoginViewModel()
+            VerifyContentView()
+                .environmentObject(vm)
+                .onAppear {
+                    vm.phoneNumber = "09369161601"
+                    vm.objectWillChange.send()
+                }
+        }
+        .previewDisplayName("VerifyContentView")
+
+        NavigationStack {
+            LoginContentView()
+                .environmentObject(LoginViewModel())
+        }
+        .previewDisplayName("LoginContentView")
+
         LoginView()
             .environmentObject(LoginViewModel())
-            .onAppear {
-                //            Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
-                //                vm.model.setIsInVerifyState(true)
-                //            }
-                vm.model.setIsInVerifyState(true)
-            }
+            .previewDisplayName("LoginView")
     }
 }

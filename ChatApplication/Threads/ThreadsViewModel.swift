@@ -62,8 +62,9 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func onNewMessage(_ event: MessageEventTypes) {
-        if case let .messageNew(response) = event, let thread = threads.first(where: { $0.id == response.result?.conversation?.id }) {
-            thread.time = response.result?.conversation?.time
+        if case let .messageNew(response) = event, let index = threads.firstIndex(where: { $0.id == response.result?.conversation?.id }) {
+            threads[index].time = response.result?.conversation?.time
+            threads[index].unreadCount = (threads[index].unreadCount ?? 0) + 1
             sort()
         }
     }
@@ -72,6 +73,9 @@ class ThreadsViewModel: ObservableObject {
         if firstSuccessResponse == false, status == .connected {
             offset = 0
             getThreads()
+        } else if status == .connected, firstSuccessResponse == true {
+            // After connecting again
+            refreshThreadsUnreadCount()
         }
     }
 
@@ -302,5 +306,19 @@ class ThreadsViewModel: ObservableObject {
 
     func firstIndex(_ threadId: Int?) -> Array<Conversation>.Index? {
         threads.firstIndex(where: { $0.id == threadId ?? -1 })
+    }
+
+    func refreshThreadsUnreadCount() {
+        let threadsIds = threads.compactMap(\.id)
+        ChatManager.activeInstance.getThreadsUnreadCount(.init(threadIds: threadsIds)) { [weak self] response in
+            response.result?.forEach { key, value in
+                if let index = self?.threads.firstIndex(where: { $0.id == Int(key) ?? -1 }) {
+                    self?.threads[index].unreadCount = value
+                }
+                withAnimation {
+                    self?.objectWillChange.send()
+                }
+            }
+        }
     }
 }

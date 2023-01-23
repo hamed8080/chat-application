@@ -95,4 +95,12 @@ extension String {
         let range = NSRange(startIndex..., in: self)
         return try? NSRegularExpression(pattern: "\(char)[0-9a-zA-Z\\-](\\.?[0-9a-zA-Z\\-])*").matches(in: self, range: range)
     }
+
+    func capitalizingFirstLetter() -> String {
+        prefix(1).uppercased() + lowercased().dropFirst()
+    }
+
+    mutating func capitalizeFirstLetter() {
+        self = capitalizingFirstLetter()
+    }
 }

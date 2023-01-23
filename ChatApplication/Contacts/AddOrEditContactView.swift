@@ -8,6 +8,19 @@
 import FanapPodChatSDK
 import SwiftUI
 
+enum ContactType: String, Identifiable, CaseIterable {
+    var id: Self { self }
+    case phoneNumber
+    case userName
+}
+
+enum ContactFocusFileds: Hashable {
+    case contactValue
+    case firstName
+    case lastName
+    case submit
+}
+
 struct AddOrEditContactView: View {
     @State var contactValue: String = ""
     @State var firstName: String = ""
@@ -16,32 +29,63 @@ struct AddOrEditContactView: View {
     @EnvironmentObject var viewModel: ContactsViewModel
     @EnvironmentObject var contactsViewModel: ContactsViewModel
     var editContact: Contact?
+    @FocusState var focusState: ContactFocusFileds?
+    @State var contactType: ContactType = .phoneNumber
 
     var body: some View {
-        VStack(spacing: 24) {
-            PrimaryTextField(title: "type contact", textBinding: $contactValue, keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
-            PrimaryTextField(title: "first name", textBinding: $firstName, keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
-            PrimaryTextField(title: "last name", textBinding: $lastName, keyboardType: .alphabet, backgroundColor: Color.primary.opacity(0.1))
-            Button {
-                if let editContact = editContact {
-                    viewModel.updateContact(contact: editContact, contactValue: contactValue, firstName: firstName, lastName: lastName)
-                } else {
-                    contactsViewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
+        NavigationStack {
+            Form {
+                Section {
+                    Picker("ContactType", selection: $contactType) {
+                        ForEach(ContactType.allCases) { type in
+                            Text(type.rawValue)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    TextField("Contact", text: $contactValue)
+                        .focused($focusState, equals: .contactValue)
+                        .keyboardType(contactType == .phoneNumber ? .phonePad : .default)
+                    TextField("First Name", text: $firstName)
+                        .focused($focusState, equals: .firstName)
+                        .textContentType(.name)
+                    TextField("Last Name", text: $lastName)
+                        .focused($focusState, equals: .lastName)
+                        .textContentType(.familyName)
+                } header: {
+                    Text("General Information")
+                } footer: {
+                    Text("In the Contact filed you could enter either username or phone number.")
                 }
-                dismiss()
-            } label: {
-                Text("Submit")
             }
-            .buttonStyle(PrimaryButtonStyle())
-            Spacer()
+            .headerProminence(.increased)
+            .navigationTitle("\(editContact != nil ? "Edit" : "Add") Contact")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        submit()
+                    }
+                }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", role: .cancel) {
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                firstName = editContact?.firstName ?? ""
+                lastName = editContact?.lastName ?? ""
+                contactValue = editContact?.computedUserIdentifire ?? ""
+            }
         }
-        .navigationTitle("\(editContact != nil ? "Edit" : "Add") Contact")
-        .padding(.all, 48)
-        .onAppear {
-            firstName = editContact?.firstName ?? ""
-            lastName = editContact?.lastName ?? ""
-            contactValue = editContact?.computedUserIdentifire ?? ""
+    }
+
+    func submit() {
+        if let editContact = editContact {
+            viewModel.updateContact(contact: editContact, contactValue: contactValue, firstName: firstName, lastName: lastName)
+        } else {
+            contactsViewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
         }
+        dismiss()
     }
 }
 

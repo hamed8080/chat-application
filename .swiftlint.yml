@@ -17,6 +17,8 @@ line_length: 250
 identifier_name:
   min_length: 1 # only min_length
   max_length: 50
+  allowed_symbols:
+    - _
 
 type_name:
   min_length: 2 # only warning
