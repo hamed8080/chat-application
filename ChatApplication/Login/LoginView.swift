@@ -111,6 +111,7 @@ struct VerifyContentView: View {
                 ErrorView(error: error)
             }
         }
+        .frame(maxWidth: 420)
         .onChange(of: viewModel.state) { newState in
             if newState == .failed || newState == .verificationCodeIncorrect {
                 hideKeyboard()
@@ -189,6 +190,7 @@ struct LoginContentView: View {
             }
             .pickerStyle(.menu)
         }
+        .frame(maxWidth: 420)
         .onChange(of: viewModel.state) { newState in
             if newState != .failed {
                 hideKeyboard()
