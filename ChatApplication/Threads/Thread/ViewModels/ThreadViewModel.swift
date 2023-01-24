@@ -113,10 +113,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             if let unreadCountModel = response.result {
                 updateUnreadCount(unreadCountModel.threadId ?? -1, unreadCountModel.unreadCount ?? -1)
             }
-        case let .threadInfoUpdated(response):
-            if let thread = response.result {
-                updateThreadInfo(thread)
-            }
         default:
             break
         }
@@ -149,20 +145,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     func updateUnreadCount(_ threadId: Int, _ unreadCount: Int) {
         if threadId == self.threadId {
             thread?.unreadCount = unreadCount
-            objectWillChange.send()
-        }
-    }
-
-    func updateThreadInfo(_ thread: Conversation) {
-        if thread.id == threadId {
-            self.thread?.title = thread.title
-            self.thread?.image = thread.image
-            self.thread?.metadata = thread.metadata
-            self.thread?.description = thread.description
-            self.thread?.type = thread.type
-            self.thread?.userGroupHash = thread.userGroupHash
-            self.thread?.time = thread.time
-            self.thread?.group = thread.group
             objectWillChange.send()
         }
     }

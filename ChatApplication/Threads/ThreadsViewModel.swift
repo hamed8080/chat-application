@@ -56,6 +56,10 @@ class ThreadsViewModel: ObservableObject {
             if let threadId = response.subjectId, let thread = threads.first(where: { $0.id == threadId }) {
                 removeThread(thread)
             }
+        case let .threadInfoUpdated(response):
+            if let thread = response.result {
+                updateThreadInfo(thread)
+            }
         default:
             break
         }
@@ -319,6 +323,21 @@ class ThreadsViewModel: ObservableObject {
                     self?.objectWillChange.send()
                 }
             }
+        }
+    }
+
+    func updateThreadInfo(_ thread: Conversation) {
+        if let index = threads.firstIndex(where: { $0.id == thread.id }) {
+            threads[index].title = thread.title
+            threads[index].partner = thread.partner
+            threads[index].image = thread.image
+            threads[index].metadata = thread.metadata
+            threads[index].description = thread.description
+            threads[index].type = thread.type
+            threads[index].userGroupHash = thread.userGroupHash
+            threads[index].time = thread.time
+            threads[index].group = thread.group
+            objectWillChange.send()
         }
     }
 }
