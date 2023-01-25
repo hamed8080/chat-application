@@ -60,6 +60,11 @@ class ThreadsViewModel: ObservableObject {
             if let thread = response.result {
                 updateThreadInfo(thread)
             }
+        case let .threadUnreadCountUpdated(response):
+            if let index = threads.firstIndex(where: { $0.id == response.result?.threadId }) {
+                threads[index].unreadCount = response.result?.unreadCount
+                objectWillChange.send()
+            }
         default:
             break
         }
