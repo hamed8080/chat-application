@@ -151,7 +151,6 @@
 		ACEAEDD7274CFA1100EC8252 /* AttachmentDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEAEDD6274CFA1100EC8252 /* AttachmentDialog.swift */; };
 		ACF82E0F275230C3000330DB /* UnSentMessageTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF82E0E275230C3000330DB /* UnSentMessageTypes.swift */; };
 		ACFADE7E27674DDF007C555F /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADE7D27674DDF007C555F /* CustomNavigationBar.swift */; };
-		ACFADE8027675BB6007C555F /* PrimaryButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADE7F27675BB6007C555F /* PrimaryButtonStyle.swift */; };
 		ACFADE8227675C29007C555F /* PrimaryTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADE8127675C29007C555F /* PrimaryTextField.swift */; };
 		ACFADE8427675DA5007C555F /* DeepButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADE8327675DA5007C555F /* DeepButtonStyle.swift */; };
 		ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFBF1B826FCA51300DD27AE /* AddOrEditContactView.swift */; };
@@ -322,7 +321,6 @@
 		ACEAEDD6274CFA1100EC8252 /* AttachmentDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDialog.swift; sourceTree = "<group>"; };
 		ACF82E0E275230C3000330DB /* UnSentMessageTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnSentMessageTypes.swift; sourceTree = "<group>"; };
 		ACFADE7D27674DDF007C555F /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
-		ACFADE7F27675BB6007C555F /* PrimaryButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButtonStyle.swift; sourceTree = "<group>"; };
 		ACFADE8127675C29007C555F /* PrimaryTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryTextField.swift; sourceTree = "<group>"; };
 		ACFADE8327675DA5007C555F /* DeepButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepButtonStyle.swift; sourceTree = "<group>"; };
 		ACFBF1B826FCA51300DD27AE /* AddOrEditContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddOrEditContactView.swift; sourceTree = "<group>"; };
@@ -753,7 +751,6 @@
 				ACC4C1922765C342008940CD /* ViewEX.swift */,
 				ACFADE8327675DA5007C555F /* DeepButtonStyle.swift */,
 				05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */,
-				ACFADE7F27675BB6007C555F /* PrimaryButtonStyle.swift */,
 				05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */,
 				05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */,
 				055EFCED27C0BFA2006E0ABC /* AnimatingCellHeight.swift */,
@@ -834,7 +831,6 @@
 			knownRegions = (
 				en,
 				Base,
-				"fa-IR",
 			);
 			mainGroup = AC1D2C9B2661FFAC00AA351A;
 			productRefGroup = AC1D2CA52661FFAC00AA351A /* Products */;
@@ -918,7 +914,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ACFADE8027675BB6007C555F /* PrimaryButtonStyle.swift in Sources */,
 				AC10007326F4674500C3AD67 /* SSOTokenResponse.swift in Sources */,
 				05781CD82903492E0064BDC3 /* AudioRecordingView.swift in Sources */,
 				ACF82E0F275230C3000330DB /* UnSentMessageTypes.swift in Sources */,

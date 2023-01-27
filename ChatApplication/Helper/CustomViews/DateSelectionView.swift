@@ -25,7 +25,7 @@ struct DateSelectionView: View {
                     VStack {
                         HStack {
                             Text("Start Date")
-                                .foregroundColor(Color("text_color_blue"))
+                                .foregroundColor(.textBlueColor)
                                 .font(.title.bold())
                             Spacer()
                             Image(systemName: "xmark.circle.fill")
@@ -46,17 +46,17 @@ struct DateSelectionView: View {
                         } label: {
                             Text("Next")
                         }
-                        .buttonStyle(PrimaryButtonStyle(bgColor: Color(named: "icon_color")))
+                        .buttonStyle(.bordered)
                     }
                     .frame(maxWidth: isIpad ? 420 : .infinity)
                     .padding()
-                    .background(Color(named: "background"))
+                    .background(Color.bgColor)
                     .cornerRadius(12)
                 } else {
                     VStack {
                         HStack {
                             Text("End Date")
-                                .foregroundColor(Color("text_color_blue"))
+                                .foregroundColor(.textBlueColor)
                                 .font(.title.bold())
                             Spacer()
                             Image(systemName: "xmark.circle.fill")
@@ -79,7 +79,7 @@ struct DateSelectionView: View {
                             } label: {
                                 Text("Back")
                             }
-                            .buttonStyle(PrimaryButtonStyle(bgColor: Color(named: "icon_color")))
+                            .buttonStyle(.bordered)
 
                             Button {
                                 showEndDate.toggle()
@@ -87,12 +87,12 @@ struct DateSelectionView: View {
                             } label: {
                                 Text("Export")
                             }
-                            .buttonStyle(PrimaryButtonStyle(bgColor: Color(named: "icon_color")))
+                            .buttonStyle(.bordered)
                         }
                     }
                     .frame(maxWidth: 420)
                     .padding()
-                    .background(Color(named: "background"))
+                    .background(Color.bgColor)
                     .cornerRadius(12)
                 }
                 Spacer()

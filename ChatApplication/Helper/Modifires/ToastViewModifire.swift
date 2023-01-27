@@ -81,7 +81,7 @@ struct TopNotifyViewModifire: ViewModifier {
 }
 
 extension View {
-    func toast(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval = 3, backgroundColor: Color = Color(named: "background"), imageColor: Color = .clear) -> some View {
+    func toast(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval = 3, backgroundColor: Color = .bgColor, imageColor: Color = .clear) -> some View {
         modifier(
             TopNotifyViewModifire(
                 isShowing: isShowing,

@@ -111,7 +111,7 @@ struct ThreadView: View {
 
             if let signalMessageText = viewModel.signalMessageText {
                 Text(signalMessageText)
-                    .foregroundColor(Color(named: "text_color_blue"))
+                    .foregroundColor(.textBlueColor)
                     .font(.subheadline.bold())
             }
 
@@ -339,7 +339,7 @@ struct SendContainer: View {
                     Spacer()
                     Image(systemName: "trash.fill")
                         .font(.system(size: 20))
-                        .foregroundColor(Color(named: "red_soft"))
+                        .foregroundColor(.redSoft)
                         .padding()
                         .onTapGesture {
                             deleteMessagesDialog.toggle()

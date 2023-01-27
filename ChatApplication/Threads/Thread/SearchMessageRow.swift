@@ -24,7 +24,7 @@ struct SearchMessageRow: View {
                     if message.message?.isEnglishString == true {
                         Spacer()
                     }
-                    Text("\(date.getTime())")
+                    Text("\(date.formatted(date: .numeric, time: .shortened))")
                         .font(.subheadline)
                     if message.message?.isEnglishString == false {
                         Spacer()

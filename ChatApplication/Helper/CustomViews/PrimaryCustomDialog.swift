@@ -56,14 +56,6 @@ struct PrimaryCustomDialog: View {
                 onSubmit?(textBinding?.wrappedValue ?? "")
                 hideDialog.toggle()
             }
-            .buttonStyle(
-                PrimaryButtonStyle(
-                    bgColor: Color.pink.opacity(colorScheme == .dark ? 0.9 : 0.25),
-                    textColor: Color.primary.opacity(0.8),
-                    minHeight: 48,
-                    cornerRadius: 12
-                )
-            )
 
             Button(cancelTitle) {
                 withAnimation {
@@ -71,14 +63,6 @@ struct PrimaryCustomDialog: View {
                     onClose?()
                 }
             }
-            .buttonStyle(
-                PrimaryButtonStyle(
-                    bgColor: colorScheme == .dark ? Color.primary.opacity(0.3) : Color.black.opacity(0.1),
-                    textColor: colorScheme == .dark ? Color.white : Color.black.opacity(0.5),
-                    minHeight: 48,
-                    cornerRadius: 12
-                )
-            )
         }
     }
 }

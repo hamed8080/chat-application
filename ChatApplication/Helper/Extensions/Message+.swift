@@ -41,8 +41,10 @@ extension Message {
         let isIpad = UIDevice.current.userInterfaceIdiom == .pad
         let maxDeviceSize: CGFloat = isIpad ? 420 : 320
         let messageWidth = messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 22)) + 16
+        let timeWidth = formattedTimeString?.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) ?? 0
         let calculatedWidth: CGFloat = min(messageWidth, maxDeviceSize)
-        let maxWidth = max(minWidth, calculatedWidth)
+        let maxFooterAndMsg: CGFloat = max(timeWidth, calculatedWidth)
+        let maxWidth = max(minWidth, maxFooterAndMsg)
         return maxWidth
     }
 
@@ -144,13 +146,19 @@ extension Message {
 
     var footerStatus: (image: UIImage, fgColor: Color) {
         if seen == true {
-            return (Message.seenImage!, Color(named: "dark_green").opacity(0.8))
+            return (Message.seenImage!, .darkGreen.opacity(0.8))
         } else if delivered == true {
             return (Message.seenImage!, Color.gray)
         } else if id != nil {
-            return (Message.sentImage!, Color(named: "dark_green").opacity(0.8))
+            return (Message.sentImage!, .darkGreen.opacity(0.8))
         } else {
-            return (Message.clockImage!, Color(named: "dark_green").opacity(0.8))
+            return (Message.clockImage!, .darkGreen.opacity(0.8))
         }
+    }
+
+    var formattedTimeString: String? {
+        guard let time = time else { return nil }
+        let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000)
+        return date.formatted(.dateTime.year().month().day().weekday(.wide).hour(.twoDigits(amPM: .omitted)).minute())
     }
 }

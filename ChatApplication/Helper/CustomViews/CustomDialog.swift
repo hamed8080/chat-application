@@ -32,7 +32,7 @@ struct CustomDialog<DialogContent: View>: ViewModifier {
                     dialogContent
                         .background(
                             RoundedRectangle(cornerRadius: 24)
-                                .foregroundColor(Color(named: "background"))
+                                .foregroundColor(.customBgColor)
                         )
                         .frame(maxWidth: 384)
                     Spacer()
@@ -56,9 +56,9 @@ struct CustomDialog_Previews: PreviewProvider {
                     Text("Message")
 
                     HStack {
-                        Button("Hello") {}.buttonStyle(PrimaryButtonStyle(bgColor: Color.black.opacity(0.1)))
+                        Button("Hello") {}
 
-                        Button("Hello") {}.buttonStyle(PrimaryButtonStyle(bgColor: Color.pink.opacity(0.4)))
+                        Button("Hello") {}
                     }
                 }
                 .padding()

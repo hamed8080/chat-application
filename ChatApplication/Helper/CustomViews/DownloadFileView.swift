@@ -34,7 +34,7 @@ struct DownloadFileView: View {
                         Image(systemName: message.iconName)
                             .resizable()
                             .padding()
-                            .foregroundColor(Color(named: "icon_color").opacity(0.8))
+                            .foregroundColor(.iconColor.opacity(0.8))
                             .scaledToFit()
                             .frame(width: 64, height: 64)
                             .onTapGesture {

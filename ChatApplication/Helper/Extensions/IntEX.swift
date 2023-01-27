@@ -7,11 +7,12 @@
 
 import Foundation
 extension Int {
+    static let unit: [String] = { ["KB", "MB", "GB", "TB", "PB", "EB"] }()
     var toSizeString: String {
         if self < 1000 { return "\(self) B" }
         let exp = Int(log2(Double(self)) / log2(1024.0))
-        let unit = ["KB", "MB", "GB", "TB", "PB", "EB"][exp - 1]
+        let unit = Int.unit[exp - 1]
         let number = Double(self) / pow(1024, Double(exp))
-        return String(format: "%.1f %@", number, unit)
+        return "\(number.formatted(.number.precision(.fractionLength(1)))) \(unit)"
     }
 }

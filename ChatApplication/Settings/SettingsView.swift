@@ -149,8 +149,10 @@ struct TokenExpireView: View {
                 Image(systemName: "key.fill")
                     .foregroundColor(Color.yellow)
                     .frame(width: 24, height: 24)
-                Text("Token expire in: \(String(format: "%.0f", viewModel.secondToExpire))")
-                    .foregroundColor(Color.gray)
+                if let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0))) {
+                    Text("Token expire in: \(secondToExpire)")
+                        .foregroundColor(Color.gray)
+                }
                 Spacer()
             }
             .onAppear {

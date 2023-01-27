@@ -71,7 +71,7 @@ struct StartThreadContactRow: View {
     func getDate(contact: Contact) -> String? {
         if let notSeenDuration = contact.notSeenDuration {
             let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(notSeenDuration)
-            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDate()
+            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDate
         } else {
             return nil
         }

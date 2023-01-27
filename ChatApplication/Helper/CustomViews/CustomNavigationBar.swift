@@ -40,13 +40,13 @@ struct CustomNavigationBar: View {
                             Text(title.uppercased())
                                 .fontWeight(.medium)
                                 .font(.headline)
-                                .foregroundColor(Color(named: "text_color_blue").opacity(0.8))
+                                .foregroundColor(.textBlueColor.opacity(0.8))
                         }
                         if let subtitle = subtitle {
                             Text(subtitle)
                                 .fontWeight(.light)
                                 .font(.subheadline)
-                                .foregroundColor(Color(named: "text_color_blue").opacity(0.8))
+                                .foregroundColor(.textBlueColor.opacity(0.8))
                         }
                     }
                     Spacer()
@@ -80,7 +80,7 @@ struct NavigationItemButton: View {
     let id: String? = UUID().string
     var title: String?
     var systemImageName: String?
-    var foregroundColor: Color = .init(named: "text_color_blue").opacity(0.8)
+    var foregroundColor: Color = .textBlueColor.opacity(0.8)
     var font: Font = .title
     @State var visible: Bool = true
     @State var isEnabled: Bool = true

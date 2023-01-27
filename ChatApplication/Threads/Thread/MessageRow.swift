@@ -52,7 +52,7 @@ struct CallMessageType: View {
     var body: some View {
         HStack(alignment: .center) {
             if let time = message.time, let date = Date(milliseconds: Int64(time)) {
-                Text("Call \(message.type == .endCall ? "ended" : "started") at \(date.timeAgoSinceDate())")
+                Text("Call \(message.type == .endCall ? "ended" : "started") at \(date.timeAgoSinceDate ?? "")")
                     .foregroundColor(Color.primary.opacity(0.8))
                     .font(.subheadline)
                     .padding(2)
@@ -77,10 +77,9 @@ struct ParticipantMessageType: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDate()
+            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDate ?? ""
             let name = message.participant?.name ?? ""
-            let isJoined = message.type == .participantJoin ? "joined" : "left"
-            let markdownText = try! AttributedString(markdown: "\(name) **\(isJoined)** - \(date)")
+            let markdownText = try! AttributedString(markdown: "\(name) - \(date)")
             Text(markdownText)
                 .foregroundColor(Color.primary.opacity(0.8))
                 .font(.subheadline)
@@ -129,7 +128,7 @@ struct TextMessageType: View {
 
                 if let fileName = message.fileName {
                     Text("\(fileName)\(message.fileExtension ?? "")")
-                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .foregroundColor(.darkGreen.opacity(0.8))
                         .font(.caption)
                 }
 
@@ -163,7 +162,7 @@ struct TextMessageType: View {
             .frame(maxWidth: message.calculatedMaxAndMinWidth, alignment: .leading)
             .padding([.leading, .trailing], 0)
             .contentShape(Rectangle())
-            .background(message.isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named: "chat_sender")!))
+            .background(message.isMe ? Color.chatMeBg : Color.chatSenderBg)
             .cornerRadius(12)
             .animation(.easeInOut, value: message.isUnsentMessage)
             .onTapGesture {
@@ -324,7 +323,7 @@ struct UploadMessageType: View {
                         .frame(width: 64, height: 64)
                         .scaledToFit()
                         .padding()
-                        .foregroundColor(Color(named: "icon_color").opacity(0.8))
+                        .foregroundColor(.iconColor.opacity(0.8))
                 }
             }
         }
@@ -342,17 +341,14 @@ struct MessageFooterView: View {
                 Text(size.toSizeString)
                     .multilineTextAlignment(.leading)
                     .font(.subheadline)
-                    .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                    .foregroundColor(.darkGreen.opacity(0.8))
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 0) {
                 HStack {
-                    if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000) {
-                        Text("\(date.getTime())")
-                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                            .font(.subheadline)
-                    }
-
+                    Text(message.formattedTimeString ?? "")
+                        .foregroundColor(.darkGreen.opacity(0.8))
+                        .font(.system(size: 12, design: .rounded))
                     if message.isMe {
                         Image(uiImage: message.footerStatus.image)
                             .resizable()
@@ -363,7 +359,7 @@ struct MessageFooterView: View {
                 }
                 if message.edited == true {
                     Text("Edited")
-                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .foregroundColor(.darkGreen.opacity(0.8))
                         .font(.caption2)
                 }
             }

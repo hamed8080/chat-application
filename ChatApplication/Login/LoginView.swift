@@ -58,16 +58,16 @@ struct VerifyContentView: View {
                 .cornerRadius(8)
             Text("Enter Verication Code")
                 .font(.title.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue"))
+                .foregroundColor(.textBlueColor)
 
             Text("Verification code sent to: **\(viewModel.phoneNumber)**")
                 .font(.subheadline.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue"))
+                .foregroundColor(.textBlueColor)
 
             HStack(spacing: 16) {
                 ForEach(0 ..< VerifyFocusFileds.allCases.endIndex, id: \.self) { i in
                     TextField("", text: $viewModel.verifyCodes[i])
-                        .frame(maxWidth: 42, minHeight: 64)
+                        .frame(minHeight: 64)
                         .textFieldStyle(.customBordered)
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.center)
@@ -111,7 +111,7 @@ struct VerifyContentView: View {
                 ErrorView(error: error)
             }
         }
-        .frame(maxWidth: 420)
+        .frame(maxWidth: 364)
         .onChange(of: viewModel.state) { newState in
             if newState == .failed || newState == .verificationCodeIncorrect {
                 hideKeyboard()
@@ -132,6 +132,7 @@ struct LoginContentView: View {
     @EnvironmentObject var viewModel: LoginViewModel
     @State var selectedServer: ServerTypes = .main
     @FocusState var isFocused
+    @State var myText = ""
 
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
@@ -142,15 +143,26 @@ struct LoginContentView: View {
                 .cornerRadius(8)
             Text("Login")
                 .font(.title.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue"))
+                .foregroundColor(.textBlueColor)
             Text("**Welcome** to Fanap Chats")
                 .font(.headline.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
+                .foregroundColor(.textBlueColor.opacity(0.7))
 
             TextField("Enter your Phone number here", text: $viewModel.phoneNumber)
                 .keyboardType(.phonePad)
                 .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 8))
                 .focused($isFocused)
+
+            VStack {
+                TextField("", text: $myText)
+                    .transition(AnyTransition.push(from: .bottom).animation(.interactiveSpring()))
+                    .id("MyTitleComponent" + myText)
+                Button("Button") {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        myText = "Vote for my post🤩"
+                    }
+                }
+            }
 
             if viewModel.isValidPhoneNumber == false {
                 ErrorView(error: "Please input correct phone number")

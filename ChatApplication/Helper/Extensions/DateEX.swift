@@ -11,40 +11,9 @@ extension Date {
         date1.compare(self) == compare(date2)
     }
 
-    func timeAgoSinceDate() -> String {
-        // From Time
-        let fromDate = self
-
-        // To Time
-        let toDate = Date()
-
-        // Estimation
-        // Year
-        if let interval = Calendar.current.dateComponents([.year], from: fromDate, to: toDate).year, interval > 0 {
-            return "\(interval)" + " " + (interval == 1 ? "Year ago" : "Years ago")
-        }
-
-        // Month
-        if let interval = Calendar.current.dateComponents([.month], from: fromDate, to: toDate).month, interval > 0 {
-            return "\(interval)" + " " + (interval == 1 ? "Month ago" : "Months ago")
-        }
-
-        // Day
-        if let interval = Calendar.current.dateComponents([.day], from: fromDate, to: toDate).day, interval > 0 {
-            return "\(interval)" + " " + (interval == 1 ? "Day ago" : "Days ago")
-        }
-
-        // Hours
-        if let interval = Calendar.current.dateComponents([.hour], from: fromDate, to: toDate).hour, interval > 0 {
-            return "\(interval)" + " " + (interval == 1 ? "Hour ago" : "Hours ago")
-        }
-
-        // Minute
-        if let interval = Calendar.current.dateComponents([.minute], from: fromDate, to: toDate).minute, interval > 0 {
-            return "\(interval)" + " " + (interval == 1 ? "Minute ago" : "Minutes ago")
-        }
-
-        return "last seen recently"
+    var timeAgoSinceDate: String? {
+        let now = Date.now
+        return (self ..< now).formatted(.components(style: .narrow, fields: [.day, .month, .day, .hour, .minute])).string
     }
 
     var millisecondsSince1970: Int64 {
@@ -62,20 +31,6 @@ extension Date {
         formatter.zeroFormattingBehavior = .pad
         formatter.unitsStyle = .positional
         return formatter.string(from: interval) ?? ""
-    }
-
-    func getShortFormatOfDate() -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: self)
-    }
-
-    func getTime() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "hh:mm"
-        formatter.timeZone = .current
-        return formatter.string(from: self)
     }
 
     func getDate() -> String {
