@@ -10,7 +10,8 @@ import SwiftUI
 
 class AppState: ObservableObject {
     static let shared = AppState()
-    var user: User?
+    var cachedUser = UserConfigManager.currentUserConfig?.user
+    var user: User? { cachedUser ?? ChatManager.activeInstance?.userInfo }
     var navViewModel: NavigationModel?
     @Published var error: ChatError?
     @Published var isLoading: Bool = false
@@ -74,9 +75,5 @@ class AppState: ObservableObject {
         }
     }
 
-    private init() {
-        if let user: User = UserDefaults.standard.codableValue(forKey: "USER") {
-            self.user = user
-        }
-    }
+    private init() {}
 }

@@ -67,14 +67,15 @@ class ChatDelegateImplementation: ChatDelegate {
     }
 
     func chatError(error: ChatError) {
+        print(error)
         if error.code == 21 || error.code == 401 {
             Task {
                 await TokenManager.shared.getNewTokenWithRefreshToken()
             }
             AppState.shared.connectionStatus = .unauthorized
+        } else {
+            AppState.shared.animateAndShowError(error)
         }
-        AppState.shared.animateAndShowError(error)
-        print(error)
     }
 
     func chatEvent(event: ChatEventType) {
