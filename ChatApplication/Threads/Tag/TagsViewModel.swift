@@ -48,11 +48,11 @@ class TagsViewModel: ObservableObject {
     }
 
     func getTagList() {
-        ChatManager.activeInstance.tagList(completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.tagList(completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     func deleteTag(_ tag: Tag) {
-        ChatManager.activeInstance.deleteTag(.init(id: tag.id)) { [weak self] response in
+        ChatManager.activeInstance?.deleteTag(.init(id: tag.id)) { [weak self] response in
             if let tag = response.result, let self = self {
                 self.removeTag(tag)
             }
@@ -75,7 +75,7 @@ class TagsViewModel: ObservableObject {
 
     func createTag(name: String) {
         isLoading = true
-        ChatManager.activeInstance.createTag(.init(tagName: name)) { [weak self] response in
+        ChatManager.activeInstance?.createTag(.init(tagName: name)) { [weak self] response in
             if let tag = response.result, let self = self {
                 self.appendTags(tags: [tag])
             }
@@ -83,13 +83,13 @@ class TagsViewModel: ObservableObject {
         }
     }
 
-    func addThreadToTag(tag: Tag, thread: Conversation, onComplete: @escaping (_ participants: [TagParticipant], _ success: Bool) -> Void) {
-        if let threadId = thread.id {
+    func addThreadToTag(tag: Tag, threadId: Int?, onComplete: ((_ participants: [TagParticipant], _ success: Bool) -> Void)? = nil) {
+        if let threadId = threadId {
             isLoading = true
-            ChatManager.activeInstance.addTagParticipants(.init(tagId: tag.id, threadIds: [threadId])) { [weak self] response in
+            ChatManager.activeInstance?.addTagParticipants(.init(tagId: tag.id, threadIds: [threadId])) { [weak self] response in
                 if let tagParticipants = response.result, let self = self {
                     self.addParticipant(tag.id, tagParticipants)
-                    onComplete(tagParticipants, response.error == nil)
+                    onComplete?(tagParticipants, response.error == nil)
                 }
                 self?.isLoading = false
             }
@@ -101,7 +101,7 @@ class TagsViewModel: ObservableObject {
     }
 
     func editTag(tag: Tag) {
-        ChatManager.activeInstance.editTag(.init(id: tag.id, tagName: tag.name)) { [weak self] response in
+        ChatManager.activeInstance?.editTag(.init(id: tag.id, tagName: tag.name)) { [weak self] response in
             if let tag = response.result, let self = self {
                 self.editedTag(tag)
             }
@@ -109,7 +109,7 @@ class TagsViewModel: ObservableObject {
     }
 
     func deleteTagParticipant(_ tagId: Int, _ tagParticipant: TagParticipant) {
-        ChatManager.activeInstance.removeTagParticipants(.init(tagId: tagId, tagParticipants: [tagParticipant])) { [weak self] response in
+        ChatManager.activeInstance?.removeTagParticipants(.init(tagId: tagId, tagParticipants: [tagParticipant])) { [weak self] response in
             if let tagParticipants = response.result, let self = self {
                 self.removeParticipants(tagId, tagParticipants)
             }

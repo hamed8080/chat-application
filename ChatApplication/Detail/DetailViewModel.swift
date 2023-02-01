@@ -48,7 +48,7 @@ class DetailViewModel: ObservableObject {
     }
 
     func blockUnBlock() {
-        ChatManager.activeInstance.blockContact(.init(userId: contact?.userId ?? user?.coreUserId)) { response in
+        ChatManager.activeInstance?.blockContact(.init(userId: contact?.userId ?? user?.coreUserId)) { response in
             if let contact = response.result {
                 self.contact?.blocked = contact.blocked
                 self.user?.blocked = contact.blocked
@@ -74,7 +74,7 @@ class DetailViewModel: ObservableObject {
         }
 
         let req = UpdateThreadInfoRequest(description: description, threadId: threadId, threadImage: imageRequest, title: title)
-        ChatManager.activeInstance.updateThreadInfo(req) { _ in } uploadProgress: { _, _ in } completion: { _ in }
+        ChatManager.activeInstance?.updateThreadInfo(req) { _ in } uploadProgress: { _, _ in } completion: { _ in }
     }
 
     func toggleMute() {
@@ -87,11 +87,11 @@ class DetailViewModel: ObservableObject {
     }
 
     func mute(_ threadId: Int) {
-        ChatManager.activeInstance.muteThread(.init(subjectId: threadId), completion: onMuteChanged)
+        ChatManager.activeInstance?.muteThread(.init(subjectId: threadId), completion: onMuteChanged)
     }
 
     func unmute(_ threadId: Int) {
-        ChatManager.activeInstance.unmuteThread(.init(subjectId: threadId), completion: onMuteChanged)
+        ChatManager.activeInstance?.unmuteThread(.init(subjectId: threadId), completion: onMuteChanged)
     }
 
     func onMuteChanged(_ response: ChatResponse<Int>) {

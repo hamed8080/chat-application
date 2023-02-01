@@ -1,5 +1,5 @@
 //
-//  DateEX.swift
+//  Date+.swift
 //  ChatApplication
 //
 //  Created by Hamed Hosseini on 6/6/21.
@@ -11,9 +11,18 @@ extension Date {
         date1.compare(self) == compare(date2)
     }
 
-    var timeAgoSinceDate: String? {
-        let now = Date.now
-        return (self ..< now).formatted(.components(style: .narrow, fields: [.day, .month, .day, .hour, .minute])).string
+    var timeAgoSinceDatecCondence: String? {
+        var formatter: Date.FormatStyle.FormatOutput
+        if Calendar.current.isDateInToday(self) {
+            formatter = formatted(.dateTime.hour().minute())
+        } else if Calendar.current.isDate(self, equalTo: .now, toGranularity: .weekOfMonth) {
+            formatter = formatted(.dateTime.weekday().hour(.twoDigits(amPM: .omitted)).minute())
+        } else if Calendar.current.isDate(self, equalTo: .now, toGranularity: .year) {
+            formatter = formatted(.dateTime.month().day())
+        } else {
+            formatter = formatted(.dateTime.year(.twoDigits).month(.abbreviated).day(.twoDigits))
+        }
+        return formatter.string?.replacingOccurrences(of: "\"", with: "")
     }
 
     var millisecondsSince1970: Int64 {

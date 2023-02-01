@@ -32,7 +32,7 @@ struct CustomDialog<DialogContent: View>: ViewModifier {
                     dialogContent
                         .background(
                             RoundedRectangle(cornerRadius: 24)
-                                .foregroundColor(.customBgColor)
+                                .foregroundColor(.bgColor)
                         )
                         .frame(maxWidth: 384)
                     Spacer()

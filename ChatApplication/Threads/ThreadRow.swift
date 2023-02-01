@@ -15,7 +15,7 @@ struct ThreadRow: View {
     var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 8) {
             ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
@@ -25,6 +25,7 @@ struct ThreadRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text(thread.title ?? "")
+                        .lineLimit(1)
                         .font(.headline)
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
@@ -33,41 +34,50 @@ struct ThreadRow: View {
                             .scaledToFit()
                             .foregroundColor(Color.gray)
                     }
+                    Spacer()
+                    if let timeString = thread.time?.date.timeAgoSinceDatecCondence {
+                        Text(timeString)
+                            .lineLimit(1)
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
                 }
 
-                if let message = thread.lastMessageVO?.message?.prefix(100) {
-                    Text(message)
-                        .lineLimit(1)
-                        .font(.subheadline)
-                        .clipped()
+                HStack {
+                    if let message = thread.lastMessageVO?.message?.prefix(100) {
+                        Text(message)
+                            .lineLimit(1)
+                            .font(.subheadline)
+                            .clipped()
+                    }
+                    Spacer()
+                    if let unreadCountString = thread.unreadCountString {
+                        Text(unreadCountString)
+                            .font(.system(size: 13))
+                            .padding(8)
+                            .frame(height: 24)
+                            .frame(minWidth: 24)
+                            .foregroundColor(Color.white)
+                            .background(Color.orange)
+                            .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
+                    }
+
+                    if thread.mentioned == true {
+                        Image(systemName: "at.circle.fill")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(Color.orange)
+                    }
+
+                    if thread.pin == true {
+                        Image(systemName: "pin.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(Color.orange)
+                    }
                 }
                 ThreadIsTypingView(threadId: thread.id ?? -1)
-            }
-            Spacer()
-            if let unreadCountString = thread.unreadCountString {
-                Text(unreadCountString)
-                    .font(.system(size: 13))
-                    .padding(8)
-                    .frame(height: 24)
-                    .frame(minWidth: 24)
-                    .foregroundColor(Color.white)
-                    .background(Color.orange)
-                    .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
-            }
-
-            if thread.mentioned == true {
-                Image(systemName: "at.circle.fill")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(Color.orange)
-            }
-
-            if thread.pin == true {
-                Image(systemName: "pin.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(Color.orange)
             }
         }
         .padding([.leading, .trailing], 8)
@@ -148,15 +158,19 @@ struct ThreadRow: View {
 }
 
 struct ThreadRow_Previews: PreviewProvider {
+    static var thread: Conversation {
+        let thread = MockData.thread
+        thread.title = "Hamed  Hosseini"
+        thread.time = 1_675_186_636_000
+        thread.pin = true
+        thread.mute = true
+        thread.mentioned = true
+        thread.unreadCount = 20
+        return thread
+    }
+
     static var previews: some View {
-        let vm = ThreadViewModel()
-        ThreadRow(thread: MockData.thread)
-            .environmentObject(vm)
-            .onAppear {
-                vm.setup(thread: MockData.thread)
-                vm.thread?.pin = true
-                vm.thread?.unreadCount = 10
-                vm.objectWillChange.send()
-            }
+        ThreadRow(thread: thread)
+            .environmentObject(ThreadsViewModel())
     }
 }

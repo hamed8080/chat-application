@@ -38,37 +38,9 @@ class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
-        if let config = Config.getConfig(.main) {
-            if config.server == "Integeration" {
-                TokenManager.shared.saveSSOToken(ssoToken: SSOTokenResponseResult(accessToken: config.debugToken, expiresIn: Int.max))
-            }
+        if let userConfig = UserConfigManager.currentUserConfig, let userId = userConfig.id {
+            UserConfigManager.createChatObjectAndConnect(userId: userId, config: userConfig.config)
             TokenManager.shared.initSetIsLogin()
-            let asyncConfig = AsyncConfigBuilder()
-                .socketAddress(config.socketAddresss)
-                .reconnectCount(Int.max)
-                .reconnectOnClose(true)
-                .appId("PodChat")
-                .serverName(config.serverName)
-                .isDebuggingLogEnabled(false)
-                .build()
-            let chatConfig = ChatConfigBuilder(asyncConfig)
-                .token(TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken ?? "")
-                .ssoHost(config.ssoHost)
-                .platformHost(config.platformHost)
-                .fileServer(config.fileServer)
-                .enableCache(true)
-                .msgTTL(800_000) // for integeration server need to be long time
-                .isDebuggingLogEnabled(true)
-                .persistLogsOnServer(true)
-                .appGroup(AppGroup.group)
-                .sendLogInterval(15)
-                .build()
-            ChatManager.instance.createInstance(config: chatConfig)
-            ChatManager.activeInstance.delegate = self
-            if let token = TokenManager.shared.getSSOTokenFromUserDefaults()?.accessToken ?? config.debugToken {
-                print("token is: \(token)")
-                ChatManager.activeInstance.connect()
-            }
         }
     }
 
@@ -89,7 +61,6 @@ class ChatDelegateImplementation: ChatDelegate {
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .connected
             NotificationCenter.default.post(name: connectName, object: nil)
-            UserDefaults.standard.setValue(codable: ChatManager.activeInstance.userInfo, forKey: "USER")
         case .uninitialized:
             print("Chat object is not initialized.")
         }
@@ -97,7 +68,9 @@ class ChatDelegateImplementation: ChatDelegate {
 
     func chatError(error: ChatError) {
         if error.code == 21 || error.code == 401 {
-            TokenManager.shared.getNewTokenWithRefreshToken()
+            Task {
+                await TokenManager.shared.getNewTokenWithRefreshToken()
+            }
             AppState.shared.connectionStatus = .unauthorized
         }
         AppState.shared.animateAndShowError(error)
@@ -120,6 +93,10 @@ class ChatDelegateImplementation: ChatDelegate {
 
         if case let .file(event) = event {
             print("file Event:\(dump(event))")
+        }
+
+        if case let .user(eventUser) = event, case let .onUser(response) = eventUser, let user = response.result {
+            UserConfigManager.onUser(user)
         }
     }
 }

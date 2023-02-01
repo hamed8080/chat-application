@@ -12,7 +12,6 @@ struct MemberView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
-        ListLoadingView(isLoading: $viewModel.isLoading)
         ParticipantSearchView()
         ForEach(viewModel.filtered) { participant in
             ParticipantRow(participant: participant)
@@ -34,6 +33,8 @@ struct MemberView: View {
         .animation(.easeInOut, value: viewModel.searchText)
         .animation(.easeInOut, value: viewModel.isLoading)
         .ignoresSafeArea(.all)
+        ListLoadingView(isLoading: $viewModel.isLoading)
+            .padding(.bottom)
     }
 }
 

@@ -20,6 +20,10 @@ class NavigationModel: ObservableObject {
     var cancelable: AnyCancellable?
 
     init() {
+        setup()
+    }
+
+    func setup() {
         sections.append(
             .init(title: "Chats", items:
                 [
@@ -60,6 +64,11 @@ class NavigationModel: ObservableObject {
                 sections[foldersSectionIndex].items[oldtagIndex].tag = tag
             }
         }
+        objectWillChange.send()
+    }
+
+    func clear() {
+        sections = []
         objectWillChange.send()
     }
 

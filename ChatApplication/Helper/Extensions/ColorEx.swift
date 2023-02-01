@@ -24,5 +24,5 @@ extension Color {
     static let redSoft = Color("red_soft")
     static let chatMeBg = Color("chat_me")
     static let chatSenderBg = Color("chat_sender")
-    static let customBgColor = Color("background")
+    static let tableItem = Color("tableItem")
 }

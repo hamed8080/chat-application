@@ -30,7 +30,7 @@ extension Message {
     var fileName: String? { uploadFile?.uploadFileRequest.fileName }
     var type: MessageType? { messageType ?? .unknown }
     var isTextMessageType: Bool { type == .text || isFileType }
-    var currentUser: User? { ChatManager.activeInstance.userInfo ?? AppState.shared.user }
+    var currentUser: User? { ChatManager.activeInstance?.userInfo ?? AppState.shared.user }
     var isMe: Bool { (ownerId ?? 0 == currentUser?.id ?? 0) || isUnsentMessage || isUploadMessage }
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol }
     /// Check id because we know that the message was successfully added in server chat.
@@ -41,7 +41,7 @@ extension Message {
         let isIpad = UIDevice.current.userInterfaceIdiom == .pad
         let maxDeviceSize: CGFloat = isIpad ? 420 : 320
         let messageWidth = messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 22)) + 16
-        let timeWidth = formattedTimeString?.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) ?? 0
+        let timeWidth = time?.date.timeAgoSinceDatecCondence?.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) ?? 0
         let calculatedWidth: CGFloat = min(messageWidth, maxDeviceSize)
         let maxFooterAndMsg: CGFloat = max(timeWidth, calculatedWidth)
         let maxWidth = max(minWidth, maxFooterAndMsg)
@@ -154,11 +154,5 @@ extension Message {
         } else {
             return (Message.clockImage!, .darkGreen.opacity(0.8))
         }
-    }
-
-    var formattedTimeString: String? {
-        guard let time = time else { return nil }
-        let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000)
-        return date.formatted(.dateTime.year().month().day().weekday(.wide).hour(.twoDigits(amPM: .omitted)).minute())
     }
 }

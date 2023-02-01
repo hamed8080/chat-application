@@ -52,12 +52,12 @@ struct StartThreadContactRow: View {
                     Spacer()
                     if contact.blocked == true {
                         Text("Blocked")
-                            .font(.headline.weight(.medium))
+                            .font(.caption2.weight(.medium))
                             .padding(4)
-                            .foregroundColor(Color.red)
+                            .foregroundColor(.redSoft)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.red)
+                                    .stroke(Color.redSoft)
                             )
                     }
                 })
@@ -71,7 +71,7 @@ struct StartThreadContactRow: View {
     func getDate(contact: Contact) -> String? {
         if let notSeenDuration = contact.notSeenDuration {
             let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(notSeenDuration)
-            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDate
+            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDatecCondence
         } else {
             return nil
         }

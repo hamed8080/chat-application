@@ -1,5 +1,5 @@
 //
-//  IntEX.swift
+//  Int+.swift
 //  ChatApplication
 //
 //  Created by Hamed Hosseini on 11/29/21.
@@ -14,5 +14,11 @@ extension Int {
         let unit = Int.unit[exp - 1]
         let number = Double(self) / pow(1024, Double(exp))
         return "\(number.formatted(.number.precision(.fractionLength(1)))) \(unit)"
+    }
+}
+
+extension UInt {
+    var date: Date {
+        Date(timeIntervalSince1970: TimeInterval(self) / 1000)
     }
 }

@@ -14,7 +14,7 @@ class AppState: ObservableObject {
     var navViewModel: NavigationModel?
     @Published var error: ChatError?
     @Published var isLoading: Bool = false
-    var cacheFileManager: CacheFileManagerProtocol? { ChatManager.activeInstance.cacheFileManager }
+    var cacheFileManager: CacheFileManagerProtocol? { ChatManager.activeInstance?.cacheFileManager }
     @Published var callLogs: [URL]?
     @Published var connectionStatusString = ""
     @Published var connectionStatus: ConnectionStatus = .connecting {
@@ -33,7 +33,7 @@ class AppState: ObservableObject {
 
     func showThread(threadId: Int) {
         isLoading = true
-        ChatManager.activeInstance.getThreads(.init(threadIds: [threadId])) { [weak self] response in
+        ChatManager.activeInstance?.getThreads(.init(threadIds: [threadId])) { [weak self] response in
             if let thraed = response.result?.first {
                 self?.animateAndShowThread(thread: thraed)
             }
@@ -42,7 +42,7 @@ class AppState: ObservableObject {
 
     func showThread(invitees: [Invitee]) {
         isLoading = true
-        ChatManager.activeInstance.createThread(.init(invitees: invitees, title: "", type: .normal)) { [weak self] response in
+        ChatManager.activeInstance?.createThread(.init(invitees: invitees, title: "", type: .normal)) { [weak self] response in
             if let thread = response.result {
                 self?.animateAndShowThread(thread: thread)
             } else if let error = response.error {

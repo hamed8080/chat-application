@@ -59,7 +59,7 @@ class ContactsViewModel: ObservableObject {
 
     func getContacts() {
         isLoading = true
-        ChatManager.activeInstance.getContacts(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.getContacts(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     func searchContact() {
@@ -68,7 +68,7 @@ class ContactsViewModel: ObservableObject {
             return
         }
         isLoading = true
-        ChatManager.activeInstance.searchContacts(.init(query: searchContactString)) { [weak self] response in
+        ChatManager.activeInstance?.searchContacts(.init(query: searchContactString)) { [weak self] response in
             if let contacts = response.result {
                 self?.setSearchedContacts(contacts)
             }
@@ -95,9 +95,13 @@ class ContactsViewModel: ObservableObject {
     }
 
     func clear() {
+        hasNext = false
         offset = 0
         count = 15
         contacts = []
+        selectedContacts = []
+        searchedContacts = []
+        maxContactsCountInServer = 0
     }
 
     func delete(indexSet: IndexSet) {
@@ -110,7 +114,7 @@ class ContactsViewModel: ObservableObject {
 
     func delete(_ contact: Contact) {
         if let contactId = contact.id {
-            ChatManager.activeInstance.removeContact(.init(contactId: contactId)) { [weak self] response in
+            ChatManager.activeInstance?.removeContact(.init(contactId: contactId)) { [weak self] response in
                 if response.error != nil {
                     self?.appendOrUpdateContact([contact])
                 }
@@ -168,7 +172,7 @@ class ContactsViewModel: ObservableObject {
         let req: AddContactRequest = isPhone ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
-        ChatManager.activeInstance.addContact(req) { [weak self] response in
+        ChatManager.activeInstance?.addContact(req) { [weak self] response in
             if let contacts = response.result {
                 self?.insertContactsAtTop(contacts)
             }
@@ -190,10 +194,10 @@ class ContactsViewModel: ObservableObject {
         let findedContact = firstContact(contact)
         if findedContact?.blocked == false {
             let req = BlockRequest(contactId: contact.id)
-            ChatManager.activeInstance.blockContact(req, completion: onBlockUNBlockResponse)
+            ChatManager.activeInstance?.blockContact(req, completion: onBlockUNBlockResponse)
         } else {
             let req = UnBlockRequest(contactId: contact.id)
-            ChatManager.activeInstance.unBlockContact(req, completion: onBlockUNBlockResponse)
+            ChatManager.activeInstance?.unBlockContact(req, completion: onBlockUNBlockResponse)
         }
     }
 
@@ -223,7 +227,7 @@ class ContactsViewModel: ObservableObject {
         let req: AddContactRequest = isPhone ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
-        ChatManager.activeInstance.addContact(req) { [weak self] response in
+        ChatManager.activeInstance?.addContact(req) { [weak self] response in
             if let updatedContact = response.result?.first {
                 if let index = self?.contacts.firstIndex(where: { $0.id == updatedContact.id }) {
                     self?.contacts[index].update(updatedContact)
@@ -232,7 +236,7 @@ class ContactsViewModel: ObservableObject {
             }
         }
 
-//        ChatManager.activeInstance.updateContact(req) { [weak self] response in
+//        ChatManager.activeInstance?.updateContact(req) { [weak self] response in
 //            response.result?.forEach { updatedContact in
 //                if updatedContact.id == contactId {
 //                    if let index = self?.contacts.firstIndex(where: { $0.id == updatedContact.id }) {

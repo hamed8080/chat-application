@@ -7,16 +7,11 @@
 
 import SwiftUI
 
-enum ServerTypes: String, CaseIterable, Identifiable {
-    var id: Self { self }
-    case main
-    case sandbox
-    case integration
-}
-
 struct LoginView: View {
     @EnvironmentObject var viewModel: LoginViewModel
     @State var path: NavigationPath = .init()
+    var addNewuser = false
+    var onNewUserAdded: (() -> Void)?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -30,6 +25,8 @@ struct LoginView: View {
         .onReceive(viewModel.$state) { newState in
             if newState == .verify {
                 path.append(newState)
+            } else if newState == .successLoggedIn {
+                onNewUserAdded?()
             }
         }
         .animation(.easeOut, value: viewModel.state)
@@ -84,7 +81,9 @@ struct VerifyContentView: View {
                             }
                             if viewModel.verifyCodes[i].count == 1, i == VerifyFocusFileds.allCases.count - 1 {
                                 // Submit automatically
-                                viewModel.verifyCode()
+                                Task {
+                                    await viewModel.verifyCode()
+                                }
                             }
                         }
                 }
@@ -92,7 +91,9 @@ struct VerifyContentView: View {
             .transition(.asymmetric(insertion: .scale(scale: 1), removal: .scale(scale: 0)))
 
             Button {
-                viewModel.verifyCode()
+                Task {
+                    await viewModel.verifyCode()
+                }
             } label: {
                 HStack(spacing: 8) {
                     if viewModel.isLoading {
@@ -130,9 +131,7 @@ struct VerifyContentView: View {
 
 struct LoginContentView: View {
     @EnvironmentObject var viewModel: LoginViewModel
-    @State var selectedServer: ServerTypes = .main
     @FocusState var isFocused
-    @State var myText = ""
 
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
@@ -153,24 +152,15 @@ struct LoginContentView: View {
                 .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 8))
                 .focused($isFocused)
 
-            VStack {
-                TextField("", text: $myText)
-                    .transition(AnyTransition.push(from: .bottom).animation(.interactiveSpring()))
-                    .id("MyTitleComponent" + myText)
-                Button("Button") {
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        myText = "Vote for my post🤩"
-                    }
-                }
-            }
-
             if viewModel.isValidPhoneNumber == false {
                 ErrorView(error: "Please input correct phone number")
             }
 
             Button {
                 if viewModel.isPhoneNumberValid() {
-                    viewModel.login()
+                    Task {
+                        await viewModel.login()
+                    }
                 }
             } label: {
                 HStack(spacing: 8) {
@@ -195,7 +185,7 @@ struct LoginContentView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(.gray.opacity(1))
 
-            Picker("Server", selection: $selectedServer) {
+            Picker("Server", selection: $viewModel.selectedServerType) {
                 ForEach(ServerTypes.allCases) { server in
                     Text(server.rawValue)
                 }

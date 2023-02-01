@@ -112,7 +112,7 @@ struct ContactRow: View {
     static func getDate(notSeenDuration: Int?) -> String? {
         if let notSeenDuration = notSeenDuration {
             let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(notSeenDuration)
-            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDate
+            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDatecCondence
         } else {
             return nil
         }

@@ -97,7 +97,7 @@ struct SettingsView: View {
 
                     Section(header: Text("Manage Calls").font(.headline)) {
                         Button {
-                            ChatManager.activeInstance.logOut()
+                            ChatManager.activeInstance?.logOut()
                             TokenManager.shared.clearToken()
                         } label: {
                             HStack {

@@ -12,13 +12,11 @@ import SwiftUI
 
 class ThreadsViewModel: ObservableObject {
     @Published var isLoading = false
-    @Published var centerIsLoading = false
     @Published var toggleThreadContactPicker = false
     @AppStorage("Threads", store: UserDefaults.group) var threadsData: Data?
     @Published var showAddParticipants = false
     @Published var showAddToTags = false
     @Published var threads: [Conversation] = []
-    @Published private(set) var tagViewModel = TagsViewModel()
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private(set) var firstSuccessResponse = false
     private(set) var count = 15
@@ -90,13 +88,13 @@ class ThreadsViewModel: ObservableObject {
 
     func getThreads() {
         isLoading = true
-        ChatManager.activeInstance.getThreads(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.getThreads(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     func getArchivedThreads() {
         archived = true
         isLoading = true
-        ChatManager.activeInstance.getThreads(.init(count: count, offset: archivedOffset, archived: true), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.getThreads(.init(count: count, offset: archivedOffset, archived: true), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     func resetArchiveSettings() {
@@ -121,7 +119,7 @@ class ThreadsViewModel: ObservableObject {
     func getThreadsWith(_ threadIds: [Int]) {
         if threadIds.count == 0 { return }
         isLoading = true
-        ChatManager.activeInstance.getThreads(.init(threadIds: threadIds), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.getThreads(.init(threadIds: threadIds), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     var filtered: [Conversation] {
@@ -176,21 +174,21 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func createThread(_ model: StartThreadResultModel) {
-        centerIsLoading = true
+        isLoading = true
         let invitees = model.selectedContacts?.map { contact in
             Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
         }
-        ChatManager.activeInstance.createThread(.init(invitees: invitees, title: model.title, type: model.type)) { [weak self] response in
+        ChatManager.activeInstance?.createThread(.init(invitees: invitees, title: model.title, type: model.type)) { [weak self] response in
             if let thread = response.result {
                 AppState.shared.animateAndShowThread(thread: thread)
             }
-            self?.centerIsLoading = false
+            self?.isLoading = false
         }
     }
 
     func searchInsideAllThreads(text _: String) {
         // not implemented yet
-        //        ChatManager.activeInstance.
+        //        ChatManager.activeInstance?.
     }
 
     func showAddParticipants(_ thread: Conversation) {
@@ -199,7 +197,7 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func addParticipantsToThread(_ contacts: [Contact]) {
-        centerIsLoading = true
+        isLoading = true
         guard let threadId = selectedThraed?.id else {
             return
         }
@@ -207,27 +205,18 @@ class ThreadsViewModel: ObservableObject {
         let contactIds = contacts.compactMap(\.id)
         let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)
 
-        ChatManager.activeInstance.addParticipant(req) { [weak self] response in
+        ChatManager.activeInstance?.addParticipant(req) { [weak self] response in
             if let thread = response.result {
                 // To navigate to the thread immediately after adding participants
                 AppState.shared.animateAndShowThread(thread: thread)
             }
-            self?.centerIsLoading = false
+            self?.isLoading = false
         }
     }
 
     func showAddThreadToTag(_ thread: Conversation) {
         selectedThraed = thread
         showAddToTags.toggle()
-    }
-
-    func threadAddedToTag(_ tag: Tag) {
-        if let selectedThraed = selectedThraed {
-            isLoading = true
-            tagViewModel.addThreadToTag(tag: tag, thread: selectedThraed) { [weak self] _, _ in
-                self?.isLoading = false
-            }
-        }
     }
 
     func hasNext(_ hasNext: Bool) {
@@ -256,8 +245,11 @@ class ThreadsViewModel: ObservableObject {
     }
 
     func clear() {
+        hasNext = false
         offset = 0
+        count = 0
         threads = []
+        firstSuccessResponse = false
     }
 
     func pinThread(_ thread: Conversation) {
@@ -283,7 +275,7 @@ class ThreadsViewModel: ObservableObject {
 
     func delete(_ thread: Conversation) {
         guard let threadId = thread.id else { return }
-        ChatManager.activeInstance.deleteThread(.init(subjectId: threadId)) { [weak self] response in
+        ChatManager.activeInstance?.deleteThread(.init(subjectId: threadId)) { [weak self] response in
             if response.error == nil {
                 self?.removeThread(thread)
             }
@@ -292,7 +284,7 @@ class ThreadsViewModel: ObservableObject {
 
     func leave(_ thread: Conversation) {
         guard let threadId = thread.id else { return }
-        ChatManager.activeInstance.leaveThread(.init(threadId: threadId, clearHistory: true)) { [weak self] response in
+        ChatManager.activeInstance?.leaveThread(.init(threadId: threadId, clearHistory: true)) { [weak self] response in
             if response.error == nil {
                 self?.removeThread(thread)
             }
@@ -301,7 +293,7 @@ class ThreadsViewModel: ObservableObject {
 
     func clearHistory(_ thread: Conversation) {
         guard let threadId = thread.id else { return }
-        ChatManager.activeInstance.clearHistory(.init(subjectId: threadId)) { [weak self] response in
+        ChatManager.activeInstance?.clearHistory(.init(subjectId: threadId)) { [weak self] response in
             if response.result != nil {
                 self?.removeThread(thread)
             }
@@ -310,7 +302,7 @@ class ThreadsViewModel: ObservableObject {
 
     func spamPV(_ thread: Conversation) {
         guard let threadId = thread.id else { return }
-        ChatManager.activeInstance.spamPvThread(.init(subjectId: threadId)) { _ in }
+        ChatManager.activeInstance?.spamPvThread(.init(subjectId: threadId)) { _ in }
     }
 
     func firstIndex(_ threadId: Int?) -> Array<Conversation>.Index? {
@@ -319,11 +311,14 @@ class ThreadsViewModel: ObservableObject {
 
     func refreshThreadsUnreadCount() {
         let threadsIds = threads.compactMap(\.id)
-        ChatManager.activeInstance.getThreadsUnreadCount(.init(threadIds: threadsIds)) { [weak self] response in
+        ChatManager.activeInstance?.getThreadsUnreadCount(.init(threadIds: threadsIds)) { [weak self] response in
             response.result?.forEach { key, value in
                 if let index = self?.threads.firstIndex(where: { $0.id == Int(key) ?? -1 }) {
                     self?.threads[index].unreadCount = value
                 }
+            }
+            self?.isLoading = false
+            if response.result?.count ?? 0 > 0 {
                 withAnimation {
                     self?.objectWillChange.send()
                 }

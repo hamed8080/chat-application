@@ -15,7 +15,7 @@ class SettingViewModel: ObservableObject {
     private(set) var firstSuccessResponse = false
 
     init() {
-        let currentUser = ChatManager.activeInstance.userInfo ?? AppState.shared.user
+        let currentUser = ChatManager.activeInstance?.userInfo ?? AppState.shared.user
         self.currentUser = currentUser
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)

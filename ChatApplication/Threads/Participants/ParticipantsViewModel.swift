@@ -52,7 +52,7 @@ class ParticipantsViewModel: ObservableObject {
 
     func getParticipants() {
         isLoading = true
-        ChatManager.activeInstance.getThreadParticipants(.init(threadId: thread?.id ?? 0, offset: offset, count: count), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.getThreadParticipants(.init(threadId: thread?.id ?? 0, offset: offset, count: count), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     func searchParticipants(text: String, type: SearchParticipantType) {
@@ -70,7 +70,7 @@ class ParticipantsViewModel: ObservableObject {
         case .admin:
             req.admin = true
         }
-        ChatManager.activeInstance.getThreadParticipants(req, completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.getThreadParticipants(req, completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     var filtered: [Participant] {
@@ -129,7 +129,7 @@ class ParticipantsViewModel: ObservableObject {
 
     func removePartitipant(_ participant: Participant) {
         guard let id = participant.id, let threadId = thread?.id else { return }
-        ChatManager.activeInstance.removeParticipants(.init(participantId: id, threadId: threadId)) { [weak self] response in
+        ChatManager.activeInstance?.removeParticipants(.init(participantId: id, threadId: threadId)) { [weak self] response in
             if response.error == nil, let participant = response.result?.first {
                 self?.removeParticipant(participant)
             }

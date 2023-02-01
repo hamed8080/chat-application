@@ -22,10 +22,6 @@ enum LoginState: String, Identifiable, Hashable {
 
 class LoginViewModel: ObservableObject {
     @Published var isLoading = false
-    weak var tokenManager: TokenManager? = TokenManager.shared
-    let handshakeClient = RestClient<HandshakeResponse>()
-    let authorizationClient = RestClient<AuthorizeResponse>()
-    let ssoClient = RestClient<SSOTokenResponse>()
 
     // this two variable need to be set from Binding so public setter needed
     @Published var phoneNumber: String = ""
@@ -33,129 +29,133 @@ class LoginViewModel: ObservableObject {
     private(set) var isValidPhoneNumber: Bool?
     @Published var state: LoginState = .login
     private(set) var keyId: String?
+    @Published var selectedServerType: ServerTypes = .main
+    let session: URLSession
+
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
 
     func isPhoneNumberValid() -> Bool {
         isValidPhoneNumber = !phoneNumber.isEmpty
         return !phoneNumber.isEmpty
     }
 
-    func login() {
-        isLoading = true
-        let req = HandshakeRequest(deviceName: UIDevice.current.name,
-                                   deviceOs: UIDevice.current.systemName,
-                                   deviceOsVersion: UIDevice.current.systemVersion,
-                                   deviceType: "MOBILE_PHONE",
-                                   deviceUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
-        handshakeClient
-            .setUrl(Routes.handshake)
-            .setMethod(.post)
-            .enablePrint(enable: true)
-            .setParamsAsQueryString(req)
-            .setOnError { [weak self] _, error in
-                DispatchQueue.main.async {
-                    print("error on login:\(error.debugDescription)")
-                    self?.isLoading = false
-                    self?.state = .failed
-                }
-            }
-            .request { [weak self] response in
-                self?.isLoading = false
-                guard let self = self else { return }
-                self.requestOTP(identity: self.phoneNumber, handskahe: response)
-            }
+    func login() async {
+        showLoading(true)
+        let req = await HandshakeRequest(deviceName: UIDevice.current.name,
+                                         deviceOs: UIDevice.current.systemName,
+                                         deviceOsVersion: UIDevice.current.systemVersion,
+                                         deviceType: "MOBILE_PHONE",
+                                         deviceUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
+        var urlReq = URLRequest(url: URL(string: Routes.handshake)!)
+        urlReq.httpBody = req.getParameterData()
+        urlReq.httpMethod = "POST"
+        do {
+            let resp = try await session.data(for: urlReq)
+            let response = try JSONDecoder().decode(HandshakeResponse.self, from: resp.0)
+            await requestOTP(identity: phoneNumber, handskahe: response)
+        } catch {
+            showError(.failed)
+        }
+        showLoading(false)
     }
 
-    func requestOTP(identity: String, handskahe: HandshakeResponse) {
+    func requestOTP(identity: String, handskahe: HandshakeResponse) async {
         guard let keyId = handskahe.result?.keyId else { return }
+        showLoading(true)
         let req = AuthorizeRequest(identity: identity, keyId: keyId)
-        isLoading = true
-        authorizationClient
-            .setUrl(Routes.authorize)
-            .setMethod(.post)
-            .enablePrint(enable: true)
-            .setParamsAsQueryString(req)
-            .addRequestHeader(key: "keyId", value: req.keyId)
-            .setOnError { [weak self] _, error in
-                DispatchQueue.main.async {
-                    print("error on requestOTP:\(error.debugDescription)")
-                    self?.isLoading = false
-                    self?.state = .failed
-                }
+        var urlReq = URLRequest(url: URL(string: Routes.authorize)!)
+        urlReq.allHTTPHeaderFields = ["keyId": req.keyId]
+        urlReq.httpBody = req.getParameterData()
+        urlReq.httpMethod = "POST"
+        do {
+            let resp = try await session.data(for: urlReq)
+            _ = try JSONDecoder().decode(AuthorizeResponse.self, from: resp.0)
+            await MainActor.run {
+                state = .verify
+                self.keyId = keyId
             }
-            .request { [weak self] response in
-                self?.isLoading = false
-                guard let self = self else { return }
-                if response.result?.identity != nil {
-                    self.state = .verify
-                    self.keyId = keyId
-                }
-            }
+        } catch {
+            showError(.failed)
+        }
+        showLoading(false)
     }
 
-    func verifyCode() {
+    func verifyCode() async {
         guard let keyId = keyId else { return }
-
+        showLoading(true)
         let req = VerifyRequest(identity: phoneNumber, keyId: keyId, otp: verifyCodes.joined())
-        isLoading = true
-        ssoClient
-            .setUrl(Routes.verify)
-            .setMethod(.post)
-            .enablePrint(enable: true)
-            .setParamsAsQueryString(req)
-            .addRequestHeader(key: "keyId", value: req.keyId)
-            .setOnError { [weak self] _, error in
-                DispatchQueue.main.async {
-                    print("error on verifyCode:\(error.debugDescription)")
-                    self?.isLoading = false
-                    self?.state = .verificationCodeIncorrect
-                }
+        var urlReq = URLRequest(url: URL(string: Routes.verify)!)
+        urlReq.allHTTPHeaderFields = ["keyId": req.keyId]
+        urlReq.httpBody = req.getParameterData()
+        urlReq.httpMethod = "POST"
+        do {
+            let resp = try await session.data(for: urlReq)
+            guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }
+            await MainActor.run {
+                TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
+                let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: selectedServerType)
+                UserConfigManager.createChatObjectAndConnect(userId: nil, config: config)
+                state = .successLoggedIn
             }
-            .request { [weak self] response in
-                self?.isLoading = false
-                guard let self = self else { return }
-                // save refresh token
-                if let ssoToken = response.result {
-                    ChatManager.activeInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: true)
-                    self.tokenManager?.saveSSOToken(ssoToken: ssoToken)
-                    if ChatManager.activeInstance.state != .chatReady {
-                        ChatManager.activeInstance.connect()
-                    }
-                    self.state = .successLoggedIn
-                }
+        } catch {
+            showError(.verificationCodeIncorrect)
+        }
+        showLoading(false)
+    }
+
+    func resetState() {
+        state = .login
+        phoneNumber = ""
+        keyId = nil
+        isLoading = false
+        verifyCodes = ["", "", "", "", "", ""]
+    }
+
+    func showError(_ state: LoginState) {
+        Task {
+            await MainActor.run {
+                self.state = state
             }
+        }
+    }
+
+    func showLoading(_ show: Bool) {
+        Task {
+            await MainActor.run {
+                isLoading = show
+            }
+        }
     }
 }
 
 class TokenManager: ObservableObject {
     static let shared = TokenManager()
-    private let refreshTokenClient = RestClient<SSOTokenResponse>()
     @Published var secondToExpire: Double = 0
     @Published private(set) var isLoggedIn = false // to update login logout ui
-    private weak var timer: Timer?
     static let ssoTokenKey = "ssoTokenKey"
     static let ssoTokenCreateDate = "ssoTokenCreateDate"
+    let session: URLSession
 
-    private init() {
+    private init(session: URLSession = .shared) {
+        self.session = session
         getSSOTokenFromUserDefaults() // need first time app luanch to set hasToken
     }
 
-    func getNewTokenWithRefreshToken() {
-        if let refreshToken = getSSOTokenFromUserDefaults()?.refreshToken {
-            refreshTokenClient
-                .enablePrint(enable: true)
-                .setUrl(Routes.refreshToken + "?refreshToken=\(refreshToken)")
-                .setOnError { _, error in
-                    print("error on getNewTokenWithRefreshToken:\(error.debugDescription)")
-                }
-                .request { [weak self] response in
-                    guard let self = self else { return }
-                    // save refresh token
-                    if let ssoToken = response.result {
-                        self.saveSSOToken(ssoToken: ssoToken)
-                        ChatManager.activeInstance.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
-                        AppState.shared.connectionStatus = .connected
-                    }
-                }
+    func getNewTokenWithRefreshToken() async {
+        guard let refreshToken = getSSOTokenFromUserDefaults()?.refreshToken else { return }
+        let urlReq = URLRequest(url: URL(string: Routes.refreshToken + "?refreshToken=\(refreshToken)")!)
+        do {
+            let resp = try await session.data(for: urlReq)
+            guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }
+            await MainActor.run {
+                saveSSOToken(ssoToken: ssoToken)
+                ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
+                AppState.shared.connectionStatus = .connected
+            }
+        } catch {
+            print("error on getNewTokenWithRefreshToken:\(error.localizedDescription)")
         }
     }
 
@@ -196,12 +196,10 @@ class TokenManager: ObservableObject {
 
     func startTimerToGetNewToken() {
         if let ssoToken = getSSOTokenFromUserDefaults(), let createDate = getCreateTokenDate() {
-            timer?.invalidate()
-            timer = nil
             let timeToStart = createDate.advanced(by: Double(ssoToken.expiresIn)).timeIntervalSince1970 - Date().timeIntervalSince1970
-            timer = Timer.scheduledTimer(withTimeInterval: timeToStart, repeats: false) { [weak self] _ in
-                guard let self = self else { return }
-                self.getNewTokenWithRefreshToken()
+            Task {
+                try? await Task.sleep(for: .seconds(timeToStart))
+                await getNewTokenWithRefreshToken()
             }
         }
     }

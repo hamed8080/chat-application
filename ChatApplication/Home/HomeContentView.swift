@@ -5,40 +5,37 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Combine
 import FanapPodChatSDK
 import SwiftUI
+import Swipy
 
 struct HomeContentView: View {
-    @StateObject var navModel = NavigationModel()
-    @StateObject var loginModel = LoginViewModel()
-    @StateObject var contactsVM = ContactsViewModel()
-    @StateObject var threadsVM = ThreadsViewModel()
-    @StateObject var settingsVM = SettingViewModel()
-    @StateObject var tokenManager = TokenManager.shared
+    @StateObject var container = ObjectsContainer()
     @StateObject var appState = AppState.shared
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        if tokenManager.isLoggedIn == false {
+        if container.tokenVM.isLoggedIn == false {
             LoginView()
-                .environmentObject(loginModel)
-                .environmentObject(tokenManager)
+                .environmentObject(container.loginVM)
+                .environmentObject(container.tokenVM)
                 .environmentObject(appState)
         } else {
             NavigationSplitView {
                 SideBar()
             } content: {
-                if navModel.isThreadType {
+                if container.navVM.isThreadType {
                     ThreadContentList()
-                } else if navModel.selectedSideBarId == "contacts" {
+                } else if container.navVM.selectedSideBarId == "contacts" {
                     ContactContentList()
-                } else if navModel.selectedSideBarId == "settings" {
+                } else if container.navVM.selectedSideBarId == "settings" {
                     SettingsView()
                 }
             } detail: {
                 NavigationStack {
-                    if let thread = navModel.selectedThread {
+                    if let thread = container.navVM.selectedThread {
                         ThreadView(thread: thread)
                             .id(thread.id) // don't remove this from here it leads to never change in view
                     } else {
@@ -46,28 +43,37 @@ struct HomeContentView: View {
                     }
                 }
             }
-            .environmentObject(navModel)
-            .environmentObject(settingsVM)
-            .environmentObject(contactsVM)
-            .environmentObject(threadsVM)
             .environmentObject(appState)
-            .environmentObject(loginModel)
-            .environmentObject(tokenManager)
-            .onReceive(threadsVM.tagViewModel.$tags) { tags in
-                navModel.addTags(tags)
+            .environmentObject(container)
+            .environmentObject(container.navVM)
+            .environmentObject(container.settingsVM)
+            .environmentObject(container.contactsVM)
+            .environmentObject(container.threadsVM)
+            .environmentObject(container.loginVM)
+            .environmentObject(container.tokenVM)
+            .environmentObject(container.tagsVM)
+            .onReceive(container.tagsVM.$tags) { tags in
+                container.navVM.addTags(tags)
             }
             .toast(
                 isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
                 title: "Error happened with code: \(appState.error?.code ?? 0)",
-                message: appState.error?.message ?? "",
-                image: Image(systemName: "xmark.square.fill"),
-                imageColor: .red.opacity(0.5)
-            )
+                message: appState.error?.message ?? ""
+            ) {
+                Image(systemName: "xmark.square.fill")
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .onTapGesture {
+                        withAnimation {
+                            appState.error = nil
+                        }
+                    }
+            }
             .onAppear {
-                appState.navViewModel = navModel
-                navModel.threadViewModel = threadsVM
-                threadsVM.title = "chats"
-                navModel.contactsViewModel = contactsVM
+                appState.navViewModel = container.navVM
+                container.navVM.threadViewModel = container.threadsVM
+                container.threadsVM.title = "chats"
+                container.navVM.contactsViewModel = container.contactsVM
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }
         }
@@ -75,20 +81,93 @@ struct HomeContentView: View {
 }
 
 struct SideBar: View {
-    @EnvironmentObject var navModel: NavigationModel
+    @EnvironmentObject var container: ObjectsContainer
+    @State var selectedUser: UserConfig.ID?
+    @State var showLoginSheet = false
+    let containerHeight: CGFloat = 72
+
     var body: some View {
-        List(navModel.sections, selection: $navModel.selectedSideBarId) { section in
-            Section(section.title) {
-                ForEach(section.items) { item in
-                    NavigationLink(value: item.id) {
-                        Label(item.title, systemImage: item.icon)
+        VStack(spacing: 0) {
+            HStack {
+                VSwipy(UserConfigManager.userConfigs, selection: $selectedUser) { item in
+                    UserConfigView(userConfig: item)
+                        .frame(height: containerHeight)
+                        .background(Color.tableItem.opacity(0.5))
+                        .cornerRadius(12)
+                } onSwipe: { item in
+                    if item.user.id == UserConfigManager.currentUserConfig?.id { return }
+                    UserConfigManager.switchToUser(item)
+                    container.reset()
+                }
+                .frame(height: containerHeight)
+                .background(.ultraThickMaterial)
+                .cornerRadius(12)
+                .onAppear {
+                    selectedUser = UserConfigManager.currentUserConfig?.id
+                }
+            }
+            .padding()
+
+            List(container.navVM.sections, selection: $container.navVM.selectedSideBarId) { section in
+                Section(section.title) {
+                    ForEach(section.items) { item in
+                        NavigationLink(value: item.id) {
+                            Label(item.title, systemImage: item.icon)
+                        }
                     }
                 }
             }
+            .listStyle(.insetGrouped)
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Chat Application")
-        .listStyle(.insetGrouped)
+        .sheet(isPresented: $showLoginSheet) {
+            LoginView {
+                container.reset()
+                showLoginSheet.toggle()
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    container.loginVM.resetState()
+                    showLoginSheet.toggle()
+                } label: {
+                    Label("Add User", systemImage: "plus.app")
+                }
+            }
+        }
+    }
+}
+
+struct UserConfigView: View {
+    let userConfig: UserConfig
+
+    var body: some View {
+        HStack {
+            ImageLaoderView(url: userConfig.user.image, userName: userConfig.user.name)
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
+                .padding()
+            VStack(alignment: .leading) {
+                Text(userConfig.user.name ?? "")
+                    .fontDesign(.rounded)
+                    .foregroundColor(.primary)
+
+                HStack {
+                    Text(userConfig.user.cellphoneNumber ?? "")
+                        .font(.subheadline)
+                        .fontDesign(.rounded)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(Config.serverType(config: userConfig.config)?.rawValue ?? "")
+                        .font(.subheadline)
+                        .fontDesign(.rounded)
+                        .foregroundColor(.green)
+                }
+            }
+            Spacer()
+        }
     }
 }
 
@@ -121,18 +200,21 @@ struct DetailContentView: View {
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        let threadsVM = ThreadsViewModel()
-        HomeContentView()
-            .environmentObject(threadsVM)
-            .environmentObject(TokenManager.shared)
-            .environmentObject(LoginViewModel())
+struct HomePreview: View {
+    @State var container = ObjectsContainer()
+    var body: some View {
+        HomeContentView(container: container)
             .onAppear {
                 AppState.shared.connectionStatus = .connected
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
-                threadsVM.appendThreads(threads: MockData.generateThreads(count: 10))
-                threadsVM.objectWillChange.send()
+                container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 10))
+                container.objectWillChange.send()
             }
+    }
+}
+
+struct HomeView_Previews: PreviewProvider {
+    static var previews: some View {
+        HomePreview()
     }
 }

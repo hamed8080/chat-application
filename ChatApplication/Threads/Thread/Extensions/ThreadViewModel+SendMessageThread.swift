@@ -53,7 +53,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                       repliedTo: replyMessageId,
                                       textMessage: textMessage,
                                       messageType: .text)
-        ChatManager.activeInstance.replyMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
+        ChatManager.activeInstance?.replyMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
     }
 
     func sendNormalMessage(_ textMessage: String) {
@@ -61,10 +61,10 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         let req = SendTextMessageRequest(threadId: threadId,
                                          textMessage: textMessage,
                                          messageType: .text)
-        let isMeId = (ChatManager.activeInstance.userInfo ?? AppState.shared.user)?.id
+        let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
         let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, uniqueId: req.uniqueId, conversation: thread)
         appendMessages([message])
-        ChatManager.activeInstance.sendTextMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
+        ChatManager.activeInstance?.sendTextMessage(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
     }
 
     func sendForwardMessage(_ destinationThread: Conversation) {
@@ -72,7 +72,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         canScrollToBottomOfTheList = true
         let messageIds = selectedMessages.compactMap(\.id)
         let req = ForwardMessageRequest(fromThreadId: threadId, threadId: destinationThreadId, messageIds: messageIds)
-        ChatManager.activeInstance.forwardMessages(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
+        ChatManager.activeInstance?.forwardMessages(req, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
         isInEditMode = false // close edit mode in ui
     }
 
@@ -116,7 +116,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
                                      textMessage: textMessage)
         self.editMessage = nil
         isInEditMode = false
-        ChatManager.activeInstance.editMessage(req) { [weak self] response in
+        ChatManager.activeInstance?.editMessage(req) { [weak self] response in
             self?.onEditedMessage(response.result)
         }
     }
@@ -153,11 +153,11 @@ extension ThreadViewModel: SendMessageThreadProtocol {
     func resendUnsetMessage(_ message: Message) {
         switch message {
         case let req as SendTextMessage:
-            ChatManager.activeInstance.sendTextMessage(req.sendTextMessageRequest, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
+            ChatManager.activeInstance?.sendTextMessage(req.sendTextMessageRequest, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
         case let req as EditTextMessage:
-            ChatManager.activeInstance.editMessage(req.editMessageRequest, completion: onUnSentEditCompletionResult)
+            ChatManager.activeInstance?.editMessage(req.editMessageRequest, completion: onUnSentEditCompletionResult)
         case let req as ForwardMessage:
-            ChatManager.activeInstance.forwardMessages(req.forwardMessageRequest, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
+            ChatManager.activeInstance?.forwardMessages(req.forwardMessageRequest, onSent: onSent, onSeen: onSeen, onDeliver: onDeliver)
         case let req as UploadFileMessage:
             // remove unset message type to start upload again the new one.
             messages.removeAll(where: { $0.uniqueId == req.uniqueId })
@@ -175,7 +175,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
     }
 
     func cancelUnsentMessage(_ uniqueId: String) {
-        ChatManager.activeInstance.cancelMessage(uniqueId: uniqueId) { _ in }
+        ChatManager.activeInstance?.cancelMessage(uniqueId: uniqueId) { _ in }
         onDeleteMessage(ChatResponse(uniqueId: uniqueId))
     }
 

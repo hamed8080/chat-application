@@ -29,7 +29,7 @@ class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol
     }
 
     func exportChats(startDate: Date, endDate: Date) {
-        ChatManager.activeInstance.exportChat(.init(threadId: threadId, fromTime: UInt(startDate.millisecondsSince1970), toTime: UInt(endDate.millisecondsSince1970))) { [weak self] response in
+        ChatManager.activeInstance?.exportChat(.init(threadId: threadId, fromTime: UInt(startDate.millisecondsSince1970), toTime: UInt(endDate.millisecondsSince1970))) { [weak self] response in
             self?.filePath = response.result
             self?.objectWillChange.send()
         }

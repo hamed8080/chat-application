@@ -52,7 +52,7 @@ struct CallMessageType: View {
     var body: some View {
         HStack(alignment: .center) {
             if let time = message.time, let date = Date(milliseconds: Int64(time)) {
-                Text("Call \(message.type == .endCall ? "ended" : "started") at \(date.timeAgoSinceDate ?? "")")
+                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDatecCondence ?? "")")
                     .foregroundColor(Color.primary.opacity(0.8))
                     .font(.subheadline)
                     .padding(2)
@@ -77,7 +77,7 @@ struct ParticipantMessageType: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDate ?? ""
+            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDatecCondence ?? ""
             let name = message.participant?.name ?? ""
             let markdownText = try! AttributedString(markdown: "\(name) - \(date)")
             Text(markdownText)
@@ -346,7 +346,7 @@ struct MessageFooterView: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 0) {
                 HStack {
-                    Text(message.formattedTimeString ?? "")
+                    Text(message.time?.date.timeAgoSinceDatecCondence ?? "")
                         .foregroundColor(.darkGreen.opacity(0.8))
                         .font(.system(size: 12, design: .rounded))
                     if message.isMe {
