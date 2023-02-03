@@ -16,7 +16,7 @@ struct ThreadIsTypingView: View {
             .lineLimit(1)
             .font(.subheadline.bold())
             .foregroundColor(Color.orange)
-            .scaleEffect(x: viewModel.isTyping ? 1 : 0, y: viewModel.isTyping ? 1 : 0)
+            .scaleEffect(x: viewModel.isTyping ? 1 : CGFloat.ulpOfOne, y: viewModel.isTyping ? 1 : CGFloat.ulpOfOne)
             .animation(.easeInOut, value: viewModel.isTyping)
             .onAppear {
                 viewModel.setThread(threadId: threadId)
