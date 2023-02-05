@@ -37,7 +37,8 @@ extension Message {
     var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
 
     var calculatedMaxAndMinWidth: CGFloat {
-        let minWidth: CGFloat = isUnsentMessage ? 148 : isFileType ? 164 : 128
+        let hasReplyMessage = replyInfo != nil
+        let minWidth: CGFloat = isUnsentMessage ? 148 : isFileType ? 164 : hasReplyMessage ? 246 : 128
         let isIpad = UIDevice.current.userInterfaceIdiom == .pad
         let maxDeviceSize: CGFloat = isIpad ? 420 : 320
         let messageWidth = messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 22)) + 16

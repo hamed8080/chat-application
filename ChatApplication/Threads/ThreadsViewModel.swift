@@ -28,6 +28,7 @@ class ThreadsViewModel: ObservableObject {
     var archived: Bool = false
     var folder: Tag?
     var title: String = ""
+    @Published var selectedFilterThreadType: ThreadTypes?
 
     init() {
         AppState.shared.$connectionStatus
@@ -88,7 +89,7 @@ class ThreadsViewModel: ObservableObject {
 
     func getThreads() {
         isLoading = true
-        ChatManager.activeInstance?.getThreads(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.getThreads(.init(count: count, offset: offset, type: selectedFilterThreadType), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
     func getArchivedThreads() {

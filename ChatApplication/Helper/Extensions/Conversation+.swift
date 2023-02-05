@@ -90,7 +90,7 @@ public extension Conversation {
     }
 
     var markdownLastMessage: AttributedString? {
-        if let participantName = lastMessageVO?.participant?.name, let message = lastMessageVO?.message?.prefix(25) {
+        if let participantName = lastMessageVO?.participant?.name, let message = lastMessageVO?.message {
             let name = String(participantName + ":")
             let mainString = "\(name)\(message)"
             let nameRange = (mainString as NSString).range(of: name)

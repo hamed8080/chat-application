@@ -175,16 +175,16 @@ struct DetailContentView: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
 
     var body: some View {
-        VStack(spacing: 48) {
+        VStack(spacing: 12) {
             Image(systemName: "doc.text.magnifyingglass")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 148, height: 148)
+                .frame(width: 64, height: 64)
                 .opacity(0.2)
             VStack(spacing: 16) {
                 Text("Nothing has been selected. You can start a conversation right now!")
-                    .font(.body.bold())
-                    .foregroundColor(Color.primary.opacity(0.8))
+                    .font(.subheadline)
+                    .foregroundColor(.secondaryLabel)
                 Button {
                     threadsVM.toggleThreadContactPicker.toggle()
                 } label: {
@@ -193,6 +193,7 @@ struct DetailContentView: View {
                 .font(.body.bold())
             }
         }
+        .fontDesign(.rounded)
         .padding([.leading, .trailing], 48)
         .padding([.bottom, .top], 96)
         .background(Color.gray.opacity(0.1))

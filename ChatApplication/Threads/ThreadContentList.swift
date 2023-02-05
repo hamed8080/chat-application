@@ -25,6 +25,7 @@ struct ThreadContentList: View {
                         }
                     }
             }
+            .listRowBackground(container.navVM.selectedThreadId == thread.id ? Color.orange.opacity(0.5) : Color(UIColor.systemBackground))
         }
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $container.threadsVM.isLoading)
@@ -38,16 +39,8 @@ struct ThreadContentList: View {
         .animation(.easeInOut, value: threadsVM.isLoading)
         .listStyle(.plain)
         .toolbar {
-            ToolbarItem {
-                Button {
-                    threadsVM.toggleThreadContactPicker.toggle()
-                } label: {
-                    Label {
-                        Text("Start new chat")
-                    } icon: {
-                        Image(systemName: "plus")
-                    }
-                }
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                trailingToolbarViews
             }
 
             ToolbarItem(placement: .principal) {
@@ -72,6 +65,35 @@ struct ThreadContentList: View {
                 threadsVM.createThread(model)
                 threadsVM.toggleThreadContactPicker.toggle()
             }
+        }
+    }
+
+    @ViewBuilder var trailingToolbarViews: some View {
+        Button {
+            threadsVM.toggleThreadContactPicker.toggle()
+        } label: {
+            Label("Start new chat", systemImage: "plus")
+        }
+
+        Menu {
+            Button {
+                threadsVM.selectedFilterThreadType = nil
+                threadsVM.refresh()
+            } label: {
+                Label("All", systemImage: threadsVM.selectedFilterThreadType == nil ? "checkmark" : "")
+            }
+            ForEach(ThreadTypes.allCases) { item in
+                if let type = item.stringValue {
+                    Button {
+                        threadsVM.selectedFilterThreadType = item
+                        threadsVM.refresh()
+                    } label: {
+                        Label("\(type)", systemImage: threadsVM.selectedFilterThreadType == item ? "checkmark" : "")
+                    }
+                }
+            }
+        } label: {
+            Label("Filter threads", systemImage: "line.3.horizontal.decrease.circle")
         }
     }
 }

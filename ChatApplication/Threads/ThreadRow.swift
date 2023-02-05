@@ -19,14 +19,14 @@ struct ThreadRow: View {
             ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
-                .frame(width: 64, height: 64)
+                .frame(width: 48, height: 48)
                 .background(Color.blue.opacity(0.4))
                 .cornerRadius(32)
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text(thread.title ?? "")
                         .lineLimit(1)
-                        .font(.headline)
+                        .font(.headline.bold())
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()
@@ -54,10 +54,14 @@ struct ThreadRow: View {
                 HStack {
                     if let message = thread.markdownLastMessage {
                         Text(message)
-                            .lineLimit(1)
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .trailing)
+                            .multilineTextAlignment(.trailing)
+                            .lineLimit(2)
+                            .truncationMode(Text.TruncationMode.tail)
                             .font(.subheadline)
                             .fontDesign(.rounded)
                             .clipped()
+                            .foregroundColor(.secondaryLabel)
                     }
 
                     if let message = thread.lastMessageVO, message.type == .endCall || message.type == .startCall {
@@ -90,7 +94,7 @@ struct ThreadRow: View {
                             .foregroundColor(Color.orange)
                     }
                 }
-                ThreadIsTypingView(threadId: thread.id ?? -1)
+                ThreadEventView(threadId: thread.id ?? -1)
             }
         }
         .padding([.leading, .trailing], 8)

@@ -1,5 +1,5 @@
 //
-//  ColorEx.swift
+//  Color+.swift
 //  ChatApplication
 //
 //  Created by Hamed Hosseini on 11/30/21.
@@ -25,4 +25,6 @@ extension Color {
     static let chatMeBg = Color("chat_me")
     static let chatSenderBg = Color("chat_sender")
     static let tableItem = Color("tableItem")
+    static let replyBg = Color("reply_background")
+    static let secondaryLabel = Color(UIColor.secondaryLabel)
 }

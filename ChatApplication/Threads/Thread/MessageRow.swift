@@ -112,6 +112,10 @@ struct TextMessageType: View {
                 sameUserAvatar
             }
             VStack {
+                if message.replyInfo != nil {
+                    ReplyInfoMessageRow(message: message)
+                }
+
                 if let forwardInfo = message.forwardInfo {
                     ForwardMessageRow(forwardInfo: forwardInfo)
                 }
@@ -265,6 +269,50 @@ struct TextMessageType: View {
     }
 }
 
+struct ReplyInfoMessageRow: View {
+    var message: Message
+    @EnvironmentObject var threadViewModel: ThreadViewModel
+
+    var body: some View {
+        HStack {
+            Image(systemName: "poweron")
+                .resizable()
+                .frame(width: 3)
+                .frame(minHeight: 0, maxHeight: .infinity)
+                .foregroundColor(.orange)
+            VStack(spacing: 4) {
+                if let name = message.replyInfo?.participant?.name {
+                    Text("\(name)")
+                        .font(.caption.bold())
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(.orange)
+                        .padding([.leading, .trailing], 4)
+                }
+
+                if let message = message.message {
+                    Text(message)
+                        .padding([.leading, .trailing], 4)
+                        .cornerRadius(8, corners: .allCorners)
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(.primary)
+                        .font(.caption.italic())
+                }
+            }
+        }
+        .frame(width: message.calculatedMaxAndMinWidth - 32, height: 48)
+        .background(Color.replyBg)
+        .cornerRadius(8)
+        .padding([.top, .leading, .trailing], 12)
+        .truncationMode(.tail)
+        .fontDesign(.rounded)
+        .lineLimit(1)
+        .onTapGesture {
+            print("tap on move to reply to")
+            threadViewModel.setScrollToUniqueId("uniqueId?")
+        }
+    }
+}
+
 struct ForwardMessageRow: View {
     var forwardInfo: ForwardInfo
     @State var showReadOnlyThreadView: Bool = false
@@ -387,6 +435,25 @@ struct MessageRow_Previews: PreviewProvider {
                     .environmentObject(threadVM)
             }
         }
+        .onAppear {
+            threadVM.setup(thread: MockData.thread)
+        }
+        .listStyle(.plain)
+    }
+}
+
+struct ReplyInfo_Previews: PreviewProvider {
+    static let participant = Participant(name: "john", username: "john_9090")
+    static let replyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, time: 100, participant: participant)
+    static let isMEParticipant = Participant(name: "Sam", username: "sam_rage")
+    static let isMeReplyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, time: 100, participant: isMEParticipant)
+    static var previews: some View {
+        let threadVM = ThreadViewModel()
+        List {
+            TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", ownerId: 10, replyInfo: replyInfo))
+            TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: isMeReplyInfo))
+        }
+        .environmentObject(threadVM)
         .onAppear {
             threadVM.setup(thread: MockData.thread)
         }

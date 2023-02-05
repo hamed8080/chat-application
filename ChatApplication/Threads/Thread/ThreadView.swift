@@ -29,17 +29,12 @@ struct ThreadView: View {
                 ThreadPinMessage(message: viewModel.messages.filter { $0.pinned == true }.first)
                 ZStack {
                     ThreadMessagesList(isInEditMode: $isInEditMode)
-                        .environmentObject(viewModel)
                     ThreadSearchList(searchMessageText: $searchMessageText)
-                        .environmentObject(viewModel)
                         .zIndex(1)
                 }
-                .animation(.easeInOut, value: searchMessageText.count)
-                .animation(.easeInOut, value: viewModel.searchedMessages.count)
                 SendContainer(showAttachmentDialog: $showAttachmentDialog,
                               deleteMessagesDialog: $deleteDialaog,
                               showSelectThreadToForward: $showSelectThreadToForward)
-                    .environmentObject(viewModel)
             }
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
@@ -54,6 +49,17 @@ struct ThreadView: View {
                 }
             }
         }
+        .environmentObject(viewModel)
+        .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
+        .animation(.easeInOut, value: showDatePicker)
+        .animation(.easeInOut, value: viewModel.messages)
+        .animation(.easeInOut, value: viewModel.messages.count)
+        .animation(.easeInOut, value: viewModel.searchedMessages.count)
+        .animation(.easeInOut, value: showExportFileURL)
+        .animation(.easeInOut, value: viewModel.isInEditMode)
+        .animation(.easeInOut, value: viewModel.editMessage)
+        .animation(.easeInOut, value: searchMessageText.count)
+        .animation(.easeInOut, value: viewModel.searchedMessages.count)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 trailingToolbar
@@ -66,14 +72,6 @@ struct ThreadView: View {
         .onChange(of: searchMessageText) { value in
             viewModel.searchInsideThread(text: value)
         }
-        .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
-        .animation(.easeInOut, value: showDatePicker)
-        .animation(.easeInOut, value: viewModel.messages)
-        .animation(.easeInOut, value: viewModel.messages.count)
-        .animation(.easeInOut, value: viewModel.searchedMessages.count)
-        .animation(.easeInOut, value: showExportFileURL)
-        .animation(.easeInOut, value: viewModel.isInEditMode)
-        .animation(.easeInOut, value: viewModel.editMessage)
         .onChange(of: viewModel.isInEditMode) { _ in
             isInEditMode = viewModel.isInEditMode
         }
@@ -87,20 +85,22 @@ struct ThreadView: View {
             viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
             viewModel.getHistory()
         }
-        .sheet(isPresented: $showExportFileURL, onDismiss: {
-            viewModel.exportMessagesVM.deleteFile()
-        }, content: {
+        .sheet(isPresented: $showExportFileURL, onDismiss: onDismiss) {
             if let exportFileUrl = viewModel.exportMessagesVM.filePath {
                 ActivityViewControllerWrapper(activityItems: [exportFileUrl])
             } else {
                 EmptyView()
             }
-        })
+        }
         .sheet(isPresented: $showSelectThreadToForward, onDismiss: nil) {
             SelectThreadContentList { selectedThread in
                 viewModel.sendForwardMessage(selectedThread)
             }
         }
+    }
+
+    func onDismiss() {
+        viewModel.exportMessagesVM.deleteFile()
     }
 
     var centerToolbarTitle: some View {
@@ -297,6 +297,7 @@ struct ThreadSearchList: View {
 
 struct ThreadPinMessage: View {
     let message: Message?
+    @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
         if let message = message {
@@ -310,6 +311,9 @@ struct ThreadPinMessage: View {
                     .foregroundColor(.orange)
             }
             .frame(height: 64)
+            .onTapGesture {
+                threadVM.setScrollToUniqueId(message.uniqueId ?? "")
+            }
         } else {
             EmptyView()
         }
