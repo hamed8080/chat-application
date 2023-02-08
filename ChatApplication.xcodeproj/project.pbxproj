@@ -68,7 +68,7 @@
 		059914B029262FF60070BD89 /* Conversation+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059914AF29262FF60070BD89 /* Conversation+.swift */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
-		05BD143029850D600015A6F6 /* UserConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD142F29850D600015A6F6 /* UserConfigManager.swift */; };
+		05BD143029850D600015A6F6 /* UserConfigManagerVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD142F29850D600015A6F6 /* UserConfigManagerVM.swift */; };
 		05C0098B2931F61D002ED678 /* Contact+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C0098A2931F61D002ED678 /* Contact+.swift */; };
 		05C42B0F29606F4000A870B3 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C42B0E29606F4000A870B3 /* Data+.swift */; };
 		05CE5B4A27855EA0004336F5 /* PrimaryToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */; };
@@ -198,6 +198,7 @@
 		050C5AA0297082BE00CD5702 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		050C5AA32970863B00CD5702 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
 		051C8EF9292235300078AD7E /* FanapPodAsyncSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FanapPodAsyncSDK; path = ../FanapPodAsyncSDK; sourceTree = "<group>"; };
+		051D58E329926D7800DC066A /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
 		05238718295F52CC00650241 /* URL+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+.swift"; sourceTree = "<group>"; };
@@ -239,7 +240,7 @@
 		059914AF29262FF60070BD89 /* Conversation+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+.swift"; sourceTree = "<group>"; };
 		05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifire.swift; sourceTree = "<group>"; };
 		05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
-		05BD142F29850D600015A6F6 /* UserConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConfigManager.swift; sourceTree = "<group>"; };
+		05BD142F29850D600015A6F6 /* UserConfigManagerVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConfigManagerVM.swift; sourceTree = "<group>"; };
 		05C0098A2931F61D002ED678 /* Contact+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Contact+.swift"; sourceTree = "<group>"; };
 		05C42B0E29606F4000A870B3 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
 		05CE5B4927855EA0004336F5 /* PrimaryToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryToggleStyle.swift; sourceTree = "<group>"; };
@@ -394,6 +395,7 @@
 		0532461128D844F900FC9C22 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				051D58E329926D7800DC066A /* Swipy */,
 				0532461328D8453100FC9C22 /* FanapPodChatSDK */,
 				051C8EF9292235300078AD7E /* FanapPodAsyncSDK */,
 			);
@@ -555,7 +557,7 @@
 				AC924CC2274A77BC00E33BD1 /* ChatApplication.entitlements */,
 				AC1D2CB52661FFAD00AA351A /* Info.plist */,
 				AC1D2CC22662016D00AA351A /* SceneDelegate.swift */,
-				05BD142F29850D600015A6F6 /* UserConfigManager.swift */,
+				05BD142F29850D600015A6F6 /* UserConfigManagerVM.swift */,
 			);
 			path = ChatApplication;
 			sourceTree = "<group>";
@@ -986,7 +988,7 @@
 				AC0FE1372755047A00C7A8DB /* Int+.swift in Sources */,
 				AC1D2CCC2662016E00AA351A /* LoadingView.swift in Sources */,
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,
-				05BD143029850D600015A6F6 /* UserConfigManager.swift in Sources */,
+				05BD143029850D600015A6F6 /* UserConfigManagerVM.swift in Sources */,
 				ACAB96D427030FBE005FB9AA /* ViewExtension.swift in Sources */,
 				057977B52805449D00FE5EA4 /* MockDatas.swift in Sources */,
 				ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */,

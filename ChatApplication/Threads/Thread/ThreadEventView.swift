@@ -12,22 +12,24 @@ struct ThreadEventView: View {
     @StateObject var viewModel = ThreadEventViewModel()
 
     var body: some View {
-        HStack {
-            Image(systemName: viewModel.smt?.eventImage ?? "")
-                .resizable()
-                .foregroundColor(.orange)
-                .frame(width: 16, height: 16)
+        if let smt = viewModel.smt {
+            HStack {
+                Image(systemName: smt.eventImage)
+                    .resizable()
+                    .foregroundColor(.orange)
+                    .frame(width: 16, height: 16)
 
-            Text(viewModel.smt?.stringEvent ?? "")
-                .lineLimit(1)
-                .font(.subheadline.bold())
-                .foregroundColor(.orange)
-                .onAppear {
-                    viewModel.setThread(threadId: threadId)
-                }
+                Text(smt.stringEvent)
+                    .lineLimit(1)
+                    .font(.subheadline.bold())
+                    .foregroundColor(.orange)
+                    .onAppear {
+                        viewModel.setThread(threadId: threadId)
+                    }
+            }
+            .frame(height: viewModel.isShowingEvent ? 16 : 0)
+            .animation(.spring(), value: viewModel.isShowingEvent)
         }
-        .frame(height: viewModel.isShowingEvent ? 16 : 0)
-        .animation(.spring(), value: viewModel.isShowingEvent)
     }
 }
 

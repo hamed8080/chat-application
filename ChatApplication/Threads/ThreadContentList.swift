@@ -80,7 +80,10 @@ struct ThreadContentList: View {
                 threadsVM.selectedFilterThreadType = nil
                 threadsVM.refresh()
             } label: {
-                Label("All", systemImage: threadsVM.selectedFilterThreadType == nil ? "checkmark" : "")
+                if threadsVM.selectedFilterThreadType == nil {
+                    Image(systemName: "checkmark")
+                }
+                Text("All")
             }
             ForEach(ThreadTypes.allCases) { item in
                 if let type = item.stringValue {
@@ -88,7 +91,10 @@ struct ThreadContentList: View {
                         threadsVM.selectedFilterThreadType = item
                         threadsVM.refresh()
                     } label: {
-                        Label("\(type)", systemImage: threadsVM.selectedFilterThreadType == item ? "checkmark" : "")
+                        if threadsVM.selectedFilterThreadType == item {
+                            Image(systemName: "checkmark")
+                        }
+                        Text("\(type)")
                     }
                 }
             }

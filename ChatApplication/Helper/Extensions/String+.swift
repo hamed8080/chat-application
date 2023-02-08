@@ -104,3 +104,9 @@ extension String {
         self = capitalizingFirstLetter()
     }
 }
+
+extension String? {
+    var isEmptyOrNil: Bool {
+        self == nil || self?.isEmpty == true
+    }
+}

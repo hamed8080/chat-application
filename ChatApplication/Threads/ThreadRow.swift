@@ -16,7 +16,7 @@ struct ThreadRow: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
+            ImageLaoderView(url: thread.computedImageURL, metaData: thread.metadata, userName: thread.title)
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
@@ -50,23 +50,8 @@ struct ThreadRow: View {
                             .font(.subheadline)
                     }
                 }
-
                 HStack {
-                    if let message = thread.markdownLastMessage {
-                        Text(message)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .trailing)
-                            .multilineTextAlignment(.trailing)
-                            .lineLimit(2)
-                            .truncationMode(Text.TruncationMode.tail)
-                            .font(.subheadline)
-                            .fontDesign(.rounded)
-                            .clipped()
-                            .foregroundColor(.secondaryLabel)
-                    }
-
-                    if let message = thread.lastMessageVO, message.type == .endCall || message.type == .startCall {
-                        ConversationCallMessageType(message: message)
-                    }
+                    ThreadLastMessageView(thread: thread)
                     Spacer()
                     if let unreadCountString = thread.unreadCountString {
                         Text(unreadCountString)
@@ -171,6 +156,53 @@ struct ThreadRow: View {
                 }
             }
         }
+    }
+}
+
+struct ThreadLastMessageView: View {
+    var thread: Conversation
+    var lastMsgVO: Message? { thread.lastMessageVO }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            if let name = lastMsgVO?.participant?.name, thread.group == true {
+                Text(name)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                    .foregroundColor(.orange)
+            }
+
+            HStack {
+                if lastMsgVO?.isFileType == true, let iconName = lastMsgVO?.iconName {
+                    Image(systemName: iconName)
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(.blue)
+                }
+                if let message = thread.lastMessageVO?.message {
+                    Text(message)
+                        .lineLimit(thread.group == false ? 2 : 1)
+                        .foregroundColor(.secondaryLabel)
+                }
+
+                if lastMsgVO?.isFileType == true, lastMsgVO?.message.isEmptyOrNil == true, let fileStringName = lastMsgVO?.fileStringName {
+                    Text(fileStringName)
+                        .lineLimit(thread.group == false ? 2 : 1)
+                        .foregroundColor(.secondaryLabel)
+                }
+                Spacer()
+            }
+            if let message = lastMsgVO, message.type == .endCall || message.type == .startCall {
+                ConversationCallMessageType(message: message)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+        .multilineTextAlignment(.leading)
+        .truncationMode(Text.TruncationMode.tail)
+        .font(.subheadline)
+        .fontDesign(.rounded)
+        .clipped()
     }
 }
 

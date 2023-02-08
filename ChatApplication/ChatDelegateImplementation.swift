@@ -38,8 +38,8 @@ class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
-        if let userConfig = UserConfigManager.currentUserConfig, let userId = userConfig.id {
-            UserConfigManager.createChatObjectAndConnect(userId: userId, config: userConfig.config)
+        if let userConfig = UserConfigManagerVM.instance.currentUserConfig, let userId = userConfig.id {
+            UserConfigManagerVM.instance.createChatObjectAndConnect(userId: userId, config: userConfig.config)
             TokenManager.shared.initSetIsLogin()
         }
     }
@@ -97,7 +97,7 @@ class ChatDelegateImplementation: ChatDelegate {
         }
 
         if case let .user(eventUser) = event, case let .onUser(response) = eventUser, let user = response.result {
-            UserConfigManager.onUser(user)
+            UserConfigManagerVM.instance.onUser(user)
         }
     }
 }

@@ -52,9 +52,7 @@ struct HomeContentView: View {
             .environmentObject(container.loginVM)
             .environmentObject(container.tokenVM)
             .environmentObject(container.tagsVM)
-            .onReceive(container.tagsVM.$tags) { tags in
-                container.navVM.addTags(tags)
-            }
+            .environmentObject(container.userConfigsVM)
             .toast(
                 isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
                 title: "Error happened with code: \(appState.error?.code ?? 0)",
@@ -82,6 +80,7 @@ struct HomeContentView: View {
 
 struct SideBar: View {
     @EnvironmentObject var container: ObjectsContainer
+    @EnvironmentObject var userConfigsVM: UserConfigManagerVM
     @State var selectedUser: UserConfig.ID?
     @State var showLoginSheet = false
     let containerHeight: CGFloat = 72
@@ -89,22 +88,21 @@ struct SideBar: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                VSwipy(UserConfigManager.userConfigs, selection: $selectedUser) { item in
+                VSwipy(container.userConfigsVM.userConfigs, selection: $selectedUser) { item in
                     UserConfigView(userConfig: item)
                         .frame(height: containerHeight)
-                        .background(Color.tableItem.opacity(0.5))
+                        .background(Color.tableItem)
                         .cornerRadius(12)
                 } onSwipe: { item in
-                    if item.user.id == UserConfigManager.currentUserConfig?.id { return }
-                    UserConfigManager.switchToUser(item)
-                    container.reset()
+                    DispatchQueue.main.async {
+                        if item.user.id == container.userConfigsVM.currentUserConfig?.id { return }
+                        container.userConfigsVM.switchToUser(item)
+                        container.reset()
+                    }
                 }
                 .frame(height: containerHeight)
-                .background(.ultraThickMaterial)
+                .background(Color.orange.opacity(0.3))
                 .cornerRadius(12)
-                .onAppear {
-                    selectedUser = UserConfigManager.currentUserConfig?.id
-                }
             }
             .padding()
 
@@ -121,6 +119,9 @@ struct SideBar: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Chat Application")
+        .onAppear {
+            selectedUser = UserConfigManagerVM.instance.currentUserConfig?.id
+        }
         .sheet(isPresented: $showLoginSheet) {
             LoginView {
                 container.reset()
@@ -136,6 +137,13 @@ struct SideBar: View {
                     Label("Add User", systemImage: "plus.app")
                 }
             }
+        }
+        .onReceive(container.tagsVM.$tags) { tags in
+            container.navVM.addTags(tags)
+            container.objectWillChange.send()
+        }
+        .onReceive(userConfigsVM.$currentUserConfig) { newUserConfig in
+            selectedUser = newUserConfig?.id
         }
     }
 }

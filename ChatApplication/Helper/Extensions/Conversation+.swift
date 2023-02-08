@@ -88,21 +88,4 @@ public extension Conversation {
             return (Message.sentImage!, .gray.opacity(0.7))
         } else { return nil }
     }
-
-    var markdownLastMessage: AttributedString? {
-        if let participantName = lastMessageVO?.participant?.name, let message = lastMessageVO?.message {
-            let name = String(participantName + ":")
-            let mainString = "\(name)\(message)"
-            let nameRange = (mainString as NSString).range(of: name)
-
-            guard let attributedString = try? NSMutableAttributedString(markdown: mainString) else { return nil }
-            attributedString.addAttribute(.foregroundColor, value: UIColor.orange, range: nameRange)
-            attributedString.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize), range: nameRange)
-            return AttributedString(attributedString)
-        } else if let message = lastMessageVO?.message {
-            return AttributedString(message)
-        } else {
-            return nil
-        }
-    }
 }

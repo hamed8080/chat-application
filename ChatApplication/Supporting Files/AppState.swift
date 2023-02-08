@@ -10,7 +10,7 @@ import SwiftUI
 
 class AppState: ObservableObject {
     static let shared = AppState()
-    var cachedUser = UserConfigManager.currentUserConfig?.user
+    var cachedUser = UserConfigManagerVM.instance.currentUserConfig?.user
     var user: User? { cachedUser ?? ChatManager.activeInstance?.userInfo }
     var navViewModel: NavigationModel?
     @Published var error: ChatError?

@@ -24,7 +24,7 @@ struct TagParticipantRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     if let thread = tagParticipant.conversation {
-                        ImageLaoderView(url: tagParticipant.conversation?.computedImageURL, userName: tagParticipant.conversation?.title)
+                        ImageLaoderView(url: tagParticipant.conversation?.computedImageURL, metaData: thread.metadata, userName: tagParticipant.conversation?.title)
                             .font(.system(size: 16).weight(.heavy))
                             .foregroundColor(.white)
                             .frame(width: 28, height: 28)

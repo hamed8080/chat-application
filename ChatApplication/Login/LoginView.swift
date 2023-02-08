@@ -179,7 +179,7 @@ struct LoginContentView: View {
                 ErrorView(error: "An error occured! try again.")
             }
 
-            Text("If you get in trouble with the login, contact the support team.")
+            Text("Contact the support team if you have gotten into trouble with the login.")
                 .multilineTextAlignment(.center)
                 .font(.subheadline.weight(.medium))
                 .fixedSize(horizontal: false, vertical: true)

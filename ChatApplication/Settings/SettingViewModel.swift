@@ -10,13 +10,10 @@ import FanapPodChatSDK
 import SwiftUI
 
 class SettingViewModel: ObservableObject {
-    @Published var currentUser: User?
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private(set) var firstSuccessResponse = false
 
     init() {
-        let currentUser = ChatManager.activeInstance?.userInfo ?? AppState.shared.user
-        self.currentUser = currentUser
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)

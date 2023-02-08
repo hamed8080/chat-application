@@ -118,8 +118,13 @@ class TagsViewModel: ObservableObject {
 
     func appendTags(tags: [Tag]) {
         // remove older data to prevent duplicate on view
-        self.tags.removeAll(where: { cashedThread in tags.contains(where: { cashedThread.id == $0.id }) })
-        self.tags.append(contentsOf: tags)
+        tags.forEach { tag in
+            if let oldIndex = self.tags.firstIndex(where: { $0.id == tag.id }) {
+                self.tags[oldIndex] = tag
+            } else {
+                self.tags.append(tag)
+            }
+        }
     }
 
     func setSelectedTag(tag: Tag?, isSelected _: Bool) {

@@ -1,8 +1,8 @@
 //
 //  PSM.swift
-//  FanapPodChatSDK
+//  ChatApplication
 //
-//  Created by Hamed Hosseini on 2/9/21.
+//  Created by Hamed Hosseini on 5/27/21.
 //
 // TLDR 'Persistance Service Manager'
 import CoreData

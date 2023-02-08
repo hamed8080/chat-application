@@ -96,7 +96,7 @@ class LoginViewModel: ObservableObject {
             await MainActor.run {
                 TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
                 let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: selectedServerType)
-                UserConfigManager.createChatObjectAndConnect(userId: nil, config: config)
+                UserConfigManagerVM.instance.createChatObjectAndConnect(userId: nil, config: config)
                 state = .successLoggedIn
             }
         } catch {

@@ -136,6 +136,51 @@ extension Message {
         }
     }
 
+    var fileStringName: String {
+        switch messageType {
+        case .text:
+            return "text"
+        case .voice:
+            return "voice"
+        case .picture:
+            return "picture"
+        case .video:
+            return "video"
+        case .sound:
+            return "sound"
+        case .file:
+            return "file"
+        case .podSpacePicture:
+            return "picture"
+        case .podSpaceVideo:
+            return "video"
+        case .podSpaceSound:
+            return "sound"
+        case .podSpaceVoice:
+            return "voice"
+        case .podSpaceFile:
+            return "file"
+        case .link:
+            return "link"
+        case .endCall:
+            return "end_call"
+        case .startCall:
+            return "start_call"
+        case .sticker:
+            return "sticker"
+        case .location:
+            return "location"
+        case .participantJoin:
+            return "join"
+        case .participantLeft:
+            return "left"
+        case .none:
+            return "file"
+        case .some(.unknown):
+            return "file"
+        }
+    }
+
     var isFileType: Bool {
         let fileTypes: [MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice]
         return fileTypes.contains(messageType ?? .unknown)

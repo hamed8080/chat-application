@@ -12,10 +12,12 @@ import SwiftUI
 struct ImageLaoderView: View {
     @StateObject var imageLoader = ImageLoader()
     let url: String?
+    let metaData: String?
     let userName: String?
     let size: ImageSize
 
-    init(url: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
+    init(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
+        self.metaData = metaData
         self.url = url
         self.userName = userName
         self.size = size
@@ -30,8 +32,12 @@ struct ImageLaoderView: View {
                     .resizable()
             }
         }
+        .animation(.easeInOut, value: imageLoader.image)
+        .animation(.easeInOut, value: imageLoader.isImageReady)
         .onAppear {
-            imageLoader.fetch(url: url, userName: userName, size: size)
+            if !imageLoader.isImageReady {
+                imageLoader.fetch(url: url, metaData: metaData, userName: userName, size: size)
+            }
         }
     }
 }
