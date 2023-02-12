@@ -17,98 +17,65 @@ struct DateSelectionView: View {
     var completion: (Date, Date) -> Void
 
     var body: some View {
-        HStack {
-            Spacer()
-            VStack {
-                Spacer()
-                if !showEndDate {
-                    VStack {
-                        HStack {
-                            Text("Start Date")
-                                .foregroundColor(.textBlueColor)
-                                .font(.title.bold())
-                            Spacer()
-                            Image(systemName: "xmark.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 36, height: 36)
-                                .foregroundColor(.gray.opacity(0.5))
-                                .onTapGesture {
-                                    showDialog = false
-                                }
-                        }
+        ZStack {
+            if !showEndDate {
+                VStack {
+                    Text("Start Date")
+                        .foregroundColor(.textBlueColor)
+                        .font(.title.bold())
 
-                        DatePicker("", selection: $startDate)
-                            .labelsHidden()
-                            .padding(16)
+                    DatePicker("", selection: $startDate)
+                        .datePickerStyle(.graphical)
+
+                    Button {
+                        showEndDate.toggle()
+                    } label: {
+                        Label("Next".uppercased(), systemImage: "arrow.forward")
+                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
+                    }
+                    .fontWeight(.medium)
+                    .buttonStyle(.bordered)
+                    .frame(maxWidth: 428)
+                }
+            } else {
+                VStack {
+                    Text("End Date")
+                        .foregroundColor(.textBlueColor)
+                        .font(.title.bold())
+                    DatePicker("", selection: $endDate)
+                        .datePickerStyle(.graphical)
+                    HStack {
                         Button {
                             showEndDate.toggle()
                         } label: {
-                            Text("Next")
+                            Label("Back".uppercased(), systemImage: "arrow.backward")
+                                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                         }
+                        .fontWeight(.medium)
+                        .buttonStyle(.bordered)
+
+                        Button {
+                            showEndDate.toggle()
+                            completion(startDate, endDate)
+                        } label: {
+                            Label("Export".uppercased(), systemImage: "tray.and.arrow.down")
+                                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
+                        }
+                        .fontWeight(.medium)
                         .buttonStyle(.bordered)
                     }
-                    .frame(maxWidth: isIpad ? 420 : .infinity)
-                    .padding()
-                    .background(Color.bgColor)
-                    .cornerRadius(12)
-                } else {
-                    VStack {
-                        HStack {
-                            Text("End Date")
-                                .foregroundColor(.textBlueColor)
-                                .font(.title.bold())
-                            Spacer()
-                            Image(systemName: "xmark.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 36, height: 36)
-                                .foregroundColor(.gray.opacity(0.5))
-                                .onTapGesture {
-                                    showDialog = false
-                                }
-                        }
-
-                        DatePicker("", selection: $endDate)
-                            .labelsHidden()
-                            .padding(16)
-
-                        HStack {
-                            Button {
-                                showEndDate.toggle()
-                            } label: {
-                                Text("Back")
-                            }
-                            .buttonStyle(.bordered)
-
-                            Button {
-                                showEndDate.toggle()
-                                completion(startDate, endDate)
-                            } label: {
-                                Text("Export")
-                            }
-                            .buttonStyle(.bordered)
-                        }
-                    }
-                    .frame(maxWidth: 420)
-                    .padding()
-                    .background(Color.bgColor)
-                    .cornerRadius(12)
+                    .frame(maxWidth: 428)
                 }
-                Spacer()
             }
-            .padding(16)
-            Spacer()
         }
+        .animation(.easeInOut, value: showEndDate)
         .animation(.easeInOut, value: showDialog)
-        .animation(.spring(), value: showEndDate)
-        .background(.ultraThinMaterial)
     }
 }
 
 struct DateSelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        DateSelectionView(showDialog: .constant(true)) { _, _ in
+        DateSelectionView(showEndDate: false, showDialog: .constant(true)) { _, _ in
         }
         .preferredColorScheme(.dark)
         .environmentObject(AppState.shared)

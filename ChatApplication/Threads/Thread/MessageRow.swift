@@ -8,8 +8,37 @@
 import FanapPodChatSDK
 import SwiftUI
 
+class CalculationRowViewModel: ObservableObject {
+    var isCalculated = false
+    @Published var isEnglish = true
+    @Published var widthOfRow: CGFloat = 128
+    @Published var markdownTitle = AttributedString()
+
+    init() {}
+
+    @MainActor
+    func calculate(message: Message) {
+        if isCalculated { return }
+        isCalculated = true
+        Task(priority: .background) {
+            let isEnglish = message.message?.isEnglishString ?? true
+            let widthOfRow = message.calculatedMaxAndMinWidth
+            let markdownTitle = message.markdownTitle
+            await MainActor.run {
+                withAnimation { [weak self] in
+                    self?.isEnglish = isEnglish
+                    self?.widthOfRow = widthOfRow
+                    self?.markdownTitle = markdownTitle
+                    self?.objectWillChange.send()
+                }
+            }
+        }
+    }
+}
+
 struct MessageRow: View {
     var message: Message
+    var calculation: CalculationRowViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
     @State private(set) var showParticipants: Bool = false
     @Binding var isInEditMode: Bool
@@ -17,23 +46,24 @@ struct MessageRow: View {
 
     var body: some View {
         HStack {
-            if isInEditMode {
-                Image(systemName: isSelected ? "checkmark.circle" : "circle")
-                    .font(.title)
-                    .frame(width: 22, height: 22, alignment: .center)
-                    .foregroundColor(Color.blue)
-                    .padding(24)
-                    .onTapGesture {
-                        isSelected.toggle()
-                        viewModel.toggleSelectedMessage(message, isSelected)
-                    }
-            }
             if let type = message.type {
                 if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
+                    if isInEditMode {
+                        Image(systemName: isSelected ? "checkmark.circle" : "circle")
+                            .font(.title)
+                            .frame(width: 22, height: 22, alignment: .center)
+                            .foregroundColor(Color.blue)
+                            .padding(24)
+                            .onTapGesture {
+                                isSelected.toggle()
+                                viewModel.toggleSelectedMessage(message, isSelected)
+                            }
+                    }
                     if message.isMe {
                         Spacer()
                     }
                     TextMessageType(message: message)
+                        .environmentObject(calculation)
                 } else if type == .participantJoin || type == .participantLeft {
                     ParticipantMessageType(message: message)
                 } else if type == .endCall || type == .startCall {
@@ -41,6 +71,7 @@ struct MessageRow: View {
                 }
             }
         }
+        .animation(.easeInOut, value: isInEditMode)
     }
 }
 
@@ -101,6 +132,7 @@ struct ParticipantMessageType: View {
 
 struct TextMessageType: View {
     var message: Message
+    @EnvironmentObject var calculation: CalculationRowViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
 
     var body: some View {
@@ -137,8 +169,8 @@ struct TextMessageType: View {
                 }
 
                 // TODO: TEXT must be alignment and image muset be fit
-                Text(message.markdownTitle)
-                    .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
+                Text(calculation.markdownTitle)
+                    .multilineTextAlignment(calculation.isEnglish ? .leading : .trailing)
                     .padding(.top, 8)
                     .padding([.leading, .trailing, .top])
                     .font(Font(UIFont.systemFont(ofSize: 18)))
@@ -163,7 +195,7 @@ struct TextMessageType: View {
                     .padding(.bottom, 8)
                     .padding([.leading, .trailing])
             }
-            .frame(maxWidth: message.calculatedMaxAndMinWidth, alignment: .leading)
+            .frame(maxWidth: calculation.widthOfRow, alignment: .leading)
             .padding([.leading, .trailing], 0)
             .contentShape(Rectangle())
             .background(message.isMe ? Color.chatMeBg : Color.chatSenderBg)
@@ -238,6 +270,9 @@ struct TextMessageType: View {
                 }
                 .disabled(message.deletable == false)
             }
+            .onAppear {
+                calculation.calculate(message: message)
+            }
 
             if message.isMe {
                 sameUserAvatar
@@ -272,6 +307,7 @@ struct TextMessageType: View {
 struct ReplyInfoMessageRow: View {
     var message: Message
     @EnvironmentObject var threadViewModel: ThreadViewModel
+    @EnvironmentObject var calculation: CalculationRowViewModel
 
     var body: some View {
         HStack {
@@ -299,7 +335,7 @@ struct ReplyInfoMessageRow: View {
                 }
             }
         }
-        .frame(width: message.calculatedMaxAndMinWidth - 32, height: 48)
+        .frame(width: calculation.widthOfRow - 32, height: 48)
         .background(Color.replyBg)
         .cornerRadius(8)
         .padding([.top, .leading, .trailing], 12)
@@ -309,6 +345,9 @@ struct ReplyInfoMessageRow: View {
         .onTapGesture {
             print("tap on move to reply to")
             threadViewModel.setScrollToUniqueId("uniqueId?")
+        }
+        .onAppear {
+            calculation.calculate(message: message)
         }
     }
 }
@@ -382,6 +421,7 @@ struct MessageFooterView: View {
     var message: Message
     // We never use this viewModel but it will refresh view when a event on this message happened such as onSent, onDeliver,onSeen.
     @EnvironmentObject var viewModel: ThreadViewModel
+    @State var timeString: String = ""
 
     var body: some View {
         HStack {
@@ -394,7 +434,7 @@ struct MessageFooterView: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 0) {
                 HStack {
-                    Text(message.time?.date.timeAgoSinceDatecCondence ?? "")
+                    Text(timeString)
                         .foregroundColor(.darkGreen.opacity(0.8))
                         .font(.system(size: 12, design: .rounded))
                     if message.isMe {
@@ -415,7 +455,14 @@ struct MessageFooterView: View {
         .animation(.easeInOut, value: message.delivered)
         .animation(.easeInOut, value: message.seen)
         .animation(.easeInOut, value: message.edited)
-        .padding([.top], 4)
+        .padding(.top, 4)
+        .onAppear {
+            Task {
+                await MainActor.run {
+                    timeString = message.time?.date.timeAgoSinceDatecCondence ?? ""
+                }
+            }
+        }
     }
 }
 
@@ -423,11 +470,11 @@ struct MessageRow_Previews: PreviewProvider {
     static var previews: some View {
         let threadVM = ThreadViewModel()
         List {
-            MessageRow(message: MockData.message, isInEditMode: .constant(true))
+            MessageRow(message: MockData.message, calculation: .init(), isInEditMode: .constant(true))
                 .environmentObject(threadVM)
-            MessageRow(message: MockData.message, isInEditMode: .constant(true))
+            MessageRow(message: MockData.message, calculation: .init(), isInEditMode: .constant(true))
                 .environmentObject(threadVM)
-            MessageRow(message: MockData.message, isInEditMode: .constant(true))
+            MessageRow(message: MockData.message, calculation: .init(), isInEditMode: .constant(true))
                 .environmentObject(threadVM)
 
             ForEach(MockData.generateMessages(count: 5)) { _ in

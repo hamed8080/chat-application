@@ -29,6 +29,7 @@ struct ThreadView: View {
                 ThreadPinMessage(message: viewModel.messages.filter { $0.pinned == true }.first)
                 ZStack {
                     ThreadMessagesList(isInEditMode: $isInEditMode)
+                        .id(thread.id)
                     ThreadSearchList(searchMessageText: $searchMessageText)
                         .zIndex(1)
                 }
@@ -39,14 +40,6 @@ struct ThreadView: View {
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
                 viewModel.deleteMessages(viewModel.selectedMessages)
-            }
-            AttachmentDialog(showAttachmentDialog: $showAttachmentDialog, viewModel: ActionSheetViewModel(threadViewModel: viewModel))
-
-            if showDatePicker {
-                DateSelectionView(showDialog: $showDatePicker) { startDate, endDate in
-                    showDatePicker.toggle()
-                    viewModel.exportMessagesVM.exportChats(startDate: startDate, endDate: endDate)
-                }
             }
         }
         .environmentObject(viewModel)
@@ -84,6 +77,15 @@ struct ThreadView: View {
         .onAppear {
             viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
             viewModel.getHistory()
+        }
+        .sheet(isPresented: $showAttachmentDialog) {
+            AttachmentDialog(viewModel: ActionSheetViewModel(threadViewModel: viewModel), showAttachmentDialog: $showAttachmentDialog)
+        }
+        .sheet(isPresented: $showDatePicker) {
+            DateSelectionView(showDialog: $showDatePicker) { startDate, endDate in
+                showDatePicker.toggle()
+                viewModel.exportMessagesVM.exportChats(startDate: startDate, endDate: endDate)
+            }
         }
         .sheet(isPresented: $showExportFileURL, onDismiss: onDismiss) {
             if let exportFileUrl = viewModel.exportMessagesVM.filePath {
@@ -172,7 +174,8 @@ struct ThreadMessagesList: View {
                     LazyVStack(spacing: 8) {
                         ListLoadingView(isLoading: $viewModel.isLoading)
                         ForEach(viewModel.messages) { message in
-                            MessageRow(message: message, isInEditMode: isInEditMode)
+                            MessageRow(message: message, calculation: CalculationRowViewModel(), isInEditMode: isInEditMode)
+                                .id(message.uniqueId)
                                 .environmentObject(viewModel)
                                 .transition(.asymmetric(insertion: .opacity, removal: .slide))
                                 .onAppear {
