@@ -57,7 +57,7 @@ struct VerifyContentView: View {
                 .font(.title.weight(.medium))
                 .foregroundColor(.textBlueColor)
 
-            Text("Verification code sent to: **\(viewModel.phoneNumber)**")
+            Text("Verification code sent to: **\(viewModel.text)**")
                 .font(.subheadline.weight(.medium))
                 .foregroundColor(.textBlueColor)
 
@@ -147,7 +147,8 @@ struct LoginContentView: View {
                 .font(.headline.weight(.medium))
                 .foregroundColor(.textBlueColor.opacity(0.7))
 
-            TextField("Enter your Phone number here", text: $viewModel.phoneNumber)
+            let titleString = viewModel.selectedServerType == .integration ? "Enter your static token here." : "Enter your Phone number here."
+            TextField(titleString, text: $viewModel.text)
                 .keyboardType(.phonePad)
                 .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 8))
                 .focused($isFocused)
@@ -235,7 +236,7 @@ struct LoginView_Previews: PreviewProvider {
             VerifyContentView()
                 .environmentObject(vm)
                 .onAppear {
-                    vm.phoneNumber = "09369161601"
+                    vm.text = "09369161601"
                     vm.objectWillChange.send()
                 }
         }

@@ -22,9 +22,9 @@ enum LoginState: String, Identifiable, Hashable {
 
 class LoginViewModel: ObservableObject {
     @Published var isLoading = false
-
-    // this two variable need to be set from Binding so public setter needed
-    @Published var phoneNumber: String = ""
+    // This two variable need to be set from Binding so public setter needed.
+    // It will use for phone number or static token for the integration server.
+    @Published var text: String = ""
     @Published var verifyCodes: [String] = ["", "", "", "", "", ""]
     private(set) var isValidPhoneNumber: Bool?
     @Published var state: LoginState = .login
@@ -37,12 +37,23 @@ class LoginViewModel: ObservableObject {
     }
 
     func isPhoneNumberValid() -> Bool {
-        isValidPhoneNumber = !phoneNumber.isEmpty
-        return !phoneNumber.isEmpty
+        isValidPhoneNumber = !text.isEmpty
+        return !text.isEmpty
     }
 
     func login() async {
         showLoading(true)
+        if selectedServerType == .integration {
+            let ssoToken = SSOTokenResponseResult(accessToken: text,
+                                                  expiresIn: Int(Calendar.current.date(byAdding: .year, value: 1, to: .now)?.millisecondsSince1970 ?? 0),
+                                                  idToken: nil,
+                                                  refreshToken: nil,
+                                                  scope: nil,
+                                                  tokenType: nil)
+            await saveTokenAndCreateChatObject(ssoToken)
+            showLoading(false)
+            return
+        }
         let req = await HandshakeRequest(deviceName: UIDevice.current.name,
                                          deviceOs: UIDevice.current.systemName,
                                          deviceOsVersion: UIDevice.current.systemVersion,
@@ -54,7 +65,7 @@ class LoginViewModel: ObservableObject {
         do {
             let resp = try await session.data(for: urlReq)
             let response = try JSONDecoder().decode(HandshakeResponse.self, from: resp.0)
-            await requestOTP(identity: phoneNumber, handskahe: response)
+            await requestOTP(identity: text, handskahe: response)
         } catch {
             showError(.failed)
         }
@@ -82,10 +93,19 @@ class LoginViewModel: ObservableObject {
         showLoading(false)
     }
 
+    fileprivate func saveTokenAndCreateChatObject(_ ssoToken: SSOTokenResponseResult) async {
+        await MainActor.run {
+            TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
+            let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: selectedServerType)
+            UserConfigManagerVM.instance.createChatObjectAndConnect(userId: nil, config: config)
+            state = .successLoggedIn
+        }
+    }
+
     func verifyCode() async {
         guard let keyId = keyId else { return }
         showLoading(true)
-        let req = VerifyRequest(identity: phoneNumber, keyId: keyId, otp: verifyCodes.joined())
+        let req = VerifyRequest(identity: text, keyId: keyId, otp: verifyCodes.joined())
         var urlReq = URLRequest(url: URL(string: Routes.verify)!)
         urlReq.allHTTPHeaderFields = ["keyId": req.keyId]
         urlReq.httpBody = req.getParameterData()
@@ -93,12 +113,7 @@ class LoginViewModel: ObservableObject {
         do {
             let resp = try await session.data(for: urlReq)
             guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }
-            await MainActor.run {
-                TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
-                let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: selectedServerType)
-                UserConfigManagerVM.instance.createChatObjectAndConnect(userId: nil, config: config)
-                state = .successLoggedIn
-            }
+            await saveTokenAndCreateChatObject(ssoToken)
         } catch {
             showError(.verificationCodeIncorrect)
         }
@@ -107,7 +122,7 @@ class LoginViewModel: ObservableObject {
 
     func resetState() {
         state = .login
-        phoneNumber = ""
+        text = ""
         keyId = nil
         isLoading = false
         verifyCodes = ["", "", "", "", "", ""]
