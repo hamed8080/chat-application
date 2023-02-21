@@ -34,7 +34,7 @@ struct DownloadFileView: View {
                         Image(systemName: message.iconName)
                             .resizable()
                             .padding()
-                            .foregroundColor(Color(named: "icon_color").opacity(0.8))
+                            .foregroundColor(.iconColor.opacity(0.8))
                             .scaledToFit()
                             .frame(width: 64, height: 64)
                             .onTapGesture {
@@ -135,7 +135,7 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
 
     var url: URL? {
         let path = message?.isImage == true ? FanapPodChatSDK.Routes.images.rawValue : FanapPodChatSDK.Routes.files.rawValue
-        let url = "\(ChatManager.activeInstance.config.fileServer)\(path)/\(fileHashCode)"
+        let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(path)/\(fileHashCode)"
         return URL(string: url)
     }
 
@@ -175,7 +175,7 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     private func downloadFile() {
         state = .DOWNLOADING
         let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: true)
-        ChatManager.activeInstance.getFile(req) { downloadProgress in
+        ChatManager.activeInstance?.getFile(req) { downloadProgress in
             self.downloadPercent = downloadProgress.percent
         } completion: { [weak self] data, _, _, _ in
             self?.onResponse(data: data)
@@ -191,7 +191,7 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     private func downloadImage() {
         state = .DOWNLOADING
         let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true, size: .ACTUAL)
-        ChatManager.activeInstance.getImage(req) { [weak self] downloadProgress in
+        ChatManager.activeInstance?.getImage(req) { [weak self] downloadProgress in
             self?.downloadPercent = downloadProgress.percent
         } completion: { [weak self] data, _, _, _ in
             self?.onResponse(data: data)
@@ -214,14 +214,14 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
 
     func pauseDownload() {
         guard let downloadUniqueId = downloadUniqueId else { return }
-        ChatManager.activeInstance.manageDownload(uniqueId: downloadUniqueId, action: .suspend) { [weak self] _, _ in
+        ChatManager.activeInstance?.manageDownload(uniqueId: downloadUniqueId, action: .suspend) { [weak self] _, _ in
             self?.state = .PAUSED
         }
     }
 
     func resumeDownload() {
         guard let downloadUniqueId = downloadUniqueId else { return }
-        ChatManager.activeInstance.manageDownload(uniqueId: downloadUniqueId, action: .resume) { [weak self] _, _ in
+        ChatManager.activeInstance?.manageDownload(uniqueId: downloadUniqueId, action: .resume) { [weak self] _, _ in
             self?.state = .DOWNLOADING
         }
     }

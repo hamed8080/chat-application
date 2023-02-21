@@ -18,7 +18,6 @@ struct CallView: View {
     @State var location: CGPoint = .init(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height - 164)
     @State var showDetailPanel: Bool = false
     @State var showCallParticipants: Bool = false
-    @StateObject var imageLoder = ImageLoader()
 
     var gridColumns: [GridItem] {
         let videoCount = viewModel.activeUsers.count
@@ -67,15 +66,20 @@ struct CallView: View {
             self.statusBarStyle.currentStyle = .default
         }
         .onChange(of: recordingViewModel.recorder) { _ in
-            if let recorder = recordingViewModel.recorder {
-                showRecordingToast = true
-                imageLoder.fetch(url: recorder.image, userName: recorder.name ?? recorder.firstName)
-            }
+            showRecordingToast = recordingViewModel.recorder != nil
         }
         .toast(isShowing: $showRecordingToast,
                title: "The recording call is started.",
-               message: "The session is recording by \(recordingViewModel.recorder?.name ?? "").",
-               image: Image(uiImage: imageLoder.image))
+               message: "The session is recording by \(recordingViewModel.recorder?.name ?? "").") {
+            if let recorder = recordingViewModel.recorder {
+                ImageLaoderView(url: recorder.image, userName: recorder.name ?? recorder.firstName)
+                    .font(.system(size: 16).weight(.heavy))
+                    .foregroundColor(.white)
+                    .frame(width: 48, height: 48)
+                    .background(Color.blue.opacity(0.4))
+                    .cornerRadius(32)
+            }
+        }
         .onChange(of: viewModel.showCallView) { _ in
             if viewModel.showCallView == false {
                 presentationMode.wrappedValue.dismiss()
@@ -547,7 +551,7 @@ struct CallControlsView_Previews: PreviewProvider {
         let chatDataDto = ChatDataDTO(sendMetaData: "", screenShare: "", reciveMetaData: "", turnAddress: "", brokerAddressWeb: "", kurentoAddress: "")
         let startedCall = StartCall(certificateFile: "", clientDTO: clientDto, chatDataDto: chatDataDto, callName: nil, callImage: nil)
         viewModel.call = receiveCall
-        ChatManager.activeInstance.initWebRTC(startedCall)
+        ChatManager.activeInstance?.initWebRTC(startedCall)
         viewModel.onCallStarted(startedCall)
         recordingVM.isRecording = true
         recordingVM.startRecodrdingDate = Date()

@@ -20,6 +20,10 @@ class NavigationModel: ObservableObject {
     var cancelable: AnyCancellable?
 
     init() {
+        setup()
+    }
+
+    func setup() {
         sections.append(
             .init(title: "Chats", items:
                 [
@@ -51,6 +55,7 @@ class NavigationModel: ObservableObject {
     }
 
     func addTags(_ tags: [Tag]) {
+        if tags.count == 0 { return }
         tags.forEach { tag in
             let tagId = "Tag-\(tag.id)"
             let foldersSectionIndex = sections.firstIndex(where: { $0.title == "Folders" })
@@ -61,6 +66,11 @@ class NavigationModel: ObservableObject {
                 sections[foldersSectionIndex].items[oldtagIndex].tag = tag
             }
         }
+        objectWillChange.send()
+    }
+
+    func clear() {
+        sections = []
         objectWillChange.send()
     }
 

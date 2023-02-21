@@ -15,17 +15,18 @@ struct ThreadRow: View {
     var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
 
     var body: some View {
-        HStack {
-            ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
+        HStack(spacing: 8) {
+            ImageLaoderView(url: thread.computedImageURL, metaData: thread.metadata, userName: thread.title)
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
-                .frame(width: 64, height: 64)
+                .frame(width: 48, height: 48)
                 .background(Color.blue.opacity(0.4))
                 .cornerRadius(32)
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text(thread.title ?? "")
-                        .font(.headline)
+                        .lineLimit(1)
+                        .font(.headline.bold())
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()
@@ -33,42 +34,53 @@ struct ThreadRow: View {
                             .scaledToFit()
                             .foregroundColor(Color.gray)
                     }
+                    Spacer()
+                    if let timeString = thread.time?.date.timeAgoSinceDatecCondence {
+                        Text(timeString)
+                            .lineLimit(1)
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
+
+                    if let lastMessageSentStatus = thread.messageStatusIcon {
+                        Image(uiImage: lastMessageSentStatus.icon)
+                            .resizable()
+                            .frame(width: 14, height: 14)
+                            .foregroundColor(lastMessageSentStatus.fgColor)
+                            .font(.subheadline)
+                    }
                 }
+                HStack {
+                    ThreadLastMessageView(thread: thread)
+                    Spacer()
+                    if let unreadCountString = thread.unreadCountString {
+                        Text(unreadCountString)
+                            .font(.system(size: 13))
+                            .padding(8)
+                            .frame(height: 24)
+                            .frame(minWidth: 24)
+                            .foregroundColor(Color.white)
+                            .background(Color.orange)
+                            .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
+                    }
 
-                if let message = thread.lastMessageVO?.message?.prefix(100) {
-                    Text(message)
-                        .lineLimit(1)
-                        .font(.subheadline)
-                        .clipped()
+                    if thread.mentioned == true {
+                        Image(systemName: "at.circle.fill")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(Color.orange)
+                    }
+
+                    if thread.pin == true {
+                        Image(systemName: "pin.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(Color.orange)
+                    }
                 }
-                ThreadIsTypingView(threadId: thread.id ?? -1)
-            }
-            Spacer()
-            JoinToGroupCallView(thread: thread)
-            if let unreadCountString = thread.unreadCountString {
-                Text(unreadCountString)
-                    .font(.system(size: 13))
-                    .padding(8)
-                    .frame(height: 24)
-                    .frame(minWidth: 24)
-                    .foregroundColor(Color.white)
-                    .background(Color.orange)
-                    .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
-            }
-
-            if thread.mentioned == true {
-                Image(systemName: "at.circle.fill")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(Color.orange)
-            }
-
-            if thread.pin == true {
-                Image(systemName: "pin.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(Color.orange)
+                JoinToGroupCallView(thread: thread)
+                ThreadEventView(threadId: thread.id ?? -1)
             }
         }
         .padding([.leading, .trailing], 8)
@@ -196,16 +208,93 @@ struct JoinToGroupCallView: View {
     }
 }
 
-struct ThreadRow_Previews: PreviewProvider {
-    static var previews: some View {
-        let vm = ThreadViewModel()
-        ThreadRow(thread: MockData.thread)
-            .environmentObject(vm)
-            .onAppear {
-                vm.setup(thread: MockData.thread)
-                vm.thread?.pin = true
-                vm.thread?.unreadCount = 10
-                vm.objectWillChange.send()
+struct ThreadLastMessageView: View {
+    var thread: Conversation
+    var lastMsgVO: Message? { thread.lastMessageVO }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            if let name = lastMsgVO?.participant?.name, thread.group == true {
+                Text(name)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                    .foregroundColor(.orange)
             }
+
+            HStack {
+                if lastMsgVO?.isFileType == true, let iconName = lastMsgVO?.iconName {
+                    Image(systemName: iconName)
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(.blue)
+                }
+                if let message = thread.lastMessageVO?.message {
+                    Text(message)
+                        .lineLimit(thread.group == false ? 2 : 1)
+                        .foregroundColor(.secondaryLabel)
+                }
+
+                if lastMsgVO?.isFileType == true, lastMsgVO?.message.isEmptyOrNil == true, let fileStringName = lastMsgVO?.fileStringName {
+                    Text(fileStringName)
+                        .lineLimit(thread.group == false ? 2 : 1)
+                        .foregroundColor(.secondaryLabel)
+                }
+                Spacer()
+            }
+            if let message = lastMsgVO, message.type == .endCall || message.type == .startCall {
+                ConversationCallMessageType(message: message)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+        .multilineTextAlignment(.leading)
+        .truncationMode(Text.TruncationMode.tail)
+        .font(.subheadline)
+        .fontDesign(.rounded)
+        .clipped()
+    }
+}
+
+struct ConversationCallMessageType: View {
+    var message: Message
+    @Environment(\.colorScheme) var color
+
+    var body: some View {
+        HStack(alignment: .center) {
+            if let time = message.time, let date = Date(milliseconds: Int64(time)) {
+                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDatecCondence ?? "")")
+                    .font(.footnote)
+                    .foregroundColor(color == .dark ? .white.opacity(0.7) : .black.opacity(0.7))
+                    .padding(2)
+            }
+
+            Image(systemName: message.type == .startCall ? "arrow.down.left" : "arrow.up.right")
+                .resizable()
+                .frame(width: 10, height: 10)
+                .scaledToFit()
+                .foregroundColor(message.type == .startCall ? Color.green : Color.red)
+        }
+        .padding([.leading], 2)
+        .padding([.trailing], 8)
+        .background(Color.tableItem.opacity(color == .dark ? 1 : 0.3))
+        .cornerRadius(6)
+    }
+}
+
+struct ThreadRow_Previews: PreviewProvider {
+    static var thread: Conversation {
+        let thread = MockData.thread
+        thread.title = "Hamed  Hosseini"
+        thread.time = 1_675_186_636_000
+        thread.pin = true
+        thread.mute = true
+        thread.mentioned = true
+        thread.unreadCount = 20
+        return thread
+    }
+
+    static var previews: some View {
+        ThreadRow(thread: thread)
+            .environmentObject(ThreadsViewModel())
     }
 }

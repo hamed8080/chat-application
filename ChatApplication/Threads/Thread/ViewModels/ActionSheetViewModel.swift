@@ -16,9 +16,7 @@ class ActionSheetViewModel: ObservableObject {
     var totalCount = 0
     var offset = 0
 
-    var hasNext: Bool {
-        offset < totalCount
-    }
+    var hasNext: Bool { totalCount >= offset }
 
     var indexSet: IndexSet {
         let lastIndex = min(offset + fetchCount, totalCount - 1)
@@ -117,21 +115,27 @@ class ActionSheetViewModel: ObservableObject {
                 self?.threadViewModel.sendPhotos(index: index, uiImage: uiImage, info: info, item: item)
             }
         }
+        refresh()
     }
 
     func sendSelectedFile() {
         if let selectedFileUrl = selectedFileUrl {
             threadViewModel.sendFile(selectedFileUrl)
         }
-    }
-
-    func clearSelectedPhotos() {
-        selectedImageItems.removeAll()
+        refresh()
     }
 
     func loadMore() {
-        if !hasNext { return }
+        if hasNext { return }
         loadImages()
+    }
+
+    func refresh() {
+        selectedImageItems = []
+        offset = 0
+        totalCount = 0
+        allImageItems = []
+        isLoading = false
     }
 }
 

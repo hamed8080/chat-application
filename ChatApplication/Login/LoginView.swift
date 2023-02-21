@@ -7,16 +7,11 @@
 
 import SwiftUI
 
-enum ServerTypes: String, CaseIterable, Identifiable {
-    var id: Self { self }
-    case main
-    case sandbox
-    case integration
-}
-
 struct LoginView: View {
     @EnvironmentObject var viewModel: LoginViewModel
     @State var path: NavigationPath = .init()
+    var addNewuser = false
+    var onNewUserAdded: (() -> Void)?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -30,6 +25,8 @@ struct LoginView: View {
         .onReceive(viewModel.$state) { newState in
             if newState == .verify {
                 path.append(newState)
+            } else if newState == .successLoggedIn {
+                onNewUserAdded?()
             }
         }
         .animation(.easeOut, value: viewModel.state)
@@ -58,16 +55,16 @@ struct VerifyContentView: View {
                 .cornerRadius(8)
             Text("Enter Verication Code")
                 .font(.title.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue"))
+                .foregroundColor(.textBlueColor)
 
-            Text("Verification code sent to: **\(viewModel.phoneNumber)**")
+            Text("Verification code sent to: **\(viewModel.text)**")
                 .font(.subheadline.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue"))
+                .foregroundColor(.textBlueColor)
 
             HStack(spacing: 16) {
                 ForEach(0 ..< VerifyFocusFileds.allCases.endIndex, id: \.self) { i in
                     TextField("", text: $viewModel.verifyCodes[i])
-                        .frame(maxWidth: 42, minHeight: 64)
+                        .frame(minHeight: 64)
                         .textFieldStyle(.customBordered)
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.center)
@@ -84,7 +81,9 @@ struct VerifyContentView: View {
                             }
                             if viewModel.verifyCodes[i].count == 1, i == VerifyFocusFileds.allCases.count - 1 {
                                 // Submit automatically
-                                viewModel.verifyCode()
+                                Task {
+                                    await viewModel.verifyCode()
+                                }
                             }
                         }
                 }
@@ -92,7 +91,9 @@ struct VerifyContentView: View {
             .transition(.asymmetric(insertion: .scale(scale: 1), removal: .scale(scale: 0)))
 
             Button {
-                viewModel.verifyCode()
+                Task {
+                    await viewModel.verifyCode()
+                }
             } label: {
                 HStack(spacing: 8) {
                     if viewModel.isLoading {
@@ -111,6 +112,7 @@ struct VerifyContentView: View {
                 ErrorView(error: error)
             }
         }
+        .frame(maxWidth: 364)
         .onChange(of: viewModel.state) { newState in
             if newState == .failed || newState == .verificationCodeIncorrect {
                 hideKeyboard()
@@ -129,7 +131,6 @@ struct VerifyContentView: View {
 
 struct LoginContentView: View {
     @EnvironmentObject var viewModel: LoginViewModel
-    @State var selectedServer: ServerTypes = .main
     @FocusState var isFocused
 
     var body: some View {
@@ -141,12 +142,13 @@ struct LoginContentView: View {
                 .cornerRadius(8)
             Text("Login")
                 .font(.title.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue"))
+                .foregroundColor(.textBlueColor)
             Text("**Welcome** to Fanap Chats")
                 .font(.headline.weight(.medium))
-                .foregroundColor(Color(named: "text_color_blue").opacity(0.7))
+                .foregroundColor(.textBlueColor.opacity(0.7))
 
-            TextField("Enter your Phone number here", text: $viewModel.phoneNumber)
+            let titleString = viewModel.selectedServerType == .integration ? "Enter your static token here." : "Enter your Phone number here."
+            TextField(titleString, text: $viewModel.text)
                 .keyboardType(.phonePad)
                 .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 8))
                 .focused($isFocused)
@@ -157,7 +159,9 @@ struct LoginContentView: View {
 
             Button {
                 if viewModel.isPhoneNumberValid() {
-                    viewModel.login()
+                    Task {
+                        await viewModel.login()
+                    }
                 }
             } label: {
                 HStack(spacing: 8) {
@@ -176,19 +180,20 @@ struct LoginContentView: View {
                 ErrorView(error: "An error occured! try again.")
             }
 
-            Text("If you get in trouble with the login, contact the support team.")
+            Text("Contact the support team if you have gotten into trouble with the login.")
                 .multilineTextAlignment(.center)
                 .font(.subheadline.weight(.medium))
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(.gray.opacity(1))
 
-            Picker("Server", selection: $selectedServer) {
+            Picker("Server", selection: $viewModel.selectedServerType) {
                 ForEach(ServerTypes.allCases) { server in
                     Text(server.rawValue)
                 }
             }
             .pickerStyle(.menu)
         }
+        .frame(maxWidth: 420)
         .onChange(of: viewModel.state) { newState in
             if newState != .failed {
                 hideKeyboard()
@@ -231,7 +236,7 @@ struct LoginView_Previews: PreviewProvider {
             VerifyContentView()
                 .environmentObject(vm)
                 .onAppear {
-                    vm.phoneNumber = "09369161601"
+                    vm.text = "09369161601"
                     vm.objectWillChange.send()
                 }
         }

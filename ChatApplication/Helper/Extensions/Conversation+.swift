@@ -7,10 +7,11 @@
 
 import FanapPodChatSDK
 import Foundation
+import SwiftUI
 
-extension Conversation {
+public extension Conversation {
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
-    func updateValues(_ newThread: Conversation) {
+    internal func updateValues(_ newThread: Conversation) {
         admin = newThread.admin
         canEditInfo = newThread.canEditInfo
         canSpam = newThread.canSpam
@@ -51,11 +52,11 @@ extension Conversation {
         isArchive = newThread.isArchive
     }
 
-    var isCircleUnreadCount: Bool {
+    internal var isCircleUnreadCount: Bool {
         unreadCount ?? 0 < 10
     }
 
-    var unreadCountString: String? {
+    internal var unreadCountString: String? {
         if let unreadCount = unreadCount, unreadCount > 0 {
             let unreadCountString = String(unreadCount)
             let computedString = unreadCount < 1000 ? unreadCountString : "\(unreadCount / 1000)K+"
@@ -65,11 +66,26 @@ extension Conversation {
         }
     }
 
-    public var metaData: FileMetaData? {
+    var metaData: FileMetaData? {
         guard let metadata = metadata?.data(using: .utf8),
               let metaData = try? JSONDecoder().decode(FileMetaData.self, from: metadata) else { return nil }
         return metaData
     }
 
-    public var computedImageURL: String? { image ?? metaData?.file?.link }
+    var computedImageURL: String? { image ?? metaData?.file?.link }
+
+    var isLastMessageMine: Bool {
+        (lastMessageVO?.ownerId ?? lastMessageVO?.participant?.id) ?? 0 == AppState.shared.user?.id
+    }
+
+    var messageStatusIcon: (icon: UIImage, fgColor: Color)? {
+        if !isLastMessageMine { return nil }
+        if partnerLastSeenMessageId == lastMessageVO?.id {
+            return (Message.seenImage!, .orange)
+        } else if partnerLastDeliveredMessageId == lastMessageVO?.id ?? 0 {
+            return (Message.seenImage!, .gray.opacity(0.7))
+        } else if lastMessageVO?.id ?? 0 > partnerLastSeenMessageId ?? 0 {
+            return (Message.sentImage!, .gray.opacity(0.7))
+        } else { return nil }
+    }
 }

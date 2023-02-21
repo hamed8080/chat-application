@@ -69,11 +69,11 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
     }
 
     func startRecording(_ callId: Int) {
-        ChatManager.activeInstance.startRecording(.init(subjectId: callId), onCallStartRecording)
+        ChatManager.activeInstance?.startRecording(.init(subjectId: callId), onCallStartRecording)
     }
 
     func stopRecording(_ callId: Int) {
-        ChatManager.activeInstance.stopRecording(.init(subjectId: callId), onCallStopRecording)
+        ChatManager.activeInstance?.stopRecording(.init(subjectId: callId), onCallStopRecording)
     }
 
     func onCallStartRecording(_ response: ChatResponse<Participant>) {

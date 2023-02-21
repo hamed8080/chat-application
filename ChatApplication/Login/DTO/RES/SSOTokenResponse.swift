@@ -6,11 +6,11 @@
 //
 
 import Foundation
-struct SSOTokenResponse: Codable {
+public struct SSOTokenResponse: Codable {
     let result: SSOTokenResponseResult?
 }
 
-struct SSOTokenResponseResult: Codable {
+public struct SSOTokenResponseResult: Codable {
     let accessToken: String?
     let expiresIn: Int
     let idToken: String?

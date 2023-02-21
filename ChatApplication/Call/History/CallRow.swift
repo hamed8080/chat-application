@@ -33,7 +33,7 @@ struct CallRow: View {
                         .foregroundColor(call.isIncomingCall(currentUserId: AppState.shared.user?.id) ? Color.red : Color.green)
 
                     if let createTime = call.createTime, let date = Date(milliseconds: Int64(createTime)) {
-                        Text(date.getShortFormatOfDate())
+                        Text(date.timeAgoSinceDatecCondence ?? "")
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                     }

@@ -11,7 +11,7 @@ import Foundation
 import SwiftUI
 
 class ParticipantsViewModel: ObservableObject {
-    private var thread: Conversation
+    var thread: Conversation?
     private var hasNext = true
     private var count = 15
     private var offset = 0
@@ -20,8 +20,10 @@ class ParticipantsViewModel: ObservableObject {
     @Published var isLoading = false
     @Published private(set) var totalCount = 0
     @Published private(set) var participants: [Participant] = []
+    var searchText: String = ""
+    var searchType: SearchParticipantType = .name
 
-    init(thread: Conversation) {
+    init(thread: Conversation? = nil) {
         self.thread = thread
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
@@ -50,7 +52,42 @@ class ParticipantsViewModel: ObservableObject {
 
     func getParticipants() {
         isLoading = true
-        ChatManager.activeInstance.getThreadParticipants(.init(threadId: thread.id ?? 0, offset: offset, count: count), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.getThreadParticipants(.init(threadId: thread?.id ?? 0, offset: offset, count: count), completion: onServerResponse, cacheResponse: onCacheResponse)
+    }
+
+    func searchParticipants(text: String, type: SearchParticipantType) {
+        isLoading = true
+        searchText = text
+        searchType = type
+        let req = ThreadParticipantsRequest(threadId: thread?.id ?? -1)
+        switch type {
+        case .name:
+            req.name = text
+        case .username:
+            req.username = text
+        case .cellphoneNumber:
+            req.cellphoneNumber = text
+        case .admin:
+            req.admin = true
+        }
+        ChatManager.activeInstance?.getThreadParticipants(req, completion: onServerResponse, cacheResponse: onCacheResponse)
+    }
+
+    var filtered: [Participant] {
+        if !searchText.isEmpty {
+            switch searchType {
+            case .name:
+                return participants.filter { $0.name?.contains(searchText) ?? false }
+            case .username:
+                return participants.filter { $0.username?.contains(searchText) ?? false }
+            case .cellphoneNumber:
+                return participants.filter { $0.cellphoneNumber?.contains(searchText) ?? false }
+            case .admin:
+                return participants.filter { $0.admin == true }
+            }
+        } else {
+            return participants
+        }
     }
 
     func loadMore() {
@@ -91,8 +128,8 @@ class ParticipantsViewModel: ObservableObject {
     }
 
     func removePartitipant(_ participant: Participant) {
-        guard let id = participant.id else { return }
-        ChatManager.activeInstance.removeParticipants(.init(participantId: id, threadId: thread.id ?? 0)) { [weak self] response in
+        guard let id = participant.id, let threadId = thread?.id else { return }
+        ChatManager.activeInstance?.removeParticipants(.init(participantId: id, threadId: threadId)) { [weak self] response in
             if response.error == nil, let participant = response.result?.first {
                 self?.removeParticipant(participant)
             }

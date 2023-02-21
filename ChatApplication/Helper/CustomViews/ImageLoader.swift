@@ -53,14 +53,23 @@ class ImageLoader: ObservableObject {
         return nil
     }
 
+    var fileServerURL: URL? {
+        guard let fileServer = ChatManager.activeInstance?.config.fileServer else { return nil }
+        return URL(string: fileServer)
+    }
+
     private var oldURLHash: String? {
-        guard let URLObject = URLObject else { return nil }
-        return URLComponents(url: URLObject, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "hash" })?.value
+        guard let urlObject = URLObject, let comp = URLComponents(url: urlObject, resolvingAgainstBaseURL: true) else { return nil }
+        if urlObject.host == fileServerURL?.host {
+            return urlObject.lastPathComponent
+        }
+        return comp.queryItems?.first(where: { $0.name == "hash" })?.value
     }
 
     private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
 
-    func fetch(url: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
+    func fetch(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
+        fileMetadata = metaData
         self.url = url
         self.userName = userName
         self.size = size
@@ -79,7 +88,7 @@ class ImageLoader: ObservableObject {
     }
 
     private func getFromSDK() {
-        ChatManager.activeInstance.getImage(.init(hashCode: hashCode, size: size ?? .LARG)) { _ in
+        ChatManager.activeInstance?.getImage(.init(hashCode: hashCode, size: size ?? .LARG)) { _ in
         } completion: { [weak self] data, _, _, _ in
             self?.update(data: data)
             self?.storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.

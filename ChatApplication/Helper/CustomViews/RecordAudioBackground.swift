@@ -50,7 +50,7 @@ struct RecordAudioBackground: View {
         RoundedRectangle(cornerRadius: cornerRadius)
             .scale(x: scale, y: scale)
             .rotation(Angle(degrees: degrees[index]))
-            .foregroundColor(Color(named: "text_color_blue").opacity(Double(index) * 80 / 100))
+            .foregroundColor(.textBlueColor.opacity(Double(index) * 80 / 100))
             .blur(radius: CGFloat(index) * 80 / 100)
     }
 }

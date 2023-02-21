@@ -7,22 +7,26 @@
 
 import SwiftUI
 
-struct TopNotifyViewModifire: ViewModifier {
+struct TopNotifyViewModifire<ContentView: View>: ViewModifier {
     @Binding private var isShowing: Bool
     let title: String?
     let message: String
-    let image: Image?
     let duration: TimeInterval
     let backgroundColor: Color
-    let imageColor: Color
+    let leadingView: () -> ContentView
 
-    internal init(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval, backgroundColor: Color, imageColor: Color = .clear) {
+    internal init(isShowing: Binding<Bool>,
+                  title: String? = nil,
+                  message: String,
+                  duration: TimeInterval,
+                  backgroundColor: Color,
+                  @ViewBuilder leadingView: @escaping () -> ContentView)
+    {
         _isShowing = isShowing
         self.title = title
         self.message = message
         self.duration = duration
-        self.image = image
-        self.imageColor = imageColor
+        self.leadingView = leadingView
         self.backgroundColor = backgroundColor
     }
 
@@ -63,13 +67,7 @@ struct TopNotifyViewModifire: ViewModifier {
                     .font(.title2.bold())
             }
             HStack(spacing: 0) {
-                if let image = image {
-                    image
-                        .resizable()
-                        .frame(width: 36, height: 36)
-                        .cornerRadius(4)
-                        .foregroundColor(imageColor)
-                }
+                leadingView()
                 Text(message)
                     .font(.subheadline)
                     .padding()
@@ -81,16 +79,21 @@ struct TopNotifyViewModifire: ViewModifier {
 }
 
 extension View {
-    func toast(isShowing: Binding<Bool>, title: String? = nil, message: String, image: Image? = nil, duration: TimeInterval = 3, backgroundColor: Color = Color(named: "background"), imageColor: Color = .clear) -> some View {
+    func toast<ContentView: View>(isShowing: Binding<Bool>,
+                                  title: String? = nil,
+                                  message: String,
+                                  duration: TimeInterval = 3,
+                                  backgroundColor: Color = .bgColor,
+                                  @ViewBuilder leadingView: @escaping () -> ContentView) -> some View
+    {
         modifier(
             TopNotifyViewModifire(
                 isShowing: isShowing,
                 title: title,
                 message: message,
-                image: image,
                 duration: duration,
                 backgroundColor: backgroundColor,
-                imageColor: imageColor
+                leadingView: leadingView
             )
         )
     }
@@ -101,10 +104,9 @@ struct TestView: View {
 
     var body: some View {
         Text("hello")
-            .toast(isShowing: $isShowing,
-                   title: "Test Title",
-                   message: "Test message",
-                   image: Image(uiImage: UIImage(named: "avatar.png")!))
+            .toast(isShowing: $isShowing, title: "Test Title", message: "Test message") {
+                Image(uiImage: UIImage(named: "avatar.png")!)
+            }
             .onTapGesture {
                 isShowing = true
             }

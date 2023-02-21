@@ -6,7 +6,7 @@
         "fileServer": "http://172.16.110.76:8080",
         "serverName": "chatlocal",
         "debugToken": "9c627a9125d04ebf8455bf57bb33d2a9",
-        "server": "integeration"
+        "server": "integration"
     },
     {
         "socketAddresss": "wss://chat-sandbox.pod.ir/ws",

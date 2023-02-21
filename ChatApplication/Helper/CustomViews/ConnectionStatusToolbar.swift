@@ -15,8 +15,7 @@ struct ConnectionStatusToolbar: View {
         if connectionStatus != .connected {
             Text("\(connectionStatus.stringValue)...")
                 .font(.subheadline.bold())
-                .foregroundColor(Color(named: "text_color_blue"))
-                .animation(.easeInOut, value: connectionStatus)
+                .foregroundColor(.textBlueColor)
                 .onReceive(appstate.$connectionStatus, perform: { newSate in
                     self.connectionStatus = newSate
                 })

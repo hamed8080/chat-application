@@ -15,17 +15,13 @@ struct StartThreadResultModel {
 }
 
 struct StartThreadContactPickerView: View {
-    @StateObject var viewModel: StartThreadContactPickerViewModel
     @EnvironmentObject var contactsVM: ContactsViewModel
-    @EnvironmentObject var appState: AppState
-    @State var title: String = "New Message"
-    @State var subtitle: String = ""
-    @State var isInMultiSelectMode = false
+    @State private var isInMultiSelectMode = false
     var onCompletedConfigCreateThread: (StartThreadResultModel) -> Void
     @State var startThreadModel: StartThreadResultModel = .init()
-    @State var showGroupTitleView: Bool = false
-    @State var showEnterGroupNameError: Bool = false
-    @State var groupTitle: String = ""
+    @State private var showGroupTitleView: Bool = false
+    @State private var showEnterGroupNameError: Bool = false
+    @State private var groupTitle: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -74,12 +70,13 @@ struct StartThreadContactPickerView: View {
                                     contactsVM.loadMore()
                                 }
                             }
-                    }.onDelete(perform: { _ in
-                        //                        guard let thread = indexSet.map({ viewModel.model.threads[$0]}).first else {return}
-                        //                        viewModel.deleteThread(thread)
-                    })
+                    }
                 }
-                .listStyle(.plain)
+                .listStyle(.insetGrouped)
+                .overlay(alignment: .bottom) {
+                    ListLoadingView(isLoading: $contactsVM.isLoading)
+                        .padding(.bottom)
+                }
             }
         }
         .padding(0)
@@ -145,13 +142,9 @@ struct StartThreadButton: View {
 
 struct StartThreadContactPickerView_Previews: PreviewProvider {
     static var previews: some View {
-        let appState = AppState.shared
-        let vm = StartThreadContactPickerViewModel()
         let contactVM = ContactsViewModel()
-        StartThreadContactPickerView(viewModel: vm, onCompletedConfigCreateThread: { _ in
-        })
-        .environmentObject(contactVM)
-        .preferredColorScheme(.dark)
-        .environmentObject(appState)
+        StartThreadContactPickerView { _ in }
+            .environmentObject(contactVM)
+            .preferredColorScheme(.dark)
     }
 }

@@ -92,7 +92,7 @@ class UploadFileViewModel: ObservableObject {
     }
 
     func uploadFile(_ message: SendTextMessageRequest, _ uploadFileRequest: UploadFileRequest) {
-        ChatManager.activeInstance.sendFileMessage(textMessage: message, uploadFile: uploadFileRequest) { uploadFileProgress, _ in
+        ChatManager.activeInstance?.sendFileMessage(textMessage: message, uploadFile: uploadFileRequest) { uploadFileProgress, _ in
             self.uploadPercent = uploadFileProgress?.percent ?? 0
         } onSent: { response in
             print(response.result ?? "")
@@ -112,14 +112,14 @@ class UploadFileViewModel: ObservableObject {
 
     func pauseUpload() {
         guard let uploadUniqueId = uploadUniqueId else { return }
-        ChatManager.activeInstance.manageUpload(uniqueId: uploadUniqueId, action: .suspend) { _, _ in
+        ChatManager.activeInstance?.manageUpload(uniqueId: uploadUniqueId, action: .suspend) { _, _ in
             self.state = .PAUSED
         }
     }
 
     func resumeUpload() {
         guard let uploadUniqueId = uploadUniqueId else { return }
-        ChatManager.activeInstance.manageUpload(uniqueId: uploadUniqueId, action: .resume) { _, _ in
+        ChatManager.activeInstance?.manageUpload(uniqueId: uploadUniqueId, action: .resume) { _, _ in
             self.state = .UPLOADING
         }
     }

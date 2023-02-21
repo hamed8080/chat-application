@@ -62,7 +62,7 @@ class CallManager: NSObject, ObservableObject {
             // Trigger the call to be answered via the underlying network service.
             let callState = CallViewModel.shared
             if let receiveCall = callState.call {
-                ChatManager.activeInstance.acceptCall(.init(callId: receiveCall.callId, client: .init(mute: !callState.answerType.mute, video: callState.answerType.video)))
+                ChatManager.activeInstance?.acceptCall(.init(callId: receiveCall.callId, client: .init(mute: !callState.answerType.mute, video: callState.answerType.video)))
             }
         } else {
             let uuid = CallViewModel.shared.uuid

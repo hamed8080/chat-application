@@ -74,10 +74,11 @@ extension String {
         }
     }
 
+    static let languageRecognizer = NLLanguageRecognizer()
     var isEnglishString: Bool {
-        let languageRecognizer = NLLanguageRecognizer()
-        languageRecognizer.processString(self)
-        guard let code = languageRecognizer.dominantLanguage?.rawValue else { return true }
+        String.languageRecognizer.processString(self)
+        guard let code = String.languageRecognizer.dominantLanguage?.rawValue else { return true }
+        String.languageRecognizer.reset()
         return Locale.current.localizedString(forIdentifier: code) == "English"
     }
 
@@ -102,5 +103,11 @@ extension String {
 
     mutating func capitalizeFirstLetter() {
         self = capitalizingFirstLetter()
+    }
+}
+
+extension String? {
+    var isEmptyOrNil: Bool {
+        self == nil || self?.isEmpty == true
     }
 }

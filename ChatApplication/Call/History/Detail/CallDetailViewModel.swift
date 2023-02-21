@@ -27,7 +27,7 @@ class CallDetailViewModel: ObservableObject {
 
     func getCallsHistory() {
         guard let threadId = model.call.conversation?.id else { return }
-        ChatManager.activeInstance.callsHistory(.init(count: 10, offset: 1, threadId: threadId)) { [weak self] response in
+        ChatManager.activeInstance?.callsHistory(.init(count: 10, offset: 1, threadId: threadId)) { [weak self] response in
             if let calls = response.result {
                 self?.model.setCalls(calls: calls)
                 self?.model.setHasNext(response.pagination?.hasNext ?? false)
@@ -40,7 +40,7 @@ class CallDetailViewModel: ObservableObject {
         if !model.hasNext || isLoading { return }
         isLoading = true
         model.preparePaginiation()
-        ChatManager.activeInstance.callsHistory(.init(count: model.count, offset: model.offset, threadId: threadId)) { [weak self] response in
+        ChatManager.activeInstance?.callsHistory(.init(count: model.count, offset: model.offset, threadId: threadId)) { [weak self] response in
             if let calls = response.result {
                 self?.model.appendCalls(calls: calls)
                 self?.isLoading = false

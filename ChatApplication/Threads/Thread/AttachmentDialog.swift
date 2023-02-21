@@ -8,135 +8,117 @@
 import SwiftUI
 
 struct AttachmentDialog: View {
-    @Binding var showAttachmentDialog: Bool
-    @StateObject var viewModel: ActionSheetViewModel
-
-    var body: some View {
-        VStack {
-            Spacer()
-            CustomActionSheetView(viewModel: viewModel, showAttachmentDialog: $showAttachmentDialog)
-                .offset(y: showAttachmentDialog ? 0 : UIScreen.main.bounds.height)
-                .animation(.spring(), value: showAttachmentDialog)
-                .animation(.spring(), value: viewModel.selectedImageItems.count)
-        }
-        .frame(maxWidth: showAttachmentDialog ? .infinity : 0, maxHeight: showAttachmentDialog ? .infinity : 0) // frame must be set to zero because textview will be coverd with auto correction on keyboard
-        .background((showAttachmentDialog ? Color.gray.opacity(0.3).ignoresSafeArea() : Color.clear.ignoresSafeArea())
-            .onTapGesture {
-                viewModel.clearSelectedPhotos()
-                showAttachmentDialog.toggle()
-            }
-        )
-        .edgesIgnoringSafeArea(.bottom)
-    }
-}
-
-struct CustomActionSheetView: View {
     @StateObject var viewModel: ActionSheetViewModel
     @Binding var showAttachmentDialog: Bool
     @State var showDocumentPicker: Bool = false
 
     var body: some View {
-        VStack(spacing: 24) {
-            if viewModel.allImageItems.count > 0 {
-                ScrollView(.horizontal) {
-                    LazyHStack(spacing: 8) {
-                        ForEach(viewModel.allImageItems) { item in
-                            ZStack {
-                                Image(uiImage: item.image)
-                                    .resizable()
-                                    .frame(width: 96, height: 96)
-                                    .scaledToFit()
-                                    .cornerRadius(12)
+        VStack(alignment: .leading, spacing: 24) {
+            Spacer()
+            let count = viewModel.selectedImageItems.count
+            let text = count > 0 ? "\(count) selected" : "Nothing Has been selected."
+            Text(verbatim: text)
+                .multilineTextAlignment(.center)
+                .font(.title2.bold())
+                .foregroundColor(.tableItem)
+                .frame(minWidth: 0, maxWidth: .infinity)
+            Spacer()
+            PhotoGridView()
+                .environmentObject(viewModel)
+            if viewModel.selectedImageItems.count > 0 {
+                Button {
+                    viewModel.sendSelectedPhotos()
+                    showAttachmentDialog.toggle()
+                } label: {
+                    Label("Send", systemImage: "paperplane")
+                }
 
-                                let isSelected = viewModel.selectedImageItems.contains(where: { $0.phAsset === item.phAsset })
-                                VStack {
-                                    HStack {
-                                        Spacer()
-                                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle.fill")
+                Button(role: .destructive) {
+                    viewModel.refresh()
+                } label: {
+                    Label("Close", systemImage: "xmark.square")
+                }
+            } else {
+                Button {
+                    showAttachmentDialog.toggle()
+                } label: {
+                    Label("Photo or Video", systemImage: "photo")
+                }
+
+                Button {
+                    showAttachmentDialog.toggle()
+                    showDocumentPicker = true
+                } label: {
+                    Label("File", systemImage: "doc")
+                }
+
+                Button {
+                    showAttachmentDialog.toggle()
+                } label: {
+                    Label("Location", systemImage: "location.viewfinder")
+                }
+
+                Button {
+                    showAttachmentDialog.toggle()
+                } label: {
+                    Label("Contact", systemImage: "person.2.crop.square.stack")
+                }
+            }
+        }
+        .animation(.easeInOut, value: viewModel.selectedImageItems.count)
+        .padding()
+        .sheet(isPresented: $showDocumentPicker, onDismiss: nil) {
+            DocumentPicker(fileUrl: $viewModel.selectedFileUrl, showDocumentPicker: $showDocumentPicker)
+        }
+    }
+}
+
+struct PhotoGridView: View {
+    @EnvironmentObject var viewModel: ActionSheetViewModel
+
+    var body: some View {
+        ScrollView(.horizontal) {
+            LazyHStack(spacing: 8) {
+                ForEach(viewModel.allImageItems) { item in
+                    Image(uiImage: item.image)
+                        .resizable()
+                        .frame(width: 96, height: 96)
+                        .scaledToFit()
+                        .overlay {
+                            VStack {
+                                HStack {
+                                    Spacer()
+                                    let isSelected = viewModel.selectedImageItems.contains(where: { $0.phAsset === item.phAsset })
+                                    if isSelected {
+                                        Image(systemName: "checkmark.circle.fill")
                                             .resizable()
                                             .frame(width: 24, height: 24)
                                             .font(.title)
                                             .padding([.top, .trailing], 4)
                                             .foregroundColor(Color.blue)
                                     }
-                                    Spacer()
                                 }
-                            }
-                            .onAppear(perform: {
-                                if viewModel.allImageItems.last == item {
-                                    viewModel.loadMore()
-                                }
-                            })
-                            .onTapGesture {
-                                viewModel.toggleSelectedImage(item)
+                                Spacer()
                             }
                         }
-                        if viewModel.isLoading {
-                            LoadingView(isAnimating: viewModel.isLoading)
+                        .onAppear {
+                            if viewModel.allImageItems.last?.id.uuidString == item.id.uuidString {
+                                viewModel.loadMore()
+                            }
                         }
-                    }
-                    .frame(height: 96)
-                    .padding([.leading], 16)
+                        .onTapGesture {
+                            viewModel.toggleSelectedImage(item)
+                        }
+                }
+                if viewModel.isLoading {
+                    LoadingView(isAnimating: viewModel.isLoading)
                 }
             }
-            VStack(alignment: .leading, spacing: 16) {
-                if viewModel.selectedImageItems.count > 0 {
-                    AttachmentButton(title: "Send", imageName: "paperplane") {
-                        viewModel.sendSelectedPhotos()
-                        showAttachmentDialog.toggle()
-                    }
-
-                    AttachmentButton(title: "Close", imageName: "xmark.square", hideDivider: true) {
-                        viewModel.clearSelectedPhotos()
-                    }
-                } else {
-                    AttachmentButton(title: "Photo or Video", imageName: "photo.on.rectangle.angled") {}
-
-                    AttachmentButton(title: "File", imageName: "doc") {
-                        showDocumentPicker = true
-                        showAttachmentDialog = false
-                    }
-
-                    AttachmentButton(title: "Location", imageName: "location.viewfinder") {}
-
-                    AttachmentButton(title: "Contact", imageName: "person.2.crop.square.stack", hideDivider: true) {}
-                }
-            }
-            .padding([.leading], 24)
-            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         }
-        .sheet(isPresented: $showDocumentPicker, onDismiss: nil) {
-            DocumentPicker(fileUrl: $viewModel.selectedFileUrl, showDocumentPicker: $showDocumentPicker)
-        }
-        .onChange(of: showAttachmentDialog) { newValue in
-            if newValue {
-                viewModel.loadImages()
-            }
-        }
-        .padding(.top, 24)
-        .padding(.bottom, ((UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.safeAreaInsets.bottom ?? 0) + 10)
-        .background(.thinMaterial)
-        .cornerRadius(16, corners: [.topLeft, .topRight])
-    }
-}
-
-struct AttachmentButton: View {
-    let title: String
-    let imageName: String
-    var hideDivider = false
-    var action: () -> Void
-
-    var body: some View {
-        Button {
-            action()
-        } label: {
-            Label(title, systemImage: imageName)
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 48, alignment: .leading)
-        }
-        .font(.title3.weight(.medium))
-        .contentShape(Rectangle(), eoFill: true)
-        if !hideDivider {
-            Divider()
+        .frame(height: 96)
+        .animation(.easeInOut, value: viewModel.selectedImageItems.count)
+        .onAppear {
+            viewModel.loadImages()
         }
     }
 }
@@ -144,8 +126,7 @@ struct AttachmentButton: View {
 struct AttachmentDialog_Previews: PreviewProvider {
     static var previews: some View {
         let vm = ThreadViewModel()
-        AttachmentDialog(showAttachmentDialog: .constant(true),
-                         viewModel: ActionSheetViewModel(threadViewModel: vm))
+        AttachmentDialog(viewModel: ActionSheetViewModel(threadViewModel: vm), showAttachmentDialog: .constant(true))
             .onAppear {
                 vm.setup(thread: MockData.thread)
             }

@@ -26,11 +26,11 @@ extension ThreadsViewModel: ArchiveThreadProtocol {
     }
 
     func archive(_ threadId: Int) {
-        ChatManager.activeInstance.archiveThread(.init(subjectId: threadId), onArchiveChanged)
+        ChatManager.activeInstance?.archiveThread(.init(subjectId: threadId), onArchiveChanged)
     }
 
     func unarchive(_ threadId: Int) {
-        ChatManager.activeInstance.unarchiveThread(.init(subjectId: threadId), onArchiveChanged)
+        ChatManager.activeInstance?.unarchiveThread(.init(subjectId: threadId), onArchiveChanged)
     }
 
     func onArchiveChanged(_ response: ChatResponse<Int>) {

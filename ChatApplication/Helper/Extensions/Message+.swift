@@ -30,19 +30,22 @@ extension Message {
     var fileName: String? { uploadFile?.uploadFileRequest.fileName }
     var type: MessageType? { messageType ?? .unknown }
     var isTextMessageType: Bool { type == .text || isFileType }
-    var currentUser: User? { ChatManager.activeInstance.userInfo ?? AppState.shared.user }
+    var currentUser: User? { ChatManager.activeInstance?.userInfo ?? AppState.shared.user }
     var isMe: Bool { (ownerId ?? 0 == currentUser?.id ?? 0) || isUnsentMessage || isUploadMessage }
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol }
     /// Check id because we know that the message was successfully added in server chat.
     var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
 
     var calculatedMaxAndMinWidth: CGFloat {
-        let minWidth: CGFloat = isUnsentMessage ? 148 : isFileType ? 164 : 128
+        let hasReplyMessage = replyInfo != nil
+        let minWidth: CGFloat = isUnsentMessage ? 148 : isFileType ? 164 : hasReplyMessage ? 246 : 128
         let isIpad = UIDevice.current.userInterfaceIdiom == .pad
         let maxDeviceSize: CGFloat = isIpad ? 420 : 320
         let messageWidth = messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 22)) + 16
+        let timeWidth = time?.date.timeAgoSinceDatecCondence?.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) ?? 0
         let calculatedWidth: CGFloat = min(messageWidth, maxDeviceSize)
-        let maxWidth = max(minWidth, calculatedWidth)
+        let maxFooterAndMsg: CGFloat = max(timeWidth, calculatedWidth)
+        let maxWidth = max(minWidth, maxFooterAndMsg)
         return maxWidth
     }
 
@@ -133,6 +136,51 @@ extension Message {
         }
     }
 
+    var fileStringName: String {
+        switch messageType {
+        case .text:
+            return "text"
+        case .voice:
+            return "voice"
+        case .picture:
+            return "picture"
+        case .video:
+            return "video"
+        case .sound:
+            return "sound"
+        case .file:
+            return "file"
+        case .podSpacePicture:
+            return "picture"
+        case .podSpaceVideo:
+            return "video"
+        case .podSpaceSound:
+            return "sound"
+        case .podSpaceVoice:
+            return "voice"
+        case .podSpaceFile:
+            return "file"
+        case .link:
+            return "link"
+        case .endCall:
+            return "end_call"
+        case .startCall:
+            return "start_call"
+        case .sticker:
+            return "sticker"
+        case .location:
+            return "location"
+        case .participantJoin:
+            return "join"
+        case .participantLeft:
+            return "left"
+        case .none:
+            return "file"
+        case .some(.unknown):
+            return "file"
+        }
+    }
+
     var isFileType: Bool {
         let fileTypes: [MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice]
         return fileTypes.contains(messageType ?? .unknown)
@@ -144,13 +192,13 @@ extension Message {
 
     var footerStatus: (image: UIImage, fgColor: Color) {
         if seen == true {
-            return (Message.seenImage!, Color(named: "dark_green").opacity(0.8))
+            return (Message.seenImage!, .darkGreen.opacity(0.8))
         } else if delivered == true {
             return (Message.seenImage!, Color.gray)
         } else if id != nil {
-            return (Message.sentImage!, Color(named: "dark_green").opacity(0.8))
+            return (Message.sentImage!, .darkGreen.opacity(0.8))
         } else {
-            return (Message.clockImage!, Color(named: "dark_green").opacity(0.8))
+            return (Message.clockImage!, .darkGreen.opacity(0.8))
         }
     }
 }

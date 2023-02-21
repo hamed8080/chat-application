@@ -10,6 +10,8 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var viewModel: SettingViewModel
+    @EnvironmentObject var container: ObjectsContainer
+    var user: User? { container.userConfigsVM.currentUserConfig?.user }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -22,7 +24,7 @@ struct SettingsView: View {
                             .frame(width: 128, height: 128)
                             .shadow(color: .black, radius: 20, x: 0, y: 0)
                             .overlay(
-                                ImageLaoderView(url: viewModel.currentUser?.image, userName: viewModel.currentUser?.username ?? viewModel.currentUser?.name, size: .LARG)
+                                ImageLaoderView(url: user?.image, userName: user?.username ?? user?.name, size: .LARG)
                                     .font(.system(size: 16).weight(.heavy))
                                     .foregroundColor(.white)
                                     .frame(width: 128, height: 128)
@@ -45,10 +47,10 @@ struct SettingsView: View {
                     HStack {
                         Spacer()
                         VStack(spacing: 12) {
-                            Text(viewModel.currentUser?.name ?? "")
+                            Text(user?.name ?? "")
                                 .font(.title.bold())
 
-                            Text(viewModel.currentUser?.cellphoneNumber ?? "")
+                            Text(user?.cellphoneNumber ?? "")
                                 .font(.subheadline)
                         }
                         Spacer()
@@ -97,8 +99,10 @@ struct SettingsView: View {
 
                     Section(header: Text("Manage Calls").font(.headline)) {
                         Button {
-                            ChatManager.activeInstance.logOut()
+                            ChatManager.activeInstance?.logOut()
                             TokenManager.shared.clearToken()
+                            UserConfigManagerVM.instance.logout()
+                            container.reset()
                         } label: {
                             HStack {
                                 Image(systemName: "arrow.backward.circle")
@@ -149,8 +153,10 @@ struct TokenExpireView: View {
                 Image(systemName: "key.fill")
                     .foregroundColor(Color.yellow)
                     .frame(width: 24, height: 24)
-                Text("Token expire in: \(String(format: "%.0f", viewModel.secondToExpire))")
-                    .foregroundColor(Color.gray)
+                if let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0))) {
+                    Text("Token expire in: \(secondToExpire)")
+                        .foregroundColor(Color.gray)
+                }
                 Spacer()
             }
             .onAppear {
@@ -164,22 +170,25 @@ struct SettingsMenu_Previews: PreviewProvider {
     @State static var dark: Bool = false
     @State static var show: Bool = false
     @State static var showBlackView: Bool = false
+    @StateObject static var container = ObjectsContainer()
     static var vm = SettingViewModel()
 
     static var previews: some View {
         NavigationStack {
             SettingsView()
                 .environmentObject(vm)
+                .environmentObject(container)
                 .environmentObject(TokenManager.shared)
                 .environmentObject(AppState.shared)
                 .onAppear {
-                    vm.currentUser = User(
+                    let user = User(
                         cellphoneNumber: "+98 936 916 1601",
                         email: "h.hosseini.co@gmail.com",
                         image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png",
                         name: "Hamed Hosseini",
                         username: "hamed8080"
                     )
+                    container.userConfigsVM.onUser(user)
                 }
         }
     }

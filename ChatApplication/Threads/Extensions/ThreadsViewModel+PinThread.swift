@@ -26,11 +26,11 @@ extension ThreadsViewModel: PinThreadProtocol {
     }
 
     func pin(_ threadId: Int) {
-        ChatManager.activeInstance.pinThread(.init(subjectId: threadId), completion: onPinChanged)
+        ChatManager.activeInstance?.pinThread(.init(subjectId: threadId), completion: onPinChanged)
     }
 
     func unpin(_ threadId: Int) {
-        ChatManager.activeInstance.unpinThread(.init(subjectId: threadId), completion: onPinChanged)
+        ChatManager.activeInstance?.unpinThread(.init(subjectId: threadId), completion: onPinChanged)
     }
 
     func onPinChanged(_ response: ChatResponse<Int>) {

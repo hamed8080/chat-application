@@ -21,12 +21,12 @@ struct CallDetails: View {
                 ZStack {
                     VStack(spacing: 12) {
                         VStack(alignment: .leading, spacing: 8) {
-                            if let startTime = viewModel.model.call.createTime, let date = Date(milliseconds: Int64(startTime)) {
-                                Text("Start: \(date.getShortFormatOfDate())")
+                            if let startTime = viewModel.model.call.createTime, let date = Date(milliseconds: Int64(startTime)).timeAgoSinceDatecCondence {
+                                Text("Start: \(date)")
                             }
 
-                            if let endTime = viewModel.model.call.endTime, let date = Date(milliseconds: Int64(endTime)) {
-                                Text("End: \(date.getShortFormatOfDate())")
+                            if let endTime = viewModel.model.call.endTime, let date = Date(milliseconds: Int64(endTime)).timeAgoSinceDatecCondence {
+                                Text("End: \(date)")
                             }
                             Text(viewModel.model.call.isIncomingCall(currentUserId: AppState.shared.user?.id) ? "Incoming call" : "Outgoing call")
                             if let status = viewModel.model.call.status {

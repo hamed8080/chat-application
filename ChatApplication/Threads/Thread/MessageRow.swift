@@ -8,8 +8,37 @@
 import FanapPodChatSDK
 import SwiftUI
 
+class CalculationRowViewModel: ObservableObject {
+    var isCalculated = false
+    @Published var isEnglish = true
+    @Published var widthOfRow: CGFloat = 128
+    @Published var markdownTitle = AttributedString()
+
+    init() {}
+
+    @MainActor
+    func calculate(message: Message) {
+        if isCalculated { return }
+        isCalculated = true
+        Task(priority: .background) {
+            let isEnglish = message.message?.isEnglishString ?? true
+            let widthOfRow = message.calculatedMaxAndMinWidth
+            let markdownTitle = message.markdownTitle
+            await MainActor.run {
+                withAnimation { [weak self] in
+                    self?.isEnglish = isEnglish
+                    self?.widthOfRow = widthOfRow
+                    self?.markdownTitle = markdownTitle
+                    self?.objectWillChange.send()
+                }
+            }
+        }
+    }
+}
+
 struct MessageRow: View {
     var message: Message
+    var calculation: CalculationRowViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
     @State private(set) var showParticipants: Bool = false
     @Binding var isInEditMode: Bool
@@ -17,23 +46,24 @@ struct MessageRow: View {
 
     var body: some View {
         HStack {
-            if isInEditMode {
-                Image(systemName: isSelected ? "checkmark.circle" : "circle")
-                    .font(.title)
-                    .frame(width: 22, height: 22, alignment: .center)
-                    .foregroundColor(Color.blue)
-                    .padding(24)
-                    .onTapGesture {
-                        isSelected.toggle()
-                        viewModel.toggleSelectedMessage(message, isSelected)
-                    }
-            }
             if let type = message.type {
                 if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
+                    if isInEditMode {
+                        Image(systemName: isSelected ? "checkmark.circle" : "circle")
+                            .font(.title)
+                            .frame(width: 22, height: 22, alignment: .center)
+                            .foregroundColor(Color.blue)
+                            .padding(24)
+                            .onTapGesture {
+                                isSelected.toggle()
+                                viewModel.toggleSelectedMessage(message, isSelected)
+                            }
+                    }
                     if message.isMe {
                         Spacer()
                     }
                     TextMessageType(message: message)
+                        .environmentObject(calculation)
                 } else if type == .participantJoin || type == .participantLeft {
                     ParticipantMessageType(message: message)
                 } else if type == .endCall || type == .startCall {
@@ -41,6 +71,7 @@ struct MessageRow: View {
                 }
             }
         }
+        .animation(.easeInOut, value: isInEditMode)
     }
 }
 
@@ -52,7 +83,7 @@ struct CallMessageType: View {
     var body: some View {
         HStack(alignment: .center) {
             if let time = message.time, let date = Date(milliseconds: Int64(time)) {
-                Text("Call \(message.type == .endCall ? "ended" : "started") at \(date.timeAgoSinceDate())")
+                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDatecCondence ?? "")")
                     .foregroundColor(Color.primary.opacity(0.8))
                     .font(.subheadline)
                     .padding(2)
@@ -77,10 +108,9 @@ struct ParticipantMessageType: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDate()
+            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDatecCondence ?? ""
             let name = message.participant?.name ?? ""
-            let isJoined = message.type == .participantJoin ? "joined" : "left"
-            let markdownText = try! AttributedString(markdown: "\(name) **\(isJoined)** - \(date)")
+            let markdownText = try! AttributedString(markdown: "\(name) - \(date)")
             Text(markdownText)
                 .foregroundColor(Color.primary.opacity(0.8))
                 .font(.subheadline)
@@ -102,6 +132,7 @@ struct ParticipantMessageType: View {
 
 struct TextMessageType: View {
     var message: Message
+    @EnvironmentObject var calculation: CalculationRowViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
 
     var body: some View {
@@ -113,6 +144,10 @@ struct TextMessageType: View {
                 sameUserAvatar
             }
             VStack {
+                if message.replyInfo != nil {
+                    ReplyInfoMessageRow(message: message)
+                }
+
                 if let forwardInfo = message.forwardInfo {
                     ForwardMessageRow(forwardInfo: forwardInfo)
                 }
@@ -129,13 +164,13 @@ struct TextMessageType: View {
 
                 if let fileName = message.fileName {
                     Text("\(fileName)\(message.fileExtension ?? "")")
-                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .foregroundColor(.darkGreen.opacity(0.8))
                         .font(.caption)
                 }
 
                 // TODO: TEXT must be alignment and image muset be fit
-                Text(message.markdownTitle)
-                    .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
+                Text(calculation.markdownTitle)
+                    .multilineTextAlignment(calculation.isEnglish ? .leading : .trailing)
                     .padding(.top, 8)
                     .padding([.leading, .trailing, .top])
                     .font(Font(UIFont.systemFont(ofSize: 18)))
@@ -160,10 +195,10 @@ struct TextMessageType: View {
                     .padding(.bottom, 8)
                     .padding([.leading, .trailing])
             }
-            .frame(maxWidth: message.calculatedMaxAndMinWidth, alignment: .leading)
+            .frame(maxWidth: calculation.widthOfRow, alignment: .leading)
             .padding([.leading, .trailing], 0)
             .contentShape(Rectangle())
-            .background(message.isMe ? Color(UIColor(named: "chat_me")!) : Color(UIColor(named: "chat_sender")!))
+            .background(message.isMe ? Color.chatMeBg : Color.chatSenderBg)
             .cornerRadius(12)
             .animation(.easeInOut, value: message.isUnsentMessage)
             .onTapGesture {
@@ -235,6 +270,9 @@ struct TextMessageType: View {
                 }
                 .disabled(message.deletable == false)
             }
+            .onAppear {
+                calculation.calculate(message: message)
+            }
 
             if message.isMe {
                 sameUserAvatar
@@ -262,6 +300,54 @@ struct TextMessageType: View {
             Rectangle()
                 .frame(width: 36, height: 36)
                 .hidden()
+        }
+    }
+}
+
+struct ReplyInfoMessageRow: View {
+    var message: Message
+    @EnvironmentObject var threadViewModel: ThreadViewModel
+    @EnvironmentObject var calculation: CalculationRowViewModel
+
+    var body: some View {
+        HStack {
+            Image(systemName: "poweron")
+                .resizable()
+                .frame(width: 3)
+                .frame(minHeight: 0, maxHeight: .infinity)
+                .foregroundColor(.orange)
+            VStack(spacing: 4) {
+                if let name = message.replyInfo?.participant?.name {
+                    Text("\(name)")
+                        .font(.caption.bold())
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(.orange)
+                        .padding([.leading, .trailing], 4)
+                }
+
+                if let message = message.message {
+                    Text(message)
+                        .padding([.leading, .trailing], 4)
+                        .cornerRadius(8, corners: .allCorners)
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        .foregroundColor(.primary)
+                        .font(.caption.italic())
+                }
+            }
+        }
+        .frame(width: calculation.widthOfRow - 32, height: 48)
+        .background(Color.replyBg)
+        .cornerRadius(8)
+        .padding([.top, .leading, .trailing], 12)
+        .truncationMode(.tail)
+        .fontDesign(.rounded)
+        .lineLimit(1)
+        .onTapGesture {
+            print("tap on move to reply to")
+            threadViewModel.setScrollToUniqueId("uniqueId?")
+        }
+        .onAppear {
+            calculation.calculate(message: message)
         }
     }
 }
@@ -324,7 +410,7 @@ struct UploadMessageType: View {
                         .frame(width: 64, height: 64)
                         .scaledToFit()
                         .padding()
-                        .foregroundColor(Color(named: "icon_color").opacity(0.8))
+                        .foregroundColor(.iconColor.opacity(0.8))
                 }
             }
         }
@@ -335,6 +421,7 @@ struct MessageFooterView: View {
     var message: Message
     // We never use this viewModel but it will refresh view when a event on this message happened such as onSent, onDeliver,onSeen.
     @EnvironmentObject var viewModel: ThreadViewModel
+    @State var timeString: String = ""
 
     var body: some View {
         HStack {
@@ -342,17 +429,14 @@ struct MessageFooterView: View {
                 Text(size.toSizeString)
                     .multilineTextAlignment(.leading)
                     .font(.subheadline)
-                    .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                    .foregroundColor(.darkGreen.opacity(0.8))
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 0) {
                 HStack {
-                    if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000) {
-                        Text("\(date.getTime())")
-                            .foregroundColor(Color(named: "dark_green").opacity(0.8))
-                            .font(.subheadline)
-                    }
-
+                    Text(timeString)
+                        .foregroundColor(.darkGreen.opacity(0.8))
+                        .font(.system(size: 12, design: .rounded))
                     if message.isMe {
                         Image(uiImage: message.footerStatus.image)
                             .resizable()
@@ -363,7 +447,7 @@ struct MessageFooterView: View {
                 }
                 if message.edited == true {
                     Text("Edited")
-                        .foregroundColor(Color(named: "dark_green").opacity(0.8))
+                        .foregroundColor(.darkGreen.opacity(0.8))
                         .font(.caption2)
                 }
             }
@@ -371,7 +455,14 @@ struct MessageFooterView: View {
         .animation(.easeInOut, value: message.delivered)
         .animation(.easeInOut, value: message.seen)
         .animation(.easeInOut, value: message.edited)
-        .padding([.top], 4)
+        .padding(.top, 4)
+        .onAppear {
+            Task {
+                await MainActor.run {
+                    timeString = message.time?.date.timeAgoSinceDatecCondence ?? ""
+                }
+            }
+        }
     }
 }
 
@@ -379,11 +470,11 @@ struct MessageRow_Previews: PreviewProvider {
     static var previews: some View {
         let threadVM = ThreadViewModel()
         List {
-            MessageRow(message: MockData.message, isInEditMode: .constant(true))
+            MessageRow(message: MockData.message, calculation: .init(), isInEditMode: .constant(true))
                 .environmentObject(threadVM)
-            MessageRow(message: MockData.message, isInEditMode: .constant(true))
+            MessageRow(message: MockData.message, calculation: .init(), isInEditMode: .constant(true))
                 .environmentObject(threadVM)
-            MessageRow(message: MockData.message, isInEditMode: .constant(true))
+            MessageRow(message: MockData.message, calculation: .init(), isInEditMode: .constant(true))
                 .environmentObject(threadVM)
 
             ForEach(MockData.generateMessages(count: 5)) { _ in
@@ -391,6 +482,25 @@ struct MessageRow_Previews: PreviewProvider {
                     .environmentObject(threadVM)
             }
         }
+        .onAppear {
+            threadVM.setup(thread: MockData.thread)
+        }
+        .listStyle(.plain)
+    }
+}
+
+struct ReplyInfo_Previews: PreviewProvider {
+    static let participant = Participant(name: "john", username: "john_9090")
+    static let replyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, time: 100, participant: participant)
+    static let isMEParticipant = Participant(name: "Sam", username: "sam_rage")
+    static let isMeReplyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, time: 100, participant: isMEParticipant)
+    static var previews: some View {
+        let threadVM = ThreadViewModel()
+        List {
+            TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", ownerId: 10, replyInfo: replyInfo))
+            TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: isMeReplyInfo))
+        }
+        .environmentObject(threadVM)
         .onAppear {
             threadVM.setup(thread: MockData.thread)
         }
