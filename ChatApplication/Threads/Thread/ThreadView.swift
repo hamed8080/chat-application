@@ -12,6 +12,7 @@ import SwiftUI
 struct ThreadView: View {
     let thread: Conversation
     @StateObject var viewModel = ThreadViewModel()
+    @EnvironmentObject var appState: AppState
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @State var showAttachmentDialog: Bool = false
     @State var isInEditMode: Bool = false
@@ -26,32 +27,28 @@ struct ThreadView: View {
     var body: some View {
         ThreadMessagesList(isInEditMode: $isInEditMode)
             .id(thread.id)
-            .overlay {
-                SendContainer(showAttachmentDialog: $showAttachmentDialog,
-                              deleteMessagesDialog: $deleteDialaog,
-                              showSelectThreadToForward: $showSelectThreadToForward)
-            }
-            .overlay {
-                ThreadSearchList(searchMessageText: $searchMessageText)
-            }
-            .overlay {
-                ThreadPinMessage(message: pinMessage)
-            }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(viewModel.thread?.title ?? "")
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
             .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
-            .animation(.easeInOut, value: showDatePicker)
-            .animation(.easeInOut, value: viewModel.messages.count)
-            .animation(.easeInOut, value: viewModel.searchedMessages.count)
-            .animation(.easeInOut, value: showExportFileURL)
-            .animation(.easeInOut, value: viewModel.isInEditMode)
-            .animation(.easeInOut, value: viewModel.editMessage)
-            .animation(.easeInOut, value: searchMessageText.count)
             .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
                 viewModel.deleteMessages(viewModel.selectedMessages)
+            }
+            .overlay {
+                SendContainer(showAttachmentDialog: $showAttachmentDialog,
+                              deleteMessagesDialog: $deleteDialaog,
+                              showSelectThreadToForward: $showSelectThreadToForward)
+                    .environmentObject(viewModel)
+            }
+            .overlay {
+                ThreadSearchList(searchMessageText: $searchMessageText)
+                    .environmentObject(viewModel)
+            }
+            .overlay {
+                ThreadPinMessage(message: pinMessage)
+                    .environmentObject(viewModel)
             }
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -111,20 +108,18 @@ struct ThreadView: View {
                 .fixedSize()
                 .font(.headline)
 
-            if let signalMessageText = viewModel.signalMessageText {
+            if appState.connectionStatus != .connected {
+                ConnectionStatusToolbar()
+            } else if let signalMessageText = viewModel.signalMessageText {
                 Text(signalMessageText)
                     .foregroundColor(.textBlueColor)
-                    .font(.subheadline.bold())
-            }
-
-            if let participantsCount = viewModel.thread?.participantCount {
+                    .font(.footnote.bold())
+            } else if let participantsCount = viewModel.thread?.participantCount {
                 Text("Members \(participantsCount)")
                     .fixedSize()
                     .foregroundColor(Color.gray)
                     .font(.footnote)
             }
-
-            ConnectionStatusToolbar()
         }
     }
 
@@ -191,9 +186,6 @@ struct ThreadMessagesList: View {
                 .padding(.bottom)
                 .padding([.leading, .trailing])
             }
-            .background(
-                background
-            )
             .overlay {
                 goToBottomOfThread(scrollView: scrollView)
             }
@@ -201,6 +193,9 @@ struct ThreadMessagesList: View {
                 Spacer()
                     .frame(height: 64)
             }
+            .background(
+                background
+            )
             .simultaneousGesture(
                 DragGesture().onChanged { value in
                     scrollingUP = value.translation.height > 0
@@ -337,7 +332,7 @@ struct SendContainer: View {
     @State var text: String = ""
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Spacer()
             if viewModel.isInEditMode {
                 HStack {
@@ -426,9 +421,19 @@ struct SendContainer: View {
                         }
                     }
                 }
-                .padding(8)
-                .background(.ultraThickMaterial)
-                .cornerRadius(24, corners: [.topRight, .topLeft])
+                .padding(.bottom, 4)
+                .padding([.leading, .trailing], 8)
+                .padding(.top, 18)
+                .background(
+                    VStack {
+                        Spacer()
+                        Rectangle()
+                            .fill(Color.clear)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(24, corners: [.topRight, .topLeft])
+                    }
+                    .ignoresSafeArea()
+                )
                 .opacity(viewModel.thread?.type == .channel ? 0.3 : 1.0)
                 .disabled(viewModel.thread?.type == .channel)
                 .animation(.easeInOut, value: viewModel.mentionList.count)
@@ -443,15 +448,6 @@ struct SendContainer: View {
                 }
             }
         }
-        .background(
-            VStack {
-                Spacer()
-                Rectangle()
-                    .fill(Color.clear)
-                    .frame(height: 48)
-                    .background(.ultraThickMaterial)
-            }.ignoresSafeArea()
-        )
     }
 }
 

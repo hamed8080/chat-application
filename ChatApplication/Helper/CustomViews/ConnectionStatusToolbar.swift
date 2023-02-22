@@ -9,24 +9,23 @@ import SwiftUI
 
 struct ConnectionStatusToolbar: View {
     @State var connectionStatus: ConnectionStatus = .connecting
-
     @EnvironmentObject var appstate: AppState
 
     var body: some View {
         if connectionStatus != .connected {
             Text("\(connectionStatus.stringValue) ...")
-                .font(.subheadline.bold())
+                .font(.footnote.bold())
                 .foregroundColor(.textBlueColor)
-                .onReceive(appstate.$connectionStatus, perform: { newSate in
+                .onReceive(appstate.$connectionStatus) { newSate in
                     self.connectionStatus = newSate
-                })
+                }
         } else {
             EmptyView()
                 .hidden()
                 .frame(width: 0, height: 0)
-                .onReceive(appstate.$connectionStatus, perform: { newSate in
+                .onReceive(appstate.$connectionStatus) { newSate in
                     self.connectionStatus = newSate
-                })
+                }
         }
     }
 }

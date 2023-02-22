@@ -71,7 +71,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     var count: Int { 15 }
     var threadId: Int { thread?.id ?? 0 }
     weak var threadsViewModel: ThreadsViewModel?
-    var signalMessageText: String?
+    @Published var signalMessageText: String?
     var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
     var searchTextTimer: Timer?
 

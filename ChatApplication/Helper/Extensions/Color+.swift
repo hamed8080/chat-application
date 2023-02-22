@@ -25,6 +25,7 @@ extension Color {
     static let chatMeBg = Color("chat_me")
     static let chatSenderBg = Color("chat_sender")
     static let tableItem = Color("tableItem")
+    static let swipyBackground = Color("swipy_background")
     static let replyBg = Color("reply_background")
     static let secondaryLabel = Color(UIColor.secondaryLabel)
 }
