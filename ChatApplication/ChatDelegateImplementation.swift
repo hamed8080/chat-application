@@ -69,9 +69,7 @@ class ChatDelegateImplementation: ChatDelegate {
     func chatError(error: ChatError) {
         print(error)
         if error.code == 21 || error.code == 401 {
-            Task {
-                await TokenManager.shared.getNewTokenWithRefreshToken()
-            }
+            TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .unauthorized
         } else {
             AppState.shared.animateAndShowError(error)

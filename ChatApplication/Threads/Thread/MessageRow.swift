@@ -38,7 +38,7 @@ class CalculationRowViewModel: ObservableObject {
 
 struct MessageRow: View {
     var message: Message
-    var calculation: CalculationRowViewModel
+    @State var calculation: CalculationRowViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
     @State private(set) var showParticipants: Bool = false
     @Binding var isInEditMode: Bool

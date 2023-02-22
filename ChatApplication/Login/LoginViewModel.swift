@@ -152,25 +152,31 @@ class TokenManager: ObservableObject {
     static let ssoTokenKey = "ssoTokenKey"
     static let ssoTokenCreateDate = "ssoTokenCreateDate"
     let session: URLSession
+    var refreshTokenTask: Task<Void, Never>?
 
     private init(session: URLSession = .shared) {
         self.session = session
         getSSOTokenFromUserDefaults() // need first time app luanch to set hasToken
     }
 
-    func getNewTokenWithRefreshToken() async {
+    func getNewTokenWithRefreshToken() {
+        if refreshTokenTask != nil { return }
         guard let refreshToken = getSSOTokenFromUserDefaults()?.refreshToken else { return }
-        let urlReq = URLRequest(url: URL(string: Routes.refreshToken + "?refreshToken=\(refreshToken)")!)
-        do {
-            let resp = try await session.data(for: urlReq)
-            guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }
-            await MainActor.run {
-                saveSSOToken(ssoToken: ssoToken)
-                ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
-                AppState.shared.connectionStatus = .connected
+        let urlReq = URLRequest(url: URL(string: Routes.refreshToken + "?refreshToken=\(refreshToken)")!, timeoutInterval: 5)
+        refreshTokenTask = Task {
+            do {
+                let resp = try await session.data(for: urlReq)
+                guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }
+                await MainActor.run {
+                    saveSSOToken(ssoToken: ssoToken)
+                    ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
+                    AppState.shared.connectionStatus = .connected
+                }
+            } catch {
+                print("error on getNewTokenWithRefreshToken:\(error.localizedDescription)")
             }
-        } catch {
-            print("error on getNewTokenWithRefreshToken:\(error.localizedDescription)")
+            refreshTokenTask?.cancel()
+            refreshTokenTask = nil
         }
     }
 
@@ -214,7 +220,7 @@ class TokenManager: ObservableObject {
             let timeToStart = createDate.advanced(by: Double(ssoToken.expiresIn)).timeIntervalSince1970 - Date().timeIntervalSince1970
             Task {
                 try? await Task.sleep(for: .seconds(timeToStart))
-                await getNewTokenWithRefreshToken()
+                getNewTokenWithRefreshToken()
             }
         }
     }

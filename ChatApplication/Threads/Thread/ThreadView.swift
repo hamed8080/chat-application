@@ -17,88 +17,88 @@ struct ThreadView: View {
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
     @State var showSelectThreadToForward: Bool = false
-    @Environment(\.isPreview) var isPreview
     @State var showMoreButton = false
     @State var showDatePicker = false
     @State var showExportFileURL = false
     @State var searchMessageText: String = ""
+    private var pinMessage: Message? { viewModel.messages.first { $0.pinned == true } }
 
     var body: some View {
-        ZStack {
-            VStack {
-                ThreadPinMessage(message: viewModel.messages.filter { $0.pinned == true }.first)
-                ZStack {
-                    ThreadMessagesList(isInEditMode: $isInEditMode)
-                        .id(thread.id)
-                    ThreadSearchList(searchMessageText: $searchMessageText)
-                        .zIndex(1)
-                }
+        ThreadMessagesList(isInEditMode: $isInEditMode)
+            .id(thread.id)
+            .overlay {
                 SendContainer(showAttachmentDialog: $showAttachmentDialog,
                               deleteMessagesDialog: $deleteDialaog,
                               showSelectThreadToForward: $showSelectThreadToForward)
             }
+            .overlay {
+                ThreadSearchList(searchMessageText: $searchMessageText)
+            }
+            .overlay {
+                ThreadPinMessage(message: pinMessage)
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(viewModel.thread?.title ?? "")
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
+            .environmentObject(viewModel)
+            .environmentObject(threadsVM)
+            .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
+            .animation(.easeInOut, value: showDatePicker)
+            .animation(.easeInOut, value: viewModel.messages.count)
+            .animation(.easeInOut, value: viewModel.searchedMessages.count)
+            .animation(.easeInOut, value: showExportFileURL)
+            .animation(.easeInOut, value: viewModel.isInEditMode)
+            .animation(.easeInOut, value: viewModel.editMessage)
+            .animation(.easeInOut, value: searchMessageText.count)
             .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
                 viewModel.deleteMessages(viewModel.selectedMessages)
             }
-        }
-        .environmentObject(viewModel)
-        .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
-        .animation(.easeInOut, value: showDatePicker)
-        .animation(.easeInOut, value: viewModel.messages)
-        .animation(.easeInOut, value: viewModel.messages.count)
-        .animation(.easeInOut, value: viewModel.searchedMessages.count)
-        .animation(.easeInOut, value: showExportFileURL)
-        .animation(.easeInOut, value: viewModel.isInEditMode)
-        .animation(.easeInOut, value: viewModel.editMessage)
-        .animation(.easeInOut, value: searchMessageText.count)
-        .animation(.easeInOut, value: viewModel.searchedMessages.count)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                trailingToolbar
-            }
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    trailingToolbar
+                }
 
-            ToolbarItem(placement: .principal) {
-                centerToolbarTitle
+                ToolbarItem(placement: .principal) {
+                    centerToolbarTitle
+                }
             }
-        }
-        .onChange(of: searchMessageText) { value in
-            viewModel.searchInsideThread(text: value)
-        }
-        .onChange(of: viewModel.isInEditMode) { _ in
-            isInEditMode = viewModel.isInEditMode
-        }
-        .onChange(of: viewModel.editMessage) { _ in
-            viewModel.textMessage = viewModel.editMessage?.message ?? ""
-        }
-        .onReceive((viewModel.exportMessagesVM as! ExportMessagesViewModel).$filePath) { filePath in
-            showExportFileURL = filePath != nil
-        }
-        .onAppear {
-            viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
-            viewModel.getHistory()
-        }
-        .sheet(isPresented: $showAttachmentDialog) {
-            AttachmentDialog(viewModel: ActionSheetViewModel(threadViewModel: viewModel), showAttachmentDialog: $showAttachmentDialog)
-        }
-        .sheet(isPresented: $showDatePicker) {
-            DateSelectionView(showDialog: $showDatePicker) { startDate, endDate in
-                showDatePicker.toggle()
-                viewModel.exportMessagesVM.exportChats(startDate: startDate, endDate: endDate)
+            .onChange(of: searchMessageText) { value in
+                viewModel.searchInsideThread(text: value)
             }
-        }
-        .sheet(isPresented: $showExportFileURL, onDismiss: onDismiss) {
-            if let exportFileUrl = viewModel.exportMessagesVM.filePath {
-                ActivityViewControllerWrapper(activityItems: [exportFileUrl])
-            } else {
-                EmptyView()
+            .onChange(of: viewModel.isInEditMode) { _ in
+                isInEditMode = viewModel.isInEditMode
             }
-        }
-        .sheet(isPresented: $showSelectThreadToForward, onDismiss: nil) {
-            SelectThreadContentList { selectedThread in
-                viewModel.sendForwardMessage(selectedThread)
+            .onChange(of: viewModel.editMessage) { _ in
+                viewModel.textMessage = viewModel.editMessage?.message ?? ""
             }
-        }
+            .onReceive((viewModel.exportMessagesVM as! ExportMessagesViewModel).$filePath) { filePath in
+                showExportFileURL = filePath != nil
+            }
+            .onAppear {
+                viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
+                viewModel.getHistory()
+            }
+            .sheet(isPresented: $showAttachmentDialog) {
+                AttachmentDialog(viewModel: ActionSheetViewModel(threadViewModel: viewModel), showAttachmentDialog: $showAttachmentDialog)
+            }
+            .sheet(isPresented: $showDatePicker) {
+                DateSelectionView(showDialog: $showDatePicker) { startDate, endDate in
+                    showDatePicker.toggle()
+                    viewModel.exportMessagesVM.exportChats(startDate: startDate, endDate: endDate)
+                }
+            }
+            .sheet(isPresented: $showExportFileURL, onDismiss: onDismiss) {
+                if let exportFileUrl = viewModel.exportMessagesVM.filePath {
+                    ActivityViewControllerWrapper(activityItems: [exportFileUrl])
+                } else {
+                    EmptyView()
+                }
+            }
+            .sheet(isPresented: $showSelectThreadToForward, onDismiss: nil) {
+                SelectThreadContentList { selectedThread in
+                    viewModel.sendForwardMessage(selectedThread)
+                }
+            }
     }
 
     func onDismiss() {
@@ -169,51 +169,54 @@ struct ThreadMessagesList: View {
 
     var body: some View {
         ScrollViewReader { scrollView in
-            ZStack {
-                ScrollView {
-                    LazyVStack(spacing: 8) {
-                        ListLoadingView(isLoading: $viewModel.isLoading)
-                        ForEach(viewModel.messages) { message in
-                            MessageRow(message: message, calculation: CalculationRowViewModel(), isInEditMode: isInEditMode)
-                                .id(message.uniqueId)
-                                .environmentObject(viewModel)
-                                .transition(.asymmetric(insertion: .opacity, removal: .slide))
-                                .onAppear {
-                                    viewModel.sendSeenMessageIfNeeded(message)
-                                    viewModel.setIfNeededToScrollToTheLastPosition(scrollingUP, message)
-                                }
-                        }
-                        ListLoadingView(isLoading: $viewModel.isLoading)
+            ScrollView {
+                LazyVStack(spacing: 8) {
+                    ListLoadingView(isLoading: $viewModel.isLoading)
+                    ForEach(viewModel.messages) { message in
+                        MessageRow(message: message, calculation: CalculationRowViewModel(), isInEditMode: isInEditMode)
+                            .id(message.uniqueId)
+                            .transition(.asymmetric(insertion: .opacity, removal: .slide))
+                            .onAppear {
+                                viewModel.sendSeenMessageIfNeeded(message)
+                                viewModel.setIfNeededToScrollToTheLastPosition(scrollingUP, message)
+                            }
                     }
-                    .background(
-                        GeometryReader {
-                            Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                        }
-                    )
-                    .padding(.bottom)
-                    .padding([.leading, .trailing])
-                }
-                .simultaneousGesture(
-                    DragGesture().onChanged { value in
-                        scrollingUP = value.translation.height > 0
-                    }
-                )
-                .coordinateSpace(name: "scroll")
-                .onPreferenceChange(ViewOffsetKey.self) { originY in
-                    if originY < 64, scrollingUP {
-                        viewModel.loadMoreMessage()
-                    }
-                }
-                .onReceive(viewModel.$scrollToUniqueId) { uniqueId in
-                    guard let uniqueId = uniqueId else { return }
-                    withAnimation {
-                        scrollView.scrollTo(uniqueId, anchor: .bottom)
-                    }
+                    ListLoadingView(isLoading: $viewModel.isLoading)
                 }
                 .background(
-                    background
+                    GeometryReader {
+                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+                    }
                 )
+                .padding(.bottom)
+                .padding([.leading, .trailing])
+            }
+            .background(
+                background
+            )
+            .overlay {
                 goToBottomOfThread(scrollView: scrollView)
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                Spacer()
+                    .frame(height: 64)
+            }
+            .simultaneousGesture(
+                DragGesture().onChanged { value in
+                    scrollingUP = value.translation.height > 0
+                }
+            )
+            .coordinateSpace(name: "scroll")
+            .onPreferenceChange(ViewOffsetKey.self) { originY in
+                if originY < 64, scrollingUP {
+                    viewModel.loadMoreMessage()
+                }
+            }
+            .onReceive(viewModel.$scrollToUniqueId) { uniqueId in
+                guard let uniqueId = uniqueId else { return }
+                withAnimation {
+                    scrollView.scrollTo(uniqueId, anchor: .bottom)
+                }
             }
         }
         .onTapGesture {
@@ -249,19 +252,19 @@ struct ThreadMessagesList: View {
     }
 
     var background: some View {
-        ZStack {
-            Image("chat_bg")
-                .resizable(resizingMode: .tile)
-                .renderingMode(.template)
-                .opacity(colorScheme == .dark ? 0.9 : 0.25)
-                .colorInvert()
-                .colorMultiply(colorScheme == .dark ? Color.white : Color.cyan)
-            let darkColors: [Color] = [.gray.opacity(0.5), .white.opacity(0.001)]
-            let lightColors: [Color] = [.white.opacity(0.1), .gray.opacity(0.5)]
-            LinearGradient(gradient: Gradient(colors: colorScheme == .dark ? darkColors : lightColors),
-                           startPoint: .top,
-                           endPoint: .bottom)
-        }
+        Image("chat_bg")
+            .resizable(resizingMode: .tile)
+            .renderingMode(.template)
+            .opacity(colorScheme == .dark ? 0.9 : 0.25)
+            .colorInvert()
+            .colorMultiply(colorScheme == .dark ? Color.white : Color.cyan)
+            .overlay {
+                let darkColors: [Color] = [.gray.opacity(0.5), .white.opacity(0.001)]
+                let lightColors: [Color] = [.white.opacity(0.1), .gray.opacity(0.5)]
+                LinearGradient(gradient: Gradient(colors: colorScheme == .dark ? darkColors : lightColors),
+                               startPoint: .top,
+                               endPoint: .bottom)
+            }
     }
 }
 
@@ -304,18 +307,21 @@ struct ThreadPinMessage: View {
 
     var body: some View {
         if let message = message {
-            HStack {
-                Text(message.messageTitle)
+            VStack {
+                HStack {
+                    Text(message.messageTitle)
+                    Spacer()
+                    Image(systemName: "pin")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.orange)
+                }
+                .frame(height: 64)
+                .onTapGesture {
+                    threadVM.setScrollToUniqueId(message.uniqueId ?? "")
+                }
                 Spacer()
-                Image(systemName: "pin")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(.orange)
-            }
-            .frame(height: 64)
-            .onTapGesture {
-                threadVM.setScrollToUniqueId(message.uniqueId ?? "")
             }
         } else {
             EmptyView()
@@ -331,8 +337,9 @@ struct SendContainer: View {
     @State var text: String = ""
 
     var body: some View {
-        if viewModel.isInEditMode {
-            VStack {
+        VStack {
+            Spacer()
+            if viewModel.isInEditMode {
                 HStack {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 24))
@@ -359,12 +366,11 @@ struct SendContainer: View {
                         .onTapGesture {
                             showSelectThreadToForward.toggle()
                         }
-                }.padding(8)
+                }
+                .padding(8)
+                .animation(.easeInOut, value: viewModel.selectedMessages.count)
                 Divider()
-            }
-            .animation(.easeInOut, value: viewModel.selectedMessages.count)
-        } else {
-            VStack {
+            } else {
                 if let replyMessage = viewModel.replyMessage {
                     HStack {
                         Image(systemName: "xmark.circle.fill")
@@ -393,8 +399,10 @@ struct SendContainer: View {
 
                 HStack {
                     Image(systemName: "paperclip")
+                        .resizable()
+                        .frame(width: 24, height: 24)
                         .font(.system(size: 24))
-                        .foregroundColor(Color.gray)
+                        .foregroundColor(.gray)
                         .onTapGesture {
                             showAttachmentDialog.toggle()
                         }
@@ -419,20 +427,31 @@ struct SendContainer: View {
                     }
                 }
                 .padding(8)
+                .background(.ultraThickMaterial)
+                .cornerRadius(24, corners: [.topRight, .topLeft])
                 .opacity(viewModel.thread?.type == .channel ? 0.3 : 1.0)
                 .disabled(viewModel.thread?.type == .channel)
-            }
-            .animation(.easeInOut, value: viewModel.mentionList.count)
-            .onReceive(viewModel.$editMessage) { editMessage in
-                if let editMessage = editMessage {
-                    text = editMessage.message ?? ""
+                .animation(.easeInOut, value: viewModel.mentionList.count)
+                .onReceive(viewModel.$editMessage) { editMessage in
+                    if let editMessage = editMessage {
+                        text = editMessage.message ?? ""
+                    }
+                }
+                .onChange(of: text) { newValue in
+                    viewModel.searchForMention(newValue)
+                    viewModel.textMessage = newValue
                 }
             }
-            .onChange(of: text) { newValue in
-                viewModel.searchForMention(newValue)
-                viewModel.textMessage = newValue
-            }
         }
+        .background(
+            VStack {
+                Spacer()
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(height: 48)
+                    .background(.ultraThickMaterial)
+            }.ignoresSafeArea()
+        )
     }
 }
 

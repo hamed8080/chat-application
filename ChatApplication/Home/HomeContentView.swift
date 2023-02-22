@@ -55,7 +55,7 @@ struct HomeContentView: View {
             .environmentObject(container.userConfigsVM)
             .toast(
                 isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
-                title: "Error happened with code: \(appState.error?.code ?? 0)",
+                title: "An error had happened with code: \(appState.error?.code ?? 0)",
                 message: appState.error?.message ?? ""
             ) {
                 Image(systemName: "xmark.square.fill")
