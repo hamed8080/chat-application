@@ -35,7 +35,9 @@ class NavigationModel: ObservableObject {
         sections.append(.init(title: "Folders", items: []))
         sections.append(.init(title: "Settings", items: [.init(id: "settings", title: "settings", icon: "gear")]))
         cancelable = $selectedSideBarId.sink { [weak self] newValue in
-            self?.manageThreadChange(newValue)
+            if newValue != self?.selectedSideBarId {
+                self?.manageThreadChange(newValue)
+            }
         }
     }
 

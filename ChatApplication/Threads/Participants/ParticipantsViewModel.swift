@@ -29,7 +29,7 @@ class ParticipantsViewModel: ObservableObject {
             .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)
 
-        NotificationCenter.default.publisher(for: threadEventNotificationName)
+        NotificationCenter.default.publisher(for: .threadEventNotificationName)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] event in
                 if case let .threadRemoveParticipants(response) = event {

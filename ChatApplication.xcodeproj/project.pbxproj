@@ -91,6 +91,7 @@
 		05F6C7102808BB1800C2EEF4 /* Message+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F6C70F2808BB1800C2EEF4 /* Message+.swift */; };
 		05FE518927899554004F44B5 /* AddParticipantsToViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */; };
 		AC00883B271D65B000376BBB /* Ringtone.aif in Resources */ = {isa = PBXBuildFile; fileRef = AC00883A271D65B000376BBB /* Ringtone.aif */; };
+		05FEB00F29AC6B8A00E13C58 /* Notification.Name+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */; };
 		AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F3B268C4FA500B008FF /* HomeContentView.swift */; };
 		AC0435FD26998D3E00B1C87B /* ParticipantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FA26998D0C00B1C87B /* ParticipantsViewModel.swift */; };
 		AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FE26998D4400B1C87B /* ParticipantRow.swift */; };
@@ -284,6 +285,7 @@
 		05E2F6FA2989781900AAA288 /* ObjectsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectsContainer.swift; sourceTree = "<group>"; };
 		05F6C70F2808BB1800C2EEF4 /* Message+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+.swift"; sourceTree = "<group>"; };
 		AC00883A271D65B000376BBB /* Ringtone.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ringtone.aif; sourceTree = "<group>"; };
+		05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification.Name+.swift"; sourceTree = "<group>"; };
 		AC008F3B268C4FA500B008FF /* HomeContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContentView.swift; sourceTree = "<group>"; };
 		AC0435FA26998D0C00B1C87B /* ParticipantsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsViewModel.swift; sourceTree = "<group>"; };
 		AC0435FE26998D4400B1C87B /* ParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantRow.swift; sourceTree = "<group>"; };
@@ -674,6 +676,7 @@
 				05C42B0E29606F4000A870B3 /* Data+.swift */,
 				0594E194298E5F420090D540 /* SMT+.swift */,
 				05610BA8298FDC6B00947E29 /* ThreadTypes+.swift */,
+				05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1185,6 +1188,7 @@
 				ACFADE8427675DA5007C555F /* DeepButtonStyle.swift in Sources */,
 				AC5E388926F5B3D70016EFAA /* ListModifier.swift in Sources */,
 				05B80E94293C81E4008A0F29 /* CallParticipant+.swift in Sources */,
+				05FEB00F29AC6B8A00E13C58 /* Notification.Name+.swift in Sources */,
 				05DED7662904281400C8236D /* ExportMessagesViewModel.swift in Sources */,
 				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
 				052C8B8927AE6C0A00C3BB2E /* CallDetails.swift in Sources */,

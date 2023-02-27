@@ -89,7 +89,7 @@ struct HomeContentView: View {
             }
             .toast(
                 isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
-                title: "Error happened with code: \(appState.error?.code ?? 0)",
+                title: "An error had happened with code: \(appState.error?.code ?? 0)",
                 message: appState.error?.message ?? ""
             ) {
                 Image(systemName: "xmark.square.fill")
@@ -125,7 +125,7 @@ struct SideBar: View {
                 VSwipy(container.userConfigsVM.userConfigs, selection: $selectedUser) { item in
                     UserConfigView(userConfig: item)
                         .frame(height: containerHeight)
-                        .background(Color.tableItem)
+                        .background(Color.swipyBackground)
                         .cornerRadius(12)
                 } onSwipe: { item in
                     DispatchQueue.main.async {

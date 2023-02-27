@@ -38,7 +38,7 @@ class RecordingViewModel: ObservableObject, RecordingProtocol {
 
     init(callId: Int?) {
         self.callId = callId
-        NotificationCenter.default.addObserver(self, selector: #selector(callEvent(_:)), name: callEventName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(callEvent(_:)), name: .callEventName, object: nil)
     }
 
     @objc func callEvent(_ notification: NSNotification) {

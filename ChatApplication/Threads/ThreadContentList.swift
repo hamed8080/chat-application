@@ -18,7 +18,6 @@ struct ThreadContentList: View {
         List(threadsVM.filtered, selection: $container.navVM.selectedThreadId) { thread in
             NavigationLink(value: thread.id) {
                 ThreadRow(thread: thread)
-                    .environmentObject(threadsVM) // wen need to inject viewmodel here because inside threadRow we are using the global viewmodel injection
                     .onAppear {
                         if self.threadsVM.filtered.last == thread {
                             threadsVM.loadMore()

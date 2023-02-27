@@ -36,15 +36,15 @@ class ThreadsViewModel: ObservableObject {
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)
-        NotificationCenter.default.publisher(for: threadEventNotificationName)
+        NotificationCenter.default.publisher(for: .threadEventNotificationName)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink(receiveValue: onThreadEvent)
             .store(in: &cancellableSet)
-        NotificationCenter.default.publisher(for: messageNotificationName)
+        NotificationCenter.default.publisher(for: .messageNotificationName)
             .compactMap { $0.object as? MessageEventTypes }
             .sink(receiveValue: onNewMessage)
             .store(in: &cancellableSet)
-        NotificationCenter.default.publisher(for: callEventName)
+        NotificationCenter.default.publisher(for: .callEventName)
             .compactMap { $0.object as? CallEventTypes }
             .sink(receiveValue: onCallEvent)
             .store(in: &cancellableSet)

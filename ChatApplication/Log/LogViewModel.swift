@@ -15,13 +15,12 @@ class LogViewModel: ObservableObject {
     @Published var logs: [Log] = []
     @Published var viewContext: NSManagedObjectContext
     @Published var searchText: String = ""
-    fileprivate static let NotificationKey = "InsertLog"
     private(set) var cancellableSet: Set<AnyCancellable> = []
 
     init(isPreview: Bool = false) {
         viewContext = isPreview ? PSM.preview.container.viewContext : PSM.shared.container.viewContext
         load()
-        NotificationCenter.default.publisher(for: Notification.Name(LogViewModel.NotificationKey))
+        NotificationCenter.default.publisher(for: .loginName)
             .compactMap { $0.object as? Log }
             .sink { [weak self] log in
                 withAnimation {

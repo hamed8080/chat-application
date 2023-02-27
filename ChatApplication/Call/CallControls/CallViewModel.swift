@@ -61,7 +61,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
     var callTitle: String? { isReceiveCall ? call?.title : startCallRequest?.titleOfCalling }
 
     private init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(callEvent(_:)), name: callEventName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(callEvent(_:)), name: .callEventName, object: nil)
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
             .store(in: &cancellableSet)

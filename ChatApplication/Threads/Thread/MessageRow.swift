@@ -38,7 +38,7 @@ class CalculationRowViewModel: ObservableObject {
 
 struct MessageRow: View {
     var message: Message
-    var calculation: CalculationRowViewModel
+    @State var calculation: CalculationRowViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
     @State private(set) var showParticipants: Bool = false
     @Binding var isInEditMode: Bool
@@ -356,34 +356,31 @@ struct ForwardMessageRow: View {
     var forwardInfo: ForwardInfo
     @State var showReadOnlyThreadView: Bool = false
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                if let name = forwardInfo.participant?.name {
-                    Text(name)
-                        .italic()
-                        .font(.footnote)
-                        .foregroundColor(Color.gray)
+    @ViewBuilder var body: some View {
+        if let forwardThread = forwardInfo.conversation {
+            NavigationLink {
+                ThreadView(thread: forwardThread)
+            } label: {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        if let name = forwardInfo.participant?.name {
+                            Text(name)
+                                .italic()
+                                .font(.subheadline)
+                                .foregroundColor(Color.gray)
+                        }
+                        Spacer()
+                        Image(systemName: "arrowshape.turn.up.right")
+                            .foregroundColor(Color.blue)
+                    }
+                    .padding([.leading, .trailing, .top], 8)
+                    .frame(minHeight: 36)
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 1)
+                        .padding([.top], 4)
                 }
-                Spacer()
-                Image(systemName: "arrowshape.turn.up.right")
-                    .foregroundColor(Color.blue)
             }
-            .padding([.leading, .trailing, .top], 8)
-            .frame(minHeight: 20)
-            Rectangle()
-                .fill(Color.gray.opacity(0.2))
-                .frame(height: 1)
-                .padding([.top], 4)
-            if let forwardThread = forwardInfo.conversation {
-                NavigationLink(destination: ThreadView(thread: forwardThread), isActive: $showReadOnlyThreadView) {
-                    EmptyView()
-                }
-                .frame(width: 0)
-                .hidden()
-            }
-        }.onTapGesture {
-            showReadOnlyThreadView = true
         }
     }
 }
