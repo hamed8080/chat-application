@@ -91,29 +91,34 @@ struct ContactRow: View {
 
     @ViewBuilder var actionsViews: some View {
         Divider()
-        HStack(spacing: 48) {
-            if appState.isLoading {
-                ProgressView()
-            } else {
-                ActionButton(iconSfSymbolName: "message") {
-                    viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+        HStack {
+            Group {
+                Spacer()
+                if appState.isLoading {
+                    ProgressView()
+                } else {
+                    ActionButton(iconSfSymbolName: "message") {
+                        viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+                    }
+                }
+                Spacer()
+                ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue) {
+                    viewModel.blockOrUnBlock(contact)
                 }
             }
-
-            ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue) {
-                viewModel.blockOrUnBlock(contact)
-            }
-
-            ActionButton(iconSfSymbolName: "video", height: 16) {
-                callViewModel.startCall(contacts: [contact], isVideoOn: true)
-            }
-
-            ActionButton(iconSfSymbolName: "phone") {
-                callViewModel.startCall(contacts: [contact], isVideoOn: false)
-            }
-
-            ActionButton(iconSfSymbolName: "pencil") {
-                navigateToAddOrEditContact.toggle()
+            Group {
+                Spacer()
+                ActionButton(iconSfSymbolName: "video", height: 16) {
+                    callViewModel.startCall(contacts: [contact], isVideoOn: true)
+                }
+                Spacer()
+                ActionButton(iconSfSymbolName: "phone") {
+                    callViewModel.startCall(contacts: [contact], isVideoOn: false)
+                }
+                Spacer()
+                ActionButton(iconSfSymbolName: "pencil") {
+                    navigateToAddOrEditContact.toggle()
+                }
             }
         }
     }
