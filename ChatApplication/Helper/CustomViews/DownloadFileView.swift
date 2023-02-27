@@ -150,7 +150,7 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
         if isInCache {
             state = .COMPLETED
         }
-        NotificationCenter.default.publisher(for: fileDeletedFromCacheName)
+        NotificationCenter.default.publisher(for: .fileDeletedFromCacheName)
             .compactMap { $0.object as? Message }
             .filter { $0.id == message.id }
             .sink { [weak self] _ in

@@ -28,12 +28,6 @@ enum ConnectionStatus: Int {
     }
 }
 
-let fileDeletedFromCacheName = Notification.Name("fileDeletedFromCacheName")
-let connectName = Notification.Name("connectName")
-let messageNotificationName = Notification.Name("messageNotificationName")
-let systemMessageEventNotificationName = Notification.Name("systemMessageEventNotificationName")
-let threadEventNotificationName = Notification.Name("threadEventNotificationName")
-
 class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
@@ -60,7 +54,7 @@ class ChatDelegateImplementation: ChatDelegate {
         case .chatReady:
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .connected
-            NotificationCenter.default.post(name: connectName, object: nil)
+            NotificationCenter.default.post(name: .connectName, object: nil)
         case .uninitialized:
             print("Chat object is not initialized.")
         }
@@ -79,15 +73,15 @@ class ChatDelegateImplementation: ChatDelegate {
     func chatEvent(event: ChatEventType) {
         print(event)
         if case let .system(event) = event {
-            NotificationCenter.default.post(name: systemMessageEventNotificationName, object: event)
+            NotificationCenter.default.post(name: .systemMessageEventNotificationName, object: event)
         }
 
         if case let .thread(event) = event {
-            NotificationCenter.default.post(name: threadEventNotificationName, object: event)
+            NotificationCenter.default.post(name: .threadEventNotificationName, object: event)
         }
 
         if case let .message(event) = event {
-            NotificationCenter.default.post(name: messageNotificationName, object: event)
+            NotificationCenter.default.post(name: .messageNotificationName, object: event)
         }
 
         if case let .file(event) = event {

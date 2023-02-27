@@ -92,12 +92,12 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     private func setupNotificationObservers() {
-        NotificationCenter.default.publisher(for: threadEventNotificationName)
+        NotificationCenter.default.publisher(for: .threadEventNotificationName)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink(receiveValue: onThreadEvent)
             .store(in: &cancellableSet)
 
-        NotificationCenter.default.publisher(for: messageNotificationName)
+        NotificationCenter.default.publisher(for: .messageNotificationName)
             .compactMap { $0.object as? MessageEventTypes }
             .sink(receiveValue: onMessageEvent)
             .store(in: &cancellableSet)
@@ -364,7 +364,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
             let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(FanapPodChatSDK.Routes.files.rawValue)/\(fileHashCode)"
             AppState.shared.cacheFileManager?.deleteFile(at: URL(string: url)!)
-            NotificationCenter.default.post(.init(name: fileDeletedFromCacheName, object: message))
+            NotificationCenter.default.post(.init(name: .fileDeletedFromCacheName, object: message))
         }
     }
 }

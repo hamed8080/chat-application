@@ -22,7 +22,7 @@ class ThreadEventViewModel: ObservableObject {
     }
 
     private func setupNotificationObservers() {
-        NotificationCenter.default.publisher(for: systemMessageEventNotificationName)
+        NotificationCenter.default.publisher(for: .systemMessageEventNotificationName)
             .compactMap { $0.object as? SystemEventTypes }
             .sink { [weak self] systemMessageEvent in
                 self?.startEventTimer(systemMessageEvent)
