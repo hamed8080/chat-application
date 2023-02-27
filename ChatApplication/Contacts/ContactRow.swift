@@ -90,7 +90,8 @@ struct ContactRow: View {
 
     @ViewBuilder var actionsViews: some View {
         Divider()
-        HStack(spacing: 48) {
+        HStack {
+            Spacer()
             if appState.isLoading {
                 ProgressView()
             } else {
@@ -98,14 +99,15 @@ struct ContactRow: View {
                     viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
                 }
             }
-
+            Spacer()
             ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue) {
                 viewModel.blockOrUnBlock(contact)
             }
-
+            Spacer()
             ActionButton(iconSfSymbolName: "pencil") {
                 navigateToAddOrEditContact.toggle()
             }
+            Spacer()
         }
     }
 
