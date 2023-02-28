@@ -11,12 +11,10 @@ import Foundation
 
 class ThreadEventViewModel: ObservableObject {
     @Published var isShowingEvent: Bool = false
-    var threadId: Int?
+    var threadId: Int
     var smt: SMT?
     private(set) var cancellableSet: Set<AnyCancellable> = []
-    init() {}
-
-    func setThread(threadId: Int) {
+    init(threadId: Int) {
         self.threadId = threadId
         setupNotificationObservers()
     }

@@ -79,7 +79,8 @@ struct ThreadRow: View {
                             .foregroundColor(Color.orange)
                     }
                 }
-                ThreadEventView(threadId: thread.id ?? -1)
+                ThreadEventView()
+                    .environmentObject(ThreadEventViewModel(threadId: thread.id ?? -1))
             }
         }
         .padding([.leading, .trailing], 8)

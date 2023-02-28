@@ -5,36 +5,33 @@
 //  Created by hamed on 11/30/22.
 //
 
+import FanapPodChatSDK
 import SwiftUI
 
 struct ThreadEventView: View {
-    let threadId: Int
-    @StateObject var viewModel = ThreadEventViewModel()
+    @EnvironmentObject var viewModel: ThreadEventViewModel
+    var smt: SMT { viewModel.smt ?? .unknown }
 
     var body: some View {
-        if let smt = viewModel.smt {
-            HStack {
-                Image(systemName: smt.eventImage)
-                    .resizable()
-                    .foregroundColor(.orange)
-                    .frame(width: 16, height: 16)
+        HStack {
+            Image(systemName: smt.eventImage)
+                .resizable()
+                .foregroundColor(.orange)
+                .frame(width: 16, height: 16)
 
-                Text(smt.stringEvent)
-                    .lineLimit(1)
-                    .font(.subheadline.bold())
-                    .foregroundColor(.orange)
-                    .onAppear {
-                        viewModel.setThread(threadId: threadId)
-                    }
-            }
-            .frame(height: viewModel.isShowingEvent ? 16 : 0)
-            .animation(.spring(), value: viewModel.isShowingEvent)
+            Text(smt.stringEvent)
+                .lineLimit(1)
+                .font(.subheadline.bold())
+                .foregroundColor(.orange)
         }
+        .frame(height: viewModel.isShowingEvent ? 16 : 0)
+        .animation(.spring(), value: viewModel.isShowingEvent)
     }
 }
 
 struct ThreadIsTypingView_Previews: PreviewProvider {
     static var previews: some View {
-        ThreadEventView(threadId: MockData.thread.id!)
+        ThreadEventView()
+            .environmentObject(ThreadEventViewModel(threadId: -1))
     }
 }
