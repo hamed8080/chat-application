@@ -13,14 +13,13 @@
 		0505C4EF2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4ED2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld */; };
 		0505C4F22869AC800034A9F0 /* PSM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4F12869AC800034A9F0 /* PSM.swift */; };
 		0506366E2801A8740080DF00 /* EnvironmentEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0506366D2801A8740080DF00 /* EnvironmentEX.swift */; };
-		050B1BE1292F8DEC0025D4ED /* ScrollToPositionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE0292F8DEC0025D4ED /* ScrollToPositionProtocol.swift */; };
-		050E521027EF275C009F52D3 /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050E520F27EF275C009F52D3 /* CallView.swift */; };
 		050B1BE1292F8DEC0025D4ED /* ThreadViewModel+ScrollToPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE0292F8DEC0025D4ED /* ThreadViewModel+ScrollToPosition.swift */; };
 		050B1BE3292F90D00025D4ED /* ThreadsViewModel+ArchiveThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE2292F90D00025D4ED /* ThreadsViewModel+ArchiveThread.swift */; };
 		050B1BE5292F91640025D4ED /* ThreadsViewModel+PinThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE4292F91640025D4ED /* ThreadsViewModel+PinThread.swift */; };
 		050B1BE7292F93020025D4ED /* ThreadsViewModel+MuteThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE6292F93020025D4ED /* ThreadsViewModel+MuteThread.swift */; };
 		050C5AA22970861E00CD5702 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA0297082BE00CD5702 /* DetailView.swift */; };
 		050C5AA42970863B00CD5702 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA32970863B00CD5702 /* DetailViewModel.swift */; };
+		050E521027EF275C009F52D3 /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050E520F27EF275C009F52D3 /* CallView.swift */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
@@ -55,8 +54,8 @@
 		055B26A427D5FA250098D585 /* GIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A327D5FA250098D585 /* GIFView.swift */; };
 		055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A527D602CD0098D585 /* TabViewsContainer.swift */; };
 		055EFCEE27C0BFA2006E0ABC /* AnimatingCellHeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055EFCED27C0BFA2006E0ABC /* AnimatingCellHeight.swift */; };
-		05743AD327F02FA70061C901 /* CallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05743AD227F02FA70061C901 /* CallViewModel.swift */; };
 		05610BA9298FDC6B00947E29 /* ThreadTypes+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05610BA8298FDC6B00947E29 /* ThreadTypes+.swift */; };
+		05743AD327F02FA70061C901 /* CallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05743AD227F02FA70061C901 /* CallViewModel.swift */; };
 		05781CCA29018F3C0064BDC3 /* EnvironmentEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0506366D2801A8740080DF00 /* EnvironmentEX.swift */; };
 		05781CCC2902A21E0064BDC3 /* LazyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05781CCB2902A21E0064BDC3 /* LazyView.swift */; };
 		05781CCE2902B0040064BDC3 /* ConnectionStatusToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05781CCD2902B0040064BDC3 /* ConnectionStatusToolbar.swift */; };
@@ -89,9 +88,10 @@
 		05E2F6FB2989781900AAA288 /* ObjectsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E2F6FA2989781900AAA288 /* ObjectsContainer.swift */; };
 		05F1E2322941D50100421C17 /* SSOTokenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC10007226F4674500C3AD67 /* SSOTokenResponse.swift */; };
 		05F6C7102808BB1800C2EEF4 /* Message+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F6C70F2808BB1800C2EEF4 /* Message+.swift */; };
+		05F7B09629ADC55600911CA0 /* CallViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F7B09529ADC55600911CA0 /* CallViewModifire.swift */; };
 		05FE518927899554004F44B5 /* AddParticipantsToViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4C2785718F004336F5 /* AddParticipantsToViewModel.swift */; };
-		AC00883B271D65B000376BBB /* Ringtone.aif in Resources */ = {isa = PBXBuildFile; fileRef = AC00883A271D65B000376BBB /* Ringtone.aif */; };
 		05FEB00F29AC6B8A00E13C58 /* Notification.Name+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */; };
+		AC00883B271D65B000376BBB /* Ringtone.aif in Resources */ = {isa = PBXBuildFile; fileRef = AC00883A271D65B000376BBB /* Ringtone.aif */; };
 		AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F3B268C4FA500B008FF /* HomeContentView.swift */; };
 		AC0435FD26998D3E00B1C87B /* ParticipantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FA26998D0C00B1C87B /* ParticipantsViewModel.swift */; };
 		AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FE26998D4400B1C87B /* ParticipantRow.swift */; };
@@ -214,13 +214,13 @@
 		0505C4EE2869AB750034A9F0 /* ChatApplicationModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChatApplicationModel.xcdatamodel; sourceTree = "<group>"; };
 		0505C4F12869AC800034A9F0 /* PSM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSM.swift; sourceTree = "<group>"; };
 		0506366D2801A8740080DF00 /* EnvironmentEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentEX.swift; sourceTree = "<group>"; };
-		050E520F27EF275C009F52D3 /* CallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallView.swift; sourceTree = "<group>"; };
 		050B1BE0292F8DEC0025D4ED /* ThreadViewModel+ScrollToPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadViewModel+ScrollToPosition.swift"; sourceTree = "<group>"; };
 		050B1BE2292F90D00025D4ED /* ThreadsViewModel+ArchiveThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadsViewModel+ArchiveThread.swift"; sourceTree = "<group>"; };
 		050B1BE4292F91640025D4ED /* ThreadsViewModel+PinThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadsViewModel+PinThread.swift"; sourceTree = "<group>"; };
 		050B1BE6292F93020025D4ED /* ThreadsViewModel+MuteThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadsViewModel+MuteThread.swift"; sourceTree = "<group>"; };
 		050C5AA0297082BE00CD5702 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		050C5AA32970863B00CD5702 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
+		050E520F27EF275C009F52D3 /* CallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallView.swift; sourceTree = "<group>"; };
 		051C8EF9292235300078AD7E /* FanapPodAsyncSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FanapPodAsyncSDK; path = ../FanapPodAsyncSDK; sourceTree = "<group>"; };
 		051D58E329926D7800DC066A /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
@@ -252,8 +252,8 @@
 		055B26A327D5FA250098D585 /* GIFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFView.swift; sourceTree = "<group>"; };
 		055B26A527D602CD0098D585 /* TabViewsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewsContainer.swift; sourceTree = "<group>"; };
 		055EFCED27C0BFA2006E0ABC /* AnimatingCellHeight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatingCellHeight.swift; sourceTree = "<group>"; };
-		05743AD227F02FA70061C901 /* CallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewModel.swift; sourceTree = "<group>"; };
 		05610BA8298FDC6B00947E29 /* ThreadTypes+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadTypes+.swift"; sourceTree = "<group>"; };
+		05743AD227F02FA70061C901 /* CallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewModel.swift; sourceTree = "<group>"; };
 		05781CCB2902A21E0064BDC3 /* LazyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyView.swift; sourceTree = "<group>"; };
 		05781CCD2902B0040064BDC3 /* ConnectionStatusToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionStatusToolbar.swift; sourceTree = "<group>"; };
 		05781CD52903466A0064BDC3 /* AudioRecordingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecordingViewModel.swift; sourceTree = "<group>"; };
@@ -284,8 +284,9 @@
 		05E28D802978294800DC73B2 /* ImageLaoderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLaoderView.swift; sourceTree = "<group>"; };
 		05E2F6FA2989781900AAA288 /* ObjectsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectsContainer.swift; sourceTree = "<group>"; };
 		05F6C70F2808BB1800C2EEF4 /* Message+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+.swift"; sourceTree = "<group>"; };
-		AC00883A271D65B000376BBB /* Ringtone.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ringtone.aif; sourceTree = "<group>"; };
+		05F7B09529ADC55600911CA0 /* CallViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewModifire.swift; sourceTree = "<group>"; };
 		05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification.Name+.swift"; sourceTree = "<group>"; };
+		AC00883A271D65B000376BBB /* Ringtone.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ringtone.aif; sourceTree = "<group>"; };
 		AC008F3B268C4FA500B008FF /* HomeContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContentView.swift; sourceTree = "<group>"; };
 		AC0435FA26998D0C00B1C87B /* ParticipantsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsViewModel.swift; sourceTree = "<group>"; };
 		AC0435FE26998D4400B1C87B /* ParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantRow.swift; sourceTree = "<group>"; };
@@ -916,6 +917,7 @@
 				05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */,
 				05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */,
 				055EFCED27C0BFA2006E0ABC /* AnimatingCellHeight.swift */,
+				05F7B09529ADC55600911CA0 /* CallViewModifire.swift */,
 				05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */,
 			);
 			path = Modifires;
@@ -1081,7 +1083,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ACFADE8027675BB6007C555F /* PrimaryButtonStyle.swift in Sources */,
 				05743AD327F02FA70061C901 /* CallViewModel.swift in Sources */,
 				AC10007326F4674500C3AD67 /* SSOTokenResponse.swift in Sources */,
 				AC989210275E3D48007973F7 /* CallManager.swift in Sources */,
@@ -1144,6 +1145,7 @@
 				059914B029262FF60070BD89 /* Conversation+.swift in Sources */,
 				AC1D2CCA2662016E00AA351A /* ImageLoader.swift in Sources */,
 				AC48ED6526F7299F00AB1A5D /* VerifyRequest.swift in Sources */,
+				05F7B09629ADC55600911CA0 /* CallViewModifire.swift in Sources */,
 				AC0FE1372755047A00C7A8DB /* Int+.swift in Sources */,
 				AC1D2CCC2662016E00AA351A /* LoadingView.swift in Sources */,
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,
@@ -1206,9 +1208,9 @@
 				AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */,
 				051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */,
 				05384A8A2792F3FC00D85A92 /* KeyboardResponsiveModifier.swift in Sources */,
-				AC21DA40273BF7D700DC86E6 /* StringEX.swift in Sources */,
+				AC21DA40273BF7D700DC86E6 /* String+.swift in Sources */,
 				AC989216275E3D48007973F7 /* CallRow.swift in Sources */,
-				AC20FBA4266CC4B500187B47 /* DateEX.swift in Sources */,
+				AC20FBA4266CC4B500187B47 /* Date+.swift in Sources */,
 				AC98920F275E3D48007973F7 /* CallParticipantRow.swift in Sources */,
 				AC21DA40273BF7D700DC86E6 /* String+.swift in Sources */,
 				050B1BE5292F91640025D4ED /* ThreadsViewModel+PinThread.swift in Sources */,
