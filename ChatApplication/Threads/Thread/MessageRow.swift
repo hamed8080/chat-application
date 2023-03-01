@@ -325,7 +325,7 @@ struct ReplyInfoMessageRow: View {
                         .padding([.leading, .trailing], 4)
                 }
 
-                if let message = message.message {
+                if let message = message.replyInfo?.message {
                     Text(message)
                         .padding([.leading, .trailing], 4)
                         .cornerRadius(8, corners: .allCorners)
