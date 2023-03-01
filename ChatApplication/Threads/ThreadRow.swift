@@ -210,6 +210,8 @@ struct JoinToGroupCallView: View {
 }
 
 struct ThreadLastMessageView: View {
+    // It must be here because we need to redraw the view after the thread inside ViewModel has changed.
+    @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
     var lastMsgVO: Message? { thread.lastMessageVO }
 

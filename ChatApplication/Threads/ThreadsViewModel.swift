@@ -61,6 +61,10 @@ class ThreadsViewModel: ObservableObject {
             if let threadId = response.subjectId, let thread = threads.first(where: { $0.id == threadId }) {
                 removeThread(thread)
             }
+        case let .lastMessageDeleted(response), let .lastMessageEdited(response):
+            if let thread = response.result {
+                onLastMessageChanged(thread)
+            }
         case let .threadInfoUpdated(response):
             if let thread = response.result {
                 updateThreadInfo(thread)
@@ -92,7 +96,11 @@ class ThreadsViewModel: ObservableObject {
         if case let .messageNew(response) = event, let index = threads.firstIndex(where: { $0.id == response.result?.conversation?.id }) {
             threads[index].time = response.result?.conversation?.time
             threads[index].unreadCount = (threads[index].unreadCount ?? 0) + 1
-            sort()
+            threads[index].lastMessageVO = response.result
+            threads[index].lastMessage = response.result?.message
+            if threads[index].pin == false {
+                sort()
+            }
         }
     }
 
@@ -366,6 +374,14 @@ class ThreadsViewModel: ObservableObject {
             threads[index].userGroupHash = thread.userGroupHash
             threads[index].time = thread.time
             threads[index].group = thread.group
+            objectWillChange.send()
+        }
+    }
+
+    func onLastMessageChanged(_ thread: Conversation) {
+        if let index = threads.firstIndex(where: { $0.id == thread.id }) {
+            threads[index].lastMessage = thread.lastMessage
+            threads[index].lastMessageVO = thread.lastMessageVO
             objectWillChange.send()
         }
     }
