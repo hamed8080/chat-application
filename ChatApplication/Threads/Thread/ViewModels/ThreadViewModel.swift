@@ -295,14 +295,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         messages = []
     }
 
-    func pinMessage(_ message: Message) {
-        messages.first(where: { $0.id == message.id })?.pinned = true
-    }
-
-    func unpinMessage(_ message: Message) {
-        messages.first(where: { $0.id == message.id })?.pinned = false
-    }
-
     func sort() {
         messages = messages.sorted { m1, m2 in
             if let t1 = m1.time, let t2 = m2.time {

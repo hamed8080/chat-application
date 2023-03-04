@@ -22,7 +22,6 @@ struct ThreadView: View {
     @State var showDatePicker = false
     @State var showExportFileURL = false
     @State var searchMessageText: String = ""
-    private var pinMessage: Message? { viewModel.messages.first { $0.pinned == true } }
 
     var body: some View {
         ThreadMessagesList(isInEditMode: $isInEditMode)
@@ -47,7 +46,7 @@ struct ThreadView: View {
                     .environmentObject(viewModel)
             }
             .overlay {
-                ThreadPinMessage(message: pinMessage)
+                ThreadPinMessage()
                     .environmentObject(viewModel)
             }
             .toolbar {
@@ -297,29 +296,31 @@ struct ThreadSearchList: View {
 }
 
 struct ThreadPinMessage: View {
-    let message: Message?
+    private var messages: [Message] { threadVM.thread?.pinMessages ?? [] }
     @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
-        if let message = message {
-            VStack {
+        VStack {
+            ForEach(messages) { message in
                 HStack {
                     Text(message.messageTitle)
                     Spacer()
-                    Image(systemName: "pin")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(.orange)
+                    Button {
+                        threadVM.unpin(message.id ?? -1)
+                    } label: {
+                        Label("Un Pin", systemImage: "pin.fill")
+                            .labelStyle(.iconOnly)
+                            .foregroundColor(.orange)
+                    }
                 }
-                .frame(height: 64)
+                .padding()
+                .frame(height: 48)
+                .background(.regularMaterial)
                 .onTapGesture {
                     threadVM.setScrollToUniqueId(message.uniqueId ?? "")
                 }
-                Spacer()
             }
-        } else {
-            EmptyView()
+            Spacer()
         }
     }
 }
