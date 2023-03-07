@@ -72,7 +72,10 @@ struct ThreadView: View {
             }
             .onAppear {
                 viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
-                viewModel.getHistory()
+                if !viewModel.isFetchedServerFirstResponse {
+                    viewModel.getHistory()
+                }
+                appState.activeThreadId = thread.id
             }
             .sheet(isPresented: $showAttachmentDialog) {
                 AttachmentDialog(viewModel: ActionSheetViewModel(threadViewModel: viewModel), showAttachmentDialog: $showAttachmentDialog)
