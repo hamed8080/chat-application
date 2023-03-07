@@ -71,29 +71,30 @@ class ChatDelegateImplementation: ChatDelegate {
     }
 
     func chatEvent(event: ChatEventType) {
-        print(event)
-        if case let .system(event) = event {
-            NotificationCenter.default.post(name: .systemMessageEventNotificationName, object: event)
-        }
-
-        if case let .thread(event) = event {
-            NotificationCenter.default.post(name: .threadEventNotificationName, object: event)
-        }
-
-        if case let .message(event) = event {
-            NotificationCenter.default.post(name: .messageNotificationName, object: event)
-        }
-
-        if case let .file(event) = event {
-            print("file Event:\(dump(event))")
-        }
-
-        if case let .call(event) = event {
-            NotificationCenter.default.post(name: .callEventName, object: event)
-        }
-
-        if case let .user(eventUser) = event, case let .onUser(response) = eventUser, let user = response.result {
-            UserConfigManagerVM.instance.onUser(user)
+        print(dump(event))
+        switch event {
+        case .bot:
+            break
+        case .contact:
+            break
+        case let .call(callEventTypes):
+            NotificationCenter.default.post(name: .callEventName, object: callEventTypes)
+        case .file:
+            break
+        case let .system(systemEventTypes):
+            NotificationCenter.default.post(name: .systemMessageEventNotificationName, object: systemEventTypes)
+        case let .message(messageEventTypes):
+            NotificationCenter.default.post(name: .messageNotificationName, object: messageEventTypes)
+        case let .thread(threadEventTypes):
+            NotificationCenter.default.post(name: .threadEventNotificationName, object: threadEventTypes)
+        case let .user(userEventTypes):
+            if case let .onUser(response) = userEventTypes, let user = response.result {
+                UserConfigManagerVM.instance.onUser(user)
+            }
+        case .assistant:
+            break
+        case .tag:
+            break
         }
     }
 }

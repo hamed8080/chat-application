@@ -13,19 +13,21 @@ struct ThreadEventView: View {
     var smt: SMT { viewModel.smt ?? .unknown }
 
     var body: some View {
-        HStack {
-            Image(systemName: smt.eventImage)
-                .resizable()
-                .foregroundColor(.orange)
-                .frame(width: 16, height: 16)
+        if let event = smt.titleAndIcon {
+            HStack {
+                Image(systemName: event.image)
+                    .resizable()
+                    .foregroundColor(.orange)
+                    .frame(width: 16, height: 16)
 
-            Text(smt.stringEvent)
-                .lineLimit(1)
-                .font(.subheadline.bold())
-                .foregroundColor(.orange)
+                Text(event.image)
+                    .lineLimit(1)
+                    .font(.subheadline.bold())
+                    .foregroundColor(.orange)
+            }
+            .frame(height: viewModel.isShowingEvent ? 16 : 0)
+            .animation(.spring(), value: viewModel.isShowingEvent)
         }
-        .frame(height: viewModel.isShowingEvent ? 16 : 0)
-        .animation(.spring(), value: viewModel.isShowingEvent)
     }
 }
 
