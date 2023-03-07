@@ -5,7 +5,7 @@
 
 Dotin iOS ChatApplication
 
-<img src="https://github.com/hamed8080/ChatApplication/raw/main/ChatApplication/Screenshots/main.png"  width="960" height="560">
+<img src="https://github.com/hamed8080/ChatApplication/raw/main/Screenshots/main.png"  width="960" height="560">
 <br />
 <br />
 
