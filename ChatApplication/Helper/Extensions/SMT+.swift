@@ -9,7 +9,14 @@ import FanapPodChatSDK
 import Foundation
 
 extension SMT {
-    var stringEvent: String {
+    typealias EventResult = (title: String, image: String)?
+
+    var titleAndIcon: EventResult {
+        guard let stringEvent, let eventImage else { return nil }
+        return (stringEvent, eventImage)
+    }
+
+    var stringEvent: String? {
         switch self {
         case .isTyping:
             return "is typing..."
@@ -24,11 +31,11 @@ extension SMT {
         case .uploadFile:
             return "is uploading a file"
         case .unknown, .serverTime:
-            return ""
+            return nil
         }
     }
 
-    var eventImage: String {
+    var eventImage: String? {
         switch self {
         case .isTyping:
             return "highlighter"
@@ -43,7 +50,7 @@ extension SMT {
         case .uploadFile:
             return "doc"
         case .unknown, .serverTime:
-            return ""
+            return nil
         }
     }
 }
