@@ -27,7 +27,7 @@ struct ThreadView: View {
         ThreadMessagesList(isInEditMode: $isInEditMode)
             .id(thread.id)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle(viewModel.thread?.title ?? "")
+            .navigationTitle(viewModel.thread?.computedTitle ?? "")
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
@@ -106,7 +106,7 @@ struct ThreadView: View {
 
     var centerToolbarTitle: some View {
         VStack(alignment: .center) {
-            Text(viewModel.thread?.title ?? "")
+            Text(viewModel.thread?.computedTitle ?? "")
                 .fixedSize()
                 .font(.headline)
 

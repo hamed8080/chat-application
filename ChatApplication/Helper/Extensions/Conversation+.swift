@@ -88,4 +88,12 @@ public extension Conversation {
             return (Message.sentImage!, .gray.opacity(0.7))
         } else { return nil }
     }
+
+    var computedTitle: String {
+        if type == .selfThread {
+            return String(localized: "self_thread")
+        } else {
+            return title ?? ""
+        }
+    }
 }

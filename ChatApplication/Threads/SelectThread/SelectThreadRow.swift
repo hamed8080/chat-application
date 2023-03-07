@@ -25,7 +25,7 @@ struct SelectThreadRow: View {
                 .frame(width: 36, height: 36)
                 .background(Color.blue.opacity(0.4))
                 .cornerRadius(18)
-            Text(thread.title ?? "")
+            Text(thread.computedTitle)
                 .font(.headline)
             Spacer()
         }

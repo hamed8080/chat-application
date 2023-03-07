@@ -16,15 +16,10 @@ struct ThreadRow: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            ImageLaoderView(url: thread.computedImageURL, metaData: thread.metadata, userName: thread.title)
-                .font(.system(size: 16).weight(.heavy))
-                .foregroundColor(.white)
-                .frame(width: 48, height: 48)
-                .background(Color.blue.opacity(0.4))
-                .cornerRadius(32)
+            ThreadImageView(thread: thread)
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text(thread.title ?? "")
+                    Text(thread.computedTitle)
                         .lineLimit(1)
                         .font(.headline.bold())
                     if thread.mute == true {
@@ -156,6 +151,33 @@ struct ThreadRow: View {
                     Label("Invite", systemImage: "person.crop.circle.badge.plus")
                 }
             }
+        }
+    }
+}
+
+struct ThreadImageView: View {
+    var thread: Conversation
+    var body: some View {
+        if thread.type == .selfThread {
+            Circle()
+                .foregroundColor(.clear)
+                .scaledToFit()
+                .frame(width: 48, height: 48)
+                .background(.ultraThickMaterial)
+                .cornerRadius(32)
+                .overlay {
+                    Image("bookmark")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+        } else {
+            ImageLaoderView(url: thread.computedImageURL, metaData: thread.metadata, userName: thread.title)
+                .font(.system(size: 16).weight(.heavy))
+                .foregroundColor(.white)
+                .frame(width: 48, height: 48)
+                .background(Color.blue.opacity(0.4))
+                .cornerRadius(32)
         }
     }
 }
