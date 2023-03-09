@@ -62,6 +62,7 @@
 		057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9C293797600089ACC9 /* ThreadEventView.swift */; };
 		05851BB8297DB1E300F7B64B /* BorderedTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */; };
 		05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586497F282D40A200218ED0 /* LoadingViewAt.swift */; };
+		0593ED1E29BA748E00541FA6 /* MessageRowCalculationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0593ED1D29BA748E00541FA6 /* MessageRowCalculationViewModel.swift */; };
 		0594E195298E5F420090D540 /* SMT+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594E194298E5F420090D540 /* SMT+.swift */; };
 		05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05962116280BF85B0036B3AA /* DateSelectionView.swift */; };
 		0596654B297C44B400A0ABDA /* NavigationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0596654A297C44B400A0ABDA /* NavigationModel.swift */; };
@@ -236,6 +237,7 @@
 		057B9A9C293797600089ACC9 /* ThreadEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEventView.swift; sourceTree = "<group>"; };
 		05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextFieldStyle.swift; sourceTree = "<group>"; };
 		0586497F282D40A200218ED0 /* LoadingViewAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAt.swift; sourceTree = "<group>"; };
+		0593ED1D29BA748E00541FA6 /* MessageRowCalculationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowCalculationViewModel.swift; sourceTree = "<group>"; };
 		0594E194298E5F420090D540 /* SMT+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SMT+.swift"; sourceTree = "<group>"; };
 		05962116280BF85B0036B3AA /* DateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSelectionView.swift; sourceTree = "<group>"; };
 		0596654A297C44B400A0ABDA /* NavigationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationModel.swift; sourceTree = "<group>"; };
@@ -680,6 +682,7 @@
 				ACF82E0E275230C3000330DB /* UnSentMessageTypes.swift */,
 				05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */,
 				057B9A9C293797600089ACC9 /* ThreadEventView.swift */,
+				0593ED1D29BA748E00541FA6 /* MessageRowCalculationViewModel.swift */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -1000,6 +1003,7 @@
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,
 				05BD143029850D600015A6F6 /* UserConfigManagerVM.swift in Sources */,
 				ACAB96D427030FBE005FB9AA /* ViewExtension.swift in Sources */,
+				0593ED1E29BA748E00541FA6 /* MessageRowCalculationViewModel.swift in Sources */,
 				057977B52805449D00FE5EA4 /* MockDatas.swift in Sources */,
 				ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */,
 				ACEAEDD5274CF87600EC8252 /* ActionSheetViewModel.swift in Sources */,
