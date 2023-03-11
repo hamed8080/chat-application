@@ -25,6 +25,8 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     var count: Int { get }
     var searchTextTimer: Timer? { get set }
     var mentionList: [Participant] { get set }
+    var isFetchedServerFirstResponse: Bool { get set }
+    var isActiveThread: Bool { get }
     func deleteMessages(_ messages: [Message])
     func loadMoreMessage()
     func getHistory(_ toTime: UInt?)
@@ -60,6 +62,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     @Published var isInEditMode: Bool = false
     @Published var exportMessagesVM: ExportMessagesViewModelProtocol = ExportMessagesViewModel()
     @Published var mentionList: [Participant] = []
+    var isFetchedServerFirstResponse: Bool = false
     var searchedMessages: [Message] = []
     var readOnly = false
     var textMessage: String?
@@ -74,6 +77,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     @Published var signalMessageText: String?
     var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
     var searchTextTimer: Timer?
+    var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
 
     weak var forwardMessage: Message? {
         didSet {
@@ -92,6 +96,10 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     private func setupNotificationObservers() {
+        AppState.shared.$connectionStatus
+            .sink(receiveValue: onConnectionStatusChanged)
+            .store(in: &cancellableSet)
+
         NotificationCenter.default.publisher(for: .threadEventNotificationName)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink(receiveValue: onThreadEvent)
@@ -101,6 +109,13 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             .compactMap { $0.object as? MessageEventTypes }
             .sink(receiveValue: onMessageEvent)
             .store(in: &cancellableSet)
+    }
+
+    func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
+        if status == .connected, isFetchedServerFirstResponse == true, isActiveThread {
+            // After connecting again get latest messages
+            getHistory()
+        }
     }
 
     func onThreadEvent(_ event: ThreadEventTypes?) {
@@ -170,6 +185,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
                 self?.setHasNext(response.pagination?.hasNext ?? false)
                 self?.appendMessages(messages)
                 self?.isLoading = false
+                self?.isFetchedServerFirstResponse = true
             }
         } cacheResponse: { [weak self] response in
             if let messages = response.result {

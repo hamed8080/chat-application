@@ -14,17 +14,16 @@ struct AttachmentDialog: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
+            PhotoGridView()
+                .environmentObject(viewModel)
             Spacer()
             let count = viewModel.selectedImageItems.count
             let text = count > 0 ? "\(count) selected" : "Nothing Has been selected."
             Text(verbatim: text)
                 .multilineTextAlignment(.center)
-                .font(.title2.bold())
-                .foregroundColor(.tableItem)
+                .foregroundColor(Color(uiColor: .systemGray))
+                .font(.subheadline)
                 .frame(minWidth: 0, maxWidth: .infinity)
-            Spacer()
-            PhotoGridView()
-                .environmentObject(viewModel)
             if viewModel.selectedImageItems.count > 0 {
                 Button {
                     viewModel.sendSelectedPhotos()
@@ -35,6 +34,7 @@ struct AttachmentDialog: View {
 
                 Button(role: .destructive) {
                     viewModel.refresh()
+                    showAttachmentDialog.toggle()
                 } label: {
                     Label("Close", systemImage: "xmark.square")
                 }
@@ -77,13 +77,13 @@ struct PhotoGridView: View {
     @EnvironmentObject var viewModel: ActionSheetViewModel
 
     var body: some View {
-        ScrollView(.horizontal) {
-            LazyHStack(spacing: 8) {
+        ScrollView(.vertical) {
+            LazyVGrid(columns: Array(repeating: .init(.adaptive(minimum: 64), spacing: 4), count: 6), spacing: 4) {
                 ForEach(viewModel.allImageItems) { item in
                     Image(uiImage: item.image)
                         .resizable()
-                        .frame(width: 96, height: 96)
                         .scaledToFit()
+                        .frame(maxHeight: 72)
                         .overlay {
                             VStack {
                                 HStack {
@@ -102,7 +102,7 @@ struct PhotoGridView: View {
                             }
                         }
                         .onAppear {
-                            if viewModel.allImageItems.last?.id.uuidString == item.id.uuidString {
+                            if viewModel.allImageItems.last?.id == item.id {
                                 viewModel.loadMore()
                             }
                         }
@@ -115,7 +115,6 @@ struct PhotoGridView: View {
                 }
             }
         }
-        .frame(height: 96)
         .animation(.easeInOut, value: viewModel.selectedImageItems.count)
         .onAppear {
             viewModel.loadImages()

@@ -82,6 +82,7 @@ class UploadFileViewModel: ObservableObject {
     init() {}
 
     func startUpload(message: Message, thread: Conversation?) {
+        if state == .COMPLETED { return }
         self.message = message
         self.thread = thread
         state = .STARTED

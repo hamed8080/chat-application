@@ -69,11 +69,14 @@
 		057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9C293797600089ACC9 /* ThreadEventView.swift */; };
 		05851BB8297DB1E300F7B64B /* BorderedTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */; };
 		05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586497F282D40A200218ED0 /* LoadingViewAt.swift */; };
+		0593ED1E29BA748E00541FA6 /* MessageRowCalculationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0593ED1D29BA748E00541FA6 /* MessageRowCalculationViewModel.swift */; };
+		0593ED2029BA76EF00541FA6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0593ED1F29BA76EF00541FA6 /* README.md */; };
 		0594E195298E5F420090D540 /* SMT+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594E194298E5F420090D540 /* SMT+.swift */; };
 		05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05962116280BF85B0036B3AA /* DateSelectionView.swift */; };
 		0596654B297C44B400A0ABDA /* NavigationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0596654A297C44B400A0ABDA /* NavigationModel.swift */; };
 		059914B029262FF60070BD89 /* Conversation+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059914AF29262FF60070BD89 /* Conversation+.swift */; };
 		05A559FB294463820096DB43 /* CallSticker+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A559FA294463820096DB43 /* CallSticker+.swift */; };
+		059B3A9629B746DA00C2E27B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 059B3A9829B746DA00C2E27B /* Localizable.strings */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
 		05B80E94293C81E4008A0F29 /* CallParticipant+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B80E93293C81E4008A0F29 /* CallParticipant+.swift */; };
@@ -264,11 +267,16 @@
 		057B9A9C293797600089ACC9 /* ThreadEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEventView.swift; sourceTree = "<group>"; };
 		05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextFieldStyle.swift; sourceTree = "<group>"; };
 		0586497F282D40A200218ED0 /* LoadingViewAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAt.swift; sourceTree = "<group>"; };
+		0593ED1D29BA748E00541FA6 /* MessageRowCalculationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowCalculationViewModel.swift; sourceTree = "<group>"; };
+		0593ED1F29BA76EF00541FA6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0594E194298E5F420090D540 /* SMT+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SMT+.swift"; sourceTree = "<group>"; };
 		05962116280BF85B0036B3AA /* DateSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateSelectionView.swift; sourceTree = "<group>"; };
 		0596654A297C44B400A0ABDA /* NavigationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationModel.swift; sourceTree = "<group>"; };
 		059914AF29262FF60070BD89 /* Conversation+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+.swift"; sourceTree = "<group>"; };
 		05A559FA294463820096DB43 /* CallSticker+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallSticker+.swift"; sourceTree = "<group>"; };
+		059B3A9529B746B900C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		059B3A9729B746DA00C2E27B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		059B3A9929B746DD00C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifire.swift; sourceTree = "<group>"; };
 		05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
 		05B80E93293C81E4008A0F29 /* CallParticipant+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallParticipant+.swift"; sourceTree = "<group>"; };
@@ -585,6 +593,7 @@
 		AC1D2C9B2661FFAC00AA351A = {
 			isa = PBXGroup;
 			children = (
+				0593ED1F29BA76EF00541FA6 /* README.md */,
 				0532461128D844F900FC9C22 /* Packages */,
 				AC924CC1274A774D00E33BD1 /* MyWidgetExtension.entitlements */,
 				AC1D2CA62661FFAC00AA351A /* ChatApplication */,
@@ -645,6 +654,7 @@
 				057977B42805449D00FE5EA4 /* MockDatas.swift */,
 				05781CD52903466A0064BDC3 /* AudioRecordingViewModel.swift */,
 				0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */,
+				059B3A9829B746DA00C2E27B /* Localizable.strings */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -740,6 +750,7 @@
 				ACF82E0E275230C3000330DB /* UnSentMessageTypes.swift */,
 				05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */,
 				057B9A9C293797600089ACC9 /* ThreadEventView.swift */,
+				0593ED1D29BA748E00541FA6 /* MessageRowCalculationViewModel.swift */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -996,6 +1007,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"fa-IR",
 			);
 			mainGroup = AC1D2C9B2661FFAC00AA351A;
 			packageReferences = (
@@ -1022,6 +1034,8 @@
 				AC1D2CB12661FFAD00AA351A /* Preview Assets.xcassets in Resources */,
 				AC085F3B2692EA8A001492B2 /* Config.json in Resources */,
 				AC1D2CAE2661FFAD00AA351A /* Assets.xcassets in Resources */,
+				059B3A9629B746DA00C2E27B /* Localizable.strings in Resources */,
+				0593ED2029BA76EF00541FA6 /* README.md in Resources */,
 				AC2D31C426EF75BC008FF43F /* webrtc_user_b.mp4 in Resources */,
 				AC2D31C326EF75BC008FF43F /* webrtc_user_a.mp4 in Resources */,
 			);
@@ -1151,6 +1165,7 @@
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,
 				05BD143029850D600015A6F6 /* UserConfigManagerVM.swift in Sources */,
 				ACAB96D427030FBE005FB9AA /* ViewExtension.swift in Sources */,
+				0593ED1E29BA748E00541FA6 /* MessageRowCalculationViewModel.swift in Sources */,
 				057977B52805449D00FE5EA4 /* MockDatas.swift in Sources */,
 				ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */,
 				ACEAEDD5274CF87600EC8252 /* ActionSheetViewModel.swift in Sources */,
@@ -1268,10 +1283,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		059B3A9829B746DA00C2E27B /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				059B3A9729B746DA00C2E27B /* en */,
+				059B3A9929B746DD00C2E27B /* fa-IR */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		AC1D2CB22661FFAD00AA351A /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				AC1D2CB32661FFAD00AA351A /* Base */,
+				059B3A9529B746B900C2E27B /* fa-IR */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";

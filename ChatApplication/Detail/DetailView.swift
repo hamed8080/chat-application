@@ -43,11 +43,11 @@ struct DetailView: View {
                         .multilineTextAlignment(.center)
                         .font(.headline.bold())
                         .onAppear {
-                            title = viewModel.thread?.title ?? ""
+                            title = viewModel.thread?.computedTitle ?? ""
                             threadDescription = viewModel.thread?.description ?? ""
                         }
                 } else {
-                    Text(viewModel.title)
+                    Text(viewModel.thread?.computedTitle ?? "")
                         .font(.title2.bold())
                 }
 

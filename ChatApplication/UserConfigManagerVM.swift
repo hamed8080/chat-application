@@ -91,6 +91,9 @@ class UserConfigManagerVM: ObservableObject, Equatable {
             setup()
             if let firstUser = userConfigs.first {
                 switchToUser(firstUser)
+            } else {
+                // Remove last user config from userDefaults
+                UserDefaults.standard.removeObject(forKey: "userConfigData")
             }
         }
     }

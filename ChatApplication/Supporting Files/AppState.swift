@@ -18,6 +18,7 @@ class AppState: ObservableObject {
     var cacheFileManager: CacheFileManagerProtocol? { ChatManager.activeInstance?.cacheFileManager }
     @Published var callLogs: [URL]?
     @Published var connectionStatusString = ""
+    var activeThreadId: Int?
     @Published var connectionStatus: ConnectionStatus = .connecting {
         didSet {
             setConnectionStatus(connectionStatus)
@@ -34,6 +35,7 @@ class AppState: ObservableObject {
 
     func showThread(threadId: Int) {
         isLoading = true
+        activeThreadId = threadId
         ChatManager.activeInstance?.getThreads(.init(threadIds: [threadId])) { [weak self] response in
             if let thraed = response.result?.first {
                 self?.animateAndShowThread(thread: thraed)
@@ -46,6 +48,7 @@ class AppState: ObservableObject {
         ChatManager.activeInstance?.createThread(.init(invitees: invitees, title: "", type: .normal)) { [weak self] response in
             if let thread = response.result {
                 self?.animateAndShowThread(thread: thread)
+                self?.activeThreadId = thread.id
             } else if let error = response.error {
                 self?.animateAndShowError(error)
             }

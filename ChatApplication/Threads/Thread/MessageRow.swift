@@ -8,37 +8,9 @@
 import FanapPodChatSDK
 import SwiftUI
 
-class CalculationRowViewModel: ObservableObject {
-    var isCalculated = false
-    @Published var isEnglish = true
-    @Published var widthOfRow: CGFloat = 128
-    @Published var markdownTitle = AttributedString()
-
-    init() {}
-
-    @MainActor
-    func calculate(message: Message) {
-        if isCalculated { return }
-        isCalculated = true
-        Task(priority: .background) {
-            let isEnglish = message.message?.isEnglishString ?? true
-            let widthOfRow = message.calculatedMaxAndMinWidth
-            let markdownTitle = message.markdownTitle
-            await MainActor.run {
-                withAnimation { [weak self] in
-                    self?.isEnglish = isEnglish
-                    self?.widthOfRow = widthOfRow
-                    self?.markdownTitle = markdownTitle
-                    self?.objectWillChange.send()
-                }
-            }
-        }
-    }
-}
-
 struct MessageRow: View {
     var message: Message
-    @State var calculation: CalculationRowViewModel
+    @State var calculation: MessageRowCalculationViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
     @State private(set) var showParticipants: Bool = false
     @Binding var isInEditMode: Bool
@@ -132,7 +104,7 @@ struct ParticipantMessageType: View {
 
 struct TextMessageType: View {
     var message: Message
-    @EnvironmentObject var calculation: CalculationRowViewModel
+    @EnvironmentObject var calculation: MessageRowCalculationViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
 
     var body: some View {
@@ -307,7 +279,7 @@ struct TextMessageType: View {
 struct ReplyInfoMessageRow: View {
     var message: Message
     @EnvironmentObject var threadViewModel: ThreadViewModel
-    @EnvironmentObject var calculation: CalculationRowViewModel
+    @EnvironmentObject var calculation: MessageRowCalculationViewModel
 
     var body: some View {
         HStack {
@@ -429,24 +401,21 @@ struct MessageFooterView: View {
                     .foregroundColor(.darkGreen.opacity(0.8))
             }
             Spacer()
-            VStack(alignment: .trailing, spacing: 0) {
-                HStack {
-                    Text(timeString)
-                        .foregroundColor(.darkGreen.opacity(0.8))
-                        .font(.system(size: 12, design: .rounded))
-                    if message.isMe {
-                        Image(uiImage: message.footerStatus.image)
-                            .resizable()
-                            .frame(width: 14, height: 14)
-                            .foregroundColor(message.footerStatus.fgColor)
-                            .font(.subheadline)
-                    }
-                }
-                if message.edited == true {
-                    Text("Edited")
-                        .foregroundColor(.darkGreen.opacity(0.8))
-                        .font(.caption2)
-                }
+            Text(timeString)
+                .foregroundColor(.darkGreen.opacity(0.8))
+                .font(.system(size: 12, design: .rounded))
+            if message.isMe {
+                Image(uiImage: message.footerStatus.image)
+                    .resizable()
+                    .frame(width: 14, height: 14)
+                    .foregroundColor(message.footerStatus.fgColor)
+                    .font(.subheadline)
+            }
+
+            if message.edited == true {
+                Text("Edited")
+                    .foregroundColor(.darkGreen.opacity(0.8))
+                    .font(.caption2)
             }
         }
         .animation(.easeInOut, value: message.delivered)

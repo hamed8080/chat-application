@@ -36,19 +36,6 @@ extension Message {
     /// Check id because we know that the message was successfully added in server chat.
     var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
 
-    var calculatedMaxAndMinWidth: CGFloat {
-        let hasReplyMessage = replyInfo != nil
-        let minWidth: CGFloat = isUnsentMessage ? 148 : isFileType ? 164 : hasReplyMessage ? 246 : 128
-        let isIpad = UIDevice.current.userInterfaceIdiom == .pad
-        let maxDeviceSize: CGFloat = isIpad ? 420 : 320
-        let messageWidth = messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 22)) + 16
-        let timeWidth = time?.date.timeAgoSinceDatecCondence?.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) ?? 0
-        let calculatedWidth: CGFloat = min(messageWidth, maxDeviceSize)
-        let maxFooterAndMsg: CGFloat = max(timeWidth, calculatedWidth)
-        let maxWidth = max(minWidth, maxFooterAndMsg)
-        return maxWidth
-    }
-
     var isImage: Bool { messageType == .podSpacePicture || messageType == .picture }
 
     func updateMessage(message: Message) {

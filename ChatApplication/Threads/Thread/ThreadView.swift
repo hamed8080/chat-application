@@ -29,7 +29,7 @@ struct ThreadView: View {
         ThreadMessagesList(isInEditMode: $isInEditMode)
             .id(thread.id)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle(viewModel.thread?.title ?? "")
+            .navigationTitle(viewModel.thread?.computedTitle ?? "")
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
@@ -74,7 +74,10 @@ struct ThreadView: View {
             }
             .onAppear {
                 viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
-                viewModel.getHistory()
+                if !viewModel.isFetchedServerFirstResponse {
+                    viewModel.getHistory()
+                }
+                appState.activeThreadId = thread.id
             }
             .sheet(isPresented: $showAttachmentDialog) {
                 AttachmentDialog(viewModel: ActionSheetViewModel(threadViewModel: viewModel), showAttachmentDialog: $showAttachmentDialog)
@@ -105,7 +108,7 @@ struct ThreadView: View {
 
     var centerToolbarTitle: some View {
         VStack(alignment: .center) {
-            Text(viewModel.thread?.title ?? "")
+            Text(viewModel.thread?.computedTitle ?? "")
                 .fixedSize()
                 .font(.headline)
 
@@ -173,7 +176,7 @@ struct ThreadMessagesList: View {
                 LazyVStack(spacing: 8) {
                     ListLoadingView(isLoading: $viewModel.isLoading)
                     ForEach(viewModel.messages) { message in
-                        MessageRow(message: message, calculation: CalculationRowViewModel(), isInEditMode: isInEditMode)
+                        MessageRow(message: message, calculation: MessageRowCalculationViewModel(), isInEditMode: isInEditMode)
                             .id(message.uniqueId)
                             .transition(.asymmetric(insertion: .opacity, removal: .slide))
                             .onAppear {

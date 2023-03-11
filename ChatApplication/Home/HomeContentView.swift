@@ -130,6 +130,7 @@ struct SideBar: View {
                 } onSwipe: { item in
                     DispatchQueue.main.async {
                         if item.user.id == container.userConfigsVM.currentUserConfig?.id { return }
+                        ChatManager.activeInstance?.dispose()
                         container.userConfigsVM.switchToUser(item)
                         container.reset()
                     }
