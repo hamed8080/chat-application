@@ -454,7 +454,7 @@ struct UserRTCView: View {
     var body: some View {
         if let rendererView = userRTC.videoRTC.renderer as? UIView {
             ZStack {
-                if userRTC.callParticipant.video == true {
+                if viewModel.isVideoActive(userRTC) {
                     RTCVideoReperesentable(renderer: rendererView)
                 } else {
                     // only audio

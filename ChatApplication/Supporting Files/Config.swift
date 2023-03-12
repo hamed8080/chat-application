@@ -44,6 +44,7 @@ extension Config {
             .callTimeout(20)
             .targetVideoWidth(640)
             .targetVideoHeight(480)
+            .maxActiveVideoSessions(2)
             .targetFPS(15)
             .build()
         let asyncConfig = AsyncConfigBuilder()

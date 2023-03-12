@@ -177,6 +177,8 @@ class CallViewModel: ObservableObject, CallStateProtocol {
             objectWillChaneWithAnimation()
         case let .sticker(response):
             onCallSticker(response.result)
+        case let .maxVideoSessionLimit(response):
+            onMaxVideoSessionLimit(response.result)
         default:
             break
         }
@@ -244,6 +246,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
                 offlineParticipants.append(participant)
             }
         }
+        ChatManager.activeInstance?.webrtc?.reCalculateActiveVideoSessionLimit()
         objectWillChaneWithAnimation()
     }
 
@@ -274,6 +277,7 @@ class CallViewModel: ObservableObject, CallStateProtocol {
                 callParticipantUserRTC.videoRTC.setTrackEnable(true)
             }
         }
+        ChatManager.activeInstance?.webrtc?.reCalculateActiveVideoSessionLimit()
         objectWillChaneWithAnimation()
     }
 
@@ -284,7 +288,18 @@ class CallViewModel: ObservableObject, CallStateProtocol {
                 callParticipantUserRTC.videoRTC.setTrackEnable(false)
             }
         }
+        ChatManager.activeInstance?.webrtc?.reCalculateActiveVideoSessionLimit()
         objectWillChaneWithAnimation()
+    }
+
+    func isVideoActive(_ userRTC: CallParticipantUserRTC) -> Bool {
+        userRTC.callParticipant.video == true && userRTC.videoRTC.isVideoTrackEnable
+    }
+
+    func onMaxVideoSessionLimit(_ callParticipant: CallParticipant?) {
+        if callParticipant != nil {
+            objectWillChaneWithAnimation()
+        }
     }
 
     func onCallParticipantJoined(_ callParticipants: [CallParticipant]?) {
