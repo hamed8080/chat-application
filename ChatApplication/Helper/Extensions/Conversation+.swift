@@ -96,4 +96,15 @@ public extension Conversation {
             return title ?? ""
         }
     }
+
+    var disableSend: Bool {
+        if type != .channel {
+            return false
+        } else if type == .channel, admin == true {
+            return false
+        } else {
+            // The current user is not an admin and the type of thread is channel
+            return true
+        }
+    }
 }

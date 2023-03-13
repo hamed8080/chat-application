@@ -292,17 +292,18 @@ struct ReplyInfoMessageRow: View {
                 if let name = message.replyInfo?.participant?.name {
                     Text("\(name)")
                         .font(.caption.bold())
-                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: name.isEnglishString ? .leading : .trailing)
                         .foregroundColor(.orange)
                         .padding([.leading, .trailing], 4)
                 }
 
-                if let message = message.message {
+                if let message = message.replyInfo?.message {
                     Text(message)
                         .padding([.leading, .trailing], 4)
                         .cornerRadius(8, corners: .allCorners)
-                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: message.isEnglishString ? .leading : .trailing)
                         .foregroundColor(.primary)
+                        .lineLimit(1)
                         .font(.caption.italic())
                 }
             }

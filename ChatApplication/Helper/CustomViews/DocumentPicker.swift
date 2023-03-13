@@ -10,14 +10,11 @@ import SwiftUI
 import UIKit
 
 struct DocumentPicker: UIViewControllerRepresentable {
-    @Binding var fileUrl: URL?
-
-    @Binding var showDocumentPicker: Bool
-
+    var completionHandler: ([URL]) -> Void
     func updateUIViewController(_: UIViewControllerType, context _: Context) {}
 
     func makeCoordinator() -> DocumentPickerCoordinator {
-        DocumentPickerCoordinator(fileUrl: $fileUrl, showDocumentPicker: $showDocumentPicker)
+        DocumentPickerCoordinator(completionHandler: completionHandler)
     }
 
     func makeUIViewController(context: Context) -> some UIViewController {
@@ -27,6 +24,7 @@ struct DocumentPicker: UIViewControllerRepresentable {
         } else {
             picker = UIDocumentPickerViewController(documentTypes: [kUTTypePlainText as String], in: .import)
         }
+        picker.allowsMultipleSelection = true
         picker.delegate = context.coordinator
 
         return picker
@@ -34,27 +32,24 @@ struct DocumentPicker: UIViewControllerRepresentable {
 }
 
 class DocumentPickerCoordinator: NSObject, UIDocumentPickerDelegate, UINavigationControllerDelegate {
-    @Binding var fileUrl: URL?
-    @Binding var showDocumentPicker: Bool
+    var completionHandler: ([URL]) -> Void
 
-    init(fileUrl: Binding<URL?>, showDocumentPicker: Binding<Bool>) {
-        _fileUrl = fileUrl
-        _showDocumentPicker = showDocumentPicker
+    init(completionHandler: @escaping ([URL]) -> Void) {
+        self.completionHandler = completionHandler
     }
 
     func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let selectedFileUrl = urls.first else { return }
-        fileUrl = selectedFileUrl
-        showDocumentPicker = false
+        completionHandler(urls)
     }
 
     func documentPickerWasCancelled(_: UIDocumentPickerViewController) {
-        showDocumentPicker = false
+        completionHandler([])
     }
 }
 
 struct DocumentPicker_Previews: PreviewProvider {
     static var previews: some View {
-        DocumentPicker(fileUrl: .constant(URL(string: "")!), showDocumentPicker: .constant(false))
+        DocumentPicker { _ in
+        }
     }
 }

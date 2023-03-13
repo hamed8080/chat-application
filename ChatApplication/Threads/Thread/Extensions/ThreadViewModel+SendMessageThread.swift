@@ -21,8 +21,9 @@ protocol SendMessageThreadProtocol {
     func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String)
     func sendNormalMessage(_ textMessage: String)
     func sendForwardMessage(_ destinationThread: Conversation)
-    func sendPhotos(index: Int, uiImage: UIImage?, info: [AnyHashable: Any]?, item: ImageItem)
-    func sendFile(_ url: URL)
+    func sendPhotos(_ imageItems: [ImageItem])
+    func sendFiles(_ urls: [URL])
+    func sendDropFiles(_ items: [DropItem])
     func onSent(_ response: ChatResponse<MessageResponse>?)
     func onDeliver(_ response: ChatResponse<MessageResponse>?)
     func onSeen(_ response: ChatResponse<MessageResponse>?)
@@ -77,35 +78,57 @@ extension ThreadViewModel: SendMessageThreadProtocol {
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image
-    func sendPhotos(index: Int, uiImage: UIImage?, info _: [AnyHashable: Any]?, item: ImageItem) {
-        guard let image = uiImage else { return }
-        canScrollToBottomOfTheList = true
-        let width = Int(image.size.width)
-        let height = Int(image.size.height)
-        let fileName = item.phAsset.originalFilename
-        let imageRequest = UploadImageRequest(data: image.jpegData(compressionQuality: 1.0) ?? Data(),
-                                              hC: height,
-                                              wC: width,
-                                              fileName: fileName,
-                                              mimeType: "image/jpg",
-                                              userGroupHash: thread?.userGroupHash)
-        let textRequest = SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
-        let fakeMessage = UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: thread)
-        fakeMessage.id = -index
-        appendMessages([fakeMessage])
+    func sendPhotos(_ imageItems: [ImageItem]) {
+        imageItems.forEach { imageItem in
+            let index = imageItems.firstIndex(where: { $0 == imageItem })!
+            canScrollToBottomOfTheList = true
+            let width = Int(imageItem.image.size.width)
+            let height = Int(imageItem.image.size.height)
+            let imageRequest = UploadImageRequest(data: imageItem.image.jpegData(compressionQuality: 1.0) ?? Data(),
+                                                  hC: height,
+                                                  wC: width,
+                                                  fileName: imageItem.fileName,
+                                                  mimeType: "image/jpg",
+                                                  userGroupHash: thread?.userGroupHash)
+            let textRequest = SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
+            let request = UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: thread)
+            request.id = -index
+            appendMessages([request])
+        }
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
-    func sendFile(_ url: URL) {
-        guard let data = try? Data(contentsOf: url) else { return }
-        canScrollToBottomOfTheList = true
-        let uploadRequest = UploadFileRequest(data: data,
-                                              fileExtension: ".\(url.fileExtension)",
-                                              fileName: url.fileName,
-                                              mimeType: url.mimeType,
-                                              userGroupHash: thread?.userGroupHash)
-        let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
-        appendMessages([UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)])
+    func sendFiles(_ urls: [URL]) {
+        urls.forEach { url in
+            let index = urls.firstIndex(where: { $0 == url })!
+            guard let data = try? Data(contentsOf: url) else { return }
+            canScrollToBottomOfTheList = true
+            let uploadRequest = UploadFileRequest(data: data,
+                                                  fileExtension: ".\(url.fileExtension)",
+                                                  fileName: url.fileName,
+                                                  mimeType: url.mimeType,
+                                                  userGroupHash: thread?.userGroupHash)
+            let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
+            let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)
+            request.id = -index
+            appendMessages([request])
+        }
+    }
+
+    func sendDropFiles(_ items: [DropItem]) {
+        items.forEach { item in
+            let index = items.firstIndex(where: { $0.id == item.id })!
+            canScrollToBottomOfTheList = true
+            let uploadRequest = UploadFileRequest(data: item.data ?? Data(),
+                                                  fileExtension: ".\(item.ext ?? "")",
+                                                  fileName: item.name,
+                                                  mimeType: nil,
+                                                  userGroupHash: thread?.userGroupHash)
+            let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
+            let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)
+            request.id = -index
+            appendMessages([request])
+        }
     }
 
     func sendEditMessage(_ textMessage: String) {

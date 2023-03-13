@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct AttachmentDialog: View {
+    @EnvironmentObject var threadViewModel: ThreadViewModel
     @StateObject var viewModel: ActionSheetViewModel
-    @Binding var showAttachmentDialog: Bool
-    @State var showDocumentPicker: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             PhotoGridView()
+                .padding()
                 .environmentObject(viewModel)
             Spacer()
             let count = viewModel.selectedImageItems.count
@@ -25,50 +25,103 @@ struct AttachmentDialog: View {
                 .font(.subheadline)
                 .frame(minWidth: 0, maxWidth: .infinity)
             if viewModel.selectedImageItems.count > 0 {
-                Button {
+                SendFileView {
                     viewModel.sendSelectedPhotos()
-                    showAttachmentDialog.toggle()
-                } label: {
-                    Label("Send", systemImage: "paperplane")
-                }
-
-                Button(role: .destructive) {
+                    threadViewModel.sheetType = nil
+                } onCancel: {
                     viewModel.refresh()
-                    showAttachmentDialog.toggle()
-                } label: {
-                    Label("Close", systemImage: "xmark.square")
+                    threadViewModel.sheetType = nil
                 }
+                .environmentObject(viewModel.threadViewModel)
             } else {
-                Button {
-                    showAttachmentDialog.toggle()
-                } label: {
-                    Label("Photo or Video", systemImage: "photo")
-                }
-
-                Button {
-                    showAttachmentDialog.toggle()
-                    showDocumentPicker = true
-                } label: {
-                    Label("File", systemImage: "doc")
-                }
-
-                Button {
-                    showAttachmentDialog.toggle()
-                } label: {
-                    Label("Location", systemImage: "location.viewfinder")
-                }
-
-                Button {
-                    showAttachmentDialog.toggle()
-                } label: {
-                    Label("Contact", systemImage: "person.2.crop.square.stack")
-                }
+                buttons
             }
         }
         .animation(.easeInOut, value: viewModel.selectedImageItems.count)
+    }
+
+    @ViewBuilder var buttons: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            Button {
+                threadViewModel.sheetType = .galleryPicker
+            } label: {
+                Label("Photo or Video", systemImage: "photo")
+            }
+
+            Button {
+                threadViewModel.sheetType = .filePicker
+            } label: {
+                Label("File", systemImage: "doc")
+            }
+
+            Button {
+                threadViewModel.sheetType = .locationPicker
+            } label: {
+                Label("Location", systemImage: "location.viewfinder")
+            }
+
+            Button {
+                threadViewModel.sheetType = .contactPicker
+            } label: {
+                Label("Contact", systemImage: "person.2.crop.square.stack")
+            }
+        }
         .padding()
-        .sheet(isPresented: $showDocumentPicker, onDismiss: nil) {
-            DocumentPicker(fileUrl: $viewModel.selectedFileUrl, showDocumentPicker: $showDocumentPicker)
+    }
+}
+
+struct SendFileView: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+    @State var text: String = ""
+    var onSubmit: () -> Void
+    var onCancel: () -> Void
+
+    var body: some View {
+        HStack {
+            Button(role: .destructive) {
+                onCancel()
+            } label: {
+                Label("Close", systemImage: "xmark")
+                    .labelStyle(.iconOnly)
+            }
+
+            MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black, mention: true)
+                .cornerRadius(16)
+                .onChange(of: viewModel.textMessage ?? "") { newValue in
+                    viewModel.sendStartTyping(newValue)
+                }
+
+            Button {
+                onSubmit()
+            } label: {
+                Label("Send", systemImage: "paperplane.fill")
+                    .labelStyle(.iconOnly)
+            }
+        }
+        .padding(.bottom, 4)
+        .padding([.leading, .trailing], 8)
+        .padding(.top, 18)
+        .background(
+            VStack {
+                Spacer()
+                Rectangle()
+                    .fill(Color.clear)
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(24, corners: [.topRight, .topLeft])
+            }
+            .ignoresSafeArea()
+        )
+        .opacity(viewModel.thread?.type == .channel ? 0.3 : 1.0)
+        .disabled(viewModel.thread?.type == .channel)
+        .animation(.easeInOut, value: viewModel.mentionList.count)
+        .onReceive(viewModel.$editMessage) { editMessage in
+            if let editMessage = editMessage {
+                text = editMessage.message ?? ""
+            }
+        }
+        .onChange(of: text) { newValue in
+            viewModel.searchForMention(newValue)
+            viewModel.textMessage = newValue
         }
     }
 }
@@ -115,6 +168,7 @@ struct PhotoGridView: View {
                 }
             }
         }
+        .animation(.easeInOut, value: viewModel.allImageItems.count)
         .animation(.easeInOut, value: viewModel.selectedImageItems.count)
         .onAppear {
             viewModel.loadImages()
@@ -125,7 +179,7 @@ struct PhotoGridView: View {
 struct AttachmentDialog_Previews: PreviewProvider {
     static var previews: some View {
         let vm = ThreadViewModel()
-        AttachmentDialog(viewModel: ActionSheetViewModel(threadViewModel: vm), showAttachmentDialog: .constant(true))
+        AttachmentDialog(viewModel: ActionSheetViewModel(threadViewModel: vm))
             .onAppear {
                 vm.setup(thread: MockData.thread)
             }

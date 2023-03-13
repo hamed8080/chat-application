@@ -62,6 +62,8 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     @Published var isInEditMode: Bool = false
     @Published var exportMessagesVM: ExportMessagesViewModelProtocol = ExportMessagesViewModel()
     @Published var mentionList: [Participant] = []
+    @Published var dropItems: [DropItem] = []
+    @Published var sheetType: ThreadSheetType?
     var isFetchedServerFirstResponse: Bool = false
     var searchedMessages: [Message] = []
     var readOnly = false
@@ -375,4 +377,31 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
             NotificationCenter.default.post(.init(name: .fileDeletedFromCacheName, object: message))
         }
     }
+
+    func storeDropItems(_ items: [NSItemProvider]) {
+        items.forEach { item in
+            let name = item.suggestedName ?? ""
+            let ext = item.registeredContentTypes.first?.preferredFilenameExtension ?? ""
+            let iconName = ext.systemImageNameForFileExtension
+            _ = item.loadDataRepresentation(for: .item) { data, _ in
+                DispatchQueue.main.async {
+                    self.dropItems.append(
+                        .init(data: data,
+                              name: name,
+                              iconName: iconName,
+                              ext: ext)
+                    )
+                }
+            }
+        }
+    }
+}
+
+struct DropItem: Identifiable {
+    let id: UUID = .init()
+    let data: Data?
+    let name: String?
+    let iconName: String?
+    let ext: String?
+    var fileSize: String { data?.count.toSizeString ?? "" }
 }

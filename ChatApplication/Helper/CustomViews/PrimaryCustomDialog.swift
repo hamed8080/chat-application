@@ -22,12 +22,12 @@ struct PrimaryCustomDialog: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 16) {
             if let systemImageName = systemImageName {
                 Image(systemName: systemImageName)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: 72)
+                    .frame(maxWidth: 48)
                     .padding()
                     .foregroundColor(colorScheme == .dark ? Color.gray : Color.gray)
             }

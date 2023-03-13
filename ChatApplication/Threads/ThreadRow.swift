@@ -29,6 +29,13 @@ struct ThreadRow: View {
                             .scaledToFit()
                             .foregroundColor(Color.gray)
                     }
+                    if thread.type == .channel {
+                        Image(systemName: "megaphone.fill")
+                            .resizable()
+                            .frame(width: 12, height: 12)
+                            .scaledToFit()
+                            .foregroundColor(Color.gray)
+                    }
                     Spacer()
                     if let timeString = thread.time?.date.timeAgoSinceDatecCondence {
                         Text(timeString)

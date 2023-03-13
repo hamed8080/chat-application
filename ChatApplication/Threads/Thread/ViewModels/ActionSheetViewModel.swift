@@ -20,19 +20,21 @@ class ActionSheetViewModel: ObservableObject {
     var hasNext: Bool { totalCount > offset }
     private var isAuthorized: Bool = false
     @Published var isLoading = false
-    @Published var selectedFileUrl: URL? {
+    @Published var selectedFileUrls: [URL] = [] {
         didSet {
-            if selectedFileUrl != nil {
+            if selectedFileUrls.count != 0 {
                 sendSelectedFile()
             }
         }
     }
 
-    lazy var options: PHImageRequestOptions = {
-        let opt = PHImageRequestOptions()
-        opt.isSynchronous = false
-        opt.deliveryMode = .highQualityFormat
-        return opt
+    lazy var option: PHImageRequestOptions = {
+        let option = PHImageRequestOptions()
+        option.isSynchronous = true
+        option.deliveryMode = .highQualityFormat
+        option.resizeMode = .exact
+        option.isNetworkAccessAllowed = true
+        return option
     }()
 
     private lazy var opt: PHFetchOptions = {
@@ -72,15 +74,15 @@ class ActionSheetViewModel: ObservableObject {
     }
 
     private func requestImage(_ object: PHAsset) {
-        PHImageManager.default().requestImage(for: object, targetSize: imageSize, contentMode: .aspectFit, options: options) { [weak self] image, _ in
-            self?.appendImage(image, object)
+        PHImageManager.default().requestImage(for: object, targetSize: imageSize, contentMode: .aspectFit, options: option) { [weak self] image, info in
+            self?.appendImage(image, object, info)
         }
     }
 
-    private func appendImage(_ image: UIImage?, _ object: PHAsset) {
+    private func appendImage(_ image: UIImage?, _ object: PHAsset, _ info: [AnyHashable: Any]?) {
         DispatchQueue.main.async {
             if let image {
-                self.allImageItems.append(.init(image: image, phAsset: object))
+                self.allImageItems.append(.init(image: image, phAsset: object, info: info))
             }
         }
     }
@@ -128,24 +130,12 @@ class ActionSheetViewModel: ObservableObject {
     }
 
     func sendSelectedPhotos() {
-        for index in selectedImageItems.indices {
-            let item = selectedImageItems[index]
-            let option = PHImageRequestOptions()
-            option.isSynchronous = true
-            option.deliveryMode = .highQualityFormat
-            option.resizeMode = .exact
-            option.isNetworkAccessAllowed = true
-            PHImageManager.default().requestImage(for: item.phAsset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: option) { [weak self] uiImage, info in
-                self?.threadViewModel.sendPhotos(index: index, uiImage: uiImage, info: info, item: item)
-            }
-        }
+        threadViewModel.sendPhotos(selectedImageItems)
         refresh()
     }
 
     func sendSelectedFile() {
-        if let selectedFileUrl = selectedFileUrl {
-            threadViewModel.sendFile(selectedFileUrl)
-        }
+        threadViewModel.sendFiles(selectedFileUrls)
         refresh()
     }
 
@@ -164,7 +154,17 @@ class ActionSheetViewModel: ObservableObject {
 }
 
 struct ImageItem: Hashable, Identifiable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    static func == (lhs: ImageItem, rhs: ImageItem) -> Bool {
+        lhs.id == rhs.id
+    }
+
     let id = UUID().uuidString
     var image: UIImage
     var phAsset: PHAsset
+    var info: [AnyHashable: Any]?
+    var fileName: String? { phAsset.originalFilename }
 }

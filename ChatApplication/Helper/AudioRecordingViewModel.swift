@@ -80,7 +80,7 @@ class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
     func stopAndSend() {
         stop()
         if let url = recordingOutputPath {
-            threadViewModel.sendFile(url)
+            threadViewModel.sendFiles([url])
         }
     }
 
