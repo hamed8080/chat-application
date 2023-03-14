@@ -47,6 +47,7 @@ struct MediaPicture: View {
 
     var body: some View {
         ImageLaoderView(url: picture.metaData?.file?.link)
+            .id("\(picture.metaData?.file?.link ?? "")\(picture.id ?? 0)")
             .scaledToFit()
             .frame(height: 128)
             .padding(16)

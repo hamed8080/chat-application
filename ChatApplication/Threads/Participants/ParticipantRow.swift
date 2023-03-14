@@ -16,6 +16,7 @@ struct ParticipantRow: View {
         Button(action: {}, label: {
             HStack {
                 ImageLaoderView(url: participant.image, userName: participant.name ?? participant.username)
+                    .id("\(participant.image ?? "")\(participant.id ?? 0)")
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
                     .frame(width: 48, height: 48)

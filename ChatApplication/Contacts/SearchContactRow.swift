@@ -15,6 +15,7 @@ struct SearchContactRow: View {
     var body: some View {
         HStack {
             ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
+                .id("\(contact.image ?? "")\(contact.id ?? 0)")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 24, height: 24)

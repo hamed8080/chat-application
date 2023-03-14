@@ -24,6 +24,7 @@ struct DetailView: View {
         List {
             VStack(alignment: .center, spacing: 12) {
                 ImageLaoderView(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
+                    .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
                     .frame(width: 128, height: 128)

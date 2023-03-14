@@ -31,6 +31,7 @@ struct StartThreadContactRow: View {
                     }
 
                     ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
+                        .id("\(contact.image ?? "")\(contact.id ?? 0)")
                         .font(.system(size: 16).weight(.heavy))
                         .foregroundColor(.white)
                         .frame(width: 32, height: 32)

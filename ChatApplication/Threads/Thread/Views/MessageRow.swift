@@ -262,6 +262,7 @@ struct TextMessageType: View {
                 DetailView(viewModel: DetailViewModel(user: message.participant))
             } label: {
                 ImageLaoderView(url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
+                    .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
                     .frame(width: 36, height: 36)

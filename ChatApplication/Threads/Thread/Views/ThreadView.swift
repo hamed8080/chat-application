@@ -131,6 +131,7 @@ struct ThreadView: View, DropDelegate {
             DetailView(viewModel: DetailViewModel(thread: viewModel.thread))
         } label: {
             ImageLaoderView(url: viewModel.thread?.computedImageURL, userName: viewModel.thread?.title)
+                .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 32, height: 32)

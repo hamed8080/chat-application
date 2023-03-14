@@ -17,6 +17,7 @@ struct ThreadRow: View {
     var body: some View {
         HStack(spacing: 8) {
             ThreadImageView(thread: thread)
+                .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text(thread.computedTitle)
@@ -163,7 +164,7 @@ struct ThreadRow: View {
 }
 
 struct ThreadImageView: View {
-    var thread: Conversation
+    @State var thread: Conversation
     var body: some View {
         if thread.type == .selfThread {
             Circle()
@@ -180,6 +181,7 @@ struct ThreadImageView: View {
                 }
         } else {
             ImageLaoderView(url: thread.computedImageURL, metaData: thread.metadata, userName: thread.title)
+                .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)

@@ -20,6 +20,7 @@ struct SelectThreadRow: View {
     var body: some View {
         HStack {
             ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
+                .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 36, height: 36)
