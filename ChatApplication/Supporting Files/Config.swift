@@ -59,6 +59,7 @@ extension Config {
             .persistLogsOnServer(true)
             .appGroup(AppGroup.group)
             .sendLogInterval(15)
+            .mapApiKey("8b77db18704aa646ee5aaea13e7370f4f88b9e8c")
             .build()
         return chatConfig
     }

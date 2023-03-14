@@ -15,7 +15,7 @@ struct DropItemsView: View {
                 DropRowView(item: item)
             }
             Spacer()
-            SendFileView {
+            SendTextViewWithButtons {
                 viewModel.sendDropFiles(viewModel.dropItems)
                 viewModel.sheetType = nil
             } onCancel: {

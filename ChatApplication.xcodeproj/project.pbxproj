@@ -19,6 +19,8 @@
 		050B1BE7292F93020025D4ED /* ThreadsViewModel+MuteThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE6292F93020025D4ED /* ThreadsViewModel+MuteThread.swift */; };
 		050C5AA22970861E00CD5702 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA0297082BE00CD5702 /* DetailView.swift */; };
 		050C5AA42970863B00CD5702 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA32970863B00CD5702 /* DetailViewModel.swift */; };
+		05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05140CD429C086BE00C8E22D /* MapPickerView.swift */; };
+		05140CD729C0A64E00C8E22D /* Coordinate+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05140CD629C0A64E00C8E22D /* Coordinate+.swift */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
@@ -208,6 +210,8 @@
 		050B1BE6292F93020025D4ED /* ThreadsViewModel+MuteThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadsViewModel+MuteThread.swift"; sourceTree = "<group>"; };
 		050C5AA0297082BE00CD5702 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		050C5AA32970863B00CD5702 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
+		05140CD429C086BE00C8E22D /* MapPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPickerView.swift; sourceTree = "<group>"; };
+		05140CD629C0A64E00C8E22D /* Coordinate+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Coordinate+.swift"; sourceTree = "<group>"; };
 		051C8EF9292235300078AD7E /* FanapPodAsyncSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FanapPodAsyncSDK; path = ../FanapPodAsyncSDK; sourceTree = "<group>"; };
 		051D58E329926D7800DC066A /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
@@ -484,6 +488,7 @@
 				05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */,
 				057B9A9C293797600089ACC9 /* ThreadEventView.swift */,
 				05C5665B29BEF465002E72F7 /* MentionList.swift */,
+				05140CD429C086BE00C8E22D /* MapPickerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -656,6 +661,7 @@
 				0594E194298E5F420090D540 /* SMT+.swift */,
 				05610BA8298FDC6B00947E29 /* ThreadTypes+.swift */,
 				05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */,
+				05140CD629C0A64E00C8E22D /* Coordinate+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1028,6 +1034,7 @@
 				AC1D2CD32662016E00AA351A /* ChatDelegateImplementation.swift in Sources */,
 				055EFCEE27C0BFA2006E0ABC /* AnimatingCellHeight.swift in Sources */,
 				05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */,
+				05140CD729C0A64E00C8E22D /* Coordinate+.swift in Sources */,
 				AC48ED6326F7051F00AB1A5D /* AuthorizeRequest.swift in Sources */,
 				05C5665229BEF2C3002E72F7 /* ThreadMessagesList.swift in Sources */,
 				057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */,
@@ -1068,6 +1075,7 @@
 				051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */,
 				05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */,
 				05C5665429BEF32A002E72F7 /* ThreadSheetView.swift in Sources */,
+				05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */,
 				05384A7F2792995F00D85A92 /* TagsViewModel.swift in Sources */,
 				ACFADE7E27674DDF007C555F /* CustomNavigationBar.swift in Sources */,
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,

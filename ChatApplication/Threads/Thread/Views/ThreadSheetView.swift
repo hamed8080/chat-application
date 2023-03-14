@@ -53,6 +53,8 @@ struct ThreadSheetView: View {
                 actionSheetViewModel.selectedFileUrls = urls
                 viewModel.sheetType = nil
             }
+        case .locationPicker:
+            MapPickerView()
         default:
             Text("Sheet \(viewModel.sheetType.debugDescription) not implemented yet.")
         }

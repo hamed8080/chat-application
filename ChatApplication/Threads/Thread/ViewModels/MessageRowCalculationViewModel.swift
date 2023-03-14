@@ -6,6 +6,7 @@
 //
 
 import FanapPodChatSDK
+import MapKit
 import SwiftUI
 
 class MessageRowCalculationViewModel: ObservableObject {
@@ -14,6 +15,7 @@ class MessageRowCalculationViewModel: ObservableObject {
     @Published var widthOfRow: CGFloat = 128
     @Published var markdownTitle = AttributedString()
     var calculatedMaxAndMinWidth: CGFloat = 128
+    var addressDetail: String?
 
     init() {}
 
@@ -25,8 +27,10 @@ class MessageRowCalculationViewModel: ObservableObject {
             let isEnglish = message.message?.isEnglishString ?? true
             let widthOfRow = calculateWidthOfMessage(message)
             let markdownTitle = message.markdownTitle
+            let addressDetail = await message.addressDetail
             await MainActor.run {
                 withAnimation { [weak self] in
+                    self?.addressDetail = addressDetail
                     self?.isEnglish = isEnglish
                     self?.widthOfRow = widthOfRow
                     self?.markdownTitle = markdownTitle

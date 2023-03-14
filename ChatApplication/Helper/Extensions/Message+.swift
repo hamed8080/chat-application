@@ -7,6 +7,7 @@
 
 import FanapPodChatSDK
 import Foundation
+import MapKit
 import SwiftUI
 
 extension Message {
@@ -175,6 +176,36 @@ extension Message {
             return (Message.sentImage!, .darkGreen.opacity(0.8))
         } else {
             return (Message.clockImage!, .darkGreen.opacity(0.8))
+        }
+    }
+
+    var coordinate: Coordinate? {
+        guard let data = systemMetadata?.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(Coordinate.self, from: data)
+    }
+
+    var appleMapsURL: URL? {
+        URL(string: "maps://?q=\(message ?? "")&ll=\(coordinate?.lat ?? 0),\(coordinate?.lng ?? 0)")
+    }
+
+    var addressDetail: String? {
+        get async {
+            typealias AddressContinuation = CheckedContinuation<String?, Never>
+            return await withCheckedContinuation { (continuation: AddressContinuation) in
+                if let coordinate = coordinate {
+                    let geocoder = CLGeocoder()
+                    geocoder.reverseGeocodeLocation(CLLocation(latitude: coordinate.lat, longitude: coordinate.lng), preferredLocale: .current) { placeMarks, _ in
+                        if let place = placeMarks?.first?.postalAddress {
+                            let addressDetail = "\(place.country) - \(place.city) - \(place.state) - \(place.street)"
+                            continuation.resume(returning: addressDetail)
+                        } else {
+                            continuation.resume(returning: nil)
+                        }
+                    }
+                } else {
+                    continuation.resume(returning: nil)
+                }
+            }
         }
     }
 }

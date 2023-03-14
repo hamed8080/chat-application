@@ -148,6 +148,13 @@ struct TextMessageType: View {
                     .font(Font(UIFont.systemFont(ofSize: 18)))
                     .foregroundColor(.black)
 
+                if let addressDetail = calculation.addressDetail {
+                    Text(addressDetail)
+                        .foregroundColor(.darkGreen.opacity(0.8))
+                        .font(.caption)
+                        .padding([.leading, .trailing])
+                }
+
                 if message.isUnsentMessage {
                     HStack {
                         Spacer()
@@ -174,6 +181,9 @@ struct TextMessageType: View {
             .cornerRadius(12)
             .animation(.easeInOut, value: message.isUnsentMessage)
             .onTapGesture {
+                if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url)
+                }
                 print("on tap gesture")
             }
             .onLongPressGesture {

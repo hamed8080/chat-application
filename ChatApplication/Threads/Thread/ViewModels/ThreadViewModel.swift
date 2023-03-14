@@ -8,6 +8,7 @@
 import Combine
 import FanapPodChatSDK
 import Foundation
+import MapKit
 import Photos
 
 protocol ThreadViewModelProtocol: AnyObject {
@@ -41,6 +42,7 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func sendSeenMessageIfNeeded(_ message: Message)
     func onMessageEvent(_ event: MessageEventTypes?)
     func updateUnreadCount(_ threadId: Int, _ unreadCount: Int)
+    func sendLoaction(_ location: LocationItem)
 }
 
 class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable, Hashable {
@@ -64,6 +66,7 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     @Published var mentionList: [Participant] = []
     @Published var dropItems: [DropItem] = []
     @Published var sheetType: ThreadSheetType?
+    @Published var selectedLocation: MKCoordinateRegion = .init()
     var isFetchedServerFirstResponse: Bool = false
     var searchedMessages: [Message] = []
     var readOnly = false
@@ -393,6 +396,27 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
                     )
                 }
             }
+        }
+    }
+
+    func sendLoaction(_ location: LocationItem) {
+        let coordinate = Coordinate(lat: location.location.latitude, lng: location.location.longitude)
+        let req = LocationMessageRequest(mapCenter: coordinate,
+                                         threadId: threadId,
+                                         userGroupHash: thread?.userGroupHash ?? "",
+                                         systemMetadata: String(data: (try? JSONEncoder().encode(coordinate)) ?? Data(), encoding: .utf8),
+                                         textMessage: textMessage)
+        ChatManager.activeInstance?.sendLocationMessage(req) { uploadProgress, error in
+            print(uploadProgress ?? 0)
+            print(error ?? 0)
+        } downloadProgress: { downloadProgress in
+            print(downloadProgress)
+        } onSent: { response in
+            print(response)
+        } onSeen: { response in
+            print(response)
+        } onDeliver: { response in
+            print(response)
         }
     }
 }

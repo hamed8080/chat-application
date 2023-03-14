@@ -25,7 +25,7 @@ struct AttachmentDialog: View {
                 .font(.subheadline)
                 .frame(minWidth: 0, maxWidth: .infinity)
             if viewModel.selectedImageItems.count > 0 {
-                SendFileView {
+                SendTextViewWithButtons {
                     viewModel.sendSelectedPhotos()
                     threadViewModel.sheetType = nil
                 } onCancel: {
@@ -70,7 +70,7 @@ struct AttachmentDialog: View {
     }
 }
 
-struct SendFileView: View {
+struct SendTextViewWithButtons: View {
     @EnvironmentObject var viewModel: ThreadViewModel
     @State var text: String = ""
     var onSubmit: () -> Void
