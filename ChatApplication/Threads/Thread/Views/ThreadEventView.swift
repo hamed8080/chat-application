@@ -20,9 +20,9 @@ struct ThreadEventView: View {
                     .foregroundColor(.orange)
                     .frame(width: 16, height: 16)
 
-                Text(event.image)
+                Text(event.title)
                     .lineLimit(1)
-                    .font(.subheadline.bold())
+                    .font(.iransansBoldCaption2)
                     .foregroundColor(.orange)
             }
             .frame(height: viewModel.isShowingEvent ? 16 : 0)

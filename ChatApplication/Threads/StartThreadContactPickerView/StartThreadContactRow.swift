@@ -32,7 +32,7 @@ struct StartThreadContactRow: View {
 
                     ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
                         .id("\(contact.image ?? "")\(contact.id ?? 0)")
-                        .font(.system(size: 16).weight(.heavy))
+                        .font(.iransansBody)
                         .foregroundColor(.white)
                         .frame(width: 32, height: 32)
                         .background(Color.blue.opacity(0.4))
@@ -42,11 +42,11 @@ struct StartThreadContactRow: View {
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                             .padding(.leading, 16)
                             .lineLimit(1)
-                            .font(.subheadline)
+                            .font(.iransansBody)
                         if let notSeenDuration = getDate(contact: contact) {
                             Text(notSeenDuration)
                                 .padding(.leading, 16)
-                                .font(.caption2.weight(.medium))
+                                .font(.iransansCaption2)
                                 .foregroundColor(Color.gray)
                         }
                     }

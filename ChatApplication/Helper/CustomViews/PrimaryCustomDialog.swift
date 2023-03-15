@@ -33,11 +33,11 @@ struct PrimaryCustomDialog: View {
             }
 
             Text(title)
-                .fontWeight(.bold)
+                .font(.iransansBoldTitle)
                 .padding([.top, .bottom])
             if let message = message {
                 Text(message)
-                    .fontWeight(.medium)
+                    .font(.iransansCaption)
                     .multilineTextAlignment(.leading)
                     .foregroundColor(Color.gray)
                     .padding([.bottom])

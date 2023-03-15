@@ -73,6 +73,12 @@
 		059B3A9629B746DA00C2E27B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 059B3A9829B746DA00C2E27B /* Localizable.strings */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
+		05B5DA0429C1AADE00CAFD9C /* Font+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B5DA0329C1AADE00CAFD9C /* Font+.swift */; };
+		05B5DA0529C1AADE00CAFD9C /* Font+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B5DA0329C1AADE00CAFD9C /* Font+.swift */; };
+		05B5DA0829C1AF6A00CAFD9C /* IRANSansX-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05B5DA0629C1AF6A00CAFD9C /* IRANSansX-Regular.ttf */; };
+		05B5DA0929C1AF6A00CAFD9C /* IRANSansX-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05B5DA0629C1AF6A00CAFD9C /* IRANSansX-Regular.ttf */; };
+		05B5DA0A29C1AF6A00CAFD9C /* IRANSansX-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05B5DA0729C1AF6A00CAFD9C /* IRANSansX-Bold.ttf */; };
+		05B5DA0B29C1AF6A00CAFD9C /* IRANSansX-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05B5DA0729C1AF6A00CAFD9C /* IRANSansX-Bold.ttf */; };
 		05BD143029850D600015A6F6 /* UserConfigManagerVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD142F29850D600015A6F6 /* UserConfigManagerVM.swift */; };
 		05C0098B2931F61D002ED678 /* Contact+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C0098A2931F61D002ED678 /* Contact+.swift */; };
 		05C42B0F29606F4000A870B3 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C42B0E29606F4000A870B3 /* Data+.swift */; };
@@ -167,7 +173,6 @@
 		ACEAEDD5274CF87600EC8252 /* ActionSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEAEDD4274CF87600EC8252 /* ActionSheetViewModel.swift */; };
 		ACEAEDD7274CFA1100EC8252 /* AttachmentDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEAEDD6274CFA1100EC8252 /* AttachmentDialog.swift */; };
 		ACF82E0F275230C3000330DB /* UnSentMessageTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF82E0E275230C3000330DB /* UnSentMessageTypes.swift */; };
-		ACFADE7E27674DDF007C555F /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADE7D27674DDF007C555F /* CustomNavigationBar.swift */; };
 		ACFADE8227675C29007C555F /* PrimaryTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADE8127675C29007C555F /* PrimaryTextField.swift */; };
 		ACFADE8427675DA5007C555F /* DeepButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADE8327675DA5007C555F /* DeepButtonStyle.swift */; };
 		ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFBF1B826FCA51300DD27AE /* AddOrEditContactView.swift */; };
@@ -260,6 +265,9 @@
 		059B3A9929B746DD00C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifire.swift; sourceTree = "<group>"; };
 		05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
+		05B5DA0329C1AADE00CAFD9C /* Font+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+.swift"; sourceTree = "<group>"; };
+		05B5DA0629C1AF6A00CAFD9C /* IRANSansX-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IRANSansX-Regular.ttf"; sourceTree = "<group>"; };
+		05B5DA0729C1AF6A00CAFD9C /* IRANSansX-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IRANSansX-Bold.ttf"; sourceTree = "<group>"; };
 		05BD142F29850D600015A6F6 /* UserConfigManagerVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConfigManagerVM.swift; sourceTree = "<group>"; };
 		05C0098A2931F61D002ED678 /* Contact+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Contact+.swift"; sourceTree = "<group>"; };
 		05C42B0E29606F4000A870B3 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
@@ -356,7 +364,6 @@
 		ACEAEDD4274CF87600EC8252 /* ActionSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetViewModel.swift; sourceTree = "<group>"; };
 		ACEAEDD6274CFA1100EC8252 /* AttachmentDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDialog.swift; sourceTree = "<group>"; };
 		ACF82E0E275230C3000330DB /* UnSentMessageTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnSentMessageTypes.swift; sourceTree = "<group>"; };
-		ACFADE7D27674DDF007C555F /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
 		ACFADE8127675C29007C555F /* PrimaryTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryTextField.swift; sourceTree = "<group>"; };
 		ACFADE8327675DA5007C555F /* DeepButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepButtonStyle.swift; sourceTree = "<group>"; };
 		ACFBF1B826FCA51300DD27AE /* AddOrEditContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddOrEditContactView.swift; sourceTree = "<group>"; };
@@ -533,6 +540,8 @@
 			isa = PBXGroup;
 			children = (
 				AC0889AB2691D47E00FD4552 /* AppState.swift */,
+				05B5DA0729C1AF6A00CAFD9C /* IRANSansX-Bold.ttf */,
+				05B5DA0629C1AF6A00CAFD9C /* IRANSansX-Regular.ttf */,
 				AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */,
 				AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */,
 				AC1D2CC82662016D00AA351A /* AppDelegate.swift */,
@@ -662,6 +671,7 @@
 				05610BA8298FDC6B00947E29 /* ThreadTypes+.swift */,
 				05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */,
 				05140CD629C0A64E00C8E22D /* Coordinate+.swift */,
+				05B5DA0329C1AADE00CAFD9C /* Font+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -675,7 +685,6 @@
 				05781CCD2902B0040064BDC3 /* ConnectionStatusToolbar.swift */,
 				05384A852792CE5E00D85A92 /* CustomDialog.swift */,
 				AC0889AF2691E14500FD4552 /* CustomHostinViewController.swift */,
-				ACFADE7D27674DDF007C555F /* CustomNavigationBar.swift */,
 				05962116280BF85B0036B3AA /* DateSelectionView.swift */,
 				AC6291962750A91800190975 /* DocumentPicker.swift */,
 				AC62919A2750EC2200190975 /* DownloadFileView.swift */,
@@ -924,6 +933,8 @@
 				0593ED2029BA76EF00541FA6 /* README.md in Resources */,
 				AC2D31C426EF75BC008FF43F /* webrtc_user_b.mp4 in Resources */,
 				AC2D31C326EF75BC008FF43F /* webrtc_user_a.mp4 in Resources */,
+				05B5DA0A29C1AF6A00CAFD9C /* IRANSansX-Bold.ttf in Resources */,
+				05B5DA0829C1AF6A00CAFD9C /* IRANSansX-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -932,6 +943,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC924CB6274A6D7300E33BD1 /* Assets.xcassets in Resources */,
+				05B5DA0B29C1AF6A00CAFD9C /* IRANSansX-Bold.ttf in Resources */,
+				05B5DA0929C1AF6A00CAFD9C /* IRANSansX-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1010,6 +1023,7 @@
 				057977B72805548000FE5EA4 /* UIColor.swift in Sources */,
 				05C42B0F29606F4000A870B3 /* Data+.swift in Sources */,
 				05C5665A29BEF3E3002E72F7 /* SendContainer.swift in Sources */,
+				05B5DA0429C1AADE00CAFD9C /* Font+.swift in Sources */,
 				ACA6DA79271ABB2200286563 /* ActivityViewControllerWrapper.swift in Sources */,
 				0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */,
 				05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */,
@@ -1077,7 +1091,6 @@
 				05C5665429BEF32A002E72F7 /* ThreadSheetView.swift in Sources */,
 				05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */,
 				05384A7F2792995F00D85A92 /* TagsViewModel.swift in Sources */,
-				ACFADE7E27674DDF007C555F /* CustomNavigationBar.swift in Sources */,
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
 				ACAB96D227030F9A005FB9AA /* ShapeExtension.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
@@ -1131,6 +1144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC2E4748274B58EB0073E8E4 /* UserDefaultsEX.swift in Sources */,
+				05B5DA0529C1AADE00CAFD9C /* Font+.swift in Sources */,
 				0523871A295F531B00650241 /* URL+.swift in Sources */,
 				057977B82805551F00FE5EA4 /* Color+.swift in Sources */,
 				05F1E2322941D50100421C17 /* SSOTokenResponse.swift in Sources */,

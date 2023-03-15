@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>IRANSansX-Bold.ttf</string>
+		<string>IRANSansX-Regular.ttf</string>
+	</array>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>ChatApplication uses your location in the case of sending a message to your friends or group if you are in need.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

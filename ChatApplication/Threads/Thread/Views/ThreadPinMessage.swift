@@ -16,8 +16,15 @@ struct ThreadPinMessage: View {
         VStack {
             ForEach(messages) { message in
                 HStack {
+                    if (message.message?.isEnglishString ?? false) == false {
+                        Spacer()
+                    }
                     Text(message.messageTitle)
-                    Spacer()
+                        .font(.iransansBody)
+
+                    if message.message?.isEnglishString ?? false == true {
+                        Spacer()
+                    }
                     Button {
                         threadVM.unpin(message.id ?? -1)
                     } label: {

@@ -109,19 +109,19 @@ struct ThreadView: View, DropDelegate {
         VStack(alignment: .center) {
             Text(viewModel.thread?.computedTitle ?? "")
                 .fixedSize()
-                .font(.headline)
+                .font(.iransansBoldSubheadline)
 
             if appState.connectionStatus != .connected {
                 ConnectionStatusToolbar()
             } else if let signalMessageText = viewModel.signalMessageText {
                 Text(signalMessageText)
                     .foregroundColor(.textBlueColor)
-                    .font(.footnote.bold())
+                    .font(.iransansCaption2)
             } else if let participantsCount = viewModel.thread?.participantCount {
                 Text("Members \(participantsCount)")
                     .fixedSize()
                     .foregroundColor(Color.gray)
-                    .font(.footnote)
+                    .font(.iransansFootnote)
             }
         }
     }
@@ -132,7 +132,7 @@ struct ThreadView: View, DropDelegate {
         } label: {
             ImageLaoderView(url: viewModel.thread?.computedImageURL, userName: viewModel.thread?.title)
                 .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
-                .font(.system(size: 16).weight(.heavy))
+                .font(.iransansBody)
                 .foregroundColor(.white)
                 .frame(width: 32, height: 32)
                 .background(Color.blue.opacity(0.4))

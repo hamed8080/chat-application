@@ -49,10 +49,10 @@ struct SettingsView: View {
                         Spacer()
                         VStack(spacing: 12) {
                             Text(user?.name ?? "")
-                                .font(.title.bold())
+                                .font(.iransansBoldTitle)
 
                             Text(user?.cellphoneNumber ?? "")
-                                .font(.subheadline)
+                                .font(.iransansSubheadline)
                         }
                         Spacer()
                     }
@@ -118,7 +118,7 @@ struct SettingsView: View {
                         TokenExpireView()
                     }
                 }
-                .font(.title3)
+                .font(.iransansSubheadline)
                 .padding(8)
             }
         }
@@ -132,7 +132,7 @@ struct SettingsView: View {
                         Text("Edit")
                     } icon: {
                         Image(systemName: "square.and.pencil")
-                            .font(.body.bold())
+                            .font(.iransansBody)
                     }
                 }
             }

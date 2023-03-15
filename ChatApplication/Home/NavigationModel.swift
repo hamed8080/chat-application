@@ -10,7 +10,7 @@ import FanapPodChatSDK
 import Foundation
 
 class NavigationModel: ObservableObject {
-    @Published var selectedSideBarId: String? = "chats"
+    @Published var selectedSideBarId: String? = "Chats"
     @Published var selectedThreadId: Conversation.ID?
     @Published var selectedThreadIds: Set<Conversation.ID> = []
     @Published var selectedTagId: Tag.ID?
@@ -27,12 +27,12 @@ class NavigationModel: ObservableObject {
         sections.append(
             .init(title: "Chats", items:
                 [
-                    .init(id: "contacts", title: "contacts", icon: "person.icloud"),
-                    .init(id: "chats", title: "chats", icon: "captions.bubble"),
-                    .init(id: "archives", title: "archives", icon: "tray.and.arrow.down"),
+                    .init(id: "Contacts", title: "Contacts", icon: "person.icloud"),
+                    .init(id: "Chats", title: "Chats", icon: "captions.bubble"),
+                    .init(id: "Archives", title: "Archives", icon: "tray.and.arrow.down"),
                 ]))
         sections.append(.init(title: "Folders", items: []))
-        sections.append(.init(title: "Settings", items: [.init(id: "settings", title: "settings", icon: "gear")]))
+        sections.append(.init(title: "Settings", items: [.init(id: "Settings", title: "Settings", icon: "gear")]))
         cancelable = $selectedSideBarId.sink { [weak self] newValue in
             if newValue != self?.selectedSideBarId {
                 self?.manageThreadChange(newValue)
@@ -42,9 +42,9 @@ class NavigationModel: ObservableObject {
 
     func manageThreadChange(_ newValue: String?) {
         threadViewModel?.title = sectionItem(newValue)?.title ?? ""
-        if newValue == "archives" {
+        if newValue == "Archives" {
             threadViewModel?.getArchivedThreads()
-        } else if selectedSideBarId == "archives" {
+        } else if selectedSideBarId == "Archives" {
             threadViewModel?.resetArchiveSettings()
         }
 
@@ -77,7 +77,7 @@ class NavigationModel: ObservableObject {
 
     var isThreadType: Bool {
         let type = selectedSideBarId ?? ""
-        return type.contains("Tag") || type == "chats" || type == "archives"
+        return type.contains("Tag") || type == "Chats" || type == "Archives"
     }
 
     func folder(_ selectedSideBarId: String?) -> Tag? {

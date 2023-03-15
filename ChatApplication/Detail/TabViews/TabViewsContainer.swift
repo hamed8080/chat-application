@@ -65,6 +65,7 @@ struct Tabs: View {
                                     .foregroundColor(Color.gray)
                                     .fixedSize()
                                 Text(tab.title)
+                                    .font(.iransansBoldBody)
                                     .fixedSize()
                             }
                             .padding([.trailing, .leading], 8)

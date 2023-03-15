@@ -38,7 +38,6 @@ struct LogView: View {
                         Text("Delete")
                     } icon: {
                         Image(systemName: "trash")
-                            .font(.body.bold())
                     }
                 }
             }

@@ -39,9 +39,10 @@ struct DropRowView: View {
             }
 
             Text(item.name ?? "")
+                .font(.iransansBody)
             Spacer()
             Text(item.fileSize)
-                .font(.caption)
+                .font(.iransansCaption2)
                 .foregroundColor(.gray)
         }
         .padding()

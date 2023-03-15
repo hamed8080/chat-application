@@ -22,7 +22,7 @@ struct ThreadRow: View {
                 HStack {
                     Text(thread.computedTitle)
                         .lineLimit(1)
-                        .font(.headline.bold())
+                        .font(.iransansBoldSubheadline)
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()
@@ -41,7 +41,7 @@ struct ThreadRow: View {
                     if let timeString = thread.time?.date.timeAgoSinceDatecCondence {
                         Text(timeString)
                             .lineLimit(1)
-                            .font(.footnote)
+                            .font(.iransansCaption2)
                             .foregroundColor(.secondary)
                     }
 
@@ -58,7 +58,7 @@ struct ThreadRow: View {
                     Spacer()
                     if let unreadCountString = thread.unreadCountString {
                         Text(unreadCountString)
-                            .font(.system(size: 13))
+                            .font(.iransansCaption2)
                             .padding(8)
                             .frame(height: 24)
                             .frame(minWidth: 24)
@@ -182,7 +182,7 @@ struct ThreadImageView: View {
         } else {
             ImageLaoderView(url: thread.computedImageURL, metaData: thread.metadata, userName: thread.title)
                 .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
-                .font(.system(size: 16).weight(.heavy))
+                .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
                 .background(Color.blue.opacity(0.4))
@@ -201,6 +201,7 @@ struct ThreadLastMessageView: View {
         VStack(spacing: 2) {
             if let name = lastMsgVO?.participant?.name, thread.group == true {
                 Text(name)
+                    .font(.iransansBoldCaption)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .foregroundColor(.orange)
@@ -215,12 +216,14 @@ struct ThreadLastMessageView: View {
                 }
                 if let message = thread.lastMessageVO?.message {
                     Text(message)
+                        .font(.iransansBody)
                         .lineLimit(thread.group == false ? 2 : 1)
                         .foregroundColor(.secondaryLabel)
                 }
 
                 if lastMsgVO?.isFileType == true, lastMsgVO?.message.isEmptyOrNil == true, let fileStringName = lastMsgVO?.fileStringName {
                     Text(fileStringName)
+                        .font(.iransansCaption2)
                         .lineLimit(thread.group == false ? 2 : 1)
                         .foregroundColor(.secondaryLabel)
                 }
@@ -234,8 +237,6 @@ struct ThreadLastMessageView: View {
         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         .multilineTextAlignment(.leading)
         .truncationMode(Text.TruncationMode.tail)
-        .font(.subheadline)
-        .fontDesign(.rounded)
         .clipped()
     }
 }

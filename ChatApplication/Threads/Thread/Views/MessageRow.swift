@@ -57,7 +57,7 @@ struct CallMessageType: View {
             if let time = message.time, let date = Date(milliseconds: Int64(time)) {
                 Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDatecCondence ?? "")")
                     .foregroundColor(Color.primary.opacity(0.8))
-                    .font(.subheadline)
+                    .font(.iransansSubheadline)
                     .padding(2)
             }
 
@@ -85,7 +85,7 @@ struct ParticipantMessageType: View {
             let markdownText = try! AttributedString(markdown: "\(name) - \(date)")
             Text(markdownText)
                 .foregroundColor(Color.primary.opacity(0.8))
-                .font(.subheadline)
+                .font(.iransansBoldCaption2)
                 .padding(2)
 
             Image(systemName: message.iconName)
@@ -112,10 +112,8 @@ struct TextMessageType: View {
             if message.isMe {
                 Spacer()
             }
-            if !message.isMe {
-                sameUserAvatar
-            }
-            VStack {
+            VStack(spacing: 0) {
+                SameAvatar(message: message)
                 if message.replyInfo != nil {
                     ReplyInfoMessageRow(message: message)
                 }
@@ -143,9 +141,8 @@ struct TextMessageType: View {
                 // TODO: TEXT must be alignment and image muset be fit
                 Text(calculation.markdownTitle)
                     .multilineTextAlignment(calculation.isEnglish ? .leading : .trailing)
-                    .padding(.top, 8)
-                    .padding([.leading, .trailing, .top])
-                    .font(Font(UIFont.systemFont(ofSize: 18)))
+                    .padding(8)
+                    .font(.iransansBody)
                     .foregroundColor(.black)
 
                 if let addressDetail = calculation.addressDetail {
@@ -256,32 +253,53 @@ struct TextMessageType: View {
                 calculation.calculate(message: message)
             }
 
-            if message.isMe {
-                sameUserAvatar
-            }
-
             if !message.isMe {
                 Spacer()
             }
         }
     }
+}
 
-    @ViewBuilder var sameUserAvatar: some View {
+struct SameAvatar: View {
+    static let size: CGFloat = 24
+    var message: Message
+    @EnvironmentObject var viewModel: ThreadViewModel
+
+    var body: some View {
         if !viewModel.isSameUser(message: message), message.participant != nil {
             NavigationLink {
                 DetailView(viewModel: DetailViewModel(user: message.participant))
             } label: {
-                ImageLaoderView(url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
-                    .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
-                    .font(.system(size: 16).weight(.heavy))
-                    .foregroundColor(.white)
-                    .frame(width: 36, height: 36)
-                    .background(Color.blue.opacity(0.4))
-                    .cornerRadius(18)
+                HStack(spacing: 8) {
+                    if message.isMe {
+                        Spacer()
+                        Text("\(message.participant?.name ?? "")")
+                            .font(.iransansBoldCaption)
+                            .foregroundColor(.darkGreen)
+                            .lineLimit(1)
+                    }
+
+                    ImageLaoderView(url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
+                        .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
+                        .font(.iransansSubheadline)
+                        .foregroundColor(.white)
+                        .frame(width: SameAvatar.size, height: SameAvatar.size)
+                        .background(Color.blue.opacity(0.4))
+                        .cornerRadius(SameAvatar.size / 2)
+                    if !message.isMe {
+                        Text("\(message.participant?.name ?? "")")
+                            .font(.iransansBoldCaption)
+                            .foregroundColor(.blue)
+                            .lineLimit(1)
+                        Spacer()
+                    }
+                }
+                .padding(.bottom, 4)
+                .padding([.leading, .trailing, .top])
             }
         } else {
             Rectangle()
-                .frame(width: 36, height: 36)
+                .frame(width: 36, height: 0)
                 .hidden()
         }
     }
@@ -302,7 +320,7 @@ struct ReplyInfoMessageRow: View {
             VStack(spacing: 4) {
                 if let name = message.replyInfo?.participant?.name {
                     Text("\(name)")
-                        .font(.caption.bold())
+                        .font(.iransansBoldCaption2)
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: name.isEnglishString ? .leading : .trailing)
                         .foregroundColor(.orange)
                         .padding([.leading, .trailing], 4)
@@ -310,12 +328,12 @@ struct ReplyInfoMessageRow: View {
 
                 if let message = message.replyInfo?.message {
                     Text(message)
+                        .font(.iransansCaption3)
                         .padding([.leading, .trailing], 4)
                         .cornerRadius(8, corners: .allCorners)
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: message.isEnglishString ? .leading : .trailing)
                         .foregroundColor(.primary)
                         .lineLimit(1)
-                        .font(.caption.italic())
                 }
             }
         }
@@ -324,7 +342,6 @@ struct ReplyInfoMessageRow: View {
         .cornerRadius(8)
         .padding([.top, .leading, .trailing], 12)
         .truncationMode(.tail)
-        .fontDesign(.rounded)
         .lineLimit(1)
         .onTapGesture {
             print("tap on move to reply to")
@@ -350,7 +367,7 @@ struct ForwardMessageRow: View {
                         if let name = forwardInfo.participant?.name {
                             Text(name)
                                 .italic()
-                                .font(.subheadline)
+                                .font(.iransansBoldCaption2)
                                 .foregroundColor(Color.gray)
                         }
                         Spacer()
@@ -409,13 +426,13 @@ struct MessageFooterView: View {
             if let fileSize = message.metaData?.file?.size, let size = Int(fileSize) {
                 Text(size.toSizeString)
                     .multilineTextAlignment(.leading)
-                    .font(.subheadline)
+                    .font(.iransansBody)
                     .foregroundColor(.darkGreen.opacity(0.8))
             }
             Spacer()
             Text(timeString)
                 .foregroundColor(.darkGreen.opacity(0.8))
-                .font(.system(size: 12, design: .rounded))
+                .font(.iransansBoldCaption2)
             if message.isMe {
                 Image(uiImage: message.footerStatus.image)
                     .resizable()
@@ -448,18 +465,12 @@ struct MessageRow_Previews: PreviewProvider {
     static var previews: some View {
         let threadVM = ThreadViewModel()
         List {
-            MessageRow(message: MockData.message, calculation: .init(), isInEditMode: .constant(true))
-                .environmentObject(threadVM)
-            MessageRow(message: MockData.message, calculation: .init(), isInEditMode: .constant(true))
-                .environmentObject(threadVM)
-            MessageRow(message: MockData.message, calculation: .init(), isInEditMode: .constant(true))
-                .environmentObject(threadVM)
-
-            ForEach(MockData.generateMessages(count: 5)) { _ in
-                TextMessageType(message: MockData.message)
+            ForEach(MockData.generateMessages(count: 5)) { message in
+                MessageRow(message: message, calculation: .init(), isInEditMode: .constant(false))
                     .environmentObject(threadVM)
             }
         }
+        .environmentObject(MessageRowCalculationViewModel())
         .onAppear {
             threadVM.setup(thread: MockData.thread)
         }
@@ -478,6 +489,7 @@ struct ReplyInfo_Previews: PreviewProvider {
             TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", ownerId: 10, replyInfo: replyInfo))
             TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: isMeReplyInfo))
         }
+        .environmentObject(MessageRowCalculationViewModel())
         .environmentObject(threadVM)
         .onAppear {
             threadVM.setup(thread: MockData.thread)

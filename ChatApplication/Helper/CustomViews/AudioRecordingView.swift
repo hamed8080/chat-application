@@ -17,7 +17,7 @@ struct AudioRecordingView: View {
         } label: {
             Image(systemName: viewModel.isRecording ? "mic.fill" : "mic")
                 .font(.system(size: 24))
-                .foregroundColor(viewModel.isRecording ? .chatMeBg.opacity(0.9) : Color.gray)
+                .foregroundColor(viewModel.isRecording ? .chatMeBg.opacity(0.9) : Color.textBlueColor.opacity(0.8))
         }
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.5)

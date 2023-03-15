@@ -60,12 +60,21 @@ class MessageRowCalculationViewModel: ObservableObject {
         return message.isUnsentMessage ? 148 : message.isFileType ? 164 : hasReplyMessage ? 246 : 128
     }
 
+    func headerWidth(_ message: Message) -> CGFloat {
+        let avatarWidth = SameAvatar.size
+        let spacing: CGFloat = 8
+        let padding: CGFloat = 16
+        return (message.participant?.name?.widthOfString(usingFont: .systemFont(ofSize: 22)) ?? 0) + avatarWidth + spacing + padding
+    }
+
     func calculateWidthOfMessage(_ message: Message) -> CGFloat {
         let messageWidth = message.messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) + 16
+        let headerWidth = headerWidth(message)
         let footerWidth = footerWidth(message)
         let calculatedWidth: CGFloat = min(messageWidth, maxAllowedWidth)
         let maxFooterAndMsg: CGFloat = max(footerWidth, calculatedWidth)
-        let maxWidth = max(minWidth(message), maxFooterAndMsg)
+        let maxHeaderAndFooter = max(maxFooterAndMsg, headerWidth)
+        let maxWidth = max(minWidth(message), maxHeaderAndFooter)
         return maxWidth
     }
 }

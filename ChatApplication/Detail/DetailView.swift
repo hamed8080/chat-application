@@ -41,14 +41,14 @@ struct DetailView: View {
                     PrimaryTextField(title: "Title", textBinding: $title, keyboardType: .alphabet, backgroundColor: bgColor)
                         .disabled(!isInEditMode)
                         .multilineTextAlignment(.center)
-                        .font(.headline.bold())
+                        .font(.iransansBody)
                         .onAppear {
                             title = viewModel.thread?.computedTitle ?? ""
                             threadDescription = viewModel.thread?.description ?? ""
                         }
                 } else {
-                    Text(viewModel.thread?.computedTitle ?? "")
-                        .font(.title2.bold())
+                    Text(viewModel.title)
+                        .font(.iransansBoldTitle)
                 }
 
                 if viewModel.thread?.canEditInfo == true {
@@ -60,7 +60,7 @@ struct DetailView: View {
 
                 if let notSeenString = viewModel.notSeenString {
                     Text(notSeenString)
-                        .font(.caption)
+                        .font(.iransansCaption3)
                 }
             }
             .noSeparators()
@@ -99,6 +99,8 @@ struct DetailView: View {
                     Section {
                         if let bio = viewModel.bio {
                             Text(bio)
+                                .font(.iransansCaption)
+                                .foregroundColor(.gray)
                             if !viewModel.isInMyContact {
                                 Divider()
                             }

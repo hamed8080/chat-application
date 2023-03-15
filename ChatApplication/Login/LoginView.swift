@@ -54,11 +54,11 @@ struct VerifyContentView: View {
                 .scaledToFit()
                 .cornerRadius(8)
             Text("Enter Verication Code")
-                .font(.title.weight(.medium))
+                .font(.iransansTitle)
                 .foregroundColor(.textBlueColor)
 
             Text("Verification code sent to: **\(viewModel.text)**")
-                .font(.subheadline.weight(.medium))
+                .font(.iransansSubheadline)
                 .foregroundColor(.textBlueColor)
 
             HStack(spacing: 16) {
@@ -68,8 +68,7 @@ struct VerifyContentView: View {
                         .textFieldStyle(.customBordered)
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.center)
-                        .fontDesign(.rounded)
-                        .font(.system(.largeTitle).weight(.medium))
+                        .font(.iransansBoldLargeTitle)
                         .focused($focusField, equals: VerifyFocusFileds.allCases.first(where: { i == $0.rawValue })!)
                         .onChange(of: viewModel.verifyCodes[i]) { _ in
                             if viewModel.verifyCodes[i].count == 1 {
@@ -104,7 +103,7 @@ struct VerifyContentView: View {
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
             }
             .disabled(viewModel.isLoading)
-            .fontWeight(.medium)
+            .font(.iransansBody)
             .buttonStyle(.bordered)
 
             if viewModel.state == .failed || viewModel.state == .verificationCodeIncorrect {
@@ -141,15 +140,16 @@ struct LoginContentView: View {
                 .scaledToFit()
                 .cornerRadius(8)
             Text("Login")
-                .font(.title.weight(.medium))
+                .font(.iransansTitle)
                 .foregroundColor(.textBlueColor)
             Text("**Welcome** to Fanap Chats")
-                .font(.headline.weight(.medium))
+                .font(.iransansSubheadline)
                 .foregroundColor(.textBlueColor.opacity(0.7))
 
             let titleString = viewModel.selectedServerType == .integration ? "Enter your static token here." : "Enter your Phone number here."
             TextField(titleString, text: $viewModel.text)
                 .keyboardType(.phonePad)
+                .font(.iransansSubtitle)
                 .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 8))
                 .focused($isFocused)
 
@@ -169,6 +169,7 @@ struct LoginContentView: View {
                         ProgressView()
                     }
                     Label("Login".uppercased(), systemImage: "door.left.hand.open")
+                        .font(.iransansBody)
                 }
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
             }
@@ -182,7 +183,7 @@ struct LoginContentView: View {
 
             Text("Contact the support team if you have gotten into trouble with the login.")
                 .multilineTextAlignment(.center)
-                .font(.subheadline.weight(.medium))
+                .font(.iransansFootnote)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(.gray.opacity(1))
 
@@ -215,7 +216,7 @@ struct ErrorView: View {
     var body: some View {
         HStack {
             Text(error.capitalizingFirstLetter())
-                .font(.footnote.weight(.medium))
+                .font(.iransansCaption2)
                 .foregroundColor(.red.opacity(0.7))
         }
         .padding()

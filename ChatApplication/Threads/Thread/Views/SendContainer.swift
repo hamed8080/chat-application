@@ -27,7 +27,7 @@ struct SendContainer: View {
                             .resizable()
                             .frame(width: 24, height: 24)
                             .font(.system(size: 24))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.orange)
                             .onTapGesture {
                                 viewModel.sheetType = .attachment
                             }
@@ -133,6 +133,7 @@ struct ReplyMessageViewPlaceholder: View {
                         viewModel.replyMessage = nil
                     }
                 Text(replyMessage.message ?? replyMessage.metaData?.name ?? "")
+                    .font(.iransansBody)
                     .offset(x: 8)
                     .onTapGesture {
                         // TODO: Go to reply message location
@@ -166,6 +167,7 @@ struct EditMessagePlaceholderView: View {
                     }
 
                 Text("\(editMessage.message ?? "")")
+                    .font(.iransansBody)
                     .offset(x: 8)
                 Spacer()
             }

@@ -35,6 +35,7 @@ struct ManageTagView: View {
                     HStack {
                         Spacer()
                         Text("Manage folders")
+                            .font(.iransansSubtitle)
                             .foregroundColor(.gray)
                         Spacer()
                     }
@@ -81,6 +82,7 @@ struct ManageTagView: View {
                     } label: {
                         Label {
                             Text("Done")
+                                .font(.iransansBody)
                         } icon: {
                             Image(systemName: "square.and.arrow.down")
                         }

@@ -33,7 +33,7 @@ struct TagParticipantRow: View {
                             .cornerRadius(14)
                         VStack(alignment: .leading) {
                             Text(thread.title ?? "")
-                                .font(.headline)
+                                .font(.iransansBody)
                                 .foregroundColor(Color.gray)
                         }
                         Spacer()

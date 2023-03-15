@@ -22,7 +22,7 @@ struct AttachmentDialog: View {
             Text(verbatim: text)
                 .multilineTextAlignment(.center)
                 .foregroundColor(Color(uiColor: .systemGray))
-                .font(.subheadline)
+                .font(.iransansCaption)
                 .frame(minWidth: 0, maxWidth: .infinity)
             if viewModel.selectedImageItems.count > 0 {
                 SendTextViewWithButtons {
@@ -66,6 +66,7 @@ struct AttachmentDialog: View {
                 Label("Contact", systemImage: "person.2.crop.square.stack")
             }
         }
+        .font(.iransansBody)
         .padding()
     }
 }

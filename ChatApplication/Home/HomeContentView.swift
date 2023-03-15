@@ -28,9 +28,9 @@ struct HomeContentView: View {
             } content: {
                 if container.navVM.isThreadType {
                     ThreadContentList()
-                } else if container.navVM.selectedSideBarId == "contacts" {
+                } else if container.navVM.selectedSideBarId == "Contacts" {
                     ContactContentList()
-                } else if container.navVM.selectedSideBarId == "settings" {
+                } else if container.navVM.selectedSideBarId == "Settings" {
                     SettingsView()
                 }
             } detail: {
@@ -70,7 +70,7 @@ struct HomeContentView: View {
             .onAppear {
                 appState.navViewModel = container.navVM
                 container.navVM.threadViewModel = container.threadsVM
-                container.threadsVM.title = "chats"
+                container.threadsVM.title = "Chats"
                 container.navVM.contactsViewModel = container.contactsVM
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }
@@ -161,18 +161,17 @@ struct UserConfigView: View {
                 .padding()
             VStack(alignment: .leading) {
                 Text(userConfig.user.name ?? "")
-                    .fontDesign(.rounded)
+                    .font(.iransansBoldSubtitle)
                     .foregroundColor(.primary)
 
                 HStack {
                     Text(userConfig.user.cellphoneNumber ?? "")
-                        .font(.subheadline)
+                        .font(.iransansBody)
                         .fontDesign(.rounded)
                         .foregroundColor(.secondary)
                     Spacer()
                     Text(Config.serverType(config: userConfig.config)?.rawValue ?? "")
-                        .font(.subheadline)
-                        .fontDesign(.rounded)
+                        .font(.iransansBody)
                         .foregroundColor(.green)
                 }
             }
@@ -193,17 +192,16 @@ struct DetailContentView: View {
                 .opacity(0.2)
             VStack(spacing: 16) {
                 Text("Nothing has been selected. You can start a conversation right now!")
-                    .font(.subheadline)
+                    .font(.iransansSubheadline)
                     .foregroundColor(.secondaryLabel)
                 Button {
                     threadsVM.toggleThreadContactPicker.toggle()
                 } label: {
                     Text("Start")
+                        .font(.iransansBoldBody)
                 }
-                .font(.body.bold())
             }
         }
-        .fontDesign(.rounded)
         .padding([.leading, .trailing], 48)
         .padding([.bottom, .top], 96)
         .background(Color.gray.opacity(0.1))

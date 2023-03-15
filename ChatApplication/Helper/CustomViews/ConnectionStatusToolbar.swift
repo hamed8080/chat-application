@@ -14,7 +14,7 @@ struct ConnectionStatusToolbar: View {
     var body: some View {
         if connectionStatus != .connected {
             Text("\(connectionStatus.stringValue) ...")
-                .font(.footnote.bold())
+                .font(.iransansBoldBody)
                 .foregroundColor(.textBlueColor)
                 .onReceive(appstate.$connectionStatus) { newSate in
                     self.connectionStatus = newSate

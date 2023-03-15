@@ -99,29 +99,31 @@ final class MockData {
     static var uploadMessage: UploadFileWithTextMessage { UploadFileWithTextMessage(uploadFileRequest: UploadFileRequest(data: Data(), fileName: "Film.mp4"), thread: thread) }
 
     static func generateMessages(count: Int = 50) -> [Message] {
-        var messages: [Message] = mockDataModel.messages.map { message in
+//        var messages: [Message] = mockDataModel.messages.map { message in
+//            message.uniqueId = UUID().uuidString
+//            return message
+//        }
+        var messages: [Message] = []
+        var lastIndex = messages.count + 1
+        for index in 0 ... count {
+            let message = Message()
             message.uniqueId = UUID().uuidString
-            return message
-        }
-        if messages.count < count {
-            var lastIndex = messages.count + 1
-            for _ in 0 ... count {
-                let message = message
-                message.message = mockDataModel.messages[Int.random(in: 1 ... 2)].message
-                message.time = UInt.random(in: 0 ... UInt.max)
-                message.ownerId = lastIndex
-                message.id = lastIndex
-                message.uniqueId = UUID().string
-                message.participant = participant
-                lastIndex += 1
-                messages.append(message)
-            }
+            message.message = "Test\(index)"
+            message.time = UInt.random(in: 0 ... UInt.max)
+            message.ownerId = index
+            message.id = index
+            message.messageType = .text
+            message.uniqueId = UUID().string
+            message.participant = participant(Int.random(in: 1 ... 12))
+            message.previousId = lastIndex - 1
+            lastIndex += 1
+            messages.append(message)
         }
         return messages
     }
 
     /// Participants
-    static var participant: Participant {
+    static func participant(_ index: Int) -> Participant {
         let participant = Participant(
             admin: true,
             cellphoneNumber: "+989369161601",
@@ -129,8 +131,8 @@ final class MockData {
             contactName: "Hamed",
             contactLastName: "Hosseini",
             firstName: "Hamed",
-            id: 0,
-            image: "avatar4",
+            id: index,
+            image: "avatar\(index)",
             lastName: "Hosseini",
             name: "Hamed",
             online: true,
@@ -145,7 +147,7 @@ final class MockData {
         if participants.count < count {
             var lastIndex = participants.count + 1
             for _ in 0 ... count {
-                let participant = participant
+                let participant = participant(1)
                 participant.firstName = mockDataModel.participants[Int.random(in: 1 ... 15)].firstName
                 participant.lastName = mockDataModel.participants[Int.random(in: 1 ... 15)].lastName
                 participant.name = (participant.firstName ?? "") + " " + (participant.lastName ?? "")

@@ -15,6 +15,7 @@ struct LogRow: View {
         ZStack(alignment: .leading) {
             (log.received ? Color.red : Color.green).opacity(0.2)
             Text("\(log.json ?? "")")
+                .font(.iransansCaption)
                 .padding()
 
         }.textSelection(.enabled)

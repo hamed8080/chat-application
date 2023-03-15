@@ -61,6 +61,6 @@ struct ParticipantRow: View {
 
 struct ParticipantRow_Previews: PreviewProvider {
     static var previews: some View {
-        ParticipantRow(participant: MockData.participant)
+        ParticipantRow(participant: MockData.participant(1))
     }
 }

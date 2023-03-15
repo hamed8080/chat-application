@@ -17,7 +17,7 @@ struct CircularProgressView: View {
                 .foregroundColor(Color.gray.opacity(0.5))
 
             Text("\(percent) %")
-                .font(.title2)
+                .font(.iransansSubheadline)
                 .foregroundColor(.indigo)
                 .fontWeight(.heavy)
 

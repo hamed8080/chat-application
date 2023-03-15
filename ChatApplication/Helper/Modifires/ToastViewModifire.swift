@@ -64,12 +64,12 @@ struct TopNotifyViewModifire<ContentView: View>: ViewModifier {
         VStack(spacing: 0) {
             if let title = title {
                 Text(title)
-                    .font(.title2.bold())
+                    .font(.iransansBoldTitle)
             }
             HStack(spacing: 0) {
                 leadingView()
                 Text(message)
-                    .font(.subheadline)
+                    .font(.iransansBody)
                     .padding()
                 Spacer()
             }

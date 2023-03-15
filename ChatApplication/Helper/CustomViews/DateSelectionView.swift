@@ -22,7 +22,7 @@ struct DateSelectionView: View {
                 VStack {
                     Text("Start Date")
                         .foregroundColor(.textBlueColor)
-                        .font(.title.bold())
+                        .font(.iransansBoldTitle)
 
                     DatePicker("", selection: $startDate)
                         .datePickerStyle(.graphical)
@@ -33,7 +33,7 @@ struct DateSelectionView: View {
                         Label("Next".uppercased(), systemImage: "arrow.forward")
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                     }
-                    .fontWeight(.medium)
+                    .font(.iransansSubheadline)
                     .buttonStyle(.bordered)
                     .frame(maxWidth: 428)
                 }
@@ -41,7 +41,7 @@ struct DateSelectionView: View {
                 VStack {
                     Text("End Date")
                         .foregroundColor(.textBlueColor)
-                        .font(.title.bold())
+                        .font(.iransansBoldTitle)
                     DatePicker("", selection: $endDate)
                         .datePickerStyle(.graphical)
                     HStack {
@@ -51,7 +51,7 @@ struct DateSelectionView: View {
                             Label("Back".uppercased(), systemImage: "arrow.backward")
                                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                         }
-                        .fontWeight(.medium)
+                        .font(.iransansSubheadline)
                         .buttonStyle(.bordered)
 
                         Button {
@@ -61,7 +61,7 @@ struct DateSelectionView: View {
                             Label("Export".uppercased(), systemImage: "tray.and.arrow.down")
                                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                         }
-                        .fontWeight(.medium)
+                        .font(.iransansSubheadline)
                         .buttonStyle(.bordered)
                     }
                     .frame(maxWidth: 428)

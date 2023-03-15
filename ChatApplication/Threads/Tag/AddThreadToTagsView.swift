@@ -55,6 +55,7 @@ struct AddThreadToTagsView: View {
                     } label: {
                         Label {
                             Text("Done")
+                                .font(.iransansCaption)
                         } icon: {
                             Image(systemName: "square.and.arrow.down")
                         }
@@ -69,6 +70,7 @@ struct AddThreadToTagsView: View {
                     } label: {
                         Label {
                             Text("Add")
+                                .font(.iransansCaption)
                         } icon: {
                             Image(systemName: "folder.badge.plus")
                         }

@@ -32,7 +32,7 @@ struct ThreadSearchList: View {
         } else if searchMessageText.count > 0 {
             ZStack {
                 Text("Nothing found.")
-                    .font(.title2.bold())
+                    .font(.iransansTitle)
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .background(.ultraThickMaterial)

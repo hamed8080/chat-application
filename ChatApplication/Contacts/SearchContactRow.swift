@@ -16,7 +16,7 @@ struct SearchContactRow: View {
         HStack {
             ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
                 .id("\(contact.image ?? "")\(contact.id ?? 0)")
-                .font(.system(size: 16).weight(.heavy))
+                .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 24, height: 24)
                 .background(Color.blue.opacity(0.4))
@@ -29,7 +29,7 @@ struct SearchContactRow: View {
                 if let notSeenDuration = ContactRow.getDate(notSeenDuration: contact.notSeenDuration) {
                     Text(notSeenDuration)
                         .padding(.leading, 4)
-                        .font(.headline.weight(.medium))
+                        .font(.iransansCaption3)
                         .foregroundColor(Color.gray)
                 }
 
