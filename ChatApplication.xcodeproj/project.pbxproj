@@ -39,6 +39,7 @@
 		05384A862792CE5E00D85A92 /* CustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A852792CE5E00D85A92 /* CustomDialog.swift */; };
 		05384A8A2792F3FC00D85A92 /* KeyboardResponsiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */; };
 		05384A8C2792FB5000D85A92 /* PrimaryCustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A8B2792FB3200D85A92 /* PrimaryCustomDialog.swift */; };
+		0540A52229C3AA9800E89635 /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0540A52129C3AA9800E89635 /* TokenManager.swift */; };
 		055024C22987E794009DDD18 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 055024C12987E794009DDD18 /* Swipy */; };
 		0555905529311C3E000D2407 /* ThreadViewModel+SendMessageThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0555905429311C3E000D2407 /* ThreadViewModel+SendMessageThread.swift */; };
 		055B269827D5F9E40098D585 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B269727D5F9E40098D585 /* MemberView.swift */; };
@@ -233,6 +234,7 @@
 		05384A852792CE5E00D85A92 /* CustomDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialog.swift; sourceTree = "<group>"; };
 		05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardResponsiveModifier.swift; sourceTree = "<group>"; };
 		05384A8B2792FB3200D85A92 /* PrimaryCustomDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryCustomDialog.swift; sourceTree = "<group>"; };
+		0540A52129C3AA9800E89635 /* TokenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenManager.swift; sourceTree = "<group>"; };
 		0555905429311C3E000D2407 /* ThreadViewModel+SendMessageThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadViewModel+SendMessageThread.swift"; sourceTree = "<group>"; };
 		055B269727D5F9E40098D585 /* MemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberView.swift; sourceTree = "<group>"; };
 		055B269927D5F9F00098D585 /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
@@ -783,6 +785,7 @@
 				ACC3C5EB26F4630600AEE578 /* DTO */,
 				AC10007826F46B4100C3AD67 /* LoginView.swift */,
 				AC10007A26F46EC900C3AD67 /* LoginViewModel.swift */,
+				0540A52129C3AA9800E89635 /* TokenManager.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -1015,6 +1018,7 @@
 				ACFADE8227675C29007C555F /* PrimaryTextField.swift in Sources */,
 				055B269A27D5F9F00098D585 /* MediaView.swift in Sources */,
 				AC10007B26F46EC900C3AD67 /* LoginViewModel.swift in Sources */,
+				0540A52229C3AA9800E89635 /* TokenManager.swift in Sources */,
 				05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */,
 				AC23695627439478008195D7 /* SearchContactRow.swift in Sources */,
 				ACC4C1932765C342008940CD /* ViewEX.swift in Sources */,

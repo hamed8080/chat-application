@@ -42,9 +42,13 @@ struct ThreadMessagesList: View {
             .overlay {
                 goToBottomOfThread(scrollView: scrollView)
             }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
+            .safeAreaInset(edge: .top) {
                 Spacer()
-                    .frame(height: 64)
+                    .frame(height: viewModel.thread?.pinMessages?.count ?? 0 > 0 ? 48 : 0)
+            }
+            .safeAreaInset(edge: .bottom) {
+                Spacer()
+                    .frame(height: 48)
             }
             .background(
                 background

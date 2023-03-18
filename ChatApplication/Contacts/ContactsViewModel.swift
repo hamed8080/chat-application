@@ -21,11 +21,7 @@ class ContactsViewModel: ObservableObject {
     @Published private(set) var contacts: [Contact] = []
     @Published private(set) var searchedContacts: [Contact] = []
     @Published var isLoading = false
-    @Published var searchContactString: String = "" {
-        didSet {
-            searchContact()
-        }
-    }
+    @Published var searchContactString: String = ""
 
     init() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
@@ -35,6 +31,26 @@ class ContactsViewModel: ObservableObject {
         }
         .store(in: &canceableSet)
         getContacts()
+        setupPublishers()
+    }
+
+    func setupPublishers() {
+        $searchContactString
+            .filter { $0.count == 0 }
+            .sink { newValue in
+                if newValue.count == 0 {
+                    self.setSearchedContacts([])
+                }
+            }
+            .store(in: &canceableSet)
+        $searchContactString
+            .debounce(for: 0.5, scheduler: RunLoop.main)
+            .filter { $0.count > 1 }
+            .removeDuplicates()
+            .sink { searchText in
+                self.searchContacts(searchText)
+            }
+            .store(in: &canceableSet)
     }
 
     func onServerResponse(_ response: ChatResponse<[Contact]>) {
@@ -62,13 +78,9 @@ class ContactsViewModel: ObservableObject {
         ChatManager.activeInstance?.getContacts(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
-    func searchContact() {
-        if searchContactString.count <= 0 {
-            setSearchedContacts([])
-            return
-        }
+    func searchContacts(_ searchText: String) {
         isLoading = true
-        ChatManager.activeInstance?.searchContacts(.init(query: searchContactString)) { [weak self] response in
+        ChatManager.activeInstance?.searchContacts(.init(query: searchText)) { [weak self] response in
             if let contacts = response.result {
                 self?.setSearchedContacts(contacts)
             }

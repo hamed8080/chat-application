@@ -16,7 +16,12 @@ extension Message {
     var forwardTitle: String? { forwardMessage != nil ? "Forward **\(forwardCount ?? 0)** messages to **\(forwardMessage?.destinationThread.title ?? "")**" : nil }
     var messageTitle: String { message ?? metaData?.name ?? forwardTitle ?? "" }
     var markdownTitle: AttributedString {
-        guard let attributedString = try? NSMutableAttributedString(markdown: messageTitle) else { return AttributedString() }
+        let option: AttributedString.MarkdownParsingOptions = .init(allowsExtendedAttributes: false,
+                                                                    interpretedSyntax: .inlineOnly,
+                                                                    failurePolicy: .throwError,
+                                                                    languageCode: nil,
+                                                                    appliesSourcePositionAttributes: false)
+        guard let attributedString = try? NSMutableAttributedString(markdown: messageTitle, options: option) else { return AttributedString() }
         let title = attributedString.string
         title.matches(char: "@")?.forEach { match in
             let userName = title[Range(match.range, in: title)!]
@@ -185,7 +190,8 @@ extension Message {
     }
 
     var appleMapsURL: URL? {
-        URL(string: "maps://?q=\(message ?? "")&ll=\(coordinate?.lat ?? 0),\(coordinate?.lng ?? 0)")
+        guard let coordinate = coordinate else { return nil }
+        return URL(string: "maps://?q=\(message ?? "")&ll=\(coordinate.lat),\(coordinate.lng)")
     }
 
     var addressDetail: String? {

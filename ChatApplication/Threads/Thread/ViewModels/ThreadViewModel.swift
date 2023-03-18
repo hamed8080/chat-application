@@ -404,7 +404,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         let req = LocationMessageRequest(mapCenter: coordinate,
                                          threadId: threadId,
                                          userGroupHash: thread?.userGroupHash ?? "",
-                                         systemMetadata: String(data: (try? JSONEncoder().encode(coordinate)) ?? Data(), encoding: .utf8),
                                          textMessage: textMessage)
         ChatManager.activeInstance?.sendLocationMessage(req) { uploadProgress, error in
             print(uploadProgress ?? 0)
