@@ -188,10 +188,10 @@ final class ThreadsViewModel: ObservableObject {
 
     func createThread(_ model: StartThreadResultModel) {
         isLoading = true
-        let invitees = model.selectedContacts?.map { contact in
+        let invitees = model.selectedContacts.map { contact in
             Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
         }
-        ChatManager.activeInstance?.createThread(.init(invitees: invitees, title: model.title, type: model.type)) { [weak self] response in
+        ChatManager.activeInstance?.createThread(.init(invitees: invitees, title: model.title, type: model.type, uniqueName: model.isPublic ? model.title : nil)) { [weak self] response in
             if let thread = response.result {
                 AppState.shared.animateAndShowThread(thread: thread)
             }
