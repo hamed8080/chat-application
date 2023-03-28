@@ -9,7 +9,7 @@ import Foundation
 import Photos
 import UIKit
 
-class ActionSheetViewModel: ObservableObject {
+final class ActionSheetViewModel: ObservableObject {
     var threadViewModel: ThreadViewModel
     @Published var allImageItems: [ImageItem] = []
     @Published var selectedImageItems: [ImageItem] = []

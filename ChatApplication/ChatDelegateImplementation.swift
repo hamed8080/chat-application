@@ -28,7 +28,7 @@ enum ConnectionStatus: Int {
     }
 }
 
-class ChatDelegateImplementation: ChatDelegate {
+final class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {

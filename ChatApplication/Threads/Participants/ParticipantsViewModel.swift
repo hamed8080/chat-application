@@ -10,7 +10,7 @@ import FanapPodChatSDK
 import Foundation
 import SwiftUI
 
-class ParticipantsViewModel: ObservableObject {
+final class ParticipantsViewModel: ObservableObject {
     var thread: Conversation?
     private var hasNext = true
     private var count = 15
@@ -20,7 +20,7 @@ class ParticipantsViewModel: ObservableObject {
     @Published var isLoading = false
     @Published private(set) var totalCount = 0
     @Published private(set) var participants: [Participant] = []
-    var searchText: String = ""
+    @Published var searchText: String = ""
     var searchType: SearchParticipantType = .name
 
     init(thread: Conversation? = nil) {
@@ -41,6 +41,14 @@ class ParticipantsViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellableSet)
+        $searchText
+            .debounce(for: 0.5, scheduler: RunLoop.main)
+            .filter { $0.count >= 2 }
+            .removeDuplicates()
+            .sink { searchText in
+                self.searchParticipants(searchText)
+            }
+            .store(in: &cancellableSet)
     }
 
     func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
@@ -55,18 +63,16 @@ class ParticipantsViewModel: ObservableObject {
         ChatManager.activeInstance?.getThreadParticipants(.init(threadId: thread?.id ?? 0, offset: offset, count: count), completion: onServerResponse, cacheResponse: onCacheResponse)
     }
 
-    func searchParticipants(text: String, type: SearchParticipantType) {
+    func searchParticipants(_ searchText: String) {
         isLoading = true
-        searchText = text
-        searchType = type
         let req = ThreadParticipantsRequest(threadId: thread?.id ?? -1)
-        switch type {
+        switch searchType {
         case .name:
-            req.name = text
+            req.name = searchText
         case .username:
-            req.username = text
+            req.username = searchText
         case .cellphoneNumber:
-            req.cellphoneNumber = text
+            req.cellphoneNumber = searchText
         case .admin:
             req.admin = true
         }

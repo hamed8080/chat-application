@@ -17,7 +17,7 @@ protocol ExportMessagesViewModelProtocol {
     func deleteFile()
 }
 
-class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol {
+final class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol {
     var thread: Conversation?
     var threadId: Int { thread?.id ?? 0 }
     @Published var filePath: URL?

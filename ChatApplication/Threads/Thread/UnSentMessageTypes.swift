@@ -24,7 +24,7 @@ class SendTextMessage: Message, UnSentMessageProtocol {
     }
 }
 
-class EditTextMessage: Message, UnSentMessageProtocol {
+final class EditTextMessage: Message, UnSentMessageProtocol {
     var editMessageRequest: EditMessageRequest
 
     init(from editMessageRequest: EditMessageRequest, thread: Conversation?) {

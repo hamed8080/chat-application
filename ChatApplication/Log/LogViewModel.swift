@@ -11,7 +11,7 @@ import FanapPodChatSDK
 import Foundation
 import SwiftUI
 
-class LogViewModel: ObservableObject {
+final class LogViewModel: ObservableObject {
     @Published var logs: [Log] = []
     @Published var viewContext: NSManagedObjectContext
     @Published var searchText: String = ""
@@ -50,7 +50,7 @@ class LogViewModel: ObservableObject {
         }
     }
 
-    class func printCallLogsFile() {
+    final class func printCallLogsFile() {
 //        if let appSupportDir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false){
 //            let logFileDir = "WEBRTC-LOG"
 //            let url = appSupportDir.appendingPathComponent(logFileDir)

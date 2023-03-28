@@ -31,7 +31,7 @@ struct DocumentPicker: UIViewControllerRepresentable {
     }
 }
 
-class DocumentPickerCoordinator: NSObject, UIDocumentPickerDelegate, UINavigationControllerDelegate {
+final class DocumentPickerCoordinator: NSObject, UIDocumentPickerDelegate, UINavigationControllerDelegate {
     var completionHandler: ([URL]) -> Void
 
     init(completionHandler: @escaping ([URL]) -> Void) {

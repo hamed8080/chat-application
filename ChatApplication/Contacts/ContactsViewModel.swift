@@ -9,7 +9,7 @@ import Combine
 import FanapPodChatSDK
 import Foundation
 
-class ContactsViewModel: ObservableObject {
+final class ContactsViewModel: ObservableObject {
     private var count = 15
     private var offset = 0
     private var hasNext: Bool = true

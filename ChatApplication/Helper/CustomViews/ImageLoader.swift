@@ -18,7 +18,7 @@ private var token: String? {
     return ssoToken.accessToken
 }
 
-class ImageLoader: ObservableObject {
+final class ImageLoader: ObservableObject {
     @Published private(set) var image: UIImage = .init()
     private(set) var url: String?
     private(set) var fileMetadata: String?

@@ -33,8 +33,7 @@ struct MemberView: View {
         .animation(.easeInOut, value: viewModel.searchText)
         .animation(.easeInOut, value: viewModel.isLoading)
         .ignoresSafeArea(.all)
-        ListLoadingView(isLoading: $viewModel.isLoading)
-            .padding(.bottom)
+        .padding(.bottom)
     }
 }
 
@@ -48,11 +47,10 @@ enum SearchParticipantType: String, CaseIterable, Identifiable {
 
 struct ParticipantSearchView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
-    @State var type: SearchParticipantType = .name
-    @State var searchText: String = ""
+
     var body: some View {
         HStack {
-            Picker("", selection: $type) {
+            Picker("", selection: $viewModel.searchType) {
                 ForEach(SearchParticipantType.allCases) { item in
                     Text(item.rawValue)
                 }
@@ -61,16 +59,14 @@ struct ParticipantSearchView: View {
             .pickerStyle(.menu)
             .layoutPriority(0)
 
-            TextField("Search for users in thread", text: $searchText)
+            TextField("Search for users in thread", text: $viewModel.searchText)
                 .textFieldStyle(.customBorderedWith(minHeight: 24, cornerRadius: 12))
                 .frame(maxWidth: 420)
                 .layoutPriority(1)
-                .onChange(of: searchText) { newValue in
-                    viewModel.searchParticipants(text: newValue, type: type)
-                }
             Spacer()
         }
-        .animation(.easeInOut, value: searchText)
+        .animation(.easeInOut, value: viewModel.searchText)
+        .animation(.easeInOut, value: viewModel.searchType)
     }
 }
 

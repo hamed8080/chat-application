@@ -27,7 +27,7 @@ protocol AudioRecordingViewModelprotocol: ObservableObject {
     func requestPermission()
 }
 
-class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
+final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
     lazy var audioRecorder = AVAudioRecorder()
     var startDate: Date = .init()
 

@@ -36,7 +36,7 @@ struct MapPickerView: View {
     }
 }
 
-class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
+final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
     @Published var currentLocation: LocationItem?
     let manager = CLLocationManager()
     @Published var region: MKCoordinateRegion = .init(center: CLLocationCoordinate2D(latitude: 51.507222,

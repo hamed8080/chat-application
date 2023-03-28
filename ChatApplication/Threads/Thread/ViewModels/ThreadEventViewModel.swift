@@ -9,7 +9,7 @@ import Combine
 import FanapPodChatSDK
 import Foundation
 
-class ThreadEventViewModel: ObservableObject {
+final class ThreadEventViewModel: ObservableObject {
     @Published var isShowingEvent: Bool = false
     var threadId: Int
     var smt: SMT?

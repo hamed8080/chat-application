@@ -72,6 +72,7 @@
 		0596654B297C44B400A0ABDA /* NavigationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0596654A297C44B400A0ABDA /* NavigationModel.swift */; };
 		059914B029262FF60070BD89 /* Conversation+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059914AF29262FF60070BD89 /* Conversation+.swift */; };
 		059B3A9629B746DA00C2E27B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 059B3A9829B746DA00C2E27B /* Localizable.strings */; };
+		059F84AF29D035350072DFC7 /* MutualThreadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059F84AE29D035350072DFC7 /* MutualThreadsView.swift */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
 		05B5DA0429C1AADE00CAFD9C /* Font+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B5DA0329C1AADE00CAFD9C /* Font+.swift */; };
@@ -265,6 +266,7 @@
 		059B3A9529B746B900C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		059B3A9729B746DA00C2E27B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		059B3A9929B746DD00C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		059F84AE29D035350072DFC7 /* MutualThreadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutualThreadsView.swift; sourceTree = "<group>"; };
 		05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifire.swift; sourceTree = "<group>"; };
 		05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
 		05B5DA0329C1AADE00CAFD9C /* Font+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+.swift"; sourceTree = "<group>"; };
@@ -470,6 +472,7 @@
 				055B26A127D5FA180098D585 /* LinkView.swift */,
 				055B26A327D5FA250098D585 /* GIFView.swift */,
 				055B26A527D602CD0098D585 /* TabViewsContainer.swift */,
+				059F84AE29D035350072DFC7 /* MutualThreadsView.swift */,
 			);
 			path = TabViews;
 			sourceTree = "<group>";
@@ -1015,6 +1018,7 @@
 				05610BA9298FDC6B00947E29 /* ThreadTypes+.swift in Sources */,
 				AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */,
 				05E2324C27C2267700FEA7A2 /* ImagePicker.swift in Sources */,
+				059F84AF29D035350072DFC7 /* MutualThreadsView.swift in Sources */,
 				ACFADE8227675C29007C555F /* PrimaryTextField.swift in Sources */,
 				055B269A27D5F9F00098D585 /* MediaView.swift in Sources */,
 				AC10007B26F46EC900C3AD67 /* LoginViewModel.swift in Sources */,

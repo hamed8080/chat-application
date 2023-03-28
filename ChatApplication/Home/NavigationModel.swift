@@ -9,7 +9,7 @@ import Combine
 import FanapPodChatSDK
 import Foundation
 
-class NavigationModel: ObservableObject {
+final class NavigationModel: ObservableObject {
     @Published var selectedSideBarId: String? = "Chats"
     @Published var selectedThreadId: Conversation.ID?
     @Published var selectedThreadIds: Set<Conversation.ID> = []

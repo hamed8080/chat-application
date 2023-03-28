@@ -9,7 +9,7 @@ import Combine
 import FanapPodChatSDK
 import Foundation
 
-class TokenManager: ObservableObject {
+final class TokenManager: ObservableObject {
     static let shared = TokenManager()
     @Published var secondToExpire: Double = 0
     @Published private(set) var isLoggedIn = false // to update login logout ui

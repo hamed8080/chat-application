@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-class ObjectsContainer: ObservableObject {
+final class ObjectsContainer: ObservableObject {
     @Published var userConfigsVM = UserConfigManagerVM.instance
     @Published var navVM = NavigationModel()
     @Published var loginVM = LoginViewModel()

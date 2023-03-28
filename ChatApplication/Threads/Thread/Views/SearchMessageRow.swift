@@ -13,7 +13,7 @@ struct SearchMessageRow: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 16) {
-            Text(message.message ?? message.metaData?.name ?? "")
+            Text(message.message ?? message.fileMetaData?.name ?? "")
                 .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
                 .padding(.top, 8)
                 .padding([.leading, .trailing, .top])

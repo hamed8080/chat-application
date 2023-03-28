@@ -45,7 +45,7 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func sendLoaction(_ location: LocationItem)
 }
 
-class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable, Hashable {
+final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable, Hashable {
     static func == (lhs: ThreadViewModel, rhs: ThreadViewModel) -> Bool {
         rhs.threadId == lhs.threadId
     }

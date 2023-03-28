@@ -20,7 +20,7 @@ enum LoginState: String, Identifiable, Hashable {
     case verificationCodeIncorrect
 }
 
-class LoginViewModel: ObservableObject {
+final class LoginViewModel: ObservableObject {
     @Published var isLoading = false
     // This two variable need to be set from Binding so public setter needed.
     // It will use for phone number or static token for the integration server.

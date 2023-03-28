@@ -9,7 +9,7 @@ import FanapPodChatSDK
 import MapKit
 import SwiftUI
 
-class MessageRowCalculationViewModel: ObservableObject {
+final class MessageRowCalculationViewModel: ObservableObject {
     var isCalculated = false
     @Published var isEnglish = true
     @Published var widthOfRow: CGFloat = 128
@@ -42,7 +42,7 @@ class MessageRowCalculationViewModel: ObservableObject {
 
     func footerWidth(_ message: Message) -> CGFloat {
         let timeWidth = message.time?.date.timeAgoSinceDatecCondence?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
-        let fileSize = Int(message.metaData?.file?.size ?? 0)
+        let fileSize = Int(message.fileMetaData?.file?.size ?? 0)
         let fileSizeWidth = fileSize.toSizeString.widthOfString(usingFont: UIFont.systemFont(ofSize: 24))
         let statusWidth: CGFloat = message.isMe ? 14 : 0
         let isEditedWidth: CGFloat = message.edited ?? false ? 24 : 0

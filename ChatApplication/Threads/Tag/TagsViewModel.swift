@@ -9,7 +9,7 @@ import Combine
 import FanapPodChatSDK
 import SwiftUI
 
-class TagsViewModel: ObservableObject {
+final class TagsViewModel: ObservableObject {
     @Published var tags: [Tag] = []
     @Published var selectedTag: Tag?
     @Published var isLoading = false

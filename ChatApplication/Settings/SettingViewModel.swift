@@ -9,7 +9,7 @@ import Combine
 import FanapPodChatSDK
 import SwiftUI
 
-class SettingViewModel: ObservableObject {
+final class SettingViewModel: ObservableObject {
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private(set) var firstSuccessResponse = false
 

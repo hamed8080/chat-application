@@ -5,6 +5,7 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import AVFoundation
 import Combine
 import FanapPodChatSDK
 import SwiftUI
@@ -30,6 +31,9 @@ struct DownloadFileView: View {
                         Image(cgImage: scaledImage)
                             .resizable()
                             .scaledToFit()
+                    } else if message.isAudio, let fileURL = downloadFileVM.fileURL {
+                        AudioPlayer(viewModel: AVAudioPlayerViewModel(fileURL: fileURL, ext: message.fileMetaData?.file?.mimeType?.ext))
+                            .id(fileURL)
                     } else {
                         Image(systemName: message.iconName)
                             .resizable()
@@ -97,6 +101,67 @@ struct DownloadFileView: View {
     }
 }
 
+struct AudioPlayer: View {
+    @StateObject var viewModel: AVAudioPlayerViewModel
+
+    var body: some View {
+        VStack {
+            Image(systemName: !viewModel.isPlaying ? "play.circle.fill" : "pause.circle.fill")
+                .resizable()
+                .foregroundColor(.blue)
+                .frame(width: 48, height: 48, alignment: .leading)
+                .cornerRadius(24)
+                .animation(.easeInOut, value: viewModel.isPlaying)
+                .onTapGesture {
+                    viewModel.toggle()
+                }
+        }
+        .padding()
+        .onAppear {
+            viewModel.setup()
+        }
+    }
+}
+
+final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPlayerDelegate {
+    @Published var isPlaying: Bool = false
+    @Published var player: AVAudioPlayer?
+    var fileURL: URL
+    var ext: String?
+
+    init(fileURL: URL, ext: String?) {
+        self.fileURL = Bundle.main.url(forResource: "Tamasha", withExtension: "mp3") ?? fileURL
+        self.ext = ext
+    }
+
+    func setup() {
+        if player != nil { return }
+        do {
+            let audioData = try Data(contentsOf: fileURL, options: NSData.ReadingOptions.mappedIfSafe)
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+            player = try AVAudioPlayer(data: audioData, fileTypeHint: ext)
+            player?.delegate = self
+        } catch let error as NSError {
+            print(error.description)
+        }
+    }
+
+    func toggle() {
+        isPlaying.toggle()
+        try? AVAudioSession.sharedInstance().setActive(isPlaying)
+        if isPlaying {
+            player?.prepareToPlay()
+            player?.play()
+        } else {
+            player?.pause()
+        }
+    }
+
+    func audioPlayerDidFinishPlaying(_: AVAudioPlayer, successfully _: Bool) {
+        isPlaying = false
+    }
+}
+
 enum DownloadFileState {
     case STARTED
     case COMPLETED
@@ -121,11 +186,11 @@ protocol DownloadFileViewModelProtocol {
     func resumeDownload()
 }
 
-class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
+final class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     @Published var downloadPercent: Int64 = 0
     @Published var state: DownloadFileState = .UNDEFINED
     @Published var data: Data?
-    var fileHashCode: String { message?.metaData?.fileHash ?? message?.metaData?.file?.hashCode ?? "" }
+    var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
     let cm: CacheFileManagerProtocol? = AppState.shared.cacheFileManager
 
     var fileURL: URL? {

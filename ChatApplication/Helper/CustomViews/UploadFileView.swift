@@ -71,7 +71,7 @@ enum UploadFileState {
     case ERROR
 }
 
-class UploadFileViewModel: ObservableObject {
+final class UploadFileViewModel: ObservableObject {
     @Published private(set) var uploadPercent: Int64 = 0
     @Published var state: UploadFileState = .STARTED
     var message: Message?

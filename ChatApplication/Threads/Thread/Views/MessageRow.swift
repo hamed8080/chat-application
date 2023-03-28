@@ -423,7 +423,7 @@ struct MessageFooterView: View {
 
     var body: some View {
         HStack {
-            if let fileSize = message.metaData?.file?.size, let size = Int(fileSize) {
+            if let fileSize = message.fileMetaData?.file?.size, let size = Int(fileSize) {
                 Text(size.toSizeString)
                     .multilineTextAlignment(.leading)
                     .font(.iransansBody)

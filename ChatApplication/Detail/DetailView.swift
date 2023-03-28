@@ -11,61 +11,10 @@ import SwiftUI
 
 struct DetailView: View {
     @StateObject var viewModel: DetailViewModel
-    @State var addToContactSheet: Bool = false
-    @State var title: String = ""
-    @State var threadDescription: String = ""
-    @State var isInEditMode = false
-    @State var showImagePicker: Bool = false
-    @State private var image: UIImage?
-    @State private var assetResource: [PHAssetResource]?
-    @State var searchText: String = ""
 
     var body: some View {
         List {
-            VStack(alignment: .center, spacing: 12) {
-                ImageLaoderView(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
-                    .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
-                    .font(.system(size: 16).weight(.heavy))
-                    .foregroundColor(.white)
-                    .frame(width: 128, height: 128)
-                    .background(Color.blue.opacity(0.4))
-                    .cornerRadius(64)
-                    .onTapGesture {
-                        if isInEditMode, viewModel.thread?.canEditInfo == true {
-                            showImagePicker = true
-                        }
-                    }
-
-                let bgColor = isInEditMode ? Color.primary.opacity(0.08) : Color.clear
-                if viewModel.thread?.canEditInfo == true {
-                    PrimaryTextField(title: "Title", textBinding: $title, keyboardType: .alphabet, backgroundColor: bgColor)
-                        .disabled(!isInEditMode)
-                        .multilineTextAlignment(.center)
-                        .font(.iransansBody)
-                        .onAppear {
-                            title = viewModel.thread?.computedTitle ?? ""
-                            threadDescription = viewModel.thread?.description ?? ""
-                        }
-                } else {
-                    Text(viewModel.title)
-                        .font(.iransansBoldTitle)
-                }
-
-                if viewModel.thread?.canEditInfo == true {
-                    PrimaryTextField(title: "Description", textBinding: $threadDescription, keyboardType: .alphabet, backgroundColor: bgColor)
-                        .disabled(!isInEditMode)
-                        .multilineTextAlignment(.center)
-                        .font(.caption)
-                }
-
-                if let notSeenString = viewModel.notSeenString {
-                    Text(notSeenString)
-                        .font(.iransansCaption3)
-                }
-            }
-            .noSeparators()
-            .frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
-
+            InfoView()
             Section {
                 HStack(spacing: 32) {
                     Spacer()
@@ -80,7 +29,8 @@ struct DetailView: View {
                     Button {
                         viewModel.toggleMute()
                     } label: {
-                        ActionImage(systemName: "bell.fill")
+                        ActionImage(systemName: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill")
+                            .foregroundColor(viewModel.thread?.mute ?? false ? .red : .blue)
                     }
 
                     Button {} label: {
@@ -107,7 +57,7 @@ struct DetailView: View {
                         }
                         if !viewModel.isInMyContact {
                             SectionItem(title: "Add To contacts", systemName: "person.badge.plus") {
-                                addToContactSheet.toggle()
+                                viewModel.addToContactSheet.toggle()
                             }
                             if viewModel.cellPhoneNumber != nil {
                                 Divider()
@@ -133,23 +83,25 @@ struct DetailView: View {
                 .noSeparators()
             }
 
-            if let thread = viewModel.thread {
+            if let thread = viewModel.thread, let participantViewModel = viewModel.participantViewModel {
                 Section {
                     TabViewsContainer(thread: thread, selectedTabIndex: 0)
+                        .environmentObject(participantViewModel)
                 }
                 .noSeparators()
             }
         }
+        .environmentObject(viewModel)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarTitle("Info")
         .listStyle(.plain)
-        .sheet(isPresented: $addToContactSheet) {
+        .sheet(isPresented: $viewModel.addToContactSheet) {
             AddOrEditContactView()
         }
-        .sheet(isPresented: $showImagePicker) {
+        .sheet(isPresented: $viewModel.showImagePicker) {
             ImagePicker(sourceType: .photoLibrary) { image, assestResources in
-                self.image = image
-                self.assetResource = assestResources
+                self.viewModel.image = image
+                self.viewModel.assetResources = assestResources ?? []
             }
         }
         .toolbar {
@@ -157,19 +109,69 @@ struct DetailView: View {
                 VStack(alignment: .center) {
                     if viewModel.thread?.canEditInfo == true {
                         Button {
-                            if isInEditMode {
+                            if viewModel.isInEditMode {
                                 // submited
-                                viewModel.updateThreadInfo(title, threadDescription, image: image, assetResources: assetResource)
+                                viewModel.updateThreadInfo()
                             }
-                            isInEditMode.toggle()
+                            viewModel.isInEditMode.toggle()
                         } label: {
-                            Text(isInEditMode ? "Done" : "Edit")
+                            Text(viewModel.isInEditMode ? "Done" : "Edit")
                         }
                     }
                 }
             }
         }
-        .animation(.interactiveSpring(), value: isInEditMode)
+        .animation(.interactiveSpring(), value: viewModel.isInEditMode)
+        .animation(.easeInOut, value: viewModel.thread?.mute)
+        .overlay(alignment: .bottom) {
+            ListLoadingView(isLoading: $viewModel.isLoading)
+        }
+    }
+}
+
+struct InfoView: View {
+    @EnvironmentObject var viewModel: DetailViewModel
+
+    var body: some View {
+        VStack(alignment: .center, spacing: 12) {
+            ImageLaoderView(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
+                .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
+                .font(.system(size: 16).weight(.heavy))
+                .foregroundColor(.white)
+                .frame(width: 128, height: 128)
+                .background(Color.blue.opacity(0.4))
+                .cornerRadius(64)
+                .onTapGesture {
+                    if viewModel.isInEditMode, viewModel.thread?.canEditInfo == true {
+                        viewModel.showImagePicker = true
+                    }
+                }
+
+            let bgColor = viewModel.isInEditMode ? Color.primary.opacity(0.08) : Color.clear
+            if viewModel.thread?.canEditInfo == true {
+                PrimaryTextField(title: "Title", textBinding: $viewModel.editTitle, keyboardType: .alphabet, backgroundColor: bgColor)
+                    .disabled(!viewModel.isInEditMode)
+                    .multilineTextAlignment(.center)
+                    .font(.iransansBody)
+            } else {
+                Text(viewModel.title)
+                    .font(.iransansBoldTitle)
+            }
+
+            if viewModel.thread?.canEditInfo == true {
+                PrimaryTextField(title: "Description", textBinding: $viewModel.threadDescription, keyboardType: .alphabet, backgroundColor: bgColor)
+                    .disabled(!viewModel.isInEditMode)
+                    .multilineTextAlignment(.center)
+                    .font(.caption)
+            }
+
+            if let notSeenString = viewModel.notSeenString {
+                Text(notSeenString)
+                    .font(.iransansCaption3)
+            }
+        }
+        .noSeparators()
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
     }
 }
 
@@ -177,7 +179,7 @@ struct ActionImage: View {
     let systemName: String
 
     var body: some View {
-        SwiftUI.Image(systemName: systemName)
+        Image(systemName: systemName)
             .resizable()
             .scaledToFit()
             .frame(width: 24, height: 24)

@@ -9,7 +9,7 @@ import Combine
 import FanapPodChatSDK
 import Foundation
 
-class AddParticipantsToViewModel: ObservableObject {
+final class AddParticipantsToViewModel: ObservableObject {
     @Published var isLoading = false
     @Published private(set) var model = StartThreadModel()
     private(set) var cancellableSet: Set<AnyCancellable> = []

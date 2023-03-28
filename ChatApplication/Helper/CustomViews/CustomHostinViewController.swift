@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class LocalStatusBarStyle { // style proxy to be stored in Environment
+final class LocalStatusBarStyle { // style proxy to be stored in Environment
     fileprivate var getter: () -> UIStatusBarStyle = { .default }
     fileprivate var setter: (UIStatusBarStyle) -> Void = { _ in }
 

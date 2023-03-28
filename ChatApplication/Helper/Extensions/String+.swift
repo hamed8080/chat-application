@@ -9,6 +9,7 @@ import FanapPodChatSDK
 import Foundation
 import NaturalLanguage
 import UIKit
+import UniformTypeIdentifiers
 
 extension String {
     func isTypingAnimationWithText(onStart: @escaping (String) -> Void, onChangeText: @escaping (String, Timer) -> Void, onEnd: @escaping () -> Void) {
@@ -119,6 +120,9 @@ extension String {
             return "paperclip.circle.fill"
         }
     }
+
+    /// Convert mimeType to extension such as `audio/mpeg` to `mp3`.
+    var ext: String? { UTType(mimeType: self)?.preferredFilenameExtension }
 }
 
 extension String? {

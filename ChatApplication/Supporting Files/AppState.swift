@@ -8,7 +8,7 @@
 import FanapPodChatSDK
 import SwiftUI
 
-class AppState: ObservableObject {
+final class AppState: ObservableObject {
     static let shared = AppState()
     var cachedUser = UserConfigManagerVM.instance.currentUserConfig?.user
     var user: User? { cachedUser ?? ChatManager.activeInstance?.userInfo }

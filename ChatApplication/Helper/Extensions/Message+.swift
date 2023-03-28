@@ -14,7 +14,7 @@ extension Message {
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
     var forwardTitle: String? { forwardMessage != nil ? "Forward **\(forwardCount ?? 0)** messages to **\(forwardMessage?.destinationThread.title ?? "")**" : nil }
-    var messageTitle: String { message ?? metaData?.name ?? forwardTitle ?? "" }
+    var messageTitle: String { message ?? fileMetaData?.name ?? forwardTitle ?? "" }
     var markdownTitle: AttributedString {
         let option: AttributedString.MarkdownParsingOptions = .init(allowsExtendedAttributes: false,
                                                                     interpretedSyntax: .inlineOnly,
@@ -43,6 +43,7 @@ extension Message {
     var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
 
     var isImage: Bool { messageType == .podSpacePicture || messageType == .picture }
+    var isAudio: Bool { [MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice].contains(messageType ?? .unknown) }
 
     func updateMessage(message: Message) {
         deletable = message.deletable
@@ -115,7 +116,7 @@ extension Message {
     }
 
     var fileExtIcon: String {
-        (metaData?.file?.extension ?? fileExtension ?? "").systemImageNameForFileExtension
+        (fileMetaData?.file?.extension ?? fileExtension ?? "").systemImageNameForFileExtension
     }
 
     var fileStringName: String {

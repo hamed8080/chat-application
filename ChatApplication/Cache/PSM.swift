@@ -7,7 +7,7 @@
 // TLDR 'Persistance Service Manager'
 import CoreData
 
-class PSM {
+final class PSM {
     static let shared = PSM()
     static let modelName = "ChatApplicationDataModel"
     static let previewPS = PSM(inMemory: true)

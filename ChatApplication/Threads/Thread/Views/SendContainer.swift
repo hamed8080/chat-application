@@ -132,7 +132,7 @@ struct ReplyMessageViewPlaceholder: View {
                     .onTapGesture {
                         viewModel.replyMessage = nil
                     }
-                Text(replyMessage.message ?? replyMessage.metaData?.name ?? "")
+                Text(replyMessage.message ?? replyMessage.fileMetaData?.name ?? "")
                     .font(.iransansBody)
                     .offset(x: 8)
                     .onTapGesture {

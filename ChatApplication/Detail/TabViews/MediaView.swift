@@ -46,15 +46,15 @@ struct MediaPicture: View {
     var picture: Message
 
     var body: some View {
-        ImageLaoderView(url: picture.metaData?.file?.link)
-            .id("\(picture.metaData?.file?.link ?? "")\(picture.id ?? 0)")
+        ImageLaoderView(url: picture.fileMetaData?.file?.link)
+            .id("\(picture.fileMetaData?.file?.link ?? "")\(picture.id ?? 0)")
             .scaledToFit()
             .frame(height: 128)
             .padding(16)
     }
 }
 
-class AttachmentsViewModel: ObservableObject {
+final class AttachmentsViewModel: ObservableObject {
     var thread: Conversation?
     @Published var isLoading = false
     @Published var model = AttachmentModel()

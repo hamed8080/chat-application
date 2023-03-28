@@ -10,7 +10,7 @@ import FanapPodChatSDK
 import Foundation
 import SwiftUI
 
-class ThreadsViewModel: ObservableObject {
+final class ThreadsViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var toggleThreadContactPicker = false
     @AppStorage("Threads", store: UserDefaults.group) var threadsData: Data?
@@ -68,6 +68,10 @@ class ThreadsViewModel: ObservableObject {
                 threads[index].unreadCount = response.result?.unreadCount
                 objectWillChange.send()
             }
+        case let .threadMute(response):
+            onMuteThreadChanged(mute: true, threadId: response.result)
+        case let .threadUnmute(response):
+            onMuteThreadChanged(mute: false, threadId: response.result)
         default:
             break
         }
@@ -354,6 +358,13 @@ class ThreadsViewModel: ObservableObject {
         if let index = threads.firstIndex(where: { $0.id == thread.id }) {
             threads[index].lastMessage = thread.lastMessage
             threads[index].lastMessageVO = thread.lastMessageVO
+            objectWillChange.send()
+        }
+    }
+
+    func onMuteThreadChanged(mute: Bool, threadId: Int?) {
+        if let index = threads.firstIndex(where: { $0.id == threadId }) {
+            threads[index].mute = mute
             objectWillChange.send()
         }
     }

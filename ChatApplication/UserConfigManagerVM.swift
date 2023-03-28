@@ -16,7 +16,7 @@ public struct UserConfig: Codable, Identifiable {
     public let ssoToken: SSOTokenResponseResult
 }
 
-class UserConfigManagerVM: ObservableObject, Equatable {
+final class UserConfigManagerVM: ObservableObject, Equatable {
     static func == (lhs: UserConfigManagerVM, rhs: UserConfigManagerVM) -> Bool {
         lhs.userConfigs.count == rhs.userConfigs.count
     }
