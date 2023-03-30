@@ -12,6 +12,7 @@ final class ObjectsContainer: ObservableObject {
     @Published var userConfigsVM = UserConfigManagerVM.instance
     @Published var navVM = NavigationModel()
     @Published var loginVM = LoginViewModel()
+    @Published var logVM = LogViewModel()
     @Published var contactsVM = ContactsViewModel()
     @Published var threadsVM = ThreadsViewModel()
     @Published var tagsVM = TagsViewModel()
@@ -28,5 +29,6 @@ final class ObjectsContainer: ObservableObject {
         navVM.setup()
         threadsVM.getThreads()
         contactsVM.getContacts()
+        logVM.clearLogs()
     }
 }

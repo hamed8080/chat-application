@@ -90,7 +90,9 @@ struct SettingsView: View {
                         }
                     }
 
-                    NavigationLink {} label: {
+                    NavigationLink {
+                        LogView()
+                    } label: {
                         HStack {
                             Image(systemName: "note.text")
                                 .foregroundColor(.purple)
@@ -154,10 +156,9 @@ struct TokenExpireView: View {
                 Image(systemName: "key.fill")
                     .foregroundColor(Color.yellow)
                     .frame(width: 24, height: 24)
-                if let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0))) {
-                    Text("Token expire in: \(secondToExpire)")
-                        .foregroundColor(Color.gray)
-                }
+                let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0)))
+                Text("Token expire in: \(secondToExpire)")
+                    .foregroundColor(Color.gray)
                 Spacer()
             }
             .onAppear {

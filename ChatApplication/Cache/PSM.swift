@@ -33,8 +33,8 @@ final class PSM {
         var logs: [Log] = []
         for index in 0 ..< count {
             let log = Log(context: previewVC)
-            log.received = index % 2 == 0
-            log.json = "Test\(index)"
+            log.type = Int64.random(in: 1 ... 2)
+            log.log = "Test\(index)"
             logs.append(log)
         }
         return logs

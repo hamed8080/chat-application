@@ -10,15 +10,31 @@ import SwiftUI
 
 struct LogRow: View {
     var log: Log
+    var color: Color {
+        let log = LogEmitter(rawValue: Int(log.type))
+        if log == .internalLog {
+            return .orange
+        } else if log == .received {
+            return .red
+        } else {
+            return .green
+        }
+    }
 
     var body: some View {
         ZStack(alignment: .leading) {
-            (log.received ? Color.red : Color.green).opacity(0.2)
-            Text("\(log.json ?? "")")
+            color.opacity(0.2)
+            Text("\(log.log ?? "")")
                 .font(.iransansCaption)
                 .padding()
-
-        }.textSelection(.enabled)
+        }
+        .overlay(alignment: .bottom) {
+            Color
+                .gray
+                .opacity(0.5)
+                .frame(height: 1)
+        }
+        .textSelection(.enabled)
     }
 }
 

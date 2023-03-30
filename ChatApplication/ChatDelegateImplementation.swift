@@ -28,12 +28,13 @@ enum ConnectionStatus: Int {
     }
 }
 
-final class ChatDelegateImplementation: ChatDelegate {
+final class ChatDelegateImplementation: ChatDelegate, LoggerDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
         if let userConfig = UserConfigManagerVM.instance.currentUserConfig, let userId = userConfig.id {
             UserConfigManagerVM.instance.createChatObjectAndConnect(userId: userId, config: userConfig.config)
+            ChatManager.activeInstance?.logDelegate = self
             TokenManager.shared.initSetIsLogin()
         }
     }
@@ -94,5 +95,9 @@ final class ChatDelegateImplementation: ChatDelegate {
         case .tag:
             break
         }
+    }
+
+    func onLog(log: FanapPodChatSDK.Log) {
+        NotificationCenter.default.post(name: .logsName, object: log)
     }
 }

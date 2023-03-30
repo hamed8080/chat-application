@@ -13,4 +13,5 @@ extension Notification.Name {
     static let systemMessageEventNotificationName = Notification.Name("systemMessageEventNotificationName")
     static let threadEventNotificationName = Notification.Name("threadEventNotificationName")
     static let loginName = Notification.Name("LoginName")
+    static let logsName = Notification.Name("Logs")
 }

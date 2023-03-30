@@ -8,6 +8,7 @@
 import Combine
 import FanapPodChatSDK
 import Foundation
+import OrderedCollections
 import SwiftUI
 
 final class ThreadsViewModel: ObservableObject {
@@ -16,12 +17,12 @@ final class ThreadsViewModel: ObservableObject {
     @AppStorage("Threads", store: UserDefaults.group) var threadsData: Data?
     @Published var showAddParticipants = false
     @Published var showAddToTags = false
-    @Published var threads: [Conversation] = []
+    @Published var threads: OrderedSet<Conversation> = []
     private(set) var cancellableSet: Set<AnyCancellable> = []
     private(set) var firstSuccessResponse = false
     private(set) var count = 15
     private(set) var offset = 0
-    var searchText: String = ""
+    @Published var searchText: String = ""
     private(set) var hasNext: Bool = true
     var archivedOffset: Int = 0
     var selectedThraed: Conversation?
@@ -43,6 +44,16 @@ final class ThreadsViewModel: ObservableObject {
             .sink(receiveValue: onNewMessage)
             .store(in: &cancellableSet)
         getThreads()
+
+        $searchText
+            .debounce(for: 0.5, scheduler: RunLoop.main)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { $0.count > 1 }
+            .removeDuplicates()
+            .sink { [weak self] newValue in
+                self?.searchThreads(newValue)
+            }
+            .store(in: &cancellableSet)
     }
 
     func onThreadEvent(_ event: ThreadEventTypes?) {
@@ -133,6 +144,14 @@ final class ThreadsViewModel: ObservableObject {
         if threadIds.count == 0 { return }
         isLoading = true
         ChatManager.activeInstance?.getThreads(.init(threadIds: threadIds), completion: onServerResponse, cacheResponse: onCacheResponse)
+    }
+
+    func searchThreads(_ text: String) {
+        ChatManager.activeInstance?.getThreads(.init(name: text, type: .publicGroup)) { [weak self] response in
+            if let threads = response.result {
+                self?.appendThreads(threads: threads)
+            }
+        }
     }
 
     var filtered: [Conversation] {
@@ -252,9 +271,8 @@ final class ThreadsViewModel: ObservableObject {
     }
 
     func sort() {
-        threads = threads
-            .sorted(by: { $0.time ?? 0 > $1.time ?? 0 })
-            .sorted(by: { $0.pin == true && $1.pin == false })
+        threads.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
+        threads.sort(by: { $0.pin == true && $1.pin == false })
     }
 
     func clear() {

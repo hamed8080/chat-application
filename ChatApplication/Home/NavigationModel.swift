@@ -8,6 +8,7 @@
 import Combine
 import FanapPodChatSDK
 import Foundation
+import SwiftUI
 
 final class NavigationModel: ObservableObject {
     @Published var selectedSideBarId: String? = "Chats"
@@ -18,6 +19,7 @@ final class NavigationModel: ObservableObject {
     var contactsViewModel: ContactsViewModel?
     var sections: [Section] = []
     var cancelable: AnyCancellable?
+    @Published var paths = NavigationPath()
 
     init() {
         setup()

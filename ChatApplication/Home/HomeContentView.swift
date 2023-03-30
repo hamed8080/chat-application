@@ -53,6 +53,7 @@ struct HomeContentView: View {
             .environmentObject(container.tokenVM)
             .environmentObject(container.tagsVM)
             .environmentObject(container.userConfigsVM)
+            .environmentObject(container.logVM)
             .toast(
                 isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
                 title: "An error had happened with code: \(appState.error?.code ?? 0)",

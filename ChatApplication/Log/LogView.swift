@@ -5,20 +5,21 @@
 //  Created by hamed on 6/27/22.
 //
 
+import FanapPodChatSDK
 import SwiftUI
 
 struct LogView: View {
-    @StateObject var vm = LogViewModel()
+    @EnvironmentObject var viewModel: LogViewModel
 
     var body: some View {
-        List(vm.filtered) {
+        List(viewModel.filtered) {
             LogRow(log: $0)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
                 .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
         }
-        .searchable(text: $vm.searchText, placement: .navigationBarDrawer, prompt: "Search inside Logs...") {
-            if vm.searchText.isEmpty == false, vm.filtered.count < 1 {
+        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer, prompt: "Search inside Logs...") {
+            if viewModel.searchText.isEmpty == false, viewModel.filtered.count < 1 {
                 HStack {
                     Image(systemName: "doc.text.magnifyingglass")
                         .foregroundColor(.gray.opacity(0.8))
@@ -27,27 +28,55 @@ struct LogView: View {
                 }
             }
         }
-        .animation(.easeInOut, value: vm.filtered)
+        .navigationTitle("Logs")
+        .animation(.easeInOut, value: viewModel.filtered.count)
         .listStyle(.plain)
         .toolbar {
             ToolbarItemGroup {
-                Button {
-                    vm.clearLogs()
-                } label: {
-                    Label {
-                        Text("Delete")
-                    } icon: {
-                        Image(systemName: "trash")
-                    }
-                }
+                trailingToolbars
             }
         }
-        .navigationTitle(Text("Logs"))
+    }
+
+    @ViewBuilder var trailingToolbars: some View {
+        Button {
+            viewModel.deleteLogs()
+        } label: {
+            Label {
+                Text("Delete")
+            } icon: {
+                Image(systemName: "trash")
+            }
+        }
+
+        Menu {
+            Button {
+                viewModel.type = nil
+            } label: {
+                if viewModel.type == nil {
+                    Image(systemName: "checkmark")
+                }
+                Text("All")
+            }
+            ForEach(LogEmitter.allCases) { item in
+                Button {
+                    viewModel.type = item
+                } label: {
+                    if viewModel.type == item {
+                        Image(systemName: "checkmark")
+                    }
+                    Text(item.title)
+                }
+            }
+        } label: {
+            Label("Filter by", systemImage: "line.3.horizontal.decrease.circle")
+        }
     }
 }
 
 struct LogView_Previews: PreviewProvider {
     static var previews: some View {
-        LogView(vm: LogViewModel(isPreview: true))
+        LogView()
+            .environmentObject(LogViewModel(isPreview: true))
     }
 }

@@ -64,6 +64,10 @@
 		057B9A9B293795A80089ACC9 /* ThreadEventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9A293795A80089ACC9 /* ThreadEventViewModel.swift */; };
 		057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9C293797600089ACC9 /* ThreadEventView.swift */; };
 		05851BB8297DB1E300F7B64B /* BorderedTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */; };
+		0585985529D4349F00C970C9 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 0585985429D4349F00C970C9 /* Collections */; };
+		0585985729D4349F00C970C9 /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 0585985629D4349F00C970C9 /* DequeModule */; };
+		0585985929D4349F00C970C9 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 0585985829D4349F00C970C9 /* OrderedCollections */; };
+		0585985B29D482E000C970C9 /* LogEmitter+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585985A29D482E000C970C9 /* LogEmitter+.swift */; };
 		05864980282D415000218ED0 /* LoadingViewAt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586497F282D40A200218ED0 /* LoadingViewAt.swift */; };
 		0593ED1E29BA748E00541FA6 /* MessageRowCalculationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0593ED1D29BA748E00541FA6 /* MessageRowCalculationViewModel.swift */; };
 		0593ED2029BA76EF00541FA6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0593ED1F29BA76EF00541FA6 /* README.md */; };
@@ -256,6 +260,7 @@
 		057B9A9A293795A80089ACC9 /* ThreadEventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEventViewModel.swift; sourceTree = "<group>"; };
 		057B9A9C293797600089ACC9 /* ThreadEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEventView.swift; sourceTree = "<group>"; };
 		05851BB7297DB1E300F7B64B /* BorderedTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedTextFieldStyle.swift; sourceTree = "<group>"; };
+		0585985A29D482E000C970C9 /* LogEmitter+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogEmitter+.swift"; sourceTree = "<group>"; };
 		0586497F282D40A200218ED0 /* LoadingViewAt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewAt.swift; sourceTree = "<group>"; };
 		0593ED1D29BA748E00541FA6 /* MessageRowCalculationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowCalculationViewModel.swift; sourceTree = "<group>"; };
 		0593ED1F29BA76EF00541FA6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -378,6 +383,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0585985929D4349F00C970C9 /* OrderedCollections in Frameworks */,
+				0585985529D4349F00C970C9 /* Collections in Frameworks */,
+				0585985729D4349F00C970C9 /* DequeModule in Frameworks */,
 				0532461628D8455B00FC9C22 /* FanapPodChatSDK in Frameworks */,
 				055024C22987E794009DDD18 /* Swipy in Frameworks */,
 			);
@@ -677,6 +685,7 @@
 				05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */,
 				05140CD629C0A64E00C8E22D /* Coordinate+.swift */,
 				05B5DA0329C1AADE00CAFD9C /* Font+.swift */,
+				0585985A29D482E000C970C9 /* LogEmitter+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -859,6 +868,9 @@
 			packageProductDependencies = (
 				0532461528D8455B00FC9C22 /* FanapPodChatSDK */,
 				055024C12987E794009DDD18 /* Swipy */,
+				0585985429D4349F00C970C9 /* Collections */,
+				0585985629D4349F00C970C9 /* DequeModule */,
+				0585985829D4349F00C970C9 /* OrderedCollections */,
 			);
 			productName = ChatApplication;
 			productReference = AC1D2CA42661FFAC00AA351A /* ChatApplication.app */;
@@ -914,6 +926,7 @@
 			mainGroup = AC1D2C9B2661FFAC00AA351A;
 			packageReferences = (
 				055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */,
+				0585985329D4349F00C970C9 /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = AC1D2CA52661FFAC00AA351A /* Products */;
 			projectDirPath = "";
@@ -1002,6 +1015,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0585985B29D482E000C970C9 /* LogEmitter+.swift in Sources */,
 				AC10007326F4674500C3AD67 /* SSOTokenResponse.swift in Sources */,
 				05781CD82903492E0064BDC3 /* AudioRecordingView.swift in Sources */,
 				05C5665629BEF376002E72F7 /* ThreadSearchList.swift in Sources */,
@@ -1482,6 +1496,14 @@
 				kind = branch;
 			};
 		};
+		0585985329D4349F00C970C9 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1497,6 +1519,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */;
 			productName = Swipy;
+		};
+		0585985429D4349F00C970C9 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0585985329D4349F00C970C9 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+		0585985629D4349F00C970C9 /* DequeModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0585985329D4349F00C970C9 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = DequeModule;
+		};
+		0585985829D4349F00C970C9 /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0585985329D4349F00C970C9 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
 		};
 /* End XCSwiftPackageProductDependency section */
 
