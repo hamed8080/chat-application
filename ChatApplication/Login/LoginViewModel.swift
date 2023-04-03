@@ -5,7 +5,7 @@
 //  Created by Hamed Hosseini on 9/17/21.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 import UIKit
 
@@ -59,9 +59,9 @@ final class LoginViewModel: ObservableObject {
                                          deviceOsVersion: UIDevice.current.systemVersion,
                                          deviceType: "MOBILE_PHONE",
                                          deviceUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
-        var urlReq = URLRequest(url: URL(string: Routes.handshake)!)
-        urlReq.httpBody = req.getParameterData()
-        urlReq.httpMethod = "POST"
+        var urlReq = URLRequest(url: URL(string: AppRoutes.handshake)!)
+        urlReq.httpBody = req.parameterData
+        urlReq.method = .post
         do {
             let resp = try await session.data(for: urlReq)
             let response = try JSONDecoder().decode(HandshakeResponse.self, from: resp.0)
@@ -76,10 +76,10 @@ final class LoginViewModel: ObservableObject {
         guard let keyId = handskahe.result?.keyId else { return }
         showLoading(true)
         let req = AuthorizeRequest(identity: identity, keyId: keyId)
-        var urlReq = URLRequest(url: URL(string: Routes.authorize)!)
+        var urlReq = URLRequest(url: URL(string: AppRoutes.authorize)!)
         urlReq.allHTTPHeaderFields = ["keyId": req.keyId]
-        urlReq.httpBody = req.getParameterData()
-        urlReq.httpMethod = "POST"
+        urlReq.httpBody = req.parameterData
+        urlReq.method = .post
         do {
             let resp = try await session.data(for: urlReq)
             _ = try JSONDecoder().decode(AuthorizeResponse.self, from: resp.0)
@@ -106,10 +106,10 @@ final class LoginViewModel: ObservableObject {
         guard let keyId = keyId else { return }
         showLoading(true)
         let req = VerifyRequest(identity: text, keyId: keyId, otp: verifyCodes.joined())
-        var urlReq = URLRequest(url: URL(string: Routes.verify)!)
+        var urlReq = URLRequest(url: URL(string: AppRoutes.verify)!)
         urlReq.allHTTPHeaderFields = ["keyId": req.keyId]
-        urlReq.httpBody = req.getParameterData()
-        urlReq.httpMethod = "POST"
+        urlReq.httpBody = req.parameterData
+        urlReq.method = .post
         do {
             let resp = try await session.data(for: urlReq)
             guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }

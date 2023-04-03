@@ -5,9 +5,10 @@
 //  Created by Hamed Hosseini on 7/5/21.
 //
 
-import FanapPodAsyncSDK
-import FanapPodChatSDK
+import Async
+import Chat
 import Foundation
+import Logger
 
 enum ServerTypes: String, CaseIterable, Identifiable {
     var id: Self { self }
@@ -40,13 +41,25 @@ extension Config {
 
     static func config(token: String, selectedServerType: ServerTypes) -> ChatConfig {
         guard let config = Config.getConfig(selectedServerType) else { fatalError("couldn't find config in the json file!") }
+        let asyncLoggerConfig = LoggerConfig(prefix: "ASYNC_SDK",
+                                             logServerURL: "http://10.56.34.61:8080/1m-http-server-test-chat",
+                                             logServerMethod: "PUT",
+                                             persistLogsOnServer: true,
+                                             isDebuggingLogEnabled: true,
+                                             logServerRequestheaders: ["Authorization": "Basic Y2hhdDpjaGF0MTIz", "Content-Type": "application/json"])
+        let chatLoggerConfig = LoggerConfig(prefix: "CHAT_SDK",
+                                            logServerURL: "http://10.56.34.61:8080/1m-http-server-test-chat",
+                                            logServerMethod: "PUT",
+                                            persistLogsOnServer: true,
+                                            isDebuggingLogEnabled: true,
+                                            logServerRequestheaders: ["Authorization": "Basic Y2hhdDpjaGF0MTIz", "Content-Type": "application/json"])
         let asyncConfig = AsyncConfigBuilder()
             .socketAddress(config.socketAddresss)
             .reconnectCount(Int.max)
             .reconnectOnClose(true)
             .appId("PodChat")
             .serverName(config.serverName)
-            .isDebuggingLogEnabled(false)
+            .loggerConfig(asyncLoggerConfig)
             .build()
         let chatConfig = ChatConfigBuilder(asyncConfig)
             .token(token)
@@ -55,10 +68,9 @@ extension Config {
             .fileServer(config.fileServer)
             .enableCache(true)
             .msgTTL(800_000) // for integeration server need to be long time
-            .isDebuggingLogEnabled(true)
             .persistLogsOnServer(true)
             .appGroup(AppGroup.group)
-            .sendLogInterval(15)
+            .loggerConfig(chatLoggerConfig)
             .mapApiKey("8b77db18704aa646ee5aaea13e7370f4f88b9e8c")
             .build()
         return chatConfig

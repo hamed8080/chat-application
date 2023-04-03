@@ -5,7 +5,7 @@
 //  Created by hamed on 11/24/22.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 
 protocol MuteThreadProtocol {

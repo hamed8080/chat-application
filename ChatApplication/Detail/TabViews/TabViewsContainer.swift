@@ -5,7 +5,7 @@
 //  Created by hamed on 3/7/22.
 //
 
-import FanapPodChatSDK
+import Chat
 import SwiftUI
 
 struct TabViewsContainer: View {

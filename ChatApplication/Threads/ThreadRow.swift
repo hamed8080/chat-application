@@ -5,8 +5,8 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Chat
 import Combine
-import FanapPodChatSDK
 import SwiftUI
 
 struct ThreadRow: View {

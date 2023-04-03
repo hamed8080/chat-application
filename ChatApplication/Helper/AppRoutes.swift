@@ -1,5 +1,5 @@
 //
-//  Routes.swift
+//  AppRoutes.swift
 //  ChatApplication
 //
 //  Created by Hamed Hosseini on 9/19/21.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class Routes {
+final class AppRoutes {
     static var authBaseUrl = "https://podspace.pod.ir/api/oauth2/"
     static var handshake = authBaseUrl + "otp/handshake"
     static var authorize = authBaseUrl + "otp/authorize"

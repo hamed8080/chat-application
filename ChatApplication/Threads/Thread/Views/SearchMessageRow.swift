@@ -5,7 +5,7 @@
 //  Created by hamed on 6/21/22.
 //
 
-import FanapPodChatSDK
+import Chat
 import SwiftUI
 
 struct SearchMessageRow: View {

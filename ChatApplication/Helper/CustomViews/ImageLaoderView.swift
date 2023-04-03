@@ -5,7 +5,7 @@
 //  Created by hamed on 1/18/23.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 import SwiftUI
 

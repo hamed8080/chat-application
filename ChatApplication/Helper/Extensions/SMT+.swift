@@ -5,7 +5,7 @@
 //  Created by hamed on 2/4/23.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 
 extension SMT {

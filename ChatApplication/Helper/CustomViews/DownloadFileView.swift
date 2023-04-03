@@ -6,8 +6,8 @@
 //
 
 import AVFoundation
+import Chat
 import Combine
-import FanapPodChatSDK
 import SwiftUI
 
 struct DownloadFileView: View {
@@ -199,7 +199,7 @@ final class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtoc
     }
 
     var url: URL? {
-        let path = message?.isImage == true ? FanapPodChatSDK.Routes.images.rawValue : FanapPodChatSDK.Routes.files.rawValue
+        let path = message?.isImage == true ? Routes.images.rawValue : Routes.files.rawValue
         let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(path)/\(fileHashCode)"
         return URL(string: url)
     }

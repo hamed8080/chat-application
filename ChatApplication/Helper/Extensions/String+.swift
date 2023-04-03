@@ -5,7 +5,7 @@
 //  Created by Hamed Hosseini on 11/10/21.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 import NaturalLanguage
 import UIKit

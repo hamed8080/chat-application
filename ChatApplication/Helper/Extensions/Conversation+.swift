@@ -5,7 +5,7 @@
 //  Created by hamed on 11/17/22.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 import SwiftUI
 
@@ -105,6 +105,32 @@ public extension Conversation {
         } else {
             // The current user is not an admin and the type of thread is channel
             return true
+        }
+    }
+
+    var isPrivate: Bool { type == .channel || type == .normal || type == .ownerGroup || type == .channelGroup }
+
+    /// Get Public type equivalent of the thread.
+    var publicType: ThreadTypes {
+        switch type {
+        case .channel, .channelGroup:
+            return .publicChannel
+        case .normal, .ownerGroup:
+            return .publicGroup
+        default:
+            return type ?? .normal
+        }
+    }
+
+    /// Get Private type equivalent of the thread.
+    var privateType: ThreadTypes {
+        switch type {
+        case .publicChannel:
+            return .channel
+        case .publicGroup:
+            return .normal
+        default:
+            return type ?? .normal
         }
     }
 }

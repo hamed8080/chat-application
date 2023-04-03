@@ -5,9 +5,10 @@
 //  Created by Hamed Hosseini on 2/6/21.
 //
 
-import FanapPodAsyncSDK
-import FanapPodChatSDK
+import Async
+import Chat
 import Foundation
+import Logger
 import UIKit
 
 enum ConnectionStatus: Int {
@@ -28,13 +29,12 @@ enum ConnectionStatus: Int {
     }
 }
 
-final class ChatDelegateImplementation: ChatDelegate, LoggerDelegate {
+final class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
         if let userConfig = UserConfigManagerVM.instance.currentUserConfig, let userId = userConfig.id {
             UserConfigManagerVM.instance.createChatObjectAndConnect(userId: userId, config: userConfig.config)
-            ChatManager.activeInstance?.logDelegate = self
             TokenManager.shared.initSetIsLogin()
         }
     }
@@ -97,7 +97,8 @@ final class ChatDelegateImplementation: ChatDelegate, LoggerDelegate {
         }
     }
 
-    func onLog(log: FanapPodChatSDK.Log) {
+    func onLog(log: Log) {
         NotificationCenter.default.post(name: .logsName, object: log)
+        print(log.message ?? "", "\n")
     }
 }

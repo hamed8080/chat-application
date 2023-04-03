@@ -6,7 +6,7 @@
 //
 
 import AVFoundation
-import FanapPodChatSDK
+import Chat
 import Foundation
 
 protocol AudioRecordingViewModelprotocol: ObservableObject {

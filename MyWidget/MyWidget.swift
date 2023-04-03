@@ -5,7 +5,7 @@
 //  Created by Hamed Hosseini on 11/21/21.
 //
 
-import FanapPodChatSDK
+import Chat
 import Intents
 import SwiftUI
 import WidgetKit

@@ -5,7 +5,7 @@
 //  Created by hamed on 1/28/23.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 import SwiftUI
 
@@ -56,11 +56,11 @@ final class UserConfigManagerVM: ObservableObject, Equatable {
         } else {
             newUserConfigs.append(userConfig)
         }
-        UserDefaults.standard.set(newUserConfigs.toData(), forKey: "userConfigsData")
+        UserDefaults.standard.set(newUserConfigs.data, forKey: "userConfigsData")
     }
 
     public func setCurrentUserAndSwitch(_ userConfig: UserConfig) {
-        UserDefaults.standard.setValue(userConfig.toData(), forKey: "userConfigData")
+        UserDefaults.standard.setValue(userConfig.data, forKey: "userConfigData")
         ChatManager.switchToUser(userId: userConfig.user.id ?? -1)
     }
 
@@ -87,7 +87,7 @@ final class UserConfigManagerVM: ObservableObject, Equatable {
     func logout() {
         if let index = userConfigs.firstIndex(where: { $0.id == currentUserConfig?.id }) {
             userConfigs.remove(at: index)
-            UserDefaults.standard.set(userConfigs.toData(), forKey: "userConfigsData")
+            UserDefaults.standard.set(userConfigs.data, forKey: "userConfigsData")
             setup()
             if let firstUser = userConfigs.first {
                 switchToUser(firstUser)

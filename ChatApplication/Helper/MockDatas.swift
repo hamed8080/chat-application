@@ -5,7 +5,7 @@
 //  Created by hamed on 4/12/22.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 
 final class MockData {

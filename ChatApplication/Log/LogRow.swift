@@ -5,16 +5,17 @@
 //  Created by hamed on 6/27/22.
 //
 
-import FanapPodChatSDK
+import Chat
+import Logger
 import SwiftUI
 
 struct LogRow: View {
     var log: Log
     var color: Color {
-        let log = LogEmitter(rawValue: Int(log.type))
-        if log == .internalLog {
+        let type = log.type
+        if type == .internalLog {
             return .orange
-        } else if log == .received {
+        } else if type == .received {
             return .red
         } else {
             return .green
@@ -24,7 +25,7 @@ struct LogRow: View {
     var body: some View {
         ZStack(alignment: .leading) {
             color.opacity(0.2)
-            Text("\(log.log ?? "")")
+            Text("\(log.message ?? "")")
                 .font(.iransansCaption)
                 .padding()
         }
@@ -40,10 +41,7 @@ struct LogRow: View {
 
 struct LogRow_Previews: PreviewProvider {
     static var log: Log {
-        let req = Log.fetchRequest()
-        req.fetchLimit = 1
-        let log = (try! PSM.preview.container.viewContext.fetch(req)).first!
-        return log
+        Log(time: Date(), message: "", level: .error, id: UUID(), type: .internalLog, userInfo: [:])
     }
 
     static var previews: some View {

@@ -5,7 +5,7 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
-import FanapPodChatSDK
+import Chat
 import Photos
 import SwiftUI
 
@@ -31,6 +31,15 @@ struct DetailView: View {
                     } label: {
                         ActionImage(systemName: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill")
                             .foregroundColor(viewModel.thread?.mute ?? false ? .red : .blue)
+                    }
+
+                    if viewModel.thread?.admin == true {
+                        Button {
+                            viewModel.toggleThreadVisibility()
+                        } label: {
+                            ActionImage(systemName: viewModel.thread?.isPrivate == true ? "lock.fill" : "lock.open.fill")
+                                .foregroundColor(viewModel.thread?.isPrivate ?? false ? .green : .blue)
+                        }
                     }
 
                     Button {} label: {
@@ -121,6 +130,7 @@ struct DetailView: View {
                 }
             }
         }
+        .animation(.easeInOut, value: viewModel.thread?.isPrivate == true)
         .animation(.interactiveSpring(), value: viewModel.isInEditMode)
         .animation(.easeInOut, value: viewModel.thread?.mute)
         .overlay(alignment: .bottom) {

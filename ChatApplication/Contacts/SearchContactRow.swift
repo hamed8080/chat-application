@@ -5,7 +5,7 @@
 //  Created by Hamed Hosseini on 11/16/21.
 //
 
-import FanapPodChatSDK
+import Chat
 import SwiftUI
 
 struct SearchContactRow: View {

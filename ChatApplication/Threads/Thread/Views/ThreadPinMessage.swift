@@ -5,7 +5,7 @@
 //  Created by hamed on 3/13/23.
 //
 
-import FanapPodChatSDK
+import Chat
 import SwiftUI
 
 struct ThreadPinMessage: View {

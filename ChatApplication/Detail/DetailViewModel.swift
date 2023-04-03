@@ -5,8 +5,8 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Chat
 import Combine
-import FanapPodChatSDK
 import Foundation
 import Photos
 import SwiftUI
@@ -136,6 +136,17 @@ final class DetailViewModel: ObservableObject {
         ChatManager.activeInstance?.mutualGroups(.init(toBeUser: invitee)) { [weak self] response in
             if let threads = response.result {
                 self?.mutualThreads = threads
+            }
+        }
+    }
+
+    func toggleThreadVisibility() {
+        guard let thread = thread, let threadId = thread.id else { return }
+        let type: ThreadTypes = thread.isPrivate ? thread.publicType : thread.privateType
+        ChatManager.activeInstance?.changeThreadType(.init(threadId: threadId, type: type)) { [weak self] response in
+            if let thread = response.result {
+                self?.thread?.type = thread.type
+                self?.objectWillChange.send()
             }
         }
     }

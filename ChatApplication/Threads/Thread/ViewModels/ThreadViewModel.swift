@@ -5,8 +5,8 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Chat
 import Combine
-import FanapPodChatSDK
 import Foundation
 import MapKit
 import Photos
@@ -375,7 +375,7 @@ final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identif
 
     func clearCacheFile(message: Message) {
         if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
-            let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(FanapPodChatSDK.Routes.files.rawValue)/\(fileHashCode)"
+            let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(Routes.files.rawValue)/\(fileHashCode)"
             AppState.shared.cacheFileManager?.deleteFile(at: URL(string: url)!)
             NotificationCenter.default.post(.init(name: .fileDeletedFromCacheName, object: message))
         }

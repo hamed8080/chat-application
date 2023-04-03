@@ -5,7 +5,8 @@
 //  Created by hamed on 6/27/22.
 //
 
-import FanapPodChatSDK
+import Chat
+import Logger
 import SwiftUI
 
 struct LogView: View {
@@ -77,6 +78,6 @@ struct LogView: View {
 struct LogView_Previews: PreviewProvider {
     static var previews: some View {
         LogView()
-            .environmentObject(LogViewModel(isPreview: true))
+            .environmentObject(LogViewModel())
     }
 }

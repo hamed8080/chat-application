@@ -5,7 +5,7 @@
 //  Created by hamed on 10/22/22.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 
 protocol ExportMessagesViewModelProtocol {

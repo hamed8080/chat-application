@@ -5,7 +5,7 @@
 //  Created by Hamed Hosseini on 11/27/21.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 protocol UnSentMessageProtocol {}
 class SendTextMessage: Message, UnSentMessageProtocol {

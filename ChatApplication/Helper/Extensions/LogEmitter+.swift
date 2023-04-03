@@ -5,7 +5,7 @@
 //  Created by hamed on 3/29/23.
 //
 
-import FanapPodChatSDK
+import Logger
 import SwiftUI
 
 extension LogEmitter {

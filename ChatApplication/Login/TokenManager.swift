@@ -5,8 +5,8 @@
 //  Created by hamed on 3/16/23.
 //
 
+import Chat
 import Combine
-import FanapPodChatSDK
 import Foundation
 
 final class TokenManager: ObservableObject {
@@ -26,7 +26,7 @@ final class TokenManager: ObservableObject {
     func getNewTokenWithRefreshToken() {
         if refreshTokenTask != nil { return }
         guard let refreshToken = getSSOTokenFromUserDefaults()?.refreshToken else { return }
-        let urlReq = URLRequest(url: URL(string: Routes.refreshToken + "?refreshToken=\(refreshToken)")!, timeoutInterval: 5)
+        let urlReq = URLRequest(url: URL(string: AppRoutes.refreshToken + "?refreshToken=\(refreshToken)")!, timeoutInterval: 5)
         refreshTokenTask = Task {
             do {
                 let resp = try await session.data(for: urlReq)

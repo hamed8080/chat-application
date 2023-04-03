@@ -5,7 +5,7 @@
 //  Created by hamed on 11/30/22.
 //
 
-import FanapPodChatSDK
+import Chat
 import SwiftUI
 
 struct ThreadEventView: View {

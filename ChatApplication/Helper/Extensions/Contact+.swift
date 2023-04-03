@@ -5,7 +5,7 @@
 //  Created by hamed on 11/26/22.
 //
 
-import FanapPodChatSDK
+import Chat
 import Foundation
 
 extension Contact {

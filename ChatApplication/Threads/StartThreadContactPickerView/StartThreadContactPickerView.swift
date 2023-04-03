@@ -5,8 +5,8 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
+import Chat
 import Combine
-import FanapPodChatSDK
 import SwiftUI
 
 class StartThreadResultModel: ObservableObject {

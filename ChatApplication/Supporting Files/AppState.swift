@@ -5,7 +5,7 @@
 //  Created by Hamed Hosseini on 7/4/21.
 //
 
-import FanapPodChatSDK
+import Chat
 import SwiftUI
 
 final class AppState: ObservableObject {

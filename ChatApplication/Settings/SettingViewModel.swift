@@ -5,8 +5,8 @@
 //  Created by Hamed Hosseini on 9/17/21.
 //
 
+import Chat
 import Combine
-import FanapPodChatSDK
 import SwiftUI
 
 final class SettingViewModel: ObservableObject {

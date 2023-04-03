@@ -10,8 +10,6 @@
 		0505C4E32869A19F0034A9F0 /* LogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E22869A19F0034A9F0 /* LogViewModel.swift */; };
 		0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E42869A1C90034A9F0 /* LogView.swift */; };
 		0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E62869A4220034A9F0 /* LogRow.swift */; };
-		0505C4EF2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4ED2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld */; };
-		0505C4F22869AC800034A9F0 /* PSM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4F12869AC800034A9F0 /* PSM.swift */; };
 		0506366E2801A8740080DF00 /* EnvironmentEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0506366D2801A8740080DF00 /* EnvironmentEX.swift */; };
 		050B1BE1292F8DEC0025D4ED /* ThreadViewModel+ScrollToPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE0292F8DEC0025D4ED /* ThreadViewModel+ScrollToPosition.swift */; };
 		050B1BE3292F90D00025D4ED /* ThreadsViewModel+ArchiveThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE2292F90D00025D4ED /* ThreadsViewModel+ArchiveThread.swift */; };
@@ -31,8 +29,6 @@
 		0525CDBC292CA06B004E1C7B /* ViewOffsetKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */; };
 		052D57362795323C0075BF8F /* ManageTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D57352795323C0075BF8F /* ManageTagView.swift */; };
 		052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D5737279539840075BF8F /* TagParticipantRow.swift */; };
-		0532461628D8455B00FC9C22 /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0532461528D8455B00FC9C22 /* FanapPodChatSDK */; };
-		0532461828D8457800FC9C22 /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0532461728D8457800FC9C22 /* FanapPodChatSDK */; };
 		05384A7F2792995F00D85A92 /* TagsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A7D2792993500D85A92 /* TagsViewModel.swift */; };
 		05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */; };
 		05384A842792A10100D85A92 /* TagRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A832792A10100D85A92 /* TagRow.swift */; };
@@ -40,7 +36,10 @@
 		05384A8A2792F3FC00D85A92 /* KeyboardResponsiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */; };
 		05384A8C2792FB5000D85A92 /* PrimaryCustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A8B2792FB3200D85A92 /* PrimaryCustomDialog.swift */; };
 		0540A52229C3AA9800E89635 /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0540A52129C3AA9800E89635 /* TokenManager.swift */; };
+		0541F94129DB175800EEDEE7 /* Chat in Frameworks */ = {isa = PBXBuildFile; productRef = 0541F94029DB175800EEDEE7 /* Chat */; };
 		055024C22987E794009DDD18 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 055024C12987E794009DDD18 /* Swipy */; };
+		055178BC29DAB96800C1F363 /* Chat in Frameworks */ = {isa = PBXBuildFile; productRef = 055178BB29DAB96800C1F363 /* Chat */; };
+		055178BE29DAB99800C1F363 /* Chat in Frameworks */ = {isa = PBXBuildFile; productRef = 055178BD29DAB99800C1F363 /* Chat */; };
 		0555905529311C3E000D2407 /* ThreadViewModel+SendMessageThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0555905429311C3E000D2407 /* ThreadViewModel+SendMessageThread.swift */; };
 		055B269827D5F9E40098D585 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B269727D5F9E40098D585 /* MemberView.swift */; };
 		055B269A27D5F9F00098D585 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B269927D5F9F00098D585 /* MediaView.swift */; };
@@ -139,7 +138,7 @@
 		AC2E4748274B58EB0073E8E4 /* UserDefaultsEX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2E4746274B58880073E8E4 /* UserDefaultsEX.swift */; };
 		AC2E474A274B6FB40073E8E4 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2E4749274B6FB40073E8E4 /* AppGroup.swift */; };
 		AC2E474B274B6FB70073E8E4 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2E4749274B6FB40073E8E4 /* AppGroup.swift */; };
-		AC48ED5E26F6F6AE00AB1A5D /* Routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48ED5D26F6F6AD00AB1A5D /* Routes.swift */; };
+		AC48ED5E26F6F6AE00AB1A5D /* AppRoutes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48ED5D26F6F6AD00AB1A5D /* AppRoutes.swift */; };
 		AC48ED6126F6FD3A00AB1A5D /* HandshakeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC10007426F4698B00C3AD67 /* HandshakeRequest.swift */; };
 		AC48ED6326F7051F00AB1A5D /* AuthorizeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48ED6226F7051F00AB1A5D /* AuthorizeRequest.swift */; };
 		AC48ED6526F7299F00AB1A5D /* VerifyRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC48ED6426F7299F00AB1A5D /* VerifyRequest.swift */; };
@@ -212,8 +211,6 @@
 		0505C4E22869A19F0034A9F0 /* LogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewModel.swift; sourceTree = "<group>"; };
 		0505C4E42869A1C90034A9F0 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		0505C4E62869A4220034A9F0 /* LogRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogRow.swift; sourceTree = "<group>"; };
-		0505C4EE2869AB750034A9F0 /* ChatApplicationModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ChatApplicationModel.xcdatamodel; sourceTree = "<group>"; };
-		0505C4F12869AC800034A9F0 /* PSM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSM.swift; sourceTree = "<group>"; };
 		0506366D2801A8740080DF00 /* EnvironmentEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentEX.swift; sourceTree = "<group>"; };
 		050B1BE0292F8DEC0025D4ED /* ThreadViewModel+ScrollToPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadViewModel+ScrollToPosition.swift"; sourceTree = "<group>"; };
 		050B1BE2292F90D00025D4ED /* ThreadsViewModel+ArchiveThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadsViewModel+ArchiveThread.swift"; sourceTree = "<group>"; };
@@ -223,7 +220,6 @@
 		050C5AA32970863B00CD5702 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
 		05140CD429C086BE00C8E22D /* MapPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPickerView.swift; sourceTree = "<group>"; };
 		05140CD629C0A64E00C8E22D /* Coordinate+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Coordinate+.swift"; sourceTree = "<group>"; };
-		051C8EF9292235300078AD7E /* FanapPodAsyncSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FanapPodAsyncSDK; path = ../FanapPodAsyncSDK; sourceTree = "<group>"; };
 		051D58E329926D7800DC066A /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
@@ -232,7 +228,6 @@
 		0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOffsetKey.swift; sourceTree = "<group>"; };
 		052D57352795323C0075BF8F /* ManageTagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTagView.swift; sourceTree = "<group>"; };
 		052D5737279539840075BF8F /* TagParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagParticipantRow.swift; sourceTree = "<group>"; };
-		0532461328D8453100FC9C22 /* FanapPodChatSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FanapPodChatSDK; path = ../FanapPodChatSDK; sourceTree = "<group>"; };
 		05384A7D2792993500D85A92 /* TagsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsViewModel.swift; sourceTree = "<group>"; };
 		05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddThreadToTagsView.swift; sourceTree = "<group>"; };
 		05384A832792A10100D85A92 /* TagRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagRow.swift; sourceTree = "<group>"; };
@@ -332,7 +327,7 @@
 		AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_b.mp4; sourceTree = "<group>"; };
 		AC2E4746274B58880073E8E4 /* UserDefaultsEX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsEX.swift; sourceTree = "<group>"; };
 		AC2E4749274B6FB40073E8E4 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroup.swift; sourceTree = "<group>"; };
-		AC48ED5D26F6F6AD00AB1A5D /* Routes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Routes.swift; sourceTree = "<group>"; };
+		AC48ED5D26F6F6AD00AB1A5D /* AppRoutes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoutes.swift; sourceTree = "<group>"; };
 		AC48ED6226F7051F00AB1A5D /* AuthorizeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizeRequest.swift; sourceTree = "<group>"; };
 		AC48ED6426F7299F00AB1A5D /* VerifyRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyRequest.swift; sourceTree = "<group>"; };
 		AC5326192751F1DA003685E3 /* UploadFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFileView.swift; sourceTree = "<group>"; };
@@ -386,8 +381,9 @@
 				0585985929D4349F00C970C9 /* OrderedCollections in Frameworks */,
 				0585985529D4349F00C970C9 /* Collections in Frameworks */,
 				0585985729D4349F00C970C9 /* DequeModule in Frameworks */,
-				0532461628D8455B00FC9C22 /* FanapPodChatSDK in Frameworks */,
 				055024C22987E794009DDD18 /* Swipy in Frameworks */,
+				0541F94129DB175800EEDEE7 /* Chat in Frameworks */,
+				055178BE29DAB99800C1F363 /* Chat in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,21 +391,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0532461828D8457800FC9C22 /* FanapPodChatSDK in Frameworks */,
+				055178BC29DAB96800C1F363 /* Chat in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0505C4F02869AC620034A9F0 /* Cache */ = {
-			isa = PBXGroup;
-			children = (
-				0505C4F12869AC800034A9F0 /* PSM.swift */,
-			);
-			path = Cache;
-			sourceTree = "<group>";
-		};
 		050B1BE8292F94260025D4ED /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -444,8 +432,6 @@
 			isa = PBXGroup;
 			children = (
 				051D58E329926D7800DC066A /* Swipy */,
-				0532461328D8453100FC9C22 /* FanapPodChatSDK */,
-				051C8EF9292235300078AD7E /* FanapPodAsyncSDK */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -561,7 +547,6 @@
 				AC085F3A2692EA8A001492B2 /* Config.json */,
 				AC1D2CAD2661FFAD00AA351A /* Assets.xcassets */,
 				AC1D2CB22661FFAD00AA351A /* LaunchScreen.storyboard */,
-				0505C4ED2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld */,
 				AC085F3D2692EC71001492B2 /* Config.swift */,
 				05DCB6872806102B00D7F37A /* MockData.json */,
 			);
@@ -613,7 +598,6 @@
 		AC1D2CA62661FFAC00AA351A /* ChatApplication */ = {
 			isa = PBXGroup;
 			children = (
-				0505C4F02869AC620034A9F0 /* Cache */,
 				AC9DAC6B266CAD44009E4722 /* Contacts */,
 				AC1D2CBC2662016D00AA351A /* Helper */,
 				AC122EC0266B827B00C0630F /* Home */,
@@ -647,7 +631,7 @@
 				ACC4C1912765C32C008940CD /* Modifires */,
 				AC1D2CBD2662016D00AA351A /* Extensions */,
 				AC1D2CBE2662016D00AA351A /* CustomViews */,
-				AC48ED5D26F6F6AD00AB1A5D /* Routes.swift */,
+				AC48ED5D26F6F6AD00AB1A5D /* AppRoutes.swift */,
 				057977B42805449D00FE5EA4 /* MockDatas.swift */,
 				05781CD52903466A0064BDC3 /* AudioRecordingViewModel.swift */,
 				0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */,
@@ -866,11 +850,12 @@
 			);
 			name = ChatApplication;
 			packageProductDependencies = (
-				0532461528D8455B00FC9C22 /* FanapPodChatSDK */,
 				055024C12987E794009DDD18 /* Swipy */,
 				0585985429D4349F00C970C9 /* Collections */,
 				0585985629D4349F00C970C9 /* DequeModule */,
 				0585985829D4349F00C970C9 /* OrderedCollections */,
+				055178BD29DAB99800C1F363 /* Chat */,
+				0541F94029DB175800EEDEE7 /* Chat */,
 			);
 			productName = ChatApplication;
 			productReference = AC1D2CA42661FFAC00AA351A /* ChatApplication.app */;
@@ -890,7 +875,7 @@
 			);
 			name = MyWidgetExtension;
 			packageProductDependencies = (
-				0532461728D8457800FC9C22 /* FanapPodChatSDK */,
+				055178BB29DAB96800C1F363 /* Chat */,
 			);
 			productName = MyWidgetExtension;
 			productReference = AC924CAC274A6D7200E33BD1 /* MyWidgetExtension.appex */;
@@ -927,6 +912,7 @@
 			packageReferences = (
 				055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */,
 				0585985329D4349F00C970C9 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				0541F93F29DB175800EEDEE7 /* XCRemoteSwiftPackageReference "chat" */,
 			);
 			productRefGroup = AC1D2CA52661FFAC00AA351A /* Products */;
 			projectDirPath = "";
@@ -987,7 +973,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint > /dev/null; then\n   swiftlint /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/ChatApplication\n   swiftlint /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/MyWidget\n   ASYNC_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/FanapPodAsyncSDK/\"\n   CHAT_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/FanapPodChatSDK/\"\n   swiftlint --config \"${ASYNC_PATH}.swiftlint.yml\" \"${ASYNC_PATH}Sources\"\n   swiftlint --config \"${CHAT_PATH}.swiftlint.yml\" \"${CHAT_PATH}Sources\"\nelse\n   echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "if which swiftlint > /dev/null; then\n   swiftlint /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/ChatApplication\n   swiftlint /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/MyWidget\n   ASYNC_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/Async/\"\n   CHAT_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/Chat/\"\n   LOGGER_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/Logger/\"\n   ADDITIVE_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/Additive/\"\n   swiftlint --config \"${ASYNC_PATH}.swiftlint.yml\" \"${ASYNC_PATH}Sources\"\n   swiftlint --config \"${CHAT_PATH}.swiftlint.yml\" \"${CHAT_PATH}Sources\"\n   swiftlint --config \"${LOGGER_PATH}.swiftlint.yml\" \"${LOGGER_PATH}Sources\"\n   swiftlint --config \"${ADDITIVE_PATH}.swiftlint.yml\" \"${ADDITIVE_PATH}Sources\"\nelse\n   echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		0597057629431DFC008CA2EE /* Swift Format */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1006,7 +992,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftformat >/dev/null; then\n   swiftformat --swiftversion 5.6 /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/ChatApplication\n   swiftformat --swiftversion 5.6 /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/MyWidget\n   ASYNC_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/FanapPodAsyncSDK/\"\n   CHAT_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/FanapPodChatSDK/\"\n   swiftformat --swiftversion 5.6 --config \"${ASYNC_PATH}.swiftformat\" \"${ASYNC_PATH}Sources\"\n   swiftformat --swiftversion 5.6 --config \"${CHAT_PATH}.swiftformat\" \"${CHAT_PATH}Sources\"\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
+			shellScript = "if which swiftformat >/dev/null; then\n   swiftformat --swiftversion 5.6 /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/ChatApplication\n   swiftformat --swiftversion 5.6 /Users/hamed/Desktop/Workspace/ios/Fanap/ChatApplication/MyWidget\n   ASYNC_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/Async/\"\n   CHAT_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/Chat/\"\n   LOGGER_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/Logger/\"\n   ADDITIVE_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/Additive/\"\n   swiftformat --swiftversion 5.6 --config \"${ASYNC_PATH}.swiftformat\" \"${ASYNC_PATH}Sources\"\n   swiftformat --swiftversion 5.6 --config \"${CHAT_PATH}.swiftformat\" \"${CHAT_PATH}Sources\"\n   swiftformat --swiftversion 5.6 --config \"${LOGGER_PATH}.swiftformat\" \"${LOGGER_PATH}Sources\"\n   swiftformat --swiftversion 5.6 --config \"${ADDITIVE_PATH}.swiftformat\" \"${ADDITIVE_PATH}Sources\"\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1023,7 +1009,6 @@
 				AC6291972750A91800190975 /* DocumentPicker.swift in Sources */,
 				05962117280BF85B0036B3AA /* DateSelectionView.swift in Sources */,
 				050B1BE7292F93020025D4ED /* ThreadsViewModel+MuteThread.swift in Sources */,
-				0505C4EF2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld in Sources */,
 				05384A8C2792FB5000D85A92 /* PrimaryCustomDialog.swift in Sources */,
 				05E28D812978294800DC73B2 /* ImageLaoderView.swift in Sources */,
 				0596654B297C44B400A0ABDA /* NavigationModel.swift in Sources */,
@@ -1127,11 +1112,10 @@
 				AC0435FD26998D3E00B1C87B /* ParticipantsViewModel.swift in Sources */,
 				05E2F6FB2989781900AAA288 /* ObjectsContainer.swift in Sources */,
 				052D57362795323C0075BF8F /* ManageTagView.swift in Sources */,
-				AC48ED5E26F6F6AE00AB1A5D /* Routes.swift in Sources */,
+				AC48ED5E26F6F6AE00AB1A5D /* AppRoutes.swift in Sources */,
 				AC085F3E2692EC71001492B2 /* Config.swift in Sources */,
 				AC10007126F4655E00C3AD67 /* AuthorizeResponse.swift in Sources */,
 				05384A842792A10100D85A92 /* TagRow.swift in Sources */,
-				0505C4F22869AC800034A9F0 /* PSM.swift in Sources */,
 				AC48ED6126F6FD3A00AB1A5D /* HandshakeRequest.swift in Sources */,
 				AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */,
 				051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */,
@@ -1488,6 +1472,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0541F93F29DB175800EEDEE7 /* XCRemoteSwiftPackageReference "chat" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "http://pubgi.fanapsoft.ir/chat/ios/chat.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.3.0;
+			};
+		};
 		055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hamed8080/Swipy";
@@ -1507,18 +1499,23 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0532461528D8455B00FC9C22 /* FanapPodChatSDK */ = {
+		0541F94029DB175800EEDEE7 /* Chat */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = FanapPodChatSDK;
-		};
-		0532461728D8457800FC9C22 /* FanapPodChatSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = FanapPodChatSDK;
+			package = 0541F93F29DB175800EEDEE7 /* XCRemoteSwiftPackageReference "chat" */;
+			productName = Chat;
 		};
 		055024C12987E794009DDD18 /* Swipy */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */;
 			productName = Swipy;
+		};
+		055178BB29DAB96800C1F363 /* Chat */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Chat;
+		};
+		055178BD29DAB99800C1F363 /* Chat */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Chat;
 		};
 		0585985429D4349F00C970C9 /* Collections */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1536,19 +1533,6 @@
 			productName = OrderedCollections;
 		};
 /* End XCSwiftPackageProductDependency section */
-
-/* Begin XCVersionGroup section */
-		0505C4ED2869AB750034A9F0 /* ChatApplicationDataModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				0505C4EE2869AB750034A9F0 /* ChatApplicationModel.xcdatamodel */,
-			);
-			currentVersion = 0505C4EE2869AB750034A9F0 /* ChatApplicationModel.xcdatamodel */;
-			path = ChatApplicationDataModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = AC1D2C9C2661FFAC00AA351A /* Project object */;
 }

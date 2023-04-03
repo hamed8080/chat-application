@@ -5,9 +5,9 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Chat
 import Combine
 import CoreMedia
-import FanapPodChatSDK
 import SwiftUI
 
 struct UploadFileView: View {
