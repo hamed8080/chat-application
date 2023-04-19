@@ -26,7 +26,7 @@ Go to [link](https://accounts.pod.ir/) and register then login only with your ph
 
 
 ## Dependency Graph of whole application and SDKs
-<img src="https://github.com/hamed8080/chat-application/raw/main/images/dependency.png"  width="256" height="480">
+<img src="https://github.com/hamed8080/chat-application/raw/main/images/dependencies.jpg"  width="256" height="480">
 <br />
 
 
