@@ -5,6 +5,8 @@
 //  Created by hamed on 3/13/23.
 //
 
+import ChatAppUI
+import ChatAppViewModels
 import SwiftUI
 
 struct ThreadSearchList: View {

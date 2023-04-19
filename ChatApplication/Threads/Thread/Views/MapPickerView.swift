@@ -6,6 +6,9 @@
 //
 
 import Chat
+import ChatAppModels
+import ChatAppUI
+import ChatAppViewModels
 import MapKit
 import SwiftUI
 
@@ -63,21 +66,6 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
 
     func locationManager(_: CLLocationManager, didFailWithError error: Error) {
         print(error)
-    }
-}
-
-struct LocationItem: Identifiable {
-    var id = UUID().uuidString
-    let name: String
-    let description: String
-    var location: CLLocationCoordinate2D
-    var coordinate: MKCoordinateRegion {
-        get {
-            MKCoordinateRegion(center: location, span: MKCoordinateSpan(latitudeDelta: 50, longitudeDelta: 50))
-        }
-        set {
-            location = newValue.center
-        }
     }
 }
 

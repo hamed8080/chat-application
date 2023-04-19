@@ -6,6 +6,9 @@
 //
 
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct StartThreadContactRow: View {
@@ -43,7 +46,7 @@ struct StartThreadContactRow: View {
                             .padding(.leading, 16)
                             .lineLimit(1)
                             .font(.iransansBody)
-                        if let notSeenDuration = getDate(contact: contact) {
+                        if let notSeenDuration = contact.notSeenString {
                             Text(notSeenDuration)
                                 .padding(.leading, 16)
                                 .font(.iransansCaption2)
@@ -67,15 +70,6 @@ struct StartThreadContactRow: View {
         .animation(.spring(), value: isInMultiSelectMode)
         .animation(.easeInOut, value: isSelected)
         .contentShape(Rectangle())
-    }
-
-    func getDate(contact: Contact) -> String? {
-        if let notSeenDuration = contact.notSeenDuration {
-            let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(notSeenDuration)
-            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDatecCondence
-        } else {
-            return nil
-        }
     }
 }
 

@@ -5,7 +5,11 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import AdditiveUI
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct MessageRow: View {
@@ -31,7 +35,7 @@ struct MessageRow: View {
                                 viewModel.toggleSelectedMessage(message, isSelected)
                             }
                     }
-                    if message.isMe {
+                    if message.isMe(currentUserId: AppState.shared.user?.id) {
                         Spacer()
                     }
                     TextMessageType(message: message)
@@ -56,7 +60,7 @@ struct CallMessageType: View {
         HStack(alignment: .center) {
             if let time = message.time {
                 let date = Date(milliseconds: Int64(time))
-                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDatecCondence ?? "")")
+                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDateCondense ?? "")")
                     .foregroundColor(Color.primary.opacity(0.8))
                     .font(.iransansSubheadline)
                     .padding(2)
@@ -81,7 +85,7 @@ struct ParticipantMessageType: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDatecCondence ?? ""
+            let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDateCondense ?? ""
             let name = message.participant?.name ?? ""
             let markdownText = try! AttributedString(markdown: "\(name) - \(date)")
             Text(markdownText)
@@ -110,7 +114,7 @@ struct TextMessageType: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            if message.isMe {
+            if message.isMe(currentUserId: AppState.shared.user?.id) {
                 Spacer()
             }
             VStack(spacing: 0) {
@@ -175,7 +179,7 @@ struct TextMessageType: View {
             .frame(maxWidth: calculation.widthOfRow, alignment: .leading)
             .padding([.leading, .trailing], 0)
             .contentShape(Rectangle())
-            .background(message.isMe ? Color.chatMeBg : Color.chatSenderBg)
+            .background(message.isMe(currentUserId: AppState.shared.user?.id) ? Color.chatMeBg : Color.chatSenderBg)
             .cornerRadius(12)
             .animation(.easeInOut, value: message.isUnsentMessage)
             .onTapGesture {
@@ -254,7 +258,7 @@ struct TextMessageType: View {
                 calculation.calculate(message: message)
             }
 
-            if !message.isMe {
+            if !message.isMe(currentUserId: AppState.shared.user?.id) {
                 Spacer()
             }
         }
@@ -262,7 +266,6 @@ struct TextMessageType: View {
 }
 
 struct SameAvatar: View {
-    static let size: CGFloat = 24
     var message: Message
     @EnvironmentObject var viewModel: ThreadViewModel
 
@@ -272,7 +275,7 @@ struct SameAvatar: View {
                 DetailView(viewModel: DetailViewModel(user: message.participant))
             } label: {
                 HStack(spacing: 8) {
-                    if message.isMe {
+                    if message.isMe(currentUserId: AppState.shared.user?.id) {
                         Spacer()
                         Text("\(message.participant?.name ?? "")")
                             .font(.iransansBoldCaption)
@@ -284,10 +287,10 @@ struct SameAvatar: View {
                         .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
                         .font(.iransansSubheadline)
                         .foregroundColor(.white)
-                        .frame(width: SameAvatar.size, height: SameAvatar.size)
+                        .frame(width: MessageRowCalculationViewModel.avatarSize, height: MessageRowCalculationViewModel.avatarSize)
                         .background(Color.blue.opacity(0.4))
-                        .cornerRadius(SameAvatar.size / 2)
-                    if !message.isMe {
+                        .cornerRadius(MessageRowCalculationViewModel.avatarSize / 2)
+                    if !message.isMe(currentUserId: AppState.shared.user?.id) {
                         Text("\(message.participant?.name ?? "")")
                             .font(.iransansBoldCaption)
                             .foregroundColor(.blue)
@@ -422,21 +425,21 @@ struct MessageFooterView: View {
     // We never use this viewModel but it will refresh view when a event on this message happened such as onSent, onDeliver,onSeen.
     @EnvironmentObject var viewModel: ThreadViewModel
     @State var timeString: String = ""
+    @EnvironmentObject var calculation: MessageRowCalculationViewModel
 
     var body: some View {
         HStack {
-            if let fileSize = message.fileMetaData?.file?.size {
-                let size = Int(fileSize)
-                Text(size.toSizeString)
+            if let fileSize = calculation.fileSizeString {
+                Text(fileSize)
                     .multilineTextAlignment(.leading)
                     .font(.iransansBody)
                     .foregroundColor(.darkGreen.opacity(0.8))
             }
             Spacer()
-            Text(timeString)
+            Text(calculation.timeString)
                 .foregroundColor(.darkGreen.opacity(0.8))
                 .font(.iransansBoldCaption2)
-            if message.isMe {
+            if message.isMe(currentUserId: AppState.shared.user?.id) {
                 Image(uiImage: message.footerStatus.image)
                     .resizable()
                     .frame(width: 14, height: 14)
@@ -454,13 +457,6 @@ struct MessageFooterView: View {
         .animation(.easeInOut, value: message.seen)
         .animation(.easeInOut, value: message.edited)
         .padding(.top, 4)
-        .onAppear {
-            Task {
-                await MainActor.run {
-                    timeString = message.time?.date.timeAgoSinceDatecCondence ?? ""
-                }
-            }
-        }
     }
 }
 

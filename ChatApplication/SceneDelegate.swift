@@ -6,6 +6,8 @@
 //
 
 import Chat
+import ChatAppUI
+import ChatAppViewModels
 import SwiftUI
 import UIKit
 

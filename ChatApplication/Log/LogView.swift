@@ -6,6 +6,7 @@
 //
 
 import Chat
+import ChatAppViewModels
 import Logger
 import SwiftUI
 

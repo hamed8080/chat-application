@@ -6,6 +6,8 @@
 //
 
 import Chat
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct AddParticipantsToThreadView: View {

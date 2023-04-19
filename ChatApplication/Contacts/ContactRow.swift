@@ -5,7 +5,11 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import AdditiveUI
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct ContactRow: View {
@@ -44,7 +48,7 @@ struct ContactRow: View {
                             .padding(.leading, 16)
                             .lineLimit(1)
                             .font(.iransansBoldSubtitle)
-                        if let notSeenDuration = ContactRow.getDate(notSeenDuration: contact.notSeenDuration) {
+                        if let notSeenDuration = contact.notSeenString {
                             Text(notSeenDuration)
                                 .padding(.leading, 16)
                                 .font(.iransansCaption)
@@ -108,15 +112,6 @@ struct ContactRow: View {
                 navigateToAddOrEditContact.toggle()
             }
             Spacer()
-        }
-    }
-
-    static func getDate(notSeenDuration: Int?) -> String? {
-        if let notSeenDuration = notSeenDuration {
-            let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(notSeenDuration)
-            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDatecCondence
-        } else {
-            return nil
         }
     }
 }

@@ -5,114 +5,12 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
+import AdditiveUI
 import Chat
+import ChatAppUI
+import ChatAppViewModels
 import Combine
 import SwiftUI
-
-class StartThreadResultModel: ObservableObject {
-    @Published var selectedContacts: [Contact]
-    @Published var type: ThreadTypes
-    @Published var title: String
-    @Published var isPublic: Bool
-    @Published var isGroup: Bool
-    @Published var isInMultiSelectMode: Bool
-    @Published var isPublicNameAvailable: Bool
-    @Published var isCehckingName: Bool = false
-    var showGroupTitleView: Bool { isGroup || type == .channel }
-    var hasError: Bool { !titleIsValid }
-    private(set) var canceableSet: Set<AnyCancellable> = []
-
-    init(selectedContacts: [Contact] = [],
-         type: ThreadTypes = .normal,
-         title: String = "",
-         isPublic: Bool = false,
-         isGroup: Bool = false,
-         isInMultiSelectMode: Bool = false,
-         isPublicNameAvailable: Bool = false)
-    {
-        self.selectedContacts = selectedContacts
-        self.type = type
-        self.title = title
-        self.isPublic = isPublic
-        self.isGroup = isGroup
-        self.isInMultiSelectMode = isInMultiSelectMode
-        self.isPublicNameAvailable = isPublicNameAvailable
-
-        $title
-            .debounce(for: 0.5, scheduler: RunLoop.main)
-            .filter { $0.count > 1 }
-            .removeDuplicates()
-            .sink { [weak self] publicName in
-                self?.checkPublicName(publicName)
-            }
-            .store(in: &canceableSet)
-    }
-
-    var titleIsValid: Bool {
-        if showGroupTitleView, title.isEmpty { return false }
-        if !isPublic { return true }
-        let regex = try! Regex("^[a-zA-Z0-9]\\S*$")
-        return title.contains(regex)
-    }
-
-    var computedType: ThreadTypes {
-        if !isPublic {
-            return type
-        } else if type == .channel, isPublic {
-            return .publicChannel
-        } else if isGroup, isPublic {
-            return .publicGroup
-        } else {
-            return .normal
-        }
-    }
-
-    var build: StartThreadResultModel { StartThreadResultModel(selectedContacts: selectedContacts, type: computedType, title: showGroupTitleView ? title : "", isPublic: isPublic, isGroup: isGroup) }
-
-    func setSelfThread() {
-        type = .selfThread
-        resetSelection()
-    }
-
-    func toggleGroup() {
-        if isGroup {
-            resetSelection()
-        } else {
-            isInMultiSelectMode = true
-            isGroup = true
-            type = .normal
-        }
-    }
-
-    func toggleChannel() {
-        if type == .channel {
-            type = .normal
-            resetSelection()
-        } else {
-            type = .channel
-            isInMultiSelectMode = true
-        }
-    }
-
-    func resetSelection() {
-        selectedContacts = []
-        isInMultiSelectMode = false
-        isGroup = false
-        isPublic = false
-    }
-
-    func checkPublicName(_ title: String) {
-        if titleIsValid {
-            isCehckingName = true
-            ChatManager.activeInstance?.isThreadNamePublic(.init(name: title)) { [weak self] result in
-                if title == result.result?.name {
-                    self?.isPublicNameAvailable = true
-                }
-                self?.isCehckingName = false
-            }
-        }
-    }
-}
 
 struct StartThreadContactPickerView: View {
     @EnvironmentObject var contactsVM: ContactsViewModel

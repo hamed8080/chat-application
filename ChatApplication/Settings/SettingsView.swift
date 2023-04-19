@@ -5,7 +5,11 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
+import AdditiveUI
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct SettingsView: View {
@@ -104,7 +108,7 @@ struct SettingsView: View {
                         Button {
                             ChatManager.activeInstance?.logOut()
                             TokenManager.shared.clearToken()
-                            UserConfigManagerVM.instance.logout()
+                            UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
                             container.reset()
                         } label: {
                             HStack {
@@ -172,7 +176,7 @@ struct SettingsMenu_Previews: PreviewProvider {
     @State static var dark: Bool = false
     @State static var show: Bool = false
     @State static var showBlackView: Bool = false
-    @StateObject static var container = ObjectsContainer()
+    @StateObject static var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
     static var vm = SettingViewModel()
 
     static var previews: some View {

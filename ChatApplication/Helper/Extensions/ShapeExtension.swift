@@ -1,5 +1,5 @@
 //
-//  ShapeExtension.swift
+//  RoundedCorner.swift
 //  ChatApplication
 //
 //  Created by Hamed Hosseini on 9/28/21.

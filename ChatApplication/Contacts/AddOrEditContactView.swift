@@ -6,6 +6,8 @@
 //
 
 import Chat
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 enum ContactType: String, Identifiable, CaseIterable {

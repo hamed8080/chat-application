@@ -6,6 +6,9 @@
 //
 
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct SearchContactRow: View {
@@ -26,7 +29,7 @@ struct SearchContactRow: View {
                     .padding(.leading, 4)
                     .lineLimit(1)
                     .font(.headline)
-                if let notSeenDuration = ContactRow.getDate(notSeenDuration: contact.notSeenDuration) {
+                if let notSeenDuration = contact.notSeenString {
                     Text(notSeenDuration)
                         .padding(.leading, 4)
                         .font(.iransansCaption3)

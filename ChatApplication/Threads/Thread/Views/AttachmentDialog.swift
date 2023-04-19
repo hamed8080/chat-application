@@ -5,6 +5,9 @@
 //  Created by Hamed Hosseini on 11/23/21.
 //
 
+import AdditiveUI
+import ChatAppUI
+import ChatAppViewModels
 import SwiftUI
 
 struct AttachmentDialog: View {
@@ -71,62 +74,6 @@ struct AttachmentDialog: View {
     }
 }
 
-struct SendTextViewWithButtons: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
-    @State var text: String = ""
-    var onSubmit: () -> Void
-    var onCancel: () -> Void
-
-    var body: some View {
-        HStack {
-            Button(role: .destructive) {
-                onCancel()
-            } label: {
-                Label("Close", systemImage: "xmark")
-                    .labelStyle(.iconOnly)
-            }
-
-            MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black, mention: true)
-                .cornerRadius(16)
-                .onChange(of: viewModel.textMessage ?? "") { newValue in
-                    viewModel.sendStartTyping(newValue)
-                }
-
-            Button {
-                onSubmit()
-            } label: {
-                Label("Send", systemImage: "paperplane.fill")
-                    .labelStyle(.iconOnly)
-            }
-        }
-        .padding(.bottom, 4)
-        .padding([.leading, .trailing], 8)
-        .padding(.top, 18)
-        .background(
-            VStack {
-                Spacer()
-                Rectangle()
-                    .fill(Color.clear)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(24, corners: [.topRight, .topLeft])
-            }
-            .ignoresSafeArea()
-        )
-        .opacity(viewModel.thread?.type == .channel ? 0.3 : 1.0)
-        .disabled(viewModel.thread?.type == .channel)
-        .animation(.easeInOut, value: viewModel.mentionList.count)
-        .onReceive(viewModel.$editMessage) { editMessage in
-            if let editMessage = editMessage {
-                text = editMessage.message ?? ""
-            }
-        }
-        .onChange(of: text) { newValue in
-            viewModel.searchForMention(newValue)
-            viewModel.textMessage = newValue
-        }
-    }
-}
-
 struct PhotoGridView: View {
     @EnvironmentObject var viewModel: ActionSheetViewModel
 
@@ -134,7 +81,8 @@ struct PhotoGridView: View {
         ScrollView(.vertical) {
             LazyVGrid(columns: Array(repeating: .init(.adaptive(minimum: 64), spacing: 4), count: 6), spacing: 4) {
                 ForEach(viewModel.allImageItems) { item in
-                    Image(uiImage: item.image)
+                    let cgImage = item.imageData.imageScale(width: 256)?.image
+                    Image(uiImage: UIImage(cgImage: (cgImage ?? UIImage().cgImage)!))
                         .resizable()
                         .scaledToFit()
                         .frame(maxHeight: 72)

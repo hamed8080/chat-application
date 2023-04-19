@@ -7,34 +7,19 @@
 
 import Async
 import Chat
+import ChatAppViewModels
+import ChatCore
+import ChatModels
 import Foundation
 import Logger
 import UIKit
-
-enum ConnectionStatus: Int {
-    case connecting = 0
-    case disconnected = 1
-    case reconnecting = 2
-    case unauthorized = 3
-    case connected = 4
-
-    var stringValue: String {
-        switch self {
-        case .connecting: return "connecting"
-        case .connected: return "connected"
-        case .disconnected: return "disconnected"
-        case .reconnecting: return "reconnectiong"
-        case .unauthorized: return "un authorized"
-        }
-    }
-}
 
 final class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
         if let userConfig = UserConfigManagerVM.instance.currentUserConfig, let userId = userConfig.id {
-            UserConfigManagerVM.instance.createChatObjectAndConnect(userId: userId, config: userConfig.config)
+            UserConfigManagerVM.instance.createChatObjectAndConnect(userId: userId, config: userConfig.config, delegate: self)
             TokenManager.shared.initSetIsLogin()
         }
     }

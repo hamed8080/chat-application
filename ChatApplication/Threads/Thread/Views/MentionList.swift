@@ -5,6 +5,7 @@
 //  Created by hamed on 3/13/23.
 //
 
+import ChatAppViewModels
 import SwiftUI
 
 struct MentionList: View {

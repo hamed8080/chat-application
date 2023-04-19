@@ -5,19 +5,9 @@
 //  Created by hamed on 3/13/23.
 //
 
+import ChatAppUI
+import ChatAppViewModels
 import SwiftUI
-
-enum ThreadSheetType {
-    case attachment
-    case dropItems
-    case exportMessagesFile
-    case datePicker
-    case threadPicker
-    case locationPicker
-    case contactPicker
-    case filePicker
-    case galleryPicker
-}
 
 struct ThreadSheetView: View {
     @EnvironmentObject var viewModel: ThreadViewModel

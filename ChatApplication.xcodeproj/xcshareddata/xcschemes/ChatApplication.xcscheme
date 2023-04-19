@@ -44,8 +44,105 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES">
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:ChatApplication.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AdditiveTests"
+               BuildableName = "AdditiveTests"
+               BlueprintName = "AdditiveTests"
+               ReferencedContainer = "container:../Additive">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AsyncTests"
+               BuildableName = "AsyncTests"
+               BlueprintName = "AsyncTests"
+               ReferencedContainer = "container:../Async">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ChatTests"
+               BuildableName = "ChatTests"
+               BlueprintName = "ChatTests"
+               ReferencedContainer = "container:../Chat">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "LoggerTests"
+               BuildableName = "LoggerTests"
+               BlueprintName = "LoggerTests"
+               ReferencedContainer = "container:../Logger">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AdditiveUITests"
+               BuildableName = "AdditiveUITests"
+               BlueprintName = "AdditiveUITests"
+               ReferencedContainer = "container:../AdditiveUI">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AdditiveUITests"
+               BuildableName = "AdditiveUITests"
+               BlueprintName = "AdditiveUITests"
+               ReferencedContainer = "container:../AdditiveUI">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AdditiveUITests"
+               BuildableName = "AdditiveUITests"
+               BlueprintName = "AdditiveUITests"
+               ReferencedContainer = "container:../AdditiveUI">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ChatExtensionsTests"
+               BuildableName = "ChatExtensionsTests"
+               BlueprintName = "ChatExtensionsTests"
+               ReferencedContainer = "container:../ChatExtensions">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ChatModelsTests"
+               BuildableName = "ChatModelsTests"
+               BlueprintName = "ChatModelsTests"
+               ReferencedContainer = "container:../ChatModels">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

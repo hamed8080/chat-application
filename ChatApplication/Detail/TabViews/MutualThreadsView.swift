@@ -5,6 +5,7 @@
 //  Created by hamed on 3/26/23.
 //
 
+import ChatAppViewModels
 import SwiftUI
 
 struct MutualThreadsView: View {

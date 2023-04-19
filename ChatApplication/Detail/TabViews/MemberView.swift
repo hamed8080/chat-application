@@ -6,6 +6,9 @@
 //
 
 import Chat
+import ChatAppModels
+import ChatAppUI
+import ChatAppViewModels
 import SwiftUI
 
 struct MemberView: View {
@@ -35,14 +38,6 @@ struct MemberView: View {
         .ignoresSafeArea(.all)
         .padding(.bottom)
     }
-}
-
-enum SearchParticipantType: String, CaseIterable, Identifiable {
-    var id: Self { self }
-    case name = "Name"
-    case username = "User Name"
-    case cellphoneNumber = "Mobile"
-    case admin = "Admin"
 }
 
 struct ParticipantSearchView: View {

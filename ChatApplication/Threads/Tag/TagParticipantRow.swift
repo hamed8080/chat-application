@@ -6,18 +6,15 @@
 //
 
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct TagParticipantRow: View {
     var tag: Tag
     var tagParticipant: TagParticipant
-    @ObservedObject var viewModel: TagsViewModel
-
-    init(tag: Tag, tagParticipant: TagParticipant, viewModel: TagsViewModel) {
-        self.tag = tag
-        self.tagParticipant = tagParticipant
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: TagsViewModel
 
     var body: some View {
         HStack {

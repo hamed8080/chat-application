@@ -6,6 +6,9 @@
 //
 
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import Combine
 import SwiftUI
 
@@ -38,14 +41,14 @@ struct ThreadRow: View {
                             .foregroundColor(Color.gray)
                     }
                     Spacer()
-                    if let timeString = thread.time?.date.timeAgoSinceDatecCondence {
+                    if let timeString = thread.time?.date.timeAgoSinceDateCondense {
                         Text(timeString)
                             .lineLimit(1)
                             .font(.iransansCaption2)
                             .foregroundColor(.secondary)
                     }
 
-                    if let lastMessageSentStatus = thread.messageStatusIcon {
+                    if let lastMessageSentStatus = thread.messageStatusIcon(currentUserId: AppState.shared.user?.id) {
                         Image(uiImage: lastMessageSentStatus.icon)
                             .resizable()
                             .frame(width: 14, height: 14)
@@ -249,7 +252,7 @@ struct ConversationCallMessageType: View {
         HStack(alignment: .center) {
             if let time = message.time {
                 let date = Date(milliseconds: Int64(time))
-                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDatecCondence ?? "")")
+                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDateCondense ?? "")")
                     .font(.footnote)
                     .foregroundColor(color == .dark ? .white.opacity(0.7) : .black.opacity(0.7))
                     .padding(2)

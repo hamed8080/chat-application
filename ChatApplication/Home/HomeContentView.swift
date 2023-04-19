@@ -6,12 +6,15 @@
 //
 
 import Chat
+import ChatAppModels
+import ChatAppUI
+import ChatAppViewModels
 import Combine
 import SwiftUI
 import Swipy
 
 struct HomeContentView: View {
-    @StateObject var container = ObjectsContainer()
+    @StateObject var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
     @StateObject var appState = AppState.shared
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @Environment(\.colorScheme) var colorScheme
@@ -23,7 +26,7 @@ struct HomeContentView: View {
                 .environmentObject(container.tokenVM)
                 .environmentObject(appState)
         } else {
-            NavigationSplitView {
+            NavigationSplitView(columnVisibility: $container.columnVisibility) {
                 SideBar()
             } content: {
                 if container.navVM.isThreadType {
@@ -57,7 +60,9 @@ struct HomeContentView: View {
             .toast(
                 isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
                 title: "An error had happened with code: \(appState.error?.code ?? 0)",
-                message: appState.error?.message ?? ""
+                message: appState.error?.message ?? "",
+                titleFont: .title2,
+                messageFont: .subheadline
             ) {
                 Image(systemName: "xmark.square.fill")
                     .resizable()
@@ -98,7 +103,7 @@ struct SideBar: View {
                     DispatchQueue.main.async {
                         if item.user.id == container.userConfigsVM.currentUserConfig?.id { return }
                         ChatManager.activeInstance?.dispose()
-                        container.userConfigsVM.switchToUser(item)
+                        container.userConfigsVM.switchToUser(item, delegate: ChatDelegateImplementation.sharedInstance)
                         container.reset()
                     }
                 }
@@ -211,7 +216,7 @@ struct DetailContentView: View {
 }
 
 struct HomePreview: View {
-    @State var container = ObjectsContainer()
+    @State var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
     var body: some View {
         HomeContentView(container: container)
             .onAppear {

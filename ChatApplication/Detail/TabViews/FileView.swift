@@ -6,6 +6,8 @@
 //
 
 import Chat
+import ChatAppUI
+import ChatModels
 import SwiftUI
 
 struct FileView: View {

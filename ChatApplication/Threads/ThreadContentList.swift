@@ -6,6 +6,9 @@
 //
 
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import Combine
 import SwiftUI
 
@@ -71,7 +74,7 @@ struct ThreadContentList: View {
         Button {
             threadsVM.toggleThreadContactPicker.toggle()
         } label: {
-            Label("Start new chat", systemImage: "plus")
+            Label("Start new chat", systemImage: "plus.square")
         }
 
         Menu {
@@ -104,7 +107,7 @@ struct ThreadContentList: View {
 }
 
 private struct Preview: View {
-    @State var container = ObjectsContainer()
+    @State var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
 
     var body: some View {
         NavigationStack {

@@ -6,6 +6,9 @@
 //
 
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct ThreadPinMessage: View {

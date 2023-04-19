@@ -5,6 +5,11 @@
 //  Created by Hamed Hosseini on 9/17/21.
 //
 
+import AdditiveUI
+import ChatAppExtensions
+import ChatAppModels
+import ChatAppUI
+import ChatAppViewModels
 import SwiftUI
 
 struct LoginView: View {
@@ -210,47 +215,27 @@ struct LoginContentView: View {
     }
 }
 
-struct ErrorView: View {
-    var error: String
-
-    var body: some View {
-        HStack {
-            Text(error.capitalizingFirstLetter())
-                .font(.iransansCaption2)
-                .foregroundColor(.red.opacity(0.7))
-        }
-        .padding()
-        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-        .background(.red.opacity(0.2))
-        .cornerRadius(8)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.red.opacity(0.7), lineWidth: 1)
-        )
-    }
-}
-
 struct LoginView_Previews: PreviewProvider {
+    static let loginVewModel = LoginViewModel(delegate: ChatDelegateImplementation.sharedInstance)
     static var previews: some View {
         NavigationStack {
-            let vm = LoginViewModel()
             VerifyContentView()
-                .environmentObject(vm)
+                .environmentObject(loginVewModel)
                 .onAppear {
-                    vm.text = "09369161601"
-                    vm.objectWillChange.send()
+                    loginVewModel.text = "09369161601"
+                    loginVewModel.objectWillChange.send()
                 }
         }
         .previewDisplayName("VerifyContentView")
 
         NavigationStack {
             LoginContentView()
-                .environmentObject(LoginViewModel())
+                .environmentObject(loginVewModel)
         }
         .previewDisplayName("LoginContentView")
 
         LoginView()
-            .environmentObject(LoginViewModel())
+            .environmentObject(loginVewModel)
             .previewDisplayName("LoginView")
     }
 }

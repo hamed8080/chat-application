@@ -5,7 +5,11 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
+import AdditiveUI
 import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct AddThreadToTagsView: View {
@@ -92,10 +96,7 @@ struct AddThreadToTags_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
         let vm = TagsViewModel()
-        AddThreadToTagsView(viewModel: vm, onCompleted: { _ in
-        })
-        .onAppear {
-            vm.setupPreview()
+        AddThreadToTagsView(viewModel: vm) { _ in
         }
         .environmentObject(appState)
     }

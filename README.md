@@ -3,7 +3,7 @@
 <img src="https://github.com/hamed8080/chat-application/raw/main/images/icon.png" width="64" height="64">
 <br />
 
-<img src="https://github.com/hamed8080/chat-application/raw/main/images/main.png"  width="960" height="640">
+<img src="https://github.com/hamed8080/chat-application/raw/main/images/main.png"  width="640" height="480">
 <br />
 
 ## Features
@@ -23,6 +23,11 @@ Add these two swift packages in Xcode dependencies section or `Package.swift` fi
 &ast; Phone number registeration is required for running the app.
 <br />
 Go to [link](https://accounts.pod.ir/) and register then login only with your phone number.
+
+
+## Dependency Graph of whole application and SDKs
+<img src="https://github.com/hamed8080/chat-application/raw/main/images/dependency.png"  width="256" height="480">
+<br />
 
 
 ## [Documentation](https://hamed8080.gitlab.io/chat/documentation/chat/)
