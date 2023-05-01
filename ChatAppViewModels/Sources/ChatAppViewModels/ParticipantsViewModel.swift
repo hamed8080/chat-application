@@ -69,7 +69,7 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public func searchParticipants(_ searchText: String) {
         isLoading = true
-        let req = ThreadParticipantsRequest(threadId: thread?.id ?? -1)
+        var req = ThreadParticipantsRequest(threadId: thread?.id ?? -1)
         switch searchType {
         case .name:
             req.name = searchText

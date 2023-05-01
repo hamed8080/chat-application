@@ -90,14 +90,15 @@ public final class DetailViewModel: ObservableObject {
             let width = Int(image.size.width)
             let height = Int(image.size.height)
             imageRequest = UploadImageRequest(data: image.pngData() ?? Data(),
-                                              hC: height,
-                                              wC: width,
                                               fileExtension: "png",
-                                              fileName: assetResources.first?.originalFilename,
+                                              fileName: assetResources.first?.originalFilename ?? "",
+                                              isPublic: true,
                                               mimeType: "image/png",
-                                              originalName: assetResources.first?.originalFilename,
+                                              originalName: assetResources.first?.originalFilename ?? "",
                                               userGroupHash: thread?.userGroupHash,
-                                              isPublic: true)
+                                              hC: height,
+                                              wC: width
+            )
         }
 
         let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)

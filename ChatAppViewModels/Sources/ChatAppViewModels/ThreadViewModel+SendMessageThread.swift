@@ -91,13 +91,14 @@ extension ThreadViewModel: SendMessageThreadProtocol {
             let width = Int(image?.size.width ?? 0)
             let height = Int(image?.size.height ?? 0)
             let imageRequest = UploadImageRequest(data: image?.jpegData(compressionQuality: 1.0) ?? Data(),
-                                                  hC: height,
-                                                  wC: width,
-                                                  fileName: imageItem.fileName,
+                                                  fileName: imageItem.fileName ?? "",
                                                   mimeType: "image/jpg",
-                                                  userGroupHash: thread?.userGroupHash)
+                                                  userGroupHash: thread?.userGroupHash,
+                                                  hC: height,
+                                                  wC: width
+            )
             let textRequest = SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
-            let request = UploadFileWithTextMessage(uploadFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: thread)
+            let request = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: thread)
             request.id = -index
             appendMessages([request])
         }

@@ -35,7 +35,7 @@ public extension Message {
     var uploadFile: UploadWithTextMessageProtocol? { self as? UploadWithTextMessageProtocol }
     var fileExtension: String? { uploadFile?.uploadFileRequest.fileExtension }
     var fileName: String? { uploadFile?.uploadFileRequest.fileName }
-    var type: MessageType? { messageType ?? .unknown }
+    var type: ChatModels.MessageType? { messageType ?? .unknown }
     var isTextMessageType: Bool { type == .text || isFileType }
     func isMe(currentUserId: Int?) -> Bool { (ownerId ?? 0 == currentUserId ?? 0) || isUnsentMessage || isUploadMessage }
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol }
@@ -165,7 +165,7 @@ public extension Message {
     }
 
     var isFileType: Bool {
-        let fileTypes: [MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice]
+        let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice]
         return fileTypes.contains(messageType ?? .unknown)
     }
 

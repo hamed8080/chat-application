@@ -186,8 +186,8 @@ public final class ContactsViewModel: ObservableObject {
     public func addContact(contactValue: String, firstName: String?, lastName: String?) {
         let isPhone = validatePhone(value: contactValue)
         let req: AddContactRequest = isPhone ?
-            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
-            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
+            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
+            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
         ChatManager.activeInstance?.addContact(req) { [weak self] response in
             if let contacts = response.result {
                 self?.insertContactsAtTop(contacts)
@@ -241,8 +241,8 @@ public final class ContactsViewModel: ObservableObject {
     public func updateContact(contact _: Contact, contactValue: String, firstName: String?, lastName: String?) {
         let isPhone = validatePhone(value: contactValue)
         let req: AddContactRequest = isPhone ?
-            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, uniqueId: nil) :
-            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, uniqueId: nil)
+            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
+            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
         ChatManager.activeInstance?.addContact(req) { [weak self] response in
             if let updatedContact = response.result?.first {
                 if let index = self?.contacts.firstIndex(where: { $0.id == updatedContact.id }) {

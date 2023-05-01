@@ -13,7 +13,7 @@ public final class AttachmentsViewModel: ObservableObject {
     public func getPictures() {
         guard let threadId = thread?.id else { return }
 
-        ChatManager.activeInstance?.getHistory(.init(threadId: threadId, count: model.count, messageType: MessageType.podSpacePicture.rawValue, offset: model.offset)) { [weak self] response in
+        ChatManager.activeInstance?.getHistory(.init(threadId: threadId, count: model.count, messageType: ChatModels.MessageType.podSpacePicture.rawValue, offset: model.offset)) { [weak self] response in
             if let messages = response.result {
                 self?.model.appendMessages(messages: messages)
                 self?.model.setHasNext(response.pagination?.hasNext ?? false)
