@@ -86,7 +86,7 @@ public final class LoginViewModel: ObservableObject {
         showLoading(false)
     }
 
-    fileprivate func saveTokenAndCreateChatObject(_ ssoToken: SSOTokenResponseResult) async {
+    public func saveTokenAndCreateChatObject(_ ssoToken: SSOTokenResponseResult) async {
         await MainActor.run {
             TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
             let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: selectedServerType)

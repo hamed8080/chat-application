@@ -1,9 +1,8 @@
 //
-//  MyWidget.swift
-//  MyWidget
+// MyWidget.swift
+// Copyright (c) 2022 MyWidgetExtension
 //
-//  Created by Hamed Hosseini on 11/21/21.
-//
+// Created by Hamed Hosseini on 12/16/22
 
 import AdditiveUI
 import Chat
@@ -17,10 +16,8 @@ import WidgetKit
 var previewThreads: [ThreadWithImageData] {
     var threads: [ThreadWithImageData] = []
     for i in 1 ... 12 {
-        let imageURL = Bundle.main.url(forResource: "avatar\(i)", withExtension: "jpeg")
-        threads.append(.init(thread: Conversation(id: i, title: "Ashly peterson"), imageURL: imageURL))
+        threads.append(.init(thread: Conversation(id: i, title: "Ashly peterson"), imageURL: nil, previewImage: "avatar\(i)"))
     }
-    threads.append(.init(thread: Conversation(id: 12, title: "Ashly peterson"), imageURL: nil))
     return threads
 }
 
@@ -36,7 +33,7 @@ struct Provider: IntentTimelineProvider {
         completion(entry)
     }
 
-    func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+    func getTimeline(for _: ConfigurationIntent, in _: Context, completion: @escaping (Timeline<SimpleEntry>) -> Void) {
         guard let threadsData = threadsData, let threads = try? JSONDecoder().decode([Conversation].self, from: threadsData)
         else {
             return
@@ -59,10 +56,12 @@ struct ThreadWithImageData: Identifiable {
     var id: Int { thread.id ?? 0 }
     let thread: Conversation
     var imageURL: URL?
+    var previewImage: String?
 }
 
 struct SimpleEntry: TimelineEntry {
     var date: Date = .init()
+    var previewImage: String?
     let threads: [ThreadWithImageData]
 }
 
@@ -119,6 +118,13 @@ struct BlurNameWidgetView: View {
                             .resizable()
                             .scaledToFill()
                     }
+
+                    if let previewImageName = thread.previewImage {
+                        Image(previewImageName)
+                            .resizable()
+                            .scaledToFill()
+                    }
+
                     VStack {
                         Spacer()
                         HStack {
@@ -187,6 +193,12 @@ struct BlurNameWidgetView: View {
                         .cornerRadius(26)
                     }
                     .frame(minHeight: 180)
+                }
+
+                if let previewImageName = thread.previewImage {
+                    Image(previewImageName)
+                        .resizable()
+                        .scaledToFill()
                 }
                 VStack {
                     Spacer()
@@ -260,6 +272,11 @@ struct SimpleWidgetView: View {
                             .resizable()
                             .scaledToFill()
                     }
+                    if let previewImageName = thread.previewImage {
+                        Image(previewImageName)
+                            .resizable()
+                            .scaledToFill()
+                    }
                     VStack {
                         Spacer()
                         HStack {
@@ -327,6 +344,11 @@ struct SimpleWidgetView: View {
                 ZStack {
                     Text(String(thread.thread.title?.first ?? " ").uppercased())
                         .font(.title2.weight(.bold))
+                    if let previewImageName = thread.previewImage {
+                        Image(previewImageName)
+                            .resizable()
+                            .scaledToFill()
+                    }
                 }
                 .frame(width: 52, height: 52)
                 .background(.ultraThinMaterial)
@@ -359,14 +381,6 @@ struct BlurNameWidget: Widget {
         }
         .configurationDisplayName("Chat Widgets")
         .description("Choose widget to access quicker chats you like!")
-    }
-}
-
-@main
-struct WidgetGroup: WidgetBundle {
-    var body: some Widget {
-        SimpleWidget()
-        BlurNameWidget()
     }
 }
 

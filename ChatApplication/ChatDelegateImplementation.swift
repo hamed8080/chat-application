@@ -7,6 +7,7 @@
 
 import Async
 import Chat
+import ChatAppModels
 import ChatAppViewModels
 import ChatCore
 import ChatModels

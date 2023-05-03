@@ -227,6 +227,15 @@ public final class ThreadsViewModel: ObservableObject {
         //        ChatManager.activeInstance?.
     }
 
+    public func makeThreadPublic(_ thread: Conversation) {
+        guard let threadId = thread.id else { return }
+        ChatManager.activeInstance?.changeThreadType(.init(threadId: threadId, type: .publicGroup)) { [weak self] response in
+            if let index = self?.threads.firstIndex(where: {$0.id == response.result?.id })  {
+                self?.threads[index].type = .publicGroup
+            }
+        }
+    }
+
     public func showAddParticipants(_ thread: Conversation) {
         selectedThraed = thread
         showAddParticipants.toggle()

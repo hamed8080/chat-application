@@ -162,6 +162,14 @@ struct ThreadRow: View {
                     Label("Invite", systemImage: "person.crop.circle.badge.plus")
                 }
             }
+
+            if thread.isPrivate {
+                Button {
+                    viewModel.makeThreadPublic(thread)
+                } label: {
+                    Label("Switch to public thread", systemImage: "arrow.triangle.swap")
+                }
+            }
         }
     }
 }
