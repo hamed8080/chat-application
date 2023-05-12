@@ -71,8 +71,18 @@ struct ThreadContentList: View {
     }
 
     @ViewBuilder var trailingToolbarViews: some View {
-        Button {
-            threadsVM.toggleThreadContactPicker.toggle()
+        Menu {
+            Button {
+                threadsVM.toggleThreadContactPicker.toggle()
+            } label: {
+                Label("Start a new Chat", systemImage: "bubble.left.and.bubble.right.fill")
+            }
+
+            Button {
+
+            } label: {
+                Label("Create a new Bot", systemImage: "face.dashed.fill")
+            }
         } label: {
             Label("Start new chat", systemImage: "plus.square")
         }
