@@ -12,10 +12,6 @@ extension View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
     }
 
-    var isIpad: Bool {
-        UIDevice.current.userInterfaceIdiom == .pad
-    }
-
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }

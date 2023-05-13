@@ -5,6 +5,8 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import ChatAppUI
+import ChatAppViewModels
 import SwiftUI
 
 struct CallsHistoryContentList: View {
@@ -71,8 +73,5 @@ struct CallsHistoryContentList_Previews: PreviewProvider {
             .environmentObject(viewModel)
             .environmentObject(AppState.shared)
             .environmentObject(CallViewModel.shared)
-            .onAppear {
-                viewModel.setupPreview()
-            }
     }
 }

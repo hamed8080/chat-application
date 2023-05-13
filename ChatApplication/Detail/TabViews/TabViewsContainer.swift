@@ -5,7 +5,9 @@
 //  Created by hamed on 3/7/22.
 //
 
-import FanapPodChatSDK
+import Chat
+import ChatAppUI
+import ChatModels
 import SwiftUI
 
 struct TabViewsContainer: View {
@@ -13,6 +15,7 @@ struct TabViewsContainer: View {
     @State var selectedTabIndex: Int
     let tabs: [Tab] = [
         .init(title: "Members", icon: "person"),
+        .init(title: "Mutual Groups", icon: "person.3"),
         .init(title: "Media", icon: "play.tv"),
         .init(title: "File", icon: "doc"),
         .init(title: "Music", icon: "music.note"),
@@ -21,23 +24,25 @@ struct TabViewsContainer: View {
         .init(title: "Gif", icon: "text.below.photo"),
     ]
     var body: some View {
-        Tabs(selectedTabIndex: $selectedTabIndex, tabs: tabs)
+        Tabs(selectedTabIndex: $selectedTabIndex, tabs: tabs, thread: thread)
         switch selectedTabIndex {
         case 0:
             MemberView()
                 .ignoresSafeArea(.all)
-                .environmentObject(ParticipantsViewModel(thread: thread))
         case 1:
-            MediaView(thread: thread)
+            MutualThreadsView()
+                .ignoresSafeArea(.all)
         case 2:
-            FileView(thread: thread)
+            MediaView(thread: thread)
         case 3:
-            MusicView(thread: thread)
+            FileView(thread: thread)
         case 4:
-            VoiceView(thread: thread)
+            MusicView(thread: thread)
         case 5:
-            LinkView(thread: thread)
+            VoiceView(thread: thread)
         case 6:
+            LinkView(thread: thread)
+        case 7:
             GIFView(thread: thread)
         default:
             EmptyView()
@@ -48,6 +53,7 @@ struct TabViewsContainer: View {
 struct Tabs: View {
     @Binding var selectedTabIndex: Int
     let tabs: [Tab]
+    let thread: Conversation
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -55,28 +61,33 @@ struct Tabs: View {
                 ForEach(tabs) { tab in
                     let index = tabs.firstIndex(where: { $0.title == tab.title })
 
-                    Button {
-                        selectedTabIndex = index ?? 0
-                    } label: {
-                        VStack {
-                            HStack(spacing: 8) {
-                                Image(systemName: tab.icon)
-                                    .frame(width: 24, height: 24)
-                                    .foregroundColor(Color.gray)
-                                    .fixedSize()
-                                Text(tab.title)
-                                    .fixedSize()
-                            }
-                            .padding([.trailing, .leading], 8)
+                    if index == 1, thread.group == true {
+                        EmptyView()
+                    } else {
+                        Button {
+                            selectedTabIndex = index ?? 0
+                        } label: {
+                            VStack {
+                                HStack(spacing: 8) {
+                                    Image(systemName: tab.icon)
+                                        .frame(width: 24, height: 24)
+                                        .foregroundColor(Color.gray)
+                                        .fixedSize()
+                                    Text(tab.title)
+                                        .font(.iransansBoldBody)
+                                        .fixedSize()
+                                }
+                                .padding([.trailing, .leading], 8)
 
-                            if index == selectedTabIndex {
-                                Rectangle()
-                                    .fill(Color.blue)
-                                    .frame(height: 3)
+                                if index == selectedTabIndex {
+                                    Rectangle()
+                                        .fill(Color.blue)
+                                        .frame(height: 3)
+                                }
                             }
                         }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .animation(.spring(), value: selectedTabIndex)

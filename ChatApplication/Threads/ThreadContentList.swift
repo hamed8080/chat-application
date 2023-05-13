@@ -5,8 +5,11 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
+import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import Combine
-import FanapPodChatSDK
 import SwiftUI
 
 struct ThreadContentList: View {
@@ -68,10 +71,18 @@ struct ThreadContentList: View {
     }
 
     @ViewBuilder var trailingToolbarViews: some View {
-        Button {
-            threadsVM.toggleThreadContactPicker.toggle()
+        Menu {
+            Button {
+                threadsVM.toggleThreadContactPicker.toggle()
+            } label: {
+                Label("Start a new Chat", systemImage: "bubble.left.and.bubble.right.fill")
+            }
+
+            Button {} label: {
+                Label("Create a new Bot", systemImage: "face.dashed.fill")
+            }
         } label: {
-            Label("Start new chat", systemImage: "plus")
+            Label("Start new chat", systemImage: "plus.square")
         }
 
         Menu {
@@ -104,7 +115,7 @@ struct ThreadContentList: View {
 }
 
 private struct Preview: View {
-    @State var container = ObjectsContainer()
+    @State var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
 
     var body: some View {
         NavigationStack {

@@ -5,7 +5,9 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import FanapPodChatSDK
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct CallRow: View {
@@ -32,8 +34,9 @@ struct CallRow: View {
                         .frame(width: 12, height: 12)
                         .foregroundColor(call.isIncomingCall(currentUserId: AppState.shared.user?.id) ? Color.red : Color.green)
 
-                    if let createTime = call.createTime, let date = Date(milliseconds: Int64(createTime)) {
-                        Text(date.timeAgoSinceDatecCondence ?? "")
+                    if let createTime = call.createTime {
+                        let date = Date(milliseconds: Int64(createTime))
+                        Text(date.timeAgoSinceDateCondense ?? "")
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                     }

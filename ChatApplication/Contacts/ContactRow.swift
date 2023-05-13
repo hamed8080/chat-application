@@ -5,7 +5,11 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import FanapPodChatSDK
+import AdditiveUI
+import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct ContactRow: View {
@@ -23,7 +27,6 @@ struct ContactRow: View {
             VStack {
                 HStack(spacing: 0) {
                     Image(systemName: viewModel.isSelected(contact: contact) ? "checkmark.circle" : "circle")
-                        .font(.title)
                         .frame(width: 22, height: 22, alignment: .center)
                         .foregroundColor(Color.blue)
                         .padding(24)
@@ -34,7 +37,8 @@ struct ContactRow: View {
                             viewModel.toggleSelectedContact(contact: contact)
                         }
                     ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
-                        .font(.system(size: 16).weight(.heavy))
+                        .id("\(contact.image ?? "")\(contact.id ?? 0)")
+                        .font(.iransansBody)
                         .foregroundColor(.white)
                         .frame(width: 64, height: 64)
                         .background(Color.blue.opacity(0.4))
@@ -44,18 +48,18 @@ struct ContactRow: View {
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                             .padding(.leading, 16)
                             .lineLimit(1)
-                            .font(.headline)
-                        if let notSeenDuration = ContactRow.getDate(notSeenDuration: contact.notSeenDuration) {
+                            .font(.iransansBoldSubtitle)
+                        if let notSeenDuration = contact.notSeenString {
                             Text(notSeenDuration)
                                 .padding(.leading, 16)
-                                .font(.headline.weight(.medium))
+                                .font(.iransansCaption)
                                 .foregroundColor(Color.gray)
                         }
                     }
                     Spacer()
                     if contact.blocked == true {
                         Text("Blocked")
-                            .font(.caption.weight(.medium))
+                            .font(.iransansCaption2)
                             .padding(4)
                             .foregroundColor(Color.red)
                             .overlay(
@@ -120,15 +124,6 @@ struct ContactRow: View {
                     navigateToAddOrEditContact.toggle()
                 }
             }
-        }
-    }
-
-    static func getDate(notSeenDuration: Int?) -> String? {
-        if let notSeenDuration = notSeenDuration {
-            let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(notSeenDuration)
-            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDatecCondence
-        } else {
-            return nil
         }
     }
 }

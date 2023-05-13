@@ -5,8 +5,10 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Chat
+import ChatAppUI
+import ChatModels
 import Combine
-import FanapPodChatSDK
 import SwiftUI
 
 struct ParticipantRow: View {
@@ -16,6 +18,7 @@ struct ParticipantRow: View {
         Button(action: {}, label: {
             HStack {
                 ImageLaoderView(url: participant.image, userName: participant.name ?? participant.username)
+                    .id("\(participant.image ?? "")\(participant.id ?? 0)")
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
                     .frame(width: 48, height: 48)
@@ -60,6 +63,6 @@ struct ParticipantRow: View {
 
 struct ParticipantRow_Previews: PreviewProvider {
     static var previews: some View {
-        ParticipantRow(participant: MockData.participant)
+        ParticipantRow(participant: MockData.participant(1))
     }
 }

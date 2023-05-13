@@ -5,7 +5,9 @@
 //  Created by Hamed Hosseini on 9/23/21.
 //
 
-import FanapPodChatSDK
+import Chat
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 enum ContactType: String, Identifiable, CaseIterable {

@@ -5,7 +5,9 @@
 //  Created by hamed on 3/7/22.
 //
 
-import FanapPodChatSDK
+import Chat
+import ChatAppUI
+import ChatModels
 import SwiftUI
 
 struct FileView: View {

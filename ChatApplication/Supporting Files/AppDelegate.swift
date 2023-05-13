@@ -5,22 +5,21 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import ChatAppViewModels
 import PushKit
 import UIKit
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate, PKPushRegistryDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate, PKPushRegistryDelegate {
     class var shared: AppDelegate! {
         UIApplication.shared.delegate as? AppDelegate
     }
 
-    var providerDelegate: ProviderDelegate?
-    let callMananger = CallManager()
-
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        providerDelegate = ProviderDelegate(callManager: callMananger)
+        AppState.shared.providerDelegate = ProviderDelegate(callManager: AppState.shared.callMananger)
         ChatDelegateImplementation.sharedInstance.createChatObject()
+        UIFont.register()
         return true
     }
 
@@ -52,6 +51,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PKPushRegistryDelegate {
         else {
             return
         }
-        providerDelegate?.reportIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo, completion: nil)
+        AppState.shared.providerDelegate?.reportIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo, completion: nil)
     }
 }

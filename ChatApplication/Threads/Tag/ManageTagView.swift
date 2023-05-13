@@ -5,7 +5,11 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
-import FanapPodChatSDK
+import AdditiveUI
+import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct ManageTagView: View {
@@ -35,6 +39,7 @@ struct ManageTagView: View {
                     HStack {
                         Spacer()
                         Text("Manage folders")
+                            .font(.iransansSubtitle)
                             .foregroundColor(.gray)
                         Spacer()
                     }
@@ -81,6 +86,7 @@ struct ManageTagView: View {
                     } label: {
                         Label {
                             Text("Done")
+                                .font(.iransansBody)
                         } icon: {
                             Image(systemName: "square.and.arrow.down")
                         }
@@ -102,10 +108,7 @@ struct ManageTagView_Previews: PreviewProvider {
     static var previews: some View {
         let appState = AppState.shared
         let vm = TagsViewModel()
-        ManageTagView(tag: MockData.tag, viewModel: vm, onCompleted: { _ in
-        })
-        .onAppear {
-            vm.setupPreview()
+        ManageTagView(tag: MockData.tag, viewModel: vm) { _ in
         }
         .environmentObject(appState)
     }

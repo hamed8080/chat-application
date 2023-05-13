@@ -5,7 +5,9 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
-import FanapPodChatSDK
+import Chat
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct AddParticipantsToThreadView: View {

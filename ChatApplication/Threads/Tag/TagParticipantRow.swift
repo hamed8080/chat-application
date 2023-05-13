@@ -5,19 +5,16 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import FanapPodChatSDK
+import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct TagParticipantRow: View {
     var tag: Tag
     var tagParticipant: TagParticipant
-    @ObservedObject var viewModel: TagsViewModel
-
-    init(tag: Tag, tagParticipant: TagParticipant, viewModel: TagsViewModel) {
-        self.tag = tag
-        self.tagParticipant = tagParticipant
-        self.viewModel = viewModel
-    }
+    @StateObject var viewModel: TagsViewModel
 
     var body: some View {
         HStack {
@@ -25,6 +22,7 @@ struct TagParticipantRow: View {
                 HStack {
                     if let thread = tagParticipant.conversation {
                         ImageLaoderView(url: tagParticipant.conversation?.computedImageURL, metaData: thread.metadata, userName: tagParticipant.conversation?.title)
+                            .id("\(tagParticipant.conversation?.computedImageURL ?? "")\(tagParticipant.conversation?.id ?? 0)")
                             .font(.system(size: 16).weight(.heavy))
                             .foregroundColor(.white)
                             .frame(width: 28, height: 28)
@@ -32,7 +30,7 @@ struct TagParticipantRow: View {
                             .cornerRadius(14)
                         VStack(alignment: .leading) {
                             Text(thread.title ?? "")
-                                .font(.headline)
+                                .font(.iransansBody)
                                 .foregroundColor(Color.gray)
                         }
                         Spacer()

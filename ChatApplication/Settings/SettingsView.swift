@@ -5,7 +5,11 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
-import FanapPodChatSDK
+import AdditiveUI
+import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct SettingsView: View {
@@ -25,6 +29,7 @@ struct SettingsView: View {
                             .shadow(color: .black, radius: 20, x: 0, y: 0)
                             .overlay(
                                 ImageLaoderView(url: user?.image, userName: user?.username ?? user?.name, size: .LARG)
+                                    .id("\(user?.image ?? "")\(user?.id ?? 0)")
                                     .font(.system(size: 16).weight(.heavy))
                                     .foregroundColor(.white)
                                     .frame(width: 128, height: 128)
@@ -48,10 +53,10 @@ struct SettingsView: View {
                         Spacer()
                         VStack(spacing: 12) {
                             Text(user?.name ?? "")
-                                .font(.title.bold())
+                                .font(.iransansBoldTitle)
 
                             Text(user?.cellphoneNumber ?? "")
-                                .font(.subheadline)
+                                .font(.iransansSubheadline)
                         }
                         Spacer()
                     }
@@ -89,7 +94,9 @@ struct SettingsView: View {
                         }
                     }
 
-                    NavigationLink {} label: {
+                    NavigationLink {
+                        LogView()
+                    } label: {
                         HStack {
                             Image(systemName: "note.text")
                                 .foregroundColor(.purple)
@@ -101,7 +108,7 @@ struct SettingsView: View {
                         Button {
                             ChatManager.activeInstance?.logOut()
                             TokenManager.shared.clearToken()
-                            UserConfigManagerVM.instance.logout()
+                            UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
                             container.reset()
                         } label: {
                             HStack {
@@ -117,7 +124,7 @@ struct SettingsView: View {
                         TokenExpireView()
                     }
                 }
-                .font(.title3)
+                .font(.iransansSubheadline)
                 .padding(8)
             }
         }
@@ -131,7 +138,7 @@ struct SettingsView: View {
                         Text("Edit")
                     } icon: {
                         Image(systemName: "square.and.pencil")
-                            .font(.body.bold())
+                            .font(.iransansBody)
                     }
                 }
             }
@@ -153,10 +160,9 @@ struct TokenExpireView: View {
                 Image(systemName: "key.fill")
                     .foregroundColor(Color.yellow)
                     .frame(width: 24, height: 24)
-                if let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0))) {
-                    Text("Token expire in: \(secondToExpire)")
-                        .foregroundColor(Color.gray)
-                }
+                let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0)))
+                Text("Token expire in: \(secondToExpire)")
+                    .foregroundColor(Color.gray)
                 Spacer()
             }
             .onAppear {
@@ -170,7 +176,7 @@ struct SettingsMenu_Previews: PreviewProvider {
     @State static var dark: Bool = false
     @State static var show: Bool = false
     @State static var showBlackView: Bool = false
-    @StateObject static var container = ObjectsContainer()
+    @StateObject static var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
     static var vm = SettingViewModel()
 
     static var previews: some View {

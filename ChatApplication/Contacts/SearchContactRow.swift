@@ -5,7 +5,10 @@
 //  Created by Hamed Hosseini on 11/16/21.
 //
 
-import FanapPodChatSDK
+import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct SearchContactRow: View {
@@ -15,7 +18,8 @@ struct SearchContactRow: View {
     var body: some View {
         HStack {
             ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
-                .font(.system(size: 16).weight(.heavy))
+                .id("\(contact.image ?? "")\(contact.id ?? 0)")
+                .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 24, height: 24)
                 .background(Color.blue.opacity(0.4))
@@ -25,10 +29,10 @@ struct SearchContactRow: View {
                     .padding(.leading, 4)
                     .lineLimit(1)
                     .font(.headline)
-                if let notSeenDuration = ContactRow.getDate(notSeenDuration: contact.notSeenDuration) {
+                if let notSeenDuration = contact.notSeenString {
                     Text(notSeenDuration)
                         .padding(.leading, 4)
-                        .font(.headline.weight(.medium))
+                        .font(.iransansCaption3)
                         .foregroundColor(Color.gray)
                 }
 

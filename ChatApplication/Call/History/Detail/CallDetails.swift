@@ -5,27 +5,26 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Additive
+import ChatAppUI
+import ChatAppViewModels
 import SwiftUI
 
 struct CallDetails: View {
     @Environment(\.presentationMode) var presentationMode
-
     @StateObject var viewModel: CallDetailViewModel
 
     var body: some View {
         GeometryReader { reader in
             VStack(spacing: 0) {
-                CustomNavigationBar(title: "Call Detail") {
-                    presentationMode.wrappedValue.dismiss()
-                }
                 ZStack {
                     VStack(spacing: 12) {
                         VStack(alignment: .leading, spacing: 8) {
-                            if let startTime = viewModel.model.call.createTime, let date = Date(milliseconds: Int64(startTime)).timeAgoSinceDatecCondence {
+                            if let startTime = viewModel.model.call.createTime, let date = Date(milliseconds: Int64(startTime)).timeAgoSinceDateCondense {
                                 Text("Start: \(date)")
                             }
 
-                            if let endTime = viewModel.model.call.endTime, let date = Date(milliseconds: Int64(endTime)).timeAgoSinceDatecCondence {
+                            if let endTime = viewModel.model.call.endTime, let date = Date(milliseconds: Int64(endTime)).timeAgoSinceDateCondense {
                                 Text("End: \(date)")
                             }
                             Text(viewModel.model.call.isIncomingCall(currentUserId: AppState.shared.user?.id) ? "Incoming call" : "Outgoing call")
@@ -79,12 +78,5 @@ struct CallDetails_Previews: PreviewProvider {
         CallDetails(viewModel: viewModel)
             .environmentObject(AppState.shared)
             .environmentObject(CallViewModel.shared)
-            .onAppear {
-                viewModel.setupPreview()
-                viewModel.setupPreview()
-                viewModel.setupPreview()
-                viewModel.setupPreview()
-                viewModel.setupPreview()
-            }
     }
 }

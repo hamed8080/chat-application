@@ -5,7 +5,10 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
-import FanapPodChatSDK
+import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct StartThreadContactRow: View {
@@ -31,7 +34,8 @@ struct StartThreadContactRow: View {
                     }
 
                     ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
-                        .font(.system(size: 16).weight(.heavy))
+                        .id("\(contact.image ?? "")\(contact.id ?? 0)")
+                        .font(.iransansBody)
                         .foregroundColor(.white)
                         .frame(width: 32, height: 32)
                         .background(Color.blue.opacity(0.4))
@@ -41,11 +45,11 @@ struct StartThreadContactRow: View {
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                             .padding(.leading, 16)
                             .lineLimit(1)
-                            .font(.subheadline)
-                        if let notSeenDuration = getDate(contact: contact) {
+                            .font(.iransansBody)
+                        if let notSeenDuration = contact.notSeenString {
                             Text(notSeenDuration)
                                 .padding(.leading, 16)
-                                .font(.caption2.weight(.medium))
+                                .font(.iransansCaption2)
                                 .foregroundColor(Color.gray)
                         }
                     }
@@ -66,15 +70,6 @@ struct StartThreadContactRow: View {
         .animation(.spring(), value: isInMultiSelectMode)
         .animation(.easeInOut, value: isSelected)
         .contentShape(Rectangle())
-    }
-
-    func getDate(contact: Contact) -> String? {
-        if let notSeenDuration = contact.notSeenDuration {
-            let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(notSeenDuration)
-            return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDatecCondence
-        } else {
-            return nil
-        }
     }
 }
 

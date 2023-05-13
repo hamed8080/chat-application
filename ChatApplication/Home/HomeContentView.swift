@@ -5,13 +5,16 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Chat
+import ChatAppModels
+import ChatAppUI
+import ChatAppViewModels
 import Combine
-import FanapPodChatSDK
 import SwiftUI
 import Swipy
 
 struct HomeContentView: View {
-    @StateObject var container = ObjectsContainer()
+    @StateObject var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
     @StateObject var appState = AppState.shared
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @Environment(\.colorScheme) var colorScheme
@@ -25,14 +28,14 @@ struct HomeContentView: View {
                 .environmentObject(container.tokenVM)
                 .environmentObject(appState)
         } else {
-            NavigationSplitView {
+            NavigationSplitView(columnVisibility: $container.columnVisibility) {
                 SideBar()
             } content: {
                 if container.navVM.isThreadType {
                     ThreadContentList()
-                } else if container.navVM.selectedSideBarId == "contacts" {
+                } else if container.navVM.selectedSideBarId == "Contacts" {
                     ContactContentList()
-                } else if container.navVM.selectedSideBarId == "settings" {
+                } else if container.navVM.selectedSideBarId == "Settings" {
                     SettingsView()
                 } else if container.navVM.selectedSideBarId == "calls" {
                     CallsHistoryContentList()
@@ -57,6 +60,7 @@ struct HomeContentView: View {
             .environmentObject(container.tokenVM)
             .environmentObject(container.tagsVM)
             .environmentObject(container.userConfigsVM)
+            .environmentObject(container.logVM)
             .environmentObject(container.callViewModel)
             .environmentObject(container.callsHistoryVM)
             .animation(.easeInOut, value: showCallView)
@@ -90,7 +94,9 @@ struct HomeContentView: View {
             .toast(
                 isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
                 title: "An error had happened with code: \(appState.error?.code ?? 0)",
-                message: appState.error?.message ?? ""
+                message: appState.error?.message ?? "",
+                titleFont: .title2,
+                messageFont: .subheadline
             ) {
                 Image(systemName: "xmark.square.fill")
                     .resizable()
@@ -104,7 +110,7 @@ struct HomeContentView: View {
             .onAppear {
                 appState.navViewModel = container.navVM
                 container.navVM.threadViewModel = container.threadsVM
-                container.threadsVM.title = "chats"
+                container.threadsVM.title = "Chats"
                 container.navVM.contactsViewModel = container.contactsVM
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }
@@ -131,7 +137,7 @@ struct SideBar: View {
                     DispatchQueue.main.async {
                         if item.user.id == container.userConfigsVM.currentUserConfig?.id { return }
                         ChatManager.activeInstance?.dispose()
-                        container.userConfigsVM.switchToUser(item)
+                        container.userConfigsVM.switchToUser(item, delegate: ChatDelegateImplementation.sharedInstance)
                         container.reset()
                     }
                 }
@@ -189,23 +195,23 @@ struct UserConfigView: View {
     var body: some View {
         HStack {
             ImageLaoderView(url: userConfig.user.image, userName: userConfig.user.name)
+                .id("\(userConfig.user.image ?? "")\(userConfig.user.id ?? 0)")
                 .frame(width: 48, height: 48)
                 .cornerRadius(24)
                 .padding()
             VStack(alignment: .leading) {
                 Text(userConfig.user.name ?? "")
-                    .fontDesign(.rounded)
+                    .font(.iransansBoldSubtitle)
                     .foregroundColor(.primary)
 
                 HStack {
                     Text(userConfig.user.cellphoneNumber ?? "")
-                        .font(.subheadline)
+                        .font(.iransansBody)
                         .fontDesign(.rounded)
                         .foregroundColor(.secondary)
                     Spacer()
                     Text(Config.serverType(config: userConfig.config)?.rawValue ?? "")
-                        .font(.subheadline)
-                        .fontDesign(.rounded)
+                        .font(.iransansBody)
                         .foregroundColor(.green)
                 }
             }
@@ -226,17 +232,16 @@ struct DetailContentView: View {
                 .opacity(0.2)
             VStack(spacing: 16) {
                 Text("Nothing has been selected. You can start a conversation right now!")
-                    .font(.subheadline)
+                    .font(.iransansSubheadline)
                     .foregroundColor(.secondaryLabel)
                 Button {
                     threadsVM.toggleThreadContactPicker.toggle()
                 } label: {
                     Text("Start")
+                        .font(.iransansBoldBody)
                 }
-                .font(.body.bold())
             }
         }
-        .fontDesign(.rounded)
         .padding([.leading, .trailing], 48)
         .padding([.bottom, .top], 96)
         .background(Color.gray.opacity(0.1))
@@ -245,7 +250,7 @@ struct DetailContentView: View {
 }
 
 struct HomePreview: View {
-    @State var container = ObjectsContainer()
+    @State var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
     var body: some View {
         HomeContentView(container: container)
             .onAppear {

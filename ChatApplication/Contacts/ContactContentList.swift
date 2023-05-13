@@ -5,7 +5,10 @@
 //  Created by Hamed Hosseini on 6/5/21.
 //
 
-import FanapPodChatSDK
+import AdditiveUI
+import Chat
+import ChatAppUI
+import ChatAppViewModels
 import SwiftUI
 
 struct ContactContentList: View {
@@ -21,10 +24,10 @@ struct ContactContentList: View {
                 HStack(spacing: 4) {
                     Spacer()
                     Text("Total contacts:".uppercased())
-                        .font(.subheadline)
+                        .font(.iransansBody)
                         .foregroundColor(.gray)
                     Text(verbatim: "\(viewModel.maxContactsCountInServer)")
-                        .fontWeight(.bold)
+                        .font(.iransansBoldBody)
                     Spacer()
                 }
                 .noSeparators()
@@ -32,7 +35,7 @@ struct ContactContentList: View {
 
             if viewModel.searchedContacts.count > 0 {
                 Text("Searched contacts")
-                    .font(.subheadline)
+                    .font(.iransansSubheadline)
                     .foregroundColor(.gray)
                     .noSeparators()
                 ForEach(viewModel.searchedContacts) { contact in

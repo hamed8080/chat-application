@@ -5,8 +5,11 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Chat
+import ChatAppUI
+import ChatAppViewModels
+import ChatModels
 import Combine
-import FanapPodChatSDK
 import SwiftUI
 
 struct ThreadRow: View {
@@ -17,11 +20,12 @@ struct ThreadRow: View {
     var body: some View {
         HStack(spacing: 8) {
             ThreadImageView(thread: thread)
+                .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text(thread.computedTitle)
                         .lineLimit(1)
-                        .font(.headline.bold())
+                        .font(.iransansBoldSubheadline)
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()
@@ -29,15 +33,22 @@ struct ThreadRow: View {
                             .scaledToFit()
                             .foregroundColor(Color.gray)
                     }
+                    if thread.type == .channel {
+                        Image(systemName: "megaphone.fill")
+                            .resizable()
+                            .frame(width: 12, height: 12)
+                            .scaledToFit()
+                            .foregroundColor(Color.gray)
+                    }
                     Spacer()
-                    if let timeString = thread.time?.date.timeAgoSinceDatecCondence {
+                    if let timeString = thread.time?.date.timeAgoSinceDateCondense {
                         Text(timeString)
                             .lineLimit(1)
-                            .font(.footnote)
+                            .font(.iransansCaption2)
                             .foregroundColor(.secondary)
                     }
 
-                    if let lastMessageSentStatus = thread.messageStatusIcon {
+                    if let lastMessageSentStatus = thread.messageStatusIcon(currentUserId: AppState.shared.user?.id) {
                         Image(uiImage: lastMessageSentStatus.icon)
                             .resizable()
                             .frame(width: 14, height: 14)
@@ -50,7 +61,7 @@ struct ThreadRow: View {
                     Spacer()
                     if let unreadCountString = thread.unreadCountString {
                         Text(unreadCountString)
-                            .font(.system(size: 13))
+                            .font(.iransansCaption2)
                             .padding(8)
                             .frame(height: 24)
                             .frame(minWidth: 24)
@@ -153,6 +164,14 @@ struct ThreadRow: View {
                     Label("Invite", systemImage: "person.crop.circle.badge.plus")
                 }
             }
+
+            if thread.isPrivate {
+                Button {
+                    viewModel.makeThreadPublic(thread)
+                } label: {
+                    Label("Switch to public thread", systemImage: "arrow.triangle.swap")
+                }
+            }
         }
     }
 }
@@ -205,7 +224,7 @@ struct JoinToGroupCallView: View {
 }
 
 struct ThreadImageView: View {
-    var thread: Conversation
+    @State var thread: Conversation
     var body: some View {
         if thread.type == .selfThread {
             Circle()
@@ -222,7 +241,8 @@ struct ThreadImageView: View {
                 }
         } else {
             ImageLaoderView(url: thread.computedImageURL, metaData: thread.metadata, userName: thread.title)
-                .font(.system(size: 16).weight(.heavy))
+                .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
+                .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
                 .background(Color.blue.opacity(0.4))
@@ -241,6 +261,7 @@ struct ThreadLastMessageView: View {
         VStack(spacing: 2) {
             if let name = lastMsgVO?.participant?.name, thread.group == true {
                 Text(name)
+                    .font(.iransansBoldCaption)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     .lineLimit(1)
                     .foregroundColor(.orange)
@@ -255,12 +276,14 @@ struct ThreadLastMessageView: View {
                 }
                 if let message = thread.lastMessageVO?.message {
                     Text(message)
+                        .font(.iransansBody)
                         .lineLimit(thread.group == false ? 2 : 1)
                         .foregroundColor(.secondaryLabel)
                 }
 
                 if lastMsgVO?.isFileType == true, lastMsgVO?.message.isEmptyOrNil == true, let fileStringName = lastMsgVO?.fileStringName {
                     Text(fileStringName)
+                        .font(.iransansCaption2)
                         .lineLimit(thread.group == false ? 2 : 1)
                         .foregroundColor(.secondaryLabel)
                 }
@@ -274,8 +297,6 @@ struct ThreadLastMessageView: View {
         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         .multilineTextAlignment(.leading)
         .truncationMode(Text.TruncationMode.tail)
-        .font(.subheadline)
-        .fontDesign(.rounded)
         .clipped()
     }
 }
@@ -286,8 +307,9 @@ struct ConversationCallMessageType: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            if let time = message.time, let date = Date(milliseconds: Int64(time)) {
-                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDatecCondence ?? "")")
+            if let time = message.time {
+                let date = Date(milliseconds: Int64(time))
+                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDateCondense ?? "")")
                     .font(.footnote)
                     .foregroundColor(color == .dark ? .white.opacity(0.7) : .black.opacity(0.7))
                     .padding(2)

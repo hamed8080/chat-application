@@ -5,8 +5,10 @@
 //  Created by Hamed Hosseini on 5/27/21.
 //
 
+import Chat
+import ChatAppUI
+import ChatModels
 import Combine
-import FanapPodChatSDK
 import SwiftUI
 
 struct SelectThreadRow: View {
@@ -20,13 +22,14 @@ struct SelectThreadRow: View {
     var body: some View {
         HStack {
             ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
-                .font(.system(size: 16).weight(.heavy))
+                .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
+                .font(.iransansSubtitle)
                 .foregroundColor(.white)
                 .frame(width: 36, height: 36)
                 .background(Color.blue.opacity(0.4))
                 .cornerRadius(18)
             Text(thread.computedTitle)
-                .font(.headline)
+                .font(.iransansSubheadline)
             Spacer()
         }
         .contentShape(Rectangle())
