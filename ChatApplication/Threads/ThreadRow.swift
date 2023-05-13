@@ -85,7 +85,6 @@ struct ThreadRow: View {
                             .foregroundColor(Color.orange)
                     }
                 }
-                JoinToGroupCallView(thread: thread)
                 ThreadEventView()
                     .environmentObject(ThreadEventViewModel(threadId: thread.id ?? -1))
             }
@@ -171,53 +170,6 @@ struct ThreadRow: View {
                 } label: {
                     Label("Switch to public thread", systemImage: "arrow.triangle.swap")
                 }
-            }
-        }
-    }
-}
-
-struct JoinToGroupCallView: View {
-    @EnvironmentObject var viewModel: ThreadsViewModel
-    @State private var variable = 0.0
-    @State var timer: Timer?
-    let thread: Conversation
-
-    var body: some View {
-        if let callIdToJoin = viewModel.activeCallThreads.first(where: { $0.threadId == thread.id }) {
-            Button {
-                CallViewModel.joinToCall(callIdToJoin.callId)
-            } label: {
-                if #available(iOS 16.0, *) {
-                    Image(systemName: "phone.and.waveform.fill", variableValue: variable)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 26, height: 26)
-                        .padding(8)
-                        .foregroundColor(Color.green)
-                } else {
-                    Image(systemName: "phone.and.waveform.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 26, height: 26)
-                        .padding(8)
-                        .foregroundColor(Color.green)
-                }
-            }
-            .transition(.asymmetric(insertion: .scale, removal: .scale))
-            .onAppear {
-                timer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
-                    withAnimation(.easeInOut) {
-                        if variable >= 1 {
-                            variable = 0
-                        } else {
-                            variable += 0.15
-                        }
-                    }
-                }
-            }
-            .onDisappear {
-                timer?.invalidate()
-                timer = nil
             }
         }
     }

@@ -14,7 +14,6 @@ import SwiftUI
 
 struct DetailView: View {
     @StateObject var viewModel: DetailViewModel
-    @EnvironmentObject var callViewModel: CallViewModel
 
     var body: some View {
         List {
@@ -28,16 +27,6 @@ struct DetailView: View {
                         } label: {
                             ActionImage(systemName: "message.fill")
                         }
-                    }
-                    Button {
-                        callViewModel.startCall(thread: viewModel.thread, isVideoOn: false)
-                    } label: {
-                        ActionImage(systemName: "phone.and.waveform.fill")
-                    }
-                    Button {
-                        callViewModel.startCall(thread: viewModel.thread, isVideoOn: true)
-                    } label: {
-                        ActionImage(systemName: "video.fill")
                     }
 
                     Button {

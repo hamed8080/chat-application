@@ -16,7 +16,6 @@ struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
     @EnvironmentObject var viewModel: ContactsViewModel
     @State public var showActionViews: Bool = false
-    @EnvironmentObject var callViewModel: CallViewModel
     @EnvironmentObject var appState: AppState
     var contact: Contact
     var contactImageURL: String? { contact.image ?? contact.user?.image }
@@ -112,17 +111,10 @@ struct ContactRow: View {
             }
             Group {
                 Spacer()
-                ActionButton(iconSfSymbolName: "video", height: 16) {
-                    callViewModel.startCall(contacts: [contact], isVideoOn: true)
-                }
-                Spacer()
-                ActionButton(iconSfSymbolName: "phone") {
-                    callViewModel.startCall(contacts: [contact], isVideoOn: false)
-                }
-                Spacer()
                 ActionButton(iconSfSymbolName: "pencil") {
                     navigateToAddOrEditContact.toggle()
                 }
+                Spacer()
             }
         }
     }

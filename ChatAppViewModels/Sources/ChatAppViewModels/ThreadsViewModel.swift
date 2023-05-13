@@ -202,7 +202,6 @@ public final class ThreadsViewModel: ObservableObject {
             appendThreads(threads: threads)
             hasNext(response.pagination?.hasNext ?? false)
             updateWidgetPreferenceThreads(threads)
-            getActiveCallsListToJoin(threads.compactMap(\.id))
         }
         isLoading = false
     }
@@ -334,14 +333,6 @@ public final class ThreadsViewModel: ObservableObject {
         guard let index = threads.firstIndex(where: { $0.id == thread.id }) else { return }
         withAnimation {
             _ = threads.remove(at: index)
-        }
-    }
-
-    func getActiveCallsListToJoin(_ threadIds: [Int]) {
-        ChatManager.call?.getCallsToJoin(.init(threadIds: threadIds)) { [weak self] response in
-            response.result?.forEach { call in
-                self?.activeCallThreads.append(CallToJoin(threadId: call.conversation?.id ?? -1, callId: call.id))
-            }
         }
     }
 

@@ -14,8 +14,6 @@ public final class ObjectsContainer: ObservableObject {
     @Published public var tagsVM = TagsViewModel()
     @Published public var settingsVM = SettingViewModel()
     @Published public var tokenVM = TokenManager.shared
-    @Published public var callViewModel = CallViewModel.shared
-    @Published public var callsHistoryVM = CallsHistoryViewModel()
     public init(delegate: ChatDelegate) {
         loginVM = LoginViewModel(delegate: delegate)
     }

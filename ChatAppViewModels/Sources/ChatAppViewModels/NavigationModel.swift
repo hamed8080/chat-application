@@ -28,7 +28,6 @@ public final class NavigationModel: ObservableObject {
                         .init(id: "Archives", title: "Archives", icon: "tray.and.arrow.down"),
                     ]))
 
-        sections.append(.init(title: "Calls", items: [.init(id: "Calls", title: "calls", icon: "phone")]))
         sections.append(.init(title: "Folders", items: []))
         sections.append(.init(title: "Settings", items: [.init(id: "Settings", title: "Settings", icon: "gear")]))
         cancelable = $selectedSideBarId.sink { [weak self] newValue in

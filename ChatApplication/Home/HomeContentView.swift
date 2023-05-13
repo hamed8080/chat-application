@@ -18,8 +18,6 @@ struct HomeContentView: View {
     @StateObject var appState = AppState.shared
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @Environment(\.colorScheme) var colorScheme
-    @State var showCallView = false
-    @State var shareCallLogs = false
 
     var body: some View {
         if container.tokenVM.isLoggedIn == false {
@@ -37,8 +35,6 @@ struct HomeContentView: View {
                     ContactContentList()
                 } else if container.navVM.selectedSideBarId == "Settings" {
                     SettingsView()
-                } else if container.navVM.selectedSideBarId == "calls" {
-                    CallsHistoryContentList()
                 }
             } detail: {
                 NavigationStack {
@@ -61,36 +57,6 @@ struct HomeContentView: View {
             .environmentObject(container.tagsVM)
             .environmentObject(container.userConfigsVM)
             .environmentObject(container.logVM)
-            .environmentObject(container.callViewModel)
-            .environmentObject(container.callsHistoryVM)
-            .animation(.easeInOut, value: showCallView)
-            .fullScreenCover(isPresented: $showCallView, onDismiss: nil) {
-                CallView()
-                    .environmentObject(appState)
-                    .environmentObject(container.callViewModel)
-                    .environmentObject(RecordingViewModel(callId: CallViewModel.shared.callId))
-            }
-            .sheet(isPresented: $shareCallLogs, onDismiss: {
-                if let zipFile = appState.callLogs?.first {
-                    FileManager.default.deleteFile(urlPathToZip: zipFile)
-                }
-            }, content: {
-                if let zipUrl = appState.callLogs {
-                    ActivityViewControllerWrapper(activityItems: zipUrl)
-                } else {
-                    EmptyView()
-                }
-            })
-            .onReceive(appState.$callLogs) { _ in
-                withAnimation {
-                    shareCallLogs = appState.callLogs != nil
-                }
-            }
-            .onReceive(CallViewModel.shared.$showCallView) { newShowCallView in
-                if showCallView != newShowCallView {
-                    showCallView = newShowCallView
-                }
-            }
             .toast(
                 isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
                 title: "An error had happened with code: \(appState.error?.code ?? 0)",

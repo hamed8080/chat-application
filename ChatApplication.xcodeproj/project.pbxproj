@@ -10,14 +10,6 @@
 		0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E42869A1C90034A9F0 /* LogView.swift */; };
 		0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E62869A4220034A9F0 /* LogRow.swift */; };
 		050C5AA22970861E00CD5702 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA0297082BE00CD5702 /* DetailView.swift */; };
-		0510DA972A0F5C21007EDC29 /* GroupCallSelectionContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510DA892A0F5C21007EDC29 /* GroupCallSelectionContentList.swift */; };
-		0510DA982A0F5C21007EDC29 /* CallParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510DA8A2A0F5C21007EDC29 /* CallParticipantRow.swift */; };
-		0510DA992A0F5C21007EDC29 /* CallsHistoryContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510DA8C2A0F5C21007EDC29 /* CallsHistoryContentList.swift */; };
-		0510DA9A2A0F5C21007EDC29 /* CallRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510DA8D2A0F5C21007EDC29 /* CallRow.swift */; };
-		0510DA9C2A0F5C21007EDC29 /* CallDetailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510DA902A0F5C21007EDC29 /* CallDetailRow.swift */; };
-		0510DA9D2A0F5C21007EDC29 /* CallDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510DA912A0F5C21007EDC29 /* CallDetails.swift */; };
-		0510DAA12A0F5C21007EDC29 /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510DA952A0F5C21007EDC29 /* CallView.swift */; };
-		0510DAA22A0F5C21007EDC29 /* CallParticipantListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510DA962A0F5C21007EDC29 /* CallParticipantListView.swift */; };
 		05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05140CD429C086BE00C8E22D /* MapPickerView.swift */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
@@ -115,14 +107,6 @@
 		0505C4E42869A1C90034A9F0 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		0505C4E62869A4220034A9F0 /* LogRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogRow.swift; sourceTree = "<group>"; };
 		050C5AA0297082BE00CD5702 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
-		0510DA892A0F5C21007EDC29 /* GroupCallSelectionContentList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallSelectionContentList.swift; sourceTree = "<group>"; };
-		0510DA8A2A0F5C21007EDC29 /* CallParticipantRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallParticipantRow.swift; sourceTree = "<group>"; };
-		0510DA8C2A0F5C21007EDC29 /* CallsHistoryContentList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallsHistoryContentList.swift; sourceTree = "<group>"; };
-		0510DA8D2A0F5C21007EDC29 /* CallRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRow.swift; sourceTree = "<group>"; };
-		0510DA902A0F5C21007EDC29 /* CallDetailRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallDetailRow.swift; sourceTree = "<group>"; };
-		0510DA912A0F5C21007EDC29 /* CallDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallDetails.swift; sourceTree = "<group>"; };
-		0510DA952A0F5C21007EDC29 /* CallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallView.swift; sourceTree = "<group>"; };
-		0510DA962A0F5C21007EDC29 /* CallParticipantListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallParticipantListView.swift; sourceTree = "<group>"; };
 		05140CD429C086BE00C8E22D /* MapPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPickerView.swift; sourceTree = "<group>"; };
 		051D58E329926D7800DC066A /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
@@ -241,37 +225,6 @@
 				0529947A2A025E8C00F58B99 /* WidgetKit.framework */,
 			);
 			name = "Recovered References";
-			sourceTree = "<group>";
-		};
-		0510DA882A0F5C21007EDC29 /* Call */ = {
-			isa = PBXGroup;
-			children = (
-				0510DA8B2A0F5C21007EDC29 /* History */,
-				0510DA892A0F5C21007EDC29 /* GroupCallSelectionContentList.swift */,
-				0510DA8A2A0F5C21007EDC29 /* CallParticipantRow.swift */,
-				0510DA952A0F5C21007EDC29 /* CallView.swift */,
-				0510DA962A0F5C21007EDC29 /* CallParticipantListView.swift */,
-			);
-			path = Call;
-			sourceTree = "<group>";
-		};
-		0510DA8B2A0F5C21007EDC29 /* History */ = {
-			isa = PBXGroup;
-			children = (
-				0510DA8C2A0F5C21007EDC29 /* CallsHistoryContentList.swift */,
-				0510DA8D2A0F5C21007EDC29 /* CallRow.swift */,
-				0510DA8F2A0F5C21007EDC29 /* Detail */,
-			);
-			path = History;
-			sourceTree = "<group>";
-		};
-		0510DA8F2A0F5C21007EDC29 /* Detail */ = {
-			isa = PBXGroup;
-			children = (
-				0510DA902A0F5C21007EDC29 /* CallDetailRow.swift */,
-				0510DA912A0F5C21007EDC29 /* CallDetails.swift */,
-			);
-			path = Detail;
 			sourceTree = "<group>";
 		};
 		051DAF1027B91997002876C9 /* SelectThread */ = {
@@ -427,7 +380,6 @@
 		AC1D2CA62661FFAC00AA351A /* ChatApplication */ = {
 			isa = PBXGroup;
 			children = (
-				0510DA882A0F5C21007EDC29 /* Call */,
 				AC9DAC6B266CAD44009E4722 /* Contacts */,
 				AC1D2CBC2662016D00AA351A /* Helper */,
 				AC122EC0266B827B00C0630F /* Home */,
@@ -708,7 +660,6 @@
 				05C5665A29BEF3E3002E72F7 /* SendContainer.swift in Sources */,
 				0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */,
 				ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */,
-				0510DA992A0F5C21007EDC29 /* CallsHistoryContentList.swift in Sources */,
 				055B26A027D5FA0F0098D585 /* VoiceView.swift in Sources */,
 				055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */,
 				05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */,
@@ -718,12 +669,8 @@
 				05C5665829BEF3B2002E72F7 /* ThreadPinMessage.swift in Sources */,
 				AC1D2CD32662016E00AA351A /* ChatDelegateImplementation.swift in Sources */,
 				05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */,
-				0510DA9D2A0F5C21007EDC29 /* CallDetails.swift in Sources */,
 				05C5665229BEF2C3002E72F7 /* ThreadMessagesList.swift in Sources */,
-				0510DA9C2A0F5C21007EDC29 /* CallDetailRow.swift in Sources */,
 				057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */,
-				0510DA9A2A0F5C21007EDC29 /* CallRow.swift in Sources */,
-				0510DA972A0F5C21007EDC29 /* GroupCallSelectionContentList.swift in Sources */,
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,
 				ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */,
 				05C5665C29BEF465002E72F7 /* MentionList.swift in Sources */,
@@ -731,7 +678,6 @@
 				ACC306B12701E6350035CCB9 /* StartThreadContactRow.swift in Sources */,
 				055B269C27D5F9F90098D585 /* FileView.swift in Sources */,
 				AC6D532426F1AE8C00CBC059 /* MessageRow.swift in Sources */,
-				0510DAA12A0F5C21007EDC29 /* CallView.swift in Sources */,
 				AC122EC4266B83A800C0630F /* SettingsView.swift in Sources */,
 				055B26A227D5FA180098D585 /* LinkView.swift in Sources */,
 				ACEAEDD7274CFA1100EC8252 /* AttachmentDialog.swift in Sources */,
@@ -741,8 +687,6 @@
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
 				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
-				0510DAA22A0F5C21007EDC29 /* CallParticipantListView.swift in Sources */,
-				0510DA982A0F5C21007EDC29 /* CallParticipantRow.swift in Sources */,
 				052D57362795323C0075BF8F /* ManageTagView.swift in Sources */,
 				05384A842792A10100D85A92 /* TagRow.swift in Sources */,
 				AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */,

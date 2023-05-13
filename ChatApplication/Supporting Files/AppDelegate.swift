@@ -6,18 +6,16 @@
 //
 
 import ChatAppViewModels
-import PushKit
 import UIKit
 
 @main
-final class AppDelegate: UIResponder, UIApplicationDelegate, PKPushRegistryDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
     class var shared: AppDelegate! {
         UIApplication.shared.delegate as? AppDelegate
     }
 
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        AppState.shared.providerDelegate = ProviderDelegate(callManager: AppState.shared.callMananger)
         ChatDelegateImplementation.sharedInstance.createChatObject()
         UIFont.register()
         return true
@@ -35,22 +33,5 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, PKPushRegistryDeleg
         // Called when the user discards a scene session.
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-    }
-
-    func pushRegistry(_: PKPushRegistry, didUpdate _: PKPushCredentials, for _: PKPushType) {}
-
-    func pushRegistry(_: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType, completion: @escaping () -> Void) {
-        defer {
-            completion()
-        }
-        guard type == .voIP,
-              let uuidString = payload.dictionaryPayload["UUID"] as? String,
-              let handle = payload.dictionaryPayload["handle"] as? String,
-              let hasVideo = payload.dictionaryPayload["hasVideo"] as? Bool,
-              let uuid = UUID(uuidString: uuidString)
-        else {
-            return
-        }
-        AppState.shared.providerDelegate?.reportIncomingCall(uuid: uuid, handle: handle, hasVideo: hasVideo, completion: nil)
     }
 }

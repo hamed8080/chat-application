@@ -22,8 +22,6 @@ public final class AppState: ObservableObject {
     @Published public var callLogs: [URL]?
     @Published public var connectionStatusString = ""
     public var activeThreadId: Int?
-    public var providerDelegate: ProviderDelegate?
-    public var callMananger = CallManager()
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
             setConnectionStatus(connectionStatus)

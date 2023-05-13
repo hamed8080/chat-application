@@ -19,14 +19,12 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../../Chat"),
-        .package(path: "../../ChatCall"),
     ],
     targets: [
         .target(
             name: "ChatAppModels",
             dependencies: [
                 "Chat",
-                "ChatCall",
             ]
         ),
         .testTarget(

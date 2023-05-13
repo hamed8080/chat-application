@@ -18,18 +18,9 @@ final class ChatDelegateImplementation: ChatDelegate {
     private(set) static var sharedInstance = ChatDelegateImplementation()
 
     func createChatObject() {
-//        if let userConfig = UserConfigManagerVM.instance.currentUserConfig, let userId = userConfig.id {
-//            UserConfigManagerVM.instance.createChatObjectAndConnect(userId: userId, config: userConfig.config, delegate: self)
-//            TokenManager.shared.initSetIsLogin()
-//        }
-
-        Task {
-            let ssoToken = SSOTokenResponseResult(accessToken: "0128f6fae42b437d88d92b6d97a6e015.XzIwMjM1", expiresIn: 900)
-            let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
-            let user = User(id: 3_463_768)
-            TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
-            UserConfigManagerVM.instance.appendOrReplace(UserConfig(user: user, config: config, ssoToken: ssoToken))
-            UserConfigManagerVM.instance.createChatObjectAndConnect(userId: user.id, config: config, delegate: self)
+        if let userConfig = UserConfigManagerVM.instance.currentUserConfig, let userId = userConfig.id {
+            UserConfigManagerVM.instance.createChatObjectAndConnect(userId: userId, config: userConfig.config, delegate: self)
+            TokenManager.shared.initSetIsLogin()
         }
     }
 
