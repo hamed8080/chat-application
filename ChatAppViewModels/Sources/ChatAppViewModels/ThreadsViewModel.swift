@@ -18,8 +18,10 @@ import ChatDTO
 public final class ThreadsViewModel: ObservableObject {
     @Published public var isLoading = false
     @Published public var toggleThreadContactPicker = false
+    @Published public var toggle = false
     @AppStorage("Threads", store: UserDefaults.group) public var threadsData: Data?
     @Published public var showAddParticipants = false
+    @Published public var showCreateDirectThread = false
     @Published public var showAddToTags = false
     @Published public var threads: OrderedSet<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
@@ -234,6 +236,18 @@ public final class ThreadsViewModel: ObservableObject {
             Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
         }
         ChatManager.activeInstance?.createThread(.init(invitees: invitees, title: model.title, type: model.type, uniqueName: model.isPublic ? model.title : nil)) { [weak self] response in
+            if let thread = response.result {
+                AppState.shared.animateAndShowThread(thread: thread)
+            }
+            self?.isLoading = false
+        }
+    }
+
+    /// Create a thread and send a message without adding a contact.
+    public func fastMessage(_ invitee: Invitee, _ message: String) {
+        isLoading = true
+        let messageREQ = CreateThreadMessage(text: message, messageType: .text)
+        ChatManager.activeInstance?.createThreadWithMessage(.init(invitees: [invitee], title: "", type: .normal, message: messageREQ)) { [weak self] response in
             if let thread = response.result {
                 AppState.shared.animateAndShowThread(thread: thread)
             }

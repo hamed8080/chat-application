@@ -6,6 +6,7 @@
 //
 
 import Chat
+import ChatAppExtensions
 import ChatAppUI
 import ChatAppViewModels
 import ChatModels
@@ -68,6 +69,11 @@ struct ThreadContentList: View {
                 threadsVM.toggleThreadContactPicker.toggle()
             }
         }
+        .sheet(isPresented: $threadsVM.showCreateDirectThread) {
+            CreateDirectThreadView { invitee, message in
+                threadsVM.fastMessage(invitee, message)
+            }
+        }
     }
 
     @ViewBuilder var trailingToolbarViews: some View {
@@ -76,6 +82,13 @@ struct ThreadContentList: View {
                 threadsVM.toggleThreadContactPicker.toggle()
             } label: {
                 Label("Start a new Chat", systemImage: "bubble.left.and.bubble.right.fill")
+            }
+
+            // Send a message to a user without creating a new contact. Directly by their userName or cellPhone number.
+            Button {
+                threadsVM.showCreateDirectThread = true
+            } label: {
+                Label("Fast Messaage", systemImage: "arrow.up.circle.fill")
             }
 
             Button {} label: {
@@ -137,8 +150,49 @@ private struct Preview: View {
     }
 }
 
+struct CreateDirectThreadView: View {
+    @State private var type: InviteeTypes = .cellphoneNumber
+    @State private var message: String = ""
+    @State private var id: String = ""
+    var onCompeletion: (Invitee, String) -> Void
+    @State var types = InviteeTypes.allCases.filter { $0 != .unknown }
+
+    var body: some View {
+        NavigationView {
+            Form {
+                Section {
+                    Picker("Contact type", selection: $type) {
+                        ForEach(types) { value in
+                            Text(verbatim: "\(value.title)")
+                        }
+                    }
+                    .pickerStyle(.navigationLink)
+                    TextField("Enter \(type.rawValue) here...", text: $id)
+                        .keyboardType(type == .cellphoneNumber ? .phonePad : .default)
+
+                    TextField("Enter your message here...", text: $message)
+                } footer: {
+                    Text("Create a thread immediately even though the person you are going to send a message to is not in the contact list.")
+                }
+
+                Button {
+                    onCompeletion(Invitee(id: id, idType: type), message)
+                } label: {
+                    HStack {
+                        Spacer()
+                        Image(systemName: "paperplane")
+                        Text("Send")
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+}
+
 struct ThreadContentList_Previews: PreviewProvider {
     static var previews: some View {
-        Preview()
+//        Preview()
+        CreateDirectThreadView { _, _ in }
     }
 }
