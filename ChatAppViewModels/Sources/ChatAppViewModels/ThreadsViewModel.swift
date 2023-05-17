@@ -329,14 +329,6 @@ public final class ThreadsViewModel: ObservableObject {
         firstSuccessResponse = false
     }
 
-    public func pinThread(_ thread: Conversation) {
-        threads.first(where: { $0.id == thread.id })?.pin = true
-    }
-
-    public func unpinThread(_ thread: Conversation) {
-        threads.first(where: { $0.id == thread.id })?.pin = false
-    }
-
     public func muteUnMuteThread(_ threadId: Int?, isMute: Bool) {
         if let threadId = threadId, let index = threads.firstIndex(where: { $0.id == threadId }) {
             threads[index].mute = isMute
@@ -429,6 +421,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func onMuteThreadChanged(mute: Bool, threadId: Int?) {
         if let index = threads.firstIndex(where: { $0.id == threadId }) {
             threads[index].mute = mute
+            sort()
             objectWillChange.send()
         }
     }

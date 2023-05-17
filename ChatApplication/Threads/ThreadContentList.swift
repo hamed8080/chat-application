@@ -33,6 +33,11 @@ struct ThreadContentList: View {
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $container.threadsVM.isLoading)
         }
+        .overlay(alignment: .bottom) {
+            AudioPlayerView()
+                .frame(minWidth: 0, maxWidth: .infinity, maxHeight: 64)
+                .background(.ultraThickMaterial)
+        }
         .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search...")
         .onChange(of: searchText) { searchText in
             threadsVM.searchText = searchText
@@ -134,6 +139,7 @@ private struct Preview: View {
         NavigationStack {
             ThreadContentList()
                 .environmentObject(container)
+                .environmentObject(container.audioPlayerVM)
                 .environmentObject(container.threadsVM)
                 .environmentObject(container.tagsVM)
                 .environmentObject(container.loginVM)
@@ -145,54 +151,18 @@ private struct Preview: View {
                 .onAppear {
                     container.threadsVM.title = "chats"
                     container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 5))
-                }
-        }
-    }
-}
-
-struct CreateDirectThreadView: View {
-    @State private var type: InviteeTypes = .cellphoneNumber
-    @State private var message: String = ""
-    @State private var id: String = ""
-    var onCompeletion: (Invitee, String) -> Void
-    @State var types = InviteeTypes.allCases.filter { $0 != .unknown }
-
-    var body: some View {
-        NavigationView {
-            Form {
-                Section {
-                    Picker("Contact type", selection: $type) {
-                        ForEach(types) { value in
-                            Text(verbatim: "\(value.title)")
-                        }
-                    }
-                    .pickerStyle(.navigationLink)
-                    TextField("Enter \(type.rawValue) here...", text: $id)
-                        .keyboardType(type == .cellphoneNumber ? .phonePad : .default)
-
-                    TextField("Enter your message here...", text: $message)
-                } footer: {
-                    Text("Create a thread immediately even though the person you are going to send a message to is not in the contact list.")
-                }
-
-                Button {
-                    onCompeletion(Invitee(id: id, idType: type), message)
-                } label: {
-                    HStack {
-                        Spacer()
-                        Image(systemName: "paperplane")
-                        Text("Send")
-                        Spacer()
+                    if let fileURL = Bundle.main.url(forResource: "new_message", withExtension: "mp3") {
+                        container.audioPlayerVM.setup(fileURL: fileURL, ext: "mp3", title: "Note")
+                        container.audioPlayerVM.toggle()
                     }
                 }
-            }
         }
     }
 }
 
 struct ThreadContentList_Previews: PreviewProvider {
     static var previews: some View {
-//        Preview()
-        CreateDirectThreadView { _, _ in }
+        Preview()
+//        CreateDirectThreadView { _, _ in }
     }
 }

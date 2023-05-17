@@ -165,6 +165,14 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         }
     }
 
+    internal func playSentAudio() {
+        if let fileURL = Bundle.main.url(forResource: "sent_message", withExtension: "mp3") {
+            audioPlayer = AVAudioPlayerViewModel()
+            audioPlayer?.setup(fileURL: fileURL , ext: "mp3", category: .ambient)
+            audioPlayer?.toggle()
+        }
+    }
+
     public func onDeliver(_ response: ChatResponse<MessageResponse>?) {
         if let index = messages.firstIndex(where: { $0.id == response?.result?.messageId || $0.uniqueId == response?.uniqueId }) {
             messages[index].delivered = true

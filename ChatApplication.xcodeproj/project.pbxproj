@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0500F7252A13BDC500F51EDA /* new_message.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 0500F7242A13BDC500F51EDA /* new_message.mp3 */; };
+		0500F7292A13FFD000F51EDA /* CreateDirectThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0500F7282A13FFD000F51EDA /* CreateDirectThreadView.swift */; };
 		0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E42869A1C90034A9F0 /* LogView.swift */; };
 		0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E62869A4220034A9F0 /* LogRow.swift */; };
 		050C5AA22970861E00CD5702 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA0297082BE00CD5702 /* DetailView.swift */; };
@@ -43,6 +45,7 @@
 		055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A527D602CD0098D585 /* TabViewsContainer.swift */; };
 		057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9C293797600089ACC9 /* ThreadEventView.swift */; };
 		0593ED2029BA76EF00541FA6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0593ED1F29BA76EF00541FA6 /* README.md */; };
+		059A3C092A14988300885E24 /* sent_message.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 059A3C082A14988300885E24 /* sent_message.mp3 */; };
 		059B3A9629B746DA00C2E27B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 059B3A9829B746DA00C2E27B /* Localizable.strings */; };
 		059F84AF29D035350072DFC7 /* MutualThreadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059F84AE29D035350072DFC7 /* MutualThreadsView.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
@@ -104,6 +107,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0500F7242A13BDC500F51EDA /* new_message.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = new_message.mp3; sourceTree = "<group>"; };
+		0500F7282A13FFD000F51EDA /* CreateDirectThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateDirectThreadView.swift; sourceTree = "<group>"; };
 		0505C4E42869A1C90034A9F0 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		0505C4E62869A4220034A9F0 /* LogRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogRow.swift; sourceTree = "<group>"; };
 		050C5AA0297082BE00CD5702 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
@@ -139,6 +144,7 @@
 		057B9A9C293797600089ACC9 /* ThreadEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEventView.swift; sourceTree = "<group>"; };
 		0590ACBC29E802C60041E9D7 /* ChatApplication.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChatApplication.xctestplan; sourceTree = "<group>"; };
 		0593ED1F29BA76EF00541FA6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		059A3C082A14988300885E24 /* sent_message.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sent_message.mp3; sourceTree = "<group>"; };
 		059B3A9529B746B900C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		059B3A9729B746DA00C2E27B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		059B3A9929B746DD00C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -329,6 +335,8 @@
 				AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */,
 				AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */,
 				AC1D2CC82662016D00AA351A /* AppDelegate.swift */,
+				059A3C082A14988300885E24 /* sent_message.mp3 */,
+				0500F7242A13BDC500F51EDA /* new_message.mp3 */,
 				AC085F3A2692EA8A001492B2 /* Config.json */,
 				AC1D2CAD2661FFAD00AA351A /* Assets.xcassets */,
 				AC1D2CB22661FFAD00AA351A /* LaunchScreen.storyboard */,
@@ -425,6 +433,7 @@
 				AC0435F926998CF300B1C87B /* Participants */,
 				AC1D2CC72662016D00AA351A /* ThreadRow.swift */,
 				AC122EC1266B82A000C0630F /* ThreadContentList.swift */,
+				0500F7282A13FFD000F51EDA /* CreateDirectThreadView.swift */,
 			);
 			path = Threads;
 			sourceTree = "<group>";
@@ -580,11 +589,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC1D2CB42661FFAD00AA351A /* LaunchScreen.storyboard in Resources */,
+				0500F7252A13BDC500F51EDA /* new_message.mp3 in Resources */,
 				051ACDF6280848C500B77DA2 /* MockData.json in Resources */,
 				AC1D2CB12661FFAD00AA351A /* Preview Assets.xcassets in Resources */,
 				AC085F3B2692EA8A001492B2 /* Config.json in Resources */,
 				AC1D2CAE2661FFAD00AA351A /* Assets.xcassets in Resources */,
 				059B3A9629B746DA00C2E27B /* Localizable.strings in Resources */,
+				059A3C092A14988300885E24 /* sent_message.mp3 in Resources */,
 				0593ED2029BA76EF00541FA6 /* README.md in Resources */,
 				AC2D31C426EF75BC008FF43F /* webrtc_user_b.mp4 in Resources */,
 				AC2D31C326EF75BC008FF43F /* webrtc_user_a.mp4 in Resources */,
@@ -685,6 +696,7 @@
 				05C5665429BEF32A002E72F7 /* ThreadSheetView.swift in Sources */,
 				05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */,
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
+				0500F7292A13FFD000F51EDA /* CreateDirectThreadView.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
 				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
 				052D57362795323C0075BF8F /* ManageTagView.swift in Sources */,

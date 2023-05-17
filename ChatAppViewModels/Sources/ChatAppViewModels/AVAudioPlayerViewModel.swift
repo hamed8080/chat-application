@@ -5,19 +5,15 @@ import AVFoundation
 public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published public var isPlaying: Bool = false
     @Published public var player: AVAudioPlayer?
-    public var fileURL: URL
-    public var ext: String?
+    public var title: String = ""
+    public override init() {}
 
-    public init(fileURL: URL, ext: String?) {
-        self.fileURL = Bundle.main.url(forResource: "Tamasha", withExtension: "mp3") ?? fileURL
-        self.ext = ext
-    }
-
-    public func setup() {
+    public func setup(fileURL: URL, ext: String?, category: AVAudioSession.Category = .playback, title: String? = nil) {
+        self.title = title ?? fileURL.lastPathComponent
         if player != nil { return }
         do {
             let audioData = try Data(contentsOf: fileURL, options: NSData.ReadingOptions.mappedIfSafe)
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+            try AVAudioSession.sharedInstance().setCategory(category)
             player = try AVAudioPlayer(data: audioData, fileTypeHint: ext)
             player?.delegate = self
         } catch let error as NSError {
@@ -25,14 +21,24 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         }
     }
 
+    public func play() {
+        isPlaying = true
+        try? AVAudioSession.sharedInstance().setActive(true)
+        player?.prepareToPlay()
+        player?.play()
+    }
+
+    public func pause() {
+        isPlaying = false
+        try? AVAudioSession.sharedInstance().setActive(false)
+        player?.pause()
+    }
+
     public func toggle() {
-        isPlaying.toggle()
-        try? AVAudioSession.sharedInstance().setActive(isPlaying)
-        if isPlaying {
-            player?.prepareToPlay()
-            player?.play()
+        if !isPlaying {
+            play()
         } else {
-            player?.pause()
+            pause()
         }
     }
 

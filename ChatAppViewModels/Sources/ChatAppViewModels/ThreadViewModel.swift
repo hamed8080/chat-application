@@ -89,6 +89,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
     public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
+    public var audioPlayer: AVAudioPlayerViewModel?
 
     public weak var forwardMessage: Message? {
         didSet {
@@ -154,6 +155,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         case let .messageSent(response):
             if threadId == response.result?.threadId {
                 onSent(response)
+                playSentAudio()
             }
         case let .messageDelivery(response):
             if threadId == response.result?.threadId {
@@ -353,7 +355,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
 
     public func togglePinMessage(_ message: Message) {
         guard let messageId = message.id else { return }
-        if message.pinned == false {
+        if message.pinned == false || message.pinned == nil {
             pin(messageId)
         } else {
             unpin(messageId)

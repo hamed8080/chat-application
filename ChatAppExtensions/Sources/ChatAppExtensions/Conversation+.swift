@@ -78,11 +78,7 @@ public extension Conversation {
     }
 
     var computedTitle: String {
-        if type == .selfThread {
-            return String(localized: "self_thread")
-        } else {
-            return title ?? ""
-        }
+        return title ?? ""
     }
 
     var disableSend: Bool {
