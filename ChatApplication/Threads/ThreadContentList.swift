@@ -30,13 +30,11 @@ struct ThreadContentList: View {
             }
             .listRowBackground(container.navVM.selectedThreadId == thread.id ? Color.orange.opacity(0.5) : Color(UIColor.systemBackground))
         }
-        .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $container.threadsVM.isLoading)
+        .safeAreaInset(edge: .top) {
+            AudioPlayerView()
         }
         .overlay(alignment: .bottom) {
-            AudioPlayerView()
-                .frame(minWidth: 0, maxWidth: .infinity, maxHeight: 64)
-                .background(.ultraThickMaterial)
+            ListLoadingView(isLoading: $container.threadsVM.isLoading)
         }
         .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search...")
         .onChange(of: searchText) { searchText in
@@ -149,7 +147,7 @@ private struct Preview: View {
                 .environmentObject(container.navVM)
                 .environmentObject(container.settingsVM)
                 .onAppear {
-                    container.threadsVM.title = "chats"
+                    container.threadsVM.title = "Chats"
                     container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 5))
                     if let fileURL = Bundle.main.url(forResource: "new_message", withExtension: "mp3") {
                         container.audioPlayerVM.setup(fileURL: fileURL, ext: "mp3", title: "Note")

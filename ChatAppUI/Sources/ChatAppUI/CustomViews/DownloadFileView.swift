@@ -34,7 +34,7 @@ public struct DownloadFileView: View {
                             .resizable()
                             .scaledToFit()
                     } else if message.isAudio, let fileURL = downloadFileVM.fileURL {
-                        AudioPlayer(fileURL: fileURL, ext: message.fileMetaData?.file?.mimeType?.ext, title: message.fileMetaData?.name)
+                        AudioPlayer(fileURL: fileURL, ext: message.fileMetaData?.file?.mimeType?.ext, title: message.fileMetaData?.name, subtitle: message.fileMetaData?.file?.originalName ?? "")
                             .id(fileURL)
                     } else {
                         Image(systemName: message.iconName)
@@ -107,6 +107,7 @@ struct AudioPlayer: View {
     let fileURL: URL
     let ext: String?
     var title: String?
+    var subtitle: String
     @EnvironmentObject var viewModel: AVAudioPlayerViewModel
 
     var body: some View {
@@ -118,13 +119,11 @@ struct AudioPlayer: View {
                 .cornerRadius(24)
                 .animation(.easeInOut, value: viewModel.isPlaying)
                 .onTapGesture {
+                    viewModel.setup(fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
                     viewModel.toggle()
                 }
         }
-        .padding()
-        .onAppear {
-            viewModel.setup(fileURL: fileURL, ext: ext, title: title)
-        }
+        .padding()        
     }
 }
 

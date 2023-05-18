@@ -41,7 +41,7 @@ public final class AppState: ObservableObject {
         activeThreadId = threadId
         ChatManager.activeInstance?.getThreads(.init(threadIds: [threadId])) { [weak self] response in
             if let thraed = response.result?.first {
-                self?.animateAndShowThread(thread: thraed)
+                self?.showThread(thread: thraed)
             }
         }
     }
@@ -50,7 +50,7 @@ public final class AppState: ObservableObject {
         isLoading = true
         ChatManager.activeInstance?.createThread(.init(invitees: invitees, title: "", type: .normal)) { [weak self] response in
             if let thread = response.result {
-                self?.animateAndShowThread(thread: thread)
+                self?.showThread(thread: thread)
                 self?.activeThreadId = thread.id
             } else if let error = response.error {
                 self?.animateAndShowError(error)
@@ -63,10 +63,10 @@ public final class AppState: ObservableObject {
         showThread(invitees: invitees)
     }
 
-    public func animateAndShowThread(thread: Conversation) {
+    public func showThread(thread: Conversation) {
         withAnimation {
             isLoading = false
-            navViewModel?.selectedSideBarId = "chats"
+            navViewModel?.selectedSideBarId = "Chats"
             navViewModel?.selectedThreadId = thread.id
         }
     }

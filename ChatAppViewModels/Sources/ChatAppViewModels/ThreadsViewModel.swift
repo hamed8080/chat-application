@@ -237,7 +237,7 @@ public final class ThreadsViewModel: ObservableObject {
         }
         ChatManager.activeInstance?.createThread(.init(invitees: invitees, title: model.title, type: model.type, uniqueName: model.isPublic ? model.title : nil)) { [weak self] response in
             if let thread = response.result {
-                AppState.shared.animateAndShowThread(thread: thread)
+                AppState.shared.showThread(thread: thread)
             }
             self?.isLoading = false
         }
@@ -249,7 +249,7 @@ public final class ThreadsViewModel: ObservableObject {
         let messageREQ = CreateThreadMessage(text: message, messageType: .text)
         ChatManager.activeInstance?.createThreadWithMessage(.init(invitees: [invitee], title: "", type: .normal, message: messageREQ)) { [weak self] response in
             if let thread = response.result {
-                AppState.shared.animateAndShowThread(thread: thread)
+                AppState.shared.showThread(thread: thread)
             }
             self?.isLoading = false
         }
@@ -286,7 +286,7 @@ public final class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance?.addParticipant(req) { [weak self] response in
             if let thread = response.result {
                 // To navigate to the thread immediately after adding participants
-                AppState.shared.animateAndShowThread(thread: thread)
+                AppState.shared.showThread(thread: thread)
             }
             self?.isLoading = false
         }

@@ -35,6 +35,7 @@ public final class NavigationModel: ObservableObject {
                 self?.manageThreadChange(newValue)
             }
         }
+        selectedSideBarId = selectedSideBarIdStorage
     }
 
     public func manageThreadChange(_ newValue: String?) {
@@ -50,6 +51,15 @@ public final class NavigationModel: ObservableObject {
         } else if selectedSideBarId?.contains("Tag") == true {
             threadViewModel?.resetFolderSettings()
         }
+        saveToUserDefaults(selectedSideBarId: newValue)
+    }
+
+    func saveToUserDefaults(selectedSideBarId: String?) {
+        UserDefaults.standard.setValue(selectedSideBarId, forKey: "selectedSideBarId")
+    }
+
+    var selectedSideBarIdStorage: String {
+        UserDefaults.standard.string(forKey: "selectedSideBarId") ?? "Chats"
     }
 
     public func addTags(_ tags: [Tag]) {
