@@ -20,7 +20,7 @@ public final class ContactsViewModel: ObservableObject {
     public private(set) var selectedContacts: [Contact] = []
     public private(set) var canceableSet: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
-    private var canLoadNextPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
+    private var canLoadNextPage: Bool { !isLoading && hasNext }
     @Published public private(set) var maxContactsCountInServer = 0
     @Published public private(set) var contacts: [Contact] = []
     @Published public private(set) var searchedContacts: [Contact] = []
