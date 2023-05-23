@@ -294,7 +294,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
             }
             if let oldMessage = self.messages.first(where: { $0.uniqueId == message.uniqueId }) {
                 oldMessage.updateMessage(message: message)
-            } else if message.conversation?.id == threadId {
+            } else if message.threadId == threadId || message.conversation?.id == threadId {
                 self.messages.append(message)
                 thread?.unreadCount = message.conversation?.unreadCount ?? 1
                 thread?.lastMessageVO = message
