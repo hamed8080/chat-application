@@ -44,6 +44,8 @@
 		055B26A427D5FA250098D585 /* GIFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A327D5FA250098D585 /* GIFView.swift */; };
 		055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A527D602CD0098D585 /* TabViewsContainer.swift */; };
 		057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9C293797600089ACC9 /* ThreadEventView.swift */; };
+		059281BF2A227961006C7E56 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059281BE2A227961006C7E56 /* AssistantView.swift */; };
+		059281C12A227C3C006C7E56 /* AssistantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059281C02A227C3C006C7E56 /* AssistantRow.swift */; };
 		0593ED2029BA76EF00541FA6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0593ED1F29BA76EF00541FA6 /* README.md */; };
 		059A3C092A14988300885E24 /* sent_message.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 059A3C082A14988300885E24 /* sent_message.mp3 */; };
 		059B3A9629B746DA00C2E27B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 059B3A9829B746DA00C2E27B /* Localizable.strings */; };
@@ -143,6 +145,8 @@
 		055B26A527D602CD0098D585 /* TabViewsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewsContainer.swift; sourceTree = "<group>"; };
 		057B9A9C293797600089ACC9 /* ThreadEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEventView.swift; sourceTree = "<group>"; };
 		0590ACBC29E802C60041E9D7 /* ChatApplication.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChatApplication.xctestplan; sourceTree = "<group>"; };
+		059281BE2A227961006C7E56 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
+		059281C02A227C3C006C7E56 /* AssistantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantRow.swift; sourceTree = "<group>"; };
 		0593ED1F29BA76EF00541FA6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		059A3C082A14988300885E24 /* sent_message.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sent_message.mp3; sourceTree = "<group>"; };
 		059B3A9529B746B900C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
@@ -294,6 +298,15 @@
 			path = TabViews;
 			sourceTree = "<group>";
 		};
+		059281BD2A22794B006C7E56 /* Assistant */ = {
+			isa = PBXGroup;
+			children = (
+				059281BE2A227961006C7E56 /* AssistantView.swift */,
+				059281C02A227C3C006C7E56 /* AssistantRow.swift */,
+			);
+			path = Assistant;
+			sourceTree = "<group>";
+		};
 		05C5665D29BEF4A4002E72F7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -388,6 +401,7 @@
 		AC1D2CA62661FFAC00AA351A /* ChatApplication */ = {
 			isa = PBXGroup;
 			children = (
+				059281BD2A22794B006C7E56 /* Assistant */,
 				AC9DAC6B266CAD44009E4722 /* Contacts */,
 				AC1D2CBC2662016D00AA351A /* Helper */,
 				AC122EC0266B827B00C0630F /* Home */,
@@ -665,11 +679,13 @@
 				AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */,
 				059F84AF29D035350072DFC7 /* MutualThreadsView.swift in Sources */,
 				055B269A27D5F9F00098D585 /* MediaView.swift in Sources */,
+				059281BF2A227961006C7E56 /* AssistantView.swift in Sources */,
 				05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */,
 				AC23695627439478008195D7 /* SearchContactRow.swift in Sources */,
 				AC122EC2266B82A000C0630F /* ThreadContentList.swift in Sources */,
 				05C5665A29BEF3E3002E72F7 /* SendContainer.swift in Sources */,
 				0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */,
+				059281C12A227C3C006C7E56 /* AssistantRow.swift in Sources */,
 				ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */,
 				055B26A027D5FA0F0098D585 /* VoiceView.swift in Sources */,
 				055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */,

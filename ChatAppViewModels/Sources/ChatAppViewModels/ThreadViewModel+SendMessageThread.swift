@@ -199,7 +199,13 @@ extension ThreadViewModel: SendMessageThreadProtocol {
         case let req as UploadFileMessage:
             // remove unset message type to start upload again the new one.
             messages.removeAll(where: { $0.uniqueId == req.uniqueId })
-            appendMessages([UploadFileWithTextMessage(uploadFileRequest: req.uploadFileRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)])
+            if message.isImage {
+                let imageMessage = UploadFileWithTextMessage(imageFileRequest: req.uploadImageRequest!, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
+                appendMessages([imageMessage])
+            } else {
+                let fileMessage = UploadFileWithTextMessage(uploadFileRequest: req.uploadFileRequest!, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
+                appendMessages([fileMessage])
+            }
         default:
             print("Type not detected!")
         }

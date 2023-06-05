@@ -104,6 +104,16 @@ struct SettingsView: View {
                         }
                     }
 
+                    NavigationLink {
+                        AssistantView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "person.badge.shield.checkmark")
+                                .foregroundColor(.purple)
+                            Text("Assistants")
+                        }
+                    }
+
                     Section(header: Text("Manage Calls").font(.headline)) {
                         Button {
                             ChatManager.activeInstance?.logOut()

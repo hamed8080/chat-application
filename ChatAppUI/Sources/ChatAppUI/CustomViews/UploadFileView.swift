@@ -58,7 +58,11 @@ public struct UploadFileView: View {
         .animation(.easeInOut, value: viewModel.state)
         .animation(.easeInOut, value: percent)
         .onAppear {
-            viewModel.startUpload(message: message, thread: threadViewModel.thread)
+            if (message.isImage) {
+                viewModel.startUploadImage(message: message, thread: threadViewModel.thread)
+            } else {
+                viewModel.startUploadFile(message: message, thread: threadViewModel.thread)
+            }
         }
         .onReceive(viewModel.$state) { state in
             if state == .COMPLETED {
@@ -83,7 +87,7 @@ struct UploadFileView_Previews: PreviewProvider {
             .environmentObject(uploadFileVM)
             .background(Color.black.ignoresSafeArea())
             .onAppear {
-                uploadFileVM.startUpload(message: message, thread: threadViewModel.thread)
+                uploadFileVM.startUploadFile(message: message, thread: threadViewModel.thread)
                 threadViewModel.setup(thread: MockData.thread)
             }
     }

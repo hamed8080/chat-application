@@ -83,7 +83,8 @@ public final class ActionSheetViewModel: ObservableObject {
     private func appendImage(_ image: UIImage?, _ object: PHAsset, _ info: [AnyHashable: Any]?) {
         DispatchQueue.main.async {
             if let image {
-                self.allImageItems.append(.init(imageData: image.pngData() ?? Data(), phAsset: object, info: info))
+                let filename = PHAssetResource.assetResources(for: object).first?.originalFilename ?? "unknown"
+                self.allImageItems.append(.init(imageData: image.pngData() ?? Data(), phAsset: object, info: info, originalFilename: filename))
             }
         }
     }

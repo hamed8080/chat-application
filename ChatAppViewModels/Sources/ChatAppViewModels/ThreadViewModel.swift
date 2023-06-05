@@ -165,6 +165,11 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
             if threadId == response.result?.threadId {
                 onSeen(response)
             }
+        case let .messageDelete(response):
+            let responseThreadId = response.subjectId ?? response.result?.threadId ?? response.result?.conversation?.id
+            if threadId == responseThreadId {
+                onDeleteMessage(response)
+            }
         default:
             break
         }
@@ -182,6 +187,9 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
             self.thread?.lastMessage = thread.lastMessage
             self.thread?.lastMessageVO = thread.lastMessageVO
             self.thread?.unreadCount = thread.unreadCount
+            if let lastMessage = thread.lastMessageVO, let index = messages.firstIndex(where: {$0.id == lastMessage.id}) {
+                messages[index] = lastMessage
+            }
             objectWillChange.send()
         }
     }
