@@ -16,6 +16,7 @@ public struct DownloadFileView: View {
     @StateObject var downloadFileVM = DownloadFileViewModel()
     @State var shareDownloadedFile: Bool = false
     let message: Message
+    @State var presentViewGallery = false
 
     public init(message: Message, placeHolder: Data? = nil) {
         self.message = message
@@ -33,6 +34,14 @@ public struct DownloadFileView: View {
                         Image(cgImage: scaledImage)
                             .resizable()
                             .scaledToFit()
+                            .fullScreenCover(isPresented: $presentViewGallery) {
+                                GalleryView()
+                                    .id(message.id)
+                                    .environmentObject(GalleryViewModel(message: message))
+                            }
+                            .onTapGesture {
+                                presentViewGallery = true
+                            }
                     } else if message.isAudio, let fileURL = downloadFileVM.fileURL {
                         AudioPlayer(fileURL: fileURL, ext: message.fileMetaData?.file?.mimeType?.ext, title: message.fileMetaData?.name, subtitle: message.fileMetaData?.file?.originalName ?? "")
                             .id(fileURL)
