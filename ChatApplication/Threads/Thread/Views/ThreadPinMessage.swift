@@ -29,7 +29,7 @@ struct ThreadPinMessage: View {
                         Spacer()
                     }
                     Button {
-                        threadVM.unpin(message.id ?? -1)
+                        threadVM.unpinMessage(message.id ?? -1)
                     } label: {
                         Label("Un Pin", systemImage: "pin.fill")
                             .labelStyle(.iconOnly)

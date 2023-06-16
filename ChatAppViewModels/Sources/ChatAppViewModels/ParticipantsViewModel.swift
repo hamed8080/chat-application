@@ -20,31 +20,25 @@ public final class ParticipantsViewModel: ObservableObject {
     private var count = 15
     private var offset = 0
     private(set) var firstSuccessResponse = false
-    private(set) var cancellableSet: Set<AnyCancellable> = []
     @Published public var isLoading = false
     @Published public private(set) var totalCount = 0
     @Published public private(set) var participants: [Participant] = []
     @Published public var searchText: String = ""
     public var searchType: SearchParticipantType = .name
+    private var cancelable: Set<AnyCancellable> = []
 
     public init(thread: Conversation? = nil) {
         self.thread = thread
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
-            .store(in: &cancellableSet)
+            .store(in: &cancelable)
 
-        NotificationCenter.default.publisher(for: .threadEventNotificationName)
-            .compactMap { $0.object as? ThreadEventTypes }
+        NotificationCenter.default.publisher(for: .participant)
+            .compactMap { $0.object as? ParticipantEventTypes }
             .sink { [weak self] event in
-                if case let .threadRemoveParticipants(response) = event {
-                    withAnimation {
-                        response.result?.forEach { participant in
-                            self?.removeParticipant(participant)
-                        }
-                    }
-                }
+                self?.onParticipantEvent(event)
             }
-            .store(in: &cancellableSet)
+            .store(in: &cancelable)
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .filter { $0.count >= 2 }
@@ -52,7 +46,29 @@ public final class ParticipantsViewModel: ObservableObject {
             .sink { searchText in
                 self.searchParticipants(searchText)
             }
-            .store(in: &cancellableSet)
+            .store(in: &cancelable)
+    }
+
+
+    private func onParticipantEvent(_ event: ParticipantEventTypes) {
+        switch event {
+        case .participants(let chatResponse):
+            onParticipants(chatResponse)
+        case .deleted(let chatResponse):
+            onDelete(chatResponse)
+        default:
+            break
+        }
+    }
+
+    private func onDelete(_ response: ChatResponse<[Participant]>) {
+        if let participants = response.result {
+            withAnimation {
+                participants.forEach { participant in
+                    removeParticipant(participant)
+                }
+            }
+        }
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
@@ -64,7 +80,7 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public func getParticipants() {
         isLoading = true
-        ChatManager.activeInstance?.getThreadParticipants(.init(threadId: thread?.id ?? 0, offset: offset, count: count), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.participant.get(.init(threadId: thread?.id ?? 0, offset: offset, count: count))
     }
 
     public func searchParticipants(_ searchText: String) {
@@ -80,7 +96,7 @@ public final class ParticipantsViewModel: ObservableObject {
         case .admin:
             req.admin = true
         }
-        ChatManager.activeInstance?.getThreadParticipants(req, completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.participant.get(req)
     }
 
     public var filtered: [Participant] {
@@ -106,23 +122,13 @@ public final class ParticipantsViewModel: ObservableObject {
         getParticipants()
     }
 
-    public func onServerResponse(_ response: ChatResponse<[Participant]>) {
+    public func onParticipants(_ response: ChatResponse<[Participant]>) {
         if let participants = response.result {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
             hasNext = response.pagination?.hasNext ?? false
         }
         isLoading = false
-    }
-
-    public func onCacheResponse(_ response: ChatResponse<[Participant]>) {
-        if let participants = response.result {
-            appendParticipants(participants: participants)
-            hasNext = response.pagination?.hasNext ?? false
-        }
-        if isLoading, AppState.shared.connectionStatus != .connected {
-            isLoading = false
-        }
     }
 
     public func refresh() {
@@ -139,11 +145,7 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public func removePartitipant(_ participant: Participant) {
         guard let id = participant.id, let threadId = thread?.id else { return }
-        ChatManager.activeInstance?.removeParticipants(.init(participantId: id, threadId: threadId)) { [weak self] response in
-            if response.error == nil, let participant = response.result?.first {
-                self?.removeParticipant(participant)
-            }
-        }
+        ChatManager.activeInstance?.participant.remove(.init(participantId: id, threadId: threadId))
     }
 
     public func preparePaginiation() {

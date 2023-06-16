@@ -19,6 +19,7 @@
 		0523E31429ED1DE3000D63C2 /* ChatAppUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0523E31329ED1DE3000D63C2 /* ChatAppUI */; };
 		0523E31629ED1DE6000D63C2 /* ChatAppModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0523E31529ED1DE6000D63C2 /* ChatAppModels */; };
 		0523E31829ED1DED000D63C2 /* ChatAppViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0523E31729ED1DED000D63C2 /* ChatAppViewModels */; };
+		0528CFBF2A36377900A671A8 /* BlockedContacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0528CFBE2A36377900A671A8 /* BlockedContacts.swift */; };
 		0529947B2A025E8C00F58B99 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0529947A2A025E8C00F58B99 /* WidgetKit.framework */; };
 		0529947D2A025E8C00F58B99 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0529947C2A025E8C00F58B99 /* SwiftUI.framework */; };
 		052994802A025E8C00F58B99 /* MyWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0529947F2A025E8C00F58B99 /* MyWidgetBundle.swift */; };
@@ -118,6 +119,7 @@
 		051D58E329926D7800DC066A /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
+		0528CFBE2A36377900A671A8 /* BlockedContacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedContacts.swift; sourceTree = "<group>"; };
 		052994792A025E8C00F58B99 /* MyWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MyWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0529947A2A025E8C00F58B99 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0529947C2A025E8C00F58B99 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -475,6 +477,7 @@
 				AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */,
 				ACFBF1B826FCA51300DD27AE /* AddOrEditContactView.swift */,
 				AC23695527439478008195D7 /* SearchContactRow.swift */,
+				0528CFBE2A36377900A671A8 /* BlockedContacts.swift */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -714,6 +717,7 @@
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
 				0500F7292A13FFD000F51EDA /* CreateDirectThreadView.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
+				0528CFBF2A36377900A671A8 /* BlockedContacts.swift in Sources */,
 				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
 				052D57362795323C0075BF8F /* ManageTagView.swift in Sources */,
 				05384A842792A10100D85A92 /* TagRow.swift in Sources */,

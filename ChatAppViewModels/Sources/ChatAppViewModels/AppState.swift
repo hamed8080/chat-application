@@ -11,6 +11,8 @@ import ChatAppModels
 import ChatModels
 import ChatAppExtensions
 import ChatCore
+import Combine
+import ChatDTO
 
 public final class AppState: ObservableObject {
     public static let shared = AppState()
@@ -22,9 +24,31 @@ public final class AppState: ObservableObject {
     @Published public var callLogs: [URL]?
     @Published public var connectionStatusString = ""
     public var activeThreadId: Int?
+    private var cancelable: Set<AnyCancellable> = []
+    private var requests: [String: Any] = [:]
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
             setConnectionStatus(connectionStatus)
+        }
+    }
+
+    private init() {
+        NotificationCenter.default.publisher(for: .thread)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink { [weak self] value in
+                self?.onThreadEvent(value)
+            }
+            .store(in: &cancelable)
+    }
+
+    private func onThreadEvent(_ event: ThreadEventTypes) {
+        switch event {
+        case .threads(let response):
+            onGetThreads(response)
+        case .created(let response):
+            onCreateThread(response)
+        default:
+            break
         }
     }
 
@@ -39,23 +63,32 @@ public final class AppState: ObservableObject {
     public func showThread(threadId: Int) {
         isLoading = true
         activeThreadId = threadId
-        ChatManager.activeInstance?.getThreads(.init(threadIds: [threadId])) { [weak self] response in
-            if let thraed = response.result?.first {
-                self?.showThread(thread: thraed)
+        ChatManager.activeInstance?.conversation.get(.init(threadIds: [threadId]))
+    }
+
+    func onGetThreads(_ response: ChatResponse<[Conversation]>) {
+        if let uniqueId = response.uniqueId, let thraed = response.result?.first, requests[uniqueId] != nil {
+            showThread(thread: thraed)
+            requests.removeValue(forKey: uniqueId)
+        }
+    }
+
+    func onCreateThread(_ response: ChatResponse<Conversation>) {
+        if let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+            if let thread = response.result {
+                showThread(thread: thread)
+                activeThreadId = thread.id
+            } else if let error = response.error {
+                animateAndShowError(error)
             }
+            requests.removeValue(forKey: uniqueId)
         }
     }
 
     public func showThread(invitees: [Invitee]) {
         isLoading = true
-        ChatManager.activeInstance?.createThread(.init(invitees: invitees, title: "", type: .normal)) { [weak self] response in
-            if let thread = response.result {
-                self?.showThread(thread: thread)
-                self?.activeThreadId = thread.id
-            } else if let error = response.error {
-                self?.animateAndShowError(error)
-            }
-        }
+        let req = CreateThreadRequest(invitees: invitees, title: "", type: .normal)
+        ChatManager.activeInstance?.conversation.create(req)
     }
 
     public func showThread(userName: String) {
@@ -80,6 +113,4 @@ public final class AppState: ObservableObject {
             }
         }
     }
-
-    private init() {}
 }

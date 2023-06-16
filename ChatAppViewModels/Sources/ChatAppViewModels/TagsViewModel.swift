@@ -11,20 +11,43 @@ import ChatModels
 import ChatCore
 import SwiftUI
 import ChatAppModels
+import ChatDTO
 
 public final class TagsViewModel: ObservableObject {
     @Published public var tags: [Tag] = []
     @Published public var selectedTag: Tag?
     @Published public var isLoading = false
     @Published public var showAddParticipants = false
-    public private(set) var cancellableSet: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
+    private var cancelable: Set<AnyCancellable> = []
+    private var requests: [String: Any] = [:]
 
     public init() {
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
-            .store(in: &cancellableSet)
+            .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: .tag)
+            .compactMap { $0.object as? TagEventTypes }
+            .sink { [weak self] value in
+                self?.onTagEvent(value)
+            }
+            .store(in: &cancelable)
         getTagList()
+    }
+
+    private func onTagEvent(_ event: TagEventTypes) {
+        switch event {
+        case .created(let chatResponse):
+            onCreateTag(chatResponse)
+        case .deleted(let chatResponse):
+            onDeleteTag(chatResponse)
+        case .edited(let chatResponse):
+            onEditTag(chatResponse)
+        case .added(let chatResponse):
+            onAddTagParticipant(chatResponse)
+        default:
+            break
+        }
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
@@ -51,15 +74,25 @@ public final class TagsViewModel: ObservableObject {
     }
 
     public func getTagList() {
-        ChatManager.activeInstance?.tagList(completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.tag.all()
     }
 
     public func deleteTag(_ tag: Tag) {
-        ChatManager.activeInstance?.deleteTag(.init(id: tag.id)) { [weak self] response in
-            if let tag = response.result, let self = self {
-                self.removeTag(tag)
-            }
+        let req = DeleteTagRequest(id: tag.id)
+        ChatManager.activeInstance?.tag.delete(req)
+    }
+
+    private func onDeleteTag(_ response: ChatResponse<Tag>) {
+        if let tag = response.result {
+            self.removeTag(tag)
         }
+    }
+
+    private func onCreateTag(_ response: ChatResponse<Tag>) {
+        if let tag = response.result {
+            self.appendTags(tags: [tag])
+        }
+        isLoading = false
     }
 
     public func refresh() {
@@ -74,25 +107,22 @@ public final class TagsViewModel: ObservableObject {
 
     public func createTag(name: String) {
         isLoading = true
-        ChatManager.activeInstance?.createTag(.init(tagName: name)) { [weak self] response in
-            if let tag = response.result, let self = self {
-                self.appendTags(tags: [tag])
-            }
-            self?.isLoading = false
+        let req = CreateTagRequest(tagName: name)
+        ChatManager.activeInstance?.tag.create(req)
+    }
+
+    public func addThreadToTag(tag: Tag, threadId: Int?) {
+        if let threadId = threadId {
+            isLoading = true
+            ChatManager.activeInstance?.tag.add(.init(tagId: tag.id, threadIds: [threadId]))
         }
     }
 
-    public func addThreadToTag(tag: Tag, threadId: Int?, onComplete: ((_ participants: [TagParticipant], _ success: Bool) -> Void)? = nil) {
-        if let threadId = threadId {
-            isLoading = true
-            ChatManager.activeInstance?.addTagParticipants(.init(tagId: tag.id, threadIds: [threadId])) { [weak self] response in
-                if let tagParticipants = response.result, let self = self {
-                    self.addParticipant(tag.id, tagParticipants)
-                    onComplete?(tagParticipants, response.error == nil)
-                }
-                self?.isLoading = false
-            }
+    private func onAddTagParticipant(_ response: ChatResponse<[TagParticipant]>) {
+        if let tagParticipants = response.result, let tagId = tagParticipants.first?.tagId {
+            addParticipant(tagId, tagParticipants)
         }
+        isLoading = false
     }
 
     public func toggleSelectedTag(tag: Tag, isSelected: Bool) {
@@ -100,19 +130,28 @@ public final class TagsViewModel: ObservableObject {
     }
 
     public func editTag(tag: Tag) {
-        ChatManager.activeInstance?.editTag(.init(id: tag.id, tagName: tag.name)) { [weak self] response in
-            if let tag = response.result, let self = self {
-                self.editedTag(tag)
-            }
+        let req = EditTagRequest(id: tag.id, tagName: tag.name)
+        ChatManager.activeInstance?.tag.edit(req)
+    }
+
+    private func onEditTag(_ response: ChatResponse<Tag>) {
+        if let tag = response.result {
+            editedTag(tag)
         }
     }
 
     public func deleteTagParticipant(_ tagId: Int, _ tagParticipant: TagParticipant) {
-        ChatManager.activeInstance?.removeTagParticipants(.init(tagId: tagId, tagParticipants: [tagParticipant])) { [weak self] response in
-            if let tagParticipants = response.result, let self = self {
-                self.removeParticipants(tagId, tagParticipants)
-            }
+        let req = RemoveTagParticipantsRequest(tagId: tagId, tagParticipants: [tagParticipant])
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.tag.remove(req)
+    }
+
+    private func onRemoveTagParticipant(_ response: ChatResponse<[TagParticipant]>) {
+        if let tagParticipants = response.result, let uniqueId = response.uniqueId, let request = requests[uniqueId] as? RemoveTagParticipantsRequest {
+            removeParticipants(request.tagId, tagParticipants)
+            requests.removeValue(forKey: uniqueId)
         }
+        isLoading = false
     }
 
     public func appendTags(tags: [Tag]) {

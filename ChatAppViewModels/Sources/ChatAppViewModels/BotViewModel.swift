@@ -11,19 +11,42 @@ import ChatModels
 import ChatCore
 import SwiftUI
 import ChatAppModels
+import ChatDTO
 
 public final class BotViewModel: ObservableObject {
     @Published public var bots: [BotInfo] = []
     @Published public var selectedBot: BotInfo?
     @Published public var isLoading = false
-    public private(set) var cancellableSet: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
+    private var cancelable: Set<AnyCancellable> = []
+    private var requests: [String: Any] = [:]
 
     public init() {
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
-            .store(in: &cancellableSet)
+            .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: .bot)
+            .compactMap { $0.object as? BotEventTypes }
+            .sink { [weak self] value in
+                self?.onBotEvent(value)
+            }
+            .store(in: &cancelable)
         getBotList()
+    }
+
+    private func onBotEvent(_ event: BotEventTypes) {
+        switch event {
+        case .bots(let response):
+            onBots(response)
+        case .start(let response):
+            onStart(response)
+        case .stop(let response):
+            onStop(response)
+        case .create(let response):
+            onCreate(response)
+        default:
+            break
+        }
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
@@ -32,7 +55,7 @@ public final class BotViewModel: ObservableObject {
         }
     }
 
-    public func onServerResponse(_ response: ChatResponse<[BotInfo]>) {
+    public func onBots(_ response: ChatResponse<[BotInfo]>) {
         if let bots = response.result {
             firstSuccessResponse = true
             appendBots(bots: bots)
@@ -40,26 +63,46 @@ public final class BotViewModel: ObservableObject {
         isLoading = false
     }
 
+    public func onStart(_ response: ChatResponse<String>) {
+        if let name = response.result, let bot = bots.first(where: {$0.name == name}) {
+            removeBot(bot)
+        }
+        isLoading = false
+    }
+
+    public func onStop(_ response: ChatResponse<String>) {
+        if response.result != nil {
+
+        }
+        isLoading = false
+    }
+
+    public func onCreate(_ response: ChatResponse<BotInfo>) {
+        if let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+            appendBots(bots: [.init(name: response.result?.name, botUserId: response.result?.botUserId)])
+            requests.removeValue(forKey: uniqueId)
+        }
+        isLoading = false
+    }
+
     public func getBotList() {
-        ChatManager.activeInstance?.getUserBots(.init(), completion: onServerResponse)
+        let req = GetUserBotsRequest()
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.bot.get(req)
     }
 
     public func stopBot(_ bot: BotInfo, threadId: Int) {
         guard let name = bot.name else { return }
-        ChatManager.activeInstance?.stopBot(.init(botName: name, threadId: threadId)) { [weak self] response in
-            if response.result != nil, let self = self {
-                self.removeBot(bot)
-            }
-        }
+        let req = StartStopBotRequest(botName: name, threadId: threadId)
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.bot.stop(req)
     }
 
     public func startBot(_ bot: BotInfo, threadId: Int) {
         guard let name = bot.name else { return }
-        ChatManager.activeInstance?.startBot(.init(botName: name, threadId: threadId)) { [weak self] response in
-            if response.result != nil, let self = self {
-                self.removeBot(bot)
-            }
-        }
+        let req = StartStopBotRequest(botName: name, threadId: threadId)
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.bot.start(req)
     }
 
     public func refresh() {
@@ -74,12 +117,9 @@ public final class BotViewModel: ObservableObject {
 
     public func createBot(name: String) {
         isLoading = true
-        ChatManager.activeInstance?.createBot(.init(botName: name)) { [weak self] response in
-            if response.result != nil, let self = self {
-                self.appendBots(bots: [.init(name: name, botUserId: AppState.shared.user?.id)])
-            }
-            self?.isLoading = false
-        }
+        let req = CreateBotRequest(botName: name)
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.bot.create(req)
     }
 
     public func appendBots(bots: [BotInfo]) {

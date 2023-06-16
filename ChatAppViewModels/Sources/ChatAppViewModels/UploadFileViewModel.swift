@@ -4,6 +4,7 @@ import Combine
 import ChatAppModels
 import ChatDTO
 import ChatCore
+import Foundation
 
 public final class UploadFileViewModel: ObservableObject {
     @Published public private(set) var uploadPercent: Int64 = 0
@@ -12,8 +13,29 @@ public final class UploadFileViewModel: ObservableObject {
     public var uploadFileWithTextMessage: UploadWithTextMessageProtocol { message as! UploadWithTextMessageProtocol }
     public var thread: Conversation?
     public var uploadUniqueId: String?
+    public private(set) var cancelable: Set<AnyCancellable> = []
 
-    public init() {}
+    public init() {
+        NotificationCenter.default.publisher(for: .upload)
+            .compactMap { $0.object as? UploadEventTypes }
+            .sink(receiveValue: onUploadEvent)
+            .store(in: &cancelable)
+    }
+
+    private func onUploadEvent(_ event: UploadEventTypes) {
+        switch event {
+        case .suspended(let uniqueId):
+            onPause(uniqueId)
+        case .resumed(let uniqueId):
+            onResume(uniqueId)
+        case .progress(let uniqueId, let uploadFileProgress, let chatError):
+            onUploadProgress(uniqueId, uploadFileProgress, chatError)
+        case .completed(let uniqueId, _, let data, let error):
+            onCompeletedUpload(uniqueId, data, error)
+        default:
+            break
+        }
+    }
 
     public func startUploadFile(message: Message, thread: Conversation?) {
         if state == .COMPLETED { return }
@@ -44,48 +66,45 @@ public final class UploadFileViewModel: ObservableObject {
     }
 
     public func uploadFile(_ message: SendTextMessageRequest, _ uploadFileRequest: UploadFileRequest) {
-        ChatManager.activeInstance?.sendFileMessage(textMessage: message, uploadFile: uploadFileRequest) { uploadFileProgress, _ in
-            self.uploadPercent = uploadFileProgress?.percent ?? 0
-        } onSent: { response in
-            print(response.result ?? "")
-            if response.error == nil {
-                self.state = .COMPLETED
-            }
-        } onSeen: { response in
-            print(response.result ?? "")
-        } onDeliver: { response in
-            print(response.result ?? "")
-        } uploadUniqueIdResult: { uploadUniqueId in
-            self.uploadUniqueId = uploadUniqueId
-        } messageUniqueIdResult: { messageUniqueId in
-            print(messageUniqueId)
-        }
+        uploadUniqueId = uploadFileRequest.uniqueId
+        ChatManager.activeInstance?.message.send(message, uploadFileRequest)
     }
 
     public func uploadImage(_ message: SendTextMessageRequest, _ uploadImageRequest: UploadImageRequest) {
-        ChatManager.activeInstance?.requestSendImageTextMessage(textMessage: message, req: uploadImageRequest, onSent: { response in
-            print(response.result ?? "")
-            if response.error == nil {
-                self.state = .COMPLETED
-            }
-        }, uploadProgress: { progress, error in
-            self.uploadPercent = progress?.percent ?? 0
-        }, uploadUniqueIdResult: { uploadUniqueId in
-            self.uploadUniqueId = uploadUniqueId
-        })
+        ChatManager.activeInstance?.message.send(message, uploadImageRequest)
+    }
+
+    private func onUploadProgress(_ uniqueId: String, _ uploadFileProgress: UploadFileProgress?, _ error: ChatError?) {
+        if uniqueId == uploadUniqueId {
+            uploadPercent = uploadFileProgress?.percent ?? 0
+        }
+    }
+
+    private func onCompeletedUpload(_ uniqueId: String, _ data: Data?, _ error: Error?) {
+        if uniqueId == uploadUniqueId {
+            state = .COMPLETED
+        }
     }
 
     public func pauseUpload() {
         guard let uploadUniqueId = uploadUniqueId else { return }
-        ChatManager.activeInstance?.manageUpload(uniqueId: uploadUniqueId, action: .suspend) { _, _ in
-            self.state = .PAUSED
+        ChatManager.activeInstance?.file.manageUpload(uniqueId: uploadUniqueId, action: .suspend)
+    }
+
+    private func onPause(_ uniqueId: String) {
+        if uniqueId == uploadUniqueId {
+            state = .PAUSED
         }
     }
 
     public func resumeUpload() {
         guard let uploadUniqueId = uploadUniqueId else { return }
-        ChatManager.activeInstance?.manageUpload(uniqueId: uploadUniqueId, action: .resume) { _, _ in
-            self.state = .UPLOADING
+        ChatManager.activeInstance?.file.manageUpload(uniqueId: uploadUniqueId, action: .resume)
+    }
+
+    private func onResume(_ uniqueId: String) {
+        if uniqueId == uploadUniqueId {
+            state = .UPLOADING
         }
     }
 }

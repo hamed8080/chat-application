@@ -19,10 +19,10 @@ public final class ObjectsContainer: ObservableObject {
     @Published public var audioPlayerVM = AVAudioPlayerViewModel()
     public init(delegate: ChatDelegate) {
         loginVM = LoginViewModel(delegate: delegate)
-        NotificationCenter.default.publisher(for: .messageNotificationName)
+        NotificationCenter.default.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
             .compactMap { event -> ChatResponse<Message>? in
-                if case let .messageNew(response) = event { return response } else { return nil }
+                if case let .new(response) = event { return response } else { return nil }
             }
             .filter{ AppState.shared.user?.id != $0.result?.ownerId }
             .sink { newMessage in

@@ -78,7 +78,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public var readOnly = false
     public var textMessage: String?
     public var canScrollToBottomOfTheList: Bool = false
-    public private(set) var cancellableSet: Set<AnyCancellable> = []
+    private var cancelable: Set<AnyCancellable> = []
     private var typingTimerStarted = false
     public lazy var audioRecoderVM: AudioRecordingViewModel = .init(threadViewModel: self)
     public var hasNext = true
@@ -86,10 +86,12 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public var threadId: Int { thread?.id ?? 0 }
     public weak var threadsViewModel: ThreadsViewModel?
     @Published public var signalMessageText: String?
-    public var canLoadNexPage: Bool { !isLoading && hasNext && AppState.shared.connectionStatus == .connected }
+    public var canLoadNexPage: Bool { !isLoading && hasNext }
     public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
     public var audioPlayer: AVAudioPlayerViewModel?
+    private var requests: [String: Any] = [:]
+    private var searchRequests: [String: Any] = [:]
 
     public weak var forwardMessage: Message? {
         didSet {
@@ -98,6 +100,11 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     }
 
     public init() {}
+
+    private func request<T>(_ response: ChatResponse<Any>) -> T? {
+        guard let uniqueId = response.uniqueId, let request = requests[uniqueId] as? T else { return nil }
+        return request
+    }
 
     public func setup(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.readOnly = readOnly
@@ -110,17 +117,11 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     private func setupNotificationObservers() {
         AppState.shared.$connectionStatus
             .sink(receiveValue: onConnectionStatusChanged)
-            .store(in: &cancellableSet)
-
-        NotificationCenter.default.publisher(for: .threadEventNotificationName)
-            .compactMap { $0.object as? ThreadEventTypes }
-            .sink(receiveValue: onThreadEvent)
-            .store(in: &cancellableSet)
-
-        NotificationCenter.default.publisher(for: .messageNotificationName)
-            .compactMap { $0.object as? MessageEventTypes }
-            .sink(receiveValue: onMessageEvent)
-            .store(in: &cancellableSet)
+            .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: .chatEvents)
+            .compactMap { $0.object as? ChatEventType }
+            .sink(receiveValue: onChatEvent)
+            .store(in: &cancelable)
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
@@ -130,13 +131,35 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         }
     }
 
+    public func onChatEvent(_ event: ChatEventType) {
+        switch event {
+        case .message(let messageEventTypes):
+            onMessageEvent(messageEventTypes)
+        case .thread(let threadEventTypes):
+            onThreadEvent(threadEventTypes)
+        case .participant(let participantEventTypes):
+            onParticipantEvent(participantEventTypes)
+        default:
+            break
+        }
+    }
+
+    public func onParticipantEvent(_ event: ParticipantEventTypes?) {
+        switch event {
+        case .participants(let response):
+            onMentionParticipants(response)
+        default:
+            break
+        }
+    }
+
     public func onThreadEvent(_ event: ThreadEventTypes?) {
         switch event {
-        case let .lastMessageDeleted(response), let .lastMessageEdited(response):
+        case .lastMessageDeleted(let response), .lastMessageEdited(let response):
             if let thread = response.result {
                 onLastMessageChanged(thread)
             }
-        case let .threadUnreadCountUpdated(response):
+        case .updatedUnreadCount(let response):
             if let unreadCountModel = response.result {
                 updateUnreadCount(unreadCountModel.threadId ?? -1, unreadCountModel.unreadCount ?? -1)
             }
@@ -147,29 +170,47 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
 
     public func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
-        case let .messageNew(response):
+        case .history(let response):
+            onHistory(response)
+            onSearch(response)
+            break
+        case .queueTextMessages(let response):
+            onQueueTextMessages(response)
+        case .queueEditMessages(let response):
+            onQueueEditMessages(response)
+        case .queueForwardMessages(let response):
+            onQueueForwardMessages(response)
+        case .queueFileMessages(let response):
+            onQueueFileMessages(response)
+        case .new(let response):
             if threadId == response.subjectId, let message = response.result {
                 appendMessages([message])
                 scrollToLastMessageIfLastMessageIsVisible()
             }
-        case let .messageSent(response):
+        case .sent(let response):
             if threadId == response.result?.threadId {
                 onSent(response)
                 playSentAudio()
             }
-        case let .messageDelivery(response):
+        case .delivered(let response):
             if threadId == response.result?.threadId {
                 onDeliver(response)
             }
-        case let .messageSeen(response):
+        case .seen(let response):
             if threadId == response.result?.threadId {
                 onSeen(response)
             }
-        case let .messageDelete(response):
+        case .deleted(let response):
             let responseThreadId = response.subjectId ?? response.result?.threadId ?? response.result?.conversation?.id
             if threadId == responseThreadId {
                 onDeleteMessage(response)
             }
+        case .pin(let response):
+            onPinMessage(response)
+        case .unpin(let response):
+            onUNPinMessage(response)
+        case .edited(let response):
+            onEditedMessage(response)
         default:
             break
         }
@@ -201,28 +242,41 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     }
 
     public func getHistory(_ toTime: UInt? = nil) {
-        ChatManager.activeInstance?.getHistory(.init(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)) { [weak self] response in
-            if let messages = response.result {
-                self?.setHasNext(response.pagination?.hasNext ?? false)
-                self?.appendMessages(messages)
-                self?.isLoading = false
-                self?.isFetchedServerFirstResponse = true
-            }
-        } cacheResponse: { [weak self] response in
-            if let messages = response.result {
-                self?.appendMessages(messages)
-            }
-        } textMessageNotSentRequests: { [weak self] response in
-            self?.appendMessages(response.result?.compactMap { SendTextMessage(from: $0, thread: self?.thread) } ?? [])
-        } editMessageNotSentRequests: { [weak self] response in
-            self?.appendMessages(response.result?.compactMap { EditTextMessage(from: $0, thread: self?.thread) } ?? [])
-        } forwardMessageNotSentRequests: { [weak self] response in
-            self?.appendMessages(response.result?.compactMap {
-                ForwardMessage(from: $0, destinationThread: .init(id: $0.threadId, title: self?.threadName($0.threadId)), thread: self?.thread)
-            } ?? []
-            )
-        } fileMessageNotSentRequests: { [weak self] response in
-            self?.appendMessages(response.result?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: self?.thread) } ?? [])
+        ChatManager.activeInstance?.message.history(.init(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly))
+    }
+
+    private func onHistory(_ response: ChatResponse<[Message]>) {
+        if let messages = response.result, response.cache == false {
+            setHasNext(response.hasNext)
+            appendMessages(messages)
+            isLoading = false
+            isFetchedServerFirstResponse = true
+        } else if let messages = response.result {
+           appendMessages(messages)
+        }
+    }
+
+    private func onQueueTextMessages(_ response: ChatResponse<[SendTextMessageRequest]>) {
+        appendMessages(response.result?.compactMap { SendTextMessage(from: $0, thread: thread) } ?? [])
+    }
+
+    private func onQueueEditMessages(_ response: ChatResponse<[EditMessageRequest]>) {
+        appendMessages(response.result?.compactMap { EditTextMessage(from: $0, thread: thread) } ?? [])
+    }
+
+    private func onQueueForwardMessages(_ response: ChatResponse<[ForwardMessageRequest]>) {
+        appendMessages(response.result?.compactMap { ForwardMessage(from: $0,
+                                                                    destinationThread: .init(id: $0.threadId, title: threadName($0.threadId)),
+                                                                    thread: thread) } ?? [])
+    }
+
+    private func onQueueFileMessages(_ response: ChatResponse<[(UploadFileRequest, SendTextMessageRequest)]>) {
+        appendMessages(response.result?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: thread) } ?? [])
+    }
+
+    public func onEditedMessage(_ response: ChatResponse<Message>) {
+        if let editedMessage = response.result, let oldMessage = messages.first(where: { $0.id == editedMessage.id }) {
+            oldMessage.updateMessage(message: editedMessage)
         }
     }
 
@@ -232,9 +286,9 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
 
     public func sendStartTyping(_ newValue: String) {
         if newValue.isEmpty == false {
-            ChatManager.activeInstance?.snedStartTyping(threadId: threadId)
+            ChatManager.activeInstance?.system.snedStartTyping(threadId: threadId)
         } else {
-            ChatManager.activeInstance?.sendStopTyping()
+            ChatManager.activeInstance?.system.sendStopTyping()
         }
     }
 
@@ -243,7 +297,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         if let messageId = message.id, let lastMsgId = thread?.lastSeenMessageId, messageId > lastMsgId, !isMe {
             thread?.lastSeenMessageId = messageId
             print("send seen for message:\(message.messageTitle) with id:\(messageId)")
-            ChatManager.activeInstance?.seen(.init(threadId: threadId, messageId: messageId))
+            ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
             if let unreadCount = thread?.unreadCount, unreadCount > 0 {
                 thread?.unreadCount = unreadCount - 1
                 objectWillChange.send()
@@ -256,7 +310,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     }
 
     public func sendSignal(_ signalMessage: SignalMessageType) {
-        ChatManager.activeInstance?.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
+        ChatManager.activeInstance?.system.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
     }
 
     public func playAudio() {}
@@ -285,14 +339,20 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public func doSearch(text: String, offset: Int = 0) {
         guard text.count >= 2 else { return }
         let req = GetHistoryRequest(threadId: threadId, count: 50, offset: offset, query: "\(text)")
-        ChatManager.activeInstance?.getHistory(req) { [weak self] response in
+        searchRequests[req.uniqueId] = req
+        ChatManager.activeInstance?.message.history(req)
+    }
+
+    private func onSearch(_ response: ChatResponse<[Message]>) {
+        if let uniqueId = response.uniqueId, searchRequests[uniqueId] != nil {
             response.result?.forEach { message in
-                if !(self?.searchedMessages.contains(where: { $0.id == message.id }) ?? false) {
-                    self?.searchedMessages.append(message)
-                    self?.objectWillChange.send()
+                if !(searchedMessages.contains(where: { $0.id == message.id })) {
+                    searchedMessages.append(message)
+                    objectWillChange.send()
                 }
             }
-        } cacheResponse: { _ in }
+            searchRequests.removeValue(forKey: uniqueId)
+        }
     }
 
     public func appendMessages(_ messages: [Message]) {
@@ -315,7 +375,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
 
     public func deleteMessages(_ messages: [Message]) {
         let messagedIds = messages.compactMap(\.id)
-        ChatManager.activeInstance?.deleteMultipleMessages(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true), completion: onDeleteMessage)
+        ChatManager.activeInstance?.message.delete(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true))
         selectedMessages = []
     }
 
@@ -353,20 +413,24 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public func searchForMention(_ text: String) {
         if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
             let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
-            ChatManager.activeInstance?.getThreadParticipants(.init(threadId: threadId, name: rangeText)) { response in
-                self.mentionList = response.result ?? []
-            }
+            ChatManager.activeInstance?.participant.get(.init(threadId: threadId, name: rangeText))
         } else {
             mentionList = []
+        }
+    }
+
+    private func onMentionParticipants(_ response: ChatResponse<[Participant]>) {
+        if let mentionList = response.result {
+            self.mentionList = mentionList
         }
     }
 
     public func togglePinMessage(_ message: Message) {
         guard let messageId = message.id else { return }
         if message.pinned == false || message.pinned == nil {
-            pin(messageId)
+            pinMessage(messageId)
         } else {
-            unpin(messageId)
+            unpinMessage(messageId)
         }
     }
 
@@ -374,27 +438,31 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         messages.firstIndex(where: { $0.id == messageId })
     }
 
-    public func pin(_ messageId: Int) {
-        ChatManager.activeInstance?.pinMessage(.init(messageId: messageId)) { [weak self] _ in
-            if let index = self?.firstMessageIndex(messageId) {
-                self?.messages[index].pinned = true
-            }
+    public func pinMessage(_ messageId: Int) {
+        ChatManager.activeInstance?.message.pin(.init(messageId: messageId))
+    }
+
+    private func onPinMessage(_ response: ChatResponse<Message>) {
+        if let messageId = response.result?.id, let index = firstMessageIndex(messageId) {
+            messages[index].pinned = true
         }
     }
 
-    public func unpin(_ messageId: Int) {
-        ChatManager.activeInstance?.unpinMessage(.init(messageId: messageId)) { [weak self] _ in
-            if let index = self?.firstMessageIndex(messageId) {
-                self?.messages[index].pinned = false
-            }
+    public func unpinMessage(_ messageId: Int) {
+        ChatManager.activeInstance?.message.unpin(.init(messageId: messageId))
+    }
+
+    private func onUNPinMessage(_ response: ChatResponse<Message>) {
+        if let messageId = response.result?.id, let index = firstMessageIndex(messageId) {
+            messages[index].pinned = false
         }
     }
 
     public func clearCacheFile(message: Message) {
         if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
             let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(Routes.files.rawValue)/\(fileHashCode)"
-            ChatManager.activeInstance?.deleteCacheFile(URL(string: url)!)
-            NotificationCenter.default.post(.init(name: .fileDeletedFromCacheName, object: message))
+            ChatManager.activeInstance?.file.deleteCacheFile(URL(string: url)!)
+            NotificationCenter.default.post(.init(name: .message, object: message))
         }
     }
 
@@ -422,18 +490,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
                                          threadId: threadId,
                                          userGroupHash: thread?.userGroupHash ?? "",
                                          textMessage: textMessage)
-        ChatManager.activeInstance?.sendLocationMessage(req) { uploadProgress, error in
-            print(uploadProgress ?? 0)
-            print(error ?? 0)
-        } downloadProgress: { downloadProgress in
-            print(downloadProgress)
-        } onSent: { response in
-            print(response)
-        } onSeen: { response in
-            print(response)
-        } onDeliver: { response in
-            print(response)
-        }
+        ChatManager.activeInstance?.message.send(req)
     }
 }
 

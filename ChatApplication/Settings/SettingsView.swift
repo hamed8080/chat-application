@@ -116,7 +116,7 @@ struct SettingsView: View {
 
                     Section(header: Text("Manage Calls").font(.headline)) {
                         Button {
-                            ChatManager.activeInstance?.logOut()
+                            ChatManager.activeInstance?.user.logOut()
                             TokenManager.shared.clearToken()
                             UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
                             container.reset()

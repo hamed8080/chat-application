@@ -30,7 +30,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     public var fileURL: URL? {
         guard let url = url else { return nil }
-        return chat?.filePath(url) ?? chat?.filePathInGroup(url)
+        return chat?.file.filePath(url) ?? chat?.file.filePathInGroup(url)
     }
 
     public var url: URL? {
@@ -50,18 +50,41 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         if isInCache {
             state = .COMPLETED
         }
-        NotificationCenter.default.publisher(for: .fileDeletedFromCacheName)
+        NotificationCenter.default.publisher(for: .message)
             .compactMap { $0.object as? Message }
             .filter { $0.id == message.id }
             .sink { [weak self] _ in
                 self?.state = .UNDEFINED
             }
             .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: .download)
+            .compactMap { $0.object as? DownloadEventTypes }
+            .sink { [weak self] value in
+                self?.onDownloadEvent(value)
+            }
+            .store(in: &cancelable)
+    }
+
+    private func onDownloadEvent(_ event: DownloadEventTypes){
+        switch event {
+        case .resumed(_):
+            state = .DOWNLOADING
+        case .file(let chatResponse, _):
+            onResponse(data: chatResponse.result)
+        case .image(let chatResponse, _):
+            onResponse(data: chatResponse.result)
+        case .suspended(_):
+            state = .PAUSED
+        case .progress(_, let progress):
+            self.downloadPercent = progress?.percent ?? 0
+        default:
+            break
+        }
     }
 
     public var isInCache: Bool {
         guard let url = url else { return false }
-        return chat?.isFileExist(url) ?? false || chat?.isFileExistInGroup(url) ?? false
+        return chat?.file.isFileExist(url) ?? false || chat?.file.isFileExistInGroup(url) ?? false
     }
 
     public func startDownload() {
@@ -75,33 +98,15 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     private func downloadFile() {
         state = .DOWNLOADING
         let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: true)
-        ChatManager.activeInstance?.getFile(req) { downloadProgress in
-            self.downloadPercent = downloadProgress.percent
-        } completion: { [weak self] data, _, _, _ in
-            self?.onResponse(data: data)
-        } cacheResponse: { [weak self] _, url, _, _ in
-            if let url = url, let data = self?.chat?.getData(url) {
-                self?.onResponse(data: data)
-            }
-        } uniqueIdResult: { uniqueId in
-            self.downloadUniqueId = uniqueId
-        }
+        downloadUniqueId = req.uniqueId
+        ChatManager.activeInstance?.file.get(req)
     }
 
     private func downloadImage() {
         state = .DOWNLOADING
         let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true, size: .ACTUAL)
-        ChatManager.activeInstance?.getImage(req) { [weak self] downloadProgress in
-            self?.downloadPercent = downloadProgress.percent
-        } completion: { [weak self] data, _, _, _ in
-            self?.onResponse(data: data)
-        } cacheResponse: { [weak self] _, url, _, _ in
-            if let url = url, let data = self?.chat?.getData(url) {
-                self?.onResponse(data: data)
-            }
-        } uniqueIdResult: { [weak self] uniqueId in
-            self?.downloadUniqueId = uniqueId
-        }
+        downloadUniqueId = req.uniqueId
+        ChatManager.activeInstance?.file.get(req)
     }
 
     private func onResponse(data: Data?) {
@@ -114,15 +119,11 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     public func pauseDownload() {
         guard let downloadUniqueId = downloadUniqueId else { return }
-        ChatManager.activeInstance?.manageDownload(uniqueId: downloadUniqueId, action: .suspend) { [weak self] _, _ in
-            self?.state = .PAUSED
-        }
+        ChatManager.activeInstance?.file.manageDownload(uniqueId: downloadUniqueId, action: .suspend)
     }
 
     public func resumeDownload() {
         guard let downloadUniqueId = downloadUniqueId else { return }
-        ChatManager.activeInstance?.manageDownload(uniqueId: downloadUniqueId, action: .resume) { [weak self] _, _ in
-            self?.state = .DOWNLOADING
-        }
+        ChatManager.activeInstance?.file.manageDownload(uniqueId: downloadUniqueId, action: .resume)
     }
 }

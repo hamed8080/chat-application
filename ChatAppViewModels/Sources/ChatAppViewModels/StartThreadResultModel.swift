@@ -3,6 +3,8 @@ import Chat
 import ChatModels
 import ChatExtensions
 import Foundation
+import ChatCore
+import ChatDTO
 
 public class StartThreadResultModel: ObservableObject {
     @Published public var selectedContacts: [Contact]
@@ -15,7 +17,7 @@ public class StartThreadResultModel: ObservableObject {
     @Published public var isCehckingName: Bool = false
     public var showGroupTitleView: Bool { isGroup || type == .channel }
     public var hasError: Bool { !titleIsValid }
-    public private(set) var canceableSet: Set<AnyCancellable> = []
+    public private(set) var cancelable: Set<AnyCancellable> = []
 
     public init(selectedContacts: [Contact] = [],
          type: ThreadTypes = .normal,
@@ -40,7 +42,23 @@ public class StartThreadResultModel: ObservableObject {
             .sink { [weak self] publicName in
                 self?.checkPublicName(publicName)
             }
-            .store(in: &canceableSet)
+            .store(in: &cancelable)
+
+        NotificationCenter.default.publisher(for: .thread)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink { [weak self] value in
+                self?.onThreadEvent(value)
+            }
+            .store(in: &cancelable)
+    }
+
+    private func onThreadEvent(_ event: ThreadEventTypes?) {
+        switch event {
+        case .isNameAvailable(let response):
+            onIsNameAvailable(response)
+        default:
+            break
+        }
     }
 
     public var titleIsValid: Bool {
@@ -99,12 +117,14 @@ public class StartThreadResultModel: ObservableObject {
     public func checkPublicName(_ title: String) {
         if titleIsValid {
             isCehckingName = true
-            ChatManager.activeInstance?.isThreadNamePublic(.init(name: title)) { [weak self] result in
-                if title == result.result?.name {
-                    self?.isPublicNameAvailable = true
-                }
-                self?.isCehckingName = false
-            }
+            ChatManager.activeInstance?.conversation.isNameAvailable(.init(name: title))
         }
+    }
+
+    private func onIsNameAvailable(_ response: ChatResponse<PublicThreadNameAvailableResponse>) {
+        if title == response.result?.name {
+            self.isPublicNameAvailable = true
+        }
+        isCehckingName = false
     }
 }

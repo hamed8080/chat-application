@@ -93,6 +93,12 @@ struct ContactContentList: View {
                     }
                 }
 
+                NavigationLink {
+                    BlockedContacts()
+                } label: {
+                    Label("Blocked", systemImage: "hand.raised.slash")
+                }
+
                 Button {
                     deleteDialog.toggle()
                 } label: {

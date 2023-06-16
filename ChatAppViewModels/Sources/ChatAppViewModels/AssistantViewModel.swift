@@ -23,6 +23,7 @@ public final class AssistantViewModel: ObservableObject {
     private var canLoadNextPage: Bool { !isLoading && hasNext }
     @Published public private(set) var assistants: [Assistant] = []
     @Published public var isLoading = false
+    private var cancelable: Set<AnyCancellable> = []
 
     public init() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
@@ -31,6 +32,12 @@ public final class AssistantViewModel: ObservableObject {
             }
         }
         .store(in: &canceableSet)
+        NotificationCenter.default.publisher(for: .assistant)
+            .compactMap { $0.object as? AssistantEventTypes }
+            .sink { [weak self] value in
+                self?.isLoading = false
+            }
+            .store(in: &cancelable)
         getAssistants()
     }
 
@@ -55,7 +62,7 @@ public final class AssistantViewModel: ObservableObject {
 
     public func getAssistants() {
         isLoading = true
-        ChatManager.activeInstance?.getAssistats(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.assistant.get(.init(count: count, offset: offset))
     }
 
     public func appendOrUpdateAssistant(_ assistants: [Assistant]) {
@@ -71,9 +78,7 @@ public final class AssistantViewModel: ObservableObject {
 
     public func deactiveSelectedAssistants() {
         isLoading = true
-        ChatManager.activeInstance?.deactiveAssistant(.init(assistants: selectedAssistant)) { [weak self] response in
-            self?.isLoading = false
-        }
+        ChatManager.activeInstance?.assistant.deactive(.init(assistants: selectedAssistant))
     }
 
     public func deactive(indexSet: IndexSet) {

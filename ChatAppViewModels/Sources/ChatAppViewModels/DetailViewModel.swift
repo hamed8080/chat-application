@@ -17,7 +17,7 @@ import ChatCore
 import ChatModels
 
 public final class DetailViewModel: ObservableObject {
-    private(set) var cancellableSet: Set<AnyCancellable> = []
+    private(set) var cancelable: Set<AnyCancellable> = []
     public var user: Participant?
     public var contact: Contact?
     public var thread: Conversation?
@@ -42,6 +42,7 @@ public final class DetailViewModel: ObservableObject {
     @Published public var isInEditMode = false
     @Published public var showImagePicker: Bool = false
     @Published public var assetResources: [PHAssetResource] = []
+    private var requests: [String: Any] = [:]
 
     public init(thread: Conversation? = nil, contact: Contact? = nil, user: Participant? = nil) {
         self.user = user
@@ -53,10 +54,44 @@ public final class DetailViewModel: ObservableObject {
         participantViewModel?.$isLoading.sink { [weak self] newValue in
             self?.isLoading = newValue
         }
-        .store(in: &cancellableSet)
+        .store(in: &cancelable)
         editTitle = title
         threadDescription = thread?.description ?? ""
         fetchMutualThreads()
+        NotificationCenter.default.publisher(for: .thread)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink { [weak self] value in
+                self?.onThreadEvent(value)
+            }
+            .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: .contact)
+            .compactMap { $0.object as? ContactEventTypes }
+            .sink { [weak self] value in
+                self?.onContactEvent(value)
+            }
+            .store(in: &cancelable)
+    }
+
+    private func onThreadEvent(_ event: ThreadEventTypes) {
+        switch event {
+        case .changedType(let chatResponse):
+            onChangeThreadType(chatResponse)
+        case .mutual(let chatResponse):
+            onMutual(chatResponse)
+        default:
+            break
+        }
+    }
+
+    private func onContactEvent(_ event: ContactEventTypes) {
+        switch event {
+        case .blocked(let chatResponse):
+            onBlock(chatResponse)
+        case .unblocked(let chatResponse):
+            onUNBlock(chatResponse)
+        default:
+            break
+        }
     }
 
     public func createThread() {
@@ -75,11 +110,28 @@ public final class DetailViewModel: ObservableObject {
     }
 
     public func blockUnBlock() {
-        ChatManager.activeInstance?.blockContact(.init(userId: contact?.userId ?? user?.coreUserId)) { response in
-            if let contact = response.result {
-                self.contact?.blocked = contact.blocked
-                self.user?.blocked = contact.blocked
-            }
+        if contact?.blocked == true {
+            let req = UnBlockRequest(userId: contact?.userId ?? user?.coreUserId)
+            requests[req.uniqueId] = req
+            ChatManager.activeInstance?.contact.unBlock(req)
+        } else {
+            let req = BlockRequest(userId: contact?.userId ?? user?.coreUserId)
+            requests[req.uniqueId] = req
+            ChatManager.activeInstance?.contact.block(req)
+        }
+    }
+
+    private func onBlock(_ response: ChatResponse<BlockedContactResponse>) {
+        if let contact = response.result {
+            self.contact?.blocked = true
+            user?.blocked = true
+        }
+    }
+
+    private func onUNBlock(_ response: ChatResponse<BlockedContactResponse>) {
+        if let contact = response.result {
+            self.contact?.blocked = false
+            user?.blocked = false
         }
     }
 
@@ -100,9 +152,8 @@ public final class DetailViewModel: ObservableObject {
                                               wC: width
             )
         }
-
         let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)
-        ChatManager.activeInstance?.updateThreadInfo(req) { _ in } uploadProgress: { _, _ in } completion: { _ in }
+        ChatManager.activeInstance?.conversation.updateInfo(req)
     }
 
     public func toggleMute() {
@@ -115,11 +166,15 @@ public final class DetailViewModel: ObservableObject {
     }
 
     public func mute(_ threadId: Int) {
-        ChatManager.activeInstance?.muteThread(.init(subjectId: threadId), completion: onMuteChanged)
+        let req = GeneralSubjectIdRequest(subjectId: threadId)
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.conversation.mute(req)
     }
 
     public func unmute(_ threadId: Int) {
-        ChatManager.activeInstance?.unmuteThread(.init(subjectId: threadId), completion: onUnMuteChanged)
+        let req = GeneralSubjectIdRequest(subjectId: threadId)
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.conversation.unmute(req)
     }
 
     public func onMuteChanged(_ response: ChatResponse<Int>) {
@@ -139,21 +194,27 @@ public final class DetailViewModel: ObservableObject {
     public func fetchMutualThreads() {
         guard let userId = (thread?.partner ?? contact?.userId ?? user?.id) else { return }
         let invitee = Invitee(id: "\(userId)", idType: .userId)
-        ChatManager.activeInstance?.mutualGroups(.init(toBeUser: invitee)) { [weak self] response in
-            if let threads = response.result {
-                self?.mutualThreads = threads
-            }
+        let req = MutualGroupsRequest(toBeUser: invitee)
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.conversation.mutual(req)
+    }
+
+    private func onMutual(_ response: ChatResponse<[Conversation]>) {
+        if let threads = response.result {
+            mutualThreads = threads
         }
     }
 
     public func toggleThreadVisibility() {
         guard let thread = thread, let threadId = thread.id else { return }
         let type: ThreadTypes = thread.isPrivate ? thread.publicType : thread.privateType
-        ChatManager.activeInstance?.changeThreadType(.init(threadId: threadId, type: type)) { [weak self] response in
-            if let thread = response.result {
-                self?.thread?.type = thread.type
-                self?.objectWillChange.send()
-            }
-        }
+        let req = ChangeThreadTypeRequest(threadId: threadId, type: type)
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.conversation.changeType(req)
+    }
+
+    private func onChangeThreadType(_ response: ChatResponse<Conversation>) {
+        self.thread?.type = response.result?.type
+        objectWillChange.send()
     }
 }

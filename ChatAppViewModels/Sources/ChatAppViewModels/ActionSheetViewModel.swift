@@ -84,7 +84,12 @@ public final class ActionSheetViewModel: ObservableObject {
         DispatchQueue.main.async {
             if let image {
                 let filename = PHAssetResource.assetResources(for: object).first?.originalFilename ?? "unknown"
-                self.allImageItems.append(.init(imageData: image.pngData() ?? Data(), phAsset: object, info: info, originalFilename: filename))
+                self.allImageItems.append(.init(imageData: image.pngData() ?? Data(),
+                                                width: object.pixelWidth,
+                                                height: object.pixelHeight,
+                                                phAsset: object,
+                                                info: info,
+                                                originalFilename: filename))
             }
         }
     }
@@ -127,7 +132,20 @@ public final class ActionSheetViewModel: ObservableObject {
         if let index = selectedImageItems.firstIndex(where: { $0.phAsset === item.phAsset }) {
             selectedImageItems.remove(at: index)
         } else {
-            selectedImageItems.append(item)
+            if let phAsset = item.phAsset as? PHAsset {
+                let options = PHImageRequestOptions()
+                options.deliveryMode = .highQualityFormat
+                PHImageManager.default().requestImageDataAndOrientation(for: phAsset, options: options) { data, uti, _, _ in
+                    DispatchQueue.main.async {
+                        let item = ImageItem(imageData: data ?? Data(),
+                                             width: phAsset.pixelWidth,
+                                             height: phAsset.pixelHeight,
+                                             phAsset: phAsset,
+                                             originalFilename: item.fileName)
+                        self.selectedImageItems.append(item)
+                    }
+                }
+            }
         }
     }
 

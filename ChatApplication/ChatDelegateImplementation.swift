@@ -22,6 +22,17 @@ final class ChatDelegateImplementation: ChatDelegate {
             UserConfigManagerVM.instance.createChatObjectAndConnect(userId: userId, config: userConfig.config, delegate: self)
             TokenManager.shared.initSetIsLogin()
         }
+
+        Task {
+            await MainActor.run {
+                let ssoToken = SSOTokenResponseResult(accessToken: "34bcfa2891c94ffe9a2e02445c500e4e.XzIwMjM2", expiresIn: 900)
+                let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
+                let user = User(id: 3_463_768)
+                TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
+                UserConfigManagerVM.instance.appendOrReplace(UserConfig(user: user, config: config, ssoToken: ssoToken))
+                UserConfigManagerVM.instance.createChatObjectAndConnect(userId: user.id, config: config, delegate: self)
+            }
+        }
     }
 
     func chatState(state: ChatState, currentUser: User?, error _: ChatError?) {
@@ -40,14 +51,48 @@ final class ChatDelegateImplementation: ChatDelegate {
         case .chatReady:
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .connected
-            NotificationCenter.default.post(name: .connectName, object: nil)
+            NotificationCenter.default.post(name: .connect, object: nil)
         case .uninitialized:
             print("Chat object is not initialized.")
         }
     }
 
-    func chatError(error: ChatError) {
-        print(error)
+    func chatEvent(event: ChatEventType) {
+        print(dump(event))
+        NotificationCenter.post(event: event)
+        switch event {
+        case let .system(systemEventTypes):
+            onSystemEvent(systemEventTypes)
+        case let .user(userEventTypes):
+            onUserEvent(userEventTypes)
+        default:
+            break
+        }
+    }
+
+    private func onUserEvent(_ event: UserEventTypes) {
+        switch event {
+        case let .user(response):
+            if let user = response.result {
+                UserConfigManagerVM.instance.onUser(user)
+            }
+        default:
+            break
+        }
+    }
+
+    private func onSystemEvent(_ event: SystemEventTypes) {
+        switch event {
+        case let .error(chatResponse):
+            onError(chatResponse)
+        default:
+            break
+        }
+    }
+
+    private func onError(_ response: ChatResponse<Any>) {
+        print(response)
+        guard let error = response.error else { return }
         if error.code == 21 || error.code == 401 {
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .unauthorized
@@ -56,36 +101,8 @@ final class ChatDelegateImplementation: ChatDelegate {
         }
     }
 
-    func chatEvent(event: ChatEventType) {
-        print(dump(event))
-        switch event {
-        case .bot:
-            break
-        case .contact:
-            break
-        case let .call(callEventTypes):
-            NotificationCenter.default.post(name: .callEventName, object: callEventTypes)
-        case .file:
-            break
-        case let .system(systemEventTypes):
-            NotificationCenter.default.post(name: .systemMessageEventNotificationName, object: systemEventTypes)
-        case let .message(messageEventTypes):
-            NotificationCenter.default.post(name: .messageNotificationName, object: messageEventTypes)
-        case let .thread(threadEventTypes):
-            NotificationCenter.default.post(name: .threadEventNotificationName, object: threadEventTypes)
-        case let .user(userEventTypes):
-            if case let .onUser(response) = userEventTypes, let user = response.result {
-                UserConfigManagerVM.instance.onUser(user)
-            }
-        case .assistant:
-            break
-        case .tag:
-            break
-        }
-    }
-
     func onLog(log: Log) {
-        NotificationCenter.default.post(name: .logsName, object: log)
+        NotificationCenter.default.post(name: .logs, object: log)
         print(log.message ?? "", "\n")
     }
 }

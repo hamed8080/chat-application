@@ -21,7 +21,7 @@
         "socketAddresss": "wss://msg.pod.ir/ws",
         "ssoHost": "https://accounts.pod.ir",
         "platformHost": "https://api.pod.ir/srv/core",
-        "fileServer": "https://podspace.podland.ir",
+        "fileServer": "https://podspace.pod.ir",
         "serverName": "chat-server",
         "debugToken": null,
         "server": "main"

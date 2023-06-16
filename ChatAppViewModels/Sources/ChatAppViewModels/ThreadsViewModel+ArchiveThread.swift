@@ -14,7 +14,8 @@ protocol ArchiveThreadProtocol {
     func toggleArchive(_ thread: Conversation)
     func archive(_ threadId: Int)
     func unarchive(_ threadId: Int)
-    func onArchiveChanged(_ response: ChatResponse<Int>)
+    func onArchive(_ response: ChatResponse<Int>)
+    func onUNArchive(_ response: ChatResponse<Int>)
 }
 
 extension ThreadsViewModel: ArchiveThreadProtocol {
@@ -28,16 +29,23 @@ extension ThreadsViewModel: ArchiveThreadProtocol {
     }
 
     public func archive(_ threadId: Int) {
-        ChatManager.activeInstance?.archiveThread(.init(subjectId: threadId), completion: onArchiveChanged)
+        ChatManager.activeInstance?.conversation.archive(.init(subjectId: threadId))
     }
 
     public func unarchive(_ threadId: Int) {
-        ChatManager.activeInstance?.unarchiveThread(.init(subjectId: threadId), completion: onArchiveChanged)
+        ChatManager.activeInstance?.conversation.unarchive(.init(subjectId: threadId))
     }
 
-    public func onArchiveChanged(_ response: ChatResponse<Int>) {
+    public func onArchive(_ response: ChatResponse<Int>) {
         if response.result != nil, response.error == nil, let threadIndex = firstIndex(response.result) {
-            threads[threadIndex].isArchive?.toggle()
+            threads[threadIndex].isArchive = true
+            sort()
+        }
+    }
+
+    public func onUNArchive(_ response: ChatResponse<Int>) {
+        if response.result != nil, response.error == nil, let threadIndex = firstIndex(response.result) {
+            threads[threadIndex].isArchive = false
             sort()
         }
     }

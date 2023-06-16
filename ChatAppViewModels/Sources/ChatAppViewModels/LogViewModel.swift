@@ -10,6 +10,7 @@ import Combine
 import CoreData
 import Foundation
 import Logger
+import ChatAppExtensions
 
 public final class LogViewModel: ObservableObject {
     @Published public var logs: [Log] = []
@@ -18,7 +19,7 @@ public final class LogViewModel: ObservableObject {
     public private(set) var cancellableSet: Set<AnyCancellable> = []
 
     public init() {
-        NotificationCenter.default.publisher(for: .logsName)
+        NotificationCenter.default.publisher(for: .logs)
             .compactMap { $0.object as? Log }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] log in

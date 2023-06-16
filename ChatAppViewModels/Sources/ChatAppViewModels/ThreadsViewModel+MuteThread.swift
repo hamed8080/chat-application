@@ -27,10 +27,10 @@ extension ThreadsViewModel: MuteThreadProtocol {
     }
 
     public func mute(_ threadId: Int) {
-        ChatManager.activeInstance?.muteThread(.init(subjectId: threadId)){_ in }
+        ChatManager.activeInstance?.conversation.mute(.init(subjectId: threadId))
     }
 
     public func unmute(_ threadId: Int) {
-        ChatManager.activeInstance?.unmuteThread(.init(subjectId: threadId)) {_ in }
+        ChatManager.activeInstance?.conversation.unmute(.init(subjectId: threadId))
     }
 }

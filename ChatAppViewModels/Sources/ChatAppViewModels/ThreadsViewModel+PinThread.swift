@@ -14,7 +14,8 @@ protocol PinThreadProtocol {
     func togglePin(_ thread: Conversation)
     func pin(_ threadId: Int)
     func unpin(_ threadId: Int)
-    func onPinChanged(_ response: ChatResponse<Int>)
+    func onPin(_ response: ChatResponse<Conversation>)
+    func onUNPin(_ response: ChatResponse<Conversation>)
 }
 
 extension ThreadsViewModel: PinThreadProtocol {
@@ -28,15 +29,22 @@ extension ThreadsViewModel: PinThreadProtocol {
     }
 
     public func pin(_ threadId: Int) {
-        ChatManager.activeInstance?.pinThread(.init(subjectId: threadId), completion: onPinChanged)
+        ChatManager.activeInstance?.conversation.pin(.init(subjectId: threadId))
     }
 
     public func unpin(_ threadId: Int) {
-        ChatManager.activeInstance?.unpinThread(.init(subjectId: threadId), completion: onPinChanged)
+        ChatManager.activeInstance?.conversation.unpin(.init(subjectId: threadId))
     }
 
-    public func onPinChanged(_ response: ChatResponse<Int>) {
-        if response.result != nil, response.error == nil, let threadIndex = firstIndex(response.result) {
+    public func onPin(_ response: ChatResponse<Conversation>) {
+        if response.result != nil, let threadIndex = firstIndex(response.result?.id) {
+            threads[threadIndex].pin?.toggle()
+            sort()
+        }
+    }
+
+    public func onUNPin(_ response: ChatResponse<Conversation>) {
+        if response.result != nil, let threadIndex = firstIndex(response.result?.id) {
             threads[threadIndex].pin?.toggle()
             sort()
         }

@@ -26,11 +26,14 @@ public final class ContactsViewModel: ObservableObject {
     @Published public private(set) var searchedContacts: [Contact] = []
     @Published public var isLoading = false
     @Published public var searchContactString: String = ""
+    private var searchUniqueId: String?
+    public var blockedContacts: [BlockedContactResponse] = []
 
     public init() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
             if self?.firstSuccessResponse == false, status == .connected {
                 self?.getContacts()
+                ChatManager.activeInstance?.contact.getBlockedList()
             }
         }
         .store(in: &canceableSet)
@@ -43,7 +46,7 @@ public final class ContactsViewModel: ObservableObject {
             .filter { $0.count == 0 }
             .sink { newValue in
                 if newValue.count == 0 {
-                    self.setSearchedContacts([])
+                    self.searchedContacts = []
                 }
             }
             .store(in: &canceableSet)
@@ -55,38 +58,65 @@ public final class ContactsViewModel: ObservableObject {
                 self.searchContacts(searchText)
             }
             .store(in: &canceableSet)
+        NotificationCenter.default.publisher(for: .contact)
+            .compactMap { $0.object as? ContactEventTypes }
+            .sink(receiveValue: onContactEvent)
+            .store(in: &canceableSet)
     }
 
-    public func onServerResponse(_ response: ChatResponse<[Contact]>) {
+    public func onContactEvent(_ event: ContactEventTypes?) {
+        switch event {
+        case let .contacts(response):
+            if searchUniqueId == response.uniqueId {
+                onSearchContacts(response)
+            } else {
+                onContacts(response)
+            }
+        case let .add(response):
+            onAddContacts(response)
+        case let .delete(response, deleted):
+            onDeleteContacts(response, deleted)
+        case let .blocked(response):
+            onBlockUNBlockResponse(response, true)
+        case let .unblocked(response):
+            onBlockUNBlockResponse(response, false)
+        case let .blockedList(response):
+            onBlockedList(response)
+        default:
+            break
+        }
+    }
+
+    public func onContacts(_ response: ChatResponse<[Contact]>) {
         if let contacts = response.result {
-            firstSuccessResponse = true
+            firstSuccessResponse = !response.cache
             appendOrUpdateContact(contacts)
-            hasNext = response.pagination?.hasNext ?? false
-            setMaxContactsCountInServer(count: (response.pagination as? PaginationWithContentCount)?.totalCount ?? 0)
+            hasNext = response.hasNext
+            setMaxContactsCountInServer(count: response.contentCount ?? 0)
         }
         isLoading = false
     }
 
-    public func onCacheResponse(_ response: ChatResponse<[Contact]>) {
-        if let contacts = response.result {
-            appendOrUpdateContact(contacts)
-            hasNext = response.pagination?.hasNext ?? false
-        }
-        if isLoading, AppState.shared.connectionStatus != .connected {
-            isLoading = false
-        }
+    func onBlockedList(_ response: ChatResponse<[BlockedContactResponse]>) {
+        blockedContacts = response.result ?? []
     }
 
     public func getContacts() {
         isLoading = true
-        ChatManager.activeInstance?.getContacts(.init(count: count, offset: offset), completion: onServerResponse, cacheResponse: onCacheResponse)
+        ChatManager.activeInstance?.contact.get(.init(count: count, offset: offset))
     }
 
     public func searchContacts(_ searchText: String) {
         isLoading = true
-        ChatManager.activeInstance?.searchContacts(.init(query: searchText)) { [weak self] response in
-            if let contacts = response.result {
-                self?.setSearchedContacts(contacts)
+        let req = ContactsRequest(query: searchText)
+        searchUniqueId = req.uniqueId
+        ChatManager.activeInstance?.contact.search(req)
+    }
+
+    public func onDeleteContacts(_ response: ChatResponse<[Contact]>, _ deleted: Bool) {
+        if deleted {
+            response.result?.forEach{ contact in
+                contacts.removeAll(where: {$0.id == contact.id})
             }
         }
     }
@@ -130,11 +160,7 @@ public final class ContactsViewModel: ObservableObject {
 
     public func delete(_ contact: Contact) {
         if let contactId = contact.id {
-            ChatManager.activeInstance?.removeContact(.init(contactId: contactId)) { [weak self] response in
-                if response.error != nil {
-                    self?.appendOrUpdateContact([contact])
-                }
-            }
+            ChatManager.activeInstance?.contact.remove(.init(contactId: contactId))
         }
     }
 
@@ -156,8 +182,10 @@ public final class ContactsViewModel: ObservableObject {
         }
     }
 
-    public func insertContactsAtTop(_ contacts: [Contact]) {
-        self.contacts.insert(contentsOf: contacts, at: 0)
+    public func onAddContacts(_ response: ChatResponse<[Contact]>) {
+        if let contacts = response.result {
+            self.contacts.insert(contentsOf: contacts, at: 0)
+        }
     }
 
     public func setMaxContactsCountInServer(count: Int) {
@@ -178,9 +206,9 @@ public final class ContactsViewModel: ObservableObject {
         selectedContacts.remove(at: index)
     }
 
-    public func setSearchedContacts(_ contacts: [Contact]) {
+    public func onSearchContacts(_ response: ChatResponse<[Contact]>) {
         isLoading = false
-        searchedContacts = contacts
+        searchedContacts = response.result ?? []
     }
 
     public func addContact(contactValue: String, firstName: String?, lastName: String?) {
@@ -188,11 +216,7 @@ public final class ContactsViewModel: ObservableObject {
         let req: AddContactRequest = isPhone ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
-        ChatManager.activeInstance?.addContact(req) { [weak self] response in
-            if let contacts = response.result {
-                self?.insertContactsAtTop(contacts)
-            }
-        }
+        ChatManager.activeInstance?.contact.add(req)
     }
 
     public func firstContact(_ contact: Contact) -> Contact? {
@@ -210,17 +234,16 @@ public final class ContactsViewModel: ObservableObject {
         let findedContact = firstContact(contact)
         if findedContact?.blocked == false {
             let req = BlockRequest(contactId: contact.id)
-            ChatManager.activeInstance?.blockContact(req, completion: onBlockUNBlockResponse)
+            ChatManager.activeInstance?.contact.block(req)
         } else {
             let req = UnBlockRequest(contactId: contact.id)
-            ChatManager.activeInstance?.unBlockContact(req, completion: onBlockUNBlockResponse)
+            ChatManager.activeInstance?.contact.unBlock(req)
         }
     }
 
-    public func onBlockUNBlockResponse(_ response: ChatResponse<Contact>) {
+    public func onBlockUNBlockResponse(_ response: ChatResponse<BlockedContactResponse>, _ block: Bool) {
         if let result = response.result {
-            let findedContact = contacts.first(where: { $0.id == result.id })
-            findedContact?.blocked?.toggle()
+            contacts.first(where: { $0.id == result.contact?.id })?.blocked = block
             objectWillChange.send()
         }
     }
@@ -243,14 +266,7 @@ public final class ContactsViewModel: ObservableObject {
         let req: AddContactRequest = isPhone ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
-        ChatManager.activeInstance?.addContact(req) { [weak self] response in
-            if let updatedContact = response.result?.first {
-                if let index = self?.contacts.firstIndex(where: { $0.id == updatedContact.id }) {
-                    self?.contacts[index].update(updatedContact)
-                    self?.objectWillChange.send()
-                }
-            }
-        }
+        ChatManager.activeInstance?.contact.add(req)
 
 //        ChatManager.activeInstance?.updateContact(req) { [weak self] response in
 //            response.result?.forEach { updatedContact in

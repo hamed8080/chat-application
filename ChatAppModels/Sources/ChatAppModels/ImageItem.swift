@@ -14,8 +14,17 @@ public struct ImageItem: Hashable, Identifiable {
     public var info: [AnyHashable: Any]?
     public var originalFilename: String?
     public var fileName: String? { originalFilename }
+    public var width: Int
+    public var height: Int
 
-    public init(imageData: Data, phAsset: NSObject, info: [AnyHashable : Any]? = nil, originalFilename: String? = nil) {
+    public init(imageData: Data,
+                width: Int,
+                height: Int,
+                phAsset: NSObject,
+                info: [AnyHashable : Any]? = nil,
+                originalFilename: String? = nil) {
+        self.width = width
+        self.height = height
         self.imageData = imageData
         self.phAsset = phAsset
         self.info = info

@@ -12,6 +12,9 @@ import ChatAppViewModels
 import ChatModels
 import ChatAppModels
 import ChatDTO
+import ChatCore
+import ChatAppExtensions
+import Combine
 
 private var token: String? {
     guard let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey),
@@ -28,7 +31,24 @@ public final class ImageLoader: ObservableObject {
     private(set) var fileMetadata: String?
     private(set) var size: ImageSize?
     private(set) var userName: String?
-    public init() {}
+    private var requests: [String: Any] = [:]
+    public private(set) var cancelable: Set<AnyCancellable> = []
+    
+    public init() {
+        NotificationCenter.default.publisher(for: .download)
+            .compactMap { $0.object as? DownloadEventTypes }
+            .sink(receiveValue: onDownloadEvent)
+            .store(in: &cancelable)
+    }
+
+    private func onDownloadEvent(_ event: DownloadEventTypes) {
+        switch event {
+        case .image(let chatResponse, let url):
+            onGetImage(chatResponse, url)
+        default:
+            break
+        }
+    }
 
     var isImageReady: Bool {
         image.size.width > 0
@@ -49,10 +69,10 @@ public final class ImageLoader: ObservableObject {
     private var fileURL: URL? {
         guard let URLObject = URLObject else { return nil }
         let chat = ChatManager.activeInstance
-        if chat?.isFileExist(URLObject) == true {
-            return chat?.filePath(URLObject)
-        } else if chat?.isFileExistInGroup(URLObject) == true {
-            return chat?.filePathInGroup(URLObject)
+        if chat?.file.isFileExist(URLObject) == true {
+            return chat?.file.filePath(URLObject)
+        } else if chat?.file.isFileExistInGroup(URLObject) == true {
+            return chat?.file.filePathInGroup(URLObject)
         }
         return nil
     }
@@ -92,13 +112,19 @@ public final class ImageLoader: ObservableObject {
     }
 
     private func getFromSDK() {
-        ChatManager.activeInstance?.getImage(.init(hashCode: hashCode, size: size ?? .LARG)) { _ in
-        } completion: { [weak self] data, _, _, _ in
-            self?.update(data: data)
-            self?.storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
-        } cacheResponse: { [weak self] _, fileURL, _, _ in
+        let req = ImageRequest(hashCode: hashCode, size: size ?? .LARG)
+        ChatManager.activeInstance?.file.get(req)
+    }
+
+    private func onGetImage(_ response: ChatResponse<Data>, _ url: URL?) {
+        guard let uniqueId = response.uniqueId, requests[uniqueId] == nil else { return }
+        if response.cache == false, let data = response.result {
+            update(data: data)
+            storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
+            requests.removeValue(forKey: uniqueId)
+        } else {
             guard let cgImage = fileURL?.imageScale(width: 128)?.image else { return }
-            self?.image = UIImage(cgImage: cgImage)
+            image = UIImage(cgImage: cgImage)
         }
     }
 
@@ -124,7 +150,7 @@ public final class ImageLoader: ObservableObject {
         if !isRealImage(data: data) { return }
         DispatchQueue.main.async { [weak self] in
             guard let self = self, let url = URL(string: self.url ?? "") else { return }
-            ChatManager.activeInstance?.saveFileInGroup(url: url, data: data) { _ in }
+            ChatManager.activeInstance?.file.saveFileInGroup(url: url, data: data) { _ in }
         }
     }
 
