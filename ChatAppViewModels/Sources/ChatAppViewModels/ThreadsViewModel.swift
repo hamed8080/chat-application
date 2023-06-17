@@ -261,11 +261,14 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
         if let threads = response.result {
-            firstSuccessResponse = true
             appendThreads(threads: threads)
             let hasNextValue = response.hasNext && !response.cache
             hasNext(hasNextValue)
             updateWidgetPreferenceThreads(threads)
+        }
+
+        if !response.cache, threads.count > 0 {
+            firstSuccessResponse = true
         }
         isLoading = false
     }

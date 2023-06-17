@@ -84,9 +84,6 @@ public final class ImageLoader: ObservableObject {
 
     private var oldURLHash: String? {
         guard let urlObject = URLObject, let comp = URLComponents(url: urlObject, resolvingAgainstBaseURL: true) else { return nil }
-        if urlObject.host == fileServerURL?.host {
-            return urlObject.lastPathComponent
-        }
         return comp.queryItems?.first(where: { $0.name == "hash" })?.value
     }
 
@@ -113,17 +110,18 @@ public final class ImageLoader: ObservableObject {
 
     private func getFromSDK() {
         let req = ImageRequest(hashCode: hashCode, size: size ?? .LARG)
+        requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
     }
 
     private func onGetImage(_ response: ChatResponse<Data>, _ url: URL?) {
-        guard let uniqueId = response.uniqueId, requests[uniqueId] == nil else { return }
+        guard let uniqueId = response.uniqueId, requests[uniqueId] != nil else { return }
         if response.cache == false, let data = response.result {
             update(data: data)
             storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
             requests.removeValue(forKey: uniqueId)
         } else {
-            guard let cgImage = fileURL?.imageScale(width: 128)?.image else { return }
+            guard let cgImage = url?.imageScale(width: 128)?.image else { return }
             image = UIImage(cgImage: cgImage)
         }
     }

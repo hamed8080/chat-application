@@ -22,7 +22,7 @@ public struct ImageLaoderView: View {
     public init(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
         self.metaData = metaData
         self.url = url
-        self.userName = userName
+        self.userName = userName?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.size = size
     }
 
