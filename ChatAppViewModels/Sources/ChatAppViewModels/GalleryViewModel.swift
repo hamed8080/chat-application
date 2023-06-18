@@ -36,6 +36,8 @@ public final class GalleryViewModel: ObservableObject {
         switch event {
         case .message(let messageEventTypes):
             onMessageEvent(messageEventTypes)
+        case .download(let downloadEventTypes):
+            onDownloadEvent(downloadEventTypes)
         default:
             break
         }
@@ -62,6 +64,10 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func onMessages(_ response: ChatResponse<[Message]>) {
+        if self.pictures.count == 0 {
+            fecthMoreLeadingMessages()
+            fecthMoreTrailingMessages()
+        }
         pictures.append(contentsOf: response.result ?? [])
     }
 
@@ -83,14 +89,19 @@ public final class GalleryViewModel: ObservableObject {
         }
     }
 
-    private func getPictureMessages(count: Int = 20, offset: Int = 0) {
+    private func getPictureMessages(count: Int = 5, fromTime: UInt? = nil, toTime: UInt? = nil) {
         guard let threadId else { return }
-        let req = GetHistoryRequest(threadId: threadId, messageType: ChatCore.MessageType.podSpacePicture.rawValue)
+        let req = GetHistoryRequest(threadId: threadId,
+                                    count: count,
+                                    fromTime: fromTime,
+                                    messageType: ChatCore.MessageType.podSpacePicture.rawValue,
+                                    toTime: toTime
+        )
         requests[req.uniqueId] = req
         ChatManager.activeInstance?.message.history(req)
     }
 
-    public func fetch(message: Message? = nil) {
+    public func fetchImage(message: Message? = nil) {
         currentImageMessage = message ?? starter
         isLoading = true
         guard let hashCode = currentImageMessage?.fileMetaData?.file?.hashCode else { return }
@@ -98,14 +109,30 @@ public final class GalleryViewModel: ObservableObject {
         let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: forceDownload, size: .ACTUAL)
         requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
-    }
-
-    public func fecthNext() {
 
     }
 
-    public func fecthPrevious() {
-
+    public func fecthMoreLeadingMessages() {
+        getPictureMessages(toTime: currentImageMessage?.time)
     }
 
+    public func fecthMoreTrailingMessages() {
+        getPictureMessages(fromTime: currentImageMessage?.time)
+    }
+
+    public enum Swipe {
+        case next
+        case previous
+    }
+
+    public func swipeTo(_ swipe: Swipe) {
+        guard let currentImageMessage = currentImageMessage,
+              let currentIndex = pictures.firstIndex(of: currentImageMessage)
+        else { return }
+            let index = currentIndex.advanced(by: swipe == .next ? 1 : -1)
+        if pictures.indices.contains(index) {
+            self.currentImageMessage = pictures[index]
+            fetchImage()
+        }
+    }
 }

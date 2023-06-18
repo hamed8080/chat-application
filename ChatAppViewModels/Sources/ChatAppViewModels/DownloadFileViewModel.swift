@@ -11,7 +11,6 @@ public protocol DownloadFileViewModelProtocol {
     var fileHashCode: String { get }
     var data: Data? { get }
     var state: DownloadFileState { get }
-    var downloadUniqueId: String? { get }
     var downloadPercent: Int64 { get }
     var url: URL? { get }
     var fileURL: URL? { get }
@@ -39,7 +38,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         return URL(string: url)
     }
 
-    public var downloadUniqueId: String?
+    public var requests: [String: Any] = [:]
     public private(set) var message: Message?
     private var cancelable: Set<AnyCancellable> = []
 
@@ -67,16 +66,16 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     private func onDownloadEvent(_ event: DownloadEventTypes){
         switch event {
-        case .resumed(_):
-            state = .DOWNLOADING
+        case .resumed(let uniqueId):
+            onResumed(uniqueId)
         case .file(let chatResponse, _):
-            onResponse(data: chatResponse.result)
+            onResponse(chatResponse)
         case .image(let chatResponse, _):
-            onResponse(data: chatResponse.result)
-        case .suspended(_):
-            state = .PAUSED
-        case .progress(_, let progress):
-            self.downloadPercent = progress?.percent ?? 0
+            onResponse(chatResponse)
+        case .suspended(let uniqueId):
+            onSuspend(uniqueId)
+        case .progress(let uniqueId, let progress):
+            onProgress(uniqueId, progress)
         default:
             break
         }
@@ -98,32 +97,51 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     private func downloadFile() {
         state = .DOWNLOADING
         let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: true)
-        downloadUniqueId = req.uniqueId
+        requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
     }
 
     private func downloadImage() {
         state = .DOWNLOADING
         let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true, size: .ACTUAL)
-        downloadUniqueId = req.uniqueId
+        requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
     }
 
-    private func onResponse(data: Data?) {
-        if let data = data {
+    private func onResponse(_ response: ChatResponse<Data>) {
+        if let data = response.result, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+            requests.removeValue(forKey: uniqueId)
             state = .COMPLETED
             downloadPercent = 100
             self.data = data
         }
     }
 
+    private func onSuspend(_ uniqueId: String) {
+        if requests[uniqueId] != nil {
+            state = .PAUSED
+        }
+    }
+
+    private func onResumed(_ uniqueId: String) {
+        if requests[uniqueId] != nil {
+            state = .DOWNLOADING
+        }
+    }
+
+    private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
+        if requests[uniqueId] != nil {
+            self.downloadPercent = progress?.percent ?? 0
+        }
+    }
+
     public func pauseDownload() {
-        guard let downloadUniqueId = downloadUniqueId else { return }
-        ChatManager.activeInstance?.file.manageDownload(uniqueId: downloadUniqueId, action: .suspend)
+        guard let uniaueId = requests.first?.key else { return }
+        ChatManager.activeInstance?.file.manageDownload(uniqueId: uniaueId, action: .suspend)
     }
 
     public func resumeDownload() {
-        guard let downloadUniqueId = downloadUniqueId else { return }
-        ChatManager.activeInstance?.file.manageDownload(uniqueId: downloadUniqueId, action: .resume)
+        guard let uniaueId = requests.first?.key else { return }
+        ChatManager.activeInstance?.file.manageDownload(uniqueId: uniaueId, action: .resume)
     }
 }

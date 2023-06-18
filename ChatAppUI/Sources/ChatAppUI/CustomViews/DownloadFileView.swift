@@ -101,7 +101,7 @@ public struct DownloadFileView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .sheet(isPresented: $shareDownloadedFile) {
             if let fileURL = downloadFileVM.fileURL {
-                ActivityViewControllerWrapper(activityItems: [fileURL])
+                ActivityViewControllerWrapper(activityItems: [fileURL], title: message.fileMetaData?.file?.originalName)
             } else {
                 EmptyView()
             }

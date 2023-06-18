@@ -10,15 +10,17 @@ import SwiftUI
 
 public struct ActivityViewControllerWrapper: UIViewControllerRepresentable {
     var activityItems: [URL]
+    var title: String?
     var applicationActivities: [UIActivity]?
 
-    public init(activityItems: [URL], applicationActivities: [UIActivity]? = nil) {
+    public init(activityItems: [URL], title: String? = nil, applicationActivities: [UIActivity]? = nil) {
         self.activityItems = activityItems
+        self.title = title
         self.applicationActivities = applicationActivities
     }
 
     public func makeUIViewController(context _: Context) -> some UIActivityViewController {
-        let vc = UIActivityViewController(activityItems: [LinkMetaDataManager(url: activityItems.first!)], applicationActivities: nil)
+        let vc = UIActivityViewController(activityItems: [LinkMetaDataManager(url: activityItems.first!, title: title)], applicationActivities: nil)
         return vc
     }
 
@@ -27,9 +29,11 @@ public struct ActivityViewControllerWrapper: UIViewControllerRepresentable {
 
 public final class LinkMetaDataManager: NSObject, UIActivityItemSource {
     let url: URL
+    let title: String?
 
-    public init(url: URL) {
+    public init(url: URL, title: String?) {
         self.url = url
+        self.title = title
     }
 
     public func activityViewControllerPlaceholderItem(_: UIActivityViewController) -> Any {
@@ -47,7 +51,7 @@ public final class LinkMetaDataManager: NSObject, UIActivityItemSource {
         metadata.originalURL = url
         metadata.url = url
         metadata.imageProvider = imageProvider
-        metadata.title = url.lastPathComponent
+        metadata.title = title ?? url.lastPathComponent
         return metadata
     }
 }

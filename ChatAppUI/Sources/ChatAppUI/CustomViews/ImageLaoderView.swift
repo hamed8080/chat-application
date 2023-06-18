@@ -13,7 +13,6 @@ import ChatDTO
 
 public struct ImageLaoderView: View {
     @StateObject var imageLoader = ImageLoader()
-    @Environment(\.isPreview) var isPreview
     let url: String?
     let metaData: String?
     let userName: String?
@@ -27,24 +26,19 @@ public struct ImageLaoderView: View {
     }
 
     public var body: some View {
-        if isPreview {
-            Image(url ?? "")
-                .resizable()
-        } else {
-            ZStack {
-                if !imageLoader.isImageReady {
-                    Text(String(userName?.first ?? " "))
-                } else if imageLoader.isImageReady {
-                    Image(uiImage: imageLoader.image)
-                        .resizable()
-                }
+        ZStack {
+            if !imageLoader.isImageReady {
+                Text(String(userName?.first ?? " "))
+            } else if imageLoader.isImageReady {
+                Image(uiImage: imageLoader.image)
+                    .resizable()
             }
-            .animation(.easeInOut, value: imageLoader.image)
-            .animation(.easeInOut, value: imageLoader.isImageReady)
-            .onAppear {
-                if !imageLoader.isImageReady {
-                    imageLoader.fetch(url: url, metaData: metaData, userName: userName, size: size)
-                }
+        }
+        .animation(.easeInOut, value: imageLoader.image)
+        .animation(.easeInOut, value: imageLoader.isImageReady)
+        .onAppear {
+            if !imageLoader.isImageReady {
+                imageLoader.fetch(url: url, metaData: metaData, userName: userName, size: size)
             }
         }
     }

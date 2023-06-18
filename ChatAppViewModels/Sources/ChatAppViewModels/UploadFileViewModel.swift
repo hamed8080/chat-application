@@ -71,6 +71,7 @@ public final class UploadFileViewModel: ObservableObject {
     }
 
     public func uploadImage(_ message: SendTextMessageRequest, _ uploadImageRequest: UploadImageRequest) {
+        uploadUniqueId = uploadImageRequest.uniqueId
         ChatManager.activeInstance?.message.send(message, uploadImageRequest)
     }
 

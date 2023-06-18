@@ -19,12 +19,12 @@ struct GalleryView: View {
 
                 if value.translation.width > 100 {
                     // swipe right
-                    viewModel.fecthPrevious()
+                    viewModel.swipeTo(.previous)
                 }
 
                 if value.translation.width < 100 {
                     // swipe left
-                    viewModel.fecthNext()
+                    viewModel.swipeTo(.next)
                 }
 
                 if value.translation.height > 100 {
@@ -52,7 +52,7 @@ struct GalleryView: View {
         .animation(.easeInOut, value: viewModel.currentData)
         .animation(.easeInOut, value: viewModel.isLoading)
         .onAppear {
-            viewModel.fetch()
+            viewModel.fetchImage()
         }
     }
 }
