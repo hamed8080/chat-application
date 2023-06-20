@@ -4,6 +4,7 @@ import Chat
 import Combine
 import ChatDTO
 import ChatCore
+import ChatAppModels
 
 public final class GalleryViewModel: ObservableObject {
     @Published public var starter: Message
@@ -14,6 +15,7 @@ public final class GalleryViewModel: ObservableObject {
     public var currentImageMessage: Message?
     public var downloadedImages: [String: Data] = [:]
     @Published public var percent: Int64 = 0
+    @Published public var state: DownloadFileState = .UNDEFINED
     private var cancelable: Set<AnyCancellable> = []
     private var requests: [String: Any] = [:]
     public var currentData: Data? {
@@ -73,6 +75,7 @@ public final class GalleryViewModel: ObservableObject {
 
     private func onImage(_ response: ChatResponse<Data>, _ fileURL: URL?) {
         if let data = response.result, let uniqueId = response.uniqueId, let request = requests[uniqueId] as? ImageRequest {
+            state = .COMPLETED
             downloadedImages[request.hashCode] = data
         }
 
@@ -84,8 +87,8 @@ public final class GalleryViewModel: ObservableObject {
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
         if let progress = progress, requests[uniqueId] != nil {
+            state = .DOWNLOADING
             percent = progress.percent
-            print("percent download \(percent)")
         }
     }
 
@@ -105,8 +108,7 @@ public final class GalleryViewModel: ObservableObject {
         currentImageMessage = message ?? starter
         isLoading = true
         guard let hashCode = currentImageMessage?.fileMetaData?.file?.hashCode else { return }
-        let forceDownload = downloadedImages[hashCode] == nil
-        let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: forceDownload, size: .ACTUAL)
+        let req = ImageRequest(hashCode: hashCode, size: .ACTUAL)
         requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
 

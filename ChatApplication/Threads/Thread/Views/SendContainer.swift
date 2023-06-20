@@ -49,10 +49,17 @@ struct SendContainer: View {
                                 text = ""
                                 viewModel.sheetType = nil
                             } label: {
-                                Image(systemName: "arrow.up.circle.fill")
-                                    .font(.system(size: 24))
-                                    .foregroundColor(Color.blue)
+                                ZStack {
+                                    Text("Send")
+                                        .frame(width: 0, height: 0)
+                                        .allowsHitTesting(false)
+                                        .disabled(true)
+                                    Image(systemName: "arrow.up.circle.fill")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(Color.blue)
+                                }
                             }
+                            .keyboardShortcut(.return, modifiers: [.command])
                         }
                     }
                 }

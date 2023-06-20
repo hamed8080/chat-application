@@ -12,6 +12,7 @@ import SwiftUI
 struct GalleryView: View {
     @EnvironmentObject var viewModel: GalleryViewModel
     @Environment(\.dismiss) var dismiss
+    @State var scaleBy: CGFloat = 1.0
 
     var dragGesture: some Gesture {
         DragGesture(minimumDistance: 10, coordinateSpace: .local)
@@ -32,17 +33,36 @@ struct GalleryView: View {
                     dismiss()
                 }
             }
+    }
 
+    var zoomGesture: some Gesture {
+        MagnificationGesture()
+            .onChanged{ newValue in
+                scaleBy = newValue
+            }
     }
 
     var body: some View {
         ZStack {
-            if viewModel.isLoading {
-                ProgressView()
-            } else if let data = viewModel.currentData, let uiImage = UIImage(data: data) {
+            if viewModel.state == .DOWNLOADING {
+                CircularProgressView(percent: $viewModel.percent)
+                    .padding()
+                    .frame(maxWidth: 128)
+            }
+            if let data = viewModel.currentData, let uiImage = UIImage(data: data) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
+                    .scaleEffect(scaleBy, anchor: .center)
+                    .gesture(zoomGesture)
+                    .animation(.easeInOut, value: scaleBy)
+            }
+
+            if let message = viewModel.currentImageMessage?.message {
+                VStack (alignment: .leading){
+                    Spacer()
+                    Text(message)
+                }
             }
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)

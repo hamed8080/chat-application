@@ -34,11 +34,6 @@ public struct DownloadFileView: View {
                         Image(cgImage: scaledImage)
                             .resizable()
                             .scaledToFit()
-                            .fullScreenCover(isPresented: $presentViewGallery) {
-                                GalleryView()
-                                    .id(message.id)
-                                    .environmentObject(GalleryViewModel(message: message))
-                            }
                             .onTapGesture {
                                 presentViewGallery = true
                             }
@@ -75,18 +70,26 @@ public struct DownloadFileView: View {
                         .onTapGesture {
                             downloadFileVM.resumeDownload()
                         }
-                case .UNDEFINED:
-                    Rectangle()
-                        .fill(Color.primary.opacity(0.1))
-                        .blur(radius: 24)
+                case .UNDEFINED, .THUMBNAIL:
+                    if message.isImage, let data = downloadFileVM.data, let image = UIImage(data: data) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .blur(radius: 5, opaque: true)
+                            .scaledToFit()
+                            .zIndex(0)
+                            .onTapGesture {
+                                presentViewGallery = true
+                            }
+                    }
 
                     Image(systemName: "arrow.down.circle")
                         .resizable()
                         .font(.headline.weight(.thin))
-                        .padding(32)
-                        .frame(width: 96, height: 96)
+                        .padding(8)
+                        .frame(width: 48, height: 48)
                         .scaledToFit()
                         .foregroundColor(.indigo)
+                        .zIndex(1)
                         .onTapGesture {
                             downloadFileVM.startDownload()
                         }
@@ -106,8 +109,16 @@ public struct DownloadFileView: View {
                 EmptyView()
             }
         }
+        .fullScreenCover(isPresented: $presentViewGallery) {
+            GalleryView()
+                .id(message.id)
+                .environmentObject(GalleryViewModel(message: message))
+        }
         .onAppear {
             downloadFileVM.setMessage(message: message)
+            if message.isImage, !downloadFileVM.isInCache {
+                downloadFileVM.downloadBlurImage()
+            }
         }
     }
 }

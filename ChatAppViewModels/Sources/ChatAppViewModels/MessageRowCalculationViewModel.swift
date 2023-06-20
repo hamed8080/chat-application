@@ -53,14 +53,15 @@ public final class MessageRowCalculationViewModel: ObservableObject {
         let fileSizeWidth = fileSizeString?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
         let statusWidth: CGFloat = message.isMe(currentUserId: AppState.shared.user?.id) ? 14 : 0
         let isEditedWidth: CGFloat = message.edited ?? false ? 24 : 0
-        return timeWidth + fileSizeWidth + statusWidth + isEditedWidth
+        let messageStatusIconWidth: CGFloat = 24
+        return timeWidth + fileSizeWidth + statusWidth + isEditedWidth + messageStatusIconWidth
     }
 
-    public var maxAllowedWidth: CGFloat {
+    public lazy var maxAllowedWidth: CGFloat = {
         let isIpad = UIDevice.current.userInterfaceIdiom == .pad
         let max: CGFloat = isIpad ? 420 : 320
         return max
-    }
+    }()
 
     public func minWidth(_ message: Message) -> CGFloat {
         let hasReplyMessage = message.replyInfo != nil
@@ -74,13 +75,12 @@ public final class MessageRowCalculationViewModel: ObservableObject {
     }
 
     public func calculateWidthOfMessage(_ message: Message) -> CGFloat {
+        let imageWidth: CGFloat = CGFloat(message.fileMetaData?.file?.actualWidth ?? 0)
         let messageWidth = message.messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) + 16
         let headerWidth = headerWidth(message)
         let footerWidth = footerWidth(message)
-        let calculatedWidth: CGFloat = min(messageWidth, maxAllowedWidth)
-        let maxFooterAndMsg: CGFloat = max(footerWidth, calculatedWidth)
-        let maxHeaderAndFooter = max(maxFooterAndMsg, headerWidth)
-        let maxWidth = max(minWidth(message), maxHeaderAndFooter)
-        return maxWidth
+        let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth].max() ?? 0
+        let calculatedWidth: CGFloat = min(contentWidth, maxAllowedWidth)
+        return calculatedWidth
     }
 }

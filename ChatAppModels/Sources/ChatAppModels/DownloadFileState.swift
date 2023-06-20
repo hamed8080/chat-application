@@ -3,6 +3,7 @@ public enum DownloadFileState {
     case COMPLETED
     case DOWNLOADING
     case PAUSED
+    case THUMBNAIL
     case ERROR
     case UNDEFINED
 }

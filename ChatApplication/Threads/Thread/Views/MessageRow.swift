@@ -330,7 +330,7 @@ struct ReplyInfoMessageRow: View {
                         .padding([.leading, .trailing], 4)
                 }
 
-                if let message = message.replyInfo?.message {
+                if let message = message.replyInfo?.message?.replacingOccurrences(of: "\n", with: " ") {
                     Text(message)
                         .font(.iransansCaption3)
                         .padding([.leading, .trailing], 4)

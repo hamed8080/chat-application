@@ -39,6 +39,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     public var requests: [String: Any] = [:]
+    public var thumbRequests: [String: Any] = [:]
     public private(set) var message: Message?
     private var cancelable: Set<AnyCancellable> = []
 
@@ -87,7 +88,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     public func startDownload() {
-        if !isInCache, message?.isImage == true {
+        if isInCache { return }
+        if message?.isImage == true {
             downloadImage()
         } else {
             downloadFile()
@@ -96,19 +98,33 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     private func downloadFile() {
         state = .DOWNLOADING
-        let req = FileRequest(hashCode: fileHashCode, forceToDownloadFromServer: true)
+        let req = FileRequest(hashCode: fileHashCode)
         requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
     }
 
     private func downloadImage() {
         state = .DOWNLOADING
-        let req = ImageRequest(hashCode: fileHashCode, forceToDownloadFromServer: true, size: .ACTUAL)
+        let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
         requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
     }
 
+    public func downloadBlurImage() {
+        state = .DOWNLOADING
+        let req = ImageRequest(hashCode: fileHashCode, quality: 0.1, size: .SMALL, thumbnail: true)
+        thumbRequests[req.uniqueId] = req
+        ChatManager.activeInstance?.file.get(req)
+    }
+
     private func onResponse(_ response: ChatResponse<Data>) {
+        if let uniqueId = response.uniqueId, thumbRequests[uniqueId] != nil, let data = response.result {
+            //State is not completed and blur view can show the thumbnail
+            state = .THUMBNAIL
+            self.data = data
+            thumbRequests.removeValue(forKey: uniqueId)
+            return
+        }
         if let data = response.result, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
             requests.removeValue(forKey: uniqueId)
             state = .COMPLETED
