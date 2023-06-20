@@ -126,7 +126,7 @@ public final class ParticipantsViewModel: ObservableObject {
         if let participants = response.result {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
-            hasNext = response.pagination?.hasNext ?? false
+            hasNext = response.hasNext
         }
         isLoading = false
     }

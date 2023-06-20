@@ -24,6 +24,7 @@ public final class AssistantViewModel: ObservableObject {
     @Published public private(set) var assistants: [Assistant] = []
     @Published public var isLoading = false
     private var cancelable: Set<AnyCancellable> = []
+    private var requests: [String: Any] = [:]
 
     public init() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
@@ -34,29 +35,32 @@ public final class AssistantViewModel: ObservableObject {
         .store(in: &canceableSet)
         NotificationCenter.default.publisher(for: .assistant)
             .compactMap { $0.object as? AssistantEventTypes }
-            .sink { [weak self] value in
-                self?.isLoading = false
+            .sink { [weak self] event   in
+                self?.onAssistantEvent(event)
             }
             .store(in: &cancelable)
         getAssistants()
     }
 
-    public func onServerResponse(_ response: ChatResponse<[Assistant]>) {
-        if let assistants = response.result {
-            firstSuccessResponse = true
-            appendOrUpdateAssistant(assistants)
-            hasNext = response.pagination?.hasNext ?? false
+    public func onAssistantEvent(_ event: AssistantEventTypes) {
+        switch event {
+        case .assistants(let chatResponse):
+            onAssistants(chatResponse)
+        default:
+            break
         }
-        isLoading = false
     }
 
-    public func onCacheResponse(_ response: ChatResponse<[Assistant]>) {
+    private func onAssistants(_ response: ChatResponse<[Assistant]>) {
         if let assistants = response.result {
             appendOrUpdateAssistant(assistants)
-            hasNext = response.pagination?.hasNext ?? false
+            hasNext = response.hasNext
         }
-        if isLoading, AppState.shared.connectionStatus != .connected {
+
+        if !response.cache, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+            firstSuccessResponse = true
             isLoading = false
+            requests.removeValue(forKey: uniqueId)
         }
     }
 

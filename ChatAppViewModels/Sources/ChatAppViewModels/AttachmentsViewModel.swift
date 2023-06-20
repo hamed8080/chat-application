@@ -40,7 +40,7 @@ public final class AttachmentsViewModel: ObservableObject {
     private func onGetHistory(_ response: ChatResponse<[Message]>) {
         if let uniqueId = response.uniqueId, requests[uniqueId] != nil, let messages = response.result, !response.cache {
             model.appendMessages(messages: messages)
-            model.setHasNext(response.pagination?.hasNext ?? false)
+            model.setHasNext(response.hasNext)
             requests.removeValue(forKey: uniqueId)
             isLoading = false
         } else if response.cache, let messages = response.result {
