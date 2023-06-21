@@ -37,7 +37,7 @@ struct ThreadView: View, DropDelegate {
                 viewModel.isInEditMode = false
             }
             .overlay {
-                SendContainer(deleteMessagesDialog: $deleteDialaog)
+                SendContainer(deleteMessagesDialog: $deleteDialaog, threadId: thread.id)
                     .environmentObject(viewModel)
             }
             .overlay {

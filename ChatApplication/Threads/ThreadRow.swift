@@ -57,7 +57,7 @@ struct ThreadRow: View {
                     }
                 }
                 HStack {
-                    ThreadLastMessageView(thread: thread)
+                    SecondaryMessageView(thread: thread)
                     Spacer()
                     if let unreadCountString = thread.unreadCountString {
                         Text(unreadCountString)
@@ -203,6 +203,35 @@ struct ThreadImageView: View {
     }
 }
 
+struct SecondaryMessageView: View {
+    var thread: Conversation
+    @State private var draft: String = ""
+    @State private var cancelable: AnyCancellable?
+
+    var body: some View {
+        HStack {
+            if draft.isEmpty {
+                ThreadLastMessageView(thread: thread)
+            } else {
+                DraftView(draft: draft)
+            }
+        }
+        .onAppear {
+            let threadId = thread.id ?? 0
+            if let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
+                self.draft = draft
+            }
+            cancelable = NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
+                .map { _ in
+                    UserDefaults.standard.string(forKey: "draft-\(threadId)") ?? ""
+                }
+                .sink { newValue in
+                    draft = newValue
+                }
+        }
+    }
+}
+
 struct ThreadLastMessageView: View {
     // It must be here because we need to redraw the view after the thread inside ViewModel has changed.
     @EnvironmentObject var viewModel: ThreadsViewModel
@@ -250,6 +279,19 @@ struct ThreadLastMessageView: View {
         .multilineTextAlignment(.leading)
         .truncationMode(Text.TruncationMode.tail)
         .clipped()
+    }
+}
+
+struct DraftView: View {
+    let draft: String
+
+    var body: some View {
+        Text("DRAFT:")
+            .font(.iransansBody)
+            .foregroundColor(.red)
+        Text(draft)
+            .font(.iransansBody)
+            .foregroundColor(.secondaryLabel)
     }
 }
 

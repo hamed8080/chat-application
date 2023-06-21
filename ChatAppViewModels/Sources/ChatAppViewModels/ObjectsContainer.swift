@@ -17,6 +17,7 @@ public final class ObjectsContainer: ObservableObject {
     @Published public var settingsVM = SettingViewModel()
     @Published public var tokenVM = TokenManager.shared
     @Published public var audioPlayerVM = AVAudioPlayerViewModel()
+    @Published public var messagePlayer = AVAudioPlayerViewModel()
     public init(delegate: ChatDelegate) {
         loginVM = LoginViewModel(delegate: delegate)
         NotificationCenter.default.publisher(for: .message)
@@ -48,8 +49,8 @@ public final class ObjectsContainer: ObservableObject {
 
     private func playNewMessageSound() {
         if let fileURL = Bundle.main.url(forResource: "new_message", withExtension: "mp3") {
-            audioPlayerVM.setup(fileURL: fileURL, ext: "mp3")
-            audioPlayerVM.toggle()
+            messagePlayer.setup(fileURL: fileURL, ext: "mp3")
+            messagePlayer.toggle()
         }
     }
 }

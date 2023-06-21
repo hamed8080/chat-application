@@ -14,6 +14,8 @@ struct SendContainer: View {
     @EnvironmentObject var viewModel: ThreadViewModel
     @Binding var deleteMessagesDialog: Bool
     @State var text: String = ""
+    /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
+    let threadId: Int?
 
     var body: some View {
         VStack {
@@ -48,6 +50,7 @@ struct SendContainer: View {
                                 viewModel.sendTextMessage(text)
                                 text = ""
                                 viewModel.sheetType = nil
+                                UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
                             } label: {
                                 ZStack {
                                     Text("Send")
@@ -90,6 +93,16 @@ struct SendContainer: View {
             .onChange(of: text) { newValue in
                 viewModel.searchForMention(newValue)
                 viewModel.textMessage = newValue
+                if !newValue.isEmpty {
+                    UserDefaults.standard.setValue(newValue, forKey: "draft-\(viewModel.threadId)")
+                } else {
+                    UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
+                }
+            }
+            .onAppear {
+                if let threadId = threadId, let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
+                    text = draft
+                }
             }
         }
     }
@@ -190,6 +203,6 @@ struct EditMessagePlaceholderView: View {
 
 struct SendContainer_Previews: PreviewProvider {
     static var previews: some View {
-        SendContainer(deleteMessagesDialog: .constant(true))
+        SendContainer(deleteMessagesDialog: .constant(true), threadId: 0)
     }
 }
