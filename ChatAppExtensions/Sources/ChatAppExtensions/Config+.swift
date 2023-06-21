@@ -43,7 +43,7 @@ public extension Config {
             .reconnectCount(Int.max)
             .reconnectOnClose(true)
             .appId("PodChat")
-            .serverName(config.serverName)
+            .peerName(config.peerName)
             .loggerConfig(asyncLoggerConfig)
             .build()
         let chatConfig = ChatConfigBuilder(asyncConfig)

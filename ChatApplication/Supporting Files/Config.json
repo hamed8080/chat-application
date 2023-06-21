@@ -4,7 +4,7 @@
         "ssoHost": "http://172.16.110.76",
         "platformHost": "http://172.16.110.235:8003/srv/bptest-core",
         "fileServer": "http://172.16.110.76:8080",
-        "serverName": "chatlocal",
+        "peerName": "chatlocal",
         "debugToken": "9c627a9125d04ebf8455bf57bb33d2a9",
         "server": "integration"
     },
@@ -13,7 +13,7 @@
         "ssoHost": "https://accounts.pod.ir",
         "platformHost": "https://sandbox.pod.ir:8043/srv/basic-platform",
         "fileServer": "http://sandbox.podspace.ir:8080",
-        "serverName": "chat-server",
+        "peerName": "chat-server",
         "debugToken": null,
         "server": "sandbox"
     },
@@ -22,7 +22,7 @@
         "ssoHost": "https://accounts.pod.ir",
         "platformHost": "https://api.pod.ir/srv/core",
         "fileServer": "https://podspace.pod.ir",
-        "serverName": "chat-server",
+        "peerName": "chat-server",
         "debugToken": null,
         "server": "main"
     }

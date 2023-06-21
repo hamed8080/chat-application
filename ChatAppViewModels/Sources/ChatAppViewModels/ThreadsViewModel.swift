@@ -262,12 +262,11 @@ public final class ThreadsViewModel: ObservableObject {
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
         if let threads = response.result {
             appendThreads(threads: threads)
-            let hasNextValue = response.hasNext && !response.cache
-            hasNext(hasNextValue)
             updateWidgetPreferenceThreads(threads)
         }
 
-        if !response.cache, threads.count > 0 {
+        if !response.cache, response.result?.count ?? 0 > 0 {
+            hasNext = response.hasNext
             firstSuccessResponse = true
         }
         isLoading = false
@@ -342,10 +341,6 @@ public final class ThreadsViewModel: ObservableObject {
     public func showAddThreadToTag(_ thread: Conversation) {
         selectedThraed = thread
         showAddToTags.toggle()
-    }
-
-    public func hasNext(_ hasNext: Bool) {
-        self.hasNext = hasNext
     }
 
     public func preparePaginiation() {
