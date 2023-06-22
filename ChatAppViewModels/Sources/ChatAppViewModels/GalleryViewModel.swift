@@ -5,6 +5,7 @@ import Combine
 import ChatDTO
 import ChatCore
 import ChatAppModels
+import ChatTransceiver
 
 public final class GalleryViewModel: ObservableObject {
     @Published public var starter: Message

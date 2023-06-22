@@ -15,6 +15,7 @@ import ChatDTO
 import ChatCore
 import ChatAppExtensions
 import Combine
+import ChatTransceiver
 
 private var token: String? {
     guard let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey),

@@ -31,7 +31,7 @@ struct CreateDirectThreadView: View {
                         }
                     }
                     .pickerStyle(.navigationLink)
-                    TextField("Enter \(type.rawValue) here...", text: $id)
+                    TextField("Enter \(type.title) here...", text: $id)
                         .keyboardType(type == .cellphoneNumber ? .phonePad : .default)
 
                     TextField("Enter your message here...", text: $message)

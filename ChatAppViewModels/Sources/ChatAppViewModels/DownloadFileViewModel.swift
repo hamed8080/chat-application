@@ -5,6 +5,7 @@ import ChatAppModels
 import Combine
 import Foundation
 import ChatCore
+import ChatTransceiver
 
 public protocol DownloadFileViewModelProtocol {
     var message: Message? { get }

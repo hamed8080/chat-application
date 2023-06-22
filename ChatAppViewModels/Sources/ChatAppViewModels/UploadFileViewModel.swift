@@ -5,6 +5,7 @@ import ChatAppModels
 import ChatDTO
 import ChatCore
 import Foundation
+import ChatTransceiver
 
 public final class UploadFileViewModel: ObservableObject {
     @Published public private(set) var uploadPercent: Int64 = 0

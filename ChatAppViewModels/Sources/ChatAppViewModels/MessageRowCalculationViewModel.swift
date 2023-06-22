@@ -79,7 +79,9 @@ public final class MessageRowCalculationViewModel: ObservableObject {
         let messageWidth = message.messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) + 16
         let headerWidth = headerWidth(message)
         let footerWidth = footerWidth(message)
-        let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth].max() ?? 0
+        let uploadFileProgressWidth: CGFloat = message.isUploadMessage == true ? 128 : 0
+        let unSentMessageWidth: CGFloat = message.isUnsentMessage == true ? messageWidth : 0
+        let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth, uploadFileProgressWidth, unSentMessageWidth].max() ?? 0
         let calculatedWidth: CGFloat = min(contentWidth, maxAllowedWidth)
         return calculatedWidth
     }
