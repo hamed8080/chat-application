@@ -91,7 +91,7 @@ struct SendContainer: View {
                 }
             }
             .onChange(of: text) { newValue in
-                viewModel.searchForMention(newValue)
+                viewModel.searchForParticipantInMentioning(newValue)
                 viewModel.textMessage = newValue
                 if !newValue.isEmpty {
                     UserDefaults.standard.setValue(newValue, forKey: "draft-\(viewModel.threadId)")

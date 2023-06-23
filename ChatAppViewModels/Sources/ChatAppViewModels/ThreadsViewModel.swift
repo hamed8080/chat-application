@@ -19,6 +19,7 @@ import ChatAppExtensions
 public final class ThreadsViewModel: ObservableObject {
     @Published public var isLoading = false
     @Published public var toggleThreadContactPicker = false
+    @Published public var showJoinPublicThread = false
     @Published public var toggle = false
     @AppStorage("Threads", store: UserDefaults.group) public var threadsData: Data?
     @Published public var showAddParticipants = false
@@ -126,6 +127,8 @@ public final class ThreadsViewModel: ObservableObject {
             onPin(response)
         case .unpin(let response):
             onUNPin(response)
+        case .userRemoveFormThread(let response):
+            onUserRemovedByAdmin(response)
         default:
             break
         }
@@ -247,7 +250,7 @@ public final class ThreadsViewModel: ObservableObject {
                 .compactMap { id in threads.first { $0.id == id } }
                 ?? []
         } else if searchText.isEmpty {
-            return threads.filter { $0.isArchive == archived }
+            return threads.filter { ($0.isArchive ?? false) == archived }
         } else {
             return threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == archived }
         }
@@ -297,6 +300,12 @@ public final class ThreadsViewModel: ObservableObject {
         isLoading = true
         let messageREQ = CreateThreadMessage(text: message, messageType: .text)
         ChatManager.activeInstance?.conversation.create(.init(invitees: [invitee], title: "", type: .normal, message: messageREQ))
+    }
+
+    /// Join to a public thread by it's unqiue name.
+    public func joinToPublicThread(_ publicThreadName: String) {
+        isLoading = true
+        ChatManager.activeInstance?.conversation.join(.init(threadName: publicThreadName))
     }
 
     public func searchInsideAllThreads(text _: String) {
@@ -473,6 +482,12 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].mute = mute
             sort()
             objectWillChange.send()
+        }
+    }
+
+    private func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
+        if let id = response.result, let index = self.threads.firstIndex(where: {$0.id == id}) {
+            threads.remove(at: index)
         }
     }
 }

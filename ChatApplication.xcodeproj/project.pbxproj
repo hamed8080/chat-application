@@ -58,6 +58,7 @@
 		05C5665829BEF3B2002E72F7 /* ThreadPinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C5665729BEF3B2002E72F7 /* ThreadPinMessage.swift */; };
 		05C5665A29BEF3E3002E72F7 /* SendContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C5665929BEF3E3002E72F7 /* SendContainer.swift */; };
 		05C5665C29BEF465002E72F7 /* MentionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C5665B29BEF465002E72F7 /* MentionList.swift */; };
+		05CC8A172A45D4180051B339 /* JoinToPublicThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CC8A162A45D4180051B339 /* JoinToPublicThreadView.swift */; };
 		05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */; };
 		AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F3B268C4FA500B008FF /* HomeContentView.swift */; };
 		AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FE26998D4400B1C87B /* ParticipantRow.swift */; };
@@ -162,6 +163,7 @@
 		05C5665729BEF3B2002E72F7 /* ThreadPinMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadPinMessage.swift; sourceTree = "<group>"; };
 		05C5665929BEF3E3002E72F7 /* SendContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainer.swift; sourceTree = "<group>"; };
 		05C5665B29BEF465002E72F7 /* MentionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionList.swift; sourceTree = "<group>"; };
+		05CC8A162A45D4180051B339 /* JoinToPublicThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinToPublicThreadView.swift; sourceTree = "<group>"; };
 		05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToThreadView.swift; sourceTree = "<group>"; };
 		05DCB6872806102B00D7F37A /* MockData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MockData.json; sourceTree = "<group>"; };
 		AC008F3B268C4FA500B008FF /* HomeContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContentView.swift; sourceTree = "<group>"; };
@@ -449,6 +451,7 @@
 				AC0435F926998CF300B1C87B /* Participants */,
 				AC1D2CC72662016D00AA351A /* ThreadRow.swift */,
 				AC122EC1266B82A000C0630F /* ThreadContentList.swift */,
+				05CC8A162A45D4180051B339 /* JoinToPublicThreadView.swift */,
 				0500F7282A13FFD000F51EDA /* CreateDirectThreadView.swift */,
 			);
 			path = Threads;
@@ -701,6 +704,7 @@
 				05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */,
 				05C5665229BEF2C3002E72F7 /* ThreadMessagesList.swift in Sources */,
 				057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */,
+				05CC8A172A45D4180051B339 /* JoinToPublicThreadView.swift in Sources */,
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,
 				ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */,
 				05C5665C29BEF465002E72F7 /* MentionList.swift in Sources */,

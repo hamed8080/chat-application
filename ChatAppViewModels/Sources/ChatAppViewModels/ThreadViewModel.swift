@@ -410,18 +410,21 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         return false
     }
 
-    public func searchForMention(_ text: String) {
+    public func searchForParticipantInMentioning(_ text: String) {
         if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
             let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
-            ChatManager.activeInstance?.participant.get(.init(threadId: threadId, name: rangeText))
+            let req = ThreadParticipantsRequest(threadId: threadId, name: rangeText)
+            requests[req.uniqueId] = req
+            ChatManager.activeInstance?.participant.get(req)
         } else {
             mentionList = []
         }
     }
 
     private func onMentionParticipants(_ response: ChatResponse<[Participant]>) {
-        if let mentionList = response.result {
+        if let mentionList = response.result, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
             self.mentionList = mentionList
+            requests.removeValue(forKey: uniqueId)
         }
     }
 

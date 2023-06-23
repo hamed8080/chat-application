@@ -199,4 +199,22 @@ public extension Message {
             }
         }
     }
+
+    var addOrRemoveParticipantString: String {
+        let effectedName = addRemoveParticipant?.participnats?.first?.name ?? ""
+        let participantName = participant?.name ?? ""
+        guard let requestType = addRemoveParticipant?.requestType else { return "" }
+        switch requestType {
+        case .leaveThread:
+            return "\(participantName) has left the group"
+        case .joinThread:
+            return "\(participantName) has joind the group"
+        case .removedFromThread:
+            return "\(effectedName) remvoed by \(participantName)"
+        case .addParticipant:
+            return "\(effectedName) added by \(participantName)"
+        default:
+            return ""
+        }
+    }
 }

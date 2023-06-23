@@ -77,6 +77,11 @@ struct ThreadContentList: View {
                 threadsVM.fastMessage(invitee, message)
             }
         }
+        .sheet(isPresented: $threadsVM.showJoinPublicThread) {
+            JoinToPublicThreadView { publicThreadName in
+                threadsVM.joinToPublicThread(publicThreadName)
+            }
+        }
     }
 
     @ViewBuilder var trailingToolbarViews: some View {
@@ -85,6 +90,12 @@ struct ThreadContentList: View {
                 threadsVM.toggleThreadContactPicker.toggle()
             } label: {
                 Label("Start a new Chat", systemImage: "bubble.left.and.bubble.right.fill")
+            }
+
+            Button {
+                threadsVM.showJoinPublicThread.toggle()
+            } label: {
+                Label("Join a public Chat", systemImage: "door.right.hand.open")
             }
 
             // Send a message to a user without creating a new contact. Directly by their userName or cellPhone number.
@@ -98,7 +109,7 @@ struct ThreadContentList: View {
                 Label("Create a new Bot", systemImage: "face.dashed.fill")
             }
         } label: {
-            Label("Start new chat", systemImage: "plus.square")
+            Label("Start new Chat", systemImage: "plus.square")
         }
 
         Menu {

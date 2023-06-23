@@ -57,7 +57,7 @@ public struct SendTextViewWithButtons: View {
             }
         }
         .onChange(of: text) { newValue in
-            viewModel.searchForMention(newValue)
+            viewModel.searchForParticipantInMentioning(newValue)
             viewModel.textMessage = newValue
         }
     }
