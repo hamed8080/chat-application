@@ -10,6 +10,7 @@ import ChatCore
 import MapKit
 import ChatAppModels
 import ChatDTO
+import ChatExtensions
 
 public extension Message {
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
@@ -203,7 +204,7 @@ public extension Message {
     var addOrRemoveParticipantString: String {
         let effectedName = addRemoveParticipant?.participnats?.first?.name ?? ""
         let participantName = participant?.name ?? ""
-        guard let requestType = addRemoveParticipant?.requestType else { return "" }
+        guard let requestType = addRemoveParticipant?.requestTypeEnum else { return "" }
         switch requestType {
         case .leaveThread:
             return "\(participantName) has left the group"
