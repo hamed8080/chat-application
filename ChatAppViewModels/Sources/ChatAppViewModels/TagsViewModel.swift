@@ -14,7 +14,7 @@ import ChatAppModels
 import ChatDTO
 
 public final class TagsViewModel: ObservableObject {
-    @Published public var tags: [Tag] = []
+    public var tags: [Tag] = []
     @Published public var selectedTag: Tag?
     @Published public var isLoading = false
     @Published public var showAddParticipants = false
@@ -37,6 +37,8 @@ public final class TagsViewModel: ObservableObject {
 
     private func onTagEvent(_ event: TagEventTypes) {
         switch event {
+        case .tags(let chatResponse):
+            onTags(chatResponse)
         case .created(let chatResponse):
             onCreateTag(chatResponse)
         case .deleted(let chatResponse):
@@ -56,21 +58,17 @@ public final class TagsViewModel: ObservableObject {
         }
     }
 
-    public func onServerResponse(_ response: ChatResponse<[Tag]>) {
+    public func onTags(_ response: ChatResponse<[Tag]>) {
         if let tags = response.result {
-            firstSuccessResponse = true
             appendTags(tags: tags)
         }
-        isLoading = false
-    }
 
-    public func onCacheResponse(_ response: ChatResponse<[Tag]>) {
-        if let tags = response.result {
-            appendTags(tags: tags)
+        if !response.cache {
+            firstSuccessResponse = true
         }
-        if isLoading, AppState.shared.connectionStatus != .connected {
-            isLoading = false
-        }
+
+        isLoading = false
+        objectWillChange.send()
     }
 
     public func getTagList() {

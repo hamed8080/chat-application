@@ -146,7 +146,7 @@ struct SideBar: View {
                 }
             }
         }
-        .onReceive(container.tagsVM.$tags) { tags in
+        .onChange(of: container.tagsVM.tags) { tags in
             container.navVM.addTags(tags)
             container.objectWillChange.send()
         }

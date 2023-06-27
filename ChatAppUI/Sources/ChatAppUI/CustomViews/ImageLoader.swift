@@ -66,7 +66,10 @@ public final class ImageLoader: ObservableObject {
 
     private var URLObject: URL? { URL(string: url ?? "") }
     private var isSDKImage: Bool { hashCode != "" }
-    private var fileMetadataModel: FileMetaData? { try? JSONDecoder().decode(FileMetaData.self, from: fileMetadata?.data(using: .utf8) ?? Data()) }
+    private var fileMetadataModel: FileMetaData? {
+        guard let fileMetadata = fileMetadata?.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(FileMetaData.self, from: fileMetadata)
+    }
     private var fileURL: URL? {
         guard let URLObject = URLObject else { return nil }
         let chat = ChatManager.activeInstance
