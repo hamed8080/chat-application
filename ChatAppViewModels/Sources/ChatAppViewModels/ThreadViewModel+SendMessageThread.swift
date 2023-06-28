@@ -34,6 +34,7 @@ extension ThreadViewModel {
                                       textMessage: textMessage,
                                       messageType: .text)
         ChatManager.activeInstance?.message.reply(req)
+        replyMessage = nil
     }
 
     public func sendNormalMessage(_ textMessage: String) {

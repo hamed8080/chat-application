@@ -24,7 +24,7 @@ struct ThreadMessagesList: View {
                 LazyVStack(spacing: 8) {
                     ListLoadingView(isLoading: $viewModel.isLoading)
                     ForEach(viewModel.messages) { message in
-                        MessageRow(message: message, calculation: MessageRowCalculationViewModel(), isInEditMode: isInEditMode)
+                        MessageRowFactory(message: message, calculation: MessageRowCalculationViewModel(), isInEditMode: isInEditMode)
                             .id(message.uniqueId)
                             .transition(.asymmetric(insertion: .opacity, removal: .slide))
                             .onAppear {

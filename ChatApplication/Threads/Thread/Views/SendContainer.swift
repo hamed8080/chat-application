@@ -85,6 +85,7 @@ struct SendContainer: View {
             .animation(.easeInOut, value: viewModel.mentionList.count)
             .animation(.easeInOut, value: viewModel.selectedMessages.count)
             .animation(.easeInOut, value: viewModel.isInEditMode)
+            .animation(.easeInOut, value: viewModel.replyMessage)
             .onReceive(viewModel.$editMessage) { editMessage in
                 if let editMessage = editMessage {
                     text = editMessage.message ?? ""

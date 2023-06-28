@@ -23,6 +23,9 @@ struct CreateDirectThreadView: View {
     var body: some View {
         NavigationView {
             Form {
+                SectionTitleView(title: "Fast Message")
+                SectionImageView(image: Image("fast_message"))
+
                 Section {
                     Picker("Contact type", selection: $type) {
                         ForEach(types) { value in
@@ -35,10 +38,6 @@ struct CreateDirectThreadView: View {
                         .keyboardType(type == .cellphoneNumber ? .phonePad : .default)
 
                     TextField("Enter your message here...", text: $message)
-                } header: {
-                    Text("Immediate Message")
-                        .font(.title3.weight(.medium))
-                        .foregroundColor(.primary)
                 } footer: {
                     Text("Create a thread immediately even though the person you are going to send a message to is not in the contact list.")
                 }

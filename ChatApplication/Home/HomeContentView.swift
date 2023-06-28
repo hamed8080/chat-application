@@ -9,7 +9,6 @@ import Chat
 import ChatAppModels
 import ChatAppUI
 import ChatAppViewModels
-import Combine
 import SwiftUI
 import Swipy
 
@@ -202,7 +201,7 @@ struct DetailContentView: View {
                     .font(.iransansSubheadline)
                     .foregroundColor(.secondaryLabel)
                 Button {
-                    threadsVM.toggleThreadContactPicker.toggle()
+                    threadsVM.sheetType = .startThread
                 } label: {
                     Text("Start")
                         .font(.iransansBoldBody)

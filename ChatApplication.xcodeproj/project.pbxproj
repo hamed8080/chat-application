@@ -20,6 +20,22 @@
 		0523E31629ED1DE6000D63C2 /* ChatAppModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0523E31529ED1DE6000D63C2 /* ChatAppModels */; };
 		0523E31829ED1DED000D63C2 /* ChatAppViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0523E31729ED1DED000D63C2 /* ChatAppViewModels */; };
 		0528CFBF2A36377900A671A8 /* BlockedContacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0528CFBE2A36377900A671A8 /* BlockedContacts.swift */; };
+		05297DCD2A4B15B700B14235 /* CallMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DCC2A4B15B700B14235 /* CallMessageType.swift */; };
+		05297DCF2A4B15F200B14235 /* ParticipantMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DCE2A4B15F200B14235 /* ParticipantMessageType.swift */; };
+		05297DD12A4B166300B14235 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DD02A4B166300B14235 /* AvatarView.swift */; };
+		05297DD32A4B16A400B14235 /* ReplyInfoMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DD22A4B16A400B14235 /* ReplyInfoMessageRow.swift */; };
+		05297DD52A4B174500B14235 /* ForwardMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DD42A4B174500B14235 /* ForwardMessageRow.swift */; };
+		05297DD72A4B177500B14235 /* UploadMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DD62A4B177500B14235 /* UploadMessageType.swift */; };
+		05297DD92A4B17A200B14235 /* MessageFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DD82A4B17A200B14235 /* MessageFooterView.swift */; };
+		05297DDC2A4B17E600B14235 /* TextMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DDB2A4B17E600B14235 /* TextMessageType.swift */; };
+		05297DDE2A4B235500B14235 /* MessageActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DDD2A4B235500B14235 /* MessageActionMenu.swift */; };
+		05297DE12A4B24DE00B14235 /* ThreadImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DE02A4B24DE00B14235 /* ThreadImageView.swift */; };
+		05297DE32A4B251100B14235 /* SecondaryMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DE22A4B251100B14235 /* SecondaryMessageView.swift */; };
+		05297DE52A4B255300B14235 /* ThreadLastMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DE42A4B255300B14235 /* ThreadLastMessageView.swift */; };
+		05297DE72A4B258200B14235 /* DraftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DE62A4B258200B14235 /* DraftView.swift */; };
+		05297DE92A4B25B600B14235 /* ConversationCallMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DE82A4B25B600B14235 /* ConversationCallMessageType.swift */; };
+		05297DEB2A4B26C600B14235 /* ThreadRowActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DEA2A4B26C600B14235 /* ThreadRowActionMenu.swift */; };
+		05297DED2A4B331200B14235 /* DeleteThreadConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05297DEC2A4B331200B14235 /* DeleteThreadConfirmationView.swift */; };
 		0529947B2A025E8C00F58B99 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0529947A2A025E8C00F58B99 /* WidgetKit.framework */; };
 		0529947D2A025E8C00F58B99 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0529947C2A025E8C00F58B99 /* SwiftUI.framework */; };
 		052994802A025E8C00F58B99 /* MyWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0529947F2A025E8C00F58B99 /* MyWidgetBundle.swift */; };
@@ -60,6 +76,7 @@
 		05C5665C29BEF465002E72F7 /* MentionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C5665B29BEF465002E72F7 /* MentionList.swift */; };
 		05CC8A172A45D4180051B339 /* JoinToPublicThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CC8A162A45D4180051B339 /* JoinToPublicThreadView.swift */; };
 		05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */; };
+		05EF89E02A4BC4900097DC97 /* ThreadsSheetFactoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EF89DF2A4BC4900097DC97 /* ThreadsSheetFactoryView.swift */; };
 		AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F3B268C4FA500B008FF /* HomeContentView.swift */; };
 		AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FE26998D4400B1C87B /* ParticipantRow.swift */; };
 		AC085F3B2692EA8A001492B2 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = AC085F3A2692EA8A001492B2 /* Config.json */; };
@@ -77,7 +94,7 @@
 		AC2D31C326EF75BC008FF43F /* webrtc_user_a.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */; };
 		AC2D31C426EF75BC008FF43F /* webrtc_user_b.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */; };
 		AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6D531F26F1ADA500CBC059 /* ThreadView.swift */; };
-		AC6D532426F1AE8C00CBC059 /* MessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6D532326F1AE8C00CBC059 /* MessageRow.swift */; };
+		AC6D532426F1AE8C00CBC059 /* MessageRowFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6D532326F1AE8C00CBC059 /* MessageRowFactory.swift */; };
 		AC7EBFF4266CAF2500984E81 /* ContactContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6F266CAD63009E4722 /* ContactContentList.swift */; };
 		AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9DAC6E266CAD63009E4722 /* ContactRow.swift */; };
 		ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC306AA2701DF8C0035CCB9 /* StartThreadContactPickerView.swift */; };
@@ -121,6 +138,22 @@
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
 		0528CFBE2A36377900A671A8 /* BlockedContacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedContacts.swift; sourceTree = "<group>"; };
+		05297DCC2A4B15B700B14235 /* CallMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageType.swift; sourceTree = "<group>"; };
+		05297DCE2A4B15F200B14235 /* ParticipantMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantMessageType.swift; sourceTree = "<group>"; };
+		05297DD02A4B166300B14235 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
+		05297DD22A4B16A400B14235 /* ReplyInfoMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyInfoMessageRow.swift; sourceTree = "<group>"; };
+		05297DD42A4B174500B14235 /* ForwardMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForwardMessageRow.swift; sourceTree = "<group>"; };
+		05297DD62A4B177500B14235 /* UploadMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadMessageType.swift; sourceTree = "<group>"; };
+		05297DD82A4B17A200B14235 /* MessageFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageFooterView.swift; sourceTree = "<group>"; };
+		05297DDB2A4B17E600B14235 /* TextMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMessageType.swift; sourceTree = "<group>"; };
+		05297DDD2A4B235500B14235 /* MessageActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActionMenu.swift; sourceTree = "<group>"; };
+		05297DE02A4B24DE00B14235 /* ThreadImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadImageView.swift; sourceTree = "<group>"; };
+		05297DE22A4B251100B14235 /* SecondaryMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryMessageView.swift; sourceTree = "<group>"; };
+		05297DE42A4B255300B14235 /* ThreadLastMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadLastMessageView.swift; sourceTree = "<group>"; };
+		05297DE62A4B258200B14235 /* DraftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftView.swift; sourceTree = "<group>"; };
+		05297DE82A4B25B600B14235 /* ConversationCallMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationCallMessageType.swift; sourceTree = "<group>"; };
+		05297DEA2A4B26C600B14235 /* ThreadRowActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadRowActionMenu.swift; sourceTree = "<group>"; };
+		05297DEC2A4B331200B14235 /* DeleteThreadConfirmationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteThreadConfirmationView.swift; sourceTree = "<group>"; };
 		052994792A025E8C00F58B99 /* MyWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MyWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0529947A2A025E8C00F58B99 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0529947C2A025E8C00F58B99 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -166,6 +199,7 @@
 		05CC8A162A45D4180051B339 /* JoinToPublicThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinToPublicThreadView.swift; sourceTree = "<group>"; };
 		05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToThreadView.swift; sourceTree = "<group>"; };
 		05DCB6872806102B00D7F37A /* MockData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MockData.json; sourceTree = "<group>"; };
+		05EF89DF2A4BC4900097DC97 /* ThreadsSheetFactoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadsSheetFactoryView.swift; sourceTree = "<group>"; };
 		AC008F3B268C4FA500B008FF /* HomeContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContentView.swift; sourceTree = "<group>"; };
 		AC0435FE26998D4400B1C87B /* ParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantRow.swift; sourceTree = "<group>"; };
 		AC085F3A2692EA8A001492B2 /* Config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Config.json; sourceTree = "<group>"; };
@@ -185,7 +219,7 @@
 		AC2D31C126EF75BB008FF43F /* webrtc_user_a.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_a.mp4; sourceTree = "<group>"; };
 		AC2D31C226EF75BC008FF43F /* webrtc_user_b.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_b.mp4; sourceTree = "<group>"; };
 		AC6D531F26F1ADA500CBC059 /* ThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadView.swift; sourceTree = "<group>"; };
-		AC6D532326F1AE8C00CBC059 /* MessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRow.swift; sourceTree = "<group>"; };
+		AC6D532326F1AE8C00CBC059 /* MessageRowFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowFactory.swift; sourceTree = "<group>"; };
 		AC924CC1274A774D00E33BD1 /* MyWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MyWidgetExtension.entitlements; sourceTree = "<group>"; };
 		AC924CC2274A77BC00E33BD1 /* ChatApplication.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChatApplication.entitlements; sourceTree = "<group>"; };
 		AC9DAC6E266CAD63009E4722 /* ContactRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactRow.swift; sourceTree = "<group>"; };
@@ -248,6 +282,37 @@
 				051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */,
 			);
 			path = SelectThread;
+			sourceTree = "<group>";
+		};
+		05297DCB2A4B155700B14235 /* MessageRows */ = {
+			isa = PBXGroup;
+			children = (
+				05297DCC2A4B15B700B14235 /* CallMessageType.swift */,
+				05297DCE2A4B15F200B14235 /* ParticipantMessageType.swift */,
+				05297DD02A4B166300B14235 /* AvatarView.swift */,
+				05297DD22A4B16A400B14235 /* ReplyInfoMessageRow.swift */,
+				05297DD42A4B174500B14235 /* ForwardMessageRow.swift */,
+				05297DD62A4B177500B14235 /* UploadMessageType.swift */,
+				05297DD82A4B17A200B14235 /* MessageFooterView.swift */,
+				05297DDB2A4B17E600B14235 /* TextMessageType.swift */,
+				AC6D532326F1AE8C00CBC059 /* MessageRowFactory.swift */,
+				05297DDD2A4B235500B14235 /* MessageActionMenu.swift */,
+			);
+			path = MessageRows;
+			sourceTree = "<group>";
+		};
+		05297DDF2A4B24C200B14235 /* ThreadRows */ = {
+			isa = PBXGroup;
+			children = (
+				05297DE02A4B24DE00B14235 /* ThreadImageView.swift */,
+				05297DE22A4B251100B14235 /* SecondaryMessageView.swift */,
+				05297DE42A4B255300B14235 /* ThreadLastMessageView.swift */,
+				05297DE62A4B258200B14235 /* DraftView.swift */,
+				05297DE82A4B25B600B14235 /* ConversationCallMessageType.swift */,
+				AC1D2CC72662016D00AA351A /* ThreadRow.swift */,
+				05297DEA2A4B26C600B14235 /* ThreadRowActionMenu.swift */,
+			);
+			path = ThreadRows;
 			sourceTree = "<group>";
 		};
 		0529947E2A025E8C00F58B99 /* MyWidget */ = {
@@ -314,7 +379,7 @@
 		05C5665D29BEF4A4002E72F7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				AC6D532326F1AE8C00CBC059 /* MessageRow.swift */,
+				05297DCB2A4B155700B14235 /* MessageRows */,
 				AC6D531F26F1ADA500CBC059 /* ThreadView.swift */,
 				05C5665129BEF2C3002E72F7 /* ThreadMessagesList.swift */,
 				05C5665329BEF32A002E72F7 /* ThreadSheetView.swift */,
@@ -443,16 +508,18 @@
 		AC1D2CC32662016D00AA351A /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				05297DDF2A4B24C200B14235 /* ThreadRows */,
 				051DAF1027B91997002876C9 /* SelectThread */,
 				05384A7C2792992C00D85A92 /* Tag */,
 				05CE5B4B2785716C004336F5 /* AddParticipantsToThreadView */,
 				ACC306A92701DF850035CCB9 /* StartThreadContactPickerView */,
 				AC6D531E26F1AD9B00CBC059 /* Thread */,
 				AC0435F926998CF300B1C87B /* Participants */,
-				AC1D2CC72662016D00AA351A /* ThreadRow.swift */,
 				AC122EC1266B82A000C0630F /* ThreadContentList.swift */,
 				05CC8A162A45D4180051B339 /* JoinToPublicThreadView.swift */,
+				05297DEC2A4B331200B14235 /* DeleteThreadConfirmationView.swift */,
 				0500F7282A13FFD000F51EDA /* CreateDirectThreadView.swift */,
+				05EF89DF2A4BC4900097DC97 /* ThreadsSheetFactoryView.swift */,
 			);
 			path = Threads;
 			sourceTree = "<group>";
@@ -688,14 +755,19 @@
 				059281BF2A227961006C7E56 /* AssistantView.swift in Sources */,
 				05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */,
 				AC23695627439478008195D7 /* SearchContactRow.swift in Sources */,
+				05297DD12A4B166300B14235 /* AvatarView.swift in Sources */,
 				AC122EC2266B82A000C0630F /* ThreadContentList.swift in Sources */,
+				05297DD92A4B17A200B14235 /* MessageFooterView.swift in Sources */,
 				05C5665A29BEF3E3002E72F7 /* SendContainer.swift in Sources */,
 				0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */,
+				05297DD32A4B16A400B14235 /* ReplyInfoMessageRow.swift in Sources */,
 				059281C12A227C3C006C7E56 /* AssistantRow.swift in Sources */,
 				ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */,
 				055B26A027D5FA0F0098D585 /* VoiceView.swift in Sources */,
 				055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */,
 				05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */,
+				05297DDE2A4B235500B14235 /* MessageActionMenu.swift in Sources */,
+				05297DE32A4B251100B14235 /* SecondaryMessageView.swift in Sources */,
 				AC7EBFF4266CAF2500984E81 /* ContactContentList.swift in Sources */,
 				AC1D2CD12662016E00AA351A /* ThreadRow.swift in Sources */,
 				AC1D2CD22662016E00AA351A /* AppDelegate.swift in Sources */,
@@ -704,30 +776,42 @@
 				05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */,
 				05C5665229BEF2C3002E72F7 /* ThreadMessagesList.swift in Sources */,
 				057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */,
+				05297DCF2A4B15F200B14235 /* ParticipantMessageType.swift in Sources */,
+				05297DEB2A4B26C600B14235 /* ThreadRowActionMenu.swift in Sources */,
 				05CC8A172A45D4180051B339 /* JoinToPublicThreadView.swift in Sources */,
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,
+				05297DD52A4B174500B14235 /* ForwardMessageRow.swift in Sources */,
 				ACC306AB2701DF960035CCB9 /* StartThreadContactPickerView.swift in Sources */,
 				05C5665C29BEF465002E72F7 /* MentionList.swift in Sources */,
+				05297DED2A4B331200B14235 /* DeleteThreadConfirmationView.swift in Sources */,
+				05297DCD2A4B15B700B14235 /* CallMessageType.swift in Sources */,
 				055B26A427D5FA250098D585 /* GIFView.swift in Sources */,
 				ACC306B12701E6350035CCB9 /* StartThreadContactRow.swift in Sources */,
+				05EF89E02A4BC4900097DC97 /* ThreadsSheetFactoryView.swift in Sources */,
 				055B269C27D5F9F90098D585 /* FileView.swift in Sources */,
-				AC6D532426F1AE8C00CBC059 /* MessageRow.swift in Sources */,
+				AC6D532426F1AE8C00CBC059 /* MessageRowFactory.swift in Sources */,
 				AC122EC4266B83A800C0630F /* SettingsView.swift in Sources */,
 				055B26A227D5FA180098D585 /* LinkView.swift in Sources */,
 				ACEAEDD7274CFA1100EC8252 /* AttachmentDialog.swift in Sources */,
 				051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */,
+				05297DDC2A4B17E600B14235 /* TextMessageType.swift in Sources */,
 				05C5665429BEF32A002E72F7 /* ThreadSheetView.swift in Sources */,
+				05297DE12A4B24DE00B14235 /* ThreadImageView.swift in Sources */,
 				05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */,
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
 				0500F7292A13FFD000F51EDA /* CreateDirectThreadView.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
 				0528CFBF2A36377900A671A8 /* BlockedContacts.swift in Sources */,
+				05297DD72A4B177500B14235 /* UploadMessageType.swift in Sources */,
+				05297DE92A4B25B600B14235 /* ConversationCallMessageType.swift in Sources */,
 				AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */,
 				052D57362795323C0075BF8F /* ManageTagView.swift in Sources */,
+				05297DE72A4B258200B14235 /* DraftView.swift in Sources */,
 				05384A842792A10100D85A92 /* TagRow.swift in Sources */,
 				AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */,
 				051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */,
 				055B269E27D5FA070098D585 /* MusicView.swift in Sources */,
+				05297DE52A4B255300B14235 /* ThreadLastMessageView.swift in Sources */,
 				055B269827D5F9E40098D585 /* MemberView.swift in Sources */,
 				052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */,
 				AC10007926F46B4100C3AD67 /* LoginView.swift in Sources */,

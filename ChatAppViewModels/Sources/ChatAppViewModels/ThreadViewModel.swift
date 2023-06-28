@@ -246,14 +246,14 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     }
 
     private func onHistory(_ response: ChatResponse<[Message]>) {
-        if let messages = response.result, response.cache == false {
-            setHasNext(response.hasNext)
+        if let messages = response.result {
             appendMessages(messages)
-            isLoading = false
-            isFetchedServerFirstResponse = true
-        } else if let messages = response.result {
-           appendMessages(messages)
         }
+        hasNext = response.hasNext
+        if response.cache == false {
+            isFetchedServerFirstResponse = true
+        }
+        isLoading = false
     }
 
     private func onQueueTextMessages(_ response: ChatResponse<[SendTextMessageRequest]>) {
@@ -360,7 +360,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
             if let oldUploadFileIndex = self.messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == message.uniqueId }) {
                 self.messages.remove(at: oldUploadFileIndex)
             }
-            if let oldMessage = self.messages.first(where: { $0.uniqueId == message.uniqueId }) {
+            if let oldMessage = self.messages.first(where: { $0.uniqueId == message.uniqueId || $0.id == message.id }) {
                 oldMessage.updateMessage(message: message)
             } else if message.threadId == threadId || message.conversation?.id == threadId {
                 self.messages.append(message)
@@ -383,10 +383,6 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     /// Delete a message with a uniqueId is needed for when the message is sent to a request.
     public func onDeleteMessage(_ response: ChatResponse<Message>) {
         messages.removeAll(where: { $0.uniqueId == response.uniqueId || response.result?.id == $0.id })
-    }
-
-    public func setHasNext(_ hasNext: Bool) {
-        self.hasNext = hasNext
     }
 
     public func clear() {

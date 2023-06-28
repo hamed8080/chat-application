@@ -19,29 +19,35 @@ struct SelectThreadContentList: View {
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        List {
-            MultilineTextField("Search ...", text: $searechInsideThread, backgroundColor: Color.gray.opacity(0.2))
-                .cornerRadius(16)
-                .noSeparators()
-                .onChange(of: searechInsideThread) { _ in
-                    viewModel.searchInsideAllThreads(text: searechInsideThread)
-                }
-
-            ForEach(viewModel.filtered) { thread in
-                SelectThreadRow(thread: thread)
-                    .onTapGesture {
-                        onSelect(thread)
-                        dismiss()
-                    }
-                    .onAppear {
-                        if viewModel.filtered.last == thread {
-                            viewModel.loadMore()
-                        }
+        Form {
+            SectionTitleView(title: "Select to start a conversation")
+            Section {
+                MultilineTextField("Search ...", text: $searechInsideThread, backgroundColor: Color.gray.opacity(0.2))
+                    .cornerRadius(16)
+                    .noSeparators()
+                    .onChange(of: searechInsideThread) { _ in
+                        viewModel.searchInsideAllThreads(text: searechInsideThread)
                     }
             }
+            .listRowBackground(Color.clear)
+
+            Section {
+                List {
+                    ForEach(viewModel.filtered) { thread in
+                        SelectThreadRow(thread: thread)
+                            .onTapGesture {
+                                onSelect(thread)
+                                dismiss()
+                            }
+                            .onAppear {
+                                if viewModel.filtered.last == thread {
+                                    viewModel.loadMore()
+                                }
+                            }
+                    }
+                }
+            }
         }
-        .navigationTitle("Select Thread")
-        .listStyle(.plain)
     }
 }
 

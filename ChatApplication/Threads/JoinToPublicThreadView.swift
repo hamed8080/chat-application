@@ -6,6 +6,7 @@
 //
 
 import Chat
+import ChatAppUI
 import Combine
 import Foundation
 import SwiftUI
@@ -19,14 +20,13 @@ struct JoinToPublicThreadView: View {
     var body: some View {
         NavigationView {
             Form {
+                SectionTitleView(title: "Join")
+                SectionImageView(image: Image("link"))
+
                 Section {
-                    TextField("Enter your message here...", text: $publicThreadName)
-                } header: {
-                    Text("Join to a public chat")
-                        .font(.title3.weight(.medium))
-                        .foregroundColor(.primary)
+                    TextField("Enter name of the chat...", text: $publicThreadName)
+                        .textFieldStyle(.roundedBorder)
                 } footer: {
-                    Text("Join to a public thread by it's unique name.")
                     if !isThreadExist, !publicThreadName.isEmpty {
                         Text("The thread name is not exist!")
                             .foregroundColor(.red)
@@ -34,16 +34,21 @@ struct JoinToPublicThreadView: View {
                         Text("Join to a public thread by it's unique name.")
                     }
                 }
+                .listRowBackground(Color.clear)
 
-                Button {
-                    onCompeletion(publicThreadName)
-                } label: {
-                    Label("Join".uppercased(), systemImage: "door.right.hand.open")
-                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
+                Section {
+                    Button {
+                        onCompeletion(publicThreadName)
+                    } label: {
+                        Label("Join".uppercased(), systemImage: "door.right.hand.open")
+                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
+                    }
+                    .opacity(isThreadExist ? 1.0 : 0.5)
+                    .disabled(!isThreadExist)
+                    .font(.iransansSubheadline)
+                    .buttonStyle(.bordered)
                 }
-                .opacity(isThreadExist ? 1.0 : 0.5)
-                .disabled(!isThreadExist)
-                .font(.iransansSubheadline)
+                .listRowBackground(Color.clear)
             }
         }
         .animation(.easeInOut, value: isThreadExist)

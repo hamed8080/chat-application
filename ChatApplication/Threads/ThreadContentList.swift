@@ -6,17 +6,16 @@
 //
 
 import Chat
-import ChatAppExtensions
 import ChatAppUI
 import ChatAppViewModels
 import ChatModels
-import Combine
 import SwiftUI
 
 struct ThreadContentList: View {
     @EnvironmentObject var container: ObjectsContainer
     @EnvironmentObject var threadsVM: ThreadsViewModel
-    @State var searchText: String = ""
+    @State private var searchText: String = ""
+    private var sheetBinding: Binding<Bool> { Binding(get: { threadsVM.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
         List(threadsVM.filtered, selection: $container.navVM.selectedThreadId) { thread in
@@ -54,53 +53,30 @@ struct ThreadContentList: View {
             }
         }
         .navigationTitle(threadsVM.title)
-        .sheet(isPresented: $threadsVM.showAddParticipants) {
-            AddParticipantsToThreadView(viewModel: .init()) { contacts in
-                threadsVM.addParticipantsToThread(contacts)
-                threadsVM.showAddParticipants.toggle()
-            }
-        }
-        .sheet(isPresented: $threadsVM.showAddToTags) {
-            AddThreadToTagsView(viewModel: container.tagsVM) { tag in
-                container.tagsVM.addThreadToTag(tag: tag, threadId: threadsVM.selectedThraed?.id)
-                threadsVM.showAddToTags.toggle()
-            }
-        }
-        .sheet(isPresented: $threadsVM.toggleThreadContactPicker) {
-            StartThreadContactPickerView { model in
-                threadsVM.createThread(model)
-                threadsVM.toggleThreadContactPicker.toggle()
-            }
-        }
-        .sheet(isPresented: $threadsVM.showCreateDirectThread) {
-            CreateDirectThreadView { invitee, message in
-                threadsVM.fastMessage(invitee, message)
-            }
-        }
-        .sheet(isPresented: $threadsVM.showJoinPublicThread) {
-            JoinToPublicThreadView { publicThreadName in
-                threadsVM.joinToPublicThread(publicThreadName)
-            }
+        .sheet(isPresented: sheetBinding) {
+            threadsVM.sheetType = nil
+        } content: {
+            ThreadsSheetFactoryView()
         }
     }
 
     @ViewBuilder var trailingToolbarViews: some View {
         Menu {
             Button {
-                threadsVM.toggleThreadContactPicker.toggle()
+                threadsVM.sheetType = .startThread
             } label: {
                 Label("Start a new Chat", systemImage: "bubble.left.and.bubble.right.fill")
             }
 
             Button {
-                threadsVM.showJoinPublicThread.toggle()
+                threadsVM.sheetType = .joinToPublicThread
             } label: {
                 Label("Join a public Chat", systemImage: "door.right.hand.open")
             }
 
             // Send a message to a user without creating a new contact. Directly by their userName or cellPhone number.
             Button {
-                threadsVM.showCreateDirectThread = true
+                threadsVM.sheetType = .fastMessage
             } label: {
                 Label("Fast Messaage", systemImage: "arrow.up.circle.fill")
             }
@@ -150,13 +126,7 @@ private struct Preview: View {
                 .environmentObject(container)
                 .environmentObject(container.audioPlayerVM)
                 .environmentObject(container.threadsVM)
-                .environmentObject(container.tagsVM)
-                .environmentObject(container.loginVM)
                 .environmentObject(AppState.shared)
-                .environmentObject(container.tokenVM)
-                .environmentObject(container.contactsVM)
-                .environmentObject(container.navVM)
-                .environmentObject(container.settingsVM)
                 .onAppear {
                     container.threadsVM.title = "Chats"
                     container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 5))
@@ -172,6 +142,5 @@ private struct Preview: View {
 struct ThreadContentList_Previews: PreviewProvider {
     static var previews: some View {
         Preview()
-//        CreateDirectThreadView { _, _ in }
     }
 }

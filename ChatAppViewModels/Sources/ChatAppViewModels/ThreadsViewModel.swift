@@ -18,16 +18,12 @@ import ChatAppExtensions
 
 public final class ThreadsViewModel: ObservableObject {
     @Published public var isLoading = false
-    @Published public var toggleThreadContactPicker = false
-    @Published public var showJoinPublicThread = false
     @Published public var toggle = false
     @AppStorage("Threads", store: UserDefaults.group) public var threadsData: Data?
-    @Published public var showAddParticipants = false
-    @Published public var showCreateDirectThread = false
-    @Published public var showAddToTags = false
     @Published public var threads: OrderedSet<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
+    @Published public var sheetType: ThreadsSheetType?
     public private(set) var cancelable: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
     public private(set) var count = 15
@@ -320,7 +316,7 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func showAddParticipants(_ thread: Conversation) {
         selectedThraed = thread
-        showAddParticipants.toggle()
+        sheetType = .addParticipant
     }
 
     public func addParticipantsToThread(_ contacts: [Contact]) {
@@ -349,7 +345,7 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func showAddThreadToTag(_ thread: Conversation) {
         selectedThraed = thread
-        showAddToTags.toggle()
+        sheetType = .tagManagement
     }
 
     public func preparePaginiation() {
@@ -393,9 +389,10 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public func delete(_ thread: Conversation) {
-        guard let threadId = thread.id else { return }
+    public func delete() {
+        guard let threadId = selectedThraed?.id else { return }
         ChatManager.activeInstance?.conversation.delete(.init(subjectId: threadId))
+        sheetType = nil
     }
 
     private func onDeleteThread(_ response: ChatResponse<Participant>) {

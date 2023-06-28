@@ -59,7 +59,7 @@ public final class MessageRowCalculationViewModel: ObservableObject {
 
     public lazy var maxAllowedWidth: CGFloat = {
         let isIpad = UIDevice.current.userInterfaceIdiom == .pad
-        let max: CGFloat = isIpad ? 420 : 320
+        let max: CGFloat = isIpad ? 480 : 320
         return max
     }()
 
