@@ -98,9 +98,9 @@ public struct DownloadFileView: View {
                 }
             }
         }
-        .animation(.easeInOut, value: downloadFileVM.state)
-        .animation(.easeInOut, value: downloadFileVM.data)
-        .animation(.easeInOut, value: downloadFileVM.downloadPercent)
+        .springAnimation(value: downloadFileVM.state)
+        .springAnimation(value: downloadFileVM.data)
+        .springAnimation(value: downloadFileVM.downloadPercent)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .sheet(isPresented: $shareDownloadedFile) {
             if let fileURL = downloadFileVM.fileURL {
