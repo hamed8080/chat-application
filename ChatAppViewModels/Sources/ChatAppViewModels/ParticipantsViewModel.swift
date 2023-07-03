@@ -13,6 +13,7 @@ import ChatModels
 import ChatAppModels
 import ChatDTO
 import ChatCore
+import ChatExtensions
 
 public final class ParticipantsViewModel: ObservableObject {
     public var thread: Conversation?
@@ -39,6 +40,13 @@ public final class ParticipantsViewModel: ObservableObject {
                 self?.onParticipantEvent(event)
             }
             .store(in: &cancelable)
+
+        NotificationCenter.default.publisher(for: .user)
+            .compactMap { $0.object as? UserEventTypes }
+            .sink { [weak self] event in
+                self?.onUserEvent(event)
+            }
+            .store(in: &cancelable)
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .filter { $0.count >= 2 }
@@ -56,6 +64,17 @@ public final class ParticipantsViewModel: ObservableObject {
             onParticipants(chatResponse)
         case .deleted(let chatResponse):
             onDelete(chatResponse)
+        default:
+            break
+        }
+    }
+
+    private func onUserEvent(_ event: UserEventTypes) {
+        switch event {
+        case .remove(let chatResponse):
+            onRemoveRoles(chatResponse)
+        case .setRolesToUser(let chatResponse):
+            onSetRolesToUser(chatResponse)
         default:
             break
         }
@@ -148,6 +167,16 @@ public final class ParticipantsViewModel: ObservableObject {
         ChatManager.activeInstance?.participant.remove(.init(participantId: id, threadId: threadId))
     }
 
+    public func makeAdmin(_ participant: Participant) {
+        guard let id = participant.id, let threadId = thread?.id else { return }
+        ChatManager.activeInstance?.user.set(RolesRequest(userRoles: [.init(userId: id, roles: Roles.adminRoles)], threadId: threadId))
+    }
+
+    public func removeAdminRole(_ participant: Participant) {
+        guard let id = participant.id, let threadId = thread?.id else { return }
+        ChatManager.activeInstance?.user.remove(RolesRequest(userRoles: [.init(userId: id, roles: Roles.adminRoles)], threadId: threadId))
+    }
+
     public func preparePaginiation() {
         offset = participants.count
     }
@@ -156,6 +185,33 @@ public final class ParticipantsViewModel: ObservableObject {
         // remove older data to prevent duplicate on view
         self.participants.removeAll(where: { participant in participants.contains(where: { participant.id == $0.id }) })
         self.participants.append(contentsOf: participants)
+    }
+
+    public func onRemoveRoles(_ response: ChatResponse<[UserRole]>) {
+        response.result?.forEach{ userRole in
+            if response.subjectId == thread?.id,
+               let participantId = userRole.id,
+               let index = participants.firstIndex(where: {$0.id == participantId}),
+               userRole.isAdminRolesChanged
+            {
+                participants[index].admin = false
+            }
+            objectWillChange.send()
+        }
+    }
+
+    public func onSetRolesToUser(_ response: ChatResponse<[UserRole]>) {
+        response.result?.forEach{ userRole in
+            if response.subjectId == thread?.id,
+               let participantId = userRole.id,
+               let index = participants.firstIndex(where: {$0.id == participantId}),
+               userRole.isAdminRolesChanged
+            {
+                participants[index].admin = true
+                objectWillChange.send()
+            }
+        }
+
     }
 
     public func removeParticipant(_ participant: Participant) {

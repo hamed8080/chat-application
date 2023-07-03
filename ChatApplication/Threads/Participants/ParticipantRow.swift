@@ -7,12 +7,14 @@
 
 import Chat
 import ChatAppUI
+import ChatAppViewModels
 import ChatModels
 import Combine
 import SwiftUI
 
 struct ParticipantRow: View {
     let participant: Participant
+    @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
         Button(action: {}, label: {
@@ -43,9 +45,10 @@ struct ParticipantRow: View {
                         Spacer()
 
                         Text("Admin")
-                            .padding(4)
+                            .padding([.leading, .trailing], 4)
+                            .padding([.top, .bottom], 2)
                             .foregroundColor(Color.blue)
-                            .font(.headline)
+                            .font(.subheadline)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4)
                                     .stroke(Color.blue, lineWidth: 1)
@@ -54,6 +57,7 @@ struct ParticipantRow: View {
                 }
                 Spacer()
             }
+            .animation(.easeInOut, value: participant.admin)
             .contentShape(Rectangle())
             .padding([.leading, .trailing], 8)
             .padding([.top, .bottom], 4)

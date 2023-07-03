@@ -29,8 +29,8 @@ public final class UploadFileViewModel: ObservableObject {
             onPause(uniqueId)
         case .resumed(let uniqueId):
             onResume(uniqueId)
-        case .progress(let uniqueId, let uploadFileProgress, let chatError):
-            onUploadProgress(uniqueId, uploadFileProgress, chatError)
+        case .progress(let uniqueId, let uploadFileProgress):
+            onUploadProgress(uniqueId, uploadFileProgress)
         case .completed(let uniqueId, _, let data, let error):
             onCompeletedUpload(uniqueId, data, error)
         default:
@@ -76,7 +76,7 @@ public final class UploadFileViewModel: ObservableObject {
         ChatManager.activeInstance?.message.send(message, uploadImageRequest)
     }
 
-    private func onUploadProgress(_ uniqueId: String, _ uploadFileProgress: UploadFileProgress?, _ error: ChatError?) {
+    private func onUploadProgress(_ uniqueId: String, _ uploadFileProgress: UploadFileProgress?) {
         if uniqueId == uploadUniqueId {
             uploadPercent = uploadFileProgress?.percent ?? 0
         }

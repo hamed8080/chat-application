@@ -24,6 +24,22 @@ struct MemberView: View {
                     }
                 }
                 .contextMenu {
+                    if viewModel.thread?.admin == true, (participant.admin ?? false) == false {
+                        Button {
+                            viewModel.makeAdmin(participant)
+                        } label: {
+                            Label("Add Admin Access", systemImage: "person.badge.key.fill")
+                        }
+                    }
+
+                    if viewModel.thread?.admin == true, (participant.admin ?? false) == true {
+                        Button {
+                            viewModel.removeAdminRole(participant)
+                        } label: {
+                            Label("Remove Admin Access", systemImage: "person.crop.circle.badge.minus")
+                        }
+                    }
+
                     Button(role: .destructive) {
                         viewModel.removePartitipant(participant)
                     } label: {
