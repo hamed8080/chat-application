@@ -24,9 +24,11 @@ struct ThreadMessagesList: View {
                 LazyVStack(spacing: 8) {
                     ListLoadingView(isLoading: $viewModel.isLoading)
                     ForEach(viewModel.messages) { message in
-                        MessageRowFactory(message: message, calculation: MessageRowCalculationViewModel(), isInEditMode: isInEditMode)
+                        let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+                        MessageRowFactory(message: message, calculation: MessageRowCalculationViewModel())
                             .id(message.uniqueId)
-                            .transition(.asymmetric(insertion: .opacity, removal: .slide))
+                            .transition(.asymmetric(insertion: .push(from: isMe ? .trailing : .leading),
+                                                    removal: .move(edge: isMe ? .trailing : .leading)))
                             .onAppear {
                                 viewModel.sendSeenMessageIfNeeded(message)
                                 viewModel.setIfNeededToScrollToTheLastPosition(scrollingUP, message)
@@ -42,8 +44,13 @@ struct ThreadMessagesList: View {
                 .padding(.bottom)
                 .padding([.leading, .trailing])
             }
-            .overlay {
-                goToBottomOfThread(scrollView: scrollView)
+            .animation(.easeInOut, value: viewModel.messages.count)
+            .animation(.easeInOut, value: viewModel.isLoading)
+            .animation(.easeInOut, value: viewModel.sheetType)
+            .animation(.easeInOut, value: viewModel.isInEditMode)
+            .animation(.easeInOut, value: viewModel.selectedMessages.count)
+            .overlay(alignment: .bottomTrailing) {
+                bottomOfThreadButton
             }
             .safeAreaInset(edge: .top) {
                 Spacer()
@@ -58,19 +65,26 @@ struct ThreadMessagesList: View {
             )
             .simultaneousGesture(
                 DragGesture().onChanged { value in
-                    scrollingUP = value.translation.height > 0
+                    withAnimation {
+                        scrollingUP = value.translation.height > 0
+                        if scrollingUP {
+                            viewModel.isAtBottomOfTheList = false
+                        }
+                    }
                 }
             )
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ViewOffsetKey.self) { originY in
-                if originY < 64, scrollingUP {
-                    viewModel.loadMoreMessage()
+                withAnimation {
+                    if originY < 64, scrollingUP {
+                        viewModel.loadMoreMessage()
+                    }
                 }
             }
             .onReceive(viewModel.$scrollToUniqueId) { uniqueId in
                 guard let uniqueId = uniqueId else { return }
                 withAnimation {
-                    scrollView.scrollTo(uniqueId, anchor: .bottom)
+                    scrollView.scrollTo(uniqueId, anchor: .center)
                 }
             }
         }
@@ -79,31 +93,25 @@ struct ThreadMessagesList: View {
         }
     }
 
-    @ViewBuilder
-    func goToBottomOfThread(scrollView _: ScrollViewProxy) -> some View {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Button {
-                    viewModel.scrollToBottom()
-                } label: {
-                    Image(systemName: "chevron.down")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16, height: 16)
-                        .padding()
-                        .foregroundColor(Color.gray)
-                        .aspectRatio(contentMode: .fit)
-                        .contentShape(Rectangle())
-                }
-                .frame(width: 36, height: 36)
-                .background(Color.white)
-                .cornerRadius(36)
-            }
-            .padding(.bottom, 16)
-            .padding([.trailing], 8)
+    var bottomOfThreadButton: some View {
+        Button {
+            viewModel.scrollToBottom()
+        } label: {
+            Image(systemName: "chevron.down")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .padding()
+                .foregroundColor(Color.gray)
+                .aspectRatio(contentMode: .fit)
+                .contentShape(Rectangle())
         }
+        .frame(width: 36, height: 36)
+        .background(Color.white)
+        .cornerRadius(36)
+        .padding(.bottom, 16)
+        .padding([.trailing], 8)
+        .scaleEffect(x: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, y: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, anchor: .center)
     }
 
     var background: some View {

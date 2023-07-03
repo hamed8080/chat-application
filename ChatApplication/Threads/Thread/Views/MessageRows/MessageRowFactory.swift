@@ -17,24 +17,11 @@ struct MessageRowFactory: View {
     @State var calculation: MessageRowCalculationViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
     @State private(set) var showParticipants: Bool = false
-    @Binding var isInEditMode: Bool
-    @State private var isSelected = false
 
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             if let type = message.type {
                 if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                    if isInEditMode {
-                        Image(systemName: isSelected ? "checkmark.circle" : "circle")
-                            .font(.title)
-                            .frame(width: 22, height: 22, alignment: .center)
-                            .foregroundColor(Color.blue)
-                            .padding(24)
-                            .onTapGesture {
-                                isSelected.toggle()
-                                viewModel.toggleSelectedMessage(message, isSelected)
-                            }
-                    }
                     TextMessageType(message: message)
                         .environmentObject(calculation)
                 } else if type == .participantJoin || type == .participantLeft {
@@ -50,7 +37,6 @@ struct MessageRowFactory: View {
                 }
             }
         }
-        .animation(.easeInOut, value: isInEditMode)
     }
 }
 
@@ -59,7 +45,7 @@ struct MessageRow_Previews: PreviewProvider {
         let threadVM = ThreadViewModel()
         List {
             ForEach(MockData.generateMessages(count: 5)) { message in
-                MessageRowFactory(message: message, calculation: .init(), isInEditMode: .constant(false))
+                MessageRowFactory(message: message, calculation: .init())
                     .environmentObject(threadVM)
             }
         }
@@ -73,9 +59,9 @@ struct MessageRow_Previews: PreviewProvider {
 
 struct ReplyInfo_Previews: PreviewProvider {
     static let participant = Participant(name: "john", username: "john_9090")
-    static let replyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, time: 100, participant: participant)
+    static let replyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, repliedToMessageTime: 100, participant: participant)
     static let isMEParticipant = Participant(name: "Sam", username: "sam_rage")
-    static let isMeReplyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, time: 100, participant: isMEParticipant)
+    static let isMeReplyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, repliedToMessageTime: 100, participant: isMEParticipant)
     static var previews: some View {
         let threadVM = ThreadViewModel()
         List {

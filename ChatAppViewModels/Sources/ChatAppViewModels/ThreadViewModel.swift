@@ -91,7 +91,11 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
     public var audioPlayer: AVAudioPlayerViewModel?
     private var requests: [String: Any] = [:]
+    private var messageIdRequests: [String: Int] = [:]
     private var searchRequests: [String: Any] = [:]
+    @Published public var isAtBottomOfTheList: Bool = false
+    @Published public var highliteMessageId: Int?
+    private var highlightTimer: Timer?
 
     public weak var forwardMessage: Message? {
         didSet {
@@ -254,6 +258,38 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
             isFetchedServerFirstResponse = true
         }
         isLoading = false
+        onMoveToTime(response)
+    }
+
+    public func moveToTime(_ time: UInt, _ messageId: Int) {
+        let toTimeReq = GetHistoryRequest(threadId: threadId, count: 25, offset: 0, order: "desc", toTime: time, readOnly: readOnly)
+        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: 25, fromTime: time, offset: 0, order: "desc", readOnly: readOnly)
+        messageIdRequests[toTimeReq.uniqueId] = messageId
+        requests[toTimeReq.uniqueId] = toTimeReq
+        requests[fromTimeReq.uniqueId] = fromTimeReq
+        ChatManager.activeInstance?.message.history(toTimeReq)
+        ChatManager.activeInstance?.message.history(fromTimeReq)
+    }
+
+    private func onMoveToTime(_ response: ChatResponse<[Message]>) {
+        if !response.cache,
+           let uniqueId = response.uniqueId,
+           requests[uniqueId] != nil,
+           let messageId = messageIdRequests[uniqueId],
+           let messageIdUniqueId = messages.first(where: {$0.id == messageId})?.uniqueId
+        {
+            setScrollToUniqueId(messageIdUniqueId)
+            requests.removeValue(forKey: uniqueId)
+            showHighlighted(messageId)
+        }
+    }
+
+    private func showHighlighted(_ messageId: Int) {
+        self.highliteMessageId = messageId
+        highlightTimer?.invalidate()
+        highlightTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+            self?.highliteMessageId = nil
+        }
     }
 
     private func onQueueTextMessages(_ response: ChatResponse<[SendTextMessageRequest]>) {

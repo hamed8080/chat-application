@@ -61,9 +61,7 @@ struct MessageActionMenu: View {
         }
 
         Button {
-            withAnimation {
-                viewModel.isInEditMode = true
-            }
+            viewModel.isInEditMode = true
         } label: {
             Label("Select", systemImage: "checkmark.circle")
         }

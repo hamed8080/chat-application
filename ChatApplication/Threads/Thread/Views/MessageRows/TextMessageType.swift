@@ -16,9 +16,14 @@ struct TextMessageType: View {
     var message: Message
     @EnvironmentObject var calculation: MessageRowCalculationViewModel
     @EnvironmentObject var viewModel: ThreadViewModel
+    @State private var isSelected = false
+    private var isMe: Bool { message.isMe(currentUserId: AppState.shared.user?.id) }
 
     var body: some View {
         HStack(spacing: 8) {
+            if !isMe {
+                selectRadio
+            }
             if message.isMe(currentUserId: AppState.shared.user?.id) {
                 Spacer()
             }
@@ -85,16 +90,17 @@ struct TextMessageType: View {
             .padding([.leading, .trailing], 0)
             .contentShape(Rectangle())
             .background(message.isMe(currentUserId: AppState.shared.user?.id) ? Color.chatMeBg : Color.chatSenderBg)
+            .overlay {
+                if viewModel.highliteMessageId == message.id {
+                    Color.blue.opacity(0.3)
+                }
+            }
             .cornerRadius(12)
             .animation(.easeInOut, value: message.isUnsentMessage)
             .onTapGesture {
                 if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url)
                 }
-                print("on tap gesture")
-            }
-            .onLongPressGesture {
-                print("long press triggred")
             }
             .contextMenu {
                 MessageActionMenu(message: message)
@@ -106,6 +112,29 @@ struct TextMessageType: View {
             if !message.isMe(currentUserId: AppState.shared.user?.id) {
                 Spacer()
             }
+
+            if isMe {
+                selectRadio
+            }
         }
+        .animation(.easeInOut, value: isSelected)
+        .animation(.easeInOut, value: viewModel.isInEditMode)
+        .animation(.easeInOut, value: viewModel.highliteMessageId)
+        .onChange(of: viewModel.selectedMessages.contains(where: { $0.id == message.id })) { newValue in
+            isSelected = newValue
+        }
+    }
+
+    var selectRadio: some View {
+        Image(systemName: isSelected ? "checkmark.circle" : "circle")
+            .font(.title)
+            .frame(width: viewModel.isInEditMode ? 22 : 0.001, height: viewModel.isInEditMode ? 22 : 0.001, alignment: .center)
+            .foregroundColor(Color.blue)
+            .padding(viewModel.isInEditMode ? 24 : 0.001)
+            .scaleEffect(x: viewModel.isInEditMode ? 1.0 : 0.001, y: viewModel.isInEditMode ? 1.0 : 0.001, anchor: .center)
+            .onTapGesture {
+                isSelected.toggle()
+                viewModel.toggleSelectedMessage(message, isSelected)
+            }
     }
 }

@@ -120,6 +120,7 @@ struct SelectionView: View {
                 .foregroundColor(Color.blue)
                 .onTapGesture {
                     viewModel.isInEditMode = false
+                    viewModel.selectedMessages = []
                 }
 
             Text("\(viewModel.selectedMessages.count) selected \(viewModel.forwardMessage != nil ? "to forward" : "")")
@@ -155,6 +156,7 @@ struct ReplyMessageViewPlaceholder: View {
                     .foregroundColor(Color.blue)
                     .onTapGesture {
                         viewModel.replyMessage = nil
+                        viewModel.selectedMessages = []
                     }
                 Text(replyMessage.message ?? replyMessage.fileMetaData?.name ?? "")
                     .font(.iransansBody)
