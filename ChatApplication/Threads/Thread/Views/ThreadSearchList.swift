@@ -11,17 +11,17 @@ import SwiftUI
 
 struct ThreadSearchList: View {
     @EnvironmentObject var viewModel: ThreadViewModel
-    @Binding var searchMessageText: String
+    var searchText: String { viewModel.searchMessageText }
 
     var body: some View {
-        if searchMessageText.count > 0, viewModel.searchedMessages.count > 0 {
+        if searchText.count > 0, viewModel.searchedMessages.count > 0 {
             ScrollView {
                 LazyVStack {
                     ForEach(viewModel.searchedMessages) { message in
                         SearchMessageRow(message: message)
                             .onAppear {
                                 if message == viewModel.searchedMessages.last {
-                                    viewModel.searchInsideThread(text: searchMessageText, offset: viewModel.searchedMessages.count)
+                                    viewModel.searchInsideThread(text: searchText, offset: viewModel.searchedMessages.count)
                                 }
                             }
                     }
@@ -31,13 +31,17 @@ struct ThreadSearchList: View {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .transition(.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .bottom)))
             .background(.ultraThickMaterial)
-        } else if searchMessageText.count > 0 {
+            .animation(.easeInOut, value: viewModel.searchMessageText)
+            .animation(.easeInOut, value: viewModel.searchedMessages.count)
+        } else if searchText.count > 0 {
             ZStack {
                 Text("Nothing found.")
                     .font(.iransansTitle)
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .background(.ultraThickMaterial)
+            .animation(.easeInOut, value: viewModel.searchMessageText)
+            .transition(.opacity)
         }
     }
 }
@@ -55,7 +59,7 @@ struct ThreadSearchList_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadSearchList(searchMessageText: searchMessageText)
+        ThreadSearchList()
             .previewDisplayName("ThreadSearchList")
             .environmentObject(vm)
     }

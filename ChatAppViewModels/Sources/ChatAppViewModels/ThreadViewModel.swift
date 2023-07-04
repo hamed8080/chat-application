@@ -91,11 +91,11 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
     public var audioPlayer: AVAudioPlayerViewModel?
     private var requests: [String: Any] = [:]
-    private var messageIdRequests: [String: Int] = [:]
-    private var searchRequests: [String: Any] = [:]
     @Published public var isAtBottomOfTheList: Bool = false
     @Published public var highliteMessageId: Int?
+    @Published public var searchMessageText: String = ""
     private var highlightTimer: Timer?
+    private var searchOffset: Int = 0
 
     public weak var forwardMessage: Message? {
         didSet {
@@ -177,6 +177,8 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         case .history(let response):
             onHistory(response)
             onSearch(response)
+            onMoveToTime(response)
+            onMoveFromTime(response)
             break
         case .queueTextMessages(let response):
             onQueueTextMessages(response)
@@ -246,46 +248,69 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     }
 
     public func getHistory(_ toTime: UInt? = nil) {
-        ChatManager.activeInstance?.message.history(.init(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly))
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
+        requests["GET_HISTORY-\(req.uniqueId)"] = req
+        ChatManager.activeInstance?.message.history(req)
     }
 
     private func onHistory(_ response: ChatResponse<[Message]>) {
-        if let messages = response.result {
-            appendMessages(messages)
-        }
+        guard let uniqueId = response.uniqueId, requests["GET_HISTORY-\(uniqueId)"] != nil, let messages = response.result else { return }
+        appendMessages(messages)
         hasNext = response.hasNext
         if response.cache == false {
             isFetchedServerFirstResponse = true
         }
         isLoading = false
-        onMoveToTime(response)
+        requests.removeValue(forKey: "GET_HISTORY-\(uniqueId)")
     }
 
     public func moveToTime(_ time: UInt, _ messageId: Int) {
-        let toTimeReq = GetHistoryRequest(threadId: threadId, count: 25, offset: 0, order: "desc", toTime: time, readOnly: readOnly)
-        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: 25, fromTime: time, offset: 0, order: "desc", readOnly: readOnly)
-        messageIdRequests[toTimeReq.uniqueId] = messageId
-        requests[toTimeReq.uniqueId] = toTimeReq
-        requests[fromTimeReq.uniqueId] = fromTimeReq
+        if let uniqueId = messages.first(where: { $0.id == messageId })?.uniqueId {
+            showHighlighted(uniqueId, messageId)
+            return
+        }
+        let toTimeReq = GetHistoryRequest(threadId: threadId, count: 25, offset: 0, order: "desc", toTime: time.advanced(by: 100), readOnly: readOnly)
+        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: 25, fromTime: time.advanced(by: 100), offset: 0, order: "desc", readOnly: readOnly)
+        requests["TO_TIME-\(toTimeReq.uniqueId)"] = (toTimeReq, messageId)
+        requests["FROM_TIME-\(fromTimeReq.uniqueId)"] = (fromTimeReq, messageId)
         ChatManager.activeInstance?.message.history(toTimeReq)
         ChatManager.activeInstance?.message.history(fromTimeReq)
     }
 
     private func onMoveToTime(_ response: ChatResponse<[Message]>) {
-        if !response.cache,
-           let uniqueId = response.uniqueId,
-           requests[uniqueId] != nil,
-           let messageId = messageIdRequests[uniqueId],
-           let messageIdUniqueId = messages.first(where: {$0.id == messageId})?.uniqueId
-        {
-            setScrollToUniqueId(messageIdUniqueId)
-            requests.removeValue(forKey: uniqueId)
-            showHighlighted(messageId)
+        guard !response.cache,
+              let uniqueId = response.uniqueId,
+              let messages = response.result,
+              let tuple = requests["TO_TIME-\(uniqueId)"] as? (request:GetHistoryRequest, messageId:Int)
+        else { return }
+        appendMessages(messages)
+        if let messageIdUniqueId = self.messages.first(where: {$0.id == tuple.messageId})?.uniqueId {
+            Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { [weak self] _ in
+                self?.showHighlighted(messageIdUniqueId, tuple.messageId)
+            }
         }
+        requests.removeValue(forKey: "TO_TIME-\(uniqueId)")
     }
 
-    private func showHighlighted(_ messageId: Int) {
-        self.highliteMessageId = messageId
+    private func onMoveFromTime(_ response: ChatResponse<[Message]>) {
+        guard !response.cache,
+              let uniqueId = response.uniqueId,
+              let messages = response.result,
+              let tuple = requests["FROM_TIME-\(uniqueId)"] as? (request:GetHistoryRequest, messageId:Int)
+        else { return }
+        appendMessages(messages)
+        objectWillChange.send()
+        if let messageIdUniqueId = self.messages.first(where: {$0.id == tuple.messageId})?.uniqueId {
+            Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { [weak self] _ in
+                self?.showHighlighted(messageIdUniqueId, tuple.messageId)
+            }
+        }
+        requests.removeValue(forKey: "FROM_TIME-\(uniqueId)")
+    }
+
+    private func showHighlighted(_ uniqueId: String, _ messageId: Int) {
+        setScrollToUniqueId(uniqueId)
+        highliteMessageId = messageId
         highlightTimer?.invalidate()
         highlightTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
             self?.highliteMessageId = nil
@@ -364,31 +389,27 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public func searchInsideThread(text: String, offset: Int = 0) {
         searchTextTimer?.invalidate()
         searchTextTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
-            if offset == 0 {
-                self?.searchedMessages.removeAll()
-                self?.objectWillChange.send()
-            }
             self?.doSearch(text: text, offset: offset)
         }
     }
 
     public func doSearch(text: String, offset: Int = 0) {
         guard text.count >= 2 else { return }
-        let req = GetHistoryRequest(threadId: threadId, count: 50, offset: offset, query: "\(text)")
-        searchRequests[req.uniqueId] = req
+        let req = GetHistoryRequest(threadId: threadId, count: 50, offset: searchOffset, query: "\(text)")
+        requests["SEARCH-\(req.uniqueId)"] = req
         ChatManager.activeInstance?.message.history(req)
     }
 
     private func onSearch(_ response: ChatResponse<[Message]>) {
-        if let uniqueId = response.uniqueId, searchRequests[uniqueId] != nil {
-            response.result?.forEach { message in
-                if !(searchedMessages.contains(where: { $0.id == message.id })) {
-                    searchedMessages.append(message)
-                    objectWillChange.send()
-                }
+        guard let uniqueId = response.uniqueId, requests["SEARCH-\(uniqueId)"] != nil else { return }
+        searchedMessages.removeAll()
+        response.result?.forEach { message in
+            if !(searchedMessages.contains(where: { $0.id == message.id })) {
+                searchedMessages.append(message)
             }
-            searchRequests.removeValue(forKey: uniqueId)
         }
+        objectWillChange.send()
+        requests.removeValue(forKey: "SEARCH-\(uniqueId)")
     }
 
     public func appendMessages(_ messages: [Message]) {
@@ -406,7 +427,6 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
             }
         }
         sort()
-        updateScrollToLastSeenUniqueId()
     }
 
     public func deleteMessages(_ messages: [Message]) {

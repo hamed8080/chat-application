@@ -7,38 +7,27 @@
 
 import Chat
 import ChatAppUI
+import ChatAppViewModels
 import ChatModels
 import SwiftUI
 
 struct SearchMessageRow: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
     let message: Message
+    @State var calculation = MessageRowCalculationViewModel()
 
     var body: some View {
-        VStack(alignment: .trailing, spacing: 16) {
-            Text(message.message ?? message.fileMetaData?.name ?? "")
-                .multilineTextAlignment(message.message?.isEnglishString == true ? .leading : .trailing)
-                .padding(.top, 8)
-                .padding([.leading, .trailing, .top])
-                .font(Font(UIFont.systemFont(ofSize: 18)))
-
-            if let time = message.time {
-                let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000)
-                HStack {
-                    if message.message?.isEnglishString == true {
-                        Spacer()
-                    }
-                    Text("\(date.formatted(date: .numeric, time: .shortened))")
-                        .font(.subheadline)
-                    if message.message?.isEnglishString == false {
-                        Spacer()
-                    }
-                }
-                .padding()
+        Button {
+            if let time = message.time, let messageId = message.id {
+                viewModel.moveToTime(time, messageId)
+                viewModel.searchedMessages.removeAll()
+                viewModel.searchMessageText = ""
             }
+        } label: {
+            TextMessageType(message: message)
+                .environmentObject(calculation)
+                .disabled(true)
         }
-        .background(.ultraThinMaterial)
-        .cornerRadius(8)
-        .padding(4)
     }
 }
 

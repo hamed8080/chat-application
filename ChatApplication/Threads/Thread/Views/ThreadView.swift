@@ -20,7 +20,6 @@ struct ThreadView: View, DropDelegate {
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
-    @State var searchMessageText: String = ""
     var sheetBinding: Binding<Bool> { Binding(get: { viewModel.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
@@ -31,7 +30,7 @@ struct ThreadView: View, DropDelegate {
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
-            .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
+            .searchable(text: $viewModel.searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
             .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
                 viewModel.deleteMessages(viewModel.selectedMessages)
                 viewModel.isInEditMode = false
@@ -41,7 +40,7 @@ struct ThreadView: View, DropDelegate {
                     .environmentObject(viewModel)
             }
             .overlay {
-                ThreadSearchList(searchMessageText: $searchMessageText)
+                ThreadSearchList()
                     .environmentObject(viewModel)
             }
             .overlay {
@@ -66,7 +65,7 @@ struct ThreadView: View, DropDelegate {
                     centerToolbarTitle
                 }
             }
-            .onChange(of: searchMessageText) { value in
+            .onChange(of: viewModel.searchMessageText) { value in
                 viewModel.searchInsideThread(text: value)
             }
             .onChange(of: viewModel.isInEditMode) { _ in
