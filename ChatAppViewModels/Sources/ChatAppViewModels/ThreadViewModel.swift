@@ -498,8 +498,12 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     }
 
     private func onPinMessage(_ response: ChatResponse<Message>) {
-        if let messageId = response.result?.id, let index = firstMessageIndex(messageId) {
-            messages[index].pinned = true
+        if let message = response.result, let messageId = message.id {
+            if let index = firstMessageIndex(messageId) {
+                messages[index].pinned = true
+            }
+            thread?.pinMessages?.append(message)
+            objectWillChange.send()
         }
     }
 
@@ -508,8 +512,12 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     }
 
     private func onUNPinMessage(_ response: ChatResponse<Message>) {
-        if let messageId = response.result?.id, let index = firstMessageIndex(messageId) {
-            messages[index].pinned = false
+        if let messageId = response.result?.id {
+            if let index = firstMessageIndex(messageId) {
+                messages[index].pinned = false
+            }
+            thread?.pinMessages?.removeAll(where: {$0.id == messageId})
+            objectWillChange.send()
         }
     }
 

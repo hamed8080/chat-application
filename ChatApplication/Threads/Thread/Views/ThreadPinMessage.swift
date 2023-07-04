@@ -40,11 +40,14 @@ struct ThreadPinMessage: View {
                 .frame(height: 48)
                 .background(.regularMaterial)
                 .onTapGesture {
-                    threadVM.setScrollToUniqueId(message.uniqueId ?? "")
+                    if let time = message.time, let messageId = message.id {
+                        threadVM.moveToTime(time, messageId)
+                    }
                 }
             }
             Spacer()
         }
+        .animation(.easeInOut, value: messages.count)
     }
 }
 

@@ -49,6 +49,7 @@ struct ThreadMessagesList: View {
             .animation(.easeInOut, value: viewModel.sheetType)
             .animation(.easeInOut, value: viewModel.isInEditMode)
             .animation(.easeInOut, value: viewModel.selectedMessages.count)
+            .animation(.easeInOut, value: viewModel.thread?.pinMessages?.count)
             .overlay(alignment: .bottomTrailing) {
                 bottomOfThreadButton
             }
