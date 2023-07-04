@@ -32,6 +32,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
     public var startDate: Date = .init()
     @Published public var timerString: String = ""
     @Published public var isRecording: Bool = false
+    private var timer: Timer?
     public var isPermissionGranted: Bool { AVAudioSession.sharedInstance().recordPermission == .granted }
     public var recordingFileName: String { "recording.m4a" }
     public var recordingOutputBasePath: URL? { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first }
@@ -55,6 +56,11 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         isRecording = true
         startDate = Date()
         threadViewModel.sendSignal(.recordVoice)
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+            guard let self = self else { return }
+            self.timerString = self.startDate.distance(to: Date()).timerString ?? ""
+        }
         guard let url = recordingOutputPath else { return }
         do {
             let settings = [
@@ -73,13 +79,14 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
     public func stopAndSend() {
         stop()
         if let url = recordingOutputPath {
-            threadViewModel.sendFiles([url])
+            threadViewModel.sendFiles([url], messageType: .voice)
         }
     }
 
     public func stop() {
         isRecording = false
         audioRecorder.stop()
+        timer?.invalidate()
     }
 
     public func cancel() {

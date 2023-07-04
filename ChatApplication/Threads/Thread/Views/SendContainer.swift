@@ -14,6 +14,7 @@ struct SendContainer: View {
     @EnvironmentObject var viewModel: ThreadViewModel
     @Binding var deleteMessagesDialog: Bool
     @State var text: String = ""
+    @State var isRecording = false
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
     let threadId: Int?
 
@@ -26,44 +27,40 @@ struct SendContainer: View {
                 } else {
                     ReplyMessageViewPlaceholder()
                     MentionList(text: $text)
+                        .frame(maxHeight: 320)
                     EditMessagePlaceholderView()
+                    AudioRecordingView()
+                        .environmentObject(viewModel.audioRecoderVM)
                     HStack {
-                        Image(systemName: "paperclip")
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .font(.system(size: 24))
-                            .foregroundColor(.orange)
-                            .onTapGesture {
+                        if isRecording == false {
+                            GradientImageButton(image: "paperclip", title: "Voice Recording") {
                                 viewModel.sheetType = .attachment
                             }
+                        }
 
                         MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black, mention: true)
                             .cornerRadius(16)
                             .onChange(of: viewModel.textMessage ?? "") { newValue in
                                 viewModel.sendStartTyping(newValue)
                             }
-
-                        AudioRecordingView(viewModel: .init(threadViewModel: viewModel))
-
-                        if viewModel.audioRecoderVM.isRecording == false {
-                            Button {
-                                viewModel.sendTextMessage(text)
-                                text = ""
-                                viewModel.sheetType = nil
-                                UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
-                            } label: {
-                                ZStack {
-                                    Text("Send")
-                                        .frame(width: 0, height: 0)
-                                        .allowsHitTesting(false)
-                                        .disabled(true)
-                                    Image(systemName: "arrow.up.circle.fill")
-                                        .font(.system(size: 24))
-                                        .foregroundColor(Color.blue)
-                                }
+                        if isRecording == false {
+                            GradientImageButton(image: "mic.fill", title: "Voice Recording") {
+                                viewModel.audioRecoderVM.toggle()
                             }
-                            .keyboardShortcut(.return, modifiers: [.command])
+                            .keyboardShortcut(.init("r"), modifiers: [.command])
                         }
+
+                        GradientImageButton(image: "arrow.up.circle.fill", title: "Send") {
+                            if isRecording {
+                                viewModel.audioRecoderVM.stopAndSend()
+                            } else {
+                                viewModel.sendTextMessage(text)
+                            }
+                            text = ""
+                            viewModel.sheetType = nil
+                            UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
+                        }
+                        .keyboardShortcut(.return, modifiers: [.command])
                     }
                 }
             }
@@ -82,10 +79,12 @@ struct SendContainer: View {
                 }
                 .ignoresSafeArea()
             )
-            .animation(.easeInOut, value: viewModel.mentionList.count)
+            .animation(animation(appear: viewModel.mentionList.count > 0), value: viewModel.mentionList.count)
             .animation(.easeInOut, value: viewModel.selectedMessages.count)
-            .animation(.easeInOut, value: viewModel.isInEditMode)
-            .animation(.easeInOut, value: viewModel.replyMessage)
+            .animation(animation(appear: viewModel.isInEditMode), value: viewModel.isInEditMode)
+            .animation(animation(appear: viewModel.editMessage != nil), value: viewModel.editMessage)
+            .animation(animation(appear: viewModel.replyMessage != nil), value: viewModel.replyMessage)
+            .animation(animation(appear: viewModel.audioRecoderVM.isRecording), value: viewModel.audioRecoderVM.isRecording)
             .onReceive(viewModel.$editMessage) { editMessage in
                 if let editMessage = editMessage {
                     text = editMessage.message ?? ""
@@ -100,12 +99,19 @@ struct SendContainer: View {
                     UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
                 }
             }
+            .onReceive(viewModel.audioRecoderVM.$isRecording) { isRecording in
+                self.isRecording = isRecording
+            }
             .onAppear {
                 if let threadId = threadId, let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
                     text = draft
                 }
             }
         }
+    }
+
+    private func animation(appear: Bool) -> Animation {
+        appear ? .spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2) : .easeOut(duration: 0.13)
     }
 }
 
@@ -197,9 +203,9 @@ struct EditMessagePlaceholderView: View {
                     .offset(x: 8)
                 Spacer()
             }
+            .animation(.easeInOut, value: viewModel.editMessage)
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
             .padding(.bottom)
-            .animation(.easeInOut, value: viewModel.editMessage)
         }
     }
 }
@@ -207,5 +213,33 @@ struct EditMessagePlaceholderView: View {
 struct SendContainer_Previews: PreviewProvider {
     static var previews: some View {
         SendContainer(deleteMessagesDialog: .constant(true), threadId: 0)
+            .environmentObject(ThreadViewModel())
+    }
+}
+
+struct GradientImageButton: View {
+    var image: String
+    var title: String
+    var action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            ZStack {
+                Text(title)
+                    .frame(width: 0, height: 0)
+                    .allowsHitTesting(false)
+                    .disabled(true)
+                LinearGradient(gradient: Gradient(colors: [.blue, .purple]), startPoint: .top, endPoint: .bottom)
+                    .mask {
+                        Image(systemName: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                    }
+                    .frame(maxWidth: 24, maxHeight: 24)
+            }
+        }
     }
 }

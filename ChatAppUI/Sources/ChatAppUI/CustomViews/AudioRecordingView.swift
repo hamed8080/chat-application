@@ -9,44 +9,47 @@ import SwiftUI
 import ChatAppViewModels
 
 public struct AudioRecordingView: View {
-    @StateObject var viewModel: AudioRecordingViewModel
+    @EnvironmentObject var viewModel: AudioRecordingViewModel
+    @State var opacity: Double = 0
 
-    public init(viewModel: AudioRecordingViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
-    }
+    public init() {}
 
     public var body: some View {
-        let scale = viewModel.isRecording ? 1.8 : 1
-        Button {
-            // ignore
-        } label: {
-            Image(systemName: viewModel.isRecording ? "mic.fill" : "mic")
-                .font(.system(size: 24))
-                .foregroundColor(viewModel.isRecording ? .chatMeBg.opacity(0.9) : Color.textBlueColor.opacity(0.8))
-        }
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5)
-                .onEnded { _ in
-                    viewModel.toggle()
-                }
-        )
-        .offset(x: viewModel.isRecording ? -10 : 0)
-        .scaleEffect(CGSize(width: scale, height: scale))
-        .gesture(
-            DragGesture(minimumDistance: 100).onEnded { value in
-                if value.location.x < 0 {
-                    viewModel.toggle()
-                }
+        if viewModel.isRecording {
+            HStack(spacing: 0) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 24))
+                    .foregroundColor(Color.blue)
+                    .onTapGesture {
+                        viewModel.isRecording = false
+                        viewModel.stop()
+                    }
+                Text(viewModel.timerString)
+                    .font(.iransansBody)
+                    .offset(x: 8)
+                    .animation(.easeInOut, value: viewModel.timerString)
+
+                Spacer()
+                Image(systemName: "record.circle")
+                    .font(.system(size: 24))
+                    .foregroundStyle(.pink.opacity(opacity), .blue, .blue)
+                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: opacity)
+                    .onAppear {
+                        opacity = 1
+                    }
             }
-        )
-        .background(RecordAudioBackground(viewModel: viewModel, cornerRadius: 8))
+            .animation(.easeInOut, value: viewModel.isRecording)
+            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+            .padding([.top, .bottom], 8)
+        }
     }
 }
 
 struct AudioRecordingView_Previews: PreviewProvider {
     static var previews: some View {
         let vm = ThreadViewModel()
-        AudioRecordingView(viewModel: .init(threadViewModel: vm))
+        AudioRecordingView()
+            .environmentObject(AudioRecordingViewModel(threadViewModel: ThreadViewModel()))
             .onAppear {
                 vm.setup(thread: MockData.thread)
             }

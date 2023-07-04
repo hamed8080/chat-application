@@ -77,7 +77,7 @@ extension ThreadViewModel {
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
-    public func sendFiles(_ urls: [URL]) {
+    public func sendFiles(_ urls: [URL], messageType: ChatModels.MessageType = .file) {
         urls.forEach { url in
             let index = urls.firstIndex(where: { $0 == url })!
             guard let data = try? Data(contentsOf: url) else { return }
@@ -87,7 +87,7 @@ extension ThreadViewModel {
                                                   fileName: url.fileName,
                                                   mimeType: url.mimeType,
                                                   userGroupHash: thread?.userGroupHash)
-            let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
+            let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: messageType)
             let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)
             request.id = -index
             appendMessages([request])
