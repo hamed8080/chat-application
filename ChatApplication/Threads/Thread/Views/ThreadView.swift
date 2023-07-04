@@ -23,7 +23,7 @@ struct ThreadView: View, DropDelegate {
     var sheetBinding: Binding<Bool> { Binding(get: { viewModel.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
-        ThreadMessagesList(isInEditMode: $isInEditMode)
+        ThreadMessagesList()
             .id(thread.id)
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(viewModel.thread?.computedTitle ?? "")

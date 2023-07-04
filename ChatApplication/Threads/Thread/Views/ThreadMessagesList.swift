@@ -12,29 +12,25 @@ import SwiftUI
 
 struct ThreadMessagesList: View {
     @EnvironmentObject var viewModel: ThreadViewModel
-    var isInEditMode: Binding<Bool>
     @State var scrollingUP = false
     @Environment(\.colorScheme) var colorScheme
-    @State private var scrollViewHeight = CGFloat.infinity
-    @Namespace var scrollViewNameSpace
 
     var body: some View {
         ScrollViewReader { scrollView in
             ScrollView {
                 LazyVStack(spacing: 8) {
                     ListLoadingView(isLoading: $viewModel.isLoading)
+                        .id(-1)
                     ForEach(viewModel.messages) { message in
-                        let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-                        MessageRowFactory(message: message, calculation: MessageRowCalculationViewModel())
+                        MessageRowFactory(message: message)
                             .id(message.uniqueId)
-                            .transition(.asymmetric(insertion: .push(from: isMe ? .trailing : .leading),
-                                                    removal: .move(edge: isMe ? .trailing : .leading)))
                             .onAppear {
                                 viewModel.sendSeenMessageIfNeeded(message)
                                 viewModel.setIfNeededToScrollToTheLastPosition(scrollingUP, message)
                             }
                     }
                     ListLoadingView(isLoading: $viewModel.isLoading)
+                        .id(-2)
                 }
                 .background(
                     GeometryReader {
@@ -76,10 +72,8 @@ struct ThreadMessagesList: View {
             )
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ViewOffsetKey.self) { originY in
-                withAnimation {
-                    if originY < 64, scrollingUP {
-                        viewModel.loadMoreMessage()
-                    }
+                if originY < 256, scrollingUP {
+                    viewModel.loadMoreMessage()
                 }
             }
             .onReceive(viewModel.$scrollToUniqueId) { uniqueId in
@@ -134,6 +128,6 @@ struct ThreadMessagesList: View {
 
 struct ThreadMessagesList_Previews: PreviewProvider {
     static var previews: some View {
-        ThreadMessagesList(isInEditMode: .constant(true))
+        ThreadMessagesList()
     }
 }

@@ -256,12 +256,12 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     private func onHistory(_ response: ChatResponse<[Message]>) {
         guard let uniqueId = response.uniqueId, requests["GET_HISTORY-\(uniqueId)"] != nil, let messages = response.result else { return }
         appendMessages(messages)
-        hasNext = response.hasNext
         if response.cache == false {
             isFetchedServerFirstResponse = true
+            hasNext = response.hasNext
+            isLoading = false
+            requests.removeValue(forKey: "GET_HISTORY-\(uniqueId)")
         }
-        isLoading = false
-        requests.removeValue(forKey: "GET_HISTORY-\(uniqueId)")
     }
 
     public func moveToTime(_ time: UInt, _ messageId: Int) {

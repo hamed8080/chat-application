@@ -38,6 +38,7 @@ public final class ThreadsViewModel: ObservableObject {
     @Published public var selectedFilterThreadType: ThreadTypes?
     private var requests: [String: Any] = [:]
     private var searchRequests: [String: Any] = [:]
+    private var canLoadMore: Bool { hasNext && !isLoading }
 
     public init() {
         AppState.shared.$connectionStatus
@@ -253,7 +254,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func loadMore() {
-        if !hasNext { return }
+        if !canLoadMore { return }
         preparePaginiation()
         getThreads()
     }

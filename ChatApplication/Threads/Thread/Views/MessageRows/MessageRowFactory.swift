@@ -14,9 +14,10 @@ import SwiftUI
 
 struct MessageRowFactory: View {
     var message: Message
-    @State var calculation: MessageRowCalculationViewModel
+    @State var calculation: MessageRowCalculationViewModel = .init()
     @EnvironmentObject var viewModel: ThreadViewModel
     @State private(set) var showParticipants: Bool = false
+    private var isMe: Bool { message.isMe(currentUserId: AppState.shared.user?.id) }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -37,6 +38,7 @@ struct MessageRowFactory: View {
                 }
             }
         }
+        .transition(.asymmetric(insertion: .push(from: isMe ? .trailing : .leading), removal: .move(edge: isMe ? .trailing : .leading)))
     }
 }
 
