@@ -6,6 +6,7 @@
 //
 
 import Chat
+import ChatAppExtensions
 import ChatAppModels
 import ChatAppViewModels
 import ChatCore
@@ -25,7 +26,7 @@ final class ChatDelegateImplementation: ChatDelegate {
 
         Task {
             await MainActor.run {
-                let ssoToken = SSOTokenResponseResult(accessToken: "3c4da95188244b55819afc48424d2a1f.XzIwMjM3", expiresIn: 900)
+                let ssoToken = SSOTokenResponseResult(accessToken: "e9605a835b504162810ed8c449cb88c3.XzIwMjM3", expiresIn: 900)
                 let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
                 let user = User(id: 3_463_768)
                 TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
@@ -93,11 +94,17 @@ final class ChatDelegateImplementation: ChatDelegate {
     private func onError(_ response: ChatResponse<Any>) {
         print(response)
         guard let error = response.error else { return }
-        if error.code == 21 || error.code == 401 {
+        if error.code == 21 {
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .unauthorized
         } else {
-            AppState.shared.animateAndShowError(error)
+            #if DEBUG
+                AppState.shared.animateAndShowError(error)
+            #else
+                if response.isPresentable {
+                    AppState.shared.animateAndShowError(error)
+                }
+            #endif
         }
     }
 

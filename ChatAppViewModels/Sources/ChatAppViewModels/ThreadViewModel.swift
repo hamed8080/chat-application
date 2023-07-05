@@ -256,6 +256,9 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     private func onHistory(_ response: ChatResponse<[Message]>) {
         guard let uniqueId = response.uniqueId, requests["GET_HISTORY-\(uniqueId)"] != nil, let messages = response.result else { return }
         appendMessages(messages)
+        if response.cache == false, isFetchedServerFirstResponse == false, let time = thread?.lastSeenMessageTime, let lastSeenMessageId = thread?.lastSeenMessageId {
+            moveToTime(time, lastSeenMessageId, highlight: false)
+        }
         if response.cache == false {
             isFetchedServerFirstResponse = true
             hasNext = response.hasNext
@@ -264,52 +267,48 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         }
     }
 
-    public func moveToTime(_ time: UInt, _ messageId: Int) {
+    public func moveToTime(_ time: UInt, _ messageId: Int, highlight: Bool = true) {
         if let uniqueId = messages.first(where: { $0.id == messageId })?.uniqueId {
-            showHighlighted(uniqueId, messageId)
+            showHighlighted(uniqueId, messageId, highlight: highlight)
             return
         }
         let toTimeReq = GetHistoryRequest(threadId: threadId, count: 25, offset: 0, order: "desc", toTime: time.advanced(by: 100), readOnly: readOnly)
         let fromTimeReq = GetHistoryRequest(threadId: threadId, count: 25, fromTime: time.advanced(by: 100), offset: 0, order: "desc", readOnly: readOnly)
-        requests["TO_TIME-\(toTimeReq.uniqueId)"] = (toTimeReq, messageId)
-        requests["FROM_TIME-\(fromTimeReq.uniqueId)"] = (fromTimeReq, messageId)
+        requests["TO_TIME-\(toTimeReq.uniqueId)"] = (toTimeReq, messageId, highlight)
+        requests["FROM_TIME-\(fromTimeReq.uniqueId)"] = (fromTimeReq, messageId, highlight)
         ChatManager.activeInstance?.message.history(toTimeReq)
         ChatManager.activeInstance?.message.history(fromTimeReq)
     }
 
     private func onMoveToTime(_ response: ChatResponse<[Message]>) {
-        guard !response.cache,
-              let uniqueId = response.uniqueId,
-              let messages = response.result,
-              let tuple = requests["TO_TIME-\(uniqueId)"] as? (request:GetHistoryRequest, messageId:Int)
-        else { return }
-        appendMessages(messages)
-        if let messageIdUniqueId = self.messages.first(where: {$0.id == tuple.messageId})?.uniqueId {
-            Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { [weak self] _ in
-                self?.showHighlighted(messageIdUniqueId, tuple.messageId)
-            }
-        }
-        requests.removeValue(forKey: "TO_TIME-\(uniqueId)")
+        onMoveTime(response: response, key: "TO_TIME")
     }
 
     private func onMoveFromTime(_ response: ChatResponse<[Message]>) {
+        onMoveTime(response: response, key: "FROM_TIME")
+    }
+
+    private func onMoveTime(response: ChatResponse<[Message]>, key: String) {
         guard !response.cache,
               let uniqueId = response.uniqueId,
               let messages = response.result,
-              let tuple = requests["FROM_TIME-\(uniqueId)"] as? (request:GetHistoryRequest, messageId:Int)
+              let tuple = requests["\(key)-\(uniqueId)"] as? (request: GetHistoryRequest, messageId: Int, highlight: Bool)
         else { return }
         appendMessages(messages)
-        objectWillChange.send()
         if let messageIdUniqueId = self.messages.first(where: {$0.id == tuple.messageId})?.uniqueId {
-            Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { [weak self] _ in
-                self?.showHighlighted(messageIdUniqueId, tuple.messageId)
-            }
+            showHighlighted(messageIdUniqueId, tuple.messageId, highlight: tuple.highlight)
         }
-        requests.removeValue(forKey: "FROM_TIME-\(uniqueId)")
+        requests.removeValue(forKey: "\(key)-\(uniqueId)")
     }
 
-    private func showHighlighted(_ uniqueId: String, _ messageId: Int) {
+    private func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true) {
         setScrollToUniqueId(uniqueId)
+        if highlight {
+            highlightMessage(messageId)
+        }
+    }
+
+    private func highlightMessage(_ messageId: Int) {
         highliteMessageId = messageId
         highlightTimer?.invalidate()
         highlightTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
@@ -421,9 +420,6 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
                 oldMessage.updateMessage(message: message)
             } else if message.threadId == threadId || message.conversation?.id == threadId {
                 self.messages.append(message)
-                thread?.unreadCount = message.conversation?.unreadCount ?? 1
-                thread?.lastMessageVO = message
-                thread?.lastMessage = message.message
             }
         }
         sort()
