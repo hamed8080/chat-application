@@ -16,8 +16,8 @@ struct ThreadMessagesList: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        ScrollViewReader { scrollView in
-            ScrollView {
+        ScrollViewReader { scrollProxy in
+            ScrollView(showsIndicators: false) {
                 LazyVStack(spacing: 8) {
                     ListLoadingView(isLoading: $viewModel.isLoading)
                         .id(-1)
@@ -25,8 +25,8 @@ struct ThreadMessagesList: View {
                         MessageRowFactory(message: message)
                             .id(message.uniqueId)
                             .onAppear {
+                                viewModel.lastVisibleUniqueId = message.uniqueId
                                 viewModel.sendSeenMessageIfNeeded(message)
-                                viewModel.setIfNeededToScrollToTheLastPosition(scrollingUP, message)
                             }
                     }
                     ListLoadingView(isLoading: $viewModel.isLoading)
@@ -40,47 +40,36 @@ struct ThreadMessagesList: View {
                 .padding(.bottom)
                 .padding([.leading, .trailing])
             }
-            .animation(.easeInOut, value: viewModel.messages.count)
+//            .animation(.easeInOut, value: viewModel.messages.count)
             .animation(.easeInOut, value: viewModel.isLoading)
             .animation(.easeInOut, value: viewModel.sheetType)
             .animation(.easeInOut, value: viewModel.isInEditMode)
             .animation(.easeInOut, value: viewModel.selectedMessages.count)
-            .animation(.easeInOut, value: viewModel.thread?.pinMessages?.count)
             .overlay(alignment: .bottomTrailing) {
-                bottomOfThreadButton
+                moveToBottomButton
+                    .offset(y: 48)
             }
             .safeAreaInset(edge: .top) {
                 Spacer()
-                    .frame(height: viewModel.thread?.pinMessages?.count ?? 0 > 0 ? 48 : 0)
+                    .frame(height: viewModel.thread?.pinMessage != nil ? 48 : 0)
             }
             .safeAreaInset(edge: .bottom) {
                 Spacer()
-                    .frame(height: 48)
+                    .frame(height: 96)
             }
-            .background(
-                background
-            )
-            .simultaneousGesture(
-                DragGesture().onChanged { value in
-                    withAnimation {
-                        scrollingUP = value.translation.height > 0
-                        if scrollingUP {
-                            viewModel.isAtBottomOfTheList = false
-                        }
-                    }
-                }
-            )
+            .background(background)
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ViewOffsetKey.self) { originY in
-                if originY < 256, scrollingUP {
-                    viewModel.loadMoreMessage()
+                #if DEBUG
+                    print("OriginY: \(originY)")
+                #endif
+                viewModel.setNewOrigin(newOriginY: originY)
+                if originY < 72, viewModel.scrollingUP {
+                    viewModel.getMoreTopHistory()
                 }
             }
-            .onReceive(viewModel.$scrollToUniqueId) { uniqueId in
-                guard let uniqueId = uniqueId else { return }
-                withAnimation {
-                    scrollView.scrollTo(uniqueId, anchor: .center)
-                }
+            .onAppear {
+                viewModel.scrollProxy = scrollProxy
             }
         }
         .onTapGesture {
@@ -88,7 +77,7 @@ struct ThreadMessagesList: View {
         }
     }
 
-    var bottomOfThreadButton: some View {
+    private var moveToBottomButton: some View {
         Button {
             viewModel.scrollToBottom()
         } label: {
@@ -107,9 +96,22 @@ struct ThreadMessagesList: View {
         .padding(.bottom, 16)
         .padding([.trailing], 8)
         .scaleEffect(x: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, y: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, anchor: .center)
+        .overlay(alignment: .top) {
+            let unreadCount = viewModel.thread?.unreadCount ?? 0
+            let hide = unreadCount == 0
+            Text(verbatim: unreadCount == 0 ? "" : "\(unreadCount)")
+                .font(.system(size: 12))
+                .fontDesign(.rounded)
+                .padding(4)
+                .frame(height: hide ? 0 : 18)
+                .background(Color.textBlueColor)
+                .foregroundColor(.white)
+                .cornerRadius(hide ? 0 : 16)
+                .offset(x: -2, y: -12)
+        }
     }
 
-    var background: some View {
+    private var background: some View {
         Image("chat_bg")
             .resizable(resizingMode: .tile)
             .renderingMode(.template)
@@ -129,5 +131,6 @@ struct ThreadMessagesList: View {
 struct ThreadMessagesList_Previews: PreviewProvider {
     static var previews: some View {
         ThreadMessagesList()
+            .environmentObject(ThreadViewModel())
     }
 }

@@ -13,7 +13,7 @@ import ChatAppViewModels
 import ChatModels
 
 public struct DownloadFileView: View {
-    @StateObject var downloadFileVM = DownloadFileViewModel()
+    @EnvironmentObject var downloadFileVM: DownloadFileViewModel
     @State var shareDownloadedFile: Bool = false
     let message: Message
     @State var presentViewGallery = false
@@ -71,7 +71,7 @@ public struct DownloadFileView: View {
                             downloadFileVM.resumeDownload()
                         }
                 case .UNDEFINED, .THUMBNAIL:
-                    if message.isImage, let data = downloadFileVM.data, let image = UIImage(data: data) {
+                    if message.isImage, let data = downloadFileVM.tumbnailData, let image = UIImage(data: data) {
                         Image(uiImage: image)
                             .resizable()
                             .blur(radius: 5, opaque: true)
@@ -116,7 +116,7 @@ public struct DownloadFileView: View {
         }
         .onAppear {
             downloadFileVM.setMessage(message: message)
-            if message.isImage, !downloadFileVM.isInCache {
+            if message.isImage, !downloadFileVM.isInCache, downloadFileVM.tumbnailData == nil {
                 downloadFileVM.downloadBlurImage()
             }
         }

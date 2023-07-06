@@ -8,46 +8,135 @@
 import Chat
 import ChatAppUI
 import ChatAppViewModels
+import ChatDTO
 import ChatModels
+import Combine
 import SwiftUI
 
 struct ThreadPinMessage: View {
-    private var messages: [Message] { threadVM.thread?.pinMessages ?? [] }
+    private var message: PinMessage? { threadVM.thread?.pinMessage }
     @EnvironmentObject var threadVM: ThreadViewModel
+    @State var thumbnailData: Data?
+    @State var cancelable: AnyCancellable?
+    @State var requestUniqueId: String?
+    private var icon: String? { fileMetadata?.file?.mimeType?.systemImageNameForFileExtension }
+    var isEnglish: Bool { message?.text?.isEnglishString ?? false }
+    private var title: String {
+        if let text = message?.text, !text.isEmpty {
+            return text
+        } else if let fileName = fileMetadata?.name {
+            return fileName
+        } else {
+            return ""
+        }
+    }
 
     var body: some View {
-        VStack {
-            ForEach(messages) { message in
+        if message != nil {
+            VStack {
                 HStack {
-                    if (message.message?.isEnglishString ?? false) == false {
-                        Spacer()
-                    }
-                    Text(message.messageTitle)
-                        .font(.iransansBody)
-
-                    if message.message?.isEnglishString ?? false == true {
-                        Spacer()
-                    }
-                    Button {
-                        threadVM.unpinMessage(message.id ?? -1)
-                    } label: {
-                        Label("Un Pin", systemImage: "pin.fill")
-                            .labelStyle(.iconOnly)
-                            .foregroundColor(.orange)
+                    if isEnglish {
+                        LTRDesign
+                    } else {
+                        RTLDesign
                     }
                 }
                 .padding()
                 .frame(height: 48)
                 .background(.regularMaterial)
                 .onTapGesture {
-                    if let time = message.time, let messageId = message.id {
+                    if let time = message?.time, let messageId = message?.messageId {
                         threadVM.moveToTime(time, messageId)
                     }
                 }
+                Spacer()
             }
-            Spacer()
+            .animation(.easeInOut, value: thumbnailData)
+            .animation(.easeInOut, value: message != nil)
+            .onAppear {
+                downloadImageThumbnail()
+                cancelable = NotificationCenter.default.publisher(for: .download)
+                    .compactMap { $0.object as? DownloadEventTypes }
+                    .sink { value in
+                        onDownloadEvent(value)
+                    }
+            }
         }
-        .animation(.easeInOut, value: messages.count)
+    }
+
+    @ViewBuilder private var LTRDesign: some View {
+        imageView
+        textView
+        Spacer()
+        pinButton
+    }
+
+    @ViewBuilder private var RTLDesign: some View {
+        Spacer()
+        textView
+        imageView
+        pinButton
+    }
+
+    private var pinButton: some View {
+        Button {
+            threadVM.unpinMessage(message?.messageId ?? -1)
+        } label: {
+            Label("Un Pin", systemImage: "pin.fill")
+                .labelStyle(.iconOnly)
+                .foregroundColor(.orange)
+        }
+    }
+
+    private var textView: some View {
+        Text(title)
+            .font(.iransansBody)
+    }
+
+    @ViewBuilder private var imageView: some View {
+        if let thumbnailData = thumbnailData, let image = UIImage(data: thumbnailData) {
+            Image(uiImage: image)
+                .resizable()
+                .frame(width: 32, height: 32)
+                .cornerRadius(4)
+        } else if let icon = icon {
+            Image(systemName: icon)
+                .resizable()
+                .frame(width: 32, height: 32)
+                .foregroundStyle(.blue, .clear)
+        }
+    }
+
+    var fileMetadata: FileMetaData? {
+        guard let metdataData = message?.metadata?.data(using: .utf8),
+              let file = try? JSONDecoder.instance.decode(FileMetaData.self, from: metdataData)
+        else { return nil }
+        return file
+    }
+
+    private func downloadImageThumbnail() {
+        guard let file = fileMetadata,
+              let hashCode = file.file?.hashCode,
+              file.file?.mimeType == "image/jpeg" || file.file?.mimeType == "image/png"
+        else {
+            thumbnailData = nil
+            return
+        }
+
+        let req = ImageRequest(hashCode: hashCode, quality: 0.1, size: .SMALL, thumbnail: true)
+        requestUniqueId = req.uniqueId
+        ChatManager.activeInstance?.file.get(req)
+    }
+
+    private func onDownloadEvent(_ event: DownloadEventTypes) {
+        switch event {
+        case let .image(chatResponse, _):
+            if requestUniqueId == chatResponse.uniqueId {
+                thumbnailData = chatResponse.result
+            }
+        default:
+            break
+        }
     }
 }
 

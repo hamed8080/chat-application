@@ -15,7 +15,7 @@ import ChatAppModels
 import ChatCore
 import ChatDTO
 import ChatExtensions
-
+import SwiftUI
 
 protocol ThreadViewModelProtocol: AnyObject {
     var thread: Conversation? { get set }
@@ -62,11 +62,10 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
 
     @Published public var thread: Conversation?
     @Published public var isLoading = false
-    @Published public var messages: [Message] = []
+    public var messages: [Message] = []
     @Published public var selectedMessages: [Message] = []
     @Published public var editMessage: Message?
     @Published public var replyMessage: Message?
-    @Published public var scrollToUniqueId: String?
     @Published public var isInEditMode: Bool = false
     @Published public var exportMessagesVM: ExportMessagesViewModelProtocol = ExportMessagesViewModel()
     @Published public var mentionList: [Participant] = []
@@ -90,12 +89,16 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
     public var audioPlayer: AVAudioPlayerViewModel?
-    private var requests: [String: Any] = [:]
-    @Published public var isAtBottomOfTheList: Bool = false
-    @Published public var highliteMessageId: Int?
+    var requests: [String: Any] = [:]
+    public var isAtBottomOfTheList: Bool = false
+    public var highliteMessageId: Int?
     @Published public var searchMessageText: String = ""
-    private var highlightTimer: Timer?
-    private var searchOffset: Int = 0
+    var highlightTimer: Timer?
+    var searchOffset: Int = 0
+    public var scrollProxy: ScrollViewProxy?
+    public var scrollingUP = false
+    var lastOrigin: CGFloat = 0
+    public var lastVisibleUniqueId: String?
 
     public weak var forwardMessage: Message? {
         didSet {
@@ -131,7 +134,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
         if status == .connected, isFetchedServerFirstResponse == true, isActiveThread {
             // After connecting again get latest messages
-            getHistory()
+            getHistory(thread?.lastSeenMessageTime)
         }
     }
 
@@ -176,6 +179,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         switch event {
         case .history(let response):
             onHistory(response)
+            onMoreTopHistory(response)
             onSearch(response)
             onMoveToTime(response)
             onMoveFromTime(response)
@@ -262,57 +266,30 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         if response.cache == false {
             isFetchedServerFirstResponse = true
             hasNext = response.hasNext
-            isLoading = false
             requests.removeValue(forKey: "GET_HISTORY-\(uniqueId)")
         }
+        self.objectWillChange.send()
     }
 
-    public func moveToTime(_ time: UInt, _ messageId: Int, highlight: Bool = true) {
-        if let uniqueId = messages.first(where: { $0.id == messageId })?.uniqueId {
-            showHighlighted(uniqueId, messageId, highlight: highlight)
-            return
-        }
-        let toTimeReq = GetHistoryRequest(threadId: threadId, count: 25, offset: 0, order: "desc", toTime: time.advanced(by: 100), readOnly: readOnly)
-        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: 25, fromTime: time.advanced(by: 100), offset: 0, order: "desc", readOnly: readOnly)
-        requests["TO_TIME-\(toTimeReq.uniqueId)"] = (toTimeReq, messageId, highlight)
-        requests["FROM_TIME-\(fromTimeReq.uniqueId)"] = (fromTimeReq, messageId, highlight)
-        ChatManager.activeInstance?.message.history(toTimeReq)
-        ChatManager.activeInstance?.message.history(fromTimeReq)
+    public func getMoreTopHistory() {
+        if !canLoadNexPage { return }
+        isLoading = true
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: messages.first?.time, readOnly: readOnly)
+        requests["MORE_TOP_HISTORY-\(req.uniqueId)"] = req
+        ChatManager.activeInstance?.message.history(req)
     }
 
-    private func onMoveToTime(_ response: ChatResponse<[Message]>) {
-        onMoveTime(response: response, key: "TO_TIME")
-    }
-
-    private func onMoveFromTime(_ response: ChatResponse<[Message]>) {
-        onMoveTime(response: response, key: "FROM_TIME")
-    }
-
-    private func onMoveTime(response: ChatResponse<[Message]>, key: String) {
-        guard !response.cache,
-              let uniqueId = response.uniqueId,
-              let messages = response.result,
-              let tuple = requests["\(key)-\(uniqueId)"] as? (request: GetHistoryRequest, messageId: Int, highlight: Bool)
-        else { return }
+    private func onMoreTopHistory(_ response: ChatResponse<[Message]>) {
+        guard let uniqueId = response.uniqueId, requests["MORE_TOP_HISTORY-\(uniqueId)"] != nil, let messages = response.result else { return }
         appendMessages(messages)
-        if let messageIdUniqueId = self.messages.first(where: {$0.id == tuple.messageId})?.uniqueId {
-            showHighlighted(messageIdUniqueId, tuple.messageId, highlight: tuple.highlight)
-        }
-        requests.removeValue(forKey: "\(key)-\(uniqueId)")
-    }
-
-    private func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true) {
-        setScrollToUniqueId(uniqueId)
-        if highlight {
-            highlightMessage(messageId)
-        }
-    }
-
-    private func highlightMessage(_ messageId: Int) {
-        highliteMessageId = messageId
-        highlightTimer?.invalidate()
-        highlightTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
-            self?.highliteMessageId = nil
+        if response.cache == false {
+            hasNext = response.hasNext
+            scrollTo(messages.first?.uniqueId ?? "", animation: nil, anchor: .top)
+            withAnimation(nil) {
+                isLoading = false
+            }
+            self.objectWillChange.send()
+            requests.removeValue(forKey: "MORE_TOP_HISTORY-\(uniqueId)")
         }
     }
 
@@ -493,12 +470,18 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         ChatManager.activeInstance?.message.pin(.init(messageId: messageId))
     }
 
-    private func onPinMessage(_ response: ChatResponse<Message>) {
+    private func onPinMessage(_ response: ChatResponse<PinMessage>) {
         if let message = response.result, let messageId = message.id {
             if let index = firstMessageIndex(messageId) {
                 messages[index].pinned = true
             }
-            thread?.pinMessages?.append(message)
+            thread?.pinMessage = message
+            animatableObjectWillChange()
+        }
+    }
+
+    func animatableObjectWillChange() {
+        withAnimation {
             objectWillChange.send()
         }
     }
@@ -507,13 +490,13 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         ChatManager.activeInstance?.message.unpin(.init(messageId: messageId))
     }
 
-    private func onUNPinMessage(_ response: ChatResponse<Message>) {
+    private func onUNPinMessage(_ response: ChatResponse<PinMessage>) {
         if let messageId = response.result?.id {
             if let index = firstMessageIndex(messageId) {
                 messages[index].pinned = false
             }
-            thread?.pinMessages?.removeAll(where: {$0.id == messageId})
-            objectWillChange.send()
+            thread?.pinMessage = nil
+            animatableObjectWillChange()
         }
     }
 

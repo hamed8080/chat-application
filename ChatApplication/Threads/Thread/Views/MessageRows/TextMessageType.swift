@@ -44,6 +44,7 @@ struct TextMessageType: View {
 
                 if message.isFileType, message.id ?? 0 > 0 {
                     DownloadFileView(message: message)
+                        .environmentObject(calculation.downloadFileVM)
                         .frame(maxHeight: 320)
                 }
 

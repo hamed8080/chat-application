@@ -68,6 +68,7 @@
 		059B3A9629B746DA00C2E27B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 059B3A9829B746DA00C2E27B /* Localizable.strings */; };
 		059F84AF29D035350072DFC7 /* MutualThreadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059F84AE29D035350072DFC7 /* MutualThreadsView.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
+		05B7C8D92A566A6400171AF4 /* UnknownMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B7C8D82A566A6400171AF4 /* UnknownMessageType.swift */; };
 		05C5665229BEF2C3002E72F7 /* ThreadMessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C5665129BEF2C3002E72F7 /* ThreadMessagesList.swift */; };
 		05C5665429BEF32A002E72F7 /* ThreadSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C5665329BEF32A002E72F7 /* ThreadSheetView.swift */; };
 		05C5665629BEF376002E72F7 /* ThreadSearchList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C5665529BEF376002E72F7 /* ThreadSearchList.swift */; };
@@ -190,6 +191,7 @@
 		059B3A9929B746DD00C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		059F84AE29D035350072DFC7 /* MutualThreadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutualThreadsView.swift; sourceTree = "<group>"; };
 		05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
+		05B7C8D82A566A6400171AF4 /* UnknownMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownMessageType.swift; sourceTree = "<group>"; };
 		05C5665129BEF2C3002E72F7 /* ThreadMessagesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMessagesList.swift; sourceTree = "<group>"; };
 		05C5665329BEF32A002E72F7 /* ThreadSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSheetView.swift; sourceTree = "<group>"; };
 		05C5665529BEF376002E72F7 /* ThreadSearchList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSearchList.swift; sourceTree = "<group>"; };
@@ -297,6 +299,7 @@
 				05297DDB2A4B17E600B14235 /* TextMessageType.swift */,
 				AC6D532326F1AE8C00CBC059 /* MessageRowFactory.swift */,
 				05297DDD2A4B235500B14235 /* MessageActionMenu.swift */,
+				05B7C8D82A566A6400171AF4 /* UnknownMessageType.swift */,
 			);
 			path = MessageRows;
 			sourceTree = "<group>";
@@ -777,6 +780,7 @@
 				05C5665229BEF2C3002E72F7 /* ThreadMessagesList.swift in Sources */,
 				057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */,
 				05297DCF2A4B15F200B14235 /* ParticipantMessageType.swift in Sources */,
+				05B7C8D92A566A6400171AF4 /* UnknownMessageType.swift in Sources */,
 				05297DEB2A4B26C600B14235 /* ThreadRowActionMenu.swift in Sources */,
 				05CC8A172A45D4180051B339 /* JoinToPublicThreadView.swift in Sources */,
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,

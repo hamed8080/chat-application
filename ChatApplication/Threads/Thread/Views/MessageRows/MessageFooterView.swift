@@ -34,6 +34,7 @@ struct MessageFooterView: View {
             if message.isMe(currentUserId: AppState.shared.user?.id) {
                 Image(uiImage: message.footerStatus.image)
                     .resizable()
+                    .scaledToFit()
                     .frame(width: 14, height: 14)
                     .foregroundColor(message.footerStatus.fgColor)
                     .font(.subheadline)
@@ -43,6 +44,15 @@ struct MessageFooterView: View {
                 Text("Edited")
                     .foregroundColor(.darkGreen.opacity(0.8))
                     .font(.caption2)
+            }
+
+            if message.pinned == true {
+                Image(systemName: "pin")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 14, height: 14)
+                    .foregroundColor(.orange)
+                    .font(.subheadline)
             }
         }
         .animation(.easeInOut, value: message.delivered)

@@ -24,6 +24,7 @@ public protocol DownloadFileViewModelProtocol {
 public final class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     @Published public var downloadPercent: Int64 = 0
     @Published public var state: DownloadFileState = .UNDEFINED
+    @Published public var tumbnailData: Data?
     @Published public var data: Data?
     public var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
     let chat = ChatManager.activeInstance
@@ -122,7 +123,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         if let uniqueId = response.uniqueId, thumbRequests[uniqueId] != nil, let data = response.result {
             //State is not completed and blur view can show the thumbnail
             state = .THUMBNAIL
-            self.data = data
+            self.tumbnailData = data
             thumbRequests.removeValue(forKey: uniqueId)
             return
         }

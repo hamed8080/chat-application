@@ -82,7 +82,7 @@ struct ThreadView: View, DropDelegate {
             .onAppear {
                 viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
                 if !viewModel.isFetchedServerFirstResponse {
-                    viewModel.getHistory()
+                    viewModel.getHistory(thread.lastSeenMessageTime)
                 }
                 appState.activeThreadId = thread.id
             }

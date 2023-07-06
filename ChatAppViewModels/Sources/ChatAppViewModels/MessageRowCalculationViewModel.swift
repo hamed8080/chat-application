@@ -13,14 +13,15 @@ import ChatModels
 
 public final class MessageRowCalculationViewModel: ObservableObject {
     public var isCalculated = false
-    @Published public var isEnglish = true
-    @Published public var widthOfRow: CGFloat = 128
-    @Published public var markdownTitle = AttributedString()
+    public var isEnglish = true
+    public var widthOfRow: CGFloat = 128
+    public var markdownTitle = AttributedString()
     public var calculatedMaxAndMinWidth: CGFloat = 128
     public var addressDetail: String?
     public var timeString: String = ""
     public var fileSizeString: String?
     public static var avatarSize: CGFloat = 24
+    public var downloadFileVM = DownloadFileViewModel()
     public init() {}
 
     @MainActor
@@ -42,8 +43,8 @@ public final class MessageRowCalculationViewModel: ObservableObject {
                     self?.markdownTitle = markdownTitle
                     self?.timeString = timeString
                     self?.fileSizeString = fileSizeString
-                    self?.objectWillChange.send()
                 }
+                objectWillChange.send()
             }
         }
     }

@@ -30,11 +30,7 @@ struct MessageRowFactory: View {
                 } else if type == .endCall || type == .startCall {
                     CallMessageType(message: message)
                 } else {
-                    VStack {
-                        Text("something is wrong")
-                        Rectangle()
-                            .fill(Color.green)
-                    }
+                    UnknownMessageType(message: message)
                 }
             }
         }
@@ -52,26 +48,6 @@ struct MessageRow_Previews: PreviewProvider {
             }
         }
         .environmentObject(MessageRowCalculationViewModel())
-        .onAppear {
-            threadVM.setup(thread: MockData.thread)
-        }
-        .listStyle(.plain)
-    }
-}
-
-struct ReplyInfo_Previews: PreviewProvider {
-    static let participant = Participant(name: "john", username: "john_9090")
-    static let replyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, repliedToMessageTime: 100, participant: participant)
-    static let isMEParticipant = Participant(name: "Sam", username: "sam_rage")
-    static let isMeReplyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, repliedToMessageTime: 100, participant: isMEParticipant)
-    static var previews: some View {
-        let threadVM = ThreadViewModel()
-        List {
-            TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", ownerId: 10, replyInfo: replyInfo))
-            TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: isMeReplyInfo))
-        }
-        .environmentObject(MessageRowCalculationViewModel())
-        .environmentObject(threadVM)
         .onAppear {
             threadVM.setup(thread: MockData.thread)
         }
