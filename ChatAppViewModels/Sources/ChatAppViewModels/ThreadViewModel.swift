@@ -507,6 +507,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
               threadId == responseThreadId
         else { return }
         messages.removeAll(where: { $0.uniqueId == response.uniqueId || response.result?.id == $0.id })
+        animatableObjectWillChange()
     }
 
     public func clear() {
@@ -537,8 +538,11 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
             requests[req.uniqueId] = req
             ChatManager.activeInstance?.conversation.participant.get(req)
         } else {
+            let mentionListWasFill = mentionList.count > 0
             mentionList = []
-            animatableObjectWillChange()
+            if mentionListWasFill {
+                animatableObjectWillChange()
+            }
         }
     }
 

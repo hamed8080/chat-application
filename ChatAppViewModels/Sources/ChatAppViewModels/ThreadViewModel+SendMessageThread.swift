@@ -43,7 +43,7 @@ extension ThreadViewModel {
                                          textMessage: textMessage,
                                          messageType: .text)
         let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
-        let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, uniqueId: req.uniqueId, conversation: thread)
+        let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().timeIntervalSince1970), uniqueId: req.uniqueId, conversation: thread)
         appendMessages([message])
         ChatManager.activeInstance?.message.send(req)
     }
@@ -125,8 +125,9 @@ extension ThreadViewModel {
         guard threadId == response.result?.threadId, let index = messages.firstIndex(where: { $0.uniqueId == response.uniqueId }) else { return }
         messages[index].id = response.result?.messageId
         messages[index].delivered = true
-        objectWillChange.send()
+        messages[index].time = response.result?.messageTime
         playSentAudio()
+        animatableObjectWillChange()
     }
 
     internal func playSentAudio() {
@@ -142,7 +143,7 @@ extension ThreadViewModel {
               let index = messages.firstIndex(where: { $0.id == response.result?.messageId || $0.uniqueId == response.uniqueId })
         else { return }
         messages[index].delivered = true
-        objectWillChange.send()
+        animatableObjectWillChange()
     }
 
     public func onSeen(_ response: ChatResponse<MessageResponse>) {
@@ -152,7 +153,7 @@ extension ThreadViewModel {
 
         messages[index].delivered = true
         messages[index].seen = true
-        objectWillChange.send()
+        animatableObjectWillChange()
     }
 
     public func resendUnsetMessage(_ message: Message) {
