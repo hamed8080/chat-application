@@ -21,12 +21,12 @@ struct ThreadSheetView: View {
             AttachmentDialog(viewModel: actionSheetViewModel)
         case .dropItems:
             DropItemsView()
-                .animation(.easeInOut, value: viewModel.dropItems.count)
                 .environmentObject(viewModel)
         case .datePicker:
             DateSelectionView(showDialog: $sheetBinding) { startDate, endDate in
                 viewModel.sheetType = nil
                 viewModel.exportMessagesVM.exportChats(startDate: startDate, endDate: endDate)
+                viewModel.animatableObjectWillChange()
             }
         case .exportMessagesFile:
             if let exportFileUrl = viewModel.exportMessagesVM.filePath {
@@ -42,6 +42,7 @@ struct ThreadSheetView: View {
             DocumentPicker { urls in
                 actionSheetViewModel.selectedFileUrls = urls
                 viewModel.sheetType = nil
+                viewModel.animatableObjectWillChange()
             }
         case .locationPicker:
             MapPickerView()

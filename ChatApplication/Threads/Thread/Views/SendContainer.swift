@@ -35,6 +35,7 @@ struct SendContainer: View {
                         if isRecording == false {
                             GradientImageButton(image: "paperclip", title: "Voice Recording") {
                                 viewModel.sheetType = .attachment
+                                viewModel.animatableObjectWillChange()
                             }
                         }
 
@@ -46,6 +47,7 @@ struct SendContainer: View {
                         if isRecording == false {
                             GradientImageButton(image: "mic.fill", title: "Voice Recording") {
                                 viewModel.audioRecoderVM.toggle()
+                                viewModel.animatableObjectWillChange()
                             }
                             .keyboardShortcut(.init("r"), modifiers: [.command])
                         }
@@ -58,6 +60,7 @@ struct SendContainer: View {
                             }
                             text = ""
                             viewModel.sheetType = nil
+                            viewModel.animatableObjectWillChange()
                             UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
                         }
                         .keyboardShortcut(.return, modifiers: [.command])
@@ -79,16 +82,8 @@ struct SendContainer: View {
                 }
                 .ignoresSafeArea()
             )
-            .animation(animation(appear: viewModel.mentionList.count > 0), value: viewModel.mentionList.count)
-            .animation(.easeInOut, value: viewModel.selectedMessages.count)
-            .animation(animation(appear: viewModel.isInEditMode), value: viewModel.isInEditMode)
-            .animation(animation(appear: viewModel.editMessage != nil), value: viewModel.editMessage)
-            .animation(animation(appear: viewModel.replyMessage != nil), value: viewModel.replyMessage)
-            .animation(animation(appear: viewModel.audioRecoderVM.isRecording), value: viewModel.audioRecoderVM.isRecording)
             .onReceive(viewModel.$editMessage) { editMessage in
-                if let editMessage = editMessage {
-                    text = editMessage.message ?? ""
-                }
+                text = editMessage?.message ?? ""
             }
             .onChange(of: text) { newValue in
                 viewModel.searchForParticipantInMentioning(newValue)
@@ -127,6 +122,7 @@ struct SelectionView: View {
                 .onTapGesture {
                     viewModel.isInEditMode = false
                     viewModel.selectedMessages = []
+                    viewModel.animatableObjectWillChange()
                 }
 
             Text("\(viewModel.selectedMessages.count) selected \(viewModel.forwardMessage != nil ? "to forward" : "")")
@@ -146,6 +142,7 @@ struct SelectionView: View {
                 .padding()
                 .onTapGesture {
                     viewModel.sheetType = .threadPicker
+                    viewModel.animatableObjectWillChange()
                 }
         }
     }
@@ -163,6 +160,7 @@ struct ReplyMessageViewPlaceholder: View {
                     .onTapGesture {
                         viewModel.replyMessage = nil
                         viewModel.selectedMessages = []
+                        viewModel.animatableObjectWillChange()
                     }
                 Text(replyMessage.message ?? replyMessage.fileMetaData?.name ?? "")
                     .font(.iransansBody)
@@ -176,7 +174,6 @@ struct ReplyMessageViewPlaceholder: View {
                     .scaledToFit()
                     .foregroundColor(Color.gray)
             }
-            .animation(.easeInOut, value: viewModel.replyMessage)
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
             .padding(8)
         }
@@ -196,6 +193,7 @@ struct EditMessagePlaceholderView: View {
                         viewModel.isInEditMode = false
                         viewModel.editMessage = nil
                         viewModel.textMessage = nil
+                        viewModel.animatableObjectWillChange()
                     }
 
                 Text("\(editMessage.message ?? "")")
@@ -203,7 +201,6 @@ struct EditMessagePlaceholderView: View {
                     .offset(x: 8)
                 Spacer()
             }
-            .animation(.easeInOut, value: viewModel.editMessage)
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
             .padding(.bottom)
         }

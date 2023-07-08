@@ -51,6 +51,7 @@
 		052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D5737279539840075BF8F /* TagParticipantRow.swift */; };
 		05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */; };
 		05384A842792A10100D85A92 /* TagRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A832792A10100D85A92 /* TagRow.swift */; };
+		054B93312A5837350076BF0B /* MoveToBottomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054B93302A5837350076BF0B /* MoveToBottomButton.swift */; };
 		055024C22987E794009DDD18 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 055024C12987E794009DDD18 /* Swipy */; };
 		055B269827D5F9E40098D585 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B269727D5F9E40098D585 /* MemberView.swift */; };
 		055B269A27D5F9F00098D585 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B269927D5F9F00098D585 /* MediaView.swift */; };
@@ -64,6 +65,7 @@
 		059281BF2A227961006C7E56 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059281BE2A227961006C7E56 /* AssistantView.swift */; };
 		059281C12A227C3C006C7E56 /* AssistantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059281C02A227C3C006C7E56 /* AssistantRow.swift */; };
 		0593ED2029BA76EF00541FA6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0593ED1F29BA76EF00541FA6 /* README.md */; };
+		0597FD612A56E1D1003E70FE /* UnreadMessagesBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0597FD602A56E1D1003E70FE /* UnreadMessagesBubble.swift */; };
 		059A3C092A14988300885E24 /* sent_message.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 059A3C082A14988300885E24 /* sent_message.mp3 */; };
 		059B3A9629B746DA00C2E27B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 059B3A9829B746DA00C2E27B /* Localizable.strings */; };
 		059F84AF29D035350072DFC7 /* MutualThreadsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059F84AE29D035350072DFC7 /* MutualThreadsView.swift */; };
@@ -172,6 +174,7 @@
 		053F969429EE6F6800DB8AEA /* ChatAppExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ChatAppExtensions; sourceTree = "<group>"; };
 		053F969529EE6F6800DB8AEA /* ChatAppModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ChatAppModels; sourceTree = "<group>"; };
 		053F969629EE6F6800DB8AEA /* ChatAppUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ChatAppUI; sourceTree = "<group>"; };
+		054B93302A5837350076BF0B /* MoveToBottomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveToBottomButton.swift; sourceTree = "<group>"; };
 		055B269727D5F9E40098D585 /* MemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberView.swift; sourceTree = "<group>"; };
 		055B269927D5F9F00098D585 /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		055B269B27D5F9F90098D585 /* FileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileView.swift; sourceTree = "<group>"; };
@@ -185,6 +188,7 @@
 		059281BE2A227961006C7E56 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		059281C02A227C3C006C7E56 /* AssistantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantRow.swift; sourceTree = "<group>"; };
 		0593ED1F29BA76EF00541FA6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0597FD602A56E1D1003E70FE /* UnreadMessagesBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMessagesBubble.swift; sourceTree = "<group>"; };
 		059A3C082A14988300885E24 /* sent_message.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sent_message.mp3; sourceTree = "<group>"; };
 		059B3A9529B746B900C2E27B /* fa-IR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fa-IR"; path = "fa-IR.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		059B3A9729B746DA00C2E27B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -300,6 +304,7 @@
 				AC6D532326F1AE8C00CBC059 /* MessageRowFactory.swift */,
 				05297DDD2A4B235500B14235 /* MessageActionMenu.swift */,
 				05B7C8D82A566A6400171AF4 /* UnknownMessageType.swift */,
+				0597FD602A56E1D1003E70FE /* UnreadMessagesBubble.swift */,
 			);
 			path = MessageRows;
 			sourceTree = "<group>";
@@ -394,6 +399,7 @@
 				057B9A9C293797600089ACC9 /* ThreadEventView.swift */,
 				05C5665B29BEF465002E72F7 /* MentionList.swift */,
 				05140CD429C086BE00C8E22D /* MapPickerView.swift */,
+				054B93302A5837350076BF0B /* MoveToBottomButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -796,6 +802,7 @@
 				AC6D532426F1AE8C00CBC059 /* MessageRowFactory.swift in Sources */,
 				AC122EC4266B83A800C0630F /* SettingsView.swift in Sources */,
 				055B26A227D5FA180098D585 /* LinkView.swift in Sources */,
+				054B93312A5837350076BF0B /* MoveToBottomButton.swift in Sources */,
 				ACEAEDD7274CFA1100EC8252 /* AttachmentDialog.swift in Sources */,
 				051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */,
 				05297DDC2A4B17E600B14235 /* TextMessageType.swift in Sources */,
@@ -815,6 +822,7 @@
 				AC7EBFF5266CAF2B00984E81 /* ContactRow.swift in Sources */,
 				051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */,
 				055B269E27D5FA070098D585 /* MusicView.swift in Sources */,
+				0597FD612A56E1D1003E70FE /* UnreadMessagesBubble.swift in Sources */,
 				05297DE52A4B255300B14235 /* ThreadLastMessageView.swift in Sources */,
 				055B269827D5F9E40098D585 /* MemberView.swift in Sources */,
 				052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */,

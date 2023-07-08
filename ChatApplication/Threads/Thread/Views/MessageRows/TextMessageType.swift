@@ -97,7 +97,6 @@ struct TextMessageType: View {
                 }
             }
             .cornerRadius(12)
-            .animation(.easeInOut, value: message.isUnsentMessage)
             .onTapGesture {
                 if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url)
@@ -118,9 +117,6 @@ struct TextMessageType: View {
                 selectRadio
             }
         }
-        .animation(.easeInOut, value: isSelected)
-        .animation(.easeInOut, value: viewModel.isInEditMode)
-        .animation(.easeInOut, value: viewModel.highliteMessageId)
         .onChange(of: viewModel.selectedMessages.contains(where: { $0.id == message.id })) { newValue in
             isSelected = newValue
         }
@@ -134,7 +130,9 @@ struct TextMessageType: View {
             .padding(viewModel.isInEditMode ? 24 : 0.001)
             .scaleEffect(x: viewModel.isInEditMode ? 1.0 : 0.001, y: viewModel.isInEditMode ? 1.0 : 0.001, anchor: .center)
             .onTapGesture {
-                isSelected.toggle()
+                withAnimation {
+                    isSelected.toggle()
+                }
                 viewModel.toggleSelectedMessage(message, isSelected)
             }
     }

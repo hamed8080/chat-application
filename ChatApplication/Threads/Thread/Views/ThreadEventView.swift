@@ -29,7 +29,6 @@ struct ThreadEventView: View {
                     .foregroundColor(.orange)
             }
             .frame(height: viewModel.isShowingEvent ? 16 : 0)
-            .animation(.spring(), value: viewModel.isShowingEvent)
         }
     }
 }

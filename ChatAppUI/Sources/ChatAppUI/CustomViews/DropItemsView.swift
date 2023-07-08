@@ -23,8 +23,10 @@ public struct DropItemsView: View {
             SendTextViewWithButtons {
                 viewModel.sendDropFiles(viewModel.dropItems)
                 viewModel.sheetType = nil
+                viewModel.animatableObjectWillChange()
             } onCancel: {
                 viewModel.sheetType = nil
+                viewModel.animatableObjectWillChange()
             }
         }
     }

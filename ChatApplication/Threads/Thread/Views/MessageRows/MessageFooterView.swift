@@ -55,9 +55,6 @@ struct MessageFooterView: View {
                     .font(.subheadline)
             }
         }
-        .animation(.easeInOut, value: message.delivered)
-        .animation(.easeInOut, value: message.seen)
-        .animation(.easeInOut, value: message.edited)
         .padding(.top, 4)
     }
 }

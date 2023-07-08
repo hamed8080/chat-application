@@ -36,15 +36,13 @@ public final class MessageRowCalculationViewModel: ObservableObject {
             let timeString = message.time?.date.timeAgoSinceDateCondense ?? ""
             let fileSizeString = message.fileMetaData?.file?.size?.toSizeString
             await MainActor.run {
-                withAnimation { [weak self] in
-                    self?.addressDetail = addressDetail
-                    self?.isEnglish = isEnglish
-                    self?.widthOfRow = widthOfRow
-                    self?.markdownTitle = markdownTitle
-                    self?.timeString = timeString
-                    self?.fileSizeString = fileSizeString
-                }
-                objectWillChange.send()
+                self.addressDetail = addressDetail
+                self.isEnglish = isEnglish
+                self.widthOfRow = widthOfRow
+                self.markdownTitle = markdownTitle
+                self.timeString = timeString
+                self.fileSizeString = fileSizeString
+                self.objectWillChange.send()
             }
         }
     }

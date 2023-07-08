@@ -20,6 +20,7 @@ struct ThreadView: View, DropDelegate {
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
+    @State var searchMessageText: String = ""
     var sheetBinding: Binding<Bool> { Binding(get: { viewModel.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
@@ -30,17 +31,18 @@ struct ThreadView: View, DropDelegate {
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
-            .searchable(text: $viewModel.searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
+            .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
             .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
                 viewModel.deleteMessages(viewModel.selectedMessages)
                 viewModel.isInEditMode = false
+                viewModel.animatableObjectWillChange()
             }
             .overlay {
                 SendContainer(deleteMessagesDialog: $deleteDialaog, threadId: thread.id)
                     .environmentObject(viewModel)
             }
             .overlay {
-                ThreadSearchList()
+                ThreadSearchList(searchText: $searchMessageText)
                     .environmentObject(viewModel)
             }
             .overlay {
@@ -65,7 +67,7 @@ struct ThreadView: View, DropDelegate {
                     centerToolbarTitle
                 }
             }
-            .onChange(of: viewModel.searchMessageText) { value in
+            .onChange(of: searchMessageText) { value in
                 viewModel.searchInsideThread(text: value)
             }
             .onChange(of: viewModel.isInEditMode) { _ in
@@ -73,18 +75,19 @@ struct ThreadView: View, DropDelegate {
             }
             .onChange(of: viewModel.editMessage) { _ in
                 viewModel.textMessage = viewModel.editMessage?.message ?? ""
+                viewModel.animatableObjectWillChange()
             }
             .onReceive((viewModel.exportMessagesVM as! ExportMessagesViewModel).$filePath) { filePath in
                 if filePath != nil {
                     viewModel.sheetType = .exportMessagesFile
+                    viewModel.animatableObjectWillChange()
                 }
             }
             .onAppear {
                 viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
-                if !viewModel.isFetchedServerFirstResponse {
-                    viewModel.getHistory(thread.lastSeenMessageTime)
-                }
+                viewModel.startFetchingHistory()
                 appState.activeThreadId = thread.id
+                viewModel.animatableObjectWillChange()
             }
             .sheet(isPresented: sheetBinding, onDismiss: onDismiss) {
                 ThreadSheetView(sheetBinding: sheetBinding)
@@ -99,6 +102,7 @@ struct ThreadView: View, DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         viewModel.storeDropItems(info.itemProviders(for: [.item]))
         viewModel.sheetType = .dropItems
+        viewModel.animatableObjectWillChange()
         return true
     }
 
@@ -106,6 +110,7 @@ struct ThreadView: View, DropDelegate {
         viewModel.exportMessagesVM.deleteFile()
         viewModel.dropItems.removeAll()
         viewModel.sheetType = nil
+        viewModel.animatableObjectWillChange()
     }
 
     var centerToolbarTitle: some View {
@@ -146,6 +151,7 @@ struct ThreadView: View, DropDelegate {
         Menu {
             Button {
                 viewModel.sheetType = .datePicker
+                viewModel.animatableObjectWillChange()
             } label: {
                 Label {
                     Text("Export")

@@ -26,16 +26,13 @@ protocol ThreadViewModelProtocol: AnyObject {
 protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     var isInEditMode: Bool { get set }
     var readOnly: Bool { get }
-    var canLoadNexPage: Bool { get }
     var threadsViewModel: ThreadsViewModel? { get set }
-    var hasNext: Bool { get set }
     var count: Int { get }
     var searchTextTimer: Timer? { get set }
     var mentionList: [Participant] { get set }
     var isFetchedServerFirstResponse: Bool { get set }
     var isActiveThread: Bool { get }
     func deleteMessages(_ messages: [Message])
-    func loadMoreMessage()
     func getHistory(_ toTime: UInt?)
     func sendSignal(_ signalMessage: SignalMessageType)
     func onLastMessageChanged(_ thread: Conversation)
@@ -47,7 +44,7 @@ protocol ThreadViewModelProtocols: ThreadViewModelProtocol {
     func updateThread(_ thread: Conversation)
     func sendSeenMessageIfNeeded(_ message: Message)
     func onMessageEvent(_ event: MessageEventTypes?)
-    func updateUnreadCount(_ threadId: Int, _ unreadCount: Int)
+    func onUnreadCount(_ response: ChatResponse<UnreadCount>)
     func sendLoaction(_ location: LocationItem)
 }
 
@@ -60,20 +57,25 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         hasher.combine(threadId)
     }
 
-    @Published public var thread: Conversation?
-    @Published public var isLoading = false
+    public var thread: Conversation?
+    public var centerLoading = false
+    public var topLoading = false
+    public var bottomLoading = false
+    public var canLoadMoreTop: Bool { hasNext && !topLoading }
+    public var canLoadMoreBottom: Bool { !bottomLoading && messages.last?.id != thread?.lastMessageVO?.id }
     public var messages: [Message] = []
-    @Published public var selectedMessages: [Message] = []
+    public var selectedMessages: [Message] = []
     @Published public var editMessage: Message?
-    @Published public var replyMessage: Message?
-    @Published public var isInEditMode: Bool = false
-    @Published public var exportMessagesVM: ExportMessagesViewModelProtocol = ExportMessagesViewModel()
-    @Published public var mentionList: [Participant] = []
-    @Published public var dropItems: [DropItem] = []
-    @Published public var sheetType: ThreadSheetType?
-    @Published public var selectedLocation: MKCoordinateRegion = .init()
+    public var replyMessage: Message?
+    public var isInEditMode: Bool = false
+    public var exportMessagesVM: ExportMessagesViewModelProtocol = ExportMessagesViewModel()
+    public var mentionList: [Participant] = []
+    public var dropItems: [DropItem] = []
+    public var sheetType: ThreadSheetType?
+    public var selectedLocation: MKCoordinateRegion = .init()
     public var isFetchedServerFirstResponse: Bool = false
     public var searchedMessages: [Message] = []
+    public var isInSearchMode: Bool = false
     public var readOnly = false
     public var textMessage: String?
     public var canScrollToBottomOfTheList: Bool = false
@@ -84,15 +86,13 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public var count: Int { 15 }
     public var threadId: Int { thread?.id ?? 0 }
     public weak var threadsViewModel: ThreadsViewModel?
-    @Published public var signalMessageText: String?
-    public var canLoadNexPage: Bool { !isLoading && hasNext }
+    public var signalMessageText: String?
     public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
     public var audioPlayer: AVAudioPlayerViewModel?
     var requests: [String: Any] = [:]
     public var isAtBottomOfTheList: Bool = false
     public var highliteMessageId: Int?
-    @Published public var searchMessageText: String = ""
     var highlightTimer: Timer?
     var searchOffset: Int = 0
     public var scrollProxy: ScrollViewProxy?
@@ -167,9 +167,9 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
                 onLastMessageChanged(thread)
             }
         case .updatedUnreadCount(let response):
-            if let unreadCountModel = response.result {
-                updateUnreadCount(unreadCountModel.threadId ?? -1, unreadCountModel.unreadCount ?? -1)
-            }
+            onUnreadCount(response)
+        case .lastSeenMessageUpdated(let response):
+            onLastSeenMessageUpdated(response)
         default:
             break
         }
@@ -178,11 +178,13 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
         case .history(let response):
+            onLastMessageHistory(response)
             onHistory(response)
-            onMoreTopHistory(response)
             onSearch(response)
             onMoveToTime(response)
             onMoveFromTime(response)
+            onMoreTop(response)
+            onMoreBottom(response)
             break
         case .queueTextMessages(let response):
             onQueueTextMessages(response)
@@ -193,28 +195,15 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         case .queueFileMessages(let response):
             onQueueFileMessages(response)
         case .new(let response):
-            if threadId == response.subjectId, let message = response.result {
-                appendMessages([message])
-                scrollToLastMessageIfLastMessageIsVisible()
-            }
+            onNewMessage(response)
         case .sent(let response):
-            if threadId == response.result?.threadId {
-                onSent(response)
-                playSentAudio()
-            }
+            onSent(response)
         case .delivered(let response):
-            if threadId == response.result?.threadId {
-                onDeliver(response)
-            }
+            onDeliver(response)
         case .seen(let response):
-            if threadId == response.result?.threadId {
-                onSeen(response)
-            }
+            onSeen(response)
         case .deleted(let response):
-            let responseThreadId = response.subjectId ?? response.result?.threadId ?? response.result?.conversation?.id
-            if threadId == responseThreadId {
-                onDeleteMessage(response)
-            }
+            onDeleteMessage(response)
         case .pin(let response):
             onPinMessage(response)
         case .unpin(let response):
@@ -226,10 +215,13 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         }
     }
 
-    public func updateUnreadCount(_ threadId: Int, _ unreadCount: Int) {
-        if threadId == self.threadId {
-            thread?.unreadCount = unreadCount
+    public func onNewMessage(_ response: ChatResponse<Message>) {
+        if threadId == response.subjectId, let message = response.result {
+            appendMessages([message])
             objectWillChange.send()
+            if isAtBottomOfTheList {
+                scrollTo(messages.last?.uniqueId ?? "", .easeInOut, .bottom)
+            }
         }
     }
 
@@ -243,12 +235,6 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
             }
             objectWillChange.send()
         }
-    }
-
-    public func loadMoreMessage() {
-        if !canLoadNexPage { return }
-        isLoading = true
-        getHistory(messages.first?.time)
     }
 
     public func getHistory(_ toTime: UInt? = nil) {
@@ -271,26 +257,120 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         self.objectWillChange.send()
     }
 
-    public func getMoreTopHistory() {
-        if !canLoadNexPage { return }
-        isLoading = true
-        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: messages.first?.time, readOnly: readOnly)
-        requests["MORE_TOP_HISTORY-\(req.uniqueId)"] = req
+    public func onMessageAppear(_ message: Message) {
+        // We get next item in the list because when we scrolling up the message is beneth NavigationView so we should get the next item to ensure we are in right position
+        if scrollingUP, let index = messages.firstIndex(where: { $0.id == message.id }), messages.indices.contains(index + 1) {
+            let message = messages[index + 1]
+            print("Scrolling up lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
+            lastVisibleUniqueId = message.uniqueId
+            isAtBottomOfTheList = false
+            animatableObjectWillChange()
+        } else if !scrollingUP, let index = messages.firstIndex(where: { $0.id == message.id }), messages.indices.contains(index - 1), messages.last?.id != message.id {
+            let message = messages[index - 1]
+            print("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
+            lastVisibleUniqueId = message.uniqueId
+            sendSeenMessageIfNeeded(message)
+            isAtBottomOfTheList = false
+            animatableObjectWillChange()
+        } else {
+            // Last Item
+            print("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
+            lastVisibleUniqueId = message.uniqueId
+            sendSeenMessageIfNeeded(message)
+            isAtBottomOfTheList = true
+            animatableObjectWillChange()
+        }
+
+        if scrollingUP, let lastIndex = messages.firstIndex(where: { lastVisibleUniqueId == $0.uniqueId }), lastIndex < 3, isFetchedServerFirstResponse == true {
+            moreTop(messages.first?.time?.advanced(by: 100))
+        }
+
+        if !scrollingUP, message.id == messages.last?.id {
+            moreBottom(messages.last?.time?.advanced(by: -100))
+        }
+    }
+
+    /// On Thread view, it will start calculating to fetch what part of [top, bottom, both top and bottom] receive.
+    public func startFetchingHistory() {
+        if thread?.lastSeenMessageId == thread?.lastMessageVO?.id {
+            moveToLastMessage()
+        } else if thread?.lastSeenMessageId ?? 0 < thread?.lastMessageVO?.id ?? 0, let lastMessageSeenTime = thread?.lastSeenMessageTime, let messageId = thread?.lastSeenMessageId {
+            moveToTime(lastMessageSeenTime, messageId, highlight: false)
+        }
+    }
+
+    public func moveToLastMessage() {
+        if bottomLoading { return }
+        withAnimation {
+            bottomLoading = true
+        }
+        print("moveToLastMessage called")
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: thread?.lastSeenMessageTime?.advanced(by: 100), readOnly: readOnly)
+        requests["LAST_MESSAGE_HISTORY-\(req.uniqueId)"] = req
         ChatManager.activeInstance?.message.history(req)
     }
 
-    private func onMoreTopHistory(_ response: ChatResponse<[Message]>) {
-        guard let uniqueId = response.uniqueId, requests["MORE_TOP_HISTORY-\(uniqueId)"] != nil, let messages = response.result else { return }
+    public func onLastMessageHistory(_ response: ChatResponse<[Message]>) {
+        guard let uniqueId = response.uniqueId, requests["LAST_MESSAGE_HISTORY-\(uniqueId)"] != nil, let messages = response.result
+        else { return }
         appendMessages(messages)
-        if response.cache == false {
-            hasNext = response.hasNext
-            scrollTo(messages.first?.uniqueId ?? "", animation: nil, anchor: .top)
-            withAnimation(nil) {
-                isLoading = false
-            }
-            self.objectWillChange.send()
-            requests.removeValue(forKey: "MORE_TOP_HISTORY-\(uniqueId)")
+        if !response.cache {
+            bottomLoading = false
+            requests.removeValue(forKey: "LAST_MESSAGE_HISTORY-\(uniqueId)")
         }
+        objectWillChange.send()
+        let lastMessageSeenUniqueId = messages.first(where: {$0.id == thread?.lastSeenMessageId })?.uniqueId
+        scrollTo(lastMessageSeenUniqueId ?? "", nil, .bottom)
+    }
+
+    public func moreTop(_ toTime: UInt?) {
+        if !canLoadMoreTop { return }
+        withAnimation {
+            topLoading = true
+        }
+        print("moreTop called")
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
+        requests["MORE_TOP-\(req.uniqueId)"] = (req, lastVisibleUniqueId)
+        ChatManager.activeInstance?.message.history(req)
+    }
+
+    public func onMoreTop(_ response: ChatResponse<[Message]>) {
+        guard let uniqueId = response.uniqueId,
+              let request = requests["MORE_TOP-\(uniqueId)"] as? (req: GetHistoryRequest, lastVisibleUniqueId: String?),
+              let messages = response.result
+        else { return }
+        appendMessages(messages)
+        if !response.cache {
+            topLoading = false
+            requests.removeValue(forKey: "MORE_TOP-\(uniqueId)")
+        }
+        objectWillChange.send()
+        scrollTo(request.lastVisibleUniqueId ?? "", nil, .top)
+    }
+
+    public func moreBottom(_ fromTime: UInt?) {
+        if !canLoadMoreBottom { return }
+        withAnimation {
+            bottomLoading = true
+        }
+        print("moreBottom called")
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: fromTime, readOnly: readOnly)
+        requests["MORE_BOTTOM-\(req.uniqueId)"] = (req, lastVisibleUniqueId)
+        ChatManager.activeInstance?.message.history(req)
+    }
+
+    public func onMoreBottom(_ response: ChatResponse<[Message]>) {
+        guard let uniqueId = response.uniqueId,
+              let request = requests["MORE_BOTTOM-\(uniqueId)"] as? (req: GetHistoryRequest, lastVisibleUniqueId: String?),
+              let messages = response.result
+        else { return }
+        appendMessages(messages)
+        if !response.cache {
+            bottomLoading = false
+            requests.removeValue(forKey: "MORE_BOTTOM-\(uniqueId)")
+        }
+        objectWillChange.send()
+        scrollTo(request.lastVisibleUniqueId ?? "", nil, .bottom)
     }
 
     private func onQueueTextMessages(_ response: ChatResponse<[SendTextMessageRequest]>) {
@@ -370,6 +450,8 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     }
 
     public func doSearch(text: String, offset: Int = 0) {
+        isInSearchMode = text.count >= 2
+        animatableObjectWillChange()
         guard text.count >= 2 else { return }
         let req = GetHistoryRequest(threadId: threadId, count: 50, offset: searchOffset, query: "\(text)")
         requests["SEARCH-\(req.uniqueId)"] = req
@@ -384,7 +466,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
                 searchedMessages.append(message)
             }
         }
-        objectWillChange.send()
+        animatableObjectWillChange()
         requests.removeValue(forKey: "SEARCH-\(uniqueId)")
     }
 
@@ -399,7 +481,17 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
                 self.messages.append(message)
             }
         }
+        appenedUnreadMessagesRowsIfNeeed()
         sort()
+    }
+
+    func appenedUnreadMessagesRowsIfNeeed() {
+        guard let lastMessageId = thread?.lastSeenMessageId,
+              thread?.unreadCount ?? 0 > 1,
+              let lastSeenIndex = self.messages.firstIndex(where: { $0.id == lastMessageId })
+        else { return }
+        messages.removeAll(where: { $0 is UnreadMessageProtocol })
+        messages.append(UnreadMessage(time: (messages[lastSeenIndex].time ?? 0) + 1))
     }
 
     public func deleteMessages(_ messages: [Message]) {
@@ -411,6 +503,9 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     /// Delete a message with an Id is needed for when the message has persisted before.
     /// Delete a message with a uniqueId is needed for when the message is sent to a request.
     public func onDeleteMessage(_ response: ChatResponse<Message>) {
+        guard let responseThreadId = response.subjectId ?? response.result?.threadId ?? response.result?.conversation?.id,
+              threadId == responseThreadId
+        else { return }
         messages.removeAll(where: { $0.uniqueId == response.uniqueId || response.result?.id == $0.id })
     }
 
@@ -438,11 +533,12 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
     public func searchForParticipantInMentioning(_ text: String) {
         if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
             let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
-            let req = ThreadParticipantsRequest(threadId: threadId, name: rangeText)
+            let req = ThreadParticipantRequest(threadId: threadId, name: rangeText)
             requests[req.uniqueId] = req
-            ChatManager.activeInstance?.participant.get(req)
+            ChatManager.activeInstance?.conversation.participant.get(req)
         } else {
             mentionList = []
+            animatableObjectWillChange()
         }
     }
 
@@ -450,6 +546,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         if let mentionList = response.result, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
             self.mentionList = mentionList
             requests.removeValue(forKey: uniqueId)
+            animatableObjectWillChange()
         }
     }
 
@@ -480,7 +577,7 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
         }
     }
 
-    func animatableObjectWillChange() {
+    public func animatableObjectWillChange() {
         withAnimation {
             objectWillChange.send()
         }
@@ -514,13 +611,14 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
             let ext = item.registeredContentTypes.first?.preferredFilenameExtension ?? ""
             let iconName = ext.systemImageNameForFileExtension
             _ = item.loadDataRepresentation(for: .item) { data, _ in
-                DispatchQueue.main.async {
-                    self.dropItems.append(
+                DispatchQueue.main.async {  [weak self] in
+                    self?.dropItems.append(
                         .init(data: data,
                               name: name,
                               iconName: iconName,
                               ext: ext)
                     )
+                    self?.animatableObjectWillChange()
                 }
             }
         }
@@ -533,6 +631,24 @@ public final class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, 
                                          userGroupHash: thread?.userGroupHash ?? "",
                                          textMessage: textMessage)
         ChatManager.activeInstance?.message.send(req)
+    }
+
+    public func onUnreadCount(_ response: ChatResponse<UnreadCount>) {
+        if threadId == response.result?.threadId {
+            thread?.unreadCount = response.result?.unreadCount
+            objectWillChange.send()
+        }
+    }
+
+    /// This method will be called whenver we send seen for an unseen message by ourself.
+    public func onLastSeenMessageUpdated(_ response: ChatResponse<LastSeenMessageResponse>) {
+        if threadId == response.subjectId {
+            thread?.lastSeenMessageTime = response.result?.lastSeenMessageTime
+            thread?.lastSeenMessageId = response.result?.lastSeenMessageId
+            thread?.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
+            thread?.unreadCount = response.contentCount
+            objectWillChange.send()
+        }
     }
 }
 

@@ -21,7 +21,7 @@ struct SearchMessageRow: View {
             if let time = message.time, let messageId = message.id {
                 viewModel.moveToTime(time, messageId)
                 viewModel.searchedMessages.removeAll()
-                viewModel.searchMessageText = ""
+                viewModel.animatableObjectWillChange()
             }
         } label: {
             TextMessageType(message: message)

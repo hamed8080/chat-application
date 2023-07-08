@@ -99,12 +99,12 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public func getParticipants() {
         isLoading = true
-        ChatManager.activeInstance?.participant.get(.init(threadId: thread?.id ?? 0, offset: offset, count: count))
+        ChatManager.activeInstance?.conversation.participant.get(.init(threadId: thread?.id ?? 0, offset: offset, count: count))
     }
 
     public func searchParticipants(_ searchText: String) {
         isLoading = true
-        var req = ThreadParticipantsRequest(threadId: thread?.id ?? -1)
+        var req = ThreadParticipantRequest(threadId: thread?.id ?? -1)
         switch searchType {
         case .name:
             req.name = searchText
@@ -115,7 +115,7 @@ public final class ParticipantsViewModel: ObservableObject {
         case .admin:
             req.admin = true
         }
-        ChatManager.activeInstance?.participant.get(req)
+        ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
     public var filtered: [Participant] {
@@ -164,7 +164,7 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public func removePartitipant(_ participant: Participant) {
         guard let id = participant.id, let threadId = thread?.id else { return }
-        ChatManager.activeInstance?.participant.remove(.init(participantId: id, threadId: threadId))
+        ChatManager.activeInstance?.conversation.participant.remove(.init(participantId: id, threadId: threadId))
     }
 
     public func makeAdmin(_ participant: Participant) {

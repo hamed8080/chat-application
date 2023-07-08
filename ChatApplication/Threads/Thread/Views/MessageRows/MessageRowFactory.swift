@@ -7,6 +7,7 @@
 
 import AdditiveUI
 import Chat
+import ChatAppModels
 import ChatAppUI
 import ChatAppViewModels
 import ChatModels
@@ -21,16 +22,20 @@ struct MessageRowFactory: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            if let type = message.type {
-                if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                    TextMessageType(message: message)
-                        .environmentObject(calculation)
-                } else if type == .participantJoin || type == .participantLeft {
-                    ParticipantMessageType(message: message)
-                } else if type == .endCall || type == .startCall {
-                    CallMessageType(message: message)
-                } else {
-                    UnknownMessageType(message: message)
+            if message is UnreadMessageProtocol {
+                UnreadMessagesBubble()
+            } else {
+                if let type = message.type {
+                    if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
+                        TextMessageType(message: message)
+                            .environmentObject(calculation)
+                    } else if type == .participantJoin || type == .participantLeft {
+                        ParticipantMessageType(message: message)
+                    } else if type == .endCall || type == .startCall {
+                        CallMessageType(message: message)
+                    } else {
+                        UnknownMessageType(message: message)
+                    }
                 }
             }
         }

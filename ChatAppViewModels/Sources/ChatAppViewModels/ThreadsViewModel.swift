@@ -126,6 +126,8 @@ public final class ThreadsViewModel: ObservableObject {
             onUNPin(response)
         case .userRemoveFormThread(let response):
             onUserRemovedByAdmin(response)
+        case .lastSeenMessageUpdated(let response):
+            onLastSeenMessageUpdated(response)
         default:
             break
         }
@@ -326,7 +328,7 @@ public final class ThreadsViewModel: ObservableObject {
         let contactIds = contacts.compactMap(\.id)
         let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)
         requests[req.uniqueId] = req
-        ChatManager.activeInstance?.participant.add(req)
+        ChatManager.activeInstance?.conversation.participant.add(req)
     }
 
     private func onAddPrticipant(_ response: ChatResponse<Conversation>) {
@@ -486,6 +488,17 @@ public final class ThreadsViewModel: ObservableObject {
     private func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
         if let id = response.result, let index = self.threads.firstIndex(where: {$0.id == id}) {
             threads.remove(at: index)
+        }
+    }
+
+    /// This method will be called whenver we send seen for an unseen message by ourself.
+    public func onLastSeenMessageUpdated(_ response: ChatResponse<LastSeenMessageResponse>) {
+        if let index = threads.firstIndex(where: {$0.id == response.subjectId }) {
+            threads[index].lastSeenMessageTime = response.result?.lastSeenMessageTime
+            threads[index].lastSeenMessageId = response.result?.lastSeenMessageId
+            threads[index].lastSeenMessageNanos = response.result?.lastSeenMessageNanos
+            threads[index].unreadCount = response.contentCount
+            objectWillChange.send()
         }
     }
 }

@@ -50,7 +50,6 @@ public struct SendTextViewWithButtons: View {
         )
         .opacity(viewModel.thread?.type == .channel ? 0.3 : 1.0)
         .disabled(viewModel.thread?.type == .channel)
-        .animation(.easeInOut, value: viewModel.mentionList.count)
         .onReceive(viewModel.$editMessage) { editMessage in
             if let editMessage = editMessage {
                 text = editMessage.message ?? ""

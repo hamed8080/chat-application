@@ -51,8 +51,6 @@ struct ThreadPinMessage: View {
                 }
                 Spacer()
             }
-            .animation(.easeInOut, value: thumbnailData)
-            .animation(.easeInOut, value: message != nil)
             .onAppear {
                 downloadImageThumbnail()
                 cancelable = NotificationCenter.default.publisher(for: .download)

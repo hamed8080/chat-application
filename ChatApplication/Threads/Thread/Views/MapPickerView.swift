@@ -31,8 +31,10 @@ struct MapPickerView: View {
                         viewModel.sendLoaction(location)
                     }
                     viewModel.sheetType = nil
+                    viewModel.animatableObjectWillChange()
                 } onCancel: {
                     viewModel.sheetType = nil
+                    viewModel.animatableObjectWillChange()
                 }
             }
         }

@@ -31,40 +31,45 @@ struct AttachmentDialog: View {
                 SendTextViewWithButtons {
                     viewModel.sendSelectedPhotos()
                     threadViewModel.sheetType = nil
+                    threadViewModel.animatableObjectWillChange()
                 } onCancel: {
                     viewModel.refresh()
                     threadViewModel.sheetType = nil
+                    threadViewModel.animatableObjectWillChange()
                 }
                 .environmentObject(viewModel.threadViewModel)
             } else {
                 buttons
             }
         }
-        .animation(.easeInOut, value: viewModel.selectedImageItems.count)
     }
 
     @ViewBuilder var buttons: some View {
         VStack(alignment: .leading, spacing: 24) {
             Button {
                 threadViewModel.sheetType = .galleryPicker
+                threadViewModel.animatableObjectWillChange()
             } label: {
                 Label("Photo or Video", systemImage: "photo")
             }
 
             Button {
                 threadViewModel.sheetType = .filePicker
+                threadViewModel.animatableObjectWillChange()
             } label: {
                 Label("File", systemImage: "doc")
             }
 
             Button {
                 threadViewModel.sheetType = .locationPicker
+                threadViewModel.animatableObjectWillChange()
             } label: {
                 Label("Location", systemImage: "location.viewfinder")
             }
 
             Button {
                 threadViewModel.sheetType = .contactPicker
+                threadViewModel.animatableObjectWillChange()
             } label: {
                 Label("Contact", systemImage: "person.2.crop.square.stack")
             }
@@ -112,13 +117,8 @@ struct PhotoGridView: View {
                             viewModel.toggleSelectedImage(item)
                         }
                 }
-                if viewModel.isLoading {
-                    LoadingView(isAnimating: viewModel.isLoading)
-                }
             }
         }
-        .animation(.easeInOut, value: viewModel.allImageItems.count)
-        .animation(.easeInOut, value: viewModel.selectedImageItems.count)
         .onAppear {
             viewModel.loadImages()
         }

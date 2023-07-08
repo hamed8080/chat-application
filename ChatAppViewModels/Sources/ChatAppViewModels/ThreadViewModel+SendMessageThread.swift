@@ -121,12 +121,12 @@ extension ThreadViewModel {
         ChatManager.activeInstance?.message.edit(req)
     }
 
-    public func onSent(_ response: ChatResponse<MessageResponse>?) {
-        if let index = messages.firstIndex(where: { $0.uniqueId == response?.uniqueId }) {
-            messages[index].id = response?.result?.messageId
-            messages[index].delivered = true
-            objectWillChange.send()
-        }
+    public func onSent(_ response: ChatResponse<MessageResponse>) {
+        guard threadId == response.result?.threadId, let index = messages.firstIndex(where: { $0.uniqueId == response.uniqueId }) else { return }
+        messages[index].id = response.result?.messageId
+        messages[index].delivered = true
+        objectWillChange.send()
+        playSentAudio()
     }
 
     internal func playSentAudio() {
@@ -137,19 +137,22 @@ extension ThreadViewModel {
         }
     }
 
-    public func onDeliver(_ response: ChatResponse<MessageResponse>?) {
-        if let index = messages.firstIndex(where: { $0.id == response?.result?.messageId || $0.uniqueId == response?.uniqueId }) {
-            messages[index].delivered = true
-            objectWillChange.send()
-        }
+    public func onDeliver(_ response: ChatResponse<MessageResponse>) {
+        guard threadId == response.result?.threadId,
+              let index = messages.firstIndex(where: { $0.id == response.result?.messageId || $0.uniqueId == response.uniqueId })
+        else { return }
+        messages[index].delivered = true
+        objectWillChange.send()
     }
 
-    public func onSeen(_ response: ChatResponse<MessageResponse>?) {
-        if let index = messages.firstIndex(where: { ($0.id ?? 0 <= response?.result?.messageId ?? 0 && $0.seen == nil) || $0.uniqueId == response?.uniqueId }) {
-            messages[index].delivered = true
-            messages[index].seen = true
-            objectWillChange.send()
-        }
+    public func onSeen(_ response: ChatResponse<MessageResponse>) {
+        guard threadId == response.result?.threadId,
+              let index = messages.firstIndex(where: { ($0.id ?? 0 <= response.result?.messageId ?? 0 && $0.seen == nil) || $0.uniqueId == response.uniqueId })
+        else { return }
+
+        messages[index].delivered = true
+        messages[index].seen = true
+        objectWillChange.send()
     }
 
     public func resendUnsetMessage(_ message: Message) {

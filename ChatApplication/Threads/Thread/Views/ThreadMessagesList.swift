@@ -8,6 +8,7 @@
 import AdditiveUI
 import ChatAppUI
 import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct ThreadMessagesList: View {
@@ -17,19 +18,18 @@ struct ThreadMessagesList: View {
 
     var body: some View {
         ScrollViewReader { scrollProxy in
-            ScrollView(showsIndicators: false) {
+            ScrollView {
                 LazyVStack(spacing: 8) {
-                    ListLoadingView(isLoading: $viewModel.isLoading)
+                    ListLoadingView(isLoading: $viewModel.topLoading)
                         .id(-1)
                     ForEach(viewModel.messages) { message in
                         MessageRowFactory(message: message)
                             .id(message.uniqueId)
                             .onAppear {
-                                viewModel.lastVisibleUniqueId = message.uniqueId
-                                viewModel.sendSeenMessageIfNeeded(message)
+                                viewModel.onMessageAppear(message)
                             }
                     }
-                    ListLoadingView(isLoading: $viewModel.isLoading)
+                    ListLoadingView(isLoading: $viewModel.bottomLoading)
                         .id(-2)
                 }
                 .background(
@@ -40,13 +40,8 @@ struct ThreadMessagesList: View {
                 .padding(.bottom)
                 .padding([.leading, .trailing])
             }
-//            .animation(.easeInOut, value: viewModel.messages.count)
-            .animation(.easeInOut, value: viewModel.isLoading)
-            .animation(.easeInOut, value: viewModel.sheetType)
-            .animation(.easeInOut, value: viewModel.isInEditMode)
-            .animation(.easeInOut, value: viewModel.selectedMessages.count)
             .overlay(alignment: .bottomTrailing) {
-                moveToBottomButton
+                MoveToBottomButton()
                     .offset(y: 48)
             }
             .safeAreaInset(edge: .top) {
@@ -64,9 +59,6 @@ struct ThreadMessagesList: View {
                     print("OriginY: \(originY)")
                 #endif
                 viewModel.setNewOrigin(newOriginY: originY)
-                if originY < 72, viewModel.scrollingUP {
-                    viewModel.getMoreTopHistory()
-                }
             }
             .onAppear {
                 viewModel.scrollProxy = scrollProxy
@@ -74,40 +66,6 @@ struct ThreadMessagesList: View {
         }
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        }
-    }
-
-    private var moveToBottomButton: some View {
-        Button {
-            viewModel.scrollToBottom()
-        } label: {
-            Image(systemName: "chevron.down")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 16, height: 16)
-                .padding()
-                .foregroundColor(Color.gray)
-                .aspectRatio(contentMode: .fit)
-                .contentShape(Rectangle())
-        }
-        .frame(width: 36, height: 36)
-        .background(Color.white)
-        .cornerRadius(36)
-        .padding(.bottom, 16)
-        .padding([.trailing], 8)
-        .scaleEffect(x: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, y: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, anchor: .center)
-        .overlay(alignment: .top) {
-            let unreadCount = viewModel.thread?.unreadCount ?? 0
-            let hide = unreadCount == 0
-            Text(verbatim: unreadCount == 0 ? "" : "\(unreadCount)")
-                .font(.system(size: 12))
-                .fontDesign(.rounded)
-                .padding(4)
-                .frame(height: hide ? 0 : 18)
-                .background(Color.textBlueColor)
-                .foregroundColor(.white)
-                .cornerRadius(hide ? 0 : 16)
-                .offset(x: -2, y: -12)
         }
     }
 
@@ -129,8 +87,20 @@ struct ThreadMessagesList: View {
 }
 
 struct ThreadMessagesList_Previews: PreviewProvider {
+    struct Preview: View {
+        @State var viewModel = ThreadViewModel()
+
+        var body: some View {
+            ThreadMessagesList()
+                .environmentObject(viewModel)
+                .onAppear {
+                    viewModel.thread = Conversation(unreadCount: 1)
+                    viewModel.objectWillChange.send()
+                }
+        }
+    }
+
     static var previews: some View {
-        ThreadMessagesList()
-            .environmentObject(ThreadViewModel())
+        Preview()
     }
 }

@@ -14,16 +14,15 @@ import SwiftUI
 
 public protocol ScrollToPositionProtocol {
     var canScrollToBottomOfTheList: Bool { get set }
-    func scrollTo(_ uniqueId: String, animation: Animation?, anchor: UnitPoint?)
-    func scrollToBottom()
+    func scrollTo(_ uniqueId: String, _ animation: Animation?, _ anchor: UnitPoint?)
+    func scrollToBottom(animation: Animation?)
     func scrollToLastMessageIfLastMessageIsVisible()
 }
 
 extension ThreadViewModel: ScrollToPositionProtocol {
 
-    public func scrollTo(_ uniqueId: String, animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) {
-        objectWillChange.send()
-        Timer.scheduledTimer(withTimeInterval: 0.002, repeats: false) { [weak self] timer in
+    public func scrollTo(_ uniqueId: String, _ animation: Animation? = .easeInOut, _ anchor: UnitPoint? = .center) {
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { [weak self] _ in
             withAnimation(animation) {
                 self?.scrollProxy?.scrollTo(uniqueId, anchor: anchor)
             }
@@ -35,14 +34,14 @@ extension ThreadViewModel: ScrollToPositionProtocol {
         lastOrigin = newOriginY
     }
 
-    public func scrollToBottom() {
+    public func scrollToBottom(animation: Animation? = .easeInOut) {
         if let uniqueId = messages.last?.uniqueId {
-            scrollTo(uniqueId)
+            scrollTo(uniqueId, animation)
         }
     }
 
     public func scrollToLastMessageIfLastMessageIsVisible() {
-        if canScrollToBottomOfTheList {
+        if isAtBottomOfTheList {
             Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
                 self?.scrollToBottom()
             }
@@ -84,6 +83,7 @@ extension ThreadViewModel: ScrollToPositionProtocol {
               let tuple = requests["\(key)-\(uniqueId)"] as? (request: GetHistoryRequest, messageId: Int, highlight: Bool)
         else { return }
         appendMessages(messages)
+        objectWillChange.send()
         if let messageIdUniqueId = self.messages.first(where: {$0.id == tuple.messageId})?.uniqueId {
             showHighlighted(messageIdUniqueId, tuple.messageId, highlight: tuple.highlight)
         }

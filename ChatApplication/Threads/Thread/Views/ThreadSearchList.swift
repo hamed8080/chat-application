@@ -11,10 +11,10 @@ import SwiftUI
 
 struct ThreadSearchList: View {
     @EnvironmentObject var viewModel: ThreadViewModel
-    var searchText: String { viewModel.searchMessageText }
+    @Binding var searchText: String
 
     var body: some View {
-        if searchText.count > 0, viewModel.searchedMessages.count > 0 {
+        if viewModel.isInSearchMode, viewModel.searchedMessages.count > 0 {
             ScrollView {
                 LazyVStack {
                     ForEach(viewModel.searchedMessages) { message in
@@ -31,16 +31,13 @@ struct ThreadSearchList: View {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .transition(.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .bottom)))
             .background(.ultraThickMaterial)
-            .animation(.easeInOut, value: viewModel.searchMessageText)
-            .animation(.easeInOut, value: viewModel.searchedMessages.count)
-        } else if searchText.count > 0 {
+        } else if viewModel.isInSearchMode {
             ZStack {
                 Text("Nothing found.")
                     .font(.iransansTitle)
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .background(.ultraThickMaterial)
-            .animation(.easeInOut, value: viewModel.searchMessageText)
             .transition(.opacity)
         }
     }
@@ -59,7 +56,7 @@ struct ThreadSearchList_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadSearchList()
+        ThreadSearchList(searchText: .constant("TEST"))
             .previewDisplayName("ThreadSearchList")
             .environmentObject(vm)
     }
