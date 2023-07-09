@@ -14,9 +14,8 @@ import ChatModels
 import SwiftUI
 
 struct MessageRowFactory: View {
-    var message: Message
-    @State var calculation: MessageRowCalculationViewModel = .init()
-    @EnvironmentObject var viewModel: ThreadViewModel
+    private var message: Message { viewModel.message }
+    @State var viewModel: MessageRowViewModel
     @State private(set) var showParticipants: Bool = false
     private var isMe: Bool { message.isMe(currentUserId: AppState.shared.user?.id) }
 
@@ -27,8 +26,8 @@ struct MessageRowFactory: View {
             } else {
                 if let type = message.type {
                     if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                        TextMessageType(message: message)
-                            .environmentObject(calculation)
+                        TextMessageType()
+                            .environmentObject(viewModel)
                     } else if type == .participantJoin || type == .participantLeft {
                         ParticipantMessageType(message: message)
                     } else if type == .endCall || type == .startCall {
@@ -48,11 +47,9 @@ struct MessageRow_Previews: PreviewProvider {
         let threadVM = ThreadViewModel()
         List {
             ForEach(MockData.generateMessages(count: 5)) { message in
-                MessageRowFactory(message: message, calculation: .init())
-                    .environmentObject(threadVM)
+                MessageRowFactory(viewModel: MessageRowViewModel(message: message, viewModel: threadVM))
             }
         }
-        .environmentObject(MessageRowCalculationViewModel())
         .onAppear {
             threadVM.setup(thread: MockData.thread)
         }

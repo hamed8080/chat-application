@@ -14,10 +14,11 @@ import Combine
 import SwiftUI
 
 struct ThreadPinMessage: View {
-    private var message: PinMessage? { threadVM.thread?.pinMessage }
-    @EnvironmentObject var threadVM: ThreadViewModel
+    let thread: Conversation
+    @State private var message: PinMessage?
+    let threadVM: ThreadViewModel
     @State var thumbnailData: Data?
-    @State var cancelable: AnyCancellable?
+    @State private var cancelableSet = Set<AnyCancellable>()
     @State var requestUniqueId: String?
     private var icon: String? { fileMetadata?.file?.mimeType?.systemImageNameForFileExtension }
     var isEnglish: Bool { message?.text?.isEnglishString ?? false }
@@ -32,8 +33,8 @@ struct ThreadPinMessage: View {
     }
 
     var body: some View {
-        if message != nil {
-            VStack {
+        VStack {
+            if message != nil {
                 HStack {
                     if isEnglish {
                         LTRDesign
@@ -44,6 +45,7 @@ struct ThreadPinMessage: View {
                 .padding()
                 .frame(height: 48)
                 .background(.regularMaterial)
+                .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top)))
                 .onTapGesture {
                     if let time = message?.time, let messageId = message?.messageId {
                         threadVM.moveToTime(time, messageId)
@@ -51,14 +53,22 @@ struct ThreadPinMessage: View {
                 }
                 Spacer()
             }
-            .onAppear {
-                downloadImageThumbnail()
-                cancelable = NotificationCenter.default.publisher(for: .download)
-                    .compactMap { $0.object as? DownloadEventTypes }
-                    .sink { value in
-                        onDownloadEvent(value)
-                    }
-            }
+        }
+        .onAppear {
+            message = thread.pinMessage
+            downloadImageThumbnail()
+            NotificationCenter.default.publisher(for: .download)
+                .compactMap { $0.object as? DownloadEventTypes }
+                .sink { event in
+                    onDownloadEvent(event)
+                }
+                .store(in: &cancelableSet)
+            NotificationCenter.default.publisher(for: .message)
+                .compactMap { $0.object as? MessageEventTypes }
+                .sink { event in
+                    onMessageEvent(event)
+                }
+                .store(in: &cancelableSet)
         }
     }
 
@@ -136,10 +146,30 @@ struct ThreadPinMessage: View {
             break
         }
     }
+
+    private func onMessageEvent(_ event: MessageEventTypes) {
+        switch event {
+        case let .pin(response):
+            if threadVM.threadId == response.subjectId {
+                withAnimation(.easeInOut) {
+                    message = response.result
+                    downloadImageThumbnail()
+                }
+            }
+        case let .unpin(response):
+            if threadVM.threadId == response.subjectId {
+                withAnimation(.easeInOut) {
+                    message = nil
+                }
+            }
+        default:
+            break
+        }
+    }
 }
 
 struct ThreadPinMessage_Previews: PreviewProvider {
     static var previews: some View {
-        ThreadPinMessage()
+        ThreadPinMessage(thread: Conversation(), threadVM: ThreadViewModel())
     }
 }

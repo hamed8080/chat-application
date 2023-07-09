@@ -1,5 +1,5 @@
 //
-//  MessageRowCalculationViewModel.swift
+//  MessageRowViewModel.swift
 //  ChatApplication
 //
 //  Created by hamed on 3/9/23.
@@ -10,8 +10,9 @@ import MapKit
 import SwiftUI
 import ChatAppExtensions
 import ChatModels
+import Combine
 
-public final class MessageRowCalculationViewModel: ObservableObject {
+public final class MessageRowViewModel: ObservableObject {
     public var isCalculated = false
     public var isEnglish = true
     public var widthOfRow: CGFloat = 128
@@ -22,12 +23,86 @@ public final class MessageRowCalculationViewModel: ObservableObject {
     public var fileSizeString: String?
     public static var avatarSize: CGFloat = 24
     public var downloadFileVM = DownloadFileViewModel()
-    public init() {}
+    public var threadVM: ThreadViewModel
+    private var cancelableSet = Set<AnyCancellable>()
+    public var message: Message
+    public var isInSelectMode: Bool = false
+    public init(message: Message, viewModel: ThreadViewModel) {
+        self.message = message
+        self.threadVM = viewModel
+    }
 
     @MainActor
     public func calculate(message: Message) {
+        self.message = message
         if isCalculated { return }
         isCalculated = true
+        NotificationCenter.default.publisher(for: .message)
+            .compactMap{ $0.object as? MessageEventTypes }
+            .sink { [weak self] event in
+                self?.onMessageEvent(event)
+            }
+            .store(in: &cancelableSet)
+        threadVM.$isInEditMode.sink { newValue in
+            /// Use if newValue != isInSelectMode to assure the newValue has arrived and all message rows will not get refreshed.
+            if newValue != self.isInSelectMode {
+                self.isInSelectMode = newValue
+                withAnimation {
+                    self.objectWillChange.send()
+                }
+            }
+        }
+        .store(in: &cancelableSet)
+        performaCalculation()
+    }
+
+    private func onMessageEvent(_ event: MessageEventTypes) {
+        if case let .edited(response) = event, message.id == response.result?.id {
+            message.message = response.result?.message
+            message.time = response.result?.time
+            message.edited = true
+            updateWithAnimation()
+        }
+
+        if case let .seen(response) = event, message.id == response.result?.messageId {
+            message.delivered = true
+            message.seen = true
+            updateWithAnimation()
+        }
+
+        if case let .sent(response) = event, message.id == response.result?.messageId {
+            message.id = response.result?.messageId
+            message.delivered = true
+            message.time = response.result?.messageTime
+            updateWithAnimation()
+        }
+
+        if case let .delivered(response) = event, message.id == response.result?.messageId {
+            message.delivered = true
+            updateWithAnimation()
+        }
+
+        if case let .pin(response) = event, message.id == response.result?.messageId {
+            message.pinned = true
+            message.pinTime = response.result?.time
+            updateWithAnimation()
+        }
+
+        if case let .unpin(response) = event, message.id == response.result?.messageId {
+            message.pinned = false
+            message.pinTime = nil
+            updateWithAnimation()
+        }
+    }
+
+    private func updateWithAnimation(){
+        Task {
+            await performaCalculation(animation: .easeInOut)
+        }
+    }
+
+    @MainActor
+    private func performaCalculation(animation: Animation? = nil) {
         Task(priority: .background) {
             let isEnglish = message.message?.isEnglishString ?? true
             let widthOfRow = calculateWidthOfMessage(message)
@@ -42,7 +117,9 @@ public final class MessageRowCalculationViewModel: ObservableObject {
                 self.markdownTitle = markdownTitle
                 self.timeString = timeString
                 self.fileSizeString = fileSizeString
-                self.objectWillChange.send()
+                withAnimation(animation) {
+                    self.objectWillChange.send()
+                }
             }
         }
     }
@@ -70,7 +147,7 @@ public final class MessageRowCalculationViewModel: ObservableObject {
     public func headerWidth(_ message: Message) -> CGFloat {
         let spacing: CGFloat = 8
         let padding: CGFloat = 16
-        return (message.participant?.name?.widthOfString(usingFont: .systemFont(ofSize: 22)) ?? 0) + MessageRowCalculationViewModel.avatarSize + spacing + padding
+        return (message.participant?.name?.widthOfString(usingFont: .systemFont(ofSize: 22)) ?? 0) + MessageRowViewModel.avatarSize + spacing + padding
     }
 
     public func calculateWidthOfMessage(_ message: Message) -> CGFloat {

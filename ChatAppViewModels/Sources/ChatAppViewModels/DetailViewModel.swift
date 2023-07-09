@@ -122,14 +122,14 @@ public final class DetailViewModel: ObservableObject {
     }
 
     private func onBlock(_ response: ChatResponse<BlockedContactResponse>) {
-        if let contact = response.result {
+        if response.result != nil {
             self.contact?.blocked = true
             user?.blocked = true
         }
     }
 
     private func onUNBlock(_ response: ChatResponse<BlockedContactResponse>) {
-        if let contact = response.result {
+        if response.result != nil {
             self.contact?.blocked = false
             user?.blocked = false
         }

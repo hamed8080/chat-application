@@ -13,9 +13,9 @@ import ChatModels
 import SwiftUI
 
 struct TextMessageType: View {
-    var message: Message
-    @EnvironmentObject var calculation: MessageRowCalculationViewModel
-    @EnvironmentObject var viewModel: ThreadViewModel
+    private var message: Message { viewModel.message }
+    private var threadVM: ThreadViewModel { viewModel.threadVM }
+    @EnvironmentObject var viewModel: MessageRowViewModel
     @State private var isSelected = false
     private var isMe: Bool { message.isMe(currentUserId: AppState.shared.user?.id) }
 
@@ -28,9 +28,10 @@ struct TextMessageType: View {
                 Spacer()
             }
             VStack(spacing: 0) {
-                AvatarView(message: message)
+                AvatarView(message: message, viewModel: threadVM)
                 if message.replyInfo != nil {
-                    ReplyInfoMessageRow(message: message)
+                    ReplyInfoMessageRow()
+                        .environmentObject(viewModel)
                 }
 
                 if let forwardInfo = message.forwardInfo {
@@ -44,7 +45,7 @@ struct TextMessageType: View {
 
                 if message.isFileType, message.id ?? 0 > 0 {
                     DownloadFileView(message: message)
-                        .environmentObject(calculation.downloadFileVM)
+                        .environmentObject(viewModel.downloadFileVM)
                         .frame(maxHeight: 320)
                 }
 
@@ -55,13 +56,13 @@ struct TextMessageType: View {
                 }
 
                 // TODO: TEXT must be alignment and image must be fit
-                Text(calculation.markdownTitle)
-                    .multilineTextAlignment(calculation.isEnglish ? .leading : .trailing)
+                Text(viewModel.markdownTitle)
+                    .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
                     .padding(8)
                     .font(.iransansBody)
                     .foregroundColor(.black)
 
-                if let addressDetail = calculation.addressDetail {
+                if let addressDetail = viewModel.addressDetail {
                     Text(addressDetail)
                         .foregroundColor(.darkGreen.opacity(0.8))
                         .font(.caption)
@@ -72,11 +73,11 @@ struct TextMessageType: View {
                     HStack {
                         Spacer()
                         Button("Resend".uppercased()) {
-                            viewModel.resendUnsetMessage(message)
+                            threadVM.resendUnsetMessage(message)
                         }
 
                         Button("Cancel".uppercased(), role: .destructive) {
-                            viewModel.cancelUnsentMessage(message.uniqueId ?? "")
+                            threadVM.cancelUnsentMessage(message.uniqueId ?? "")
                         }
                     }
                     .padding()
@@ -87,12 +88,12 @@ struct TextMessageType: View {
                     .padding(.bottom, 8)
                     .padding([.leading, .trailing])
             }
-            .frame(maxWidth: calculation.widthOfRow, alignment: .leading)
+            .frame(maxWidth: viewModel.widthOfRow, alignment: .leading)
             .padding([.leading, .trailing], 0)
             .contentShape(Rectangle())
             .background(message.isMe(currentUserId: AppState.shared.user?.id) ? Color.chatMeBg : Color.chatSenderBg)
             .overlay {
-                if viewModel.highliteMessageId == message.id {
+                if threadVM.highliteMessageId == message.id {
                     Color.blue.opacity(0.3)
                 }
             }
@@ -103,10 +104,11 @@ struct TextMessageType: View {
                 }
             }
             .contextMenu {
-                MessageActionMenu(message: message)
+                MessageActionMenu()
+                    .environmentObject(viewModel)
             }
             .onAppear {
-                calculation.calculate(message: message)
+                viewModel.calculate(message: message)
             }
 
             if !message.isMe(currentUserId: AppState.shared.user?.id) {
@@ -117,7 +119,7 @@ struct TextMessageType: View {
                 selectRadio
             }
         }
-        .onChange(of: viewModel.selectedMessages.contains(where: { $0.id == message.id })) { newValue in
+        .onChange(of: threadVM.selectedMessages.contains(where: { $0.id == message.id })) { newValue in
             isSelected = newValue
         }
     }
@@ -125,15 +127,15 @@ struct TextMessageType: View {
     var selectRadio: some View {
         Image(systemName: isSelected ? "checkmark.circle" : "circle")
             .font(.title)
-            .frame(width: viewModel.isInEditMode ? 22 : 0.001, height: viewModel.isInEditMode ? 22 : 0.001, alignment: .center)
+            .frame(width: viewModel.isInSelectMode ? 22 : 0.001, height: viewModel.isInSelectMode ? 22 : 0.001, alignment: .center)
             .foregroundColor(Color.blue)
-            .padding(viewModel.isInEditMode ? 24 : 0.001)
-            .scaleEffect(x: viewModel.isInEditMode ? 1.0 : 0.001, y: viewModel.isInEditMode ? 1.0 : 0.001, anchor: .center)
+            .padding(viewModel.isInSelectMode ? 24 : 0.001)
+            .scaleEffect(x: viewModel.isInSelectMode ? 1.0 : 0.001, y: viewModel.isInSelectMode ? 1.0 : 0.001, anchor: .center)
             .onTapGesture {
                 withAnimation {
                     isSelected.toggle()
                 }
-                viewModel.toggleSelectedMessage(message, isSelected)
+                threadVM.toggleSelectedMessage(message, isSelected)
             }
     }
 }

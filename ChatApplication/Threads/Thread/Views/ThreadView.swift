@@ -45,8 +45,7 @@ struct ThreadView: View, DropDelegate {
                     .environmentObject(viewModel)
             }
             .overlay {
-                ThreadPinMessage()
-                    .environmentObject(viewModel)
+                ThreadPinMessage(thread: thread, threadVM: viewModel)
             }
             .toolbar {
                 if thread.type == .channel {
@@ -91,7 +90,6 @@ struct ThreadView: View, DropDelegate {
             }
             .sheet(isPresented: sheetBinding, onDismiss: onDismiss) {
                 ThreadSheetView(sheetBinding: sheetBinding)
-                    .environmentObject(viewModel)
                     .environmentObject(ActionSheetViewModel(threadViewModel: viewModel))
             }
             .onDrop(of: [.image], delegate: self)

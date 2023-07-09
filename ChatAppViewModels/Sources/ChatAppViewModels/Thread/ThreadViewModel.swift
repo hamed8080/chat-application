@@ -36,7 +36,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var selectedMessages: [Message] = []
     @Published public var editMessage: Message?
     public var replyMessage: Message?
-    public var isInEditMode: Bool = false
+    @Published public var isInEditMode: Bool = false
     public var exportMessagesVM: ExportMessagesViewModelProtocol = ExportMessagesViewModel()
     public var mentionList: [Participant] = []
     public var dropItems: [DropItem] = []

@@ -23,7 +23,7 @@ struct ThreadMessagesList: View {
                     ListLoadingView(isLoading: $viewModel.topLoading)
                         .id(-1)
                     ForEach(viewModel.messages) { message in
-                        MessageRowFactory(message: message)
+                        MessageRowFactory(viewModel: MessageRowViewModel(message: message, viewModel: viewModel))
                             .id(message.uniqueId)
                             .onAppear {
                                 viewModel.onMessageAppear(message)

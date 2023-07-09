@@ -13,14 +13,14 @@ import ChatModels
 import SwiftUI
 
 struct ReplyInfoMessageRow: View {
-    var message: Message
-    @EnvironmentObject var threadViewModel: ThreadViewModel
-    @EnvironmentObject var calculation: MessageRowCalculationViewModel
+    private var message: Message { viewModel.message }
+    private var threadVM: ThreadViewModel { viewModel.threadVM }
+    @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
         Button {
             if let time = message.replyInfo?.repliedToMessageTime, let repliedToMessageId = message.replyInfo?.repliedToMessageId {
-                threadViewModel.moveToTime(time, repliedToMessageId)
+                threadVM.moveToTime(time, repliedToMessageId)
             }
         } label: {
             HStack {
@@ -62,14 +62,14 @@ struct ReplyInfoMessageRow: View {
             }
         }
         .buttonStyle(.plain)
-        .frame(width: calculation.widthOfRow - 32, height: message.replyInfo?.deleted == true ? 32 : 48)
+        .frame(width: viewModel.widthOfRow - 32, height: message.replyInfo?.deleted == true ? 32 : 48)
         .background(Color.replyBg)
         .cornerRadius(8)
         .padding([.top, .leading, .trailing], 12)
         .truncationMode(.tail)
         .lineLimit(1)
         .onAppear {
-            calculation.calculate(message: message)
+            viewModel.calculate(message: message)
         }
     }
 }
@@ -83,12 +83,13 @@ struct ReplyInfo_Previews: PreviewProvider {
     static var previews: some View {
         let threadVM = ThreadViewModel()
         List {
-            TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", ownerId: 10, replyInfo: replyInfo))
-            TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: isMeReplyInfo))
-            TextMessageType(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: deletedReplay))
+            TextMessageType()
+                .environmentObject(MessageRowViewModel(message: Message(message: "Hi Hamed, I'm graet.", ownerId: 10, replyInfo: replyInfo), viewModel: threadVM))
+            TextMessageType()
+                .environmentObject(MessageRowViewModel(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: isMeReplyInfo), viewModel: threadVM))
+            TextMessageType()
+                .environmentObject(MessageRowViewModel(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: deletedReplay), viewModel: threadVM))
         }
-        .environmentObject(MessageRowCalculationViewModel())
-        .environmentObject(threadVM)
         .onAppear {
             threadVM.setup(thread: MockData.thread)
         }

@@ -10,7 +10,7 @@ import ChatAppViewModels
 import SwiftUI
 
 struct ThreadSheetView: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    var viewModel: ThreadViewModel { actionSheetViewModel.threadViewModel }
     @EnvironmentObject var actionSheetViewModel: ActionSheetViewModel
     @Binding var sheetBinding: Bool
 
@@ -19,6 +19,7 @@ struct ThreadSheetView: View {
         switch type {
         case .attachment:
             AttachmentDialog(viewModel: actionSheetViewModel)
+                .environmentObject(viewModel)
         case .dropItems:
             DropItemsView()
                 .environmentObject(viewModel)

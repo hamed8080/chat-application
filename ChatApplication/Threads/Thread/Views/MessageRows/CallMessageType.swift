@@ -14,7 +14,6 @@ import SwiftUI
 
 struct CallMessageType: View {
     var message: Message
-    @EnvironmentObject var threadViewModel: ThreadViewModel
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {

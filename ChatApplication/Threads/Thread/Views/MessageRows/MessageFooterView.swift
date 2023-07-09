@@ -14,10 +14,8 @@ import SwiftUI
 
 struct MessageFooterView: View {
     var message: Message
-    // We never use this viewModel but it will refresh view when a event on this message happened such as onSent, onDeliver,onSeen.
-    @EnvironmentObject var viewModel: ThreadViewModel
     @State var timeString: String = ""
-    @EnvironmentObject var calculation: MessageRowCalculationViewModel
+    @EnvironmentObject var calculation: MessageRowViewModel
 
     var body: some View {
         HStack {

@@ -12,20 +12,20 @@ import ChatModels
 import SwiftUI
 
 struct SearchMessageRow: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
-    let message: Message
-    @State var calculation = MessageRowCalculationViewModel()
+    private var message: Message { viewModel.message }
+    private var threadVM: ThreadViewModel { viewModel.threadVM }
+    @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
         Button {
             if let time = message.time, let messageId = message.id {
-                viewModel.moveToTime(time, messageId)
-                viewModel.searchedMessages.removeAll()
-                viewModel.animatableObjectWillChange()
+                threadVM.moveToTime(time, messageId)
+                threadVM.searchedMessages.removeAll()
+                threadVM.animatableObjectWillChange()
             }
         } label: {
-            TextMessageType(message: message)
-                .environmentObject(calculation)
+            TextMessageType()
+                .environmentObject(viewModel)
                 .disabled(true)
         }
     }
@@ -33,6 +33,7 @@ struct SearchMessageRow: View {
 
 struct SearchMessageRow_Previews: PreviewProvider {
     static var previews: some View {
-        SearchMessageRow(message: MockData.message)
+        SearchMessageRow()
+            .environmentObject(MessageRowViewModel(message: MockData.message, viewModel: .init()))
     }
 }

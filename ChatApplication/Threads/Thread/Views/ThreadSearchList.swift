@@ -18,7 +18,8 @@ struct ThreadSearchList: View {
             ScrollView {
                 LazyVStack {
                     ForEach(viewModel.searchedMessages) { message in
-                        SearchMessageRow(message: message)
+                        SearchMessageRow()
+                            .environmentObject(MessageRowViewModel(message: message, viewModel: viewModel))
                             .onAppear {
                                 if message == viewModel.searchedMessages.last {
                                     viewModel.searchInsideThread(text: searchText, offset: viewModel.searchedMessages.count)

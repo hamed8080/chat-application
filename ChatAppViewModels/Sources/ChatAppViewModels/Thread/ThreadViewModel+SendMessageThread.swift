@@ -136,7 +136,6 @@ extension ThreadViewModel {
         messages[index].delivered = true
         messages[index].time = response.result?.messageTime
         playSentAudio()
-        animatableObjectWillChange()
     }
 
     internal func playSentAudio() {
@@ -162,7 +161,6 @@ extension ThreadViewModel {
 
         messages[index].delivered = true
         messages[index].seen = true
-        animatableObjectWillChange()
     }
 
     public func resendUnsetMessage(_ message: Message) {

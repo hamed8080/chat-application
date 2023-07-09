@@ -21,7 +21,6 @@ extension ThreadViewModel {
                 messages[index].pinned = true
             }
             thread?.pinMessage = message
-            animatableObjectWillChange()
         }
     }
 
@@ -35,7 +34,6 @@ extension ThreadViewModel {
                 messages[index].pinned = false
             }
             thread?.pinMessage = nil
-            animatableObjectWillChange()
         }
     }
 }

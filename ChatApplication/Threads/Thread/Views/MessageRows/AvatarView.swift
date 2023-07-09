@@ -14,7 +14,7 @@ import SwiftUI
 
 struct AvatarView: View {
     var message: Message
-    @EnvironmentObject var viewModel: ThreadViewModel
+    let viewModel: ThreadViewModel
 
     var body: some View {
         if !viewModel.isSameUser(message: message), message.participant != nil {
@@ -34,9 +34,9 @@ struct AvatarView: View {
                         .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
                         .font(.iransansSubheadline)
                         .foregroundColor(.white)
-                        .frame(width: MessageRowCalculationViewModel.avatarSize, height: MessageRowCalculationViewModel.avatarSize)
+                        .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
                         .background(Color.blue.opacity(0.4))
-                        .cornerRadius(MessageRowCalculationViewModel.avatarSize / 2)
+                        .cornerRadius(MessageRowViewModel.avatarSize / 2)
                     if !message.isMe(currentUserId: AppState.shared.user?.id) {
                         Text("\(message.participant?.name ?? "")")
                             .font(.iransansBoldCaption)
