@@ -16,7 +16,6 @@ import SwiftUI
 struct ThreadView: View, DropDelegate {
     let thread: Conversation
     @StateObject var viewModel = ThreadViewModel()
-    @EnvironmentObject var appState: AppState
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
@@ -60,11 +59,12 @@ struct ThreadView: View, DropDelegate {
                 }
 
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    trailingToolbar
+                    ThreadViewTrailingToolbar()
+                        .environmentObject(viewModel)
                 }
 
                 ToolbarItem(placement: .principal) {
-                    centerToolbarTitle
+                    ThreadViewCenterToolbar(viewModel: viewModel)
                 }
             }
             .onChange(of: searchMessageText) { value in
@@ -86,7 +86,7 @@ struct ThreadView: View, DropDelegate {
             .onAppear {
                 viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
                 viewModel.startFetchingHistory()
-                appState.activeThreadId = thread.id
+                AppState.shared.activeThreadId = thread.id
                 viewModel.animatableObjectWillChange()
             }
             .sheet(isPresented: sheetBinding, onDismiss: onDismiss) {
@@ -111,59 +111,6 @@ struct ThreadView: View, DropDelegate {
         viewModel.dropItems.removeAll()
         viewModel.sheetType = nil
         viewModel.animatableObjectWillChange()
-    }
-
-    var centerToolbarTitle: some View {
-        VStack(alignment: .center) {
-            Text(viewModel.thread?.computedTitle ?? "")
-                .fixedSize()
-                .font(.iransansBoldSubheadline)
-
-            if appState.connectionStatus != .connected {
-                ConnectionStatusToolbar()
-            } else if let signalMessageText = viewModel.signalMessageText {
-                Text(signalMessageText)
-                    .foregroundColor(.textBlueColor)
-                    .font(.iransansCaption2)
-            } else if let participantsCount = viewModel.thread?.participantCount {
-                Text("Members \(participantsCount)")
-                    .fixedSize()
-                    .foregroundColor(Color.gray)
-                    .font(.iransansFootnote)
-            }
-        }
-    }
-
-    @ViewBuilder var trailingToolbar: some View {
-        NavigationLink {
-            DetailView(viewModel: DetailViewModel(thread: viewModel.thread))
-        } label: {
-            ImageLaoderView(url: viewModel.thread?.computedImageURL, userName: viewModel.thread?.title)
-                .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
-                .font(.iransansBody)
-                .foregroundColor(.white)
-                .frame(width: 32, height: 32)
-                .background(Color.blue.opacity(0.4))
-                .cornerRadius(16)
-                .cornerRadius(18)
-        }
-
-        Menu {
-            Button {
-                viewModel.sheetType = .datePicker
-                viewModel.animatableObjectWillChange()
-            } label: {
-                Label {
-                    Text("Export")
-                } icon: {
-                    Image(systemName: "square.and.arrow.up")
-                        .resizable()
-                        .scaledToFit()
-                }
-            }
-        } label: {
-            Image(systemName: "ellipsis")
-        }
     }
 }
 

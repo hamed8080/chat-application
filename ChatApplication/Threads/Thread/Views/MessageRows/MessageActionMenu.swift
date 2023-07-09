@@ -27,6 +27,7 @@ struct MessageActionMenu: View {
         Button {
             withAnimation(animation(appear: viewModel.forwardMessage != nil)) {
                 viewModel.forwardMessage = message
+                viewModel.isInEditMode = true
                 viewModel.objectWillChange.send()
             }
         } label: {

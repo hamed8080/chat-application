@@ -26,7 +26,7 @@ final class ChatDelegateImplementation: ChatDelegate {
 
         Task {
             await MainActor.run {
-                let ssoToken = SSOTokenResponseResult(accessToken: "6929eafdff6c4d4ba0c3060938c080ee.XzIwMjM3", expiresIn: 900)
+                let ssoToken = SSOTokenResponseResult(accessToken: "34e3e4db303b487da6e4a92ae2f4ae45.XzIwMjM3", expiresIn: 900)
                 let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
                 let user = User(id: 3_463_768)
                 TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
@@ -96,13 +96,9 @@ final class ChatDelegateImplementation: ChatDelegate {
             TokenManager.shared.getNewTokenWithRefreshToken()
             AppState.shared.connectionStatus = .unauthorized
         } else {
-            #if DEBUG
+            if response.isPresentable {
                 AppState.shared.animateAndShowError(error)
-            #else
-                if response.isPresentable {
-                    AppState.shared.animateAndShowError(error)
-                }
-            #endif
+            }
         }
     }
 

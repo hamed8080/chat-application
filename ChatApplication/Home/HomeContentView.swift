@@ -14,7 +14,6 @@ import Swipy
 
 struct HomeContentView: View {
     @StateObject var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
-    @StateObject var appState = AppState.shared
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @Environment(\.colorScheme) var colorScheme
 
@@ -23,7 +22,7 @@ struct HomeContentView: View {
             LoginView()
                 .environmentObject(container.loginVM)
                 .environmentObject(container.tokenVM)
-                .environmentObject(appState)
+                .environmentObject(AppState.shared)
         } else {
             NavigationSplitView(columnVisibility: $container.columnVisibility) {
                 SideBar()
@@ -45,7 +44,7 @@ struct HomeContentView: View {
                     }
                 }
             }
-            .environmentObject(appState)
+            .environmentObject(AppState.shared)
             .environmentObject(container)
             .environmentObject(container.navVM)
             .environmentObject(container.settingsVM)
@@ -58,9 +57,9 @@ struct HomeContentView: View {
             .environmentObject(container.logVM)
             .environmentObject(container.audioPlayerVM)
             .toast(
-                isShowing: Binding(get: { appState.error != nil }, set: { _ in }),
-                title: "An error had happened with code: \(appState.error?.code ?? 0)",
-                message: appState.error?.message ?? "",
+                isShowing: Binding(get: { AppState.shared.error != nil }, set: { _ in }),
+                title: "An error had happened with code: \(AppState.shared.error?.code ?? 0)",
+                message: AppState.shared.error?.message ?? "",
                 titleFont: .title2,
                 messageFont: .subheadline
             ) {
@@ -69,12 +68,12 @@ struct HomeContentView: View {
                     .frame(width: 24, height: 24)
                     .onTapGesture {
                         withAnimation {
-                            appState.error = nil
+                            AppState.shared.error = nil
                         }
                     }
             }
             .onAppear {
-                appState.navViewModel = container.navVM
+                AppState.shared.navViewModel = container.navVM
                 container.navVM.threadViewModel = container.threadsVM
                 container.threadsVM.title = "Chats"
                 container.navVM.contactsViewModel = container.contactsVM

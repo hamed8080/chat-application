@@ -55,7 +55,7 @@ struct SendContainer: View {
                         GradientImageButton(image: "arrow.up.circle.fill", title: "Send") {
                             if isRecording {
                                 viewModel.audioRecoderVM.stopAndSend()
-                            } else {
+                            } else if !text.isEmpty {
                                 viewModel.sendTextMessage(text)
                             }
                             text = ""

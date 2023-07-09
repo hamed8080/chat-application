@@ -121,6 +121,15 @@ extension ThreadViewModel {
         ChatManager.activeInstance?.message.edit(req)
     }
 
+    public func sendLoaction(_ location: LocationItem) {
+        let coordinate = Coordinate(lat: location.location.latitude, lng: location.location.longitude)
+        let req = LocationMessageRequest(mapCenter: coordinate,
+                                         threadId: threadId,
+                                         userGroupHash: thread?.userGroupHash ?? "",
+                                         textMessage: textMessage)
+        ChatManager.activeInstance?.message.send(req)
+    }
+
     public func onSent(_ response: ChatResponse<MessageResponse>) {
         guard threadId == response.result?.threadId, let index = messages.firstIndex(where: { $0.uniqueId == response.uniqueId }) else { return }
         messages[index].id = response.result?.messageId

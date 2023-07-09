@@ -79,6 +79,8 @@
 		05C5665C29BEF465002E72F7 /* MentionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C5665B29BEF465002E72F7 /* MentionList.swift */; };
 		05CC8A172A45D4180051B339 /* JoinToPublicThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CC8A162A45D4180051B339 /* JoinToPublicThreadView.swift */; };
 		05CE5B4E2785724C004336F5 /* AddParticipantsToThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */; };
+		05ED6AE22A5ABD7A006F0D77 /* ThreadViewCenterToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ED6AE12A5ABD7A006F0D77 /* ThreadViewCenterToolbar.swift */; };
+		05ED6AE42A5ABE19006F0D77 /* ThreadViewTrailingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ED6AE32A5ABE19006F0D77 /* ThreadViewTrailingToolbar.swift */; };
 		05EF89E02A4BC4900097DC97 /* ThreadsSheetFactoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EF89DF2A4BC4900097DC97 /* ThreadsSheetFactoryView.swift */; };
 		AC008F3C268C4FA500B008FF /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC008F3B268C4FA500B008FF /* HomeContentView.swift */; };
 		AC0435FF26998D4400B1C87B /* ParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0435FE26998D4400B1C87B /* ParticipantRow.swift */; };
@@ -205,6 +207,8 @@
 		05CC8A162A45D4180051B339 /* JoinToPublicThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinToPublicThreadView.swift; sourceTree = "<group>"; };
 		05CE5B4D278571A6004336F5 /* AddParticipantsToThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsToThreadView.swift; sourceTree = "<group>"; };
 		05DCB6872806102B00D7F37A /* MockData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MockData.json; sourceTree = "<group>"; };
+		05ED6AE12A5ABD7A006F0D77 /* ThreadViewCenterToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadViewCenterToolbar.swift; sourceTree = "<group>"; };
+		05ED6AE32A5ABE19006F0D77 /* ThreadViewTrailingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadViewTrailingToolbar.swift; sourceTree = "<group>"; };
 		05EF89DF2A4BC4900097DC97 /* ThreadsSheetFactoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadsSheetFactoryView.swift; sourceTree = "<group>"; };
 		AC008F3B268C4FA500B008FF /* HomeContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContentView.swift; sourceTree = "<group>"; };
 		AC0435FE26998D4400B1C87B /* ParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantRow.swift; sourceTree = "<group>"; };
@@ -400,6 +404,8 @@
 				05C5665B29BEF465002E72F7 /* MentionList.swift */,
 				05140CD429C086BE00C8E22D /* MapPickerView.swift */,
 				054B93302A5837350076BF0B /* MoveToBottomButton.swift */,
+				05ED6AE12A5ABD7A006F0D77 /* ThreadViewCenterToolbar.swift */,
+				05ED6AE32A5ABE19006F0D77 /* ThreadViewTrailingToolbar.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -775,6 +781,7 @@
 				055B26A027D5FA0F0098D585 /* VoiceView.swift in Sources */,
 				055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */,
 				05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */,
+				05ED6AE42A5ABE19006F0D77 /* ThreadViewTrailingToolbar.swift in Sources */,
 				05297DDE2A4B235500B14235 /* MessageActionMenu.swift in Sources */,
 				05297DE32A4B251100B14235 /* SecondaryMessageView.swift in Sources */,
 				AC7EBFF4266CAF2500984E81 /* ContactContentList.swift in Sources */,
@@ -788,6 +795,7 @@
 				05297DCF2A4B15F200B14235 /* ParticipantMessageType.swift in Sources */,
 				05B7C8D92A566A6400171AF4 /* UnknownMessageType.swift in Sources */,
 				05297DEB2A4B26C600B14235 /* ThreadRowActionMenu.swift in Sources */,
+				05ED6AE22A5ABD7A006F0D77 /* ThreadViewCenterToolbar.swift in Sources */,
 				05CC8A172A45D4180051B339 /* JoinToPublicThreadView.swift in Sources */,
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,
 				05297DD52A4B174500B14235 /* ForwardMessageRow.swift in Sources */,
