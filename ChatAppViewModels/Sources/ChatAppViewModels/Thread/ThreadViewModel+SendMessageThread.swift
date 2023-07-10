@@ -65,7 +65,7 @@ extension ThreadViewModel {
             let imageRequest = UploadImageRequest(data: imageItem.imageData,
                                                   fileName: imageItem.fileName ?? "",
                                                   mimeType: "image/jpeg",
-                                                  userGroupHash: thread?.userGroupHash,
+                                                  userGroupHash: thread.userGroupHash,
                                                   hC: imageItem.height,
                                                   wC: imageItem.width
             )
@@ -86,7 +86,7 @@ extension ThreadViewModel {
                                                   fileExtension: ".\(url.fileExtension)",
                                                   fileName: url.fileName,
                                                   mimeType: url.mimeType,
-                                                  userGroupHash: thread?.userGroupHash)
+                                                  userGroupHash: thread.userGroupHash)
             let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: messageType)
             let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)
             request.id = -index
@@ -102,7 +102,7 @@ extension ThreadViewModel {
                                                   fileExtension: ".\(item.ext ?? "")",
                                                   fileName: item.name,
                                                   mimeType: nil,
-                                                  userGroupHash: thread?.userGroupHash)
+                                                  userGroupHash: thread.userGroupHash)
             let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
             let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)
             request.id = -index
@@ -125,7 +125,8 @@ extension ThreadViewModel {
         let coordinate = Coordinate(lat: location.location.latitude, lng: location.location.longitude)
         let req = LocationMessageRequest(mapCenter: coordinate,
                                          threadId: threadId,
-                                         userGroupHash: thread?.userGroupHash ?? "",
+                                         userGroupHash: thread.userGroupHash ?? "",
+                                         mapImageName: location.name,
                                          textMessage: textMessage)
         ChatManager.activeInstance?.message.send(req)
     }
@@ -195,7 +196,7 @@ extension ThreadViewModel {
 
     public func cancelUnsentMessage(_ uniqueId: String) {
         ChatManager.activeInstance?.message.cancel(uniqueId: uniqueId)
-        onDeleteMessage(ChatResponse(uniqueId: uniqueId))
+        onDeleteMessage(ChatResponse(uniqueId: uniqueId, subjectId: threadId))
     }
 
     public func toggleSelectedMessage(_ message: Message, _ isSelected: Bool) {

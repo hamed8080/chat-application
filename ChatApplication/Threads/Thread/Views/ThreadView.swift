@@ -14,8 +14,8 @@ import Combine
 import SwiftUI
 
 struct ThreadView: View, DropDelegate {
-    let thread: Conversation
-    @StateObject var viewModel = ThreadViewModel()
+    private var thread: Conversation { viewModel.thread }
+    @StateObject var viewModel: ThreadViewModel
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
@@ -26,7 +26,7 @@ struct ThreadView: View, DropDelegate {
         ThreadMessagesList()
             .id(thread.id)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle(viewModel.thread?.computedTitle ?? "")
+            .navigationTitle(thread.computedTitle)
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
@@ -37,15 +37,14 @@ struct ThreadView: View, DropDelegate {
                 viewModel.animatableObjectWillChange()
             }
             .overlay {
-                SendContainer(deleteMessagesDialog: $deleteDialaog, threadId: thread.id)
-                    .environmentObject(viewModel)
+                SendContainer(viewModel: viewModel, deleteMessagesDialog: $deleteDialaog)
             }
             .overlay {
                 ThreadSearchList(searchText: $searchMessageText)
                     .environmentObject(viewModel)
             }
             .overlay {
-                ThreadPinMessage(thread: thread, threadVM: viewModel)
+                ThreadPinMessage(threadVM: viewModel)
             }
             .toolbar {
                 if thread.type == .channel {
@@ -58,8 +57,7 @@ struct ThreadView: View, DropDelegate {
                 }
 
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    ThreadViewTrailingToolbar()
-                        .environmentObject(viewModel)
+                    ThreadViewTrailingToolbar(viewModel: viewModel)
                 }
 
                 ToolbarItem(placement: .principal) {
@@ -83,7 +81,6 @@ struct ThreadView: View, DropDelegate {
                 }
             }
             .onAppear {
-                viewModel.setup(thread: thread, readOnly: false, threadsViewModel: threadsVM)
                 viewModel.startFetchingHistory()
                 AppState.shared.activeThreadId = thread.id
                 viewModel.animatableObjectWillChange()
@@ -114,17 +111,16 @@ struct ThreadView: View, DropDelegate {
 
 struct ThreadView_Previews: PreviewProvider {
     static var vm: ThreadViewModel {
-        let vm = ThreadViewModel()
+        let vm = ThreadViewModel(thread: MockData.thread)
         vm.searchedMessages = MockData.generateMessages(count: 15)
         vm.objectWillChange.send()
         return vm
     }
 
     static var previews: some View {
-        ThreadView(thread: MockData.thread)
+        ThreadView(viewModel: ThreadViewModel(thread: MockData.thread))
             .environmentObject(AppState.shared)
             .onAppear {
-                vm.setup(thread: MockData.thread)
                 //                vm.toggleRecording()
                 //                vm.setReplyMessage(MockData.message)
                 //                vm.setForwardMessage(MockData.message)

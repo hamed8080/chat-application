@@ -127,10 +127,7 @@ struct PhotoGridView: View {
 
 struct AttachmentDialog_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = ThreadViewModel()
+        let vm = ThreadViewModel(thread: MockData.thread)
         AttachmentDialog(viewModel: ActionSheetViewModel(threadViewModel: vm))
-            .onAppear {
-                vm.setup(thread: MockData.thread)
-            }
     }
 }

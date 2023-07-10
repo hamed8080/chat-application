@@ -11,6 +11,7 @@ import SwiftUI
 import ChatAppExtensions
 import ChatModels
 import Combine
+import ChatAppModels
 
 public final class MessageRowViewModel: ObservableObject {
     public var isCalculated = false
@@ -53,7 +54,9 @@ public final class MessageRowViewModel: ObservableObject {
             }
         }
         .store(in: &cancelableSet)
-        performaCalculation()
+        Task.detached(priority: .background) {
+            await self.performaCalculation()
+        }
     }
 
     private func onMessageEvent(_ event: MessageEventTypes) {
@@ -61,7 +64,7 @@ public final class MessageRowViewModel: ObservableObject {
             message.message = response.result?.message
             message.time = response.result?.time
             message.edited = true
-            updateWithAnimation()
+            recalculateWithAnimation()
         }
 
         if case let .seen(response) = event, message.id == response.result?.messageId {
@@ -95,36 +98,40 @@ public final class MessageRowViewModel: ObservableObject {
         }
     }
 
-    private func updateWithAnimation(){
-        Task {
-            await performaCalculation(animation: .easeInOut)
+    private func updateWithAnimation() {
+        withAnimation(.easeInOut) {
+            self.objectWillChange.send()
         }
     }
 
-    @MainActor
-    private func performaCalculation(animation: Animation? = nil) {
-        Task(priority: .background) {
-            let isEnglish = message.message?.isEnglishString ?? true
-            let widthOfRow = calculateWidthOfMessage(message)
-            let markdownTitle = message.markdownTitle
-            let addressDetail = await message.addressDetail
-            let timeString = message.time?.date.timeAgoSinceDateCondense ?? ""
-            let fileSizeString = message.fileMetaData?.file?.size?.toSizeString
-            await MainActor.run {
-                self.addressDetail = addressDetail
-                self.isEnglish = isEnglish
-                self.widthOfRow = widthOfRow
-                self.markdownTitle = markdownTitle
-                self.timeString = timeString
-                self.fileSizeString = fileSizeString
-                withAnimation(animation) {
-                    self.objectWillChange.send()
-                }
+    private func recalculateWithAnimation(){
+        Task.detached(priority: .background) {
+            await self.performaCalculation(animation: .easeInOut)
+        }
+    }
+
+    private func performaCalculation(animation: Animation? = nil) async {
+        let message = message
+        let isEnglish = message.message?.isEnglishString ?? true
+        let widthOfRow = self.calculateWidthOfMessage()
+        let markdownTitle = message.markdownTitle
+        let addressDetail = await message.addressDetail
+        let timeString = message.time?.date.timeAgoSinceDateCondense ?? ""
+        let fileSizeString = message.fileMetaData?.file?.size?.toSizeString
+        await MainActor.run {
+            self.addressDetail = addressDetail ?? ""
+            self.isEnglish = isEnglish
+            self.widthOfRow = widthOfRow
+            self.markdownTitle = markdownTitle
+            self.timeString = timeString
+            self.fileSizeString = fileSizeString
+            withAnimation(animation) {
+                self.objectWillChange.send()
             }
         }
     }
 
-    public func footerWidth(_ message: Message) -> CGFloat {
+    public func footerWidth() -> CGFloat {
         let timeWidth = message.time?.date.timeAgoSinceDateCondense?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
         let fileSizeWidth = fileSizeString?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
         let statusWidth: CGFloat = message.isMe(currentUserId: AppState.shared.user?.id) ? 14 : 0
@@ -139,25 +146,38 @@ public final class MessageRowViewModel: ObservableObject {
         return max
     }()
 
-    public func minWidth(_ message: Message) -> CGFloat {
+    public func minWidth() -> CGFloat {
         let hasReplyMessage = message.replyInfo != nil
         return message.isUnsentMessage ? 148 : message.isFileType ? 164 : hasReplyMessage ? 246 : 128
     }
 
-    public func headerWidth(_ message: Message) -> CGFloat {
+    public func headerWidth() -> CGFloat {
         let spacing: CGFloat = 8
         let padding: CGFloat = 16
         return (message.participant?.name?.widthOfString(usingFont: .systemFont(ofSize: 22)) ?? 0) + MessageRowViewModel.avatarSize + spacing + padding
     }
 
-    public func calculateWidthOfMessage(_ message: Message) -> CGFloat {
+    public func unsentFileWidth() -> CGFloat {
+        if message is UnSentMessageProtocol {
+            let cancelButtonWidth: CGFloat = 64
+            let resendButtonWidth: CGFloat = 69
+            let padding: CGFloat = 16
+            let controlsSize = cancelButtonWidth + resendButtonWidth + padding
+            let fileNameWidth = "\(message.fileName ?? "").\(message.fileExtension ?? "")".widthOfString(usingFont: .systemFont(ofSize: 12)) + padding
+            let width = max(controlsSize, fileNameWidth)
+            return width
+        }
+        return 0
+    }
+
+    public func calculateWidthOfMessage() -> CGFloat {
         let imageWidth: CGFloat = CGFloat(message.fileMetaData?.file?.actualWidth ?? 0)
         let messageWidth = message.messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) + 16
-        let headerWidth = headerWidth(message)
-        let footerWidth = footerWidth(message)
+        let headerWidth = headerWidth()
+        let footerWidth = footerWidth()
         let uploadFileProgressWidth: CGFloat = message.isUploadMessage == true ? 128 : 0
-        let unSentMessageWidth: CGFloat = message.isUnsentMessage == true ? messageWidth : 0
-        let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth, uploadFileProgressWidth, unSentMessageWidth].max() ?? 0
+        let unsentFileWidth = unsentFileWidth()
+        let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth, uploadFileProgressWidth, unsentFileWidth].max() ?? 0
         let calculatedWidth: CGFloat = min(contentWidth, maxAllowedWidth)
         return calculatedWidth
     }

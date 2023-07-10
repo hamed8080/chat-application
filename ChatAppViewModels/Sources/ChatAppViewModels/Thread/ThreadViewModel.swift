@@ -26,14 +26,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         hasher.combine(threadId)
     }
 
-    public var thread: Conversation?
+    public var thread: Conversation
     public var centerLoading = false
-    public var topLoading = false
-    public var bottomLoading = false
+    @Published public var topLoading = false
+    @Published public var bottomLoading = false
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
-    public var canLoadMoreBottom: Bool { !bottomLoading && messages.last?.id != thread?.lastMessageVO?.id }
+    public var canLoadMoreBottom: Bool { !bottomLoading && messages.last?.id != thread.lastMessageVO?.id }
     public var messages: [Message] = []
-    public var selectedMessages: [Message] = []
+    @Published public var selectedMessages: [Message] = []
     @Published public var editMessage: Message?
     public var replyMessage: Message?
     @Published public var isInEditMode: Bool = false
@@ -54,7 +54,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var hasNextTop = true
     public var hasNextBottom = true
     public var count: Int { 15 }
-    public var threadId: Int { thread?.id ?? 0 }
+    public var threadId: Int { thread.id ?? 0 }
     public weak var threadsViewModel: ThreadsViewModel?
     public var signalMessageText: String?
     public var searchTextTimer: Timer?
@@ -71,14 +71,11 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var lastVisibleUniqueId: String?
     public weak var forwardMessage: Message?
 
-    public init() {
-        setupNotificationObservers()
-    }
-
-    public func setup(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
+    public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.readOnly = readOnly
         self.thread = thread
         self.threadsViewModel = threadsViewModel
+        setupNotificationObservers()
         exportMessagesVM.setup(thread)
     }
 
@@ -102,18 +99,16 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
             appendMessages([message])
-            objectWillChange.send()
-            if isAtBottomOfTheList {
-                scrollTo(messages.last?.uniqueId ?? "", .easeInOut, .bottom)
-            }
+            animatableObjectWillChange()
+            scrollToLastMessageIfLastMessageIsVisible()
         }
     }
 
     public func onLastMessageChanged(_ thread: Conversation) {
         if thread.id == threadId {
-            self.thread?.lastMessage = thread.lastMessage
-            self.thread?.lastMessageVO = thread.lastMessageVO
-            self.thread?.unreadCount = thread.unreadCount
+            self.thread.lastMessage = thread.lastMessage
+            self.thread.lastMessageVO = thread.lastMessageVO
+            self.thread.unreadCount = thread.unreadCount
             if let lastMessage = thread.lastMessageVO, let index = messageIndex(lastMessage.id) {
                 messages[index] = lastMessage
             }
@@ -192,33 +187,23 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func sendSeenMessageIfNeeded(_ message: Message) {
         let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        if let messageId = message.id, let lastMsgId = thread?.lastSeenMessageId, messageId > lastMsgId, !isMe {
-            thread?.lastSeenMessageId = messageId
+        if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, !isMe {
+            thread.lastSeenMessageId = messageId
             print("send seen for message:\(message.messageTitle) with id:\(messageId)")
             ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
-            if let unreadCount = thread?.unreadCount, unreadCount > 0 {
-                thread?.unreadCount = unreadCount - 1
+            if let unreadCount = thread.unreadCount, unreadCount > 0 {
+                thread.unreadCount = unreadCount - 1
                 objectWillChange.send()
             }
-        } else if thread?.unreadCount ?? 0 > 0 {
-            print("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(thread?.lastSeenMessageId ?? 0)")
-            thread?.unreadCount = 0
+        } else if thread.unreadCount ?? 0 > 0 {
+            print("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(thread.lastSeenMessageId ?? 0)")
+            thread.unreadCount = 0
             objectWillChange.send()
         }
     }
 
     public func sendSignal(_ signalMessage: SignalMessageType) {
         ChatManager.activeInstance?.system.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
-    }
-
-    public func setMessageEdited(_ message: Message) {
-        messages.first(where: { $0.id == message.id })?.message = message.message
-    }
-
-    /// Prevent reconstructing the thread in updates like from a cached version to a server version.
-    public func updateThread(_ thread: Conversation) {
-        self.thread?.updateValues(thread)
-        objectWillChange.send()
     }
 
     public func appendMessages(_ messages: [Message]) {
@@ -237,8 +222,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     func appenedUnreadMessagesRowsIfNeeed() {
-        guard let lastMessageId = thread?.lastSeenMessageId,
-              thread?.unreadCount ?? 0 > 1,
+        guard let lastMessageId = thread.lastSeenMessageId,
+              thread.unreadCount ?? 0 > 1,
               let lastSeenIndex = self.messages.firstIndex(where: { $0.id == lastMessageId })
         else { return }
         messages.removeAll(where: { $0 is UnreadMessageProtocol })
@@ -301,15 +286,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    public func togglePinMessage(_ message: Message) {
-        guard let messageId = message.id else { return }
-        if message.pinned == false || message.pinned == nil {
-            pinMessage(messageId)
-        } else {
-            unpinMessage(messageId)
-        }
-    }
-
     public func messageIndex(_ messageId: Int?) -> Array<Message>.Index? {
         messages.firstIndex(where: { $0.id == messageId })
     }
@@ -349,7 +325,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func onUnreadCount(_ response: ChatResponse<UnreadCount>) {
         if threadId == response.result?.threadId {
-            thread?.unreadCount = response.result?.unreadCount
+            thread.unreadCount = response.result?.unreadCount
             objectWillChange.send()
         }
     }
@@ -357,10 +333,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     /// This method will be called whenver we send seen for an unseen message by ourself.
     public func onLastSeenMessageUpdated(_ response: ChatResponse<LastSeenMessageResponse>) {
         if threadId == response.subjectId {
-            thread?.lastSeenMessageTime = response.result?.lastSeenMessageTime
-            thread?.lastSeenMessageId = response.result?.lastSeenMessageId
-            thread?.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
-            thread?.unreadCount = response.contentCount
+            thread.lastSeenMessageTime = response.result?.lastSeenMessageTime
+            thread.lastSeenMessageId = response.result?.lastSeenMessageId
+            thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
+            thread.unreadCount = response.contentCount
             objectWillChange.send()
         }
     }

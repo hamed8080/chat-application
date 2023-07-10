@@ -34,6 +34,6 @@ struct SearchMessageRow: View {
 struct SearchMessageRow_Previews: PreviewProvider {
     static var previews: some View {
         SearchMessageRow()
-            .environmentObject(MessageRowViewModel(message: MockData.message, viewModel: .init()))
+            .environmentObject(MessageRowViewModel(message: MockData.message, viewModel: .init(thread: Conversation())))
     }
 }

@@ -17,9 +17,9 @@ extension ThreadViewModel {
     /// On Thread view, it will start calculating to fetch what part of [top, bottom, both top and bottom] receive.
     public func startFetchingHistory() {
         if isFetchedServerFirstResponse == true { return }
-        if thread?.lastSeenMessageId == thread?.lastMessageVO?.id {
+        if thread.lastSeenMessageId == thread.lastMessageVO?.id {
             moveToLastMessage()
-        } else if thread?.lastSeenMessageId ?? 0 < thread?.lastMessageVO?.id ?? 0, let lastMessageSeenTime = thread?.lastSeenMessageTime, let messageId = thread?.lastSeenMessageId {
+        } else if thread.lastSeenMessageId ?? 0 < thread.lastMessageVO?.id ?? 0, let lastMessageSeenTime = thread.lastSeenMessageTime, let messageId = thread.lastSeenMessageId {
             moveToTime(lastMessageSeenTime, messageId, highlight: false)
         } else {
             /// If lastMessageDeleted it cause the view not render because lastSeenMessageId is ahead of real lastMessage
@@ -36,7 +36,7 @@ extension ThreadViewModel {
     func onHistory(_ response: ChatResponse<[Message]>) {
         guard let uniqueId = response.uniqueId, requests["GET_HISTORY-\(uniqueId)"] != nil, let messages = response.result else { return }
         appendMessages(messages)
-        if response.cache == false, isFetchedServerFirstResponse == false, let time = thread?.lastSeenMessageTime, let lastSeenMessageId = thread?.lastSeenMessageId {
+        if response.cache == false, isFetchedServerFirstResponse == false, let time = thread.lastSeenMessageTime, let lastSeenMessageId = thread.lastSeenMessageId {
             moveToTime(time, lastSeenMessageId, highlight: false)
         }
         if response.cache == false {
@@ -88,7 +88,7 @@ extension ThreadViewModel {
             bottomLoading = true
         }
         print("moveToLastMessage called")
-        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: thread?.lastSeenMessageTime?.advanced(by: 100), readOnly: readOnly)
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: thread.lastSeenMessageTime?.advanced(by: 100), readOnly: readOnly)
         requests["LAST_MESSAGE_HISTORY-\(req.uniqueId)"] = req
         ChatManager.activeInstance?.message.history(req)
     }
@@ -103,7 +103,7 @@ extension ThreadViewModel {
             requests.removeValue(forKey: "LAST_MESSAGE_HISTORY-\(uniqueId)")
         }
         objectWillChange.send()
-        let lastMessageSeenUniqueId = messages.first(where: {$0.id == thread?.lastSeenMessageId })?.uniqueId
+        let lastMessageSeenUniqueId = messages.first(where: {$0.id == thread.lastSeenMessageId })?.uniqueId
         scrollTo(lastMessageSeenUniqueId ?? "", nil, .bottom)
     }
 

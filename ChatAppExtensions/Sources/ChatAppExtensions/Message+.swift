@@ -34,7 +34,7 @@ public extension Message {
     }
 
     var uploadFile: UploadWithTextMessageProtocol? { self as? UploadWithTextMessageProtocol }
-    var fileExtension: String? { uploadFile?.uploadFileRequest?.fileExtension ?? uploadFile?.uploadImageRequest?.fileExtension}
+    var fileExtension: String? { uploadFile?.uploadFileRequest?.fileExtension ?? uploadFile?.uploadImageRequest?.fileExtension }
     var fileName: String? { uploadFile?.uploadFileRequest?.fileName ?? uploadFile?.uploadImageRequest?.fileName }
     var type: ChatModels.MessageType? { messageType ?? .unknown }
     var isTextMessageType: Bool { type == .text || isFileType }

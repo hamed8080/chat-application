@@ -80,7 +80,7 @@ public struct UploadFileView: View {
 struct UploadFileView_Previews: PreviewProvider {
     static var previews: some View {
         let message = UploadFileWithTextMessage(uploadFileRequest: UploadFileRequest(data: Data()), thread: MockData.thread)
-        let threadViewModel = ThreadViewModel()
+        let threadViewModel = ThreadViewModel(thread: Conversation())
         let uploadFileVM = UploadFileViewModel()
         UploadFileView(message: message)
             .environmentObject(threadViewModel)
@@ -88,7 +88,6 @@ struct UploadFileView_Previews: PreviewProvider {
             .background(Color.black.ignoresSafeArea())
             .onAppear {
                 uploadFileVM.startUploadFile(message: message, thread: threadViewModel.thread)
-                threadViewModel.setup(thread: MockData.thread)
             }
     }
 }

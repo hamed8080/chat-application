@@ -93,7 +93,7 @@ struct TextMessageType: View {
             .contentShape(Rectangle())
             .background(message.isMe(currentUserId: AppState.shared.user?.id) ? Color.chatMeBg : Color.chatSenderBg)
             .overlay {
-                if threadVM.highliteMessageId == message.id {
+                if let messageId = message.id, threadVM.highliteMessageId == messageId {
                     Color.blue.opacity(0.3)
                 }
             }

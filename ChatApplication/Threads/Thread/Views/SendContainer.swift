@@ -8,27 +8,32 @@
 import AdditiveUI
 import ChatAppUI
 import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct SendContainer: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    @State private var isInEditMode: Bool = false
+    let viewModel: ThreadViewModel
     @Binding var deleteMessagesDialog: Bool
-    @State var text: String = ""
-    @State var isRecording = false
+    @State private var text: String = ""
+    @State private var isRecording = false
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
-    let threadId: Int?
+    private var threadId: Int? { viewModel.thread.id }
 
     var body: some View {
         VStack {
             Spacer()
             VStack(spacing: 0) {
-                if viewModel.isInEditMode {
-                    SelectionView(deleteMessagesDialog: $deleteMessagesDialog)
+                if isInEditMode {
+                    SelectionView(viewModel: viewModel, deleteMessagesDialog: $deleteMessagesDialog)
                 } else {
                     ReplyMessageViewPlaceholder()
+                        .environmentObject(viewModel)
                     MentionList(text: $text)
                         .frame(maxHeight: 320)
+                        .environmentObject(viewModel)
                     EditMessagePlaceholderView()
+                        .environmentObject(viewModel)
                     AudioRecordingView()
                         .environmentObject(viewModel.audioRecoderVM)
                     HStack {
@@ -67,8 +72,8 @@ struct SendContainer: View {
                     }
                 }
             }
-            .opacity(viewModel.thread?.disableSend ?? false ? 0.3 : 1.0)
-            .disabled(viewModel.thread?.disableSend ?? false)
+            .opacity(viewModel.thread.disableSend ? 0.3 : 1.0)
+            .disabled(viewModel.thread.disableSend)
             .padding(.bottom, 4)
             .padding([.leading, .trailing], 8)
             .padding(.top, 18)
@@ -84,6 +89,11 @@ struct SendContainer: View {
             )
             .onReceive(viewModel.$editMessage) { editMessage in
                 text = editMessage?.message ?? ""
+            }
+            .onReceive(viewModel.$isInEditMode) { newValue in
+                if newValue != isInEditMode {
+                    isInEditMode = newValue
+                }
             }
             .onChange(of: text) { newValue in
                 viewModel.searchForParticipantInMentioning(newValue)
@@ -111,7 +121,8 @@ struct SendContainer: View {
 }
 
 struct SelectionView: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    let viewModel: ThreadViewModel
+    @State private var selectedCount: Int = 0
     @Binding var deleteMessagesDialog: Bool
 
     var body: some View {
@@ -125,9 +136,10 @@ struct SelectionView: View {
                     viewModel.animatableObjectWillChange()
                 }
 
-            Text("\(viewModel.selectedMessages.count) selected \(viewModel.forwardMessage != nil ? "to forward" : "")")
+            Text("\(selectedCount) selected \(viewModel.forwardMessage != nil ? "to forward" : "")")
                 .offset(x: 8)
             Spacer()
+
             Image(systemName: "trash.fill")
                 .font(.system(size: 20))
                 .foregroundColor(.redSoft)
@@ -144,6 +156,11 @@ struct SelectionView: View {
                     viewModel.sheetType = .threadPicker
                     viewModel.animatableObjectWillChange()
                 }
+        }
+        .onReceive(viewModel.$selectedMessages) { newValue in
+            withAnimation {
+                selectedCount = newValue.count
+            }
         }
     }
 }
@@ -209,8 +226,7 @@ struct EditMessagePlaceholderView: View {
 
 struct SendContainer_Previews: PreviewProvider {
     static var previews: some View {
-        SendContainer(deleteMessagesDialog: .constant(true), threadId: 0)
-            .environmentObject(ThreadViewModel())
+        SendContainer(viewModel: ThreadViewModel(thread: Conversation(id: 0)), deleteMessagesDialog: .constant(true))
     }
 }
 

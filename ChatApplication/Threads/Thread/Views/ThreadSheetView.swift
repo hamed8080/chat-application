@@ -47,6 +47,7 @@ struct ThreadSheetView: View {
             }
         case .locationPicker:
             MapPickerView()
+                .environmentObject(viewModel)
         default:
             Text("Sheet \(viewModel.sheetType.debugDescription) not implemented yet.")
         }

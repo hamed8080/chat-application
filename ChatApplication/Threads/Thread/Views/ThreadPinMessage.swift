@@ -14,7 +14,7 @@ import Combine
 import SwiftUI
 
 struct ThreadPinMessage: View {
-    let thread: Conversation
+    private var thread: Conversation { threadVM.thread }
     @State private var message: PinMessage?
     let threadVM: ThreadViewModel
     @State var thumbnailData: Data?
@@ -170,6 +170,6 @@ struct ThreadPinMessage: View {
 
 struct ThreadPinMessage_Previews: PreviewProvider {
     static var previews: some View {
-        ThreadPinMessage(thread: Conversation(), threadVM: ThreadViewModel())
+        ThreadPinMessage(threadVM: ThreadViewModel(thread: Conversation()))
     }
 }

@@ -36,6 +36,7 @@ struct MapPickerView: View {
                     viewModel.sheetType = nil
                     viewModel.animatableObjectWillChange()
                 }
+                .environmentObject(viewModel)
             }
         }
     }

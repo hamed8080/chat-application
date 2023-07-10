@@ -19,7 +19,7 @@ struct ForwardMessageRow: View {
     @ViewBuilder var body: some View {
         if let forwardThread = forwardInfo.conversation {
             NavigationLink {
-                ThreadView(thread: forwardThread)
+                ThreadView(viewModel: ThreadViewModel(thread: forwardThread))
             } label: {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {

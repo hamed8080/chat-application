@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ChatAppViewModels
+import ChatModels
 
 public struct AudioRecordingView: View {
     @EnvironmentObject var viewModel: AudioRecordingViewModel
@@ -47,11 +48,7 @@ public struct AudioRecordingView: View {
 
 struct AudioRecordingView_Previews: PreviewProvider {
     static var previews: some View {
-        let vm = ThreadViewModel()
         AudioRecordingView()
-            .environmentObject(AudioRecordingViewModel(threadViewModel: ThreadViewModel()))
-            .onAppear {
-                vm.setup(thread: MockData.thread)
-            }
+            .environmentObject(AudioRecordingViewModel(threadViewModel: ThreadViewModel(thread: MockData.thread)))
     }
 }

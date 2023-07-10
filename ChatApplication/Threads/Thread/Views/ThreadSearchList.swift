@@ -7,6 +7,7 @@
 
 import ChatAppUI
 import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct ThreadSearchList: View {
@@ -50,7 +51,7 @@ struct ThreadSearchList_Previews: PreviewProvider {
     }
 
     static var vm: ThreadViewModel {
-        let vm = ThreadViewModel()
+        let vm = ThreadViewModel(thread: Conversation())
         vm.searchedMessages = MockData.generateMessages(count: 15)
         vm.objectWillChange.send()
         return vm

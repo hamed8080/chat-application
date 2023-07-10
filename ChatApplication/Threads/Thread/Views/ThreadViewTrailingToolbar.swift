@@ -11,15 +11,15 @@ import ChatModels
 import SwiftUI
 
 struct ThreadViewTrailingToolbar: View {
-    var thread: Conversation? { viewModel.thread }
-    @EnvironmentObject var viewModel: ThreadViewModel
+    private var thread: Conversation { viewModel.thread }
+    let viewModel: ThreadViewModel
 
     var body: some View {
         NavigationLink {
             DetailView(viewModel: DetailViewModel(thread: thread))
         } label: {
-            ImageLaoderView(url: thread?.computedImageURL, userName: thread?.title)
-                .id("\(thread?.id ?? 0)\(thread?.computedImageURL ?? "")")
+            ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
+                .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
                 .font(.iransansBody)
                 .foregroundColor(.white)
                 .frame(width: 32, height: 32)
@@ -49,6 +49,6 @@ struct ThreadViewTrailingToolbar: View {
 
 struct ThreadViewTrailingToolbar_Previews: PreviewProvider {
     static var previews: some View {
-        ThreadViewTrailingToolbar()
+        ThreadViewTrailingToolbar(viewModel: ThreadViewModel(thread: Conversation()))
     }
 }

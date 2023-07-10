@@ -31,7 +31,7 @@ struct MoveToBottomButton: View {
         .padding([.trailing], 8)
         .scaleEffect(x: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, y: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, anchor: .center)
         .overlay(alignment: .top) {
-            let unreadCount = viewModel.thread?.unreadCount ?? 0
+            let unreadCount = viewModel.thread.unreadCount ?? 0
             let hide = unreadCount == 0
             Text(verbatim: unreadCount == 0 ? "" : "\(unreadCount)")
                 .font(.system(size: 12))

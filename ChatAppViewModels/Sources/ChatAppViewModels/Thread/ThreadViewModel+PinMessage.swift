@@ -11,6 +11,16 @@ import ChatCore
 import ChatModels
 
 extension ThreadViewModel {
+
+    public func togglePinMessage(_ message: Message) {
+        guard let messageId = message.id else { return }
+        if message.pinned == false || message.pinned == nil {
+            pinMessage(messageId)
+        } else {
+            unpinMessage(messageId)
+        }
+    }
+    
     public func pinMessage(_ messageId: Int) {
         ChatManager.activeInstance?.message.pin(.init(messageId: messageId))
     }
@@ -20,7 +30,7 @@ extension ThreadViewModel {
             if let index = messageIndex(messageId) {
                 messages[index].pinned = true
             }
-            thread?.pinMessage = message
+            thread.pinMessage = message
         }
     }
 
@@ -33,7 +43,7 @@ extension ThreadViewModel {
             if let index = messageIndex(messageId) {
                 messages[index].pinned = false
             }
-            thread?.pinMessage = nil
+            thread.pinMessage = nil
         }
     }
 }

@@ -46,7 +46,7 @@ struct ThreadMessagesList: View {
             }
             .safeAreaInset(edge: .top) {
                 Spacer()
-                    .frame(height: viewModel.thread?.pinMessage != nil ? 48 : 0)
+                    .frame(height: viewModel.thread.pinMessage != nil ? 48 : 0)
             }
             .safeAreaInset(edge: .bottom) {
                 Spacer()
@@ -88,7 +88,7 @@ struct ThreadMessagesList: View {
 
 struct ThreadMessagesList_Previews: PreviewProvider {
     struct Preview: View {
-        @State var viewModel = ThreadViewModel()
+        @State var viewModel = ThreadViewModel(thread: Conversation())
 
         var body: some View {
             ThreadMessagesList()

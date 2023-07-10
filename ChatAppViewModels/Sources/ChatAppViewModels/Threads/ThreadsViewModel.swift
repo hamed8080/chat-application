@@ -60,104 +60,7 @@ public final class ThreadsViewModel: ObservableObject {
             .store(in: &cancelable)
     }
 
-    private func onChatEvent(_ event: ChatEventType) {
-        switch event {
-        case .message(let messageEventTypes):
-            onMessageEvent(messageEventTypes)
-        case .thread(let threadEventTypes):
-            onThreadEvent(threadEventTypes)
-        case .call(let callEventTypes):
-            onCallEvent(callEventTypes)
-        default:
-            break
-        }
-    }
-
-    private func onParticipantEvent(_ event: ParticipantEventTypes) {
-        switch event {
-        case .add(let chatResponse):
-            onAddPrticipant(chatResponse)
-        case .deleted(let chatResponse):
-            onDeletePrticipant(chatResponse)
-        default:
-            break
-        }
-    }
-
-    public func onThreadEvent(_ event: ThreadEventTypes?) {
-
-        switch event {
-        case .threads(let response):
-            onThreads(response)
-        case .created(let response):
-            onCreate(response)
-        case .deleted(let response):
-            onDeleteThread(response)
-        case let .lastMessageDeleted(response), let .lastMessageEdited(response):
-            if let thread = response.result {
-                onLastMessageChanged(thread)
-            }
-        case .updatedInfo(let response):
-            if let thread = response.result {
-                updateThreadInfo(thread)
-            }
-        case .updatedUnreadCount(let response):
-            if let index = threads.firstIndex(where: { $0.id == response.result?.threadId }) {
-                threads[index].unreadCount = response.result?.unreadCount
-                objectWillChange.send()
-            }
-        case .mute(let response):
-            onMuteThreadChanged(mute: true, threadId: response.result)
-        case .unmute(let response):
-            onMuteThreadChanged(mute: false, threadId: response.result)
-        case .archive(let response):
-            onArchive(response)
-        case .unArchive(let response):
-            onUNArchive(response)
-        case .changedType(let response):
-            onChangedType(response)
-        case .spammed(let response):
-            onSpam(response)
-        case .unreadCount(let response):
-            onUnreadCounts(response)
-        case .pin(let response):
-            onPin(response)
-        case .unpin(let response):
-            onUNPin(response)
-        case .userRemoveFormThread(let response):
-            onUserRemovedByAdmin(response)
-        case .lastSeenMessageUpdated(let response):
-            onLastSeenMessageUpdated(response)
-        default:
-            break
-        }
-    }
-
-    private func onCallEvent(_ event: CallEventTypes) {
-        switch event {
-        case let .callEnded(response):
-            activeCallThreads.removeAll(where: { $0.callId == response?.result })
-        case let .groupCallCanceled(response):
-            activeCallThreads.append(.init(threadId: response.subjectId ?? -1, callId: response.result?.callId ?? -1))
-        case let .callReceived(response):
-            activeCallThreads.append(.init(threadId: response.result?.conversation?.id ?? -1, callId: response.result?.callId ?? -1))
-        default:
-            break
-        }
-    }
-
-    private func onMessageEvent(_ event: MessageEventTypes) {
-        switch event {
-        case .new(let chatResponse):
-            onNewMessage(chatResponse)
-        case .cleared(let chatResponse):
-            onClear(chatResponse)
-        default:
-            break
-        }
-    }
-
-    private func onCreate(_ response: ChatResponse<Conversation>) {
+    func onCreate(_ response: ChatResponse<Conversation>) {
         if let thread = response.result {
             AppState.shared.showThread(thread: thread)
             appendThreads(threads: [thread])
@@ -177,7 +80,7 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    private func onChangedType(_ response: ChatResponse<Conversation>) {
+    func onChangedType(_ response: ChatResponse<Conversation>) {
         if let index = threads.firstIndex(where: {$0.id == response.result?.id })  {
             threads[index].type = .publicGroup
         }
@@ -235,7 +138,7 @@ public final class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance?.conversation.get(req)
     }
 
-    private func onSearch(_ response: ChatResponse<[Conversation]>) {
+    func onSearch(_ response: ChatResponse<[Conversation]>) {
         if let threads = response.result, let uniqueId = response.uniqueId, searchRequests[uniqueId] != nil {
             appendThreads(threads: threads)
             searchRequests.removeValue(forKey: uniqueId)
@@ -331,7 +234,7 @@ public final class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance?.conversation.participant.add(req)
     }
 
-    private func onAddPrticipant(_ response: ChatResponse<Conversation>) {
+    func onAddPrticipant(_ response: ChatResponse<Conversation>) {
         if let thread = response.result {
             /// To navigate to the thread immediately after adding participants
             AppState.shared.showThread(thread: thread)
@@ -339,7 +242,7 @@ public final class ThreadsViewModel: ObservableObject {
         isLoading = false
     }
 
-    private func onDeletePrticipant(_ response: ChatResponse<[Participant]>) {
+    func onDeletePrticipant(_ response: ChatResponse<[Participant]>) {
         if let index = firstIndex(response.subjectId) {
             threads[index].participantCount = min(0, threads[index].participantCount ?? 0 - 1)
         }
@@ -398,7 +301,7 @@ public final class ThreadsViewModel: ObservableObject {
         sheetType = nil
     }
 
-    private func onDeleteThread(_ response: ChatResponse<Participant>) {
+    func onDeleteThread(_ response: ChatResponse<Participant>) {
         if let threadId = response.subjectId, let thread = threads.first(where: { $0.id == threadId }) {
             removeThread(thread)
         }
@@ -414,7 +317,7 @@ public final class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance?.message.clear(.init(subjectId: threadId))
     }
 
-    private func onClear(_ response: ChatResponse<Int>) {
+    func onClear(_ response: ChatResponse<Int>) {
         if let threadId = response.result, let thread = threads.first(where: { $0.id == threadId }) {
             removeThread(thread)
         }
@@ -425,7 +328,7 @@ public final class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance?.conversation.spam(.init(subjectId: threadId))
     }
 
-    private func onSpam(_ response: ChatResponse<Contact>) {
+    func onSpam(_ response: ChatResponse<Contact>) {
         if let threadId = response.subjectId, let thread = threads.first(where: { $0.id == threadId }) {
             removeThread(thread)
         }
@@ -440,7 +343,7 @@ public final class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance?.conversation.unreadCount(.init(threadIds: threadsIds))
     }
 
-    private func onUnreadCounts(_ response: ChatResponse<[String : Int]>) {
+    func onUnreadCounts(_ response: ChatResponse<[String : Int]>) {
         response.result?.forEach { key, value in
             if let index = threads.firstIndex(where: { $0.id == Int(key) ?? -1 }) {
                 threads[index].unreadCount = value
@@ -485,7 +388,7 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    private func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
+    func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
         if let id = response.result, let index = self.threads.firstIndex(where: {$0.id == id}) {
             threads.remove(at: index)
         }

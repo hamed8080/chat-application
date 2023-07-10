@@ -44,14 +44,11 @@ struct MessageRowFactory: View {
 
 struct MessageRow_Previews: PreviewProvider {
     static var previews: some View {
-        let threadVM = ThreadViewModel()
+        let threadVM = ThreadViewModel(thread: Conversation())
         List {
             ForEach(MockData.generateMessages(count: 5)) { message in
                 MessageRowFactory(viewModel: MessageRowViewModel(message: message, viewModel: threadVM))
             }
-        }
-        .onAppear {
-            threadVM.setup(thread: MockData.thread)
         }
         .listStyle(.plain)
     }

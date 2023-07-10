@@ -38,15 +38,15 @@ struct ThreadViewCenterToolbar: View {
                     .font(.iransansFootnote)
             }
         }
-        .onChange(of: viewModel.thread?.computedTitle ?? "") { newValue in
+        .onChange(of: viewModel.thread.computedTitle) { newValue in
             title = newValue
         }
-        .onChange(of: viewModel.thread?.participantCount) { newValue in
+        .onChange(of: viewModel.thread.participantCount) { newValue in
             participantCount = newValue
         }
         .onAppear {
-            participantCount = viewModel.thread?.participantCount
-            title = viewModel.thread?.computedTitle ?? ""
+            participantCount = viewModel.thread.participantCount
+            title = viewModel.thread.computedTitle
             NotificationCenter.default.publisher(for: .thread)
                 .compactMap { $0.object as? ParticipantEventTypes }
                 .sink { event in
@@ -80,6 +80,6 @@ struct ThreadViewCenterToolbar: View {
 
 struct ThreadViewCenterToolbar_Previews: PreviewProvider {
     static var previews: some View {
-        ThreadViewCenterToolbar(viewModel: ThreadViewModel())
+        ThreadViewCenterToolbar(viewModel: ThreadViewModel(thread: Conversation()))
     }
 }

@@ -81,7 +81,7 @@ struct ReplyInfo_Previews: PreviewProvider {
     static let isMeReplyInfo = ReplyInfo(repliedToMessageId: 0, message: "Hi how are you?", messageType: .text, repliedToMessageTime: 100, participant: isMEParticipant)
     static let deletedReplay = ReplyInfo(deleted: true)
     static var previews: some View {
-        let threadVM = ThreadViewModel()
+        let threadVM = ThreadViewModel(thread: Conversation())
         List {
             TextMessageType()
                 .environmentObject(MessageRowViewModel(message: Message(message: "Hi Hamed, I'm graet.", ownerId: 10, replyInfo: replyInfo), viewModel: threadVM))
@@ -89,9 +89,6 @@ struct ReplyInfo_Previews: PreviewProvider {
                 .environmentObject(MessageRowViewModel(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: isMeReplyInfo), viewModel: threadVM))
             TextMessageType()
                 .environmentObject(MessageRowViewModel(message: Message(message: "Hi Hamed, I'm graet.", replyInfo: deletedReplay), viewModel: threadVM))
-        }
-        .onAppear {
-            threadVM.setup(thread: MockData.thread)
         }
         .listStyle(.plain)
     }
