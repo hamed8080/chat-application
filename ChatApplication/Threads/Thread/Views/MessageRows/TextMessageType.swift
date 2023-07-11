@@ -108,7 +108,7 @@ struct TextMessageType: View {
                     .environmentObject(viewModel)
             }
             .onAppear {
-                viewModel.calculate(message: message)
+                viewModel.calculate()
             }
 
             if !message.isMe(currentUserId: AppState.shared.user?.id) {

@@ -12,6 +12,8 @@ import ChatAppExtensions
 import ChatModels
 import Combine
 import ChatAppModels
+import NaturalLanguage
+import ChatDTO
 
 public final class MessageRowViewModel: ObservableObject {
     public var isCalculated = false
@@ -28,20 +30,32 @@ public final class MessageRowViewModel: ObservableObject {
     private var cancelableSet = Set<AnyCancellable>()
     public var message: Message
     public var isInSelectMode: Bool = false
+    public var isMe: Bool
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
         self.threadVM = viewModel
+        self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
     }
 
     @MainActor
-    public func calculate(message: Message) {
-        self.message = message
+    public func calculate() {
         if isCalculated { return }
         isCalculated = true
         NotificationCenter.default.publisher(for: .message)
             .compactMap{ $0.object as? MessageEventTypes }
             .sink { [weak self] event in
                 self?.onMessageEvent(event)
+            }
+            .store(in: &cancelableSet)
+
+        NotificationCenter.default.publisher(for: Notification.Name("UPDATE_SEEN"))
+            .compactMap {$0.object as? MessageResponse}
+            .sink { newValue in
+                self.message.delivered = true
+                self.message.seen = true
+                withAnimation {
+                    self.objectWillChange.send()
+                }
             }
             .store(in: &cancelableSet)
         threadVM.$isInEditMode.sink { newValue in
@@ -112,7 +126,7 @@ public final class MessageRowViewModel: ObservableObject {
 
     private func performaCalculation(animation: Animation? = nil) async {
         let message = message
-        let isEnglish = message.message?.isEnglishString ?? true
+        let isEnglish = message.message?.naturalTextAlignment == .leading
         let widthOfRow = self.calculateWidthOfMessage()
         let markdownTitle = message.markdownTitle
         let addressDetail = await message.addressDetail
@@ -125,7 +139,7 @@ public final class MessageRowViewModel: ObservableObject {
             self.markdownTitle = markdownTitle
             self.timeString = timeString
             self.fileSizeString = fileSizeString
-            withAnimation(animation) {
+            withAnimation(animation?.speed(0.2)) {
                 self.objectWillChange.send()
             }
         }

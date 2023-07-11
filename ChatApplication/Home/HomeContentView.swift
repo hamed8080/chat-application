@@ -37,7 +37,7 @@ struct HomeContentView: View {
             } detail: {
                 NavigationStack {
                     if let thread = container.navVM.selectedThread {
-                        ThreadView(viewModel: ThreadViewModel(thread: thread))
+                        ThreadView(viewModel: ThreadViewModel(thread: thread, threadsViewModel: container.threadsVM))
                             .id(thread.id) // don't remove this from here it leads to never change in view
                     } else {
                         DetailContentView()

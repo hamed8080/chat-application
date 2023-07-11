@@ -206,7 +206,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         ChatManager.activeInstance?.system.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
     }
 
-    public func appendMessages(_ messages: [Message]) {
+    public func appendMessages(_ messages: [Message], isToTime: Bool = false) {
+        guard messages.count > 0 else { return }
         messages.forEach { message in
             if let oldUploadFileIndex = self.messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == message.uniqueId }) {
                 self.messages.remove(at: oldUploadFileIndex)
@@ -217,17 +218,17 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                 self.messages.append(message)
             }
         }
-        appenedUnreadMessagesRowsIfNeeed()
+        appenedUnreadMessagesBannerIfNeeed(isToTime)
         sort()
     }
 
-    func appenedUnreadMessagesRowsIfNeeed() {
-        guard let lastMessageId = thread.lastSeenMessageId,
-              thread.unreadCount ?? 0 > 1,
+    func appenedUnreadMessagesBannerIfNeeed(_ isToTime: Bool) {
+        guard isToTime,
+              let lastMessageId = thread.lastSeenMessageId,
               let lastSeenIndex = self.messages.firstIndex(where: { $0.id == lastMessageId })
         else { return }
         messages.removeAll(where: { $0 is UnreadMessageProtocol })
-        messages.append(UnreadMessage(time: (messages[lastSeenIndex].time ?? 0) + 1))
+        messages.append(UnreadMessage(id: -1, time: (messages[lastSeenIndex].time ?? 0) + 1))
     }
 
     public func deleteMessages(_ messages: [Message]) {

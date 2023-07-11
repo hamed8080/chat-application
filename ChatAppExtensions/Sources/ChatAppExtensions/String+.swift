@@ -7,6 +7,8 @@
 
 import ChatModels
 import UniformTypeIdentifiers
+import SwiftUI
+import NaturalLanguage
 
 public extension String {
     func isTypingAnimationWithText(onStart: @escaping (String) -> Void, onChangeText: @escaping (String, Timer) -> Void, onEnd: @escaping () -> Void) {
@@ -99,4 +101,24 @@ public extension String {
 
     /// Convert mimeType to extension such as `audio/mpeg` to `mp3`.
     var ext: String? { UTType(mimeType: self)?.preferredFilenameExtension }
+
+    var dominantLanguage: String? {
+        return NLLanguageRecognizer.dominantLanguage(for: self)?.rawValue
+    }
+
+    var naturalTextAlignment: TextAlignment {
+        guard let dominantLanguage = dominantLanguage else {
+            return .leading
+        }
+        switch NSParagraphStyle.defaultWritingDirection(forLanguage: dominantLanguage) {
+        case .leftToRight:
+            return .leading
+        case .rightToLeft:
+            return .trailing
+        case .natural:
+            return .leading
+        @unknown default:
+            return .leading
+        }
+    }
 }

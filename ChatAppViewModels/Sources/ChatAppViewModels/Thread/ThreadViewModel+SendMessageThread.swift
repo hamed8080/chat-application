@@ -157,11 +157,22 @@ extension ThreadViewModel {
 
     public func onSeen(_ response: ChatResponse<MessageResponse>) {
         guard threadId == response.result?.threadId,
-              let index = messages.firstIndex(where: { ($0.id ?? 0 <= response.result?.messageId ?? 0 && $0.seen == nil) || $0.uniqueId == response.uniqueId })
+              let index = messages.firstIndex(where: { ($0.id ?? 0 == response.result?.messageId ?? 0 && $0.seen == nil) || $0.uniqueId == response.uniqueId })
         else { return }
-
         messages[index].delivered = true
         messages[index].seen = true
+        setSeenForOlderMessages(messageId: response.result?.messageId)
+    }
+
+    private func setSeenForOlderMessages(messageId: Int?) {
+        if let messageId = messageId {
+            messages.filter({ ($0.id ?? 0 < messageId) && ($0.seen == false || $0.seen == nil || $0.delivered == nil || $0.delivered == false) && $0.ownerId == ChatManager.activeInstance?.userInfo?.id }).forEach { message in
+                message.delivered = true
+                message.seen = true
+                let result = MessageResponse(messageState: .seen, threadId: threadId, messageId: message.id)
+                NotificationCenter.default.post(name: Notification.Name("UPDATE_SEEN"), object: result)
+            }
+        }
     }
 
     public func resendUnsetMessage(_ message: Message) {

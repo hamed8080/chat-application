@@ -56,7 +56,9 @@ extension ThreadViewModel {
         requests["TO_TIME-\(toTimeReq.uniqueId)"] = (toTimeReq, messageId, highlight)
         requests["FROM_TIME-\(fromTimeReq.uniqueId)"] = (fromTimeReq, messageId, highlight)
         ChatManager.activeInstance?.message.history(toTimeReq)
-        ChatManager.activeInstance?.message.history(fromTimeReq)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5){
+            ChatManager.activeInstance?.message.history(fromTimeReq)
+        }
     }
 
     func onMoveToTime(_ response: ChatResponse<[Message]>) {
@@ -74,7 +76,7 @@ extension ThreadViewModel {
               let tuple = requests["\(key)-\(uniqueId)"] as? (request: GetHistoryRequest, messageId: Int, highlight: Bool)
         else { return }
         isFetchedServerFirstResponse = true
-        appendMessages(messages)
+        appendMessages(messages, isToTime: key == "TO_TIME")
         objectWillChange.send()
         if let messageIdUniqueId = self.messages.first(where: {$0.id == tuple.messageId})?.uniqueId {
             showHighlighted(messageIdUniqueId, tuple.messageId, highlight: tuple.highlight)
@@ -84,9 +86,8 @@ extension ThreadViewModel {
     
     public func moveToLastMessage() {
         if bottomLoading { return }
-        withAnimation {
-            bottomLoading = true
-        }
+        bottomLoading = true
+        animatableObjectWillChange()
         print("moveToLastMessage called")
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: thread.lastSeenMessageTime?.advanced(by: 100), readOnly: readOnly)
         requests["LAST_MESSAGE_HISTORY-\(req.uniqueId)"] = req
@@ -102,9 +103,8 @@ extension ThreadViewModel {
             bottomLoading = false
             requests.removeValue(forKey: "LAST_MESSAGE_HISTORY-\(uniqueId)")
         }
-        objectWillChange.send()
         let lastMessageSeenUniqueId = messages.first(where: {$0.id == thread.lastSeenMessageId })?.uniqueId
-        scrollTo(lastMessageSeenUniqueId ?? "", nil, .bottom)
+        scrollTo(lastMessageSeenUniqueId ?? "")
     }
 
     public func moreTop(_ toTime: UInt?) {
@@ -131,7 +131,7 @@ extension ThreadViewModel {
             requests.removeValue(forKey: "MORE_TOP-\(uniqueId)")
         }
         objectWillChange.send()
-        scrollTo(request.lastVisibleUniqueId ?? "", nil, .top)
+        scrollTo(request.lastVisibleUniqueId ?? "", anchor: .top)
     }
 
     public func moreBottom(_ fromTime: UInt?) {
@@ -157,6 +157,6 @@ extension ThreadViewModel {
             requests.removeValue(forKey: "MORE_BOTTOM-\(uniqueId)")
         }
         objectWillChange.send()
-        scrollTo(request.lastVisibleUniqueId ?? "", nil, .bottom)
+        scrollTo(request.lastVisibleUniqueId ?? "", anchor: .bottom)
     }
 }

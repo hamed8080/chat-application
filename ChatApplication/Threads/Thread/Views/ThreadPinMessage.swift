@@ -21,7 +21,7 @@ struct ThreadPinMessage: View {
     @State private var cancelableSet = Set<AnyCancellable>()
     @State var requestUniqueId: String?
     private var icon: String? { fileMetadata?.file?.mimeType?.systemImageNameForFileExtension }
-    var isEnglish: Bool { message?.text?.isEnglishString ?? false }
+    var isEnglish: Bool { message?.text?.naturalTextAlignment == .leading }
     private var title: String {
         if let text = message?.text, !text.isEmpty {
             return text

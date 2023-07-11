@@ -47,28 +47,28 @@ public extension Message {
     var isAudio: Bool { [MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice].contains(messageType ?? .unknown) }
 
     func updateMessage(message: Message) {
-        deletable = message.deletable
-        delivered = message.delivered
-        seen = message.seen ?? seen
-        editable = message.editable
-        edited = message.edited
-        id = message.id
-        mentioned = message.mentioned
-        self.message = message.message
-        messageType = message.messageType
-        metadata = message.metadata
-        ownerId = message.ownerId
-        pinned = message.pinned
-        previousId = message.previousId
-        systemMetadata = message.systemMetadata
-        threadId = message.threadId
-        time = message.time
-        timeNanos = message.timeNanos
-        uniqueId = message.uniqueId
-        conversation = message.conversation
-        forwardInfo = message.forwardInfo
-        participant = message.participant
-        replyInfo = message.replyInfo
+        deletable = message.deletable ?? deletable
+        delivered = message.delivered ?? delivered ?? delivered
+        seen = message.seen ?? seen ?? seen
+        editable = message.editable ?? editable
+        edited = message.edited ?? edited
+        id = message.id ?? id
+        mentioned = message.mentioned ?? mentioned
+        self.message = message.message ?? self.message
+        messageType = message.messageType ?? messageType
+        metadata = message.metadata ?? metadata
+        ownerId = message.ownerId ?? ownerId
+        pinned = message.pinned ?? pinned
+        previousId = message.previousId ?? previousId
+        systemMetadata = message.systemMetadata ?? systemMetadata
+        threadId = message.threadId ?? threadId
+        time = message.time ?? time
+        timeNanos = message.timeNanos ?? timeNanos
+        uniqueId = message.uniqueId ?? uniqueId
+        conversation = message.conversation ?? conversation
+        forwardInfo = message.forwardInfo ?? forwardInfo
+        participant = message.participant ?? participant
+        replyInfo = message.replyInfo ?? replyInfo
     }
 
     var iconName: String {

@@ -17,7 +17,6 @@ struct MessageRowFactory: View {
     private var message: Message { viewModel.message }
     @State var viewModel: MessageRowViewModel
     @State private(set) var showParticipants: Bool = false
-    private var isMe: Bool { message.isMe(currentUserId: AppState.shared.user?.id) }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -38,7 +37,7 @@ struct MessageRowFactory: View {
                 }
             }
         }
-        .transition(.asymmetric(insertion: .push(from: isMe ? .trailing : .leading), removal: .move(edge: isMe ? .trailing : .leading)))
+        .transition(.asymmetric(insertion: .push(from: viewModel.isMe ? .trailing : .leading), removal: .move(edge: viewModel.isMe ? .trailing : .leading)))
     }
 }
 

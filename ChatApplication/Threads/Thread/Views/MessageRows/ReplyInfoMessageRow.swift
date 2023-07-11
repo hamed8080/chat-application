@@ -33,7 +33,7 @@ struct ReplyInfoMessageRow: View {
                     if let name = message.replyInfo?.participant?.name {
                         Text("\(name)")
                             .font(.iransansBoldCaption2)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: name.isEnglishString ? .leading : .trailing)
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: name.naturalTextAlignment == .leading ? .leading : .trailing)
                             .foregroundColor(.orange)
                             .padding([.leading, .trailing], 4)
                     }
@@ -51,7 +51,7 @@ struct ReplyInfoMessageRow: View {
                             .font(.iransansCaption3)
                             .padding([.leading, .trailing], 4)
                             .cornerRadius(8, corners: .allCorners)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: message.isEnglishString ? .leading : .trailing)
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: message.naturalTextAlignment == .leading ? .leading : .trailing)
                             .foregroundColor(.primary)
                             .lineLimit(1)
                     }
@@ -69,7 +69,7 @@ struct ReplyInfoMessageRow: View {
         .truncationMode(.tail)
         .lineLimit(1)
         .onAppear {
-            viewModel.calculate(message: message)
+            viewModel.calculate()
         }
     }
 }
