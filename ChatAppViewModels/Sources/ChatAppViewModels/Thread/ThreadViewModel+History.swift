@@ -103,8 +103,11 @@ extension ThreadViewModel {
             bottomLoading = false
             requests.removeValue(forKey: "LAST_MESSAGE_HISTORY-\(uniqueId)")
         }
-        let lastMessageSeenUniqueId = messages.first(where: {$0.id == thread.lastSeenMessageId })?.uniqueId
-        scrollTo(lastMessageSeenUniqueId ?? "")
+        /// If a message deleted from bottom of a history lastSeenMessageId is not exist in message response so we should move to lastMessageVO?.id
+        let lastSeenUniqueId = messages.first(where: {$0.id == thread.lastSeenMessageId })?.uniqueId
+        let lastMessageVOUniqueId = messages.first(where: {$0.id == thread.lastMessageVO?.id })?.uniqueId
+        let computedLastUniqueId = lastSeenUniqueId ?? lastMessageVOUniqueId
+        scrollTo(computedLastUniqueId ?? "")
     }
 
     public func moreTop(_ toTime: UInt?) {

@@ -26,7 +26,7 @@ final class ChatDelegateImplementation: ChatDelegate {
 
         Task {
             await MainActor.run {
-                let ssoToken = SSOTokenResponseResult(accessToken: "37aa9cb2d261433a8207a7b09737ba9e.XzIwMjM3", expiresIn: 900)
+                let ssoToken = SSOTokenResponseResult(accessToken: "4151e76bb855403793dbf7b7b0be7c4d.XzIwMjM3", expiresIn: 900)
                 let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
                 let user = User(id: 3_463_768)
                 TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
@@ -59,6 +59,7 @@ final class ChatDelegateImplementation: ChatDelegate {
     }
 
     func chatEvent(event: ChatEventType) {
+        print(dump(event))
         NotificationCenter.post(event: event)
         switch event {
         case let .system(systemEventTypes):

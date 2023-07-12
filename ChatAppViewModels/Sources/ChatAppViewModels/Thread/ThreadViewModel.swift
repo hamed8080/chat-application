@@ -61,9 +61,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
     public var audioPlayer: AVAudioPlayerViewModel?
     var requests: [String: Any] = [:]
-    public var isAtBottomOfTheList: Bool = false
-    public var highliteMessageId: Int?
-    var highlightTimer: Timer?
+    public var isAtBottomOfTheList: Bool = false    
     var searchOffset: Int = 0
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false

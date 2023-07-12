@@ -9,18 +9,18 @@ import Foundation
 import Photos
 import UIKit
 import ChatAppModels
+import SwiftUI
 
 public final class ActionSheetViewModel: ObservableObject {
     public var threadViewModel: ThreadViewModel
-    @Published public var allImageItems: [ImageItem] = []
-    @Published public var selectedImageItems: [ImageItem] = []
-    private let imageSize = CGSize(width: 72, height: 72)
-    public let fetchCount = 10
+    public var allImageItems: [ImageItem] = []
+    public var selectedImageItems: [ImageItem] = []
+    private let imageSize = CGSize(width: 128, height: 128)
+    public let fetchCount = 50
     public var totalCount = 0
     public var offset = 0
     public var hasNext: Bool { totalCount > offset }
     private var isAuthorized: Bool = false
-    @Published public var isLoading = false
     @Published public var selectedFileUrls: [URL] = [] {
         didSet {
             if selectedFileUrls.count != 0 {
@@ -32,7 +32,7 @@ public final class ActionSheetViewModel: ObservableObject {
     public lazy var option: PHImageRequestOptions = {
         let option = PHImageRequestOptions()
         option.isSynchronous = true
-        option.deliveryMode = .highQualityFormat
+        option.deliveryMode = .opportunistic
         option.resizeMode = .exact
         option.isNetworkAccessAllowed = true
         return option
@@ -58,7 +58,18 @@ public final class ActionSheetViewModel: ObservableObject {
     public init(threadViewModel: ThreadViewModel) {
         self.threadViewModel = threadViewModel
         setTotalImageCount()
-        checkAuthorization()
+        let state = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        if state != .authorized {
+            _ = Task {
+                if await checkAuthorization() == .authorized {
+                    self.isAuthorized = true
+                    setTotalImageCount()
+                    await self.loadImages()
+                }
+            }
+        } else {
+            isAuthorized = true
+        }
     }
 
     public func setTotalImageCount() {
@@ -66,86 +77,86 @@ public final class ActionSheetViewModel: ObservableObject {
         totalCount = allImages.count
     }
 
-    private func fetchImages() {
+    private func fetchImages() async {
         let fetchResults = PHAsset.fetchAssets(with: .image, options: opt)
-        fetchResults.enumerateObjects(at: indexSet, options: .concurrent) { [weak self] object, _, _ in
-            self?.requestImage(object)
-            self?.hideLoading()
+        let phAssets = fetchResults.objects(at: indexSet)
+        for asset in phAssets {
+            let tuple = await self.requestImage(asset)
+            self.appendImage(tuple.0, tuple.1, tuple.2)
         }
+        await animateObjectWillChane()
     }
 
-    private func requestImage(_ object: PHAsset) {
-        PHImageManager.default().requestImage(for: object, targetSize: imageSize, contentMode: .aspectFit, options: option) { [weak self] image, info in
-            self?.appendImage(image, object, info)
+    private func requestImage(_ object: PHAsset) async -> (UIImage?, PHAsset, [AnyHashable: Any]?) {
+        typealias FetchContinuation = CheckedContinuation<(UIImage?, PHAsset, [AnyHashable: Any]?), Never>
+        return await withCheckedContinuation { (continuation: FetchContinuation )  in
+            PHImageManager.default().requestImage(for: object, targetSize: imageSize, contentMode: .default, options: option) { image, info in
+                continuation.resume(returning: (image, object, info))
+            }
         }
     }
 
     private func appendImage(_ image: UIImage?, _ object: PHAsset, _ info: [AnyHashable: Any]?) {
-        DispatchQueue.main.async {
-            if let image {
-                let filename = PHAssetResource.assetResources(for: object).first?.originalFilename ?? "unknown"
-                self.allImageItems.append(.init(imageData: image.pngData() ?? Data(),
-                                                width: object.pixelWidth,
-                                                height: object.pixelHeight,
-                                                phAsset: object,
-                                                info: info,
-                                                originalFilename: filename))
-            }
+        if let image {
+            let filename = PHAssetResource.assetResources(for: object).first?.originalFilename ?? "unknown"
+            self.allImageItems.append(.init(imageData: image.pngData() ?? Data(),
+                                            width: object.pixelWidth,
+                                            height: object.pixelHeight,
+                                            phAsset: object,
+                                            info: info,
+                                            originalFilename: filename))
         }
     }
 
-    public func loadImages() {
-        isLoading = true
+    public func loadImages() async {
         if isAuthorized {
-            DispatchQueue.global(qos: .background).async {
-                self.fetchImages()
-                self.offset += self.fetchCount
+            await fetchImages()
+            offset += fetchCount
+        }
+    }
+
+    public func checkAuthorization() async -> PHAuthorizationStatus {
+        typealias AthurizationResponse = CheckedContinuation<PHAuthorizationStatus, Never>
+        return await withCheckedContinuation { (continuation: AthurizationResponse) in
+            PHPhotoLibrary.requestAuthorization { status in
+                continuation.resume(returning: status)
             }
         }
     }
 
-    public func hideLoading() {
-        DispatchQueue.main.async {
-            self.isLoading = false
-        }
-    }
-
-    public func checkAuthorization() {
-        PHPhotoLibrary.requestAuthorization { [weak self] status in
-            guard let self = self else { return }
-            switch status {
-            case .authorized:
-                self.isAuthorized = true
-            case .denied, .restricted:
-                print("Not allowed")
-            case .notDetermined:
-                print("Not determined yet")
-            case .limited:
-                print("Not determined yet")
-            @unknown default:
-                print("Not determined yet")
+    public func requestImageDataAndOrientation(phAsset: PHAsset, options: PHImageRequestOptions) async -> Data? {
+        typealias ImageDataResponse = CheckedContinuation<Data?, Never>
+        return await withCheckedContinuation { (continuation: ImageDataResponse) in
+            PHImageManager.default().requestImageDataAndOrientation(for: phAsset, options: options) { data, uti, _, _ in
+                continuation.resume(returning: data)
             }
         }
     }
 
-    public func toggleSelectedImage(_ item: ImageItem) {
+    public func toggleSelectedImage(_ item: ImageItem) async {
         if let index = selectedImageItems.firstIndex(where: { $0.phAsset === item.phAsset }) {
             selectedImageItems.remove(at: index)
+            await animateObjectWillChane()
         } else {
             if let phAsset = item.phAsset as? PHAsset {
                 let options = PHImageRequestOptions()
                 options.deliveryMode = .highQualityFormat
-                PHImageManager.default().requestImageDataAndOrientation(for: phAsset, options: options) { data, uti, _, _ in
-                    DispatchQueue.main.async {
-                        let item = ImageItem(imageData: data ?? Data(),
-                                             width: phAsset.pixelWidth,
-                                             height: phAsset.pixelHeight,
-                                             phAsset: phAsset,
-                                             originalFilename: item.fileName)
-                        self.selectedImageItems.append(item)
-                    }
-                }
+                let data = await self.requestImageDataAndOrientation(phAsset: phAsset, options: options)
+                let item = ImageItem(imageData: data ?? Data(),
+                                     width: phAsset.pixelWidth,
+                                     height: phAsset.pixelHeight,
+                                     phAsset: phAsset,
+                                     originalFilename: item.fileName)
+                self.selectedImageItems.append(item)
+                await animateObjectWillChane()
             }
+        }
+    }
+
+    @MainActor
+    private func animateObjectWillChane() {
+        withAnimation {
+            objectWillChange.send()
         }
     }
 
@@ -161,7 +172,9 @@ public final class ActionSheetViewModel: ObservableObject {
 
     public func loadMore() {
         if !hasNext { return }
-        loadImages()
+        Task.detached(priority: .userInitiated) {
+            await self.loadImages()
+        }
     }
 
     public func refresh() {
@@ -169,6 +182,5 @@ public final class ActionSheetViewModel: ObservableObject {
         offset = 0
         totalCount = 0
         allImageItems = []
-        isLoading = false
     }
 }

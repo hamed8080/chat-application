@@ -11,13 +11,12 @@ import ChatAppViewModels
 import SwiftUI
 
 struct AttachmentDialog: View {
-    @EnvironmentObject var threadViewModel: ThreadViewModel
+    private var threadVM: ThreadViewModel { viewModel.threadViewModel }
     @StateObject var viewModel: ActionSheetViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             PhotoGridView()
-                .padding()
                 .environmentObject(viewModel)
             Spacer()
             let count = viewModel.selectedImageItems.count
@@ -30,12 +29,12 @@ struct AttachmentDialog: View {
             if viewModel.selectedImageItems.count > 0 {
                 SendTextViewWithButtons {
                     viewModel.sendSelectedPhotos()
-                    threadViewModel.sheetType = nil
-                    threadViewModel.animatableObjectWillChange()
+                    threadVM.sheetType = nil
+                    threadVM.animatableObjectWillChange()
                 } onCancel: {
                     viewModel.refresh()
-                    threadViewModel.sheetType = nil
-                    threadViewModel.animatableObjectWillChange()
+                    threadVM.sheetType = nil
+                    threadVM.animatableObjectWillChange()
                 }
                 .environmentObject(viewModel.threadViewModel)
             } else {
@@ -47,29 +46,29 @@ struct AttachmentDialog: View {
     @ViewBuilder var buttons: some View {
         VStack(alignment: .leading, spacing: 24) {
             Button {
-                threadViewModel.sheetType = .galleryPicker
-                threadViewModel.animatableObjectWillChange()
+                threadVM.sheetType = .galleryPicker
+                threadVM.animatableObjectWillChange()
             } label: {
                 Label("Photo or Video", systemImage: "photo")
             }
 
             Button {
-                threadViewModel.sheetType = .filePicker
-                threadViewModel.animatableObjectWillChange()
+                threadVM.sheetType = .filePicker
+                threadVM.animatableObjectWillChange()
             } label: {
                 Label("File", systemImage: "doc")
             }
 
             Button {
-                threadViewModel.sheetType = .locationPicker
-                threadViewModel.animatableObjectWillChange()
+                threadVM.sheetType = .locationPicker
+                threadVM.animatableObjectWillChange()
             } label: {
                 Label("Location", systemImage: "location.viewfinder")
             }
 
             Button {
-                threadViewModel.sheetType = .contactPicker
-                threadViewModel.animatableObjectWillChange()
+                threadVM.sheetType = .contactPicker
+                threadVM.animatableObjectWillChange()
             } label: {
                 Label("Contact", systemImage: "person.2.crop.square.stack")
             }
@@ -81,16 +80,18 @@ struct AttachmentDialog: View {
 
 struct PhotoGridView: View {
     @EnvironmentObject var viewModel: ActionSheetViewModel
+    @Environment(\.horizontalSizeClass) var size
 
     var body: some View {
         ScrollView(.vertical) {
-            LazyVGrid(columns: Array(repeating: .init(.adaptive(minimum: 64), spacing: 4), count: 6), spacing: 4) {
+            LazyVGrid(columns: Array(repeating: .init(.flexible(minimum: 96, maximum: 128), spacing: 0), count: size == .compact ? 4 : 7), spacing: 4) {
                 ForEach(viewModel.allImageItems) { item in
-                    let cgImage = item.imageData.imageScale(width: 256)?.image
-                    Image(uiImage: UIImage(cgImage: (cgImage ?? UIImage().cgImage)!))
+                    Image(uiImage: UIImage(data: item.imageData)!)
                         .resizable()
-                        .scaledToFit()
-                        .frame(maxHeight: 72)
+                        .scaledToFill()
+                        .frame(width: 96, height: 96)
+                        .clipped()
+                        .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
                         .overlay {
                             VStack {
                                 HStack {
@@ -114,13 +115,18 @@ struct PhotoGridView: View {
                             }
                         }
                         .onTapGesture {
-                            viewModel.toggleSelectedImage(item)
+                            Task {
+                                await viewModel.toggleSelectedImage(item)
+                            }
                         }
                 }
             }
         }
-        .onAppear {
-            viewModel.loadImages()
+        .onDisappear {
+            viewModel.refresh()
+        }
+        .task {
+            await viewModel.loadImages()
         }
     }
 }

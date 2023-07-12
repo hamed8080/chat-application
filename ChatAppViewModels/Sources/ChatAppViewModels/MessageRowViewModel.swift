@@ -31,6 +31,8 @@ public final class MessageRowViewModel: ObservableObject {
     public var message: Message
     public var isInSelectMode: Bool = false
     public var isMe: Bool
+    public var isHighlited: Bool = false
+    public var highlightTimer: Timer?
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
         self.threadVM = viewModel
@@ -53,8 +55,17 @@ public final class MessageRowViewModel: ObservableObject {
             .sink { newValue in
                 self.message.delivered = true
                 self.message.seen = true
-                withAnimation {
-                    self.objectWillChange.send()
+                self.updateWithAnimation()
+            }
+            .store(in: &cancelableSet)
+
+        NotificationCenter.default.publisher(for: Notification.Name("HIGHLIGHT"))
+            .compactMap {$0.object as? Int}
+            .sink { newValue in
+                if let messageId = self.message.id, messageId == newValue {
+                    self.isHighlited = true
+                    self.updateWithAnimation()
+                    self.startHighlightTimer()
                 }
             }
             .store(in: &cancelableSet)
@@ -62,14 +73,20 @@ public final class MessageRowViewModel: ObservableObject {
             /// Use if newValue != isInSelectMode to assure the newValue has arrived and all message rows will not get refreshed.
             if newValue != self.isInSelectMode {
                 self.isInSelectMode = newValue
-                withAnimation {
-                    self.objectWillChange.send()
-                }
+                self.updateWithAnimation()
             }
         }
         .store(in: &cancelableSet)
         Task.detached(priority: .background) {
             await self.performaCalculation()
+        }
+    }
+
+    private func startHighlightTimer() {
+        highlightTimer?.invalidate()
+        highlightTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { [weak self] _ in
+            self?.isHighlited = false
+            self?.updateWithAnimation()
         }
     }
 
