@@ -82,7 +82,8 @@ struct CallMessageType: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            if let time = message.time, let date = Date(milliseconds: Int64(time)) {
+            if let time = message.time {
+                let date = Date(milliseconds: Int64(time))
                 Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDatecCondence ?? "")")
                     .foregroundColor(Color.primary.opacity(0.8))
                     .font(.subheadline)
@@ -401,8 +402,8 @@ struct UploadMessageType: View {
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: 320)
-                } else if let iconName = message.iconName {
-                    Image(systemName: iconName)
+                } else {
+                    Image(systemName: message.iconName)
                         .resizable()
                         .frame(width: 64, height: 64)
                         .scaledToFit()
@@ -422,7 +423,8 @@ struct MessageFooterView: View {
 
     var body: some View {
         HStack {
-            if let fileSize = message.metaData?.file?.size, let size = Int(fileSize) {
+            if let fileSize = message.metaData?.file?.size {
+                let size = Int(fileSize)
                 Text(size.toSizeString)
                     .multilineTextAlignment(.leading)
                     .font(.subheadline)

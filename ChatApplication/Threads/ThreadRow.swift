@@ -215,7 +215,8 @@ struct ConversationCallMessageType: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            if let time = message.time, let date = Date(milliseconds: Int64(time)) {
+            if let time = message.time {
+                let date = Date(milliseconds: Int64(time))
                 Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDatecCondence ?? "")")
                     .font(.footnote)
                     .foregroundColor(color == .dark ? .white.opacity(0.7) : .black.opacity(0.7))

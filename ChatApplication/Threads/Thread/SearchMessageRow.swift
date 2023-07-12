@@ -19,7 +19,8 @@ struct SearchMessageRow: View {
                 .padding([.leading, .trailing, .top])
                 .font(Font(UIFont.systemFont(ofSize: 18)))
 
-            if let time = message.time, let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000) {
+            if let time = message.time {
+                let date = Date(timeIntervalSince1970: TimeInterval(time) / 1000)
                 HStack {
                     if message.message?.isEnglishString == true {
                         Spacer()

@@ -13,6 +13,8 @@ struct ThreadContentList: View {
     @EnvironmentObject var container: ObjectsContainer
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @State var searchText: String = ""
+    @State var showTokenDialog = false
+    @State var token: String = ""
 
     var body: some View {
         List(threadsVM.filtered, selection: $container.navVM.selectedThreadId) { thread in
@@ -65,6 +67,15 @@ struct ThreadContentList: View {
                 threadsVM.toggleThreadContactPicker.toggle()
             }
         }
+        .customDialog(isShowing: $showTokenDialog) {
+            Form {
+                TextField("Enter your token here.", text: $token)
+                Button("Update") {
+                    ChatManager.activeInstance?.setToken(newToken: token)
+                    showTokenDialog = false
+                }
+            }
+        }
     }
 
     @ViewBuilder var trailingToolbarViews: some View {
@@ -72,6 +83,18 @@ struct ThreadContentList: View {
             threadsVM.toggleThreadContactPicker.toggle()
         } label: {
             Label("Start new chat", systemImage: "plus")
+        }
+
+        Button {
+            showTokenDialog = true
+        } label: {
+            Label("update token", systemImage: "key.icloud")
+        }
+
+        Button {
+            ChatManager.activeInstance?.dispose()
+        } label: {
+            Label("Dispose", systemImage: "xmark.circle")
         }
 
         Menu {

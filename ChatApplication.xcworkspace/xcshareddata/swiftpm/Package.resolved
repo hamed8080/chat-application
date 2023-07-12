@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "chat",
+      "kind" : "remoteSourceControl",
+      "location" : "http://pubgi.fanapsoft.ir/chat/ios/chat.git",
+      "state" : {
+        "branch" : "v1.2",
+        "revision" : "c2032f9ef1348f39f3901016cef9882c86046282"
+      }
+    },
+    {
+      "identity" : "fanappodasyncsdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://pubgi.fanapsoft.ir/chat/ios/fanappodasyncsdk.git",
+      "state" : {
+        "revision" : "d9f8d1b0f9874320453fb7e2e124a607d9af56fa",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "starscream",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/daltoniam/Starscream.git",
+      "state" : {
+        "revision" : "a063fda2b8145a231953c20e7a646be254365396",
+        "version" : "3.1.2"
+      }
+    }
+  ],
+  "version" : 2
+}

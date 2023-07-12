@@ -53,7 +53,7 @@ extension Config {
             .ssoHost(config.ssoHost)
             .platformHost(config.platformHost)
             .fileServer(config.fileServer)
-            .enableCache(true)
+            .enableCache(false)
             .msgTTL(800_000) // for integeration server need to be long time
             .isDebuggingLogEnabled(true)
             .persistLogsOnServer(true)
