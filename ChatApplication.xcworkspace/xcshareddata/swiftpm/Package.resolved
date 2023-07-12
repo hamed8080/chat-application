@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "http://pubgi.fanapsoft.ir/chat/ios/chat.git",
       "state" : {
-        "branch" : "v1.2",
-        "revision" : "c2032f9ef1348f39f3901016cef9882c86046282"
+        "revision" : "c2032f9ef1348f39f3901016cef9882c86046282",
+        "version" : "1.2.1"
       }
     },
     {

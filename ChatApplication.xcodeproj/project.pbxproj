@@ -24,7 +24,7 @@
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
 		05238719295F52CC00650241 /* URL+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05238718295F52CC00650241 /* URL+.swift */; };
 		0523871C295F7EBD00650241 /* Image+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0523871B295F7EBD00650241 /* Image+.swift */; };
-		0523CA7E2A5ED5DD0029CC1E /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0523CA7D2A5ED5DD0029CC1E /* FanapPodChatSDK */; };
+		0523CA812A5EDDFF0029CC1E /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0523CA802A5EDDFF0029CC1E /* FanapPodChatSDK */; };
 		0525CDBC292CA06B004E1C7B /* ViewOffsetKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */; };
 		052D57362795323C0075BF8F /* ManageTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D57352795323C0075BF8F /* ManageTagView.swift */; };
 		052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D5737279539840075BF8F /* TagParticipantRow.swift */; };
@@ -309,7 +309,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0523CA7E2A5ED5DD0029CC1E /* FanapPodChatSDK in Frameworks */,
+				0523CA812A5EDDFF0029CC1E /* FanapPodChatSDK in Frameworks */,
 				055024C22987E794009DDD18 /* Swipy in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -741,7 +741,7 @@
 			name = ChatApplication;
 			packageProductDependencies = (
 				055024C12987E794009DDD18 /* Swipy */,
-				0523CA7D2A5ED5DD0029CC1E /* FanapPodChatSDK */,
+				0523CA802A5EDDFF0029CC1E /* FanapPodChatSDK */,
 			);
 			productName = ChatApplication;
 			productReference = AC1D2CA42661FFAC00AA351A /* ChatApplication.app */;
@@ -773,7 +773,7 @@
 			mainGroup = AC1D2C9B2661FFAC00AA351A;
 			packageReferences = (
 				055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */,
-				0523CA7C2A5ED5DD0029CC1E /* XCRemoteSwiftPackageReference "chat" */,
+				0523CA7F2A5EDDFF0029CC1E /* XCRemoteSwiftPackageReference "chat" */,
 			);
 			productRefGroup = AC1D2CA52661FFAC00AA351A /* Products */;
 			projectDirPath = "";
@@ -1196,12 +1196,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0523CA7C2A5ED5DD0029CC1E /* XCRemoteSwiftPackageReference "chat" */ = {
+		0523CA7F2A5EDDFF0029CC1E /* XCRemoteSwiftPackageReference "chat" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "http://pubgi.fanapsoft.ir/chat/ios/chat.git";
 			requirement = {
-				branch = v1.2;
-				kind = branch;
+				kind = exactVersion;
+				version = 1.2.1;
 			};
 		};
 		055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */ = {
@@ -1215,9 +1215,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0523CA7D2A5ED5DD0029CC1E /* FanapPodChatSDK */ = {
+		0523CA802A5EDDFF0029CC1E /* FanapPodChatSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0523CA7C2A5ED5DD0029CC1E /* XCRemoteSwiftPackageReference "chat" */;
+			package = 0523CA7F2A5EDDFF0029CC1E /* XCRemoteSwiftPackageReference "chat" */;
 			productName = FanapPodChatSDK;
 		};
 		055024C12987E794009DDD18 /* Swipy */ = {
