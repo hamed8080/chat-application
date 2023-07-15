@@ -16,6 +16,13 @@ import ChatCore
 import ChatDTO
 import ChatExtensions
 import SwiftUI
+import OrderedCollections
+
+public struct MessageSection: Identifiable, Hashable, Equatable {
+    public var id: Date { date }
+    public let date: Date
+    public var messages: [Message]
+}
 
 public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public static func == (lhs: ThreadViewModel, rhs: ThreadViewModel) -> Bool {
@@ -31,8 +38,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     @Published public var topLoading = false
     @Published public var bottomLoading = false
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
-    public var canLoadMoreBottom: Bool { !bottomLoading && messages.last?.id != thread.lastMessageVO?.id }
-    public var messages: [Message] = []
+    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id }
+    public var sections: [MessageSection] = []
     @Published public var selectedMessages: [Message] = []
     @Published public var editMessage: Message?
     public var replyMessage: Message?
@@ -68,6 +75,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     var lastOrigin: CGFloat = 0
     public var lastVisibleUniqueId: String?
     public weak var forwardMessage: Message?
+    public var disableScrolling: Bool = false
 
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.readOnly = readOnly
@@ -107,23 +115,31 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             self.thread.lastMessage = thread.lastMessage
             self.thread.lastMessageVO = thread.lastMessageVO
             self.thread.unreadCount = thread.unreadCount
-            if let lastMessage = thread.lastMessageVO, let index = messageIndex(lastMessage.id) {
-                messages[index] = lastMessage
+            if let lastMessage = thread.lastMessageVO,
+               let messageId = lastMessage.id,
+               let sectionIndex = sectionIndexByMessageId(messageId),
+               let index = messageIndex(messageId, in: sectionIndex) {
+                sections[sectionIndex].messages[index] = lastMessage
             }
             animatableObjectWillChange()
         }
     }
 
     public func onMessageAppear(_ message: Message) {
-        /// We get next item in the list because when we scrolling up the message is beneth NavigationView so we should get the next item to ensure we are in right position
-        if scrollingUP, let index = messageIndex(message.id), messages.indices.contains(index + 1) {
-            let message = messages[index + 1]
+        /// We get next item in the list because when we are scrolling up the message is beneth NavigationView so we should get the next item to ensure we are in right position
+        guard
+            let sectionIndex = sectionIndexByMessageId(message),
+            let messageIndex = messageIndex(message.id ?? -1, in: sectionIndex)
+        else { return }
+        let section = sections[sectionIndex]
+        if scrollingUP, section.messages.indices.contains(messageIndex + 1) == true {
+            let message = section.messages[messageIndex + 1]
             print("Scrolling up lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
             lastVisibleUniqueId = message.uniqueId
             isAtBottomOfTheList = false
             animatableObjectWillChange()
-        } else if !scrollingUP, let index = messageIndex(message.id), messages.indices.contains(index - 1), messages.last?.id != message.id {
-            let message = messages[index - 1]
+        } else if !scrollingUP, section.messages.indices.contains(messageIndex - 1), section.messages.last?.id != message.id {
+            let message = section.messages[messageIndex - 1]
             print("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
             lastVisibleUniqueId = message.uniqueId
             sendSeenMessageIfNeeded(message)
@@ -138,12 +154,12 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             animatableObjectWillChange()
         }
 
-        if scrollingUP, let lastIndex = messages.firstIndex(where: { lastVisibleUniqueId == $0.uniqueId }), lastIndex < 3 {
-            moreTop(messages.first?.time?.advanced(by: 100))
+        if scrollingUP, let lastIndex = sections.first?.messages.firstIndex(where: { lastVisibleUniqueId == $0.uniqueId }), lastIndex < 3 {
+            moreTop(sections.first?.messages.first?.time?.advanced(by: 100))
         }
 
-        if !scrollingUP, message.id == messages.last?.id {
-            moreBottom(messages.last?.time?.advanced(by: -100))
+        if !scrollingUP, message.id == sections.last?.messages.last?.id {
+            moreBottom(sections.last?.messages.last?.time?.advanced(by: -100))
         }
     }
 
@@ -166,9 +182,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func onEditedMessage(_ response: ChatResponse<Message>) {
-        if let editedMessage = response.result, let oldMessage = messages.first(where: { $0.id == editedMessage.id }) {
-            oldMessage.updateMessage(message: editedMessage)
-        }
+        guard
+            let indices = indicesByMessageId(response.result?.id ?? -1),
+            let editedMessage = response.result,
+            sections.indices.contains(indices.sectionIndex),
+            sections[indices.sectionIndex].messages.indices.contains(indices.messageIndex)
+        else { return }
+        let oldMessage = sections[indices.sectionIndex].messages[indices.messageIndex]
+        oldMessage.updateMessage(message: editedMessage)
     }
 
     public func threadName(_ threadId: Int) -> String? {
@@ -206,11 +227,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func appendMessages(_ messages: [Message], isToTime: Bool = false) {
         guard messages.count > 0 else { return }
+        let lastSectionIndex = sections.firstIndex(where: {$0.id == sections.last?.id})
         messages.forEach { message in
-            if let oldUploadFileIndex = self.messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == message.uniqueId }) {
-                self.messages.remove(at: oldUploadFileIndex)
+            let indecies = indicesByMessageId(message.id ?? -1)
+            if let lastSectionIndex = lastSectionIndex, let oldUploadFileIndex = self.sections.last?.messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == message.uniqueId }) {
+                self.sections[lastSectionIndex].messages.remove(at: oldUploadFileIndex)
             }
-            if let oldMessage = self.messages.first(where: { $0.uniqueId == message.uniqueId || $0.id == message.id }) {
+            if let indecies = indecies, let oldMessage = self.sections[].messages.first(where: { $0.uniqueId == message.uniqueId || $0.id == message.id }) {
                 oldMessage.updateMessage(message: message)
             } else if message.threadId == threadId || message.conversation?.id == threadId {
                 self.messages.append(message)
@@ -220,13 +243,50 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         sort()
     }
 
+    func insertOrUpdate(_ message: Message) {
+
+    }
+
+    func indicesByMessageId(_ id: Int) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
+        guard
+            let sectionIndex = sectionIndexByMessageId(id),
+            let messageIndex = messageIndex(id, in: sectionIndex)
+        else { return nil }
+        return (sectionIndex: sectionIndex, messageIndex: messageIndex)
+    }
+
+    func sectionIndexByUniqueId(_ message: Message) -> Array<MessageSection>.Index? {
+        sectionIndexByUniqueId(message.uniqueId ?? "")
+    }
+
+    func sectionIndexByUniqueId(_ uniqueId: String) -> Array<MessageSection>.Index? {
+        sections.firstIndex(where: { $0.messages.contains(where: {$0.uniqueId == uniqueId }) })
+    }
+
+    func sectionIndexByMessageId(_ message: Message) -> Array<MessageSection>.Index? {
+        sectionIndexByMessageId(message.id ?? 0)
+    }
+
+    func sectionIndexByMessageId(_ id: Int) -> Array<MessageSection>.Index? {
+        sections.firstIndex(where: { $0.messages.contains(where: {$0.id == id }) })
+    }
+
+    func sectionIndexFor(_ message: Message) -> Array<MessageSection>.Index? {
+        sections.firstIndex(where: { Calendar.current.isDate(message.time?.date ?? Date(), inSameDayAs: $0.date)})
+    }
+
+    public func messageIndex(_ messageId: Int, in section: Array<MessageSection>.Index) -> Array<Message>.Index? {
+        sections[section].messages.firstIndex(where: { $0.id == messageId })
+    }
+
     func appenedUnreadMessagesBannerIfNeeed(_ isToTime: Bool) {
         guard isToTime,
-              let lastMessageId = thread.lastSeenMessageId,
-              let lastSeenIndex = self.messages.firstIndex(where: { $0.id == lastMessageId })
+              let lastSeenMessageId = thread.lastSeenMessageId,
+              let indices = indicesByMessageId(lastSeenMessageId)
         else { return }
-        messages.removeAll(where: { $0 is UnreadMessageProtocol })
-        messages.append(UnreadMessage(id: -1, time: (messages[lastSeenIndex].time ?? 0) + 1))
+        sections[indices.sectionIndex].messages.removeAll(where: { $0 is UnreadMessageProtocol })
+        sections[indices.sectionIndex].messages.append(UnreadMessage(id: -1, time: (sections[indices.sectionIndex].messages[indices.messageIndex].time ?? 0) + 1))
+        sections.append(sections.first!)
     }
 
     public func deleteMessages(_ messages: [Message]) {
@@ -246,7 +306,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func sort() {
-        messages = messages.sorted { m1, m2 in
+        messages.sort { m1, m2 in
             if let t1 = m1.time, let t2 = m2.time {
                 return t1 < t2
             } else {
@@ -256,7 +316,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func isSameUser(message: Message) -> Bool {
-        if let previousMessage = messages.first(where: { $0.id == message.previousId }) {
+        if let indices = indicesByMessageId(message.previousId ?? -1) let previousMessage = messages.first(where: { $0.id == message.previousId }) {
             return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
         }
         return false
@@ -283,10 +343,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             requests.removeValue(forKey: uniqueId)
             animatableObjectWillChange()
         }
-    }
-
-    public func messageIndex(_ messageId: Int?) -> Array<Message>.Index? {
-        messages.firstIndex(where: { $0.id == messageId })
     }
 
     public func animatableObjectWillChange() {

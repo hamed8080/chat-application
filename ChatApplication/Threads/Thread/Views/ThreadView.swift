@@ -82,8 +82,8 @@ struct ThreadView: View, DropDelegate {
             }
             .onAppear {
                 viewModel.startFetchingHistory()
-                AppState.shared.activeThreadId = thread.id
-                viewModel.animatableObjectWillChange()
+//                AppState.shared.activeThreadId = thread.id
+//                viewModel.animatableObjectWillChange()
             }
             .sheet(isPresented: sheetBinding, onDismiss: onDismiss) {
                 ThreadSheetView(sheetBinding: sheetBinding)

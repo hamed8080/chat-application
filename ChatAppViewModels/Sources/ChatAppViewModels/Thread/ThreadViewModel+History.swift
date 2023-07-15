@@ -118,7 +118,9 @@ extension ThreadViewModel {
         print("moreTop called")
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
         requests["MORE_TOP-\(req.uniqueId)"] = (req, lastVisibleUniqueId)
-        ChatManager.activeInstance?.message.history(req)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            ChatManager.activeInstance?.message.history(req)
+        }
     }
 
     public func onMoreTop(_ response: ChatResponse<[Message]>) {
@@ -126,15 +128,42 @@ extension ThreadViewModel {
               let request = requests["MORE_TOP-\(uniqueId)"] as? (req: GetHistoryRequest, lastVisibleUniqueId: String?),
               let messages = response.result
         else { return }
-        appendMessages(messages)
+        let beforeTopUniqueId = self.messages.first?.uniqueId
+        messages.sorted(by: {$0.time ?? 0 >= $1.time ?? 0}).forEach { message in
+            self.messages.insert(message, at: 0)
+        }
+
+
+        self.disableScrolling = true
+        self.objectWillChange.send()
+        let firstId = abs(oldTopItemId) + 1
+        let endId = firstId + 25
+        let previousDate = Calendar.current.date(byAdding: .day, value: -1, to: oldTopItem?.date ?? .now)!
+        let messages: [Message] = (firstId...endId).map({.init(id: -$0, text: "Text-\(-$0)", date: previousDate)})
+        self.sections.insert(.init(date: previousDate, messages: messages.sorted(by: {$0.id < $1.id})), at: 0)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            withAnimation {
+                self.disableScrolling = false
+                self.scrollProxy?.scrollTo(oldTopItemId, anchor: .top)
+                self.isLoading = false
+                self.objectWillChange.send()
+            }
+        }
+
+
+        self.messages.insert(contentsOf: messages.sorted(by: {$0.time ?? 0 >= $1.time ?? 0}), at: 0)
+//        appendMessages(messages)
         if !response.cache {
             hasNextTop = response.hasNext
             isFetchedServerFirstResponse = true
             topLoading = false
             requests.removeValue(forKey: "MORE_TOP-\(uniqueId)")
         }
+//        animatableObjectWillChange()
+        scrollProxy?.scrollTo(beforeTopUniqueId, anchor: .top)
         objectWillChange.send()
-        scrollTo(request.lastVisibleUniqueId ?? "", anchor: .top)
+
+//        scrollTo(request.lastVisibleUniqueId ?? "", anchor: .top)
     }
 
     public func moreBottom(_ fromTime: UInt?) {
