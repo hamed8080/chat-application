@@ -19,7 +19,9 @@ public final class UploadFileViewModel: ObservableObject {
     public init() {
         NotificationCenter.default.publisher(for: .upload)
             .compactMap { $0.object as? UploadEventTypes }
-            .sink(receiveValue: onUploadEvent)
+            .sink { [weak self] event in
+                self?.onUploadEvent(event)
+            }
             .store(in: &cancelable)
     }
 

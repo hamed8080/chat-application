@@ -26,11 +26,9 @@ extension ThreadViewModel {
     }
 
     func onPinMessage(_ response: ChatResponse<PinMessage>) {
-        if let message = response.result, let messageId = message.id {
-            if let index = messageIndex(messageId) {
-                messages[index].pinned = true
-            }
-            thread.pinMessage = message
+        if let messageId = response.result?.id, let indices = indicesByMessageId(messageId) {
+            sections[indices.sectionIndex].messages[indices.messageIndex].pinned = true
+            thread.pinMessage = response.result
         }
     }
 
@@ -39,10 +37,8 @@ extension ThreadViewModel {
     }
 
     func onUNPinMessage(_ response: ChatResponse<PinMessage>) {
-        if let messageId = response.result?.id {
-            if let index = messageIndex(messageId) {
-                messages[index].pinned = false
-            }
+        if let messageId = response.result?.id, let indices = indicesByMessageId(messageId)   {
+            sections[indices.sectionIndex].messages[indices.messageIndex].pinned = false
             thread.pinMessage = nil
         }
     }

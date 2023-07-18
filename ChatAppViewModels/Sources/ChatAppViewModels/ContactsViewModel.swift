@@ -44,9 +44,9 @@ public final class ContactsViewModel: ObservableObject {
     public func setupPublishers() {
         $searchContactString
             .filter { $0.count == 0 }
-            .sink { newValue in
+            .sink { [weak self] newValue in
                 if newValue.count == 0 {
-                    self.searchedContacts = []
+                    self?.searchedContacts = []
                 }
             }
             .store(in: &canceableSet)
@@ -54,13 +54,15 @@ public final class ContactsViewModel: ObservableObject {
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .filter { $0.count > 1 }
             .removeDuplicates()
-            .sink { searchText in
-                self.searchContacts(searchText)
+            .sink { [weak self] searchText in
+                self?.searchContacts(searchText)
             }
             .store(in: &canceableSet)
         NotificationCenter.default.publisher(for: .contact)
             .compactMap { $0.object as? ContactEventTypes }
-            .sink(receiveValue: onContactEvent)
+            .sink{ [weak self] event in
+                self?.onContactEvent(event)
+            }
             .store(in: &canceableSet)
     }
 

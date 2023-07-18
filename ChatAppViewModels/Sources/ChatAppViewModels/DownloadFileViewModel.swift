@@ -27,7 +27,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     @Published public var tumbnailData: Data?
     @Published public var data: Data?
     public var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
-    let chat = ChatManager.activeInstance
+    var chat: Chat? { ChatManager.activeInstance }
 
     public var fileURL: URL? {
         guard let url = url else { return nil }
@@ -42,7 +42,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     public var requests: [String: Any] = [:]
     public var thumbRequests: [String: Any] = [:]
-    public private(set) var message: Message?
+    public private(set) weak var message: Message?
     private var cancelable: Set<AnyCancellable> = []
 
     public init() {}

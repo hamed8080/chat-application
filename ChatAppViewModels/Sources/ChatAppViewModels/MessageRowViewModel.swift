@@ -25,10 +25,10 @@ public final class MessageRowViewModel: ObservableObject {
     public var timeString: String = ""
     public var fileSizeString: String?
     public static var avatarSize: CGFloat = 24
-    public var downloadFileVM = DownloadFileViewModel()
-    public var threadVM: ThreadViewModel
+    public let downloadFileVM = DownloadFileViewModel()
+    public weak var threadVM: ThreadViewModel?
     private var cancelableSet = Set<AnyCancellable>()
-    public var message: Message
+    public let message: Message
     public var isInSelectMode: Bool = false
     public var isMe: Bool
     public var isHighlited: Bool = false
@@ -52,33 +52,33 @@ public final class MessageRowViewModel: ObservableObject {
 
         NotificationCenter.default.publisher(for: Notification.Name("UPDATE_SEEN"))
             .compactMap {$0.object as? MessageResponse}
-            .sink { newValue in
-                self.message.delivered = true
-                self.message.seen = true
-                self.updateWithAnimation()
+            .sink { [weak self] newValue in
+                self?.message.delivered = true
+                self?.message.seen = true
+                self?.updateWithAnimation()
             }
             .store(in: &cancelableSet)
 
         NotificationCenter.default.publisher(for: Notification.Name("HIGHLIGHT"))
             .compactMap {$0.object as? Int}
-            .sink { newValue in
-                if let messageId = self.message.id, messageId == newValue {
-                    self.isHighlited = true
-                    self.updateWithAnimation()
-                    self.startHighlightTimer()
+            .sink { [weak self] newValue in
+                if let messageId = self?.message.id, messageId == newValue {
+                    self?.isHighlited = true
+                    self?.updateWithAnimation()
+                    self?.startHighlightTimer()
                 }
             }
             .store(in: &cancelableSet)
-        threadVM.$isInEditMode.sink { newValue in
+        threadVM?.$isInEditMode.sink { [weak self] newValue in
             /// Use if newValue != isInSelectMode to assure the newValue has arrived and all message rows will not get refreshed.
-            if newValue != self.isInSelectMode {
-                self.isInSelectMode = newValue
-                self.updateWithAnimation()
+            if newValue != self?.isInSelectMode {
+                self?.isInSelectMode = newValue
+                self?.updateWithAnimation()
             }
         }
         .store(in: &cancelableSet)
-        Task.detached(priority: .background) {
-            await self.performaCalculation()
+        Task.detached(priority: .background) { [weak self] in
+            await self?.performaCalculation()
         }
     }
 
@@ -136,8 +136,8 @@ public final class MessageRowViewModel: ObservableObject {
     }
 
     private func recalculateWithAnimation(){
-        Task.detached(priority: .background) {
-            await self.performaCalculation(animation: .easeInOut)
+        Task.detached(priority: .background) { [weak self] in
+            await self?.performaCalculation(animation: .easeInOut)
         }
     }
 
@@ -156,9 +156,9 @@ public final class MessageRowViewModel: ObservableObject {
             self.markdownTitle = markdownTitle
             self.timeString = timeString
             self.fileSizeString = fileSizeString
-//            withAnimation(animation?.speed(0.2)) {
-//                self.objectWillChange.send()
-//            }
+            withAnimation(animation?.speed(0.2)) {
+                self.objectWillChange.send()
+            }
         }
     }
 

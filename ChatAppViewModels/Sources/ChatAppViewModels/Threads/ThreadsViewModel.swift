@@ -42,11 +42,15 @@ public final class ThreadsViewModel: ObservableObject {
 
     public init() {
         AppState.shared.$connectionStatus
-            .sink(receiveValue: onConnectionStatusChanged)
+            .sink{ [weak self] event in
+                self?.onConnectionStatusChanged(event)
+            }
             .store(in: &cancelable)
         NotificationCenter.default.publisher(for: .chatEvents)
             .compactMap { $0.object as? ChatEventType }
-            .sink(receiveValue: onChatEvent)
+            .sink{ [weak self] event in
+                self?.onChatEvent(event)
+            }
             .store(in: &cancelable)
         getThreads()
         $searchText

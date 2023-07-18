@@ -12,33 +12,13 @@ import ChatModels
 import SwiftUI
 
 struct ThreadMessagesList: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
-    @State var scrollingUP = false
+    let viewModel: ThreadViewModel
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         ScrollViewReader { scrollProxy in
             ScrollView {
-                LazyVStack(spacing: 8) {
-                    ListLoadingView(isLoading: $viewModel.topLoading)
-                        .id(-1)
-                    ForEach(viewModel.messages) { message in
-                        MessageRowFactory(viewModel: MessageRowViewModel(message: message, viewModel: viewModel))
-                            .id(message.uniqueId)
-                            .onAppear {
-                                viewModel.onMessageAppear(message)
-                            }
-                    }
-                    ListLoadingView(isLoading: $viewModel.bottomLoading)
-                        .id(-2)
-                }
-                .background(
-                    GeometryReader {
-                        Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-                    }
-                )
-                .padding(.bottom)
-                .padding([.leading, .trailing])
+                MessagesLazyStack()
             }
             .overlay(alignment: .bottomTrailing) {
                 MoveToBottomButton()
@@ -86,12 +66,67 @@ struct ThreadMessagesList: View {
     }
 }
 
+struct MessagesLazyStack: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+
+    var body: some View {
+        LazyVStack(spacing: 8) {
+            ListLoadingView(isLoading: $viewModel.topLoading)
+                .id(-1)
+            ForEach(viewModel.sections) { section in
+                SectionView(section: section)
+                MessageList(messages: section.messages, viewModel: viewModel)
+            }
+            ListLoadingView(isLoading: $viewModel.bottomLoading)
+                .id(-2)
+        }
+        .background(
+            GeometryReader {
+                Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
+            }
+        )
+        .padding(.bottom)
+        .padding([.leading, .trailing])
+    }
+}
+
+struct SectionView: View {
+    let section: MessageSection
+
+    var body: some View {
+        Text(verbatim: section.date.yearCondence ?? "")
+            .font(.iransansCaption)
+            .padding([.leading, .trailing], 8)
+            .padding([.top, .bottom], 4)
+            .background(.orange.opacity(0.1))
+            .background(.ultraThinMaterial)
+            .cornerRadius(8)
+            .foregroundColor(.secondaryLabel)
+            .padding(16)
+    }
+}
+
+struct MessageList: View {
+    let messages: [Message]
+    let viewModel: ThreadViewModel
+
+    var body: some View {
+        ForEach(messages) { message in
+            MessageRowFactory(viewModel: MessageRowViewModel(message: message, viewModel: viewModel))
+                .id(message.uniqueId)
+                .onAppear {
+                    viewModel.onMessageAppear(message)
+                }
+        }
+    }
+}
+
 struct ThreadMessagesList_Previews: PreviewProvider {
     struct Preview: View {
         @State var viewModel = ThreadViewModel(thread: Conversation())
 
         var body: some View {
-            ThreadMessagesList()
+            ThreadMessagesList(viewModel: viewModel)
                 .environmentObject(viewModel)
                 .onAppear {
                     viewModel.thread = Conversation(unreadCount: 1)

@@ -77,11 +77,25 @@ extension ThreadViewModel {
         else { return }
         isFetchedServerFirstResponse = true
         appendMessages(messages, isToTime: key == "TO_TIME")
-        objectWillChange.send()
-        if let messageIdUniqueId = self.messages.first(where: {$0.id == tuple.messageId})?.uniqueId {
-            showHighlighted(messageIdUniqueId, tuple.messageId, highlight: tuple.highlight)
+        self.disableScrolling = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if !response.cache {
+                self.disableScrolling = false
+                self.objectWillChange.send()
+            }
         }
-        requests.removeValue(forKey: "\(key)-\(uniqueId)")
+        withAnimation(.spring()) {
+            if !response.cache {
+                hasNextTop = response.hasNext
+                isFetchedServerFirstResponse = true
+                requests.removeValue(forKey: "\(key)-\(uniqueId)")
+                topLoading = false
+            }
+            if let indices = indicesByMessageId(tuple.messageId), let messageUniqueId = sections[indices.sectionIndex].messages[indices.messageIndex].uniqueId {
+                showHighlighted(messageUniqueId, tuple.messageId, highlight: tuple.highlight)
+            }
+            objectWillChange.send()
+        }
     }
     
     public func moveToLastMessage() {
@@ -117,7 +131,7 @@ extension ThreadViewModel {
         }
         print("moreTop called")
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
-        requests["MORE_TOP-\(req.uniqueId)"] = (req, lastVisibleUniqueId)
+        requests["MORE_TOP-\(req.uniqueId)"] = (req, sections.first?.messages.first?.uniqueId)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             ChatManager.activeInstance?.message.history(req)
         }
@@ -128,42 +142,24 @@ extension ThreadViewModel {
               let request = requests["MORE_TOP-\(uniqueId)"] as? (req: GetHistoryRequest, lastVisibleUniqueId: String?),
               let messages = response.result
         else { return }
-        let beforeTopUniqueId = self.messages.first?.uniqueId
-        messages.sorted(by: {$0.time ?? 0 >= $1.time ?? 0}).forEach { message in
-            self.messages.insert(message, at: 0)
-        }
-
-
+        appendMessages(messages.sorted(by: {$0.time ?? 0 >= $1.time ?? 0}))
         self.disableScrolling = true
-        self.objectWillChange.send()
-        let firstId = abs(oldTopItemId) + 1
-        let endId = firstId + 25
-        let previousDate = Calendar.current.date(byAdding: .day, value: -1, to: oldTopItem?.date ?? .now)!
-        let messages: [Message] = (firstId...endId).map({.init(id: -$0, text: "Text-\(-$0)", date: previousDate)})
-        self.sections.insert(.init(date: previousDate, messages: messages.sorted(by: {$0.id < $1.id})), at: 0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            withAnimation {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if !response.cache {
                 self.disableScrolling = false
-                self.scrollProxy?.scrollTo(oldTopItemId, anchor: .top)
-                self.isLoading = false
                 self.objectWillChange.send()
             }
         }
-
-
-        self.messages.insert(contentsOf: messages.sorted(by: {$0.time ?? 0 >= $1.time ?? 0}), at: 0)
-//        appendMessages(messages)
-        if !response.cache {
-            hasNextTop = response.hasNext
-            isFetchedServerFirstResponse = true
-            topLoading = false
-            requests.removeValue(forKey: "MORE_TOP-\(uniqueId)")
+        withAnimation(.spring()) {
+            if !response.cache {
+                hasNextTop = response.hasNext
+                isFetchedServerFirstResponse = true
+                requests.removeValue(forKey: "MORE_TOP-\(uniqueId)")
+                topLoading = false
+            }
+            scrollProxy?.scrollTo(request.lastVisibleUniqueId, anchor: .center)
+            objectWillChange.send()
         }
-//        animatableObjectWillChange()
-        scrollProxy?.scrollTo(beforeTopUniqueId, anchor: .top)
-        objectWillChange.send()
-
-//        scrollTo(request.lastVisibleUniqueId ?? "", anchor: .top)
     }
 
     public func moreBottom(_ fromTime: UInt?) {
@@ -183,12 +179,22 @@ extension ThreadViewModel {
               let messages = response.result
         else { return }
         appendMessages(messages)
-        if !response.cache {
-            isFetchedServerFirstResponse = true
-            bottomLoading = false
-            requests.removeValue(forKey: "MORE_BOTTOM-\(uniqueId)")
+        self.disableScrolling = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if !response.cache {
+                self.disableScrolling = false
+                self.objectWillChange.send()
+            }
         }
-        objectWillChange.send()
-        scrollTo(request.lastVisibleUniqueId ?? "", anchor: .bottom)
+        withAnimation(.spring()) {
+            if !response.cache {
+                hasNextTop = response.hasNext
+                isFetchedServerFirstResponse = true
+                requests.removeValue(forKey: "MORE_BOTTOM-\(uniqueId)")
+                bottomLoading = false
+            }
+            scrollProxy?.scrollTo(request.lastVisibleUniqueId, anchor: .center)
+            objectWillChange.send()
+        }
     }
 }

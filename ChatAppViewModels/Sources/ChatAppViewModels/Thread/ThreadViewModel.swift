@@ -57,7 +57,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var canScrollToBottomOfTheList: Bool = false
     private var cancelable: Set<AnyCancellable> = []
     private var typingTimerStarted = false
-    public lazy var audioRecoderVM: AudioRecordingViewModel = .init(threadViewModel: self)
+    public var audioRecoderVM: AudioRecordingViewModel = .init()
     public var hasNextTop = true
     public var hasNextBottom = true
     public var count: Int { 15 }
@@ -66,7 +66,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var signalMessageText: String?
     public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
-    public var audioPlayer: AVAudioPlayerViewModel?
+    public weak var audioPlayer: AVAudioPlayerViewModel?
     var requests: [String: Any] = [:]
     public var isAtBottomOfTheList: Bool = false    
     var searchOffset: Int = 0
@@ -81,17 +81,22 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.readOnly = readOnly
         self.thread = thread
         self.threadsViewModel = threadsViewModel
+        self.audioRecoderVM.threadViewModel = self
         setupNotificationObservers()
         exportMessagesVM.setup(thread)
     }
 
     private func setupNotificationObservers() {
         AppState.shared.$connectionStatus
-            .sink(receiveValue: onConnectionStatusChanged)
+            .sink { [weak self] status in
+                self?.onConnectionStatusChanged(status)
+            }
             .store(in: &cancelable)
         NotificationCenter.default.publisher(for: .chatEvents)
             .compactMap { $0.object as? ChatEventType }
-            .sink(receiveValue: onChatEvent)
+            .sink { [weak self] event in
+                self?.onChatEvent(event)
+            }
             .store(in: &cancelable)
     }
 
@@ -229,28 +234,52 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         guard messages.count > 0 else { return }
         let lastSectionIndex = sections.firstIndex(where: {$0.id == sections.last?.id})
         messages.forEach { message in
-            let indecies = indicesByMessageId(message.id ?? -1)
-            if let lastSectionIndex = lastSectionIndex, let oldUploadFileIndex = self.sections.last?.messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == message.uniqueId }) {
-                self.sections[lastSectionIndex].messages.remove(at: oldUploadFileIndex)
-            }
-            if let indecies = indecies, let oldMessage = self.sections[].messages.first(where: { $0.uniqueId == message.uniqueId || $0.id == message.id }) {
-                oldMessage.updateMessage(message: message)
-            } else if message.threadId == threadId || message.conversation?.id == threadId {
-                self.messages.append(message)
-            }
+            removeUploadMessagePlaceholder(message, lastSectionIndex)
+            insertOrUpdate(message)
         }
         appenedUnreadMessagesBannerIfNeeed(isToTime)
         sort()
     }
 
-    func insertOrUpdate(_ message: Message) {
+    func removeUploadMessagePlaceholder(_ message: Message, _ lastSectionIndex: Array<MessageSection>.Index?) {
+        if let lastSectionIndex = lastSectionIndex, let oldUploadFileIndex = sections.last?.messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == message.uniqueId }) {
+            self.sections[lastSectionIndex].messages.remove(at: oldUploadFileIndex)
+        }
+    }
 
+    func insertOrUpdate(_ message: Message) {
+        let indices = findIncicesBy(uniqueId: message.uniqueId ?? "", message.id ?? -1)
+        if let indices = indices {
+            sections[indices.sectionIndex].messages[indices.messageIndex].updateMessage(message: message)
+        } else if message.threadId == threadId || message.conversation?.id == threadId {
+            if let sectionIndex = sectionIndexByDate(message.time?.date ?? Date()) {
+                sections[sectionIndex].messages.append(message)
+            } else {
+                sections.append(.init(date: message.time?.date ?? Date(), messages: [message]))
+            }
+        }
     }
 
     func indicesByMessageId(_ id: Int) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
         guard
             let sectionIndex = sectionIndexByMessageId(id),
             let messageIndex = messageIndex(id, in: sectionIndex)
+        else { return nil }
+        return (sectionIndex: sectionIndex, messageIndex: messageIndex)
+    }
+
+    func indicesByMessageUniqueId(_ uniqueId: String) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
+        guard
+            let sectionIndex = sectionIndexByUniqueId(uniqueId),
+            let messageIndex = messageIndex(uniqueId, in: sectionIndex)
+        else { return nil }
+        return (sectionIndex: sectionIndex, messageIndex: messageIndex)
+    }
+
+    func findIncicesBy(uniqueId: String?, _ id: Int?) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
+        guard
+            let sectionIndex = sections.firstIndex(where: { $0.messages.contains(where: { $0.uniqueId == uniqueId || $0.id == id }) }),
+            let messageIndex = sections[sectionIndex].messages.firstIndex(where: { $0.uniqueId == uniqueId || $0.id == id })
         else { return nil }
         return (sectionIndex: sectionIndex, messageIndex: messageIndex)
     }
@@ -271,22 +300,45 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         sections.firstIndex(where: { $0.messages.contains(where: {$0.id == id }) })
     }
 
-    func sectionIndexFor(_ message: Message) -> Array<MessageSection>.Index? {
-        sections.firstIndex(where: { Calendar.current.isDate(message.time?.date ?? Date(), inSameDayAs: $0.date)})
+    func sectionIndexByDate(_ date: Date) -> Array<MessageSection>.Index? {
+        sections.firstIndex(where: { Calendar.current.isDate(date, inSameDayAs: $0.date)})
     }
 
     public func messageIndex(_ messageId: Int, in section: Array<MessageSection>.Index) -> Array<Message>.Index? {
         sections[section].messages.firstIndex(where: { $0.id == messageId })
     }
 
+    public func messageIndex(_ uniqueId: String, in section: Array<MessageSection>.Index) -> Array<Message>.Index? {
+        sections[section].messages.firstIndex(where: { $0.uniqueId == uniqueId })
+    }
+
+    public func removeById(_ id: Int?) {
+        guard let id = id, let indices = indicesByMessageId(id) else { return }
+        sections[indices.sectionIndex].messages.remove(at: indices.messageIndex)
+    }
+
+    public func removeByUniqueId(_ uniqueId: String?) {
+        guard let uniqueId = uniqueId, let indices = indicesByMessageUniqueId(uniqueId) else { return }
+        sections[indices.sectionIndex].messages.remove(at: indices.messageIndex)
+    }
+
     func appenedUnreadMessagesBannerIfNeeed(_ isToTime: Bool) {
+        if thread.lastMessageVO?.ownerId == AppState.shared.user?.id {
+            removeAllUnreadSeen()
+            return
+        }
         guard isToTime,
               let lastSeenMessageId = thread.lastSeenMessageId,
               let indices = indicesByMessageId(lastSeenMessageId)
         else { return }
-        sections[indices.sectionIndex].messages.removeAll(where: { $0 is UnreadMessageProtocol })
-        sections[indices.sectionIndex].messages.append(UnreadMessage(id: -1, time: (sections[indices.sectionIndex].messages[indices.messageIndex].time ?? 0) + 1))
-        sections.append(sections.first!)
+        removeAllUnreadSeen()
+        sections[indices.sectionIndex].messages.append(UnreadMessage(id: -2, time: (sections[indices.sectionIndex].messages[indices.messageIndex].time ?? 0) + 1))
+    }
+
+    func removeAllUnreadSeen() {
+        sections.indices.forEach { sectionIndex in
+            sections[sectionIndex].messages.removeAll(where: {$0 is UnreadMessageProtocol})
+        }
     }
 
     public func deleteMessages(_ messages: [Message]) {
@@ -299,25 +351,32 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     /// Delete a message with a uniqueId is needed for when the message is sent to a request.
     public func onDeleteMessage(_ response: ChatResponse<Message>) {
         guard let responseThreadId = response.subjectId ?? response.result?.threadId ?? response.result?.conversation?.id,
-              threadId == responseThreadId
+              threadId == responseThreadId,
+              let indices = findIncicesBy(uniqueId: response.uniqueId, response.result?.id)
         else { return }
-        messages.removeAll(where: { $0.uniqueId == response.uniqueId || response.result?.id == $0.id })
+        sections[indices.sectionIndex].messages.remove(at: indices.messageIndex)
+        if sections[indices.sectionIndex].messages.count == 0 {
+            sections.remove(at: indices.sectionIndex)
+        }
         animatableObjectWillChange()
     }
 
     public func sort() {
-        messages.sort { m1, m2 in
-            if let t1 = m1.time, let t2 = m2.time {
-                return t1 < t2
-            } else {
-                return false
+        sections.indices.forEach { sectionIndex in
+            sections[sectionIndex].messages.sort { m1, m2 in
+                if let t1 = m1.time, let t2 = m2.time {
+                    return t1 < t2
+                } else {
+                    return false
+                }
             }
         }
+        sections.sort(by: {$0.date < $1.date})
     }
 
     public func isSameUser(message: Message) -> Bool {
-        if let indices = indicesByMessageId(message.previousId ?? -1) let previousMessage = messages.first(where: { $0.id == message.previousId }) {
-            return previousMessage.participant?.id ?? 0 == message.participant?.id ?? -1
+        if let indices = indicesByMessageId(message.previousId ?? -1) {
+            return sections[indices.sectionIndex].messages[indices.messageIndex].participant?.id ?? 0 == message.participant?.id ?? -1
         }
         return false
     }

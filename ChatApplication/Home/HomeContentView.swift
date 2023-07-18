@@ -9,39 +9,30 @@ import Chat
 import ChatAppModels
 import ChatAppUI
 import ChatAppViewModels
+import Combine
 import SwiftUI
 import Swipy
 
 struct HomeContentView: View {
-    @StateObject var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
+    let container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @Environment(\.colorScheme) var colorScheme
+    @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
 
     var body: some View {
-        if container.tokenVM.isLoggedIn == false {
+        if TokenManager.shared.isLoggedIn == false {
             LoginView()
                 .environmentObject(container.loginVM)
                 .environmentObject(container.tokenVM)
                 .environmentObject(AppState.shared)
         } else {
-            NavigationSplitView(columnVisibility: $container.columnVisibility) {
-                SideBar()
+            NavigationSplitView(columnVisibility: $columnVisibility) {
+                SideBarView(container: container)
             } content: {
-                if container.navVM.isThreadType {
-                    ThreadContentList()
-                } else if container.navVM.selectedSideBarId == "Contacts" {
-                    ContactContentList()
-                } else if container.navVM.selectedSideBarId == "Settings" {
-                    SettingsView()
-                }
+                SplitViewContentView()
             } detail: {
                 NavigationStack {
-                    if let thread = container.navVM.selectedThread {
-                        ThreadView(viewModel: ThreadViewModel(thread: thread, threadsViewModel: container.threadsVM))
-                            .id(thread.id) // don't remove this from here it leads to never change in view
-                    } else {
-                        DetailContentView()
-                    }
+                    StackContentView()
                 }
             }
             .environmentObject(AppState.shared)
@@ -72,6 +63,11 @@ struct HomeContentView: View {
                         }
                     }
             }
+            .onReceive(container.$columnVisibility) { newValue in
+                if newValue != columnVisibility {
+                    columnVisibility = newValue
+                }
+            }
             .onAppear {
                 AppState.shared.navViewModel = container.navVM
                 container.navVM.threadViewModel = container.threadsVM
@@ -83,73 +79,29 @@ struct HomeContentView: View {
     }
 }
 
-struct SideBar: View {
+struct SplitViewContentView: View {
     @EnvironmentObject var container: ObjectsContainer
-    @EnvironmentObject var userConfigsVM: UserConfigManagerVM
-    @State var selectedUser: UserConfig.ID?
-    @State var showLoginSheet = false
-    let containerHeight: CGFloat = 72
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                VSwipy(container.userConfigsVM.userConfigs, selection: $selectedUser) { item in
-                    UserConfigView(userConfig: item)
-                        .frame(height: containerHeight)
-                        .background(Color.swipyBackground)
-                        .cornerRadius(12)
-                } onSwipe: { item in
-                    DispatchQueue.main.async {
-                        if item.user.id == container.userConfigsVM.currentUserConfig?.id { return }
-                        ChatManager.activeInstance?.dispose()
-                        container.userConfigsVM.switchToUser(item, delegate: ChatDelegateImplementation.sharedInstance)
-                        container.reset()
-                    }
-                }
-                .frame(height: containerHeight)
-                .background(Color.orange.opacity(0.3))
-                .cornerRadius(12)
-            }
-            .padding()
+        if container.navVM.isThreadType {
+            ThreadContentList()
+        } else if container.navVM.selectedSideBarId == "Contacts" {
+            ContactContentList()
+        } else if container.navVM.selectedSideBarId == "Settings" {
+            SettingsView()
+        }
+    }
+}
 
-            List(container.navVM.sections, selection: $container.navVM.selectedSideBarId) { section in
-                Section(section.title) {
-                    ForEach(section.items) { item in
-                        NavigationLink(value: item.id) {
-                            Label(item.title, systemImage: item.icon)
-                        }
-                    }
-                }
-            }
-            .listStyle(.insetGrouped)
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Chat Application")
-        .onAppear {
-            selectedUser = UserConfigManagerVM.instance.currentUserConfig?.id
-        }
-        .sheet(isPresented: $showLoginSheet) {
-            LoginView {
-                container.reset()
-                showLoginSheet.toggle()
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    container.loginVM.resetState()
-                    showLoginSheet.toggle()
-                } label: {
-                    Label("Add User", systemImage: "plus.app")
-                }
-            }
-        }
-        .onChange(of: container.tagsVM.tags) { tags in
-            container.navVM.addTags(tags)
-            container.objectWillChange.send()
-        }
-        .onReceive(userConfigsVM.$currentUserConfig) { newUserConfig in
-            selectedUser = newUserConfig?.id
+struct StackContentView: View {
+    @EnvironmentObject var container: ObjectsContainer
+
+    var body: some View {
+        if let thread = container.navVM.selectedThread {
+            ThreadView(viewModel: ThreadViewModel(thread: thread, threadsViewModel: container.threadsVM))
+                .id(thread.id) // don't remove this from here it leads to never change in view
+        } else {
+            DetailContentView(threadsVM: container.threadsVM)
         }
     }
 }
@@ -186,7 +138,7 @@ struct UserConfigView: View {
 }
 
 struct DetailContentView: View {
-    @EnvironmentObject var threadsVM: ThreadsViewModel
+    let threadsVM: ThreadsViewModel
 
     var body: some View {
         VStack(spacing: 12) {
@@ -217,7 +169,7 @@ struct DetailContentView: View {
 struct HomePreview: View {
     @State var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
     var body: some View {
-        HomeContentView(container: container)
+        HomeContentView()
             .onAppear {
                 AppState.shared.connectionStatus = .connected
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)

@@ -43,7 +43,7 @@ extension ThreadViewModel {
                                          textMessage: textMessage,
                                          messageType: .text)
         let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
-        let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().timeIntervalSince1970), uniqueId: req.uniqueId, conversation: thread)
+        let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().millisecondsSince1970), uniqueId: req.uniqueId, conversation: thread)
         appendMessages([message])
         ChatManager.activeInstance?.message.send(req)
     }
@@ -132,10 +132,13 @@ extension ThreadViewModel {
     }
 
     public func onSent(_ response: ChatResponse<MessageResponse>) {
-        guard threadId == response.result?.threadId, let index = messages.firstIndex(where: { $0.uniqueId == response.uniqueId }) else { return }
-        messages[index].id = response.result?.messageId
-        messages[index].delivered = true
-        messages[index].time = response.result?.messageTime
+        guard
+            threadId == response.result?.threadId,
+            let indices = indicesByMessageUniqueId(response.uniqueId ?? "")
+        else { return }
+        sections[indices.sectionIndex].messages[indices.messageIndex].id = response.result?.messageId
+        sections[indices.sectionIndex].messages[indices.messageIndex].delivered = true
+        sections[indices.sectionIndex].messages[indices.messageIndex].time = response.result?.messageTime
         playSentAudio()
     }
 
@@ -149,28 +152,36 @@ extension ThreadViewModel {
 
     public func onDeliver(_ response: ChatResponse<MessageResponse>) {
         guard threadId == response.result?.threadId,
-              let index = messages.firstIndex(where: { $0.id == response.result?.messageId || $0.uniqueId == response.uniqueId })
+              let indices = findIncicesBy(uniqueId: response.uniqueId ?? "", response.result?.messageId ?? 0)
         else { return }
-        messages[index].delivered = true
+        sections[indices.sectionIndex].messages[indices.messageIndex].delivered = true
         animatableObjectWillChange()
     }
 
     public func onSeen(_ response: ChatResponse<MessageResponse>) {
         guard threadId == response.result?.threadId,
-              let index = messages.firstIndex(where: { ($0.id ?? 0 == response.result?.messageId ?? 0 && $0.seen == nil) || $0.uniqueId == response.uniqueId })
+              let indices = findIncicesBy(uniqueId: response.uniqueId ?? "", response.result?.messageId ?? 0),
+              sections[indices.sectionIndex].messages[indices.messageIndex].seen == nil
         else { return }
-        messages[index].delivered = true
-        messages[index].seen = true
+        sections[indices.sectionIndex].messages[indices.messageIndex].delivered = true
+        sections[indices.sectionIndex].messages[indices.messageIndex].seen = true
         setSeenForOlderMessages(messageId: response.result?.messageId)
     }
 
     private func setSeenForOlderMessages(messageId: Int?) {
         if let messageId = messageId {
-            messages.filter({ ($0.id ?? 0 < messageId) && ($0.seen == false || $0.seen == nil || $0.delivered == nil || $0.delivered == false) && $0.ownerId == ChatManager.activeInstance?.userInfo?.id }).forEach { message in
-                message.delivered = true
-                message.seen = true
-                let result = MessageResponse(messageState: .seen, threadId: threadId, messageId: message.id)
-                NotificationCenter.default.post(name: Notification.Name("UPDATE_SEEN"), object: result)
+            sections.indices.forEach { sectionIndex in
+                sections[sectionIndex].messages.indices.forEach { messageIndex in
+                    let message = sections[sectionIndex].messages[messageIndex]
+                    if (message.id ?? 0 < messageId) &&
+                        (message.seen ?? false == false || message.delivered ?? false == false)
+                        && message.ownerId == ChatManager.activeInstance?.userInfo?.id {
+                        sections[sectionIndex].messages[messageIndex].delivered = true
+                        sections[sectionIndex].messages[messageIndex].seen = true
+                        let result = MessageResponse(messageState: .seen, threadId: threadId, messageId: message.id)
+                        NotificationCenter.default.post(name: Notification.Name("UPDATE_SEEN"), object: result)
+                    }
+                }
             }
         }
     }
@@ -185,7 +196,7 @@ extension ThreadViewModel {
             ChatManager.activeInstance?.message.send(req.forwardMessageRequest)
         case let req as UploadFileMessage:
             // remove unset message type to start upload again the new one.
-            messages.removeAll(where: { $0.uniqueId == req.uniqueId })
+            removeByUniqueId(req.uniqueId)
             if message.isImage {
                 let imageMessage = UploadFileWithTextMessage(imageFileRequest: req.uploadImageRequest!, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
                 appendMessages([imageMessage])

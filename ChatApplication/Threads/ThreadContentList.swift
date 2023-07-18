@@ -45,7 +45,7 @@ struct ThreadContentList: View {
         .listStyle(.plain)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                trailingToolbarViews
+                ThreadsTrailingToolbarView(threadsVM: threadsVM)
             }
 
             ToolbarItem(placement: .principal) {
@@ -58,6 +58,14 @@ struct ThreadContentList: View {
         } content: {
             ThreadsSheetFactoryView()
         }
+    }
+}
+
+struct ThreadsTrailingToolbarView: View {
+    let threadsVM: ThreadsViewModel
+
+    var body: some View {
+        trailingToolbarViews
     }
 
     @ViewBuilder var trailingToolbarViews: some View {

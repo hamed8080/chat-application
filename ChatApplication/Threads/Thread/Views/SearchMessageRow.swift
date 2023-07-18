@@ -13,15 +13,15 @@ import SwiftUI
 
 struct SearchMessageRow: View {
     private var message: Message { viewModel.message }
-    private var threadVM: ThreadViewModel { viewModel.threadVM }
+    private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
         Button {
             if let time = message.time, let messageId = message.id {
-                threadVM.moveToTime(time, messageId)
-                threadVM.searchedMessages.removeAll()
-                threadVM.animatableObjectWillChange()
+                threadVM?.moveToTime(time, messageId)
+                threadVM?.searchedMessages.removeAll()
+                threadVM?.animatableObjectWillChange()
             }
         } label: {
             TextMessageType()

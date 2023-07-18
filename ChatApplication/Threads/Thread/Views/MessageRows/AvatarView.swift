@@ -14,10 +14,10 @@ import SwiftUI
 
 struct AvatarView: View {
     var message: Message
-    let viewModel: ThreadViewModel
+    let viewModel: ThreadViewModel?
 
     var body: some View {
-        if !viewModel.isSameUser(message: message), message.participant != nil {
+        if !(viewModel?.isSameUser(message: message) == true), message.participant != nil {
             NavigationLink {
                 DetailView(viewModel: DetailViewModel(user: message.participant))
             } label: {

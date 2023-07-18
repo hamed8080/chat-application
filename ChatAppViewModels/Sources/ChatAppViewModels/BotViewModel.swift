@@ -23,7 +23,9 @@ public final class BotViewModel: ObservableObject {
 
     public init() {
         AppState.shared.$connectionStatus
-            .sink(receiveValue: onConnectionStatusChanged)
+            .sink{ [weak self] event in
+                self?.onConnectionStatusChanged(event)
+            }
             .store(in: &cancelable)
         NotificationCenter.default.publisher(for: .bot)
             .compactMap { $0.object as? BotEventTypes }

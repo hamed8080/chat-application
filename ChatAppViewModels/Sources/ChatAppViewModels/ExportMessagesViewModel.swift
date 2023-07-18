@@ -22,7 +22,7 @@ public protocol ExportMessagesViewModelProtocol {
 }
 
 public final class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol {
-    public var thread: Conversation?
+    public weak var thread: Conversation?
     public var threadId: Int { thread?.id ?? 0 }
     @Published public var filePath: URL?
     private var cancelable: Set<AnyCancellable> = []

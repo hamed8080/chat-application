@@ -37,11 +37,9 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
     public var recordingFileName: String { "recording.m4a" }
     public var recordingOutputBasePath: URL? { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first }
     public var recordingOutputPath: URL? { recordingOutputBasePath?.appendingPathComponent(recordingFileName) }
-    public var threadViewModel: ThreadViewModel
+    public weak var threadViewModel: ThreadViewModel?
 
-    public init(threadViewModel: ThreadViewModel) {
-        self.threadViewModel = threadViewModel
-    }
+    public init(){}
 
     public func toggle() {
         if !isRecording {
@@ -55,7 +53,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         if !isPermissionGranted { requestPermission(); return }
         isRecording = true
         startDate = Date()
-        threadViewModel.sendSignal(.recordVoice)
+        threadViewModel?.sendSignal(.recordVoice)
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
             guard let self = self else { return }
@@ -79,7 +77,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
     public func stopAndSend() {
         stop()
         if let url = recordingOutputPath {
-            threadViewModel.sendFiles([url], messageType: .voice)
+            threadViewModel?.sendFiles([url], messageType: .voice)
         }
     }
 

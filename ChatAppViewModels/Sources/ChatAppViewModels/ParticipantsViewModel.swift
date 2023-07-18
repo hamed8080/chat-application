@@ -31,7 +31,9 @@ public final class ParticipantsViewModel: ObservableObject {
     public init(thread: Conversation? = nil) {
         self.thread = thread
         AppState.shared.$connectionStatus
-            .sink(receiveValue: onConnectionStatusChanged)
+            .sink{ [weak self] status in
+                self?.onConnectionStatusChanged(status)
+            }
             .store(in: &cancelable)
 
         NotificationCenter.default.publisher(for: .participant)
@@ -51,8 +53,8 @@ public final class ParticipantsViewModel: ObservableObject {
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .filter { $0.count >= 2 }
             .removeDuplicates()
-            .sink { searchText in
-                self.searchParticipants(searchText)
+            .sink { [weak self] searchText in
+                self?.searchParticipants(searchText)
             }
             .store(in: &cancelable)
     }

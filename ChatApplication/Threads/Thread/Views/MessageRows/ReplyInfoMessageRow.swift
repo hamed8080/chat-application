@@ -14,13 +14,13 @@ import SwiftUI
 
 struct ReplyInfoMessageRow: View {
     private var message: Message { viewModel.message }
-    private var threadVM: ThreadViewModel { viewModel.threadVM }
+    private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
         Button {
             if let time = message.replyInfo?.repliedToMessageTime, let repliedToMessageId = message.replyInfo?.repliedToMessageId {
-                threadVM.moveToTime(time, repliedToMessageId)
+                threadVM?.moveToTime(time, repliedToMessageId)
             }
         } label: {
             HStack {

@@ -14,7 +14,7 @@ import SwiftUI
 
 struct TextMessageType: View {
     private var message: Message { viewModel.message }
-    private var threadVM: ThreadViewModel { viewModel.threadVM }
+    private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
     @State private var isSelected = false
     private var isMe: Bool { message.isMe(currentUserId: AppState.shared.user?.id) }
@@ -73,11 +73,11 @@ struct TextMessageType: View {
                     HStack {
                         Spacer()
                         Button("Resend".uppercased()) {
-                            threadVM.resendUnsetMessage(message)
+                            threadVM?.resendUnsetMessage(message)
                         }
 
                         Button("Cancel".uppercased(), role: .destructive) {
-                            threadVM.cancelUnsentMessage(message.uniqueId ?? "")
+                            threadVM?.cancelUnsentMessage(message.uniqueId ?? "")
                         }
                     }
                     .padding()
@@ -119,7 +119,7 @@ struct TextMessageType: View {
                 selectRadio
             }
         }
-        .onChange(of: threadVM.selectedMessages.contains(where: { $0.id == message.id })) { newValue in
+        .onChange(of: threadVM?.selectedMessages.contains(where: { $0.id == message.id }) == true) { newValue in
             isSelected = newValue
         }
     }
@@ -135,7 +135,7 @@ struct TextMessageType: View {
                 withAnimation {
                     isSelected.toggle()
                 }
-                threadVM.toggleSelectedMessage(message, isSelected)
+                threadVM?.toggleSelectedMessage(message, isSelected)
             }
     }
 }

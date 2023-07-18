@@ -23,7 +23,7 @@ struct ThreadView: View, DropDelegate {
     var sheetBinding: Binding<Bool> { Binding(get: { viewModel.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
-        ThreadMessagesList()
+        ThreadMessagesList(viewModel: viewModel)
             .id(thread.id)
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(thread.computedTitle)
@@ -82,8 +82,6 @@ struct ThreadView: View, DropDelegate {
             }
             .onAppear {
                 viewModel.startFetchingHistory()
-//                AppState.shared.activeThreadId = thread.id
-//                viewModel.animatableObjectWillChange()
             }
             .sheet(isPresented: sheetBinding, onDismiss: onDismiss) {
                 ThreadSheetView(sheetBinding: sheetBinding)

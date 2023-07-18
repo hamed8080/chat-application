@@ -17,7 +17,9 @@ public final class SettingViewModel: ObservableObject {
 
     public init() {
         AppState.shared.$connectionStatus
-            .sink(receiveValue: onConnectionStatusChanged)
+            .sink{ [weak self] status in
+                self?.onConnectionStatusChanged(status)
+            }
             .store(in: &cancellableSet)
     }
 

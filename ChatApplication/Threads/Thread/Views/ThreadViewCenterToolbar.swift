@@ -47,7 +47,7 @@ struct ThreadViewCenterToolbar: View {
         .onAppear {
             participantCount = viewModel.thread.participantCount
             title = viewModel.thread.computedTitle
-            NotificationCenter.default.publisher(for: .thread)
+            NotificationCenter.default.publisher(for: .participant)
                 .compactMap { $0.object as? ParticipantEventTypes }
                 .sink { event in
                     if case let .added(response) = event {

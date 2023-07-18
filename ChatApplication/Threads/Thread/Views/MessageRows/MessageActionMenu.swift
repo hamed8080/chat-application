@@ -12,33 +12,33 @@ import SwiftUI
 
 struct MessageActionMenu: View {
     private var message: Message { viewModel.message }
-    private var threadVM: ThreadViewModel { viewModel.threadVM }
+    private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
         Button {
-            withAnimation(animation(appear: threadVM.replyMessage != nil)) {
-                threadVM.replyMessage = message
-                threadVM.objectWillChange.send()
+            withAnimation(animation(appear: threadVM?.replyMessage != nil)) {
+                threadVM?.replyMessage = message
+                threadVM?.objectWillChange.send()
             }
         } label: {
             Label("Reply", systemImage: "arrowshape.turn.up.left")
         }
 
         Button {
-            withAnimation(animation(appear: threadVM.forwardMessage != nil)) {
-                threadVM.forwardMessage = message
-                threadVM.isInEditMode = true
-                threadVM.objectWillChange.send()
+            withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
+                threadVM?.forwardMessage = message
+                threadVM?.isInEditMode = true
+                threadVM?.objectWillChange.send()
             }
         } label: {
             Label("forward", systemImage: "arrowshape.turn.up.forward")
         }
 
         Button {
-            withAnimation(animation(appear: threadVM.editMessage != nil)) {
-                threadVM.editMessage = message
-                threadVM.objectWillChange.send()
+            withAnimation(animation(appear: threadVM?.editMessage != nil)) {
+                threadVM?.editMessage = message
+                threadVM?.objectWillChange.send()
             }
         } label: {
             Label("Edit", systemImage: "pencil.circle")
@@ -53,32 +53,32 @@ struct MessageActionMenu: View {
 
         if message.isFileType == true {
             Button {
-                threadVM.clearCacheFile(message: message)
-                threadVM.animatableObjectWillChange()
+                threadVM?.clearCacheFile(message: message)
+                threadVM?.animatableObjectWillChange()
             } label: {
                 Label("Delete file from cache", systemImage: "cylinder.split.1x2")
             }
         }
 
         Button {
-            threadVM.togglePinMessage(message)
-            threadVM.animatableObjectWillChange()
+            threadVM?.togglePinMessage(message)
+            threadVM?.animatableObjectWillChange()
         } label: {
             Label((message.pinned ?? false) ? "UnPin" : "Pin", systemImage: "pin")
         }
 
         Button {
-            withAnimation(animation(appear: threadVM.isInEditMode)) {
-                threadVM.isInEditMode = true
-                threadVM.objectWillChange.send()
+            withAnimation(animation(appear: threadVM?.isInEditMode == true)) {
+                threadVM?.isInEditMode = true
+                threadVM?.objectWillChange.send()
             }
         } label: {
             Label("Select", systemImage: "checkmark.circle")
         }
 
         Button(role: .destructive) {
-            threadVM.deleteMessages([message])
-            threadVM.animatableObjectWillChange()
+            threadVM?.deleteMessages([message])
+            threadVM?.animatableObjectWillChange()
         } label: {
             Label("Delete", systemImage: "trash")
         }

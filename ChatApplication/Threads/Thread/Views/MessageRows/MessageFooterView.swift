@@ -29,6 +29,13 @@ struct MessageFooterView: View {
             Text(calculation.timeString)
                 .foregroundColor(.darkGreen.opacity(0.8))
                 .font(.iransansBoldCaption2)
+
+            if message.edited == true {
+                Text("Edited")
+                    .foregroundColor(.darkGreen.opacity(0.8))
+                    .font(.caption2)
+            }
+
             if message.isMe(currentUserId: AppState.shared.user?.id) {
                 Image(uiImage: message.footerStatus.image)
                     .resizable()
@@ -36,12 +43,6 @@ struct MessageFooterView: View {
                     .frame(width: 14, height: 14)
                     .foregroundColor(message.footerStatus.fgColor)
                     .font(.subheadline)
-            }
-
-            if message.edited == true {
-                Text("Edited")
-                    .foregroundColor(.darkGreen.opacity(0.8))
-                    .font(.caption2)
             }
 
             if message.pinned == true {

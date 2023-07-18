@@ -17,8 +17,8 @@ final class StartThreadContactPickerViewModel: ObservableObject {
     public private(set) var cancellableSet: Set<AnyCancellable> = []
 
     public init() {
-        AppState.shared.$connectionStatus.sink { status in
-            if self.model.threads.count == 0, status == .connected {}
+        AppState.shared.$connectionStatus.sink { [weak self] status in
+            if self?.model.threads.count == 0, status == .connected {}
         }
         .store(in: &cancellableSet)
     }

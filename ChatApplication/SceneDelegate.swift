@@ -26,6 +26,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let appearance = UITabBarAppearance()
             UITabBar.appearance().scrollEdgeAppearance = appearance
         }
+        TokenManager.shared.initSetIsLogin()
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {

@@ -26,10 +26,10 @@ public final class ObjectsContainer: ObservableObject {
                 if case let .new(response) = event { return response } else { return nil }
             }
             .filter{ AppState.shared.user?.id != $0.result?.ownerId }
-            .sink { newMessage in
-                let isMute = self.threadsVM.threads.first(where: { $0.id == newMessage.result?.conversation?.id })?.mute
+            .sink { [weak self] newMessage in
+                let isMute = self?.threadsVM.threads.first(where: { $0.id == newMessage.result?.conversation?.id })?.mute
                 if isMute == false {
-                    self.playNewMessageSound()
+                    self?.playNewMessageSound()
                 }
             }
             .store(in: &cancellableSet)

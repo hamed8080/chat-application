@@ -38,7 +38,9 @@ public final class ImageLoader: ObservableObject {
     public init() {
         NotificationCenter.default.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
-            .sink(receiveValue: onDownloadEvent)
+            .sink{ [weak self] event in
+                self?.onDownloadEvent(event)
+            }
             .store(in: &cancelable)
     }
 

@@ -17,6 +17,7 @@ public struct ConnectionStatusToolbar: View {
         self.connectionStatus = connectionStatus
     }
 
+    @ViewBuilder
     public var body: some View {
         if connectionStatus != .connected {
             Text("\(connectionStatus.stringValue) ...")

@@ -47,8 +47,15 @@ public struct AudioRecordingView: View {
 }
 
 struct AudioRecordingView_Previews: PreviewProvider {
+    static var threadVM = ThreadViewModel(thread: MockData.thread)
+    static var viewModel: AudioRecordingViewModel {
+        let viewModel = AudioRecordingViewModel()
+        viewModel.threadViewModel = threadVM
+        return viewModel
+    }
+
     static var previews: some View {
         AudioRecordingView()
-            .environmentObject(AudioRecordingViewModel(threadViewModel: ThreadViewModel(thread: MockData.thread)))
+            .environmentObject(viewModel)
     }
 }

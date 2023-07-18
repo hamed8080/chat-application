@@ -33,12 +33,12 @@ extension ThreadViewModel: ScrollToPositionProtocol {
         scrollingUP = lastOrigin > newOriginY
         lastOrigin = newOriginY
         if scrollingUP, newOriginY < 0, canLoadMoreTop {
-            moreTop(messages.first?.time?.advanced(by: -1))
+            moreTop(sections.first?.messages.first?.time?.advanced(by: -1))
         }
     }
 
     public func scrollToBottom(animation: Animation? = .easeInOut) {
-        if let uniqueId = messages.last?.uniqueId {
+        if let uniqueId = sections.last?.messages.last?.uniqueId {
             scrollTo(uniqueId, animation)
         }
     }
@@ -54,7 +54,7 @@ extension ThreadViewModel: ScrollToPositionProtocol {
     /// Search for a message with an id in the messages array, and if it can find the message, it will redirect to that message locally, and there is no request sent to the server.
     /// - Returns: Indicate that it moved loclally or not.
     func moveToMessageLocally(_ messageId: Int, highlight: Bool) -> Bool {
-        if let uniqueId = messages.first(where: { $0.id == messageId })?.uniqueId {
+        if let indices = indicesByMessageId(messageId), let uniqueId = sections[indices.sectionIndex].messages[indices.messageIndex].uniqueId {
             showHighlighted(uniqueId, messageId, highlight: highlight)
             return true
         }
