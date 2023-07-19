@@ -11,6 +11,7 @@ import Combine
 import SwiftUI
 import ChatAppViewModels
 import ChatModels
+import AVKit
 
 public struct DownloadFileView: View {
     @EnvironmentObject var downloadFileVM: DownloadFileViewModel
@@ -37,8 +38,18 @@ public struct DownloadFileView: View {
                             .onTapGesture {
                                 presentViewGallery = true
                             }
+                    } else if message.isVideo, let fileURL = downloadFileVM.fileURL {
+                        VideoPlayerView()
+                            .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
+                                                                    ext: message.fileMetaData?.file?.mimeType?.ext,
+                                                                    title: message.fileMetaData?.name,
+                                                                    subtitle: message.fileMetaData?.file?.originalName ?? ""))
+                            .id(fileURL)
                     } else if message.isAudio, let fileURL = downloadFileVM.fileURL {
-                        AudioPlayer(fileURL: fileURL, ext: message.fileMetaData?.file?.mimeType?.ext, title: message.fileMetaData?.name, subtitle: message.fileMetaData?.file?.originalName ?? "")
+                       InlineAudioPlayerView(fileURL: fileURL,
+                                    ext: message.fileMetaData?.file?.mimeType?.ext,
+                                    title: message.fileMetaData?.name,
+                                    subtitle: message.fileMetaData?.file?.originalName ?? "")
                             .id(fileURL)
                     } else {
                         Image(systemName: message.iconName)
@@ -122,31 +133,6 @@ public struct DownloadFileView: View {
         }
     }
 }
-
-struct AudioPlayer: View {
-    let fileURL: URL
-    let ext: String?
-    var title: String?
-    var subtitle: String
-    @EnvironmentObject var viewModel: AVAudioPlayerViewModel
-
-    var body: some View {
-        VStack {
-            Image(systemName: !viewModel.isPlaying ? "play.circle.fill" : "pause.circle.fill")
-                .resizable()
-                .foregroundColor(.blue)
-                .frame(width: 48, height: 48, alignment: .leading)
-                .cornerRadius(24)
-                .animation(.easeInOut, value: viewModel.isPlaying)
-                .onTapGesture {
-                    viewModel.setup(fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
-                    viewModel.toggle()
-                }
-        }
-        .padding()        
-    }
-}
-
 
 struct DownloadFileView_Previews: PreviewProvider {
     static var previews: some View {

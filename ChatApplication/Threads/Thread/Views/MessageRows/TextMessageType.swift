@@ -98,11 +98,11 @@ struct TextMessageType: View {
                 }
             }
             .cornerRadius(12)
-            .onTapGesture {
+            .simultaneousGesture(TapGesture().onEnded { _ in
                 if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url)
                 }
-            }
+            }, including: message.isVideo ? .subviews : .all)
             .contextMenu {
                 MessageActionMenu()
                     .environmentObject(viewModel)
