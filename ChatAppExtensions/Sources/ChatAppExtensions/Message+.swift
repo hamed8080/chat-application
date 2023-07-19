@@ -45,6 +45,7 @@ public extension Message {
 
     var isImage: Bool { messageType == .podSpacePicture || messageType == .picture }
     var isAudio: Bool { [MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice].contains(messageType ?? .unknown) }
+    var isVideo: Bool { [MessageType.video, .podSpaceVideo, .video].contains(messageType ?? .unknown) }
 
     func updateMessage(message: Message) {
         deletable = message.deletable ?? deletable
@@ -166,7 +167,7 @@ public extension Message {
     }
 
     var isFileType: Bool {
-        let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice]
+        let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice, .podSpaceVideo]
         return fileTypes.contains(messageType ?? .unknown)
     }
 

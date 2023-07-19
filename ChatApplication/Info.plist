@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>ChatApplication uses your location in the case of sending a message to your friends or group if you are in need.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>ChatApplication uses your location in the case of sending a message to your friends or group if you are in need.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>ChatApplication uses your location in the case of sending a message to your friends or group if you are in need.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -49,6 +43,13 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>10.56.34.61</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 			<key>188.75.65.159</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
@@ -56,7 +57,7 @@
 				<key>NSIncludesSubdomains</key>
 				<true/>
 			</dict>
-			<key>10.56.34.61</key>
+			<key>talkotp-d.fanapsoft.ir</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -69,6 +70,12 @@
 	<string>$(PRODUCT_NAME) Requires camera access in order to capture and transmit video</string>
 	<key>NSContactsUsageDescription</key>
 	<string>This app access to your contacts to sync with application.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>ChatApplication uses your location in the case of sending a message to your friends or group if you are in need.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>ChatApplication uses your location in the case of sending a message to your friends or group if you are in need.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>ChatApplication uses your location in the case of sending a message to your friends or group if you are in need.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$(PRODUCT_NAME) Requires microphone access in order to capture and transmit audio</string>
 	<key>NSPhotoLibraryUsageDescription</key>
