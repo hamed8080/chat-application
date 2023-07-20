@@ -113,10 +113,16 @@ struct GalleryTextView: View {
     @EnvironmentObject var viewModel: GalleryViewModel
 
     var body: some View {
-        if let message = viewModel.currentImageMessage?.message {
-            VStack (alignment: .leading){
+        if let message = viewModel.currentImageMessage?.message?.trimmingCharacters(in: .whitespacesAndNewlines), !message.isEmpty {
+            VStack(alignment: .leading, spacing: 0){
                 Spacer()
-                Text(message)
+                HStack {
+                    LongTextView(message)
+                        .frame(minWidth: 0, maxWidth: .infinity)
+                        .padding()
+                        .edgesIgnoringSafeArea([.leading, .trailing, .bottom])
+                }
+                .background(.ultraThickMaterial)
             }
         }
     }

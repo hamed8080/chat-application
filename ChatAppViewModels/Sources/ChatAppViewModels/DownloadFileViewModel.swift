@@ -6,27 +6,28 @@ import Combine
 import Foundation
 import ChatCore
 import ChatTransceiver
+import SwiftUI
 
 public protocol DownloadFileViewModelProtocol {
-    var message: Message? { get }
+    var message: Message { get }
     var fileHashCode: String { get }
     var data: Data? { get }
     var state: DownloadFileState { get }
     var downloadPercent: Int64 { get }
     var url: URL? { get }
     var fileURL: URL? { get }
-    func setMessage(message: Message)
+    func setObservers()
     func startDownload()
     func pauseDownload()
     func resumeDownload()
 }
 
 public final class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
-    @Published public var downloadPercent: Int64 = 0
-    @Published public var state: DownloadFileState = .UNDEFINED
-    @Published public var tumbnailData: Data?
-    @Published public var data: Data?
-    public var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
+    public var downloadPercent: Int64 = 0
+    public var state: DownloadFileState = .UNDEFINED
+    public var tumbnailData: Data?
+    public var data: Data?
+    public var fileHashCode: String { message.fileMetaData?.fileHash ?? message.fileMetaData?.file?.hashCode ?? "" }
     var chat: Chat? { ChatManager.activeInstance }
 
     public var fileURL: URL? {
@@ -35,28 +36,32 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     public var url: URL? {
-        let path = message?.isImage == true ? Routes.images.rawValue : Routes.files.rawValue
+        let path = message.isImage == true ? Routes.images.rawValue : Routes.files.rawValue
         let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(path)/\(fileHashCode)"
         return URL(string: url)
     }
 
     public var requests: [String: Any] = [:]
     public var thumbRequests: [String: Any] = [:]
-    public private(set) weak var message: Message?
+    public var message: Message
     private var cancelable: Set<AnyCancellable> = []
 
-    public init() {}
-
-    public func setMessage(message: Message) {
+    public init(message: Message) {
         self.message = message
         if isInCache {
             state = .COMPLETED
+            animateObjectWillChange()
         }
+        setObservers()
+    }
+
+    public func setObservers() {
         NotificationCenter.default.publisher(for: .message)
             .compactMap { $0.object as? Message }
-            .filter { $0.id == message.id }
+            .filter { $0.id == self.message.id }
             .sink { [weak self] _ in
                 self?.state = .UNDEFINED
+                self?.animateObjectWillChange()
             }
             .store(in: &cancelable)
         NotificationCenter.default.publisher(for: .download)
@@ -91,7 +96,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     public func startDownload() {
         if isInCache { return }
-        if message?.isImage == true {
+        if message.isImage == true {
             downloadImage()
         } else {
             downloadFile()
@@ -103,6 +108,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         let req = FileRequest(hashCode: fileHashCode)
         requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
+        animateObjectWillChange()
     }
 
     private func downloadImage() {
@@ -110,6 +116,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
         requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
+        animateObjectWillChange()
     }
 
     public func downloadBlurImage() {
@@ -117,6 +124,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         let req = ImageRequest(hashCode: fileHashCode, quality: 0.1, size: .SMALL, thumbnail: true)
         thumbRequests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
+        animateObjectWillChange()
     }
 
     private func onResponse(_ response: ChatResponse<Data>, _ url: URL?) {
@@ -125,6 +133,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             state = .THUMBNAIL
             self.tumbnailData = data
             thumbRequests.removeValue(forKey: uniqueId)
+            animateObjectWillChange()
             return
         }
         if let data = response.result, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
@@ -132,6 +141,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             state = .COMPLETED
             downloadPercent = 100
             self.data = data
+            animateObjectWillChange()
         }
 
         /// When the user clicks on the side of an image not directly hit the download button, it triggers gallery view, and therefore after the user is back to the view the image and file should update properly.
@@ -139,24 +149,28 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             state = .COMPLETED
             downloadPercent = 100
             self.data = response.result
+            animateObjectWillChange()
         }
     }
 
     private func onSuspend(_ uniqueId: String) {
         if requests[uniqueId] != nil {
             state = .PAUSED
+            animateObjectWillChange()
         }
     }
 
     private func onResumed(_ uniqueId: String) {
         if requests[uniqueId] != nil {
             state = .DOWNLOADING
+            animateObjectWillChange()
         }
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
         if requests[uniqueId] != nil {
             self.downloadPercent = progress?.percent ?? 0
+            animateObjectWillChange()
         }
     }
 
@@ -168,5 +182,11 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public func resumeDownload() {
         guard let uniaueId = requests.first?.key else { return }
         ChatManager.activeInstance?.file.manageDownload(uniqueId: uniaueId, action: .resume)
+    }
+
+    private func animateObjectWillChange() {
+        withAnimation {
+            objectWillChange.send()
+        }
     }
 }

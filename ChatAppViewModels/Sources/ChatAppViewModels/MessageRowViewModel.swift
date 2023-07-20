@@ -25,7 +25,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var timeString: String = ""
     public var fileSizeString: String?
     public static var avatarSize: CGFloat = 24
-    public let downloadFileVM = DownloadFileViewModel()
+    public let downloadFileVM: DownloadFileViewModel
     public weak var threadVM: ThreadViewModel?
     private var cancelableSet = Set<AnyCancellable>()
     public let message: Message
@@ -35,6 +35,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var highlightTimer: Timer?
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
+        self.downloadFileVM = DownloadFileViewModel(message: message)
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
     }

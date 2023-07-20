@@ -38,7 +38,7 @@ struct FullScreenBackgroundViewModifier: ViewModifier {
 }
 
 public extension View {
-    func fullScreenBackgroundView(view: UIView = UIVisualEffectView(effect: UIBlurEffect(style: .extraLight))) -> some View {
+    func fullScreenBackgroundView(view: UIView = UIVisualEffectView(effect: UIBlurEffect(style: .prominent))) -> some View {
         modifier(FullScreenBackgroundViewModifier(view: view))
     }
 }

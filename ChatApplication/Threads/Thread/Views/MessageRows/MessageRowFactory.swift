@@ -25,8 +25,7 @@ struct MessageRowFactory: View {
             } else {
                 if let type = message.type {
                     if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                        TextMessageType()
-                            .environmentObject(viewModel)
+                        TextMessageType(viewModel: viewModel)
                     } else if type == .participantJoin || type == .participantLeft {
                         ParticipantMessageType(message: message)
                     } else if type == .endCall || type == .startCall {

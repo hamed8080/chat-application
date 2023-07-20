@@ -24,8 +24,7 @@ struct SearchMessageRow: View {
                 threadVM?.animatableObjectWillChange()
             }
         } label: {
-            TextMessageType()
-                .environmentObject(viewModel)
+            TextMessageType(viewModel: viewModel)
                 .disabled(true)
         }
     }
