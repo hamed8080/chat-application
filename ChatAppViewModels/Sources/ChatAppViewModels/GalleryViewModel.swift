@@ -6,17 +6,18 @@ import ChatDTO
 import ChatCore
 import ChatAppModels
 import ChatTransceiver
+import SwiftUI
 
 public final class GalleryViewModel: ObservableObject {
-    @Published public var starter: Message
-    @Published public var pictures: [Message] = []
-    @Published public var isLoading: Bool = false
+    public var starter: Message
+    public var pictures: [Message] = []
+    public var isLoading: Bool = false
     var thread: Conversation? { starter.conversation }
     var threadId: Int? { thread?.id }
     public var currentImageMessage: Message?
     public var downloadedImages: [String: Data] = [:]
-    @Published public var percent: Int64 = 0
-    @Published public var state: DownloadFileState = .UNDEFINED
+    public var percent: Int64 = 0
+    public var state: DownloadFileState = .UNDEFINED
     private var cancelable: Set<AnyCancellable> = []
     private var requests: [String: Any] = [:]
     public var currentData: Data? {
@@ -84,12 +85,20 @@ public final class GalleryViewModel: ObservableObject {
             requests.removeValue(forKey: uniqueId)
         }
         isLoading = false
+        objectWillChangeWithAnimation()
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
         if let progress = progress, requests[uniqueId] != nil {
             state = .DOWNLOADING
             percent = progress.percent
+            objectWillChangeWithAnimation()
+        }
+    }
+
+    private func objectWillChangeWithAnimation(){
+        withAnimation {
+            objectWillChange.send()
         }
     }
 
@@ -108,6 +117,7 @@ public final class GalleryViewModel: ObservableObject {
     public func fetchImage(message: Message? = nil) {
         currentImageMessage = message ?? starter
         isLoading = true
+        objectWillChangeWithAnimation()
         guard let hashCode = currentImageMessage?.fileMetaData?.file?.hashCode else { return }
         let req = ImageRequest(hashCode: hashCode, size: .ACTUAL)
         requests[req.uniqueId] = req

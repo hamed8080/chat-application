@@ -71,10 +71,10 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         switch event {
         case .resumed(let uniqueId):
             onResumed(uniqueId)
-        case .file(let chatResponse, _):
-            onResponse(chatResponse)
-        case .image(let chatResponse, _):
-            onResponse(chatResponse)
+        case .file(let chatResponse, let url):
+            onResponse(chatResponse, url)
+        case .image(let chatResponse, let url):
+            onResponse(chatResponse, url)
         case .suspended(let uniqueId):
             onSuspend(uniqueId)
         case .progress(let uniqueId, let progress):
@@ -119,7 +119,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         ChatManager.activeInstance?.file.get(req)
     }
 
-    private func onResponse(_ response: ChatResponse<Data>) {
+    private func onResponse(_ response: ChatResponse<Data>, _ url: URL?) {
         if let uniqueId = response.uniqueId, thumbRequests[uniqueId] != nil, let data = response.result {
             //State is not completed and blur view can show the thumbnail
             state = .THUMBNAIL
@@ -132,6 +132,13 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             state = .COMPLETED
             downloadPercent = 100
             self.data = data
+        }
+
+        /// When the user clicks on the side of an image not directly hit the download button, it triggers gallery view, and therefore after the user is back to the view the image and file should update properly.
+        if url?.absoluteString == fileURL?.absoluteString, !response.cache {
+            state = .COMPLETED
+            downloadPercent = 100
+            self.data = response.result
         }
     }
 

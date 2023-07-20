@@ -17,7 +17,7 @@ public struct VideoPlayerView: View {
         VStack {
             if let player = videoPlayerVM.player {
                 PlayerViewRepresentable(player: player)
-                    .frame(minHeight: 256)
+                    .frame(minHeight: 196)
                     .cornerRadius(12)
             }
         }

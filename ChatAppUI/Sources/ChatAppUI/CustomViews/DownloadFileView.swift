@@ -15,12 +15,14 @@ import AVKit
 
 public struct DownloadFileView: View {
     @EnvironmentObject var downloadFileVM: DownloadFileViewModel
+    @State var galleryViewModel: GalleryViewModel
     @State var shareDownloadedFile: Bool = false
     let message: Message
     @State var presentViewGallery = false
 
     public init(message: Message, placeHolder: Data? = nil) {
         self.message = message
+        galleryViewModel = GalleryViewModel(message: message)
         if let placeHolder = placeHolder {
             downloadFileVM.data = placeHolder
         }
@@ -121,9 +123,8 @@ public struct DownloadFileView: View {
             }
         }
         .fullScreenCover(isPresented: $presentViewGallery) {
-            GalleryView()
+            GalleryView(viewModel: galleryViewModel)
                 .id(message.id)
-                .environmentObject(GalleryViewModel(message: message))
         }
         .onAppear {
             downloadFileVM.setMessage(message: message)

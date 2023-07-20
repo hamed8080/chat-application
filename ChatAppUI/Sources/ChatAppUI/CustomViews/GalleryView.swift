@@ -10,14 +10,63 @@ import ChatModels
 import SwiftUI
 
 struct GalleryView: View {
+    let viewModel: GalleryViewModel
+
+    var body: some View {
+        ZStack {
+            GalleryProgressView()
+                .environmentObject(viewModel)
+            GalleryImageViewData()
+                .environmentObject(viewModel)
+            GalleryTextView()
+                .environmentObject(viewModel)
+        }
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+        .fullScreenBackgroundView()
+        .ignoresSafeArea(.all)
+        .onAppear {
+            viewModel.fetchImage()
+        }
+    }
+}
+
+struct GalleryProgressView: View {
     @EnvironmentObject var viewModel: GalleryViewModel
+
+    var body: some View {
+        if viewModel.state == .DOWNLOADING {
+            CircularProgressView(percent: $viewModel.percent)
+                .padding()
+                .frame(maxWidth: 128)
+        }
+    }
+}
+
+struct GalleryImageViewData: View {
+    @EnvironmentObject var viewModel: GalleryViewModel
+
+    var body: some View {
+        if let data = viewModel.currentData, let uiimage = UIImage(data: data) {
+            GalleryImageView(uiimage: uiimage, viewModel: viewModel)
+        }
+    }
+}
+
+struct GalleryImageView: View {
+    let uiimage: UIImage
+    let viewModel: GalleryViewModel
     @Environment(\.dismiss) var dismiss
-    @State var scaleBy: CGFloat = 1.0
+    @GestureState private var scaleBy: CGFloat = 1.0
+    @State private var endScale: CGFloat = 1.0
+    @State private var isDragging = false
 
     var dragGesture: some Gesture {
         DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            .onChanged { _ in
+                isDragging = true
+            }
             .onEnded { value in
-
+                isDragging = false
                 if value.translation.width > 100 {
                     // swipe right
                     viewModel.swipeTo(.previous)
@@ -37,49 +86,44 @@ struct GalleryView: View {
 
     var zoomGesture: some Gesture {
         MagnificationGesture()
-            .onChanged{ newValue in
-                scaleBy = newValue
+            .updating($scaleBy) { value, state, transaction in
+                state = value
+                transaction.animation = .interactiveSpring()
+            }
+            .onEnded{ value in
+                if !isDragging {
+                    endScale = value
+                }
             }
     }
 
     var body: some View {
-        ZStack {
-            if viewModel.state == .DOWNLOADING {
-                CircularProgressView(percent: $viewModel.percent)
-                    .padding()
-                    .frame(maxWidth: 128)
-            }
-            if let data = viewModel.currentData, let uiImage = UIImage(data: data) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .scaleEffect(scaleBy, anchor: .center)
-                    .gesture(zoomGesture)
-                    .animation(.easeInOut, value: scaleBy)
-            }
+        Image(uiImage: uiimage)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .scaleEffect(scaleBy, anchor: .center)
+            .scaleEffect(endScale, anchor: .center)
+            .gesture(zoomGesture)
+            .gesture(dragGesture)
+            .animation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.9), value: scaleBy)
+    }
+}
 
-            if let message = viewModel.currentImageMessage?.message {
-                VStack (alignment: .leading){
-                    Spacer()
-                    Text(message)
-                }
+struct GalleryTextView: View {
+    @EnvironmentObject var viewModel: GalleryViewModel
+
+    var body: some View {
+        if let message = viewModel.currentImageMessage?.message {
+            VStack (alignment: .leading){
+                Spacer()
+                Text(message)
             }
-        }
-        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-        .fullScreenBackgroundView()
-        .gesture(dragGesture)
-        .ignoresSafeArea(.all)
-        .animation(.easeInOut, value: viewModel.currentData)
-        .animation(.easeInOut, value: viewModel.isLoading)
-        .onAppear {
-            viewModel.fetchImage()
         }
     }
 }
 
 struct GalleryView_Previews: PreviewProvider {
     static var previews: some View {
-        GalleryView()
-            .environmentObject(GalleryViewModel(message: Message(message: "TEST", conversation: .init(id: 1))))
+        GalleryView(viewModel: GalleryViewModel(message: Message(message: "TEST", conversation: .init(id: 1))))
     }
 }
