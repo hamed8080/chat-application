@@ -17,12 +17,11 @@ struct TextMessageType: View {
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     let viewModel: MessageRowViewModel
     @State private var isSelected = false
-    private var isMe: Bool { message.isMe(currentUserId: AppState.shared.user?.id) }
     @State var isInSelectionMode = false
 
     var body: some View {
         HStack(spacing: 8) {
-            if !isMe {
+            if !viewModel.isMe {
                 selectRadio
             }
 
@@ -37,7 +36,7 @@ struct TextMessageType: View {
                 Spacer()
             }
 
-            if isMe {
+            if viewModel.isMe {
                 selectRadio
             }
         }
@@ -166,5 +165,28 @@ struct MutableMessageView: View {
         .onAppear {
             viewModel.calculate()
         }
+    }
+}
+
+struct TextMessageType_Previews: PreviewProvider {
+    struct Preview: View {
+        var body: some View {
+            let participant = Participant(id: 0, name: "John Doe")
+            TextMessageType(
+                viewModel: MessageRowViewModel(
+                    message: .init(
+                        id: 1,
+                        message: "TEST",
+                        seen: true,
+                        time: UInt(Date().millisecondsSince1970), participant: participant
+                    ),
+                    viewModel: .init(thread: Conversation(id: 1))
+                )
+            )
+        }
+    }
+
+    static var previews: some View {
+        Preview()
     }
 }

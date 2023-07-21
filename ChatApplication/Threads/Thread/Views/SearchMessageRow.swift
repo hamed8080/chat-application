@@ -21,10 +21,11 @@ struct SearchMessageRow: View {
             if let time = message.time, let messageId = message.id {
                 threadVM?.moveToTime(time, messageId)
                 threadVM?.searchedMessages.removeAll()
+                threadVM?.isInSearchMode = false
                 threadVM?.animatableObjectWillChange()
             }
         } label: {
-            TextMessageType(viewModel: viewModel)
+            MessageRowFactory(viewModel: viewModel)
                 .disabled(true)
         }
     }

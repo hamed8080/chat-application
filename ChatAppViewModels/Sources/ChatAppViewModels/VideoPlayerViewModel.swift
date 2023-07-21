@@ -16,19 +16,27 @@ public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLo
     let ext: String?
     var title: String?
     var subtitle: String?
+    var timer: Timer?
+    @Published public var timerString = "00:00"
 
-    public init(fileURL: URL, ext: String? = nil, title: String? = nil, subtitle: String? = nil) {
+    public init(fileURL: URL, ext: String? = nil, title: String? = nil, subtitle: String? = nil, directLink: Bool = false) {
         self.fileURL = fileURL
         self.ext = ext
         self.title = title
         self.subtitle = subtitle
         super.init()
         do {
-            let hardLinkURL = fileURL.appendingPathExtension(ext ?? "mp4")
-            if !FileManager.default.fileExists(atPath: hardLinkURL.path()) {
-                try FileManager.default.linkItem(at: fileURL, to: hardLinkURL)
+            var url: URL
+            if !directLink {
+                let hardLinkURL = fileURL.appendingPathExtension(ext ?? "mp4")
+                if !FileManager.default.fileExists(atPath: hardLinkURL.path()) {
+                    try FileManager.default.linkItem(at: fileURL, to: hardLinkURL)
+                }
+                url = hardLinkURL
+            } else {
+                url = fileURL
             }
-            let asset = AVURLAsset(url: hardLinkURL)
+            let asset = AVURLAsset(url: url)
             asset.resourceLoader.setDelegate(self, queue: DispatchQueue.main)
             let item = AVPlayerItem(asset: asset)
             player = AVPlayer(playerItem: item)
@@ -56,6 +64,28 @@ public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLo
         @unknown default:
             print("default status video player")
         }
+    }
+
+    public func toggle() {
+        if player?.timeControlStatus == .paused {
+            player?.play()
+            startTimer()
+        } else {
+            player?.pause()
+            stopTimer()
+        }
+    }
+
+    public func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+            guard let elapsed = self?.player?.currentTime() else { return }
+            self?.timerString = elapsed.seconds.rounded().timerString ?? "00:00"
+        }
+    }
+
+    public func stopTimer() {
+        timer?.invalidate()
+        timer = nil
     }
 
     deinit {

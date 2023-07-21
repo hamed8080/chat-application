@@ -41,6 +41,8 @@ public struct DownloadFileView: View {
         .onTapGesture {
             if message.isImage {
                 presentViewGallery = true
+            } else if message.isVideo {
+                // Enter to full screen
             } else if viewModel.state == .COMPLETED {
                 shareDownloadedFile.toggle()
             }
