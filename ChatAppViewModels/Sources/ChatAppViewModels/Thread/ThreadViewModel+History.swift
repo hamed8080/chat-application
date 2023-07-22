@@ -168,7 +168,7 @@ extension ThreadViewModel {
             bottomLoading = true
         }
         print("moreBottom called")
-        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: fromTime, readOnly: readOnly)
+        let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "desc", readOnly: readOnly)
         requests["MORE_BOTTOM-\(req.uniqueId)"] = (req, lastVisibleUniqueId)
         ChatManager.activeInstance?.message.history(req)
     }
@@ -188,7 +188,7 @@ extension ThreadViewModel {
         }
         withAnimation(.spring()) {
             if !response.cache {
-                hasNextTop = response.hasNext
+                hasNextBottom = response.hasNext
                 isFetchedServerFirstResponse = true
                 requests.removeValue(forKey: "MORE_BOTTOM-\(uniqueId)")
                 bottomLoading = false

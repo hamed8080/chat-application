@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MoveToBottomButton: View {
     @EnvironmentObject var viewModel: ThreadViewModel
+    @State private var isAtBottomOfTheList: Bool = true
 
     var body: some View {
         Button {
@@ -29,7 +30,7 @@ struct MoveToBottomButton: View {
         .cornerRadius(36)
         .padding(.bottom, 16)
         .padding([.trailing], 8)
-        .scaleEffect(x: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, y: viewModel.isAtBottomOfTheList ? 0.0 : 1.0, anchor: .center)
+        .scaleEffect(x: isAtBottomOfTheList ? 0.0 : 1.0, y: isAtBottomOfTheList ? 0.0 : 1.0, anchor: .center)
         .overlay(alignment: .top) {
             let unreadCount = viewModel.thread.unreadCount ?? 0
             let hide = unreadCount == 0
@@ -43,6 +44,11 @@ struct MoveToBottomButton: View {
                 .cornerRadius(hide ? 0 : 24)
                 .offset(x: -3, y: -16)
                 .animation(.easeInOut, value: unreadCount)
+        }
+        .onChange(of: viewModel.isAtBottomOfTheList) { newValue in
+            if newValue != isAtBottomOfTheList {
+                isAtBottomOfTheList = newValue
+            }
         }
     }
 }

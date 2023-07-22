@@ -38,7 +38,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     @Published public var topLoading = false
     @Published public var bottomLoading = false
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
-    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id }
+    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom }
     public var sections: [MessageSection] = []
     @Published public var selectedMessages: [Message] = []
     @Published public var editMessage: Message?
@@ -163,7 +163,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
 
         if !scrollingUP, message.id == sections.last?.messages.last?.id {
-            moreBottom(sections.last?.messages.last?.time?.advanced(by: -100))
+            moreBottom(sections.last?.messages.last?.time?.advanced(by: 1))
         }
     }
 
