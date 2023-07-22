@@ -244,7 +244,7 @@ struct GradientImageButton: View {
                     .frame(width: 0, height: 0)
                     .allowsHitTesting(false)
                     .disabled(true)
-                LinearGradient(gradient: Gradient(colors: [.blue, .purple]), startPoint: .top, endPoint: .bottom)
+                LinearGradient(gradient: Gradient(colors: [.blue, .teal]), startPoint: .topLeading, endPoint: .bottomTrailing)
                     .mask {
                         Image(systemName: image)
                             .resizable()

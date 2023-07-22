@@ -136,18 +136,22 @@ extension ThreadViewModel {
             threadId == response.result?.threadId,
             let indices = indicesByMessageUniqueId(response.uniqueId ?? "")
         else { return }
-        sections[indices.sectionIndex].messages[indices.messageIndex].id = response.result?.messageId
-        sections[indices.sectionIndex].messages[indices.messageIndex].delivered = true
-        sections[indices.sectionIndex].messages[indices.messageIndex].time = response.result?.messageTime
-        playSentAudio()
+        if !replaceUploadMessage(response) {
+            sections[indices.sectionIndex].messages[indices.messageIndex].id = response.result?.messageId
+            sections[indices.sectionIndex].messages[indices.messageIndex].time = response.result?.messageTime
+        }
     }
 
-    internal func playSentAudio() {
-        if let fileURL = Bundle.main.url(forResource: "sent_message", withExtension: "mp3") {
-            audioPlayer = AVAudioPlayerViewModel()
-            audioPlayer?.setup(fileURL: fileURL , ext: "mp3", category: .ambient)
-            audioPlayer?.toggle()
+    func replaceUploadMessage(_ response: ChatResponse<MessageResponse>) -> Bool {
+        let lasSectionIndex = sections.firstIndex(where: {$0.id == sections.last?.id})
+        if let lasSectionIndex,
+           sections.indices.contains(lasSectionIndex),
+           let oldUploadFileIndex = sections[lasSectionIndex].messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == response.uniqueId }) {
+            sections[lasSectionIndex].messages.remove(at: oldUploadFileIndex) /// Remove because it was of type UploadWithTextMessageProtocol
+            sections[lasSectionIndex].messages.append(.init(threadId: response.subjectId, id: response.result?.messageId, time: response.result?.messageTime, uniqueId: response.uniqueId))
+            return true
         }
+        return false
     }
 
     public func onDeliver(_ response: ChatResponse<MessageResponse>) {
@@ -155,7 +159,6 @@ extension ThreadViewModel {
               let indices = findIncicesBy(uniqueId: response.uniqueId ?? "", response.result?.messageId ?? 0)
         else { return }
         sections[indices.sectionIndex].messages[indices.messageIndex].delivered = true
-        animatableObjectWillChange()
     }
 
     public func onSeen(_ response: ChatResponse<MessageResponse>) {
@@ -179,7 +182,7 @@ extension ThreadViewModel {
                         sections[sectionIndex].messages[messageIndex].delivered = true
                         sections[sectionIndex].messages[messageIndex].seen = true
                         let result = MessageResponse(messageState: .seen, threadId: threadId, messageId: message.id)
-                        NotificationCenter.default.post(name: Notification.Name("UPDATE_SEEN"), object: result)
+                        NotificationCenter.default.post(name: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"), object: result)
                     }
                 }
             }

@@ -66,7 +66,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var signalMessageText: String?
     public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
-    public weak var audioPlayer: AVAudioPlayerViewModel?
     var requests: [String: Any] = [:]
     public var isAtBottomOfTheList: Bool = false    
     var searchOffset: Int = 0
@@ -232,19 +231,11 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func appendMessages(_ messages: [Message], isToTime: Bool = false) {
         guard messages.count > 0 else { return }
-        let lastSectionIndex = sections.firstIndex(where: {$0.id == sections.last?.id})
         messages.forEach { message in
-            removeUploadMessagePlaceholder(message, lastSectionIndex)
             insertOrUpdate(message)
         }
         appenedUnreadMessagesBannerIfNeeed(isToTime)
         sort()
-    }
-
-    func removeUploadMessagePlaceholder(_ message: Message, _ lastSectionIndex: Array<MessageSection>.Index?) {
-        if let lastSectionIndex = lastSectionIndex, let oldUploadFileIndex = sections.last?.messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == message.uniqueId }) {
-            self.sections[lastSectionIndex].messages.remove(at: oldUploadFileIndex)
-        }
     }
 
     func insertOrUpdate(_ message: Message) {

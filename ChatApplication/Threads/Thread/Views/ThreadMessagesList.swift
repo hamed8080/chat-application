@@ -44,9 +44,9 @@ struct ThreadMessagesList: View {
                 viewModel.scrollProxy = scrollProxy
             }
         }
-//        .simultaneousGesture(TapGesture().onEnded { _ in
-//            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-//        })
+        .simultaneousGesture(TapGesture().onEnded { _ in
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        })
     }
 
     private var background: some View {

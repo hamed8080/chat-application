@@ -51,7 +51,7 @@ public final class MessageRowViewModel: ObservableObject {
             }
             .store(in: &cancelableSet)
 
-        NotificationCenter.default.publisher(for: Notification.Name("UPDATE_SEEN"))
+        NotificationCenter.default.publisher(for: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"))
             .compactMap {$0.object as? MessageResponse}
             .sink { [weak self] newValue in
                 self?.message.delivered = true
@@ -92,6 +92,11 @@ public final class MessageRowViewModel: ObservableObject {
     }
 
     private func onMessageEvent(_ event: MessageEventTypes) {
+        /// Update the message after message has sent to server and the chat server respond wtih MessageVOTypes.Message we should update ui for upload messages.
+        if case let .new(response) = event, message.uniqueId == response.result?.uniqueId, let message = response.result {
+            self.message.updateMessage(message: message)
+            recalculateWithAnimation()
+        }
         if case let .edited(response) = event, message.id == response.result?.id {
             message.message = response.result?.message
             message.time = response.result?.time
@@ -107,7 +112,6 @@ public final class MessageRowViewModel: ObservableObject {
 
         if case let .sent(response) = event, message.id == response.result?.messageId {
             message.id = response.result?.messageId
-            message.delivered = true
             message.time = response.result?.messageTime
             updateWithAnimation()
         }
@@ -157,7 +161,7 @@ public final class MessageRowViewModel: ObservableObject {
             self.markdownTitle = markdownTitle
             self.timeString = timeString
             self.fileSizeString = fileSizeString
-            withAnimation(animation?.speed(0.2)) {
+            withAnimation(animation?.speed(0.8)) {
                 self.objectWillChange.send()
             }
         }

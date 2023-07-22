@@ -22,15 +22,8 @@ public final class ObjectsContainer: ObservableObject {
         loginVM = LoginViewModel(delegate: delegate)
         NotificationCenter.default.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
-            .compactMap { event -> ChatResponse<Message>? in
-                if case let .new(response) = event { return response } else { return nil }
-            }
-            .filter{ AppState.shared.user?.id != $0.result?.ownerId }
-            .sink { [weak self] newMessage in
-                let isMute = self?.threadsVM.threads.first(where: { $0.id == newMessage.result?.conversation?.id })?.mute
-                if isMute == false {
-                    self?.playNewMessageSound()
-                }
+            .sink { [weak self] event in
+                self?.onMessageEvent(event)
             }
             .store(in: &cancellableSet)
     }
@@ -47,8 +40,27 @@ public final class ObjectsContainer: ObservableObject {
         logVM.clearLogs()
     }
 
-    private func playNewMessageSound() {
-        if let fileURL = Bundle.main.url(forResource: "new_message", withExtension: "mp3") {
+    private func onMessageEvent(_ event: MessageEventTypes) {
+        switch event {
+        case .new(let chatResponse):
+            onNewMessage(chatResponse)
+            break
+        case .sent(_):
+            playMessageSound(sent: true)
+            break
+        default:
+            break
+        }
+    }
+
+    private func onNewMessage(_ response: ChatResponse<Message>) {
+        if AppState.shared.user?.id != response.result?.ownerId, threadsVM.threads.first(where: { $0.id == response.result?.conversation?.id })?.mute == false {
+            playMessageSound(sent: false)
+        }
+    }
+
+    private func playMessageSound(sent: Bool) {
+        if let fileURL = Bundle.main.url(forResource: sent ? "sent_message" : "new_message", withExtension: "mp3") {
             messagePlayer.setup(fileURL: fileURL, ext: "mp3")
             messagePlayer.toggle()
         }
