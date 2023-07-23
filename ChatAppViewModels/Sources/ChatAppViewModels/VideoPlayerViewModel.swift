@@ -9,6 +9,7 @@ import UIKit
 import Combine
 import Foundation
 import AVKit
+import OSLog
 
 public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLoaderDelegate {
     @Published public var player: AVPlayer?
@@ -42,7 +43,7 @@ public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLo
             player = AVPlayer(playerItem: item)
             item.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: [.old, .new], context: nil)
         } catch {
-            print("error in hardlinking: \(error.localizedDescription)")
+            Logger.viewModels.info("error in hardlinking: \(error.localizedDescription)")
         }
     }
 
@@ -54,15 +55,14 @@ public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLo
         switch item.status {
 
         case .unknown:
-            print("unkown state video player")
+            Logger.viewModels.info("unkown state video player")
         case .readyToPlay:
-            print("reday video player")
+            Logger.viewModels.info("reday video player")
         case .failed:
             guard let error = item.error else { return }
-            print(error)
-            print("failed state video player\(error.localizedDescription)")
+            Logger.viewModels.info("failed state video player\(error.localizedDescription)")
         @unknown default:
-            print("default status video player")
+            Logger.viewModels.info("default status video player")
         }
     }
 

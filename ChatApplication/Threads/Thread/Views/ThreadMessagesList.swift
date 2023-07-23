@@ -35,9 +35,6 @@ struct ThreadMessagesList: View {
             .background(background)
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ViewOffsetKey.self) { originY in
-                #if DEBUG
-                    print("OriginY: \(originY)")
-                #endif
                 viewModel.setNewOrigin(newOriginY: originY)
             }
             .onAppear {

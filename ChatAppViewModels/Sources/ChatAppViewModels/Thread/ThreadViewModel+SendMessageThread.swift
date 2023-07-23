@@ -13,6 +13,7 @@ import ChatAppExtensions
 import ChatAppModels
 import ChatDTO
 import ChatCore
+import OSLog
 
 extension ThreadViewModel {
     /// It triggers when send button tapped
@@ -208,7 +209,7 @@ extension ThreadViewModel {
                 appendMessages([fileMessage])
             }
         default:
-            print("Type not detected!")
+            Logger.viewModels.info("Type not detected!")
         }
     }
 

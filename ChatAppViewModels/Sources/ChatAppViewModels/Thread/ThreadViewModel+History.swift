@@ -11,6 +11,7 @@ import SwiftUI
 import ChatDTO
 import ChatCore
 import ChatModels
+import OSLog
 
 extension ThreadViewModel {
 
@@ -102,7 +103,7 @@ extension ThreadViewModel {
         if bottomLoading { return }
         bottomLoading = true
         animatableObjectWillChange()
-        print("moveToLastMessage called")
+        Logger.viewModels.info("moveToLastMessage called")
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: thread.lastSeenMessageTime?.advanced(by: 100), readOnly: readOnly)
         requests["LAST_MESSAGE_HISTORY-\(req.uniqueId)"] = req
         ChatManager.activeInstance?.message.history(req)
@@ -129,7 +130,7 @@ extension ThreadViewModel {
         withAnimation {
             topLoading = true
         }
-        print("moreTop called")
+        Logger.viewModels.info("moreTop called")
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
         requests["MORE_TOP-\(req.uniqueId)"] = (req, sections.first?.messages.first?.uniqueId)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -167,7 +168,7 @@ extension ThreadViewModel {
         withAnimation {
             bottomLoading = true
         }
-        print("moreBottom called")
+        Logger.viewModels.info("moreBottom called")
         let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "desc", readOnly: readOnly)
         requests["MORE_BOTTOM-\(req.uniqueId)"] = (req, lastVisibleUniqueId)
         ChatManager.activeInstance?.message.history(req)

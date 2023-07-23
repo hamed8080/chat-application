@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import AVFoundation
+import OSLog
 
 public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published public var isPlaying: Bool = false
@@ -28,7 +29,7 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
             player?.delegate = self
             duration = player?.duration ?? 0
         } catch let error as NSError {
-            print(error.description)
+            Logger.viewModels.info("\(error.description)")
         }
     }
 

@@ -17,6 +17,7 @@ import ChatDTO
 import ChatExtensions
 import SwiftUI
 import OrderedCollections
+import OSLog
 
 public struct MessageSection: Identifiable, Hashable, Equatable {
     public var id: Date { date }
@@ -37,8 +38,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var centerLoading = false
     @Published public var topLoading = false
     @Published public var bottomLoading = false
-    public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
-    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom }
+    public var canLoadMoreTop: Bool { hasNextTop && !topLoading && !disableScrolling }
+    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom && !disableScrolling }
     public var sections: [MessageSection] = []
     @Published public var selectedMessages: [Message] = []
     @Published public var editMessage: Message?
@@ -74,6 +75,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     var lastOrigin: CGFloat = 0
     public var lastVisibleUniqueId: String?
     public weak var forwardMessage: Message?
+    /// The property `DisableScrolling` works as a mechanism to prevent sending a new request to the server every time SwiftUI tries to calculate and layout our views rows, because SwiftUI starts rendering at the top when we load more top.
     public var disableScrolling: Bool = false
 
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
@@ -138,20 +140,20 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         let section = sections[sectionIndex]
         if scrollingUP, section.messages.indices.contains(messageIndex + 1) == true {
             let message = section.messages[messageIndex + 1]
-            print("Scrolling up lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
+            Logger.viewModels.info("Scrolling up lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
             isAtBottomOfTheList = false
             animatableObjectWillChange()
         } else if !scrollingUP, section.messages.indices.contains(messageIndex - 1), section.messages.last?.id != message.id {
             let message = section.messages[messageIndex - 1]
-            print("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
+            Logger.viewModels.info("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
             sendSeenMessageIfNeeded(message)
             isAtBottomOfTheList = false
             animatableObjectWillChange()
         } else {
             // Last Item
-            print("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
+            Logger.viewModels.info("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
             sendSeenMessageIfNeeded(message)
             isAtBottomOfTheList = true
@@ -212,14 +214,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, !isMe {
             thread.lastSeenMessageId = messageId
-            print("send seen for message:\(message.messageTitle) with id:\(messageId)")
+            Logger.viewModels.info("send seen for message:\(message.messageTitle, privacy: .sensitive) with id:\(messageId)")
             ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
             if let unreadCount = thread.unreadCount, unreadCount > 0 {
                 thread.unreadCount = unreadCount - 1
                 objectWillChange.send()
             }
         } else if thread.unreadCount ?? 0 > 0 {
-            print("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(thread.lastSeenMessageId ?? 0)")
+            Logger.viewModels.info("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(self.thread.lastSeenMessageId ?? 0)")
             thread.unreadCount = 0
             objectWillChange.send()
         }

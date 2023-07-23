@@ -10,6 +10,7 @@ import Combine
 import Foundation
 import ChatModels
 import ChatAppModels
+import OSLog
 
 public final class TokenManager: ObservableObject {
     public static let shared = TokenManager()
@@ -39,7 +40,7 @@ public final class TokenManager: ObservableObject {
                     AppState.shared.connectionStatus = .connected
                 }
             } catch {
-                print("error on getNewTokenWithRefreshToken:\(error.localizedDescription)")
+                Logger.viewModels.info("error on getNewTokenWithRefreshToken:\(error.localizedDescription, privacy: .sensitive)")
             }
             refreshTokenTask?.cancel()
             refreshTokenTask = nil
@@ -63,7 +64,7 @@ public final class TokenManager: ObservableObject {
     public func saveSSOToken(ssoToken: SSOTokenResponseResult) {
         let data = (try? JSONEncoder().encode(ssoToken)) ?? Data()
         let str = String(data: data, encoding: .utf8)
-        print("save token:\n\(str ?? "")")
+        Logger.viewModels.info("save token:\n\(str ?? "", privacy: .sensitive)")
         refreshCreateTokenDate()
         startTimerToGetNewToken()
         if let encodedData = try? JSONEncoder().encode(ssoToken) {

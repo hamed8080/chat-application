@@ -8,6 +8,7 @@
 import AVFoundation
 import Chat
 import Foundation
+import OSLog
 
 protocol AudioRecordingViewModelprotocol: ObservableObject {
     var audioRecorder: AVAudioRecorder { get set }
@@ -106,7 +107,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
             recordingSession.requestRecordPermission { _ in
             }
         } catch {
-            print("error to get recording permission")
+            Logger.viewModels.info("error to get recording permission")
         }
     }
 }
