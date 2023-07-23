@@ -30,7 +30,9 @@ extension ThreadViewModel {
 
     public func getHistory(_ toTime: UInt? = nil) {
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
-        requests["GET_HISTORY-\(req.uniqueId)"] = req
+        let key = "GET_HISTORY-\(req.uniqueId)"
+        requests[key] = req
+        addCancelTimer(key: key)
         ChatManager.activeInstance?.message.history(req)
     }
 
@@ -54,11 +56,15 @@ extension ThreadViewModel {
         if moveToMessageLocally(messageId, highlight: highlight) { return }
         let toTimeReq = GetHistoryRequest(threadId: threadId, count: 25, offset: 0, order: "desc", toTime: time.advanced(by: 100), readOnly: readOnly)
         let fromTimeReq = GetHistoryRequest(threadId: threadId, count: 25, fromTime: time.advanced(by: 100), offset: 0, order: "desc", readOnly: readOnly)
-        requests["TO_TIME-\(toTimeReq.uniqueId)"] = (toTimeReq, messageId, highlight)
-        requests["FROM_TIME-\(fromTimeReq.uniqueId)"] = (fromTimeReq, messageId, highlight)
+        let toTimeKey = "TO_TIME-\(toTimeReq.uniqueId)"
+        let fromTimeKey = "FROM_TIME-\(fromTimeReq.uniqueId)"
+        requests[toTimeKey] = (toTimeReq, messageId, highlight)
+        requests[fromTimeKey] = (fromTimeReq, messageId, highlight)
+        addCancelTimer(key: toTimeKey)
         ChatManager.activeInstance?.message.history(toTimeReq)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5){ [weak self] in
             ChatManager.activeInstance?.message.history(fromTimeReq)
+            self?.addCancelTimer(key: fromTimeKey)
         }
     }
 
@@ -105,8 +111,10 @@ extension ThreadViewModel {
         animatableObjectWillChange()
         Logger.viewModels.info("moveToLastMessage called")
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: thread.lastSeenMessageTime?.advanced(by: 100), readOnly: readOnly)
-        requests["LAST_MESSAGE_HISTORY-\(req.uniqueId)"] = req
+        let key = "LAST_MESSAGE_HISTORY-\(req.uniqueId)"
+        requests[key] = req
         ChatManager.activeInstance?.message.history(req)
+        addCancelTimer(key: key)
     }
 
     public func onLastMessageHistory(_ response: ChatResponse<[Message]>) {
@@ -130,12 +138,13 @@ extension ThreadViewModel {
         withAnimation {
             topLoading = true
         }
-        Logger.viewModels.info("moreTop called")
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
-        requests["MORE_TOP-\(req.uniqueId)"] = (req, sections.first?.messages.first?.uniqueId)
+        let key = "MORE_TOP-\(req.uniqueId)"
+        requests[key] = (req, sections.first?.messages.first?.uniqueId)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             ChatManager.activeInstance?.message.history(req)
         }
+        addCancelTimer(key: key)
     }
 
     public func onMoreTop(_ response: ChatResponse<[Message]>) {
@@ -168,10 +177,11 @@ extension ThreadViewModel {
         withAnimation {
             bottomLoading = true
         }
-        Logger.viewModels.info("moreBottom called")
         let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "desc", readOnly: readOnly)
-        requests["MORE_BOTTOM-\(req.uniqueId)"] = (req, lastVisibleUniqueId)
+        let key = "MORE_BOTTOM-\(req.uniqueId)"
+        requests[key] = (req, lastVisibleUniqueId)
         ChatManager.activeInstance?.message.history(req)
+        addCancelTimer(key: key)
     }
 
     public func onMoreBottom(_ response: ChatResponse<[Message]>) {

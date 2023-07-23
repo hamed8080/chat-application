@@ -24,8 +24,10 @@ extension ThreadViewModel {
         animatableObjectWillChange()
         guard text.count >= 2 else { return }
         let req = GetHistoryRequest(threadId: threadId, count: 50, offset: searchOffset, query: "\(text)")
-        requests["SEARCH-\(req.uniqueId)"] = req
+        let key = "SEARCH-\(req.uniqueId)"
+        requests[key] = req
         ChatManager.activeInstance?.message.history(req)
+        addCancelTimer(key: key)
     }
 
     func onSearch(_ response: ChatResponse<[Message]>) {

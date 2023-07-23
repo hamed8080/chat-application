@@ -31,10 +31,8 @@ struct ThreadView: View, DropDelegate {
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
             .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
-            .dialog("Delete selected messages", "Are you sure you want to delete all selected messages?", "trash.fill", $deleteDialaog) { _ in
-                viewModel.deleteMessages(viewModel.selectedMessages)
-                viewModel.isInEditMode = false
-                viewModel.animatableObjectWillChange()
+            .customDialog(isShowing: $deleteDialaog) {
+                DeleteMessageDialog(viewModel: viewModel, showDialog: $deleteDialaog)
             }
             .overlay {
                 SendContainer(viewModel: viewModel, deleteMessagesDialog: $deleteDialaog)

@@ -26,7 +26,7 @@ final class ChatDelegateImplementation: ChatDelegate {
 
         Task {
             await MainActor.run {
-                let ssoToken = SSOTokenResponseResult(accessToken: "ce1ada6be618495b9e120c82462365e2.XzIwMjM3", expiresIn: 900)
+                let ssoToken = SSOTokenResponseResult(accessToken: "cac6231a3c264a75bd0239d89ac451b9.XzIwMjM3", expiresIn: 900)
                 let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
                 let user = User(id: 3_463_768)
                 TokenManager.shared.saveSSOToken(ssoToken: ssoToken)

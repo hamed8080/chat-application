@@ -378,8 +378,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
             let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
             let req = ThreadParticipantRequest(threadId: threadId, name: rangeText)
-            requests[req.uniqueId] = req
+            let key = req.uniqueId
+            requests[key] = req
             ChatManager.activeInstance?.conversation.participant.get(req)
+            addCancelTimer(key: key)
         } else {
             let mentionListWasFill = mentionList.count > 0
             mentionList = []
@@ -445,6 +447,20 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
             thread.unreadCount = response.contentCount
             objectWillChange.send()
+        }
+    }
+
+    /// Automatically cancel a request if there is no response come back from the chat server after 5 seconds.
+    func addCancelTimer(key: String) {
+        Logger.viewModels.info("Send request with key:\(key)")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            if ((self?.requests.keys.contains(where: { $0 == key})) != nil) {
+                withAnimation {
+                    self?.requests.removeValue(forKey: key)
+                    self?.topLoading = false
+                    self?.bottomLoading = false
+                }
+            }
         }
     }
 }

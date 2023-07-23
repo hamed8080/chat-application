@@ -25,16 +25,7 @@ struct ContactRow: View {
         VStack {
             VStack {
                 HStack(spacing: 0) {
-                    Image(systemName: viewModel.isSelected(contact: contact) ? "checkmark.circle" : "circle")
-                        .frame(width: 22, height: 22, alignment: .center)
-                        .foregroundColor(Color.blue)
-                        .padding(24)
-                        .offset(x: isInSelectionMode ? 0 : -64)
-                        .frame(width: isInSelectionMode ? 48 : 0)
-                        .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-                        .onTapGesture {
-                            viewModel.toggleSelectedContact(contact: contact)
-                        }
+                    selectRadio
                     ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
                         .id("\(contact.image ?? "")\(contact.id ?? 0)")
                         .font(.iransansBody)
@@ -115,6 +106,28 @@ struct ContactRow: View {
                     navigateToAddOrEditContact.toggle()
                 }
                 Spacer()
+            }
+        }
+    }
+
+    @ViewBuilder var selectRadio: some View {
+        let isSelected = viewModel.isSelected(contact: contact)
+        ZStack {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.title)
+                .scaleEffect(x: isSelected ? 1 : 0.001, y: isSelected ? 1 : 0.001, anchor: .center)
+                .foregroundColor(Color.blue)
+
+            Image(systemName: "circle")
+                .font(.title)
+                .foregroundColor(Color.blue)
+        }
+        .frame(width: isInSelectionMode ? 22 : 0.001, height: isInSelectionMode ? 22 : 0.001, alignment: .center)
+        .padding(isInSelectionMode ? 24 : 0.001)
+        .scaleEffect(x: isInSelectionMode ? 1.0 : 0.001, y: isInSelectionMode ? 1.0 : 0.001, anchor: .center)
+        .onTapGesture {
+            withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
+                viewModel.toggleSelectedContact(contact: contact)
             }
         }
     }

@@ -27,7 +27,7 @@ public extension ThreadTypes {
         case .publicChannel:
             return "Public Channel"
         case .selfThread:
-            return "Self thread"
+            return "Saved Messages"
         case .unknown:
             return nil
         }
