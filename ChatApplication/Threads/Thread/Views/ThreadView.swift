@@ -83,7 +83,7 @@ struct ThreadView: View, DropDelegate {
             }
             .sheet(isPresented: sheetBinding, onDismiss: onDismiss) {
                 ThreadSheetView(sheetBinding: sheetBinding)
-                    .environmentObject(ActionSheetViewModel(threadViewModel: viewModel))
+                    .environmentObject(viewModel.sheetViewModel)
             }
             .onDrop(of: [.image], delegate: self)
     }

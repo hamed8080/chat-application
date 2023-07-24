@@ -12,7 +12,7 @@ import ChatAppModels
 import SwiftUI
 
 public final class ActionSheetViewModel: ObservableObject {
-    public var threadViewModel: ThreadViewModel
+    public weak var threadViewModel: ThreadViewModel?
     public var allImageItems: [ImageItem] = []
     public var selectedImageItems: [ImageItem] = []
     private let imageSize = CGSize(width: 128, height: 128)
@@ -55,8 +55,7 @@ public final class ActionSheetViewModel: ObservableObject {
         return IndexSet(offset + 1 ... lastIndex)
     }
 
-    public init(threadViewModel: ThreadViewModel) {
-        self.threadViewModel = threadViewModel
+    public init() {
         setTotalImageCount()
         let state = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         if state != .authorized {
@@ -161,12 +160,12 @@ public final class ActionSheetViewModel: ObservableObject {
     }
 
     public func sendSelectedPhotos() {
-        threadViewModel.sendPhotos(selectedImageItems)
+        threadViewModel?.sendPhotos(selectedImageItems)
         refresh()
     }
 
     public func sendSelectedFile() {
-        threadViewModel.sendFiles(selectedFileUrls)
+        threadViewModel?.sendFiles(selectedFileUrls)
         refresh()
     }
 
@@ -180,7 +179,6 @@ public final class ActionSheetViewModel: ObservableObject {
     public func refresh() {
         selectedImageItems = []
         offset = 0
-        totalCount = 0
         allImageItems = []
     }
 }
