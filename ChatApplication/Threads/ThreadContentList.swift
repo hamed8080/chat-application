@@ -71,8 +71,10 @@ struct ThreadContentList: View {
             Form {
                 TextField("Enter your token here.", text: $token)
                 Button("Update") {
+                    ChatManager.activeInstance?.dispose()
                     ChatManager.activeInstance?.setToken(newToken: token)
                     showTokenDialog = false
+                    print("Set Token caalled")
                 }
             }
         }

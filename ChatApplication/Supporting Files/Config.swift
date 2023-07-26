@@ -46,7 +46,7 @@ extension Config {
             .reconnectOnClose(true)
             .appId("PodChat")
             .serverName(config.serverName)
-            .isDebuggingLogEnabled(false)
+            .isDebuggingLogEnabled(true)
             .build()
         let chatConfig = ChatConfigBuilder(asyncConfig)
             .token(token)

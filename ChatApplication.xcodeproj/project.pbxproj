@@ -19,12 +19,12 @@
 		050B1BE7292F93020025D4ED /* ThreadsViewModel+MuteThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE6292F93020025D4ED /* ThreadsViewModel+MuteThread.swift */; };
 		050C5AA22970861E00CD5702 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA0297082BE00CD5702 /* DetailView.swift */; };
 		050C5AA42970863B00CD5702 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA32970863B00CD5702 /* DetailViewModel.swift */; };
+		05121E972A6F8DC400DD82C6 /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 05121E962A6F8DC400DD82C6 /* FanapPodChatSDK */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
 		05238719295F52CC00650241 /* URL+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05238718295F52CC00650241 /* URL+.swift */; };
 		0523871C295F7EBD00650241 /* Image+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0523871B295F7EBD00650241 /* Image+.swift */; };
-		0523CA812A5EDDFF0029CC1E /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0523CA802A5EDDFF0029CC1E /* FanapPodChatSDK */; };
 		0525CDBC292CA06B004E1C7B /* ViewOffsetKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */; };
 		052D57362795323C0075BF8F /* ManageTagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D57352795323C0075BF8F /* ManageTagView.swift */; };
 		052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052D5737279539840075BF8F /* TagParticipantRow.swift */; };
@@ -173,6 +173,7 @@
 		050B1BE6292F93020025D4ED /* ThreadsViewModel+MuteThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadsViewModel+MuteThread.swift"; sourceTree = "<group>"; };
 		050C5AA0297082BE00CD5702 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		050C5AA32970863B00CD5702 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
+		05121E952A6F8D3B00DD82C6 /* chat */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = chat; path = ../chat; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
 		05238718295F52CC00650241 /* URL+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+.swift"; sourceTree = "<group>"; };
@@ -309,7 +310,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0523CA812A5EDDFF0029CC1E /* FanapPodChatSDK in Frameworks */,
+				05121E972A6F8DC400DD82C6 /* FanapPodChatSDK in Frameworks */,
 				055024C22987E794009DDD18 /* Swipy in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -358,6 +359,7 @@
 			isa = PBXGroup;
 			children = (
 				054FFC8B2A5E9AB8008C65EF /* Swipy */,
+				05121E952A6F8D3B00DD82C6 /* chat */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -741,7 +743,7 @@
 			name = ChatApplication;
 			packageProductDependencies = (
 				055024C12987E794009DDD18 /* Swipy */,
-				0523CA802A5EDDFF0029CC1E /* FanapPodChatSDK */,
+				05121E962A6F8DC400DD82C6 /* FanapPodChatSDK */,
 			);
 			productName = ChatApplication;
 			productReference = AC1D2CA42661FFAC00AA351A /* ChatApplication.app */;
@@ -773,7 +775,6 @@
 			mainGroup = AC1D2C9B2661FFAC00AA351A;
 			packageReferences = (
 				055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */,
-				0523CA7F2A5EDDFF0029CC1E /* XCRemoteSwiftPackageReference "chat" */,
 			);
 			productRefGroup = AC1D2CA52661FFAC00AA351A /* Products */;
 			projectDirPath = "";
@@ -819,7 +820,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint > /dev/null; then\n   swiftlint /Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat-application/ChatApplication\n   swiftlint /Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat-application/MyWidget\n   ASYNC_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/async/\"\n   CHAT_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat/\"\n   swiftlint --config \"${ASYNC_PATH}.swiftlint.yml\" \"${ASYNC_PATH}Sources\"\n   swiftlint --config \"${CHAT_PATH}.swiftlint.yml\" \"${CHAT_PATH}Sources\"\nelse\n   echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "
+";
 		};
 		0597057629431DFC008CA2EE /* Swift Format */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -838,7 +840,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftformat >/dev/null; then\n   swiftformat --swiftversion 5.6 /Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat-application/ChatApplication\n   swiftformat --swiftversion 5.6 /Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat-application/MyWidget\n   ASYNC_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/async/\"\n   CHAT_PATH=\"/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat/\"\n   swiftformat --swiftversion 5.6 --config \"${ASYNC_PATH}.swiftformat\" \"${ASYNC_PATH}Sources\"\n   swiftformat --swiftversion 5.6 --config \"${CHAT_PATH}.swiftformat\" \"${CHAT_PATH}Sources\"\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
+			shellScript = "
+";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1196,14 +1199,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		0523CA7F2A5EDDFF0029CC1E /* XCRemoteSwiftPackageReference "chat" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "http://pubgi.fanapsoft.ir/chat/ios/chat.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.2.1;
-			};
-		};
 		055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hamed8080/Swipy";
@@ -1215,9 +1210,8 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0523CA802A5EDDFF0029CC1E /* FanapPodChatSDK */ = {
+		05121E962A6F8DC400DD82C6 /* FanapPodChatSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0523CA7F2A5EDDFF0029CC1E /* XCRemoteSwiftPackageReference "chat" */;
 			productName = FanapPodChatSDK;
 		};
 		055024C12987E794009DDD18 /* Swipy */ = {
