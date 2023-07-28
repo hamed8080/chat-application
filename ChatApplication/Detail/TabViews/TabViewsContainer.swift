@@ -16,13 +16,14 @@ struct TabViewsContainer: View {
     let tabs: [Tab] = [
         .init(title: "Members", icon: "person"),
         .init(title: "Mutual Groups", icon: "person.3"),
-        .init(title: "Media", icon: "play.tv"),
+        .init(title: "Photos", icon: "photo.stack"),
+        .init(title: "Videos", icon: "play.tv"),
         .init(title: "File", icon: "doc"),
         .init(title: "Music", icon: "music.note"),
         .init(title: "Voice", icon: "mic"),
         .init(title: "Link", icon: "link"),
-        .init(title: "Gif", icon: "text.below.photo"),
     ]
+
     var body: some View {
         Tabs(selectedTabIndex: $selectedTabIndex, tabs: tabs, thread: thread)
         switch selectedTabIndex {
@@ -33,17 +34,17 @@ struct TabViewsContainer: View {
             MutualThreadsView()
                 .ignoresSafeArea(.all)
         case 2:
-            MediaView(thread: thread)
+            PictureView(conversation: thread, messageType: .podSpacePicture)
         case 3:
-            FileView(thread: thread)
+            VideoView(conversation: thread, messageType: .podSpaceVideo)
         case 4:
-            MusicView(thread: thread)
+            FileView(conversation: thread, messageType: .podSpaceFile)
         case 5:
-            VoiceView(thread: thread)
+            MusicView(conversation: thread, messageType: .podSpaceSound)
         case 6:
-            LinkView(thread: thread)
+            VoiceView(conversation: thread, messageType: .podSpaceVoice)
         case 7:
-            GIFView(thread: thread)
+            LinkView(conversation: thread, messageType: .link)
         default:
             EmptyView()
         }

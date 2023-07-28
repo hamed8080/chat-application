@@ -24,6 +24,7 @@ struct MentionList: View {
                         }
                     }
                     .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
             .transition(.asymmetric(insertion: .opacity, removal: .move(edge: .bottom)))

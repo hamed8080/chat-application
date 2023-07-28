@@ -14,9 +14,10 @@ import SwiftUI
 
 struct DetailView: View {
     @StateObject var viewModel: DetailViewModel
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        List {
+        ScrollView {
             InfoView()
             Section {
                 HStack(spacing: 32) {
@@ -106,7 +107,6 @@ struct DetailView: View {
         .environmentObject(viewModel)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarTitle("Info")
-        .listStyle(.plain)
         .sheet(isPresented: $viewModel.addToContactSheet) {
             AddOrEditContactView()
         }
@@ -138,6 +138,11 @@ struct DetailView: View {
         .animation(.easeInOut, value: viewModel.thread?.mute)
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $viewModel.isLoading)
+        }
+        .onReceive(viewModel.$dismiss) { newValue in
+            if newValue {
+                dismiss()
+            }
         }
     }
 }
@@ -184,7 +189,7 @@ struct InfoView: View {
             }
         }
         .noSeparators()
-        .frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
+        .frame(minWidth: 0, maxWidth: 312, alignment: .center)
     }
 }
 

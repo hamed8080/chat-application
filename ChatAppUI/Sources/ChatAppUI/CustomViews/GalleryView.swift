@@ -9,10 +9,14 @@ import ChatAppViewModels
 import ChatModels
 import SwiftUI
 
-struct GalleryView: View {
+public struct GalleryView: View {
     let viewModel: GalleryViewModel
 
-    var body: some View {
+    public init(viewModel: GalleryViewModel) {
+        self.viewModel = viewModel
+    }
+
+    public var body: some View {
         ZStack {
             GalleryProgressView()
                 .environmentObject(viewModel)
@@ -35,7 +39,7 @@ struct GalleryProgressView: View {
 
     var body: some View {
         if viewModel.state == .DOWNLOADING {
-            CircularProgressView(percent: $viewModel.percent)
+            CircularProgressView(percent: $viewModel.percent, config: .normal)
                 .padding()
                 .frame(maxWidth: 128)
         }

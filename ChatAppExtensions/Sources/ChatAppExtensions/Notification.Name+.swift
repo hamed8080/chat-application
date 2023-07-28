@@ -26,6 +26,7 @@ public extension Notification.Name {
     static let call = Notification.Name("call")
     static let login = Notification.Name("login")
     static let logs = Notification.Name("logs")
+    static let windowMode = Notification.Name("windowMode")
 }
 
 

@@ -198,7 +198,7 @@ public final class ParticipantsViewModel: ObservableObject {
             {
                 participants[index].admin = false
             }
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
@@ -210,7 +210,7 @@ public final class ParticipantsViewModel: ObservableObject {
                userRole.isAdminRolesChanged
             {
                 participants[index].admin = true
-                objectWillChange.send()
+                animateObjectWillChange()
             }
         }
 
@@ -218,5 +218,11 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public func removeParticipant(_ participant: Participant) {
         participants.removeAll(where: { $0.id == participant.id })
+    }
+
+    private func animateObjectWillChange() {
+        withAnimation {
+            objectWillChange.send()
+        }
     }
 }

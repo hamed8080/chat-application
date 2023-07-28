@@ -17,7 +17,7 @@ struct ParticipantRow: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
-        Button(action: {}, label: {
+        VStack {
             HStack {
                 ImageLaoderView(url: participant.image, userName: participant.name ?? participant.username)
                     .id("\(participant.image ?? "")\(participant.id ?? 0)")
@@ -30,10 +30,12 @@ struct ParticipantRow: View {
                 HStack(alignment: .center, spacing: 8) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(participant.contactName ?? participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")
-                            .font(.headline)
-                        Text(participant.cellphoneNumber ?? "")
-                            .font(.caption2)
-                            .foregroundColor(.primary.opacity(0.5))
+                            .font(.iransansBody)
+                        if let cellphoneNumber = participant.cellphoneNumber, !cellphoneNumber.isEmpty {
+                            Text(cellphoneNumber)
+                                .font(.iransansCaption3)
+                                .foregroundColor(.primary.opacity(0.5))
+                        }
                         if participant.online == true {
                             Text("online")
                                 .font(.caption2)
@@ -57,11 +59,13 @@ struct ParticipantRow: View {
                 }
                 Spacer()
             }
-            .animation(.easeInOut, value: participant.admin)
-            .contentShape(Rectangle())
-            .padding([.leading, .trailing], 8)
-            .padding([.top, .bottom], 4)
-        })
+            Rectangle()
+                .fill(.gray.opacity(0.2))
+                .frame(height: 0.5)
+        }
+        .contentShape(Rectangle())
+        .padding([.leading, .trailing], 12)
+        .padding([.top, .bottom], 6)
     }
 }
 

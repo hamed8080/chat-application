@@ -44,6 +44,12 @@ public final class MessageRowViewModel: ObservableObject {
     public func calculate() {
         if isCalculated { return }
         isCalculated = true
+        NotificationCenter.default.publisher(for: .windowMode)
+            .sink { [weak self] newValue in
+                self?.recalculateWithAnimation()
+            }
+            .store(in: &cancelableSet)
+
         NotificationCenter.default.publisher(for: .message)
             .compactMap{ $0.object as? MessageEventTypes }
             .sink { [weak self] event in
@@ -176,11 +182,12 @@ public final class MessageRowViewModel: ObservableObject {
         return timeWidth + fileSizeWidth + statusWidth + isEditedWidth + messageStatusIconWidth
     }
 
-    public lazy var maxAllowedWidth: CGFloat = {
-        let isIpad = UIDevice.current.userInterfaceIdiom == .pad
-        let max: CGFloat = isIpad ? 480 : 320
+    public var maxAllowedWidth: CGFloat {
+        let modes: [WindowMode] = [.iPhone, .ipadOneThirdSplitView, .ipadSlideOver]
+        let isInCompactMode = modes.contains(AppState.shared.windowMode)
+        let max: CGFloat = isInCompactMode ? 320 : 480
         return max
-    }()
+    }
 
     public func minWidth() -> CGFloat {
         let hasReplyMessage = message.replyInfo != nil

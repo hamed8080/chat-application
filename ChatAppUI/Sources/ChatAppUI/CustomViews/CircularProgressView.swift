@@ -7,24 +7,30 @@
 
 import SwiftUI
 
-struct CircularProgressView: View {
+public struct CircularProgressView: View {
     @Binding var percent: Int64
+    let config: CircleProgressConfig
 
-    var body: some View {
+    public init(percent: Binding<Int64>, config: CircleProgressConfig) {
+        self._percent = percent
+        self.config = config
+    }
+
+    public var body: some View {
         ZStack {
             Circle()
-                .stroke(lineWidth: 4)
-                .foregroundColor(Color.gray.opacity(0.5))
+                .stroke(lineWidth: config.circleLineWidth)
+                .foregroundColor(config.dimPathColor)
 
             Text("\(percent) %")
-                .font(.iransansSubheadline)
-                .foregroundColor(.indigo)
-                .fontWeight(.heavy)
+                .font(config.progressFont)
+                .foregroundColor(config.forgroundColor)
+                .fontWeight(config.fontWeight)
 
             Circle()
                 .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
-                .stroke(style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
-                .foregroundColor(.indigo)
+                .stroke(style: StrokeStyle(lineWidth: config.circleLineWidth, lineCap: .round, lineJoin: .round))
+                .foregroundColor(config.forgroundColor)
                 .rotationEffect(Angle(degrees: 270))
         }
     }
@@ -32,7 +38,7 @@ struct CircularProgressView: View {
 
 struct ProgressView_Previews: PreviewProvider {
     static var previews: some View {
-        CircularProgressView(percent: .constant(60))
+        CircularProgressView(percent: .constant(60), config: .normal)
             .background(Color.black)
     }
 }

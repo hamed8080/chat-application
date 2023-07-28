@@ -31,7 +31,7 @@ public struct UploadFileView: View {
             ZStack(alignment: .center) {
                 switch viewModel.state {
                 case .UPLOADING, .STARTED:
-                    CircularProgressView(percent: $percent)
+                    CircularProgressView(percent: $percent, config: .normal)
                         .padding()
                         .frame(maxWidth: 128)
                         .onTapGesture {

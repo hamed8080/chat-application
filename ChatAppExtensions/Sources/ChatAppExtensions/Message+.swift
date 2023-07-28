@@ -76,45 +76,45 @@ public extension Message {
     var iconName: String {
         switch messageType {
         case .text:
-            return "doc.text.fill"
+            return "doc.text"
         case .voice:
-            return "play.circle.fill"
+            return "play.circle"
         case .picture:
             return "photo.on.rectangle.angled"
         case .video:
-            return "play.rectangle.fill"
+            return "play.rectangle"
         case .sound:
-            return "play.circle.fill"
+            return "play.circle"
         case .file:
             return fileExtIcon
         case .podSpacePicture:
             return "photo.on.rectangle.angled"
         case .podSpaceVideo:
-            return "play.rectangle.fill"
+            return "play.rectangle"
         case .podSpaceSound:
-            return "play.circle.fill"
+            return "play.circle"
         case .podSpaceVoice:
-            return "play.circle.fill"
+            return "play.circle"
         case .podSpaceFile:
             return fileExtIcon
         case .link:
-            return "link.circle.fill"
+            return "link.circle"
         case .endCall:
-            return "phone.fill.arrow.down.left"
+            return "phone.arrow.down.left"
         case .startCall:
-            return "phone.fill.arrow.up.right"
+            return "phone.arrow.up.right"
         case .sticker:
-            return "face.smiling.fill"
+            return "face.smiling"
         case .location:
-            return "map.fill"
+            return "mmap.circle"
         case .participantJoin:
             return "person.crop.rectangle.badge.plus"
         case .participantLeft:
             return "door.right.hand.open"
         case .none:
-            return "paperclip.circle.fill"
+            return "paperclip.circle"
         case .some(.unknown):
-            return "paperclip.circle.fill"
+            return "paperclip.circle"
         }
     }
 

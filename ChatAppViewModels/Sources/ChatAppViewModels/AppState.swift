@@ -26,6 +26,8 @@ public final class AppState: ObservableObject {
     public var activeThreadId: Int?
     private var cancelable: Set<AnyCancellable> = []
     private var requests: [String: Any] = [:]
+    public var windowMode: WindowMode = .iPhone
+
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
             setConnectionStatus(connectionStatus)
@@ -39,6 +41,16 @@ public final class AppState: ObservableObject {
                 self?.onThreadEvent(value)
             }
             .store(in: &cancelable)
+        UIApplication.shared.connectedScenes.first(where: {$0.activationState == .foregroundActive}).publisher.sink { [weak self] newValue in
+            self?.updateWindowMode()
+        }
+        .store(in: &cancelable)
+        updateWindowMode()
+    }
+
+    public func updateWindowMode() {
+        windowMode = UIApplication.shared.windowMode()
+        NotificationCenter.default.post(name: .windowMode, object: windowMode)
     }
 
     private func onThreadEvent(_ event: ThreadEventTypes) {

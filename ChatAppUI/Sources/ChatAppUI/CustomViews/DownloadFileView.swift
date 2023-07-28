@@ -18,19 +18,21 @@ public struct DownloadFileView: View {
     var message: Message { viewModel.message }
     @State var shareDownloadedFile: Bool = false
     @State var presentViewGallery = false
+    let config: DownloadFileViewConfig
 
-    public init(viewModel: DownloadFileViewModel) {
+    public init(viewModel: DownloadFileViewModel, config: DownloadFileViewConfig = .normal) {
         self.viewModel = viewModel
+        self.config = config
     }
 
     public var body: some View {
         HStack {
             ZStack(alignment: .center) {
-                MutableDownloadViews()
+                MutableDownloadViews(config: config)
                     .environmentObject(viewModel)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: config.maxHeight, maxHeight: config.maxHeight)
         .sheet(isPresented: $shareDownloadedFile) {
             if let fileURL = viewModel.fileURL {
                 ActivityViewControllerWrapper(activityItems: [fileURL], title: message.fileMetaData?.file?.originalName)
@@ -62,6 +64,7 @@ public struct DownloadFileView: View {
 struct MutableDownloadViews: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     var message: Message { viewModel.message }
+    let config: DownloadFileViewConfig
 
     var body: some View {
         switch viewModel.state {
@@ -86,28 +89,27 @@ struct MutableDownloadViews: View {
             } else {
                 Image(systemName: message.iconName)
                     .resizable()
-                    .padding()
-                    .foregroundColor(.iconColor.opacity(0.8))
+                    .padding(8)
+                    .foregroundColor(config.iconColor)
                     .scaledToFit()
-                    .frame(width: 64, height: 64)
-
+                    .frame(width: config.iconWidth, height: config.iconHeight)
             }
         case .DOWNLOADING, .STARTED:
-            CircularProgressView(percent: $viewModel.downloadPercent)
-                .padding()
-                .frame(maxWidth: 128)
+            CircularProgressView(percent: $viewModel.downloadPercent, config: config.circleConfig)
+                .padding(8)
+                .frame(maxWidth: config.circleProgressMaxWidth)
                 .onTapGesture {
                     viewModel.pauseDownload()
                 }
         case .PAUSED:
             Image(systemName: "pause.circle")
                 .resizable()
-                .padding()
+                .padding(8)
                 .font(.headline.weight(.thin))
-                .foregroundColor(.indigo)
+                .foregroundColor(config.iconColor)
                 .scaledToFit()
-                .frame(width: 64, height: 64)
-                .frame(maxWidth: 128)
+                .frame(width: config.iconWidth, height: config.iconHeight)
+                .frame(maxWidth: config.circleProgressMaxWidth)
                 .onTapGesture {
                     viewModel.resumeDownload()
                 }
@@ -122,11 +124,11 @@ struct MutableDownloadViews: View {
 
             Image(systemName: "arrow.down.circle")
                 .resizable()
-                .font(.headline.weight(.thin))
+                .font(config.circleConfig.progressFont)
                 .padding(8)
-                .frame(width: 48, height: 48)
+                .frame(width: config.iconWidth, height: config.iconHeight)
                 .scaledToFit()
-                .foregroundColor(.indigo)
+                .foregroundColor(config.iconColor)
                 .zIndex(1)
                 .onTapGesture {
                     viewModel.startDownload()

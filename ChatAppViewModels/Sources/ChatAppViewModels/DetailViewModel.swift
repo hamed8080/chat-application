@@ -43,6 +43,7 @@ public final class DetailViewModel: ObservableObject {
     @Published public var showImagePicker: Bool = false
     @Published public var assetResources: [PHAssetResource] = []
     private var requests: [String: Any] = [:]
+    @Published public var dismiss = false
 
     public init(thread: Conversation? = nil, contact: Contact? = nil, user: Participant? = nil) {
         self.user = user
