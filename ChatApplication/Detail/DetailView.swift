@@ -13,101 +13,19 @@ import Photos
 import SwiftUI
 
 struct DetailView: View {
-    @StateObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ScrollView {
             InfoView()
-            Section {
-                HStack(spacing: 32) {
-                    Spacer()
-                    if viewModel.thread == nil {
-                        Button {
-                            viewModel.createThread()
-                        } label: {
-                            ActionImage(systemName: "message.fill")
-                        }
-                    }
-
-                    Button {
-                        viewModel.toggleMute()
-                    } label: {
-                        ActionImage(systemName: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill")
-                            .foregroundColor(viewModel.thread?.mute ?? false ? .red : .blue)
-                    }
-
-                    if viewModel.thread?.admin == true {
-                        Button {
-                            viewModel.toggleThreadVisibility()
-                        } label: {
-                            ActionImage(systemName: viewModel.thread?.isPrivate == true ? "lock.fill" : "lock.open.fill")
-                                .foregroundColor(viewModel.thread?.isPrivate ?? false ? .green : .blue)
-                        }
-                    }
-
-                    Button {} label: {
-                        ActionImage(systemName: "magnifyingglass")
-                    }
-
-                    Spacer()
-                }
-                .buttonStyle(.bordered)
-                .foregroundColor(.blue)
-            }
-            .noSeparators()
-
-            if viewModel.showInfoGroupBox {
-                GroupBox {
-                    Section {
-                        if let bio = viewModel.bio {
-                            Text(bio)
-                                .font(.iransansCaption)
-                                .foregroundColor(.gray)
-                            if !viewModel.isInMyContact {
-                                Divider()
-                            }
-                        }
-                        if !viewModel.isInMyContact {
-                            SectionItem(title: "Add To contacts", systemName: "person.badge.plus") {
-                                viewModel.addToContactSheet.toggle()
-                            }
-                            if viewModel.cellPhoneNumber != nil {
-                                Divider()
-                            }
-                        }
-                        if let phone = viewModel.cellPhoneNumber {
-                            SectionItem(title: phone, systemName: "doc.on.doc") {
-                                viewModel.copyPhone()
-                            }
-                            if viewModel.canBlock {
-                                Divider()
-                            }
-                        }
-
-                        if viewModel.canBlock {
-                            SectionItem(title: "Block", systemName: "hand.raised.slash") {
-                                viewModel.blockUnBlock()
-                            }
-                            .foregroundColor(.red)
-                        }
-                    }
-                }
-                .noSeparators()
-            }
-
-            if let thread = viewModel.thread, let participantViewModel = viewModel.participantViewModel {
-                Section {
-                    TabViewsContainer(thread: thread, selectedTabIndex: 0)
-                        .environmentObject(participantViewModel)
-                }
-                .noSeparators()
-            }
+            DetailTopButtons()
+            TabDetail(viewModel: viewModel)
         }
         .environmentObject(viewModel)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarTitle("Info")
-        .sheet(isPresented: $viewModel.addToContactSheet) {
+        .sheet(isPresented: $viewModel.showAddToContactSheet) {
             AddOrEditContactView()
         }
         .sheet(isPresented: $viewModel.showImagePicker) {
@@ -135,9 +53,9 @@ struct DetailView: View {
         }
         .animation(.easeInOut, value: viewModel.thread?.isPrivate == true)
         .animation(.interactiveSpring(), value: viewModel.isInEditMode)
-        .animation(.easeInOut, value: viewModel.thread?.mute)
         .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $viewModel.isLoading)
+            ListLoadingView(isLoading: Binding(get: { viewModel.participantViewModel?.isLoading ?? false },
+                                               set: { newValue in viewModel.participantViewModel?.isLoading = newValue }))
         }
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue {
@@ -193,6 +111,103 @@ struct InfoView: View {
     }
 }
 
+struct DetailTopButtons: View {
+    @EnvironmentObject var viewModel: DetailViewModel
+
+    var body: some View {
+        Section {
+            HStack(spacing: 32) {
+                Spacer()
+                if viewModel.thread == nil {
+                    Button {
+                        viewModel.createThread()
+                    } label: {
+                        ActionImage(systemName: "message.fill")
+                    }
+                }
+
+                Button {
+                    viewModel.toggleMute()
+                } label: {
+                    ActionImage(systemName: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill")
+                        .foregroundColor(viewModel.thread?.mute ?? false ? .red : .blue)
+                }
+
+                if viewModel.thread?.admin == true {
+                    Button {
+                        viewModel.toggleThreadVisibility()
+                    } label: {
+                        ActionImage(systemName: viewModel.thread?.isPrivate == true ? "lock.fill" : "lock.open.fill")
+                            .foregroundColor(viewModel.thread?.isPrivate ?? false ? .green : .blue)
+                    }
+                }
+
+                Button {} label: {
+                    ActionImage(systemName: "magnifyingglass")
+                }
+
+                Spacer()
+            }
+            .buttonStyle(.bordered)
+            .foregroundColor(.blue)
+        }
+        .noSeparators()
+
+        if viewModel.showInfoGroupBox {
+            GroupBox {
+                Section {
+                    if let bio = viewModel.bio {
+                        Text(bio)
+                            .font(.iransansCaption)
+                            .foregroundColor(.gray)
+                        if !viewModel.isInMyContact {
+                            Divider()
+                        }
+                    }
+                    if !viewModel.isInMyContact {
+                        SectionItem(title: "Add To contacts", systemName: "person.badge.plus") {
+                            viewModel.showAddToContactSheet.toggle()
+                        }
+                        if viewModel.cellPhoneNumber != nil {
+                            Divider()
+                        }
+                    }
+                    if let phone = viewModel.cellPhoneNumber {
+                        SectionItem(title: phone, systemName: "doc.on.doc") {
+                            viewModel.copyPhone()
+                        }
+                        if viewModel.canBlock {
+                            Divider()
+                        }
+                    }
+
+                    if viewModel.canBlock {
+                        SectionItem(title: "Block", systemName: "hand.raised.slash") {
+                            viewModel.blockUnBlock()
+                        }
+                        .foregroundColor(.red)
+                    }
+                }
+            }
+            .noSeparators()
+        }
+    }
+}
+
+struct TabDetail: View {
+    let viewModel: DetailViewModel
+
+    var body: some View {
+        if let thread = viewModel.thread, let participantViewModel = viewModel.participantViewModel {
+            Section {
+                TabViewsContainer(thread: thread, selectedTabIndex: 0)
+                    .environmentObject(participantViewModel)
+            }
+            .noSeparators()
+        }
+    }
+}
+
 struct ActionImage: View {
     let systemName: String
 
@@ -230,6 +245,7 @@ struct SectionItem: View {
 
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
-        DetailView(viewModel: DetailViewModel(thread: MockData.thread, contact: MockData.contact, user: nil))
+        DetailView()
+            .environmentObject(DetailViewModel(thread: MockData.thread, contact: MockData.contact, user: nil))
     }
 }

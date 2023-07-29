@@ -19,7 +19,8 @@ struct AvatarView: View {
     var body: some View {
         if !(viewModel?.isSameUser(message: message) == true), message.participant != nil {
             NavigationLink {
-                DetailView(viewModel: DetailViewModel(user: message.participant))
+                DetailView()
+                    .environmentObject(DetailViewModel(user: message.participant))
             } label: {
                 HStack(spacing: 8) {
                     if message.isMe(currentUserId: AppState.shared.user?.id) {

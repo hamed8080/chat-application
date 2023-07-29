@@ -11,6 +11,7 @@ import ChatDTO
 import ChatModels
 import Combine
 import SwiftUI
+import ChatAppExtensions
 
 public class DetailTabDownloaderViewModel: ObservableObject {
     public private(set) var messages: [Message] = []
@@ -22,6 +23,7 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     public private(set) var hasNext = true
     private let messageType: MessageType
     private let count = 25
+    public var itemCount = 3
 
     public init(conversation: Conversation, messageType: MessageType) {
         self.conversation = conversation
@@ -37,7 +39,11 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     private func onMessageEvent(_ event: MessageEventTypes) {
         switch event {
         case let .history(response):
-            if !response.cache, let uniqueId = response.uniqueId, requests[uniqueId] != nil, response.subjectId == conversation.id, let messages = response.result {
+            if !response.cache,
+               let uniqueId = response.uniqueId,
+               requests[uniqueId] != nil,
+               response.subjectId == conversation.id,
+               let messages = response.result {
                 messages.forEach { message in
                     if !self.messages.contains(where: { $0.id == message.id }) {
                         self.messages.append(message)
@@ -47,9 +53,7 @@ public class DetailTabDownloaderViewModel: ObservableObject {
                 requests.removeValue(forKey: uniqueId)
                 isLoading = false
                 hasNext = response.hasNext
-                withAnimation {
-                    objectWillChange.send()
-                }
+                animateObjectWillChange()
             }
         default:
             break
@@ -72,5 +76,28 @@ public class DetailTabDownloaderViewModel: ObservableObject {
         requests[req.uniqueId] = req
         isLoading = true
         ChatManager.activeInstance?.message.history(req)
+        animateObjectWillChange()
+    }
+
+    public func itemWidth(readerWidth: CGFloat) -> CGFloat {
+        let modes: [WindowMode] = [.iPhone, .ipadOneThirdSplitView, .ipadSlideOver]
+        let semiFullModes: [WindowMode] = [.ipadHalfSplitView, .ipadTwoThirdSplitView]
+        let isInSemiFullMode = semiFullModes.contains(UIApplication.shared.windowMode())
+        if modes.contains(UIApplication.shared.windowMode()) {
+            itemCount = 3
+            return readerWidth / 3
+        } else if isInSemiFullMode {
+            itemCount = 5
+            return readerWidth / 5
+        } else {
+            itemCount = 8
+            return readerWidth / 8
+        }
+    }
+
+    private func animateObjectWillChange() {
+        withAnimation {
+            objectWillChange.send()
+        }
     }
 }

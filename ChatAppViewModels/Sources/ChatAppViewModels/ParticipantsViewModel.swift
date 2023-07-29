@@ -25,17 +25,11 @@ public final class ParticipantsViewModel: ObservableObject {
     @Published public private(set) var totalCount = 0
     @Published public private(set) var participants: [Participant] = []
     @Published public var searchText: String = ""
-    public var searchType: SearchParticipantType = .name
+    @Published public var searchType: SearchParticipantType = .name
     private var cancelable: Set<AnyCancellable> = []
 
     public init(thread: Conversation? = nil) {
         self.thread = thread
-        AppState.shared.$connectionStatus
-            .sink{ [weak self] status in
-                self?.onConnectionStatusChanged(status)
-            }
-            .store(in: &cancelable)
-
         NotificationCenter.default.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
             .sink { [weak self] event in
@@ -89,13 +83,6 @@ public final class ParticipantsViewModel: ObservableObject {
                     removeParticipant(participant)
                 }
             }
-        }
-    }
-
-    public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if firstSuccessResponse == false, status == .connected {
-            offset = 0
-            getParticipants()
         }
     }
 

@@ -20,19 +20,19 @@ public enum WindowMode {
 }
 
 public extension UIApplication {
-    func windowMode() -> WindowMode {
-        let screenRect = UIScreen.main.bounds
-        let activeWindowScene = UIApplication.shared.connectedScenes.filter({$0.activationState == .foregroundActive}).first as? UIWindowScene
-        let appRect = activeWindowScene?.windows.first?.bounds ?? .zero
+    var screenRect: CGRect { UIScreen.main.bounds }
+    var activeWindowScene: UIWindowScene? { UIApplication.shared.connectedScenes.filter({$0.activationState == .foregroundActive}).first as? UIWindowScene }
+    var activeSceneRect: CGRect { activeWindowScene?.windows.first?.bounds ?? .zero }
 
-        let isInHalfThreshold = isInThereshold(a: appRect.width, b: abs(screenRect.width - (screenRect.width / 2)))
-        let isInOneThirdThreshold = isInThereshold(a: appRect.width, b: abs(screenRect.width - (screenRect.width / (8/10))))
-        let isInTwoThirdThreshold = isInThereshold(a: appRect.width, b: abs(screenRect.width - (screenRect.width * (3/10))))
+    func windowMode() -> WindowMode {
+        let isInHalfThreshold = isInThereshold(a: activeSceneRect.width, b: abs(screenRect.width - (screenRect.width / 2)))
+        let isInOneThirdThreshold = isInThereshold(a: activeSceneRect.width, b: abs(screenRect.width - (screenRect.width / (8/10))))
+        let isInTwoThirdThreshold = isInThereshold(a: activeSceneRect.width, b: abs(screenRect.width - (screenRect.width * (3/10))))
         if (UIDevice.current.userInterfaceIdiom == .phone) {
             return .iPhone
-        } else if (screenRect == appRect) {
+        } else if (screenRect == activeSceneRect) {
             return .ipadFullScreen
-        } else if (appRect.size.height < screenRect.size.height) {
+        } else if (activeSceneRect.size.height < screenRect.size.height) {
             return .ipadSlideOver
         } else if isInHalfThreshold {
             return .ipadHalfSplitView

@@ -30,18 +30,17 @@ public final class DetailViewModel: ObservableObject {
     public var bio: String? { contact?.user?.chatProfileVO?.bio ?? user?.chatProfileVO?.bio }
     public var showInfoGroupBox: Bool { bio != nil || cellPhoneNumber != nil || canBlock == true }
     public var url: String? { thread?.computedImageURL ?? user?.image ?? contact?.image }
-    @Published public var isLoading: Bool = false
-    @Published public var participantViewModel: ParticipantsViewModel?
-    @Published public var mutualThreads: [Conversation] = []
+    public var participantViewModel: ParticipantsViewModel?
+    public var mutualThreads: [Conversation] = []
 
-    @Published public var editTitle: String = ""
-    @Published public var searchText: String = ""
-    @Published public var image: UIImage?
-    @Published public var addToContactSheet: Bool = false
-    @Published public var threadDescription: String = ""
+    public var editTitle: String = ""
+    public var searchText: String = ""
+    public var image: UIImage?
+    @Published public var showAddToContactSheet: Bool = false
+    public var threadDescription: String = ""
     @Published public var isInEditMode = false
     @Published public var showImagePicker: Bool = false
-    @Published public var assetResources: [PHAssetResource] = []
+    public var assetResources: [PHAssetResource] = []
     private var requests: [String: Any] = [:]
     @Published public var dismiss = false
 
@@ -52,10 +51,6 @@ public final class DetailViewModel: ObservableObject {
         if let thread = thread {
             participantViewModel = ParticipantsViewModel(thread: thread)
         }
-        participantViewModel?.$isLoading.sink { [weak self] newValue in
-            self?.isLoading = newValue
-        }
-        .store(in: &cancelable)
         editTitle = title
         threadDescription = thread?.description ?? ""
         fetchMutualThreads()
@@ -79,6 +74,10 @@ public final class DetailViewModel: ObservableObject {
             onChangeThreadType(chatResponse)
         case .mutual(let chatResponse):
             onMutual(chatResponse)
+        case .mute(let response):
+            onMuteChanged(response)
+        case .unmute(let response):
+            onUnMuteChanged(response)
         default:
             break
         }
@@ -126,6 +125,7 @@ public final class DetailViewModel: ObservableObject {
         if response.result != nil {
             self.contact?.blocked = true
             user?.blocked = true
+            animateObjectWillChange()
         }
     }
 
@@ -133,6 +133,7 @@ public final class DetailViewModel: ObservableObject {
         if response.result != nil {
             self.contact?.blocked = false
             user?.blocked = false
+            animateObjectWillChange()
         }
     }
 
@@ -181,14 +182,14 @@ public final class DetailViewModel: ObservableObject {
     public func onMuteChanged(_ response: ChatResponse<Int>) {
         if response.result != nil, response.error == nil {
             thread?.mute = true
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
     public func onUnMuteChanged(_ response: ChatResponse<Int>) {
         if response.result != nil, response.error == nil {
             thread?.mute = false
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
@@ -203,6 +204,7 @@ public final class DetailViewModel: ObservableObject {
     private func onMutual(_ response: ChatResponse<[Conversation]>) {
         if let threads = response.result {
             mutualThreads = threads
+            animateObjectWillChange()
         }
     }
 
@@ -216,6 +218,12 @@ public final class DetailViewModel: ObservableObject {
 
     private func onChangeThreadType(_ response: ChatResponse<Conversation>) {
         self.thread?.type = response.result?.type
-        objectWillChange.send()
+        animateObjectWillChange()
+    }
+
+    private func animateObjectWillChange() {
+        withAnimation {
+            objectWillChange.send()
+        }
     }
 }

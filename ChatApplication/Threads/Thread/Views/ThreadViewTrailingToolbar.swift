@@ -16,7 +16,8 @@ struct ThreadViewTrailingToolbar: View {
 
     var body: some View {
         NavigationLink {
-            DetailView(viewModel: DetailViewModel(thread: thread))
+            DetailView()
+                .environmentObject(viewModel.detailVM)
                 .environmentObject(viewModel)
         } label: {
             ImageLaoderView(url: thread.computedImageURL, userName: thread.title)

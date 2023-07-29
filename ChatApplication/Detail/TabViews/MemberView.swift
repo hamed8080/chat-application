@@ -55,6 +55,11 @@ struct MemberView: View {
         .animation(.easeInOut, value: viewModel.isLoading)
         .ignoresSafeArea(.all)
         .padding(.bottom)
+        .onAppear {
+            if viewModel.participants.count == 0 {
+                viewModel.getParticipants()
+            }
+        }
     }
 }
 
@@ -66,12 +71,13 @@ struct ParticipantSearchView: View {
             Picker("", selection: $viewModel.searchType) {
                 ForEach(SearchParticipantType.allCases) { item in
                     Text(item.rawValue)
+                        .font(.iransansBoldCaption3)
                 }
             }
             .labelsHidden()
             .pickerStyle(.menu)
             .layoutPriority(0)
-            .frame(width: 96)
+            .frame(width: 128)
 
             TextField("Search for users in thread", text: $viewModel.searchText)
                 .textFieldStyle(.customBorderedWith(minHeight: 24, cornerRadius: 12))
