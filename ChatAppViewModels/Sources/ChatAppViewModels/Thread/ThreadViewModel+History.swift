@@ -85,10 +85,10 @@ extension ThreadViewModel {
         isFetchedServerFirstResponse = true
         appendMessages(messages, isToTime: key == "TO_TIME")
         self.disableScrolling = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             if !response.cache {
-                self.disableScrolling = false
-                self.objectWillChange.send()
+                self?.disableScrolling = false
+                self?.objectWillChange.send()
             }
         }
         withAnimation(.spring()) {
@@ -141,8 +141,10 @@ extension ThreadViewModel {
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
         let key = "MORE_TOP-\(req.uniqueId)"
         requests[key] = (req, sections.first?.messages.first?.uniqueId)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            ChatManager.activeInstance?.message.history(req)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            if self != nil {
+                ChatManager.activeInstance?.message.history(req)
+            }
         }
         addCancelTimer(key: key)
     }
@@ -154,10 +156,10 @@ extension ThreadViewModel {
         else { return }
         appendMessages(messages.sorted(by: {$0.time ?? 0 >= $1.time ?? 0}))
         self.disableScrolling = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             if !response.cache {
-                self.disableScrolling = false
-                self.objectWillChange.send()
+                self?.disableScrolling = false
+                self?.objectWillChange.send()
             }
         }
         withAnimation(.spring()) {
@@ -191,10 +193,10 @@ extension ThreadViewModel {
         else { return }
         appendMessages(messages)
         self.disableScrolling = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             if !response.cache {
-                self.disableScrolling = false
-                self.objectWillChange.send()
+                self?.disableScrolling = false
+                self?.objectWillChange.send()
             }
         }
         withAnimation(.spring()) {

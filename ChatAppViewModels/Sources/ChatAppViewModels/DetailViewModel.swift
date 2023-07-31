@@ -16,11 +16,21 @@ import ChatAppModels
 import ChatCore
 import ChatModels
 
-public final class DetailViewModel: ObservableObject {
+public final class DetailViewModel: ObservableObject, Hashable {
+    public static func == (lhs: DetailViewModel, rhs: DetailViewModel) -> Bool {
+        lhs.user?.id == rhs.user?.id || lhs.thread?.id == rhs.thread?.id || lhs.contact?.id == rhs.contact?.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(contact?.id)
+        hasher.combine(thread?.id)
+        hasher.combine(user?.id)
+    }
+
     private(set) var cancelable: Set<AnyCancellable> = []
-    public var user: Participant?
-    public var contact: Contact?
-    public var thread: Conversation?
+    public weak var user: Participant?
+    public weak var contact: Contact?
+    public weak var thread: Conversation?
     public var isInMyContact: Bool { (user?.contactId != nil || contact != nil) && thread == nil }
     public var canBlock: Bool { thread == nil }
     public var title: String { thread?.title ?? user?.name ?? contact?.user?.name ?? "\(contact?.firstName ?? "") \(contact?.lastName ?? "")" }

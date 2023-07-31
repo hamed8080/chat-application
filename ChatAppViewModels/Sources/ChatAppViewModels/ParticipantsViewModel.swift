@@ -16,7 +16,7 @@ import ChatCore
 import ChatExtensions
 
 public final class ParticipantsViewModel: ObservableObject {
-    public var thread: Conversation?
+    public weak var thread: Conversation?
     private var hasNext = true
     private var count = 15
     private var offset = 0

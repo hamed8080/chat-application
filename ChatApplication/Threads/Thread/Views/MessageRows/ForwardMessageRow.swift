@@ -13,13 +13,13 @@ import ChatModels
 import SwiftUI
 
 struct ForwardMessageRow: View {
-    var forwardInfo: ForwardInfo
-    @State var showReadOnlyThreadView: Bool = false
+    let forwardInfo: ForwardInfo
+    @EnvironmentObject var navVM: NavigationModel
 
     @ViewBuilder var body: some View {
         if let forwardThread = forwardInfo.conversation {
-            NavigationLink {
-                ThreadView(viewModel: ThreadViewModel(thread: forwardThread))
+            Button {
+                navVM.append(thread: forwardThread)
             } label: {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {

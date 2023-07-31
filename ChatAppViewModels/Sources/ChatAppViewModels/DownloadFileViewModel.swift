@@ -131,25 +131,31 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         if let uniqueId = response.uniqueId, thumbRequests[uniqueId] != nil, let data = response.result {
             //State is not completed and blur view can show the thumbnail
             state = .THUMBNAIL
-            self.tumbnailData = data
-            thumbRequests.removeValue(forKey: uniqueId)
-            animateObjectWillChange()
+            autoreleasepool {
+                self.tumbnailData = data
+                thumbRequests.removeValue(forKey: uniqueId)
+                animateObjectWillChange()
+            }
             return
         }
         if let data = response.result, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
-            requests.removeValue(forKey: uniqueId)
-            state = .COMPLETED
-            downloadPercent = 100
-            self.data = data
-            animateObjectWillChange()
+            autoreleasepool {
+                requests.removeValue(forKey: uniqueId)
+                state = .COMPLETED
+                downloadPercent = 100
+                self.data = data
+                animateObjectWillChange()
+            }
         }
 
         /// When the user clicks on the side of an image not directly hit the download button, it triggers gallery view, and therefore after the user is back to the view the image and file should update properly.
         if url?.absoluteString == fileURL?.absoluteString, !response.cache {
-            state = .COMPLETED
-            downloadPercent = 100
-            self.data = response.result
-            animateObjectWillChange()
+            autoreleasepool {
+                state = .COMPLETED
+                downloadPercent = 100
+                self.data = response.result
+                animateObjectWillChange()
+            }
         }
     }
 

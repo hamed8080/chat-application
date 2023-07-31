@@ -6,7 +6,15 @@ import ChatModels
 
 public final class NavigationModel: ObservableObject {
     @Published public var selectedSideBarId: String? = "Chats"
-    @Published public var selectedThreadId: Conversation.ID?
+    @Published public var selectedThreadId: Conversation.ID? {
+        didSet {
+            if let selectedThread = selectedThread {
+                currentThreadVM = .init(thread: selectedThread)
+                clearThreadStack()
+                objectWillChange.send()
+            }
+        }
+    }
     @Published public var selectedThreadIds: Set<Conversation.ID> = []
     @Published public var selectedTagId: Tag.ID?
     public var threadViewModel: ThreadsViewModel?
@@ -14,6 +22,8 @@ public final class NavigationModel: ObservableObject {
     public var sections: [ChatAppModels.Section] = []
     public var cancelable: AnyCancellable?
     @Published public var paths = NavigationPath()
+    public var currentThreadVM: ThreadViewModel?
+    var threadStack: [ThreadViewModel] = []
 
     public init() {
         setup()
@@ -97,5 +107,28 @@ public final class NavigationModel: ObservableObject {
 
     public func sectionItem(_ selectedSideBarId: String?) -> SideBarItem? {
         sections.flatMap(\.items).first(where: { $0.id == selectedSideBarId })
+    }
+
+    public func append(participantDetail: Participant) {
+        paths.append(DetailViewModel(user: participantDetail))
+    }
+
+    public func append(threadDetail: Conversation) {
+        paths.append(DetailViewModel(thread: threadDetail))
+    }
+
+    public func append(thread: Conversation) {
+        if !threadStack.contains(where: {$0.threadId == thread.id}) {
+            threadStack.append(ThreadViewModel(thread: thread))
+        }
+        paths.append(thread)
+    }
+
+    public func threadViewModel(threadId: Int) -> ThreadViewModel {
+        return threadStack.first(where: {$0.threadId == threadId})!
+    }
+
+    public func clearThreadStack() {
+        threadStack.removeAll()
     }
 }

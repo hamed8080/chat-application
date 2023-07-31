@@ -13,7 +13,6 @@ import SwiftUI
 
 struct JoinToPublicThreadView: View {
     @State private var publicThreadName: String = ""
-    @State private var cancelables = Set<AnyCancellable>()
     @State private var isThreadExist: Bool = false
     var onCompeletion: (String) -> Void
 
@@ -52,30 +51,23 @@ struct JoinToPublicThreadView: View {
             }
         }
         .animation(.easeInOut, value: isThreadExist)
-        .onAppear {
-            NotificationCenter.default.publisher(for: .thread)
-                .sink { event in
-                    switch event.object as? ThreadEventTypes {
-                    case let .isNameAvailable(response):
-                        isThreadExist = response.result == nil
-                    default:
-                        break
-                    }
+        .onReceive(NotificationCenter.default.publisher(for: .thread)) { event in
+            switch event.object as? ThreadEventTypes {
+            case let .isNameAvailable(response):
+                isThreadExist = response.result == nil
+            default:
+                break
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .system)) { event in
+            switch event.object as? SystemEventTypes {
+            case let .error(response):
+                if response.error?.code == 130 {
+                    isThreadExist = true
                 }
-                .store(in: &cancelables)
-
-            NotificationCenter.default.publisher(for: .system)
-                .sink { event in
-                    switch event.object as? SystemEventTypes {
-                    case let .error(response):
-                        if response.error?.code == 130 {
-                            isThreadExist = true
-                        }
-                    default:
-                        break
-                    }
-                }
-                .store(in: &cancelables)
+            default:
+                break
+            }
         }
         .onChange(of: publicThreadName) { newValue in
             ChatManager.activeInstance?.conversation.isNameAvailable(.init(name: newValue))

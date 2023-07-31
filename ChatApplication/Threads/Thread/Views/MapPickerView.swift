@@ -59,10 +59,10 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
     }
 
     func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        DispatchQueue.main.async {
-            if let currentLocation = locations.first, MKMapPoint(currentLocation.coordinate).distance(to: MKMapPoint(self.currentLocation?.location ?? CLLocationCoordinate2D())) > 100 {
-                self.currentLocation = .init(name: "My location", description: "I'm here!", location: currentLocation.coordinate)
-                self.region.center = currentLocation.coordinate
+        DispatchQueue.main.async { [weak self] in
+            if let currentLocation = locations.first, MKMapPoint(currentLocation.coordinate).distance(to: MKMapPoint(self?.currentLocation?.location ?? CLLocationCoordinate2D())) > 100 {
+                self?.currentLocation = .init(name: "My location", description: "I'm here!", location: currentLocation.coordinate)
+                self?.region.center = currentLocation.coordinate
             }
         }
     }

@@ -58,11 +58,13 @@ public final class ImageLoader: ObservableObject {
     }
 
     private func setImage(data: Data) {
-        if size == nil {
-            image = UIImage(data: data) ?? UIImage()
-        } else {
-            guard let cgImage = data.imageScale(width: size == .SMALL ? 128 : 256)?.image else { return }
-            image = UIImage(cgImage: cgImage)
+        autoreleasepool {
+            if size == nil {
+                image = UIImage(data: data) ?? UIImage()
+            } else {
+                guard let cgImage = data.imageScale(width: size == .SMALL ? 128 : 256)?.image else { return }
+                image = UIImage(cgImage: cgImage)
+            }
         }
     }
 
@@ -108,7 +110,9 @@ public final class ImageLoader: ObservableObject {
             getFromSDK()
         } else if let fileURL = fileURL {
             guard let cgImage = fileURL.imageScale(width: 128)?.image else { return }
-            image = UIImage(cgImage: cgImage)
+            autoreleasepool {
+                image = UIImage(cgImage: cgImage)
+            }
         } else {
             downloadFromAnyURL()
         }
@@ -128,7 +132,9 @@ public final class ImageLoader: ObservableObject {
             requests.removeValue(forKey: uniqueId)
         } else {
             guard let cgImage = url?.imageScale(width: 128)?.image else { return }
-            image = UIImage(cgImage: cgImage)
+            autoreleasepool {
+                image = UIImage(cgImage: cgImage)
+            }
         }
     }
 
@@ -144,8 +150,8 @@ public final class ImageLoader: ObservableObject {
     private func update(data: Data?) {
         guard let data = data else { return }
         if !isRealImage(data: data) { return }
-        DispatchQueue.main.async {
-            self.setImage(data: data)
+        DispatchQueue.main.async { [weak self] in
+            self?.setImage(data: data)
         }
     }
 

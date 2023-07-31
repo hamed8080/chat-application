@@ -10,7 +10,6 @@ import ChatAppUI
 import ChatAppViewModels
 import ChatDTO
 import ChatModels
-import Combine
 import SwiftUI
 
 struct ThreadViewCenterToolbar: View {
@@ -18,7 +17,8 @@ struct ThreadViewCenterToolbar: View {
     var viewModel: ThreadViewModel
     @State private var title: String = ""
     @State private var participantCount: Int?
-    @State private var cancelableSet = Set<AnyCancellable>()
+    private let participantPublisher = NotificationCenter.default.publisher(for: .participant).compactMap { $0.object as? ParticipantEventTypes }
+    private let threadPublisher = NotificationCenter.default.publisher(for: .thread).compactMap { $0.object as? ThreadEventTypes }
 
     var body: some View {
         VStack(alignment: .center) {
@@ -44,36 +44,29 @@ struct ThreadViewCenterToolbar: View {
         .onChange(of: viewModel.thread.participantCount) { newValue in
             participantCount = newValue
         }
+        .onReceive(participantPublisher) { event in
+            if case let .added(response) = event {
+                withAnimation {
+                    participantCount = (participantCount ?? 0) + (response.result?.count ?? 0)
+                }
+            }
+
+            if case let .deleted(response) = event {
+                withAnimation {
+                    participantCount = max(0, (participantCount ?? 0) - (response.result?.count ?? 0))
+                }
+            }
+        }
+        .onReceive(threadPublisher) { event in
+            if case let .updatedInfo(response) = event {
+                withAnimation {
+                    title = response.result?.computedTitle ?? ""
+                }
+            }
+        }
         .onAppear {
             participantCount = viewModel.thread.participantCount
             title = viewModel.thread.computedTitle
-            NotificationCenter.default.publisher(for: .participant)
-                .compactMap { $0.object as? ParticipantEventTypes }
-                .sink { event in
-                    if case let .added(response) = event {
-                        withAnimation {
-                            participantCount = (participantCount ?? 0) + (response.result?.count ?? 0)
-                        }
-                    }
-
-                    if case let .deleted(response) = event {
-                        withAnimation {
-                            participantCount = max(0, (participantCount ?? 0) - (response.result?.count ?? 0))
-                        }
-                    }
-                }
-                .store(in: &cancelableSet)
-
-            NotificationCenter.default.publisher(for: .thread)
-                .compactMap { $0.object as? ThreadEventTypes }
-                .sink { event in
-                    if case let .updatedInfo(response) = event {
-                        withAnimation {
-                            title = response.result?.computedTitle ?? ""
-                        }
-                    }
-                }
-                .store(in: &cancelableSet)
         }
     }
 }

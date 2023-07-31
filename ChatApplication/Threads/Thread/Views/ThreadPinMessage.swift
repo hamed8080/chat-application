@@ -10,7 +10,6 @@ import ChatAppUI
 import ChatAppViewModels
 import ChatDTO
 import ChatModels
-import Combine
 import SwiftUI
 
 struct ThreadPinMessage: View {
@@ -18,7 +17,6 @@ struct ThreadPinMessage: View {
     @State private var message: PinMessage?
     let threadVM: ThreadViewModel
     @State var thumbnailData: Data?
-    @State private var cancelableSet = Set<AnyCancellable>()
     @State var requestUniqueId: String?
     private var icon: String? { fileMetadata?.file?.mimeType?.systemImageNameForFileExtension }
     var isEnglish: Bool { message?.text?.naturalTextAlignment == .leading }
@@ -31,6 +29,9 @@ struct ThreadPinMessage: View {
             return ""
         }
     }
+
+    private let downloadPublisher = NotificationCenter.default.publisher(for: .download).compactMap { $0.object as? DownloadEventTypes }
+    private let messagePublisher = NotificationCenter.default.publisher(for: .message).compactMap { $0.object as? MessageEventTypes }
 
     var body: some View {
         VStack {
@@ -54,21 +55,15 @@ struct ThreadPinMessage: View {
                 Spacer()
             }
         }
+        .onReceive(downloadPublisher) { event in
+            onDownloadEvent(event)
+        }
+        .onReceive(messagePublisher) { event in
+            onMessageEvent(event)
+        }
         .onAppear {
             message = thread.pinMessage
             downloadImageThumbnail()
-            NotificationCenter.default.publisher(for: .download)
-                .compactMap { $0.object as? DownloadEventTypes }
-                .sink { event in
-                    onDownloadEvent(event)
-                }
-                .store(in: &cancelableSet)
-            NotificationCenter.default.publisher(for: .message)
-                .compactMap { $0.object as? MessageEventTypes }
-                .sink { event in
-                    onMessageEvent(event)
-                }
-                .store(in: &cancelableSet)
         }
     }
 

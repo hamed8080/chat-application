@@ -15,7 +15,7 @@ import SwiftUI
 
 struct ThreadView: View, DropDelegate {
     private var thread: Conversation { viewModel.thread }
-    @StateObject var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadViewModel
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
@@ -114,7 +114,8 @@ struct ThreadView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadView(viewModel: ThreadViewModel(thread: MockData.thread))
+        ThreadView()
+            .environmentObject(ThreadViewModel(thread: MockData.thread))
             .environmentObject(AppState.shared)
             .onAppear {
                 //                vm.toggleRecording()

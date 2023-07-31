@@ -13,12 +13,11 @@ import SwiftUI
 struct ThreadViewTrailingToolbar: View {
     private var thread: Conversation { viewModel.thread }
     let viewModel: ThreadViewModel
+    @EnvironmentObject var navVM: NavigationModel
 
     var body: some View {
-        NavigationLink {
-            DetailView()
-                .environmentObject(viewModel.detailVM)
-                .environmentObject(viewModel)
+        Button {
+            navVM.append(threadDetail: thread)
         } label: {
             ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
                 .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
@@ -52,5 +51,6 @@ struct ThreadViewTrailingToolbar: View {
 struct ThreadViewTrailingToolbar_Previews: PreviewProvider {
     static var previews: some View {
         ThreadViewTrailingToolbar(viewModel: ThreadViewModel(thread: Conversation()))
+            .environmentObject(NavigationModel())
     }
 }

@@ -64,7 +64,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var count: Int { 15 }
     public var threadId: Int { thread.id ?? 0 }
     public weak var threadsViewModel: ThreadsViewModel?
-    public var detailVM: DetailViewModel
     public var signalMessageText: String?
     public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
@@ -88,7 +87,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.readOnly = readOnly
         self.thread = thread
         self.threadsViewModel = threadsViewModel
-        detailVM = .init(thread: thread)
         self.audioRecoderVM.threadViewModel = self
         setupNotificationObservers()
         exportMessagesVM.setup(thread)
@@ -469,5 +467,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                 }
             }
         }
+    }
+
+    deinit {
+        print("deinit called in class ThreadViewModel: \(thread.title ?? "")")
     }
 }

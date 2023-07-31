@@ -9,32 +9,20 @@ import Chat
 import ChatAppModels
 import ChatAppUI
 import ChatAppViewModels
+import ChatModels
 import Combine
 import SwiftUI
 import Swipy
 
 struct HomeContentView: View {
     let container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
-    @Environment(\.localStatusBarStyle) var statusBarStyle
-    @Environment(\.colorScheme) var colorScheme
-    @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
 
     var body: some View {
-        if TokenManager.shared.isLoggedIn == false {
-            LoginView()
-                .environmentObject(container.loginVM)
-                .environmentObject(container.tokenVM)
-                .environmentObject(AppState.shared)
-        } else {
-            NavigationSplitView(columnVisibility: $columnVisibility) {
-                SideBarView(container: container)
-            } content: {
-                SplitViewContentView()
-            } detail: {
-                NavigationStack {
-                    StackContentView()
-                }
-            }
+        LoginHomeView(container: container)
+            .environmentObject(container.loginVM)
+            .environmentObject(container.tokenVM)
+            .environmentObject(AppState.shared)
+        SplitView(container: container)
             .environmentObject(AppState.shared)
             .environmentObject(container)
             .environmentObject(container.navVM)
@@ -47,6 +35,50 @@ struct HomeContentView: View {
             .environmentObject(container.userConfigsVM)
             .environmentObject(container.logVM)
             .environmentObject(container.audioPlayerVM)
+    }
+}
+
+struct LoginHomeView: View {
+    let container: ObjectsContainer
+
+    var body: some View {
+        if TokenManager.shared.isLoggedIn == false {
+            LoginView()
+        }
+    }
+}
+
+struct SplitView: View {
+    let container: ObjectsContainer
+    @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.localStatusBarStyle) var statusBarStyle
+    @EnvironmentObject var navVM: NavigationModel
+
+    @ViewBuilder var body: some View {
+        bodyView
+    }
+
+    @ViewBuilder var bodyView: some View {
+        if TokenManager.shared.isLoggedIn {
+            NavigationSplitView {
+                SideBarView(container: container)
+            } content: {
+                SplitViewContentView()
+            } detail: {
+                NavigationStack(path: $navVM.paths) {
+                    StackContentView()
+                        .navigationDestination(for: Conversation.self) { thread in
+                            ThreadView()
+                                .id(thread.id)
+                                .environmentObject(navVM.threadViewModel(threadId: thread.id ?? 0))
+                        }
+                        .navigationDestination(for: DetailViewModel.self) { viewModel in
+                            DetailView()
+                                .environmentObject(viewModel)
+                        }
+                }
+            }
             .toast(
                 isShowing: Binding(get: { AppState.shared.error != nil }, set: { _ in }),
                 title: "An error had happened with code: \(AppState.shared.error?.code ?? 0)",
@@ -84,7 +116,7 @@ struct SplitViewContentView: View {
 
     var body: some View {
         if container.navVM.isThreadType {
-            ThreadContentList()
+            ThreadContentList(container: container)
         } else if container.navVM.selectedSideBarId == "Contacts" {
             ContactContentList()
         } else if container.navVM.selectedSideBarId == "Settings" {
@@ -94,12 +126,14 @@ struct SplitViewContentView: View {
 }
 
 struct StackContentView: View {
+    @EnvironmentObject var navVM: NavigationModel
     @EnvironmentObject var container: ObjectsContainer
 
     var body: some View {
-        if let thread = container.navVM.selectedThread {
-            ThreadView(viewModel: ThreadViewModel(thread: thread, threadsViewModel: container.threadsVM))
-                .id(thread.id) // don't remove this from here it leads to never change in view
+        if let viewModel = navVM.currentThreadVM {
+            ThreadView()
+                .environmentObject(viewModel)
+                .id(viewModel.thread.id) // don't remove this from here it leads to never change in view
         } else {
             DetailContentView(threadsVM: container.threadsVM)
         }

@@ -13,7 +13,6 @@ import SwiftUI
 
 struct ThreadMessagesList: View {
     let viewModel: ThreadViewModel
-    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         ScrollViewReader { scrollProxy in
@@ -32,7 +31,7 @@ struct ThreadMessagesList: View {
                 Spacer()
                     .frame(height: 96)
             }
-            .background(background)
+            .background(ThreadbackgroundView(threadId: viewModel.threadId))
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ViewOffsetKey.self) { originY in
                 viewModel.setNewOrigin(newOriginY: originY)
@@ -45,11 +44,17 @@ struct ThreadMessagesList: View {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         })
     }
+}
 
-    private var background: some View {
+struct ThreadbackgroundView: View {
+    @Environment(\.colorScheme) var colorScheme
+    let threadId: Int
+
+    var body: some View {
         Image("chat_bg")
             .resizable(resizingMode: .tile)
             .renderingMode(.template)
+            .id("chat_bg_\(threadId)")
             .opacity(colorScheme == .dark ? 0.9 : 0.25)
             .colorInvert()
             .colorMultiply(colorScheme == .dark ? Color.white : Color.cyan)

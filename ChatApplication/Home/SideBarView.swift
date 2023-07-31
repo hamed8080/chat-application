@@ -86,6 +86,7 @@ struct SwipyView: View {
 struct SideBarSectionsView: View {
     @EnvironmentObject var container: ObjectsContainer
     @State private var sections: [ChatAppModels.Section] = []
+    @State var selectedSideBarId: String? = "Chats"
 
     var body: some View {
         List(sections, selection: $container.navVM.selectedSideBarId) { section in
@@ -104,6 +105,11 @@ struct SideBarSectionsView: View {
         .onReceive(container.navVM.objectWillChange) { _ in
             if sections != container.navVM.sections {
                 sections = container.navVM.sections
+            }
+        }
+        .onReceive(container.navVM.$selectedSideBarId) { newValue in
+            if selectedSideBarId != newValue {
+                selectedSideBarId = newValue
             }
         }
     }

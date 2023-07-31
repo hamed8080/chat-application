@@ -13,14 +13,16 @@ import ChatModels
 import SwiftUI
 
 struct AvatarView: View {
+    @EnvironmentObject var navVM: NavigationModel
     var message: Message
     let viewModel: ThreadViewModel?
 
     var body: some View {
         if !(viewModel?.isSameUser(message: message) == true), message.participant != nil {
-            NavigationLink {
-                DetailView()
-                    .environmentObject(DetailViewModel(user: message.participant))
+            Button {
+                if let participant = message.participant {
+                    navVM.append(participantDetail: participant)
+                }
             } label: {
                 HStack(spacing: 8) {
                     if message.isMe(currentUserId: AppState.shared.user?.id) {

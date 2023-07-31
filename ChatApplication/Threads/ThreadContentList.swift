@@ -12,13 +12,15 @@ import ChatModels
 import SwiftUI
 
 struct ThreadContentList: View {
-    @EnvironmentObject var container: ObjectsContainer
+    let container: ObjectsContainer
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @State private var searchText: String = ""
+    @State var selectedThreadId: Conversation.ID?
+    @EnvironmentObject var navVM: NavigationModel
     private var sheetBinding: Binding<Bool> { Binding(get: { threadsVM.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
-        List(threadsVM.filtered, selection: $container.navVM.selectedThreadId) { thread in
+        List(threadsVM.filtered, selection: $navVM.selectedThreadId) { thread in
             NavigationLink(value: thread.id) {
                 ThreadRow(thread: thread)
                     .onAppear {
@@ -33,7 +35,7 @@ struct ThreadContentList: View {
             AudioPlayerView()
         }
         .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $container.threadsVM.isLoading)
+            ListLoadingView(isLoading: $threadsVM.isLoading)
         }
         .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search...")
         .onChange(of: searchText) { searchText in
@@ -130,7 +132,7 @@ private struct Preview: View {
 
     var body: some View {
         NavigationStack {
-            ThreadContentList()
+            ThreadContentList(container: container)
                 .environmentObject(container)
                 .environmentObject(container.audioPlayerVM)
                 .environmentObject(container.threadsVM)
