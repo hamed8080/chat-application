@@ -99,8 +99,8 @@ struct MutableMessageView: View {
                     .frame(maxHeight: 320)
             }
 
-            if message.isFileType, message.id ?? 0 > 0 {
-                DownloadFileView(viewModel: viewModel.downloadFileVM)
+            if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
+                DownloadFileView(viewModel: downloadVM)
                     .frame(maxHeight: 320)
             }
 

@@ -76,6 +76,8 @@ struct SplitView: View {
                         .navigationDestination(for: DetailViewModel.self) { viewModel in
                             DetailView()
                                 .environmentObject(viewModel)
+                                .environmentObject(container.threadsVM)
+                                .environmentObject(container.navVM.currentThreadVM!)
                         }
                 }
             }
@@ -145,7 +147,7 @@ struct UserConfigView: View {
 
     var body: some View {
         HStack {
-            ImageLaoderView(url: userConfig.user.image, userName: userConfig.user.name)
+            ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: userConfig.user.image, userName: userConfig.user.name)
                 .id("\(userConfig.user.image ?? "")\(userConfig.user.id ?? 0)")
                 .frame(width: 48, height: 48)
                 .cornerRadius(24)

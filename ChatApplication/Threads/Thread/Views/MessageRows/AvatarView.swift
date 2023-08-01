@@ -33,13 +33,23 @@ struct AvatarView: View {
                             .lineLimit(1)
                     }
 
-                    ImageLaoderView(url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
-                        .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
-                        .font(.iransansSubheadline)
-                        .foregroundColor(.white)
-                        .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-                        .background(Color.blue.opacity(0.4))
-                        .cornerRadius(MessageRowViewModel.avatarSize / 2)
+                    if let image = message.participant?.image, let imageLoaderVM = viewModel?.threadsViewModel?.avatars(for: image) {
+                        ImageLaoderView(imageLoader: imageLoaderVM, url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
+                            .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
+                            .font(.iransansSubheadline)
+                            .foregroundColor(.white)
+                            .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
+                            .background(Color.blue.opacity(0.4))
+                            .cornerRadius(MessageRowViewModel.avatarSize / 2)
+                    } else {
+                        Text(verbatim: String(message.participant?.name?.first ?? message.participant?.username?.first ?? " "))
+                            .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
+                            .font(.iransansSubheadline)
+                            .foregroundColor(.white)
+                            .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
+                            .background(Color.blue.opacity(0.4))
+                            .cornerRadius(MessageRowViewModel.avatarSize / 2)
+                    }
                     if !message.isMe(currentUserId: AppState.shared.user?.id) {
                         Text("\(message.participant?.name ?? "")")
                             .font(.iransansBoldCaption)

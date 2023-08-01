@@ -61,7 +61,6 @@ struct MessageListPictureView: View {
 
 struct PictureRowView: View {
     let message: Message
-    let downloadVM: DownloadFileViewModel
     @EnvironmentObject var threadVM: ThreadViewModel
     @EnvironmentObject var viewModel: DetailViewModel
     @State private var presentViewGallery = false
@@ -70,12 +69,10 @@ struct PictureRowView: View {
     init(message: Message, itemWidth: CGFloat) {
         self.message = message
         self.itemWidth = itemWidth
-        downloadVM = .init(message: message)
     }
 
     var body: some View {
-        DownloadPictureButtonView(itemWidth: itemWidth)
-            .environmentObject(downloadVM)
+        let view = DownloadPictureButtonView(itemWidth: itemWidth)
             .frame(width: itemWidth, height: itemWidth)
             .clipped()
             .contextMenu {
@@ -92,13 +89,19 @@ struct PictureRowView: View {
                 GalleryView(viewModel: GalleryViewModel(message: message))
                     .id(message.id)
             }
+        if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+            view
+                .environmentObject(downloadVM)
+        } else {
+            view
+        }
     }
 }
 
 struct DownloadPictureButtonView: View {
     let itemWidth: CGFloat
     @EnvironmentObject var viewModel: DownloadFileViewModel
-    private var message: Message { viewModel.message }
+    private var message: Message? { viewModel.message }
     private let config = DownloadPictureButtonView.config
     static var config: DownloadFileViewConfig = {
         var config: DownloadFileViewConfig = .small
@@ -119,12 +122,21 @@ struct DownloadPictureButtonView: View {
                     .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
             }
         case .DOWNLOADING, .STARTED:
-            CircularProgressView(percent: $viewModel.downloadPercent, config: config.circleConfig)
-                .padding(8)
-                .frame(maxWidth: itemWidth)
-                .onTapGesture {
-                    viewModel.pauseDownload()
-                }
+            if config.showSkeleton {
+                Image(systemName: "photo")
+                    .resizable()
+                    .scaledToFit()
+                    .opacity(0.3)
+                    .padding(8)
+                    .frame(width: itemWidth, height: itemWidth)
+            } else {
+                CircularProgressView(percent: $viewModel.downloadPercent, config: config.circleConfig)
+                    .padding(8)
+                    .frame(maxWidth: itemWidth)
+                    .onTapGesture {
+                        viewModel.pauseDownload()
+                    }
+            }
         case .PAUSED:
             Image(systemName: "pause.circle")
                 .resizable()
@@ -138,7 +150,7 @@ struct DownloadPictureButtonView: View {
                 }
         case .UNDEFINED, .THUMBNAIL:
             ZStack {
-                if message.isImage, let data = viewModel.tumbnailData, let image = UIImage(data: data) {
+                if message?.isImage == true, let data = viewModel.tumbnailData, let image = UIImage(data: data) {
                     Image(uiImage: image)
                         .resizable(resizingMode: .stretch)
                         .frame(width: itemWidth, height: itemWidth)
@@ -160,7 +172,7 @@ struct DownloadPictureButtonView: View {
                         viewModel.startDownload()
                     }
                     .onAppear {
-                        if message.isImage, !viewModel.isInCache, viewModel.tumbnailData == nil {
+                        if message?.isImage == true, !viewModel.isInCache, viewModel.tumbnailData == nil {
                             viewModel.downloadBlurImage()
                         }
                     }

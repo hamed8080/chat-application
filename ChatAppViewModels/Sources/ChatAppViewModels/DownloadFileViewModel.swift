@@ -9,7 +9,7 @@ import ChatTransceiver
 import SwiftUI
 
 public protocol DownloadFileViewModelProtocol {
-    var message: Message { get }
+    var message: Message? { get }
     var fileHashCode: String { get }
     var data: Data? { get }
     var state: DownloadFileState { get }
@@ -27,7 +27,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public var state: DownloadFileState = .UNDEFINED
     public var tumbnailData: Data?
     public var data: Data?
-    public var fileHashCode: String { message.fileMetaData?.fileHash ?? message.fileMetaData?.file?.hashCode ?? "" }
+    public var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
     var chat: Chat? { ChatManager.activeInstance }
 
     public var fileURL: URL? {
@@ -36,15 +36,16 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     public var url: URL? {
-        let path = message.isImage == true ? Routes.images.rawValue : Routes.files.rawValue
+        let path = message?.isImage == true ? Routes.images.rawValue : Routes.files.rawValue
         let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(path)/\(fileHashCode)"
         return URL(string: url)
     }
 
     public var requests: [String: Any] = [:]
     public var thumbRequests: [String: Any] = [:]
-    public var message: Message
-    private var cancelable: Set<AnyCancellable> = []
+    public weak var message: Message?
+    private var messageCancelable: AnyCancellable?
+    private var downloadCancelable: AnyCancellable?
 
     public init(message: Message) {
         self.message = message
@@ -56,20 +57,18 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     public func setObservers() {
-        NotificationCenter.default.publisher(for: .message)
+       downloadCancelable = NotificationCenter.default.publisher(for: .message)
             .compactMap { $0.object as? Message }
-            .filter { $0.id == self.message.id }
+            .filter { $0.id == self.message?.id }
             .sink { [weak self] _ in
                 self?.state = .UNDEFINED
                 self?.animateObjectWillChange()
             }
-            .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: .download)
+       messageCancelable = NotificationCenter.default.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
             .sink { [weak self] value in
                 self?.onDownloadEvent(value)
             }
-            .store(in: &cancelable)
     }
 
     private func onDownloadEvent(_ event: DownloadEventTypes){
@@ -96,7 +95,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     public func startDownload() {
         if isInCache { return }
-        if message.isImage == true {
+        if message?.isImage == true {
             downloadImage()
         } else {
             downloadFile()
@@ -194,5 +193,18 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         withAnimation {
             objectWillChange.send()
         }
+    }
+
+    public func cancelObservers(){
+        messageCancelable?.cancel()
+        downloadCancelable?.cancel()
+
+        messageCancelable = nil
+        downloadCancelable = nil
+    }
+
+    deinit {
+        messageCancelable?.cancel()
+        downloadCancelable?.cancel()
     }
 }

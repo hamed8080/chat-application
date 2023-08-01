@@ -114,7 +114,7 @@ struct MessageList: View {
 
     var body: some View {
         ForEach(messages) { message in
-            MessageRowFactory(viewModel: MessageRowViewModel(message: message, viewModel: viewModel))
+            MessageRowFactory(viewModel: viewModel.messageViewModel(for: message))
                 .id(message.uniqueId)
                 .onAppear {
                     viewModel.onMessageAppear(message)

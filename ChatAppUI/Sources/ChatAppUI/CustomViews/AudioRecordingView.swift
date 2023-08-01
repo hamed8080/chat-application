@@ -12,18 +12,25 @@ import ChatModels
 public struct AudioRecordingView: View {
     @EnvironmentObject var viewModel: AudioRecordingViewModel
     @State var opacity: Double = 0
+    @Binding var isRecording: Bool
+    let id: Namespace.ID
 
-    public init() {}
+    public init(isRecording: Binding<Bool>, nameSpace: Namespace.ID) {
+        _isRecording = isRecording
+        id = nameSpace
+    }
 
     public var body: some View {
         if viewModel.isRecording {
             HStack(spacing: 0) {
                 Image(systemName: "xmark.circle.fill")
+                    .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
                     .font(.system(size: 24))
                     .foregroundColor(Color.blue)
                     .onTapGesture {
                         viewModel.isRecording = false
                         viewModel.stop()
+                        isRecording = false
                     }
                 Text(viewModel.timerString)
                     .font(.iransansBody)
@@ -47,6 +54,7 @@ public struct AudioRecordingView: View {
 }
 
 struct AudioRecordingView_Previews: PreviewProvider {
+    @Namespace static var id
     static var threadVM = ThreadViewModel(thread: MockData.thread)
     static var viewModel: AudioRecordingViewModel {
         let viewModel = AudioRecordingViewModel()
@@ -55,7 +63,7 @@ struct AudioRecordingView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        AudioRecordingView()
+        AudioRecordingView(isRecording: .constant(false), nameSpace: AudioRecordingView_Previews.id)
             .environmentObject(viewModel)
     }
 }

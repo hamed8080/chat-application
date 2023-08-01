@@ -45,7 +45,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     @Published public var editMessage: Message?
     public var replyMessage: Message?
     @Published public var isInEditMode: Bool = false
-    public var exportMessagesVM: ExportMessagesViewModelProtocol = ExportMessagesViewModel()
+    public var exportMessagesVM: ExportMessagesViewModelProtocol?
     public var mentionList: [Participant] = []
     public var dropItems: [DropItem] = []
     public var sheetType: ThreadSheetType?
@@ -58,7 +58,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var canScrollToBottomOfTheList: Bool = false
     private var cancelable: Set<AnyCancellable> = []
     private var typingTimerStarted = false
-    public var audioRecoderVM: AudioRecordingViewModel = .init()
+    public var audioRecoderVM: AudioRecordingViewModel?
     public var hasNextTop = true
     public var hasNextBottom = true
     public var count: Int { 15 }
@@ -83,13 +83,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         return sheetViewModel
     }()
 
+    private var messageViewModels: [MessageRowViewModel] = []
+
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.readOnly = readOnly
         self.thread = thread
         self.threadsViewModel = threadsViewModel
-        self.audioRecoderVM.threadViewModel = self
         setupNotificationObservers()
-        exportMessagesVM.setup(thread)
     }
 
     private func setupNotificationObservers() {
@@ -469,7 +469,43 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
+    public func setupRecording() {
+        if audioRecoderVM == nil {
+            audioRecoderVM = .init()
+            audioRecoderVM?.threadViewModel = self
+        }
+        audioRecoderVM?.toggle()
+        animatableObjectWillChange()
+    }
+
+    public func setupExportMessage(startDate: Date, endDate: Date) {
+        if exportMessagesVM == nil {
+            exportMessagesVM = ExportMessagesViewModel()
+            exportMessagesVM?.thread = thread
+            (exportMessagesVM as? ExportMessagesViewModel)?.objectWillChange
+                .sink { [weak self] in
+                    self?.sheetType = .exportMessagesFile
+                    self?.animatableObjectWillChange()
+                }
+                .store(in: &cancelable)
+        }
+        exportMessagesVM?.exportChats(startDate: startDate, endDate: endDate)
+        animatableObjectWillChange()
+    }
+
+    public func messageViewModel(for message: Message) -> MessageRowViewModel {
+        if let viewModel = messageViewModels.first(where: { $0.message.id == message.id }){
+            return viewModel
+        } else {
+            let newViewModel = MessageRowViewModel(message: message, viewModel: self)
+            messageViewModels.append(newViewModel)
+            return newViewModel
+        }
+    }
+
     deinit {
+#if DEBUG
         print("deinit called in class ThreadViewModel: \(thread.title ?? "")")
+#endif
     }
 }

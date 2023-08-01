@@ -9,6 +9,7 @@ import AdditiveUI
 import ChatAppUI
 import ChatAppViewModels
 import ChatModels
+import Combine
 import SwiftUI
 
 struct SendContainer: View {
@@ -19,6 +20,7 @@ struct SendContainer: View {
     @State private var isRecording = false
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
     private var threadId: Int? { viewModel.thread.id }
+    @Namespace var id
 
     var body: some View {
         VStack {
@@ -34,14 +36,17 @@ struct SendContainer: View {
                         .environmentObject(viewModel)
                     EditMessagePlaceholderView()
                         .environmentObject(viewModel)
-                    AudioRecordingView()
-                        .environmentObject(viewModel.audioRecoderVM)
+                    if let recordingVM = viewModel.audioRecoderVM {
+                        AudioRecordingView(isRecording: $isRecording, nameSpace: id)
+                            .environmentObject(recordingVM)
+                    }
                     HStack {
                         if isRecording == false {
                             GradientImageButton(image: "paperclip", title: "Voice Recording") {
                                 viewModel.sheetType = .attachment
                                 viewModel.animatableObjectWillChange()
                             }
+                            .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
                         }
 
                         MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black, mention: true)
@@ -51,15 +56,16 @@ struct SendContainer: View {
                             }
                         if isRecording == false {
                             GradientImageButton(image: "mic.fill", title: "Voice Recording") {
-                                viewModel.audioRecoderVM.toggle()
-                                viewModel.animatableObjectWillChange()
+                                viewModel.setupRecording()
+                                isRecording = true
                             }
                             .keyboardShortcut(.init("r"), modifiers: [.command])
                         }
 
                         GradientImageButton(image: "arrow.up.circle.fill", title: "Send") {
                             if isRecording {
-                                viewModel.audioRecoderVM.stopAndSend()
+                                viewModel.audioRecoderVM?.stopAndSend()
+                                isRecording = false
                             } else if !text.isEmpty {
                                 viewModel.sendTextMessage(text)
                             }
@@ -77,6 +83,7 @@ struct SendContainer: View {
             .padding(.bottom, 4)
             .padding([.leading, .trailing], 8)
             .padding(.top, 18)
+            .animation(isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: isRecording)
             .background(
                 VStack {
                     Spacer()
@@ -103,9 +110,6 @@ struct SendContainer: View {
                 } else {
                     UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
                 }
-            }
-            .onReceive(viewModel.audioRecoderVM.$isRecording) { isRecording in
-                self.isRecording = isRecording
             }
             .onAppear {
                 if let threadId = threadId, let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {

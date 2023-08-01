@@ -26,7 +26,7 @@ struct ContactRow: View {
             VStack {
                 HStack(spacing: 0) {
                     selectRadio
-                    ImageLaoderView(url: contact.image ?? contact.user?.image, userName: contact.firstName)
+                    ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
                         .id("\(contact.image ?? "")\(contact.id ?? 0)")
                         .font(.iransansBody)
                         .foregroundColor(.white)

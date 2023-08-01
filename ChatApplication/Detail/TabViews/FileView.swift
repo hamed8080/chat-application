@@ -62,8 +62,12 @@ struct FileRowView: View {
                         .font(.iransansSubtitle)
                 }
                 Spacer()
-                DownloadFileButtonView()
-                    .environmentObject(DownloadFileViewModel(message: message))
+                let view = DownloadFileButtonView()
+                if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+                    view.environmentObject(downloadVM)
+                } else {
+                    view
+                }
             }
             Rectangle()
                 .fill(.gray.opacity(0.3))

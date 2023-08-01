@@ -67,21 +67,24 @@ struct DetailView: View {
 
 struct InfoView: View {
     @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var threadsVM: ThreadsViewModel
 
     var body: some View {
         VStack(alignment: .center, spacing: 12) {
-            ImageLaoderView(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
-                .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
-                .font(.system(size: 16).weight(.heavy))
-                .foregroundColor(.white)
-                .frame(width: 128, height: 128)
-                .background(Color.blue.opacity(0.4))
-                .cornerRadius(64)
-                .onTapGesture {
-                    if viewModel.isInEditMode, viewModel.thread?.canEditInfo == true {
-                        viewModel.showImagePicker = true
+            if let image = viewModel.url {
+                ImageLaoderView(imageLoader: threadsVM.avatars(for: image), url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
+                    .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
+                    .font(.system(size: 16).weight(.heavy))
+                    .foregroundColor(.white)
+                    .frame(width: 128, height: 128)
+                    .background(Color.blue.opacity(0.4))
+                    .cornerRadius(64)
+                    .onTapGesture {
+                        if viewModel.isInEditMode, viewModel.thread?.canEditInfo == true {
+                            viewModel.showImagePicker = true
+                        }
                     }
-                }
+            }
 
             let bgColor = viewModel.isInEditMode ? Color.primary.opacity(0.08) : Color.clear
             if viewModel.thread?.canEditInfo == true {

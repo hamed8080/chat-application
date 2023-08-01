@@ -7,6 +7,7 @@
 
 import Chat
 import ChatAppUI
+import ChatAppViewModels
 import ChatModels
 import Combine
 import SwiftUI
@@ -21,7 +22,7 @@ struct SelectThreadRow: View {
 
     var body: some View {
         HStack {
-            ImageLaoderView(url: thread.computedImageURL, userName: thread.title)
+            ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: thread.computedImageURL, userName: thread.title)
                 .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
                 .font(.iransansSubtitle)
                 .foregroundColor(.white)

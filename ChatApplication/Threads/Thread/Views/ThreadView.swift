@@ -72,16 +72,11 @@ struct ThreadView: View, DropDelegate {
                 viewModel.textMessage = viewModel.editMessage?.message ?? ""
                 viewModel.animatableObjectWillChange()
             }
-            .onReceive((viewModel.exportMessagesVM as! ExportMessagesViewModel).$filePath) { filePath in
-                if filePath != nil {
-                    viewModel.sheetType = .exportMessagesFile
-                    viewModel.animatableObjectWillChange()
-                }
-            }
             .onAppear {
                 viewModel.startFetchingHistory()
+                threadsVM.clearAvatarsOnSelectAnotherThread()
             }
-            .sheet(isPresented: sheetBinding, onDismiss: onDismiss) {
+            .sheet(isPresented: sheetBinding) {
                 ThreadSheetView(sheetBinding: sheetBinding)
                     .environmentObject(viewModel.sheetViewModel)
             }
@@ -95,13 +90,6 @@ struct ThreadView: View, DropDelegate {
         viewModel.sheetType = .dropItems
         viewModel.animatableObjectWillChange()
         return true
-    }
-
-    func onDismiss() {
-        viewModel.exportMessagesVM.deleteFile()
-        viewModel.dropItems.removeAll()
-        viewModel.sheetType = nil
-        viewModel.animatableObjectWillChange()
     }
 }
 

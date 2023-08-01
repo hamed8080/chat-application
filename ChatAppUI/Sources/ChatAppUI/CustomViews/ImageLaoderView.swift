@@ -9,20 +9,22 @@ import Chat
 import Foundation
 import SwiftUI
 import ChatAppModels
+import ChatAppViewModels
 import ChatDTO
 
 public struct ImageLaoderView: View {
-    @StateObject var imageLoader = ImageLoader()
+    @StateObject var imageLoader: ImageLoaderViewModel
     let url: String?
     let metaData: String?
     let userName: String?
     let size: ImageSize
 
-    public init(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
+    public init(imageLoader: ImageLoaderViewModel, url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
         self.metaData = metaData
         self.url = url
         self.userName = userName?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.size = size
+        self._imageLoader = StateObject(wrappedValue: imageLoader)
     }
 
     public var body: some View {
@@ -46,7 +48,7 @@ public struct ImageLaoderView: View {
 
 struct ImageLoaderView_Previews: PreviewProvider {
     static var previews: some View {
-        ImageLaoderView(url: "https://podspace.podland.ir/api/images/FQW4R5QUPE4XNDUV", userName: "Hamed")
+        ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: "https://podspace.podland.ir/api/images/FQW4R5QUPE4XNDUV", userName: "Hamed")
             .font(.system(size: 16).weight(.heavy))
             .foregroundColor(.white)
             .frame(width: 128, height: 128)

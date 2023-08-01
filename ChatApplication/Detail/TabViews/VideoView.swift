@@ -62,8 +62,13 @@ struct VideoRowView: View {
                         .font(.iransansSubtitle)
                 }
                 Spacer()
-                DownloadVideoButtonView()
-                    .environmentObject(DownloadFileViewModel(message: message))
+
+                let view = DownloadVideoButtonView()
+                if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+                    view.environmentObject(downloadVM)
+                } else {
+                    view
+                }
             }
             Rectangle()
                 .fill(.gray.opacity(0.3))
@@ -79,7 +84,7 @@ struct VideoRowView: View {
 
 struct DownloadVideoButtonView: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
-    private var message: Message { viewModel.message }
+    private var message: Message? { viewModel.message }
     static var config: DownloadFileViewConfig = {
         var config: DownloadFileViewConfig = .small
         config.circleConfig.forgroundColor = .green
@@ -115,7 +120,7 @@ struct DownloadVideoButtonView: View {
                     viewModel.resumeDownload()
                 }
         case .UNDEFINED, .THUMBNAIL:
-            if message.isImage, let data = viewModel.tumbnailData, let image = UIImage(data: data) {
+            if message?.isImage == true, let data = viewModel.tumbnailData, let image = UIImage(data: data) {
                 Image(uiImage: image)
                     .resizable()
                     .blur(radius: 5, opaque: true)

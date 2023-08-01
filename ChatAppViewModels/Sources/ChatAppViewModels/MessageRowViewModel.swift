@@ -25,7 +25,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var timeString: String = ""
     public var fileSizeString: String?
     public static var avatarSize: CGFloat = 24
-    public let downloadFileVM: DownloadFileViewModel
+    public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     private var cancelableSet = Set<AnyCancellable>()
     public let message: Message
@@ -35,7 +35,9 @@ public final class MessageRowViewModel: ObservableObject {
     public var highlightTimer: Timer?
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
-        self.downloadFileVM = DownloadFileViewModel(message: message)
+        if message.isFileType {
+            self.downloadFileVM = DownloadFileViewModel(message: message)
+        }
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
     }
@@ -224,5 +226,13 @@ public final class MessageRowViewModel: ObservableObject {
         let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth, uploadFileProgressWidth, unsentFileWidth, videoWidth].max() ?? 0
         let calculatedWidth: CGFloat = min(contentWidth, maxAllowedWidth)
         return calculatedWidth
+    }
+
+    deinit {
+        downloadFileVM?.cancelObservers()
+        downloadFileVM = nil
+#if Debug
+        print("Deinit get called for message: \(message.message ?? "") and message isFileTye:\(message.isFileType) and id is: \(message.id ?? 0)")
+#endif
     }
 }

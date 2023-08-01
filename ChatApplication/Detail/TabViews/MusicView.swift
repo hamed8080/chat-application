@@ -60,8 +60,12 @@ struct MusicRowView: View {
                         .font(.iransansSubtitle)
                 }
                 Spacer()
-                DownloadMusicButtonView()
-                    .environmentObject(DownloadFileViewModel(message: message))
+                let view = DownloadMusicButtonView()
+                if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+                    view.environmentObject(downloadVM)
+                } else {
+                    view
+                }
             }
             Rectangle()
                 .fill(.gray.opacity(0.3))

@@ -42,6 +42,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var url: String? { thread?.computedImageURL ?? user?.image ?? contact?.image }
     public var participantViewModel: ParticipantsViewModel?
     public var mutualThreads: [Conversation] = []
+    public weak var threadVM: ThreadViewModel?
 
     public var editTitle: String = ""
     public var searchText: String = ""

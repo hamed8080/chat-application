@@ -22,15 +22,27 @@ struct ThreadSheetView: View {
             case .dropItems:
                 DropItemsView()
                     .environmentObject(viewModel)
+                    .onDisappear {
+                        sheetBinding = false
+                        viewModel.exportMessagesVM?.deleteFile()
+                        viewModel.dropItems.removeAll()
+                        viewModel.sheetType = nil
+                        viewModel.animatableObjectWillChange()
+                    }
             case .datePicker:
                 DateSelectionView(showDialog: $sheetBinding) { startDate, endDate in
                     viewModel.sheetType = nil
-                    viewModel.exportMessagesVM.exportChats(startDate: startDate, endDate: endDate)
-                    viewModel.animatableObjectWillChange()
+                    viewModel.setupExportMessage(startDate: startDate, endDate: endDate)
                 }
             case .exportMessagesFile:
-                if let exportFileUrl = viewModel.exportMessagesVM.filePath {
+                if let exportFileUrl = viewModel.exportMessagesVM?.filePath {
                     ActivityViewControllerWrapper(activityItems: [exportFileUrl])
+                        .onDisappear {
+                            sheetBinding = false
+                            viewModel.sheetType = nil
+                            viewModel.exportMessagesVM = nil
+                            viewModel.animatableObjectWillChange()
+                        }
                 } else {
                     EmptyView()
                 }

@@ -1,5 +1,5 @@
 //
-//  ImageLoader.swift
+//  ImageLoaderViewModel.swift
 //  ChatApplication
 //
 //  Created by Hamed Hosseini on 5/27/21.
@@ -8,7 +8,6 @@
 import Chat
 import Foundation
 import UIKit
-import ChatAppViewModels
 import ChatModels
 import ChatAppModels
 import ChatDTO
@@ -26,8 +25,8 @@ private var token: String? {
     return ssoToken.accessToken
 }
 
-public final class ImageLoader: ObservableObject {
-    @Published private(set) var image: UIImage = .init()
+public final class ImageLoaderViewModel: ObservableObject {
+    @Published public private(set) var image: UIImage = .init()
     private(set) var url: String?
     private(set) var fileMetadata: String?
     private(set) var size: ImageSize?
@@ -53,7 +52,7 @@ public final class ImageLoader: ObservableObject {
         }
     }
 
-    var isImageReady: Bool {
+    public var isImageReady: Bool {
         image.size.width > 0
     }
 
@@ -97,7 +96,7 @@ public final class ImageLoader: ObservableObject {
 
     private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
 
-    func fetch(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
+    public func fetch(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
         fileMetadata = metaData
         self.url = url
         self.userName = userName

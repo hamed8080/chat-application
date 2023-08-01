@@ -40,6 +40,7 @@ public final class ThreadsViewModel: ObservableObject {
     private var requests: [String: Any] = [:]
     private var searchRequests: [String: Any] = [:]
     private var canLoadMore: Bool { hasNext && !isLoading }
+    private var avatarsVM: [String :ImageLoaderViewModel] = [:]
 
     public init() {
         AppState.shared.$connectionStatus
@@ -440,6 +441,29 @@ public final class ThreadsViewModel: ObservableObject {
                     self?.isLoading = false
                 }
             }
+        }
+    }
+
+    public func avatars(for imageURL: String) -> ImageLoaderViewModel {
+        if let avatarVM = avatarsVM[imageURL] {
+            return avatarVM
+        } else {
+            let newAvatarVM = ImageLoaderViewModel()
+            avatarsVM[imageURL] = newAvatarVM
+            return newAvatarVM
+        }
+    }
+
+    public func clearAvatarsOnSelectAnotherThread() {
+        var keysToRemove: [String] = []
+        let allThreadImages = threads.compactMap({$0.computedImageURL})
+        avatarsVM.forEach { (key: String, value: ImageLoaderViewModel) in
+            if !allThreadImages.contains(where: {$0 == key }) {
+                keysToRemove.append(key)
+            }
+        }
+        keysToRemove.forEach { key in
+            avatarsVM.removeValue(forKey: key)
         }
     }
 }

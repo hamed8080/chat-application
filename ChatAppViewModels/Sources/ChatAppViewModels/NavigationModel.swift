@@ -9,7 +9,7 @@ public final class NavigationModel: ObservableObject {
     @Published public var selectedThreadId: Conversation.ID? {
         didSet {
             if let selectedThread = selectedThread {
-                currentThreadVM = .init(thread: selectedThread)
+                currentThreadVM = .init(thread: selectedThread, threadsViewModel: threadViewModel)
                 clearThreadStack()
                 objectWillChange.send()
             }
@@ -119,7 +119,7 @@ public final class NavigationModel: ObservableObject {
 
     public func append(thread: Conversation) {
         if !threadStack.contains(where: {$0.threadId == thread.id}) {
-            threadStack.append(ThreadViewModel(thread: thread))
+            threadStack.append(ThreadViewModel(thread: thread, threadsViewModel: threadViewModel))
         }
         paths.append(thread)
     }

@@ -60,8 +60,12 @@ struct LinkRowView: View {
                         .font(.iransansSubtitle)
                 }
                 Spacer()
-                DownloadLinkButtonView()
-                    .environmentObject(DownloadFileViewModel(message: message))
+                let view = DownloadLinkButtonView()
+                if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+                    view.environmentObject(downloadVM)
+                } else {
+                    view
+                }
             }
             Rectangle()
                 .fill(.gray.opacity(0.3))

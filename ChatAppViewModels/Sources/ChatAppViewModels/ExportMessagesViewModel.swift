@@ -13,8 +13,7 @@ import ChatCore
 import ChatDTO
 
 public protocol ExportMessagesViewModelProtocol {
-    func setup(_ thread: Conversation)
-    var thread: Conversation? { get }
+    var thread: Conversation? { get set }
     var filePath: URL? { get set }
     var threadId: Int { get }
     func exportChats(startDate: Date, endDate: Date)
@@ -24,7 +23,7 @@ public protocol ExportMessagesViewModelProtocol {
 public final class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol {
     public weak var thread: Conversation?
     public var threadId: Int { thread?.id ?? 0 }
-    @Published public var filePath: URL?
+    public var filePath: URL?
     private var cancelable: Set<AnyCancellable> = []
     private var requests: [String: Any] = [:]
 
@@ -42,10 +41,6 @@ public final class ExportMessagesViewModel: ObservableObject, ExportMessagesView
     private func onExport(_ response: ChatResponse<URL>) {
         filePath = response.result
         objectWillChange.send()
-    }
-
-    public func setup(_ thread: Conversation) {
-        self.thread = thread
     }
 
     public func exportChats(startDate: Date, endDate: Date) {

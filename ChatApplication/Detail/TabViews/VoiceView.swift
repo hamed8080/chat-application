@@ -60,8 +60,12 @@ struct VoiceRowView: View {
                         .font(.iransansSubtitle)
                 }
                 Spacer()
-                DownloadVoiceButtonView()
-                    .environmentObject(DownloadFileViewModel(message: message))
+                let view = DownloadVoiceButtonView()
+                if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+                    view.environmentObject(downloadVM)
+                } else {
+                    view
+                }
             }
             Rectangle()
                 .fill(.gray.opacity(0.3))

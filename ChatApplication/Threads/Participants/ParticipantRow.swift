@@ -19,7 +19,7 @@ struct ParticipantRow: View {
     var body: some View {
         VStack {
             HStack {
-                ImageLaoderView(url: participant.image, userName: participant.name ?? participant.username)
+                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: participant.image, userName: participant.name ?? participant.username)
                     .id("\(participant.image ?? "")\(participant.id ?? 0)")
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)

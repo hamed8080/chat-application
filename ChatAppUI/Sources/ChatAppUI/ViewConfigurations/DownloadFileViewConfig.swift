@@ -15,7 +15,8 @@ public struct DownloadFileViewConfig {
                                                       iconWidth: 52,
                                                       iconHeight: 52,
                                                       iconColor: .iconColor.opacity(0.8),
-                                                      circleProgressMaxWidth: 128
+                                                      circleProgressMaxWidth: 128,
+                                                      showSkeleton: false
     )
 
     public static let small = DownloadFileViewConfig(circleConfig: .small,
@@ -24,7 +25,8 @@ public struct DownloadFileViewConfig {
                                                      iconWidth: 48,
                                                      iconHeight: 48,
                                                      iconColor: .iconColor.opacity(0.8),
-                                                     circleProgressMaxWidth: 64
+                                                     circleProgressMaxWidth: 64,
+                                                     showSkeleton: true
     )
     public var circleConfig: CircleProgressConfig
     public var maxWidth: CGFloat
@@ -33,6 +35,8 @@ public struct DownloadFileViewConfig {
     public var iconHeight: CGFloat
     public var iconColor: Color
     public var circleProgressMaxWidth: CGFloat
+    /// If this property set to true it will not show the progress bar and only shows skeleton view.
+    public var showSkeleton: Bool
 
     public init(circleConfig: CircleProgressConfig,
                 maxWidth: CGFloat,
@@ -40,7 +44,8 @@ public struct DownloadFileViewConfig {
                 iconWidth: CGFloat,
                 iconHeight: CGFloat,
                 iconColor: Color,
-                circleProgressMaxWidth: CGFloat
+                circleProgressMaxWidth: CGFloat,
+                showSkeleton: Bool
     ) {
         self.circleConfig = circleConfig
         self.maxWidth = maxWidth
@@ -49,5 +54,6 @@ public struct DownloadFileViewConfig {
         self.iconHeight = iconHeight
         self.iconColor = iconColor
         self.circleProgressMaxWidth = circleProgressMaxWidth
+        self.showSkeleton = showSkeleton
     }
 }

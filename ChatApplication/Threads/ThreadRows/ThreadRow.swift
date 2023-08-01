@@ -17,7 +17,7 @@ struct ThreadRow: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            ThreadImageView(thread: thread)
+            ThreadImageView(thread: thread, threadsVM: viewModel)
                 .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
             VStack(alignment: .leading, spacing: 6) {
                 HStack {

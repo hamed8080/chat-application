@@ -28,7 +28,7 @@ struct SettingsView: View {
                             .frame(width: 128, height: 128)
                             .shadow(color: .black, radius: 20, x: 0, y: 0)
                             .overlay(
-                                ImageLaoderView(url: user?.image, userName: user?.username ?? user?.name, size: .LARG)
+                                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: user?.image, userName: user?.username ?? user?.name, size: .LARG)
                                     .id("\(user?.image ?? "")\(user?.id ?? 0)")
                                     .font(.system(size: 16).weight(.heavy))
                                     .foregroundColor(.white)

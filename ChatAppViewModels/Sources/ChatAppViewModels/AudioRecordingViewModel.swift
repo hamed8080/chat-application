@@ -86,6 +86,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         isRecording = false
         audioRecorder.stop()
         timer?.invalidate()
+        timerString = ""
     }
 
     public func cancel() {
