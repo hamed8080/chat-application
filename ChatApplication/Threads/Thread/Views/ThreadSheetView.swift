@@ -19,29 +19,31 @@ struct ThreadSheetView: View {
             switch viewModel.sheetType {
             case .attachment:
                 AttachmentDialog(viewModel: actionSheetViewModel)
+                    .onDisappear {
+                        closeSheet()
+                    }
             case .dropItems:
                 DropItemsView()
                     .environmentObject(viewModel)
                     .onDisappear {
-                        sheetBinding = false
                         viewModel.exportMessagesVM?.deleteFile()
                         viewModel.dropItems.removeAll()
-                        viewModel.sheetType = nil
-                        viewModel.animatableObjectWillChange()
+                        closeSheet()
                     }
             case .datePicker:
                 DateSelectionView(showDialog: $sheetBinding) { startDate, endDate in
                     viewModel.sheetType = nil
                     viewModel.setupExportMessage(startDate: startDate, endDate: endDate)
                 }
+                .onDisappear {
+                    closeSheet()
+                }
             case .exportMessagesFile:
                 if let exportFileUrl = viewModel.exportMessagesVM?.filePath {
                     ActivityViewControllerWrapper(activityItems: [exportFileUrl])
                         .onDisappear {
-                            sheetBinding = false
-                            viewModel.sheetType = nil
                             viewModel.exportMessagesVM = nil
-                            viewModel.animatableObjectWillChange()
+                            closeSheet()
                         }
                 } else {
                     EmptyView()
@@ -50,19 +52,34 @@ struct ThreadSheetView: View {
                 SelectThreadContentList { selectedThread in
                     viewModel.sendForwardMessage(selectedThread)
                 }
+                .onDisappear {
+                    closeSheet()
+                }
             case .filePicker:
                 DocumentPicker { urls in
                     actionSheetViewModel.selectedFileUrls = urls
                     viewModel.sheetType = nil
                     viewModel.animatableObjectWillChange()
                 }
+                .onDisappear {
+                    closeSheet()
+                }
             case .locationPicker:
                 MapPickerView()
                     .environmentObject(viewModel)
+                    .onDisappear {
+                        closeSheet()
+                    }
             default:
                 Text("Sheet \(viewModel.sheetType.debugDescription) not implemented yet.")
             }
         }
+    }
+
+    private func closeSheet() {
+        sheetBinding = false
+        viewModel?.sheetType = nil
+        viewModel?.animatableObjectWillChange()
     }
 }
 
