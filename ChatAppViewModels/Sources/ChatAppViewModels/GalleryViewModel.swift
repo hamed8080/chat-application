@@ -85,20 +85,14 @@ public final class GalleryViewModel: ObservableObject {
             requests.removeValue(forKey: uniqueId)
         }
         isLoading = false
-        objectWillChangeWithAnimation()
+        animateObjectWillChange()
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
         if let progress = progress, requests[uniqueId] != nil {
             state = .DOWNLOADING
             percent = progress.percent
-            objectWillChangeWithAnimation()
-        }
-    }
-
-    private func objectWillChangeWithAnimation(){
-        withAnimation {
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
@@ -117,7 +111,7 @@ public final class GalleryViewModel: ObservableObject {
     public func fetchImage(message: Message? = nil) {
         currentImageMessage = message ?? starter
         isLoading = true
-        objectWillChangeWithAnimation()
+        animateObjectWillChange()
         guard let hashCode = currentImageMessage?.fileMetaData?.file?.hashCode else { return }
         let req = ImageRequest(hashCode: hashCode, size: .ACTUAL)
         requests[req.uniqueId] = req

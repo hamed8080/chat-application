@@ -69,9 +69,10 @@ struct SplitView: View {
                 NavigationStack(path: $navVM.paths) {
                     StackContentView()
                         .navigationDestination(for: Conversation.self) { thread in
-                            ThreadView()
-                                .id(thread.id)
-                                .environmentObject(navVM.threadViewModel(threadId: thread.id ?? 0))
+                            if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
+                                ThreadView()
+                                    .environmentObject(viewModel)
+                            }
                         }
                         .navigationDestination(for: DetailViewModel.self) { viewModel in
                             DetailView()
@@ -210,7 +211,7 @@ struct HomePreview: View {
                 AppState.shared.connectionStatus = .connected
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
                 container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 10))
-                container.objectWillChange.send()
+                container.animateObjectWillChange()
             }
     }
 }

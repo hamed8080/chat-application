@@ -40,7 +40,7 @@ public final class ExportMessagesViewModel: ObservableObject, ExportMessagesView
 
     private func onExport(_ response: ChatResponse<URL>) {
         filePath = response.result
-        objectWillChange.send()
+        animateObjectWillChange()
     }
 
     public func exportChats(startDate: Date, endDate: Date) {

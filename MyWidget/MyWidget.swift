@@ -13,7 +13,7 @@ import Intents
 import SwiftUI
 import WidgetKit
 
-var previewThreads: [ThreadWithImageData] {
+private var previewThreads: [ThreadWithImageData] {
     var threads: [ThreadWithImageData] = []
     for i in 1 ... 12 {
         threads.append(.init(thread: Conversation(id: i, title: "Ashly peterson"), imageURL: nil, previewImage: "avatar\(i)"))

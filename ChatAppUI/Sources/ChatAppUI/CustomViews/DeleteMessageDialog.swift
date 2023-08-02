@@ -46,7 +46,7 @@ public struct DeleteMessageDialog: View {
                     viewModel.deleteMessages(viewModel.selectedMessages)
                     viewModel.isInEditMode = false
                     showDialog = false
-                    viewModel.animatableObjectWillChange()
+                    viewModel.animateObjectWillChange()
                 } label: {
                     Label("Delete", systemImage: "trash.circle.fill")
                         .frame(minWidth: 256)
@@ -59,7 +59,7 @@ public struct DeleteMessageDialog: View {
                     viewModel.selectedMessages.removeAll()
                     viewModel.isInEditMode = false
                     showDialog = false
-                    viewModel.animatableObjectWillChange()
+                    viewModel.animateObjectWillChange()
                 } label: {
                     Label("Cancel", systemImage: "xmark.circle.fill")
                         .frame(minWidth: 256)

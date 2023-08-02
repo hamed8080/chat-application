@@ -70,7 +70,7 @@ public final class TagsViewModel: ObservableObject {
         }
 
         isLoading = false
-        objectWillChange.send()
+        animateObjectWillChange()
     }
 
     public func getTagList() {

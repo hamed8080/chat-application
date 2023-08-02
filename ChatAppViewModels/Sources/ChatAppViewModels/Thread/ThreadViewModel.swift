@@ -66,7 +66,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public weak var threadsViewModel: ThreadsViewModel?
     public var signalMessageText: String?
     public var searchTextTimer: Timer?
-    public var isActiveThread: Bool { AppState.shared.activeThreadId == threadId }
+    public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
     var requests: [String: Any] = [:]
     public var isAtBottomOfTheList: Bool = false    
     var searchOffset: Int = 0
@@ -77,6 +77,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public weak var forwardMessage: Message?
     /// The property `DisableScrolling` works as a mechanism to prevent sending a new request to the server every time SwiftUI tries to calculate and layout our views rows, because SwiftUI starts rendering at the top when we load more top.
     public var disableScrolling: Bool = false
+    var createThreadCompletion: (()-> Void)?
     public lazy var sheetViewModel: ActionSheetViewModel = {
         let sheetViewModel = ActionSheetViewModel()
         sheetViewModel.threadViewModel  = self
@@ -116,7 +117,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
             appendMessages([message])
-            animatableObjectWillChange()
+            animateObjectWillChange()
             scrollToLastMessageIfLastMessageIsVisible()
         }
     }
@@ -132,7 +133,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                let index = messageIndex(messageId, in: sectionIndex) {
                 sections[sectionIndex].messages[index] = lastMessage
             }
-            animatableObjectWillChange()
+            animateObjectWillChange()
         }
     }
 
@@ -148,21 +149,21 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             Logger.viewModels.info("Scrolling up lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
             isAtBottomOfTheList = false
-            animatableObjectWillChange()
+            animateObjectWillChange()
         } else if !scrollingUP, section.messages.indices.contains(messageIndex - 1), section.messages.last?.id != message.id {
             let message = section.messages[messageIndex - 1]
             Logger.viewModels.info("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
             sendSeenMessageIfNeeded(message)
             isAtBottomOfTheList = false
-            animatableObjectWillChange()
+            animateObjectWillChange()
         } else {
             // Last Item
             Logger.viewModels.info("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
             sendSeenMessageIfNeeded(message)
             isAtBottomOfTheList = true
-            animatableObjectWillChange()
+            animateObjectWillChange()
         }
 
         if scrollingUP, let lastIndex = sections.first?.messages.firstIndex(where: { lastVisibleUniqueId == $0.uniqueId }), lastIndex < 3 {
@@ -208,6 +209,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func sendStartTyping(_ newValue: String) {
+        if threadId == LocalId.emptyThread.rawValue { return }
         if newValue.isEmpty == false {
             ChatManager.activeInstance?.system.snedStartTyping(threadId: threadId)
         } else {
@@ -330,7 +332,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
               let indices = indicesByMessageId(lastSeenMessageId)
         else { return }
         removeAllUnreadSeen()
-        sections[indices.sectionIndex].messages.append(UnreadMessage(id: -2, time: (sections[indices.sectionIndex].messages[indices.messageIndex].time ?? 0) + 1))
+        sections[indices.sectionIndex].messages.append(UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: (sections[indices.sectionIndex].messages[indices.messageIndex].time ?? 0) + 1))
     }
 
     func removeAllUnreadSeen() {
@@ -356,7 +358,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         if sections[indices.sectionIndex].messages.count == 0 {
             sections.remove(at: indices.sectionIndex)
         }
-        animatableObjectWillChange()
+        animateObjectWillChange()
     }
 
     public func sort() {
@@ -391,7 +393,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             let mentionListWasFill = mentionList.count > 0
             mentionList = []
             if mentionListWasFill {
-                animatableObjectWillChange()
+                animateObjectWillChange()
             }
         }
     }
@@ -400,13 +402,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         if let mentionList = response.result, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
             self.mentionList = mentionList
             requests.removeValue(forKey: uniqueId)
-            animatableObjectWillChange()
-        }
-    }
-
-    public func animatableObjectWillChange() {
-        withAnimation {
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
     
@@ -431,7 +427,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                               iconName: iconName,
                               ext: ext)
                     )
-                    self?.animatableObjectWillChange()
+                    self?.animateObjectWillChange()
                 }
             }
         }
@@ -440,7 +436,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func onUnreadCount(_ response: ChatResponse<UnreadCount>) {
         if threadId == response.result?.threadId {
             thread.unreadCount = response.result?.unreadCount
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
@@ -451,7 +447,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             thread.lastSeenMessageId = response.result?.lastSeenMessageId
             thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
             thread.unreadCount = response.contentCount
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
@@ -475,7 +471,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             audioRecoderVM?.threadViewModel = self
         }
         audioRecoderVM?.toggle()
-        animatableObjectWillChange()
+        animateObjectWillChange()
     }
 
     public func setupExportMessage(startDate: Date, endDate: Date) {
@@ -485,12 +481,12 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             (exportMessagesVM as? ExportMessagesViewModel)?.objectWillChange
                 .sink { [weak self] in
                     self?.sheetType = .exportMessagesFile
-                    self?.animatableObjectWillChange()
+                    self?.animateObjectWillChange()
                 }
                 .store(in: &cancelable)
         }
         exportMessagesVM?.exportChats(startDate: startDate, endDate: endDate)
-        animatableObjectWillChange()
+        animateObjectWillChange()
     }
 
     public func messageViewModel(for message: Message) -> MessageRowViewModel {

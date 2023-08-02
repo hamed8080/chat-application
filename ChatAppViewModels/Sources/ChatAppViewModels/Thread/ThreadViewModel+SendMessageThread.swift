@@ -39,14 +39,17 @@ extension ThreadViewModel {
     }
 
     public func sendNormalMessage(_ textMessage: String) {
-        canScrollToBottomOfTheList = true
-        let req = SendTextMessageRequest(threadId: threadId,
-                                         textMessage: textMessage,
-                                         messageType: .text)
-        let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
-        let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().millisecondsSince1970), uniqueId: req.uniqueId, conversation: thread)
-        appendMessages([message])
-        ChatManager.activeInstance?.message.send(req)
+        send { [weak self] in
+            guard let self = self else {return}
+            canScrollToBottomOfTheList = true
+            let req = SendTextMessageRequest(threadId: threadId,
+                                             textMessage: textMessage,
+                                             messageType: .text)
+            let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
+            let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().millisecondsSince1970), uniqueId: req.uniqueId, conversation: thread)
+            appendMessages([message])
+            ChatManager.activeInstance?.message.send(req)
+        }
     }
 
     public func sendForwardMessage(_ destinationThread: Conversation) {
@@ -60,54 +63,63 @@ extension ThreadViewModel {
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image
     public func sendPhotos(_ imageItems: [ImageItem]) {
-        imageItems.forEach { imageItem in
-            let index = imageItems.firstIndex(where: { $0 == imageItem })!
-            canScrollToBottomOfTheList = true
-            let imageRequest = UploadImageRequest(data: imageItem.imageData,
-                                                  fileName: imageItem.fileName ?? "",
-                                                  mimeType: "image/jpeg",
-                                                  userGroupHash: thread.userGroupHash,
-                                                  hC: imageItem.height,
-                                                  wC: imageItem.width
-            )
-            let textRequest = SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .picture)
-            let request = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: thread)
-            request.id = -index
-            appendMessages([request])
+        send { [weak self] in
+            guard let self = self else {return}
+            imageItems.forEach { imageItem in
+                let index = imageItems.firstIndex(where: { $0 == imageItem })!
+                self.canScrollToBottomOfTheList = true
+                let imageRequest = UploadImageRequest(data: imageItem.imageData,
+                                                      fileName: imageItem.fileName ?? "",
+                                                      mimeType: "image/jpeg",
+                                                      userGroupHash: self.thread.userGroupHash,
+                                                      hC: imageItem.height,
+                                                      wC: imageItem.width
+                )
+                let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: self.textMessage ?? "", messageType: .picture)
+                let request = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: self.thread)
+                request.id = -index
+                self.appendMessages([request])
+            }
         }
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
     public func sendFiles(_ urls: [URL], messageType: ChatModels.MessageType = .file) {
-        urls.forEach { url in
-            let index = urls.firstIndex(where: { $0 == url })!
-            guard let data = try? Data(contentsOf: url) else { return }
-            canScrollToBottomOfTheList = true
-            let uploadRequest = UploadFileRequest(data: data,
-                                                  fileExtension: ".\(url.fileExtension)",
-                                                  fileName: url.fileName,
-                                                  mimeType: url.mimeType,
-                                                  userGroupHash: thread.userGroupHash)
-            let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: messageType)
-            let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)
-            request.id = -index
-            appendMessages([request])
+        send { [weak self] in
+            guard let self = self else {return}
+            urls.forEach { url in
+                let index = urls.firstIndex(where: { $0 == url })!
+                guard let data = try? Data(contentsOf: url) else { return }
+                self.canScrollToBottomOfTheList = true
+                let uploadRequest = UploadFileRequest(data: data,
+                                                      fileExtension: ".\(url.fileExtension)",
+                                                      fileName: url.fileName,
+                                                      mimeType: url.mimeType,
+                                                      userGroupHash: self.thread.userGroupHash)
+                let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: self.textMessage ?? "", messageType: messageType)
+                let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
+                request.id = -index
+                self.appendMessages([request])
+            }
         }
     }
 
     public func sendDropFiles(_ items: [DropItem]) {
-        items.forEach { item in
-            let index = items.firstIndex(where: { $0.id == item.id })!
-            canScrollToBottomOfTheList = true
-            let uploadRequest = UploadFileRequest(data: item.data ?? Data(),
-                                                  fileExtension: ".\(item.ext ?? "")",
-                                                  fileName: item.name,
-                                                  mimeType: nil,
-                                                  userGroupHash: thread.userGroupHash)
-            let textRequest = textMessage == nil || textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: threadId, textMessage: textMessage ?? "", messageType: .file)
-            let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: thread)
-            request.id = -index
-            appendMessages([request])
+        send { [weak self] in
+            guard let self = self else {return}
+            items.forEach { item in
+                let index = items.firstIndex(where: { $0.id == item.id })!
+                self.canScrollToBottomOfTheList = true
+                let uploadRequest = UploadFileRequest(data: item.data ?? Data(),
+                                                      fileExtension: ".\(item.ext ?? "")",
+                                                      fileName: item.name,
+                                                      mimeType: nil,
+                                                      userGroupHash: self.thread.userGroupHash)
+                let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: self.textMessage ?? "", messageType: .file)
+                let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
+                request.id = -index
+                self.appendMessages([request])
+            }
         }
     }
 
@@ -123,13 +135,16 @@ extension ThreadViewModel {
     }
 
     public func sendLoaction(_ location: LocationItem) {
-        let coordinate = Coordinate(lat: location.location.latitude, lng: location.location.longitude)
-        let req = LocationMessageRequest(mapCenter: coordinate,
-                                         threadId: threadId,
-                                         userGroupHash: thread.userGroupHash ?? "",
-                                         mapImageName: location.name,
-                                         textMessage: textMessage)
-        ChatManager.activeInstance?.message.send(req)
+        send { [weak self] in
+            guard let self = self else {return}
+            let coordinate = Coordinate(lat: location.location.latitude, lng: location.location.longitude)
+            let req = LocationMessageRequest(mapCenter: coordinate,
+                                             threadId: threadId,
+                                             userGroupHash: thread.userGroupHash ?? "",
+                                             mapImageName: location.name,
+                                             textMessage: textMessage)
+            ChatManager.activeInstance?.message.send(req)
+        }
     }
 
     public func onSent(_ response: ChatResponse<MessageResponse>) {
@@ -235,11 +250,43 @@ extension ThreadViewModel {
 
     public func appendSelectedMessage(_ message: Message) {
         selectedMessages.append(message)
-        objectWillChange.send()
+        animateObjectWillChange()
     }
 
     public func removeSelectedMessage(_ message: Message) {
         guard let index = selectedMessages.firstIndex(of: message) else { return }
         selectedMessages.remove(at: index)
+    }
+
+    public func send(completion: @escaping ()-> Void) {
+        if isEmptyThared {
+            self.createThreadCompletion = completion
+            createP2PThread()
+        } else {
+            completion()
+        }
+    }
+
+    public var isEmptyThared: Bool {
+        AppState.shared.userToCreateThread != nil && thread.id == LocalId.emptyThread.rawValue
+    }
+
+    public func createP2PThread() {
+        guard let coreuserId = AppState.shared.userToCreateThread?.id else { return }
+        let req = CreateThreadRequest(invitees: [.init(id: "\(coreuserId)", idType: .coreUserId)], title: "")
+        requests["CREATE_P2P-\(req.uniqueId)"] = req
+        ChatManager.activeInstance?.conversation.create(req)
+    }
+
+    public func onCreateP2PThread(_ response: ChatResponse<Conversation>) {
+        guard let uniqueId = response.uniqueId,
+              requests["CREATE_P2P-\(uniqueId)"] != nil,
+              let thread = response.result
+        else { return }
+        self.thread = thread
+        AppState.shared.userToCreateThread = nil
+        animateObjectWillChange()
+        createThreadCompletion?()
+        createThreadCompletion = nil
     }
 }

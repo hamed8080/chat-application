@@ -59,7 +59,7 @@ struct ThreadSheetView: View {
                 DocumentPicker { urls in
                     actionSheetViewModel.selectedFileUrls = urls
                     viewModel.sheetType = nil
-                    viewModel.animatableObjectWillChange()
+                    viewModel.animateObjectWillChange()
                 }
                 .onDisappear {
                     closeSheet()
@@ -79,7 +79,7 @@ struct ThreadSheetView: View {
     private func closeSheet() {
         sheetBinding = false
         viewModel?.sheetType = nil
-        viewModel?.animatableObjectWillChange()
+        viewModel?.animateObjectWillChange()
     }
 }
 

@@ -50,9 +50,7 @@ public struct VideoPlayerView: View {
                 .onTapGesture {
                     withAnimation {
                         videoPlayerVM.toggle()
-                        withAnimation {
-                            videoPlayerVM.objectWillChange.send()
-                        }
+                        videoPlayerVM.animateObjectWillChange()
                     }
                 }
         }

@@ -123,13 +123,13 @@ public final class ThreadsViewModel: ObservableObject {
         archived = false
         archivedOffset = 0
         hasNext = true
-        objectWillChange.send()
+        animateObjectWillChange()
     }
 
     public func resetFolderSettings() {
         folder = nil
         hasNext = true
-        objectWillChange.send()
+        animateObjectWillChange()
     }
 
     public func getThreadsInsideFolder(_ folder: Tag) {
@@ -377,9 +377,7 @@ public final class ThreadsViewModel: ObservableObject {
         }
         isLoading = false
         if response.result?.count ?? 0 > 0 {
-            withAnimation {
-                objectWillChange.send()
-            }
+            animateObjectWillChange()
         }
     }
 
@@ -394,7 +392,7 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].userGroupHash = thread.userGroupHash
             threads[index].time = thread.time
             threads[index].group = thread.group
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
@@ -402,7 +400,7 @@ public final class ThreadsViewModel: ObservableObject {
         if let index = threads.firstIndex(where: { $0.id == thread.id }) {
             threads[index].lastMessage = thread.lastMessage
             threads[index].lastMessageVO = thread.lastMessageVO
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
@@ -410,7 +408,7 @@ public final class ThreadsViewModel: ObservableObject {
         if let index = threads.firstIndex(where: { $0.id == threadId }) {
             threads[index].mute = mute
             sort()
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
@@ -427,7 +425,7 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].lastSeenMessageId = response.result?.lastSeenMessageId
             threads[index].lastSeenMessageNanos = response.result?.lastSeenMessageNanos
             threads[index].unreadCount = response.contentCount
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 

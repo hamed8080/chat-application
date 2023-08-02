@@ -206,10 +206,4 @@ public final class ParticipantsViewModel: ObservableObject {
     public func removeParticipant(_ participant: Participant) {
         participants.removeAll(where: { $0.id == participant.id })
     }
-
-    private func animateObjectWillChange() {
-        withAnimation {
-            objectWillChange.send()
-        }
-    }
 }

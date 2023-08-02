@@ -45,11 +45,11 @@ struct MutableAttachmentDialog: View {
             SendTextViewWithButtons {
                 viewModel.sendSelectedPhotos()
                 threadVM.sheetType = nil
-                threadVM.animatableObjectWillChange()
+                threadVM.animateObjectWillChange()
             } onCancel: {
                 viewModel.refresh()
                 threadVM.sheetType = nil
-                threadVM.animatableObjectWillChange()
+                threadVM.animateObjectWillChange()
             }
             .environmentObject(threadVM)
         } else {
@@ -61,28 +61,28 @@ struct MutableAttachmentDialog: View {
         VStack(alignment: .leading, spacing: 24) {
             Button {
                 threadVM.sheetType = .galleryPicker
-                threadVM.animatableObjectWillChange()
+                threadVM.animateObjectWillChange()
             } label: {
                 Label("Photo or Video", systemImage: "photo")
             }
 
             Button {
                 threadVM.sheetType = .filePicker
-                threadVM.animatableObjectWillChange()
+                threadVM.animateObjectWillChange()
             } label: {
                 Label("File", systemImage: "doc")
             }
 
             Button {
                 threadVM.sheetType = .locationPicker
-                threadVM.animatableObjectWillChange()
+                threadVM.animateObjectWillChange()
             } label: {
                 Label("Location", systemImage: "location.viewfinder")
             }
 
             Button {
                 threadVM.sheetType = .contactPicker
-                threadVM.animatableObjectWillChange()
+                threadVM.animateObjectWillChange()
             } label: {
                 Label("Contact", systemImage: "person.2.crop.square.stack")
             }

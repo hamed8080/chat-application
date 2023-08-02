@@ -21,7 +21,7 @@ extension ThreadViewModel {
 
     public func doSearch(text: String, offset: Int = 0) {
         isInSearchMode = text.count >= 2
-        animatableObjectWillChange()
+        animateObjectWillChange()
         guard text.count >= 2 else { return }
         let req = GetHistoryRequest(threadId: threadId, count: 50, offset: searchOffset, query: "\(text)")
         let key = "SEARCH-\(req.uniqueId)"
@@ -38,7 +38,7 @@ extension ThreadViewModel {
                 searchedMessages.append(message)
             }
         }
-        animatableObjectWillChange()
+        animateObjectWillChange()
         requests.removeValue(forKey: "SEARCH-\(uniqueId)")
     }
 }

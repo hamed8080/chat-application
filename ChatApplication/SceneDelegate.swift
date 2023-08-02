@@ -42,11 +42,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if url.absoluteString.contains("Widget") == true {
             let threadIdString = url.absoluteString.replacingOccurrences(of: "Widget://link-", with: "")
             let threadId = Int(threadIdString) ?? 0
-            AppState.shared.showThread(threadId: threadId)
-        }
-
-        if let userName = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "userName" })?.value {
-            AppState.shared.showThread(userName: userName)
+            AppState.shared.showThread(thread: .init(id: threadId))
         }
     }
 

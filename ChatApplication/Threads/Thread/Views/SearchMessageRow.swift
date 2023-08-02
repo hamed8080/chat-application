@@ -22,7 +22,7 @@ struct SearchMessageRow: View {
                 threadVM?.moveToTime(time, messageId)
                 threadVM?.searchedMessages.removeAll()
                 threadVM?.isInSearchMode = false
-                threadVM?.animatableObjectWillChange()
+                threadVM?.animateObjectWillChange()
             }
         } label: {
             MessageRowFactory(viewModel: viewModel)

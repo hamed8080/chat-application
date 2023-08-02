@@ -12,11 +12,13 @@ import ChatDTO
 import ChatCore
 import ChatModels
 import OSLog
+import ChatAppModels
 
 extension ThreadViewModel {
 
     /// On Thread view, it will start calculating to fetch what part of [top, bottom, both top and bottom] receive.
     public func startFetchingHistory() {
+        if threadId == LocalId.emptyThread.rawValue { return }
         if isFetchedServerFirstResponse == true { return }
         if thread.lastSeenMessageId == thread.lastMessageVO?.id {
             moveToLastMessage()
@@ -47,9 +49,7 @@ extension ThreadViewModel {
             hasNextBottom = response.hasNext
             requests.removeValue(forKey: "GET_HISTORY-\(uniqueId)")
         }
-        withAnimation {
-            self.objectWillChange.send()
-        }
+        animateObjectWillChange()
     }
 
     public func moveToTime(_ time: UInt, _ messageId: Int, highlight: Bool = true) {
@@ -88,7 +88,7 @@ extension ThreadViewModel {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             if !response.cache {
                 self?.disableScrolling = false
-                self?.objectWillChange.send()
+                self?.animateObjectWillChange()
             }
         }
         withAnimation(.spring()) {
@@ -108,7 +108,7 @@ extension ThreadViewModel {
     public func moveToLastMessage() {
         if bottomLoading { return }
         bottomLoading = true
-        animatableObjectWillChange()
+        animateObjectWillChange()
         Logger.viewModels.info("moveToLastMessage called")
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: thread.lastSeenMessageTime?.advanced(by: 100), readOnly: readOnly)
         let key = "LAST_MESSAGE_HISTORY-\(req.uniqueId)"
@@ -159,7 +159,7 @@ extension ThreadViewModel {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             if !response.cache {
                 self?.disableScrolling = false
-                self?.objectWillChange.send()
+                self?.animateObjectWillChange()
             }
         }
         withAnimation(.spring()) {
@@ -196,7 +196,7 @@ extension ThreadViewModel {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             if !response.cache {
                 self?.disableScrolling = false
-                self?.objectWillChange.send()
+                self?.animateObjectWillChange()
             }
         }
         withAnimation(.spring()) {

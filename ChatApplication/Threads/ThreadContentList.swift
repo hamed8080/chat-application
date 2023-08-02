@@ -20,16 +20,18 @@ struct ThreadContentList: View {
     private var sheetBinding: Binding<Bool> { Binding(get: { threadsVM.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
-        List(threadsVM.filtered, selection: $navVM.selectedThreadId) { thread in
-            NavigationLink(value: thread.id) {
+        List(threadsVM.filtered) { thread in
+            Button {
+                navVM.selectedThreadId = thread.id
+            } label: {
                 ThreadRow(thread: thread)
-                    .onAppear {
-                        if self.threadsVM.filtered.last == thread {
-                            threadsVM.loadMore()
-                        }
-                    }
             }
             .listRowBackground(container.navVM.selectedThreadId == thread.id ? Color.orange.opacity(0.5) : Color(UIColor.systemBackground))
+            .onAppear {
+                if self.threadsVM.filtered.last == thread {
+                    threadsVM.loadMore()
+                }
+            }
         }
         .safeAreaInset(edge: .top) {
             AudioPlayerView()

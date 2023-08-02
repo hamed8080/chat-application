@@ -94,10 +94,4 @@ public class DetailTabDownloaderViewModel: ObservableObject {
             return readerWidth / 8
         }
     }
-
-    private func animateObjectWillChange() {
-        withAnimation {
-            objectWillChange.send()
-        }
-    }
 }

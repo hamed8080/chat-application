@@ -70,7 +70,7 @@ struct ThreadView: View, DropDelegate {
             }
             .onChange(of: viewModel.editMessage) { _ in
                 viewModel.textMessage = viewModel.editMessage?.message ?? ""
-                viewModel.animatableObjectWillChange()
+                viewModel.animateObjectWillChange()
             }
             .onAppear {
                 viewModel.startFetchingHistory()
@@ -88,7 +88,7 @@ struct ThreadView: View, DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         viewModel.storeDropItems(info.itemProviders(for: [.item]))
         viewModel.sheetType = .dropItems
-        viewModel.animatableObjectWillChange()
+        viewModel.animateObjectWillChange()
         return true
     }
 }

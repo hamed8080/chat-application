@@ -43,7 +43,7 @@ struct SearchContactRow: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            contactsVM.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+            AppState.shared.openThread(contact: contact)
         }
     }
 }

@@ -83,7 +83,7 @@ public final class ActionSheetViewModel: ObservableObject {
             let tuple = await self.requestImage(asset)
             self.appendImage(tuple.0, tuple.1, tuple.2)
         }
-        await animateObjectWillChane()
+        animateObjectWillChange()
     }
 
     private func requestImage(_ object: PHAsset) async -> (UIImage?, PHAsset, [AnyHashable: Any]?) {
@@ -135,7 +135,7 @@ public final class ActionSheetViewModel: ObservableObject {
     public func toggleSelectedImage(_ item: ImageItem) async {
         if let index = selectedImageItems.firstIndex(where: { $0.phAsset === item.phAsset }) {
             selectedImageItems.remove(at: index)
-            await animateObjectWillChane()
+            animateObjectWillChange()
         } else {
             if let phAsset = item.phAsset as? PHAsset {
                 let options = PHImageRequestOptions()
@@ -147,15 +147,8 @@ public final class ActionSheetViewModel: ObservableObject {
                                      phAsset: phAsset,
                                      originalFilename: item.fileName)
                 self.selectedImageItems.append(item)
-                await animateObjectWillChane()
+                animateObjectWillChange()
             }
-        }
-    }
-
-    @MainActor
-    private func animateObjectWillChane() {
-        withAnimation {
-            objectWillChange.send()
         }
     }
 

@@ -93,7 +93,6 @@ struct ThreadRow: View {
         .animation(.easeInOut, value: thread)
         .animation(.easeInOut, value: thread.pin)
         .animation(.easeInOut, value: thread.mute)
-        .animation(.easeInOut, value: thread.unreadCount)
         .animation(.easeInOut, value: thread.title)
         .animation(.easeInOut, value: viewModel.activeCallThreads.count)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {

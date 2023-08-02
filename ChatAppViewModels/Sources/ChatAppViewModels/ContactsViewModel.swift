@@ -123,10 +123,6 @@ public final class ContactsViewModel: ObservableObject {
         }
     }
 
-    public func createThread(invitees: [Invitee]) {
-        AppState.shared.showThread(invitees: invitees)
-    }
-
     public func loadMore() {
         if !canLoadNextPage { return }
         preparePaginiation()
@@ -246,7 +242,7 @@ public final class ContactsViewModel: ObservableObject {
     public func onBlockUNBlockResponse(_ response: ChatResponse<BlockedContactResponse>, _ block: Bool) {
         if let result = response.result {
             contacts.first(where: { $0.id == result.contact?.id })?.blocked = block
-            objectWillChange.send()
+            animateObjectWillChange()
         }
     }
 
@@ -260,7 +256,7 @@ public final class ContactsViewModel: ObservableObject {
         } else {
             addToSelctedContacts(contact)
         }
-        objectWillChange.send()
+        animateObjectWillChange()
     }
 
     public func updateContact(contact _: Contact, contactValue: String, firstName: String?, lastName: String?) {

@@ -223,7 +223,7 @@ struct LoginView_Previews: PreviewProvider {
                 .environmentObject(loginVewModel)
                 .onAppear {
                     loginVewModel.text = "09369161601"
-                    loginVewModel.objectWillChange.send()
+                    loginVewModel.animateObjectWillChange()
                 }
         }
         .previewDisplayName("VerifyContentView")

@@ -14,6 +14,7 @@ struct MessageActionMenu: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
+    @EnvironmentObject var navVM: NavigationModel
 
     var body: some View {
         Button {
@@ -23,6 +24,14 @@ struct MessageActionMenu: View {
             }
         } label: {
             Label("Reply", systemImage: "arrowshape.turn.up.left")
+        }
+
+        Button {
+            guard let participant = message.participant else { return }
+            AppState.shared.replyPrivately = message
+            AppState.shared.openThread(participant: participant)
+        } label: {
+            Label("ReplyPrivately", systemImage: "arrowshape.turn.up.left")
         }
 
         Button {
@@ -54,7 +63,7 @@ struct MessageActionMenu: View {
         if message.isFileType == true {
             Button {
                 threadVM?.clearCacheFile(message: message)
-                threadVM?.animatableObjectWillChange()
+                threadVM?.animateObjectWillChange()
             } label: {
                 Label("Delete file from cache", systemImage: "cylinder.split.1x2")
             }
@@ -62,7 +71,7 @@ struct MessageActionMenu: View {
 
         Button {
             threadVM?.togglePinMessage(message)
-            threadVM?.animatableObjectWillChange()
+            threadVM?.animateObjectWillChange()
         } label: {
             Label((message.pinned ?? false) ? "UnPin" : "Pin", systemImage: "pin")
         }
@@ -78,7 +87,7 @@ struct MessageActionMenu: View {
 
         Button(role: .destructive) {
             threadVM?.deleteMessages([message])
-            threadVM?.animatableObjectWillChange()
+            threadVM?.animateObjectWillChange()
         } label: {
             Label("Delete", systemImage: "trash")
         }

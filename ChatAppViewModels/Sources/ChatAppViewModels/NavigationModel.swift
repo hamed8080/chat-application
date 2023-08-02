@@ -11,7 +11,7 @@ public final class NavigationModel: ObservableObject {
             if let selectedThread = selectedThread {
                 currentThreadVM = .init(thread: selectedThread, threadsViewModel: threadViewModel)
                 clearThreadStack()
-                objectWillChange.send()
+                animateObjectWillChange()
             }
         }
     }
@@ -84,12 +84,12 @@ public final class NavigationModel: ObservableObject {
                 sections[foldersSectionIndex].items[oldtagIndex].tag = tag
             }
         }
-        objectWillChange.send()
+        animateObjectWillChange()
     }
 
     public func clear() {
         sections = []
-        objectWillChange.send()
+        animateObjectWillChange()
     }
 
     public var isThreadType: Bool {
@@ -124,11 +124,16 @@ public final class NavigationModel: ObservableObject {
         paths.append(thread)
     }
 
-    public func threadViewModel(threadId: Int) -> ThreadViewModel {
-        return threadStack.first(where: {$0.threadId == threadId})!
+    public func threadViewModel(threadId: Int) -> ThreadViewModel? {
+        /// We return last for when the user sends the first message inside a p2p thread after sending a message the thread object inside the ThreadViewModel will change to update the new id and other stuff.
+        return threadStack.first(where: {$0.threadId == threadId}) ?? threadStack.last
     }
 
     public func clearThreadStack() {
         threadStack.removeAll()
+    }
+
+    var presentedThreadViewModel: ThreadViewModel? {
+        threadStack.last
     }
 }

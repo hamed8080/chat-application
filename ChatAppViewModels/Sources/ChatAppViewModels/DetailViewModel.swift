@@ -107,11 +107,9 @@ public final class DetailViewModel: ObservableObject, Hashable {
 
     public func createThread() {
         if let contact = contact {
-            let invitees = [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)]
-            AppState.shared.showThread(invitees: invitees)
+            AppState.shared.openThread(contact: contact)
         } else if let user = user {
-            let invitees = [Invitee(id: "\(user.coreUserId ?? 0)", idType: .userId)]
-            AppState.shared.showThread(invitees: invitees)
+            AppState.shared.openThread(participant: user)
         }
     }
 
@@ -230,11 +228,5 @@ public final class DetailViewModel: ObservableObject, Hashable {
     private func onChangeThreadType(_ response: ChatResponse<Conversation>) {
         self.thread?.type = response.result?.type
         animateObjectWillChange()
-    }
-
-    private func animateObjectWillChange() {
-        withAnimation {
-            objectWillChange.send()
-        }
     }
 }

@@ -102,7 +102,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         self.userName = userName
         self.size = size
         if url == nil {
-            objectWillChange.send()
+            animateObjectWillChange()
             return
         }
         if isSDKImage {

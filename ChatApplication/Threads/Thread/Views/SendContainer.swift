@@ -44,7 +44,7 @@ struct SendContainer: View {
                         if isRecording == false {
                             GradientImageButton(image: "paperclip", title: "Voice Recording") {
                                 viewModel.sheetType = .attachment
-                                viewModel.animatableObjectWillChange()
+                                viewModel.animateObjectWillChange()
                             }
                             .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
                         }
@@ -71,7 +71,7 @@ struct SendContainer: View {
                             }
                             text = ""
                             viewModel.sheetType = nil
-                            viewModel.animatableObjectWillChange()
+                            viewModel.animateObjectWillChange()
                             UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
                         }
                         .keyboardShortcut(.return, modifiers: [.command])
@@ -137,7 +137,7 @@ struct SelectionView: View {
                 .onTapGesture {
                     viewModel.isInEditMode = false
                     viewModel.selectedMessages = []
-                    viewModel.animatableObjectWillChange()
+                    viewModel.animateObjectWillChange()
                 }
 
             Text("\(selectedCount) selected \(viewModel.forwardMessage != nil ? "to forward" : "")")
@@ -158,7 +158,7 @@ struct SelectionView: View {
                 .padding()
                 .onTapGesture {
                     viewModel.sheetType = .threadPicker
-                    viewModel.animatableObjectWillChange()
+                    viewModel.animateObjectWillChange()
                 }
         }
         .onReceive(viewModel.$selectedMessages) { newValue in
@@ -181,7 +181,7 @@ struct ReplyMessageViewPlaceholder: View {
                     .onTapGesture {
                         viewModel.replyMessage = nil
                         viewModel.selectedMessages = []
-                        viewModel.animatableObjectWillChange()
+                        viewModel.animateObjectWillChange()
                     }
                 Text(replyMessage.message ?? replyMessage.fileMetaData?.name ?? "")
                     .font(.iransansBody)
@@ -214,7 +214,7 @@ struct EditMessagePlaceholderView: View {
                         viewModel.isInEditMode = false
                         viewModel.editMessage = nil
                         viewModel.textMessage = nil
-                        viewModel.animatableObjectWillChange()
+                        viewModel.animateObjectWillChange()
                     }
 
                 Text("\(editMessage.message ?? "")")

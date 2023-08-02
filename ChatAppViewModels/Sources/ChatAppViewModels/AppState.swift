@@ -23,10 +23,11 @@ public final class AppState: ObservableObject {
     @Published public var isLoading: Bool = false
     @Published public var callLogs: [URL]?
     @Published public var connectionStatusString = ""
-    public var activeThreadId: Int?
     private var cancelable: Set<AnyCancellable> = []
     private var requests: [String: Any] = [:]
     public var windowMode: WindowMode = .iPhone
+    public var userToCreateThread: User?
+    public var replyPrivately: Message?
 
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
@@ -57,8 +58,6 @@ public final class AppState: ObservableObject {
         switch event {
         case .threads(let response):
             onGetThreads(response)
-        case .created(let response):
-            onCreateThread(response)
         default:
             break
         }
@@ -72,40 +71,16 @@ public final class AppState: ObservableObject {
         }
     }
 
-    public func showThread(threadId: Int) {
-        isLoading = true
-        activeThreadId = threadId
-        ChatManager.activeInstance?.conversation.get(.init(threadIds: [threadId]))
-    }
-
     func onGetThreads(_ response: ChatResponse<[Conversation]>) {
         if let uniqueId = response.uniqueId, let thraed = response.result?.first, requests[uniqueId] != nil {
             showThread(thread: thraed)
             requests.removeValue(forKey: uniqueId)
         }
-    }
 
-    func onCreateThread(_ response: ChatResponse<Conversation>) {
-        if let uniqueId = response.uniqueId, requests[uniqueId] != nil {
-            if let thread = response.result {
-                showThread(thread: thread)
-                activeThreadId = thread.id
-            } else if let error = response.error {
-                animateAndShowError(error)
-            }
-            requests.removeValue(forKey: uniqueId)
+        if let uniqueId = response.uniqueId, requests["SEARCH_P2P_\(uniqueId)"] as? ThreadsRequest != nil, !response.cache {
+            onSearchP2PThreads(thread: response.result?.first)
+            requests.removeValue(forKey: "SEARCH_P2P_\(uniqueId)")
         }
-    }
-
-    public func showThread(invitees: [Invitee]) {
-        isLoading = true
-        let req = CreateThreadRequest(invitees: invitees, title: "", type: .normal)
-        ChatManager.activeInstance?.conversation.create(req)
-    }
-
-    public func showThread(userName: String) {
-        let invitees: [Invitee] = [.init(id: userName, idType: .username)]
-        showThread(invitees: invitees)
     }
 
     public func showThread(thread: Conversation) {
@@ -113,6 +88,55 @@ public final class AppState: ObservableObject {
             isLoading = false
             navViewModel?.selectedSideBarId = "Chats"
             navViewModel?.selectedThreadId = thread.id
+        }
+    }
+
+    public func openThread(contact: Contact) {
+        userToCreateThread = .init(id: contact.user?.coreUserId, image: contact.image ?? contact.user?.image, name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
+        searchForP2PThread(coreUserId: contact.user?.coreUserId ?? -1)
+    }
+
+    public func openThread(participant: Participant) {
+        userToCreateThread = .init(id: participant.coreUserId, image: participant.image, name: participant.name)
+        searchForP2PThread(coreUserId: participant.coreUserId ?? -1)
+    }
+
+    public func openThread(user: User) {
+        userToCreateThread = .init(id: user.coreUserId, image: user.image, name: user.name)
+        searchForP2PThread(coreUserId: user.coreUserId ?? -1)
+    }
+
+    public func searchForP2PThread(coreUserId: Int) {
+        if let thread = checkForP2POffline(coreUserId: coreUserId) {
+            onSearchP2PThreads(thread: thread)
+            return
+        }
+        let req = ThreadsRequest(type: .normal, partnerCoreUserId: coreUserId)
+        requests["SEARCH_P2P_\(req.uniqueId)"] = req
+        ChatManager.activeInstance?.conversation.get(req)
+    }
+
+    public func onSearchP2PThreads(thread: Conversation?) {
+        if let thread = thread {
+            navViewModel?.append(thread: thread)
+        } else {
+            showEmptyThread()
+        }
+    }
+
+    public func checkForP2POffline(coreUserId: Int) -> Conversation? {
+        navViewModel?.threadViewModel?.threads
+            .first(where: {
+                ($0.partner == coreUserId || ($0.participants?.contains(where: {$0.coreUserId == coreUserId}) ?? false))
+                && $0.group == false && $0.type == .normal}
+            )
+    }
+
+    public func showEmptyThread() {
+        guard let userToCreateThread else { return }
+        withAnimation {
+            navViewModel?.append(thread: .init(id: LocalId.emptyThread.rawValue, image: userToCreateThread.image, title: userToCreateThread.name, participants: [.init(coreUserId: userToCreateThread.id)]))
+            isLoading = false
         }
     }
 

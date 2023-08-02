@@ -92,7 +92,7 @@ struct ContactRow: View {
                     ProgressView()
                 } else {
                     ActionButton(iconSfSymbolName: "message") {
-                        viewModel.createThread(invitees: [Invitee(id: "\(contact.id ?? 0)", idType: .contactId)])
+                        appState.openThread(contact: contact)
                     }
                 }
                 Spacer()

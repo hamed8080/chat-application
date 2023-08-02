@@ -189,12 +189,6 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         ChatManager.activeInstance?.file.manageDownload(uniqueId: uniaueId, action: .resume)
     }
 
-    private func animateObjectWillChange() {
-        withAnimation {
-            objectWillChange.send()
-        }
-    }
-
     public func cancelObservers(){
         messageCancelable?.cancel()
         downloadCancelable?.cancel()
