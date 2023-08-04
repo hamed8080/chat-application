@@ -79,6 +79,7 @@ struct MessagesLazyStack: View {
                 SectionView(section: section)
                 MessageList(messages: section.messages, viewModel: viewModel)
             }
+            .padding([.leading, .trailing])
             ListLoadingView(isLoading: $viewModel.bottomLoading)
                 .id(-2)
         }
@@ -88,7 +89,6 @@ struct MessagesLazyStack: View {
             }
         )
         .padding(.bottom)
-        .padding([.leading, .trailing])
     }
 }
 
