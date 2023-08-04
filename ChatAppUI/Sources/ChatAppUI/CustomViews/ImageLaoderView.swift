@@ -34,6 +34,7 @@ public struct ImageLaoderView: View {
             } else if imageLoader.isImageReady {
                 Image(uiImage: imageLoader.image)
                     .resizable()
+                    .scaledToFill()
             }
         }
         .animation(.easeInOut, value: imageLoader.image)
