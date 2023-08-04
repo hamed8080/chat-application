@@ -51,7 +51,7 @@ public struct DownloadFileView: View {
         }
         .fullScreenCover(isPresented: $presentViewGallery) {
             if let message {
-                GalleryView(viewModel: GalleryViewModel(message: message))
+                GalleryView(message: message)
                     .id(message.id)
             } else {
                 EmptyView()

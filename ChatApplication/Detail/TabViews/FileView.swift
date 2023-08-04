@@ -87,6 +87,7 @@ struct DownloadFileButtonView: View {
         var config: DownloadFileViewConfig = .small
         config.circleConfig.forgroundColor = .green
         config.iconColor = .orange
+        config.showSkeleton = false
         return config
     }()
 

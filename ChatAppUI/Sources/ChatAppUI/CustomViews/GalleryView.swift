@@ -11,10 +11,10 @@ import SwiftUI
 import OSLog
 
 public struct GalleryView: View {
-    let viewModel: GalleryViewModel
+    @StateObject var viewModel: GalleryViewModel
 
-    public init(viewModel: GalleryViewModel) {
-        self.viewModel = viewModel
+    public init(message: Message) {
+        self._viewModel = StateObject(wrappedValue: .init(message: message))
     }
 
     public var body: some View {
@@ -153,8 +153,9 @@ struct DismissGalleryButton: View {
                         .scaledToFit()
                         .foregroundStyle(.orange, .ultraThinMaterial)
                         .background(.ultraThinMaterial)
-                        .frame(width: 42, height: 42)
+                        .frame(width: 36, height: 36)
                         .cornerRadius(22)
+                        .padding([.top])
                 }
                 Spacer()
             }
@@ -177,7 +178,7 @@ struct GalleryTextView: View {
                         .padding()
                         .edgesIgnoringSafeArea([.leading, .trailing, .bottom])
                 }
-                .background(.ultraThickMaterial)
+                .background(.ultraThinMaterial)
             }
         }
     }
@@ -185,6 +186,6 @@ struct GalleryTextView: View {
 
 struct GalleryView_Previews: PreviewProvider {
     static var previews: some View {
-        GalleryView(viewModel: GalleryViewModel(message: Message(message: "TEST", conversation: .init(id: 1))))
+        GalleryView(message: Message(message: "TEST", conversation: .init(id: 1)))
     }
 }

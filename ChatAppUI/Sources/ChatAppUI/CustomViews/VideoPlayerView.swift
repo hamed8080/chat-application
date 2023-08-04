@@ -64,7 +64,7 @@ public struct PlayerViewRepresentable: UIViewControllerRepresentable {
     public func makeUIViewController(context: Context) -> AVPlayerViewController {
         let controller = AVPlayerViewController()
         controller.player = player
-        controller.showsPlaybackControls = false
+        controller.showsPlaybackControls = true
         controller.allowsVideoFrameAnalysis = false
         controller.entersFullScreenWhenPlaybackBegins = true
         controller.delegate = context.coordinator
@@ -79,7 +79,6 @@ public struct PlayerViewRepresentable: UIViewControllerRepresentable {
 
     private func chooseScreenType(_ controller: AVPlayerViewController) {
         print("chooseScreenType", self.showFullScreen)
-        controller.showsPlaybackControls = showFullScreen
         self.showFullScreen ? controller.enterFullScreen(animated: true) : controller.exitFullScreen(animated: true)
     }
 

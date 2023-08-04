@@ -55,6 +55,7 @@ struct MessageListPictureView: View {
         }
         if viewModel.isLoading {
             LoadingView()
+                .frame(width: 36, height: 36)
         }
     }
 }
@@ -86,7 +87,7 @@ struct PictureRowView: View {
                 presentViewGallery = true
             }
             .fullScreenCover(isPresented: $presentViewGallery) {
-                GalleryView(viewModel: GalleryViewModel(message: message))
+                GalleryView(message: message)
                     .id(message.id)
             }
         if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
@@ -107,6 +108,7 @@ struct DownloadPictureButtonView: View {
         var config: DownloadFileViewConfig = .small
         config.circleConfig.forgroundColor = .green
         config.iconColor = .orange
+        config.showSkeleton = true
         return config
     }()
 
@@ -123,12 +125,13 @@ struct DownloadPictureButtonView: View {
             }
         case .DOWNLOADING, .STARTED:
             if config.showSkeleton {
-                Image(systemName: "photo")
+                Image(systemName: "photo.artframe")
                     .resizable()
                     .scaledToFit()
                     .opacity(0.3)
                     .padding(8)
                     .frame(width: itemWidth, height: itemWidth)
+                    .redacted(reason: .placeholder)
             } else {
                 CircularProgressView(percent: $viewModel.downloadPercent, config: config.circleConfig)
                     .padding(8)
@@ -165,7 +168,7 @@ struct DownloadPictureButtonView: View {
                     .font(config.circleConfig.progressFont)
                     .padding(8)
                     .frame(width: config.iconWidth, height: config.iconHeight, alignment: .center)
-                    .scaledToFit()
+                    .scaledToFill()
                     .foregroundColor(config.iconColor)
                     .zIndex(1)
                     .onTapGesture {

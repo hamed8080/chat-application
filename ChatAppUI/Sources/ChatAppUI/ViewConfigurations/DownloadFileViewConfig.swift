@@ -26,7 +26,7 @@ public struct DownloadFileViewConfig {
                                                      iconHeight: 48,
                                                      iconColor: .iconColor.opacity(0.8),
                                                      circleProgressMaxWidth: 64,
-                                                     showSkeleton: true
+                                                     showSkeleton: false
     )
     public var circleConfig: CircleProgressConfig
     public var maxWidth: CGFloat
