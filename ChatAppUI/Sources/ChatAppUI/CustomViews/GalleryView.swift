@@ -8,6 +8,7 @@
 import ChatAppViewModels
 import ChatModels
 import SwiftUI
+import OSLog
 
 public struct GalleryView: View {
     let viewModel: GalleryViewModel
@@ -63,6 +64,9 @@ public struct GalleryImageView: View {
     @GestureState private var scaleBy: CGFloat = 1.0
     @State private var endScale: CGFloat = 1.0
     @State private var isDragging = false
+    @State var dragOffset: CGSize = .zero
+    @State private var previousDragOffset: CGSize = .zero
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "GalleryImageView")
 
     public init(uiimage: UIImage, viewModel: GalleryViewModel? = nil) {
         self.uiimage = uiimage
@@ -71,11 +75,17 @@ public struct GalleryImageView: View {
 
     var dragGesture: some Gesture {
         DragGesture(minimumDistance: 10, coordinateSpace: .local)
-            .onChanged { _ in
+            .onChanged { value in
+                logger.info("OnChanged dragGesture before: previousDragoffset: \(previousDragOffset.debugDescription) endScale: \(endScale) isDragging: \(isDragging) valueTranslation: \(value.translation.debugDescription)")
                 isDragging = true
+                dragOffset.width = value.translation.width + previousDragOffset.width
+                dragOffset.height = value.translation.height + previousDragOffset.height
+                logger.info("OnChanged dragGesture after: previousDragoffset: \(previousDragOffset.debugDescription) endScale: \(endScale) isDragging: \(isDragging) valueTranslation: \(value.translation.debugDescription)")
             }
             .onEnded { value in
+                logger.info("OnEnded dragGesture before: endScale: \(endScale) isDragging: \(isDragging) valueTRanslation: \(value.translation.debugDescription)")
                 isDragging = false
+                previousDragOffset = dragOffset
                 if value.translation.width > 100 {
                     // swipe right
                     viewModel?.swipeTo(.previous)
@@ -86,35 +96,71 @@ public struct GalleryImageView: View {
                     viewModel?.swipeTo(.next)
                 }
 
-                if value.translation.height > 100 {
+                if value.translation.height > 100, endScale <= 1.0, abs(value.translation.width) < 42 {
                     // swipe down
                     dismiss()
                 }
+                logger.info("OnEnded dragGesture after: endScale: \(endScale) isDragging: \(isDragging) valueTRanslation: \(value.translation.debugDescription)")
             }
     }
 
     var zoomGesture: some Gesture {
         MagnificationGesture()
             .updating($scaleBy) { value, state, transaction in
+                logger.info("OnUpdating zoomGesture before: endScale: \(endScale) isDragging: \(isDragging)")
                 state = value
                 transaction.animation = .interactiveSpring()
+                logger.info("OnUpdating zoomGesture after: endScale: \(endScale) isDragging: \(isDragging)")
             }
             .onEnded{ value in
                 if !isDragging {
+                    logger.info("OnEnded zoomGesture before: endScale: \(endScale) isDragging: \(isDragging)")
                     endScale = value
+                    logger.info("OnEnded zoomGesture after: endScale: \(endScale) isDragging: \(isDragging)")
                 }
             }
     }
 
     public var body: some View {
-        Image(uiImage: uiimage)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .scaleEffect(scaleBy, anchor: .center)
-            .scaleEffect(endScale, anchor: .center)
-            .gesture(zoomGesture)
-            .gesture(dragGesture)
-            .animation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.9), value: scaleBy)
+        ZStack {
+            Image(uiImage: uiimage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .scaleEffect(scaleBy, anchor: .center)
+                .scaleEffect(endScale, anchor: .center)
+                .offset(dragOffset)
+                .gesture(dragGesture)
+                .gesture(zoomGesture)
+                .animation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.9), value: scaleBy)
+            DismissGalleryButton()
+        }
+    }
+}
+
+struct DismissGalleryButton: View {
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        VStack {
+            HStack {
+                Button {
+                    withAnimation {
+                        dismiss()
+                    }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundStyle(.orange, .ultraThinMaterial)
+                        .background(.ultraThinMaterial)
+                        .frame(width: 42, height: 42)
+                        .cornerRadius(22)
+                }
+                Spacer()
+            }
+            Spacer()
+        }
+        .padding()
     }
 }
 
