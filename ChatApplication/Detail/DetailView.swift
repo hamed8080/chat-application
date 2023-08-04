@@ -67,12 +67,13 @@ struct DetailView: View {
 
 struct InfoView: View {
     @EnvironmentObject var viewModel: DetailViewModel
-    @EnvironmentObject var threadsVM: ThreadsViewModel
+    @State private var showGalleryView = false
+    @StateObject private var fullScreenImageLoader: ImageLoaderViewModel = .init()
 
     var body: some View {
         VStack(alignment: .center, spacing: 12) {
-            if let image = viewModel.url {
-                ImageLaoderView(imageLoader: threadsVM.avatars(for: image), url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
+            if let image = viewModel.url, let avatarVM = AppState.shared.navViewModel?.threadViewModel?.avatars(for: image) {
+                ImageLaoderView(imageLoader: avatarVM, url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
                     .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
                     .font(.system(size: 16).weight(.heavy))
                     .foregroundColor(.white)
@@ -82,6 +83,9 @@ struct InfoView: View {
                     .onTapGesture {
                         if viewModel.isInEditMode, viewModel.thread?.canEditInfo == true {
                             viewModel.showImagePicker = true
+                        } else {
+                            fullScreenImageLoader.fetch(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title, size: .ACTUAL, forceToDownloadFromServer: true)
+                            showGalleryView = true
                         }
                     }
             }
@@ -111,6 +115,9 @@ struct InfoView: View {
         }
         .noSeparators()
         .frame(minWidth: 0, maxWidth: 312, alignment: .center)
+        .fullScreenCover(isPresented: $showGalleryView) {
+            GalleryImageView(uiimage: fullScreenImageLoader.image)
+        }
     }
 }
 

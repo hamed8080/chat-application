@@ -58,10 +58,21 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     private func setImage(data: Data) {
         autoreleasepool {
-            if size == nil {
+            if size == nil || size == .ACTUAL {
                 image = UIImage(data: data) ?? UIImage()
             } else {
                 guard let cgImage = data.imageScale(width: size == .SMALL ? 128 : 256)?.image else { return }
+                image = UIImage(cgImage: cgImage)
+            }
+        }
+    }
+
+    private func setImage(fileURL: URL) {
+        autoreleasepool {
+            if size == nil || size == .ACTUAL, let data = fileURL.data {
+                image = UIImage(data: data) ?? UIImage()
+            } else {
+                guard let cgImage = fileURL.imageScale(width: size == .SMALL ? 128 : 256)?.image else { return }
                 image = UIImage(cgImage: cgImage)
             }
         }
@@ -96,7 +107,7 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
 
-    public func fetch(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
+    public func fetch(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL, forceToDownloadFromServer: Bool = false) {
         fileMetadata = metaData
         self.url = url
         self.userName = userName
@@ -106,19 +117,16 @@ public final class ImageLoaderViewModel: ObservableObject {
             return
         }
         if isSDKImage {
-            getFromSDK()
+            getFromSDK(forceToDownloadFromServer: forceToDownloadFromServer)
         } else if let fileURL = fileURL {
-            guard let cgImage = fileURL.imageScale(width: 128)?.image else { return }
-            autoreleasepool {
-                image = UIImage(cgImage: cgImage)
-            }
+            setImage(fileURL: fileURL)
         } else {
             downloadFromAnyURL()
         }
     }
 
-    private func getFromSDK() {
-        let req = ImageRequest(hashCode: hashCode, size: size ?? .LARG)
+    private func getFromSDK(forceToDownloadFromServer: Bool = false) {
+        let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: forceToDownloadFromServer, size: size ?? .LARG)
         requests[req.uniqueId] = req
         ChatManager.activeInstance?.file.get(req)
     }
@@ -130,10 +138,8 @@ public final class ImageLoaderViewModel: ObservableObject {
             storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
             requests.removeValue(forKey: uniqueId)
         } else {
-            guard let cgImage = url?.imageScale(width: 128)?.image else { return }
-            autoreleasepool {
-                image = UIImage(cgImage: cgImage)
-            }
+            guard let url = url else { return }
+            setImage(fileURL: url)
         }
     }
 

@@ -24,16 +24,16 @@ final class ChatDelegateImplementation: ChatDelegate {
             TokenManager.shared.initSetIsLogin()
         }
 
-        Task {
-            await MainActor.run {
-                let ssoToken = SSOTokenResponseResult(accessToken: "a637413e91f0487190ae0fe0059bbe71.XzIwMjM4", expiresIn: 900)
-                let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
-                let user = User(id: 3_463_768)
-                TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
-                UserConfigManagerVM.instance.appendOrReplace(UserConfig(user: user, config: config, ssoToken: ssoToken))
-                UserConfigManagerVM.instance.createChatObjectAndConnect(userId: user.id, config: config, delegate: self)
-            }
-        }
+//        Task {
+//            await MainActor.run {
+//                let ssoToken = SSOTokenResponseResult(accessToken: "e00c8b69df46424b89cb4904f0dc0c9d.XzIwMjM4", expiresIn: 900)
+//                let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
+//                let user = User(id: 3_463_768)
+//                TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
+//                UserConfigManagerVM.instance.appendOrReplace(UserConfig(user: user, config: config, ssoToken: ssoToken))
+//                UserConfigManagerVM.instance.createChatObjectAndConnect(userId: user.id, config: config, delegate: self)
+//            }
+//        }
     }
 
     func chatState(state: ChatState, currentUser: User?, error _: ChatError?) {

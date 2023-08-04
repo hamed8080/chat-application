@@ -56,13 +56,18 @@ struct GalleryImageViewData: View {
     }
 }
 
-struct GalleryImageView: View {
+public struct GalleryImageView: View {
     let uiimage: UIImage
-    let viewModel: GalleryViewModel
+    let viewModel: GalleryViewModel?
     @Environment(\.dismiss) var dismiss
     @GestureState private var scaleBy: CGFloat = 1.0
     @State private var endScale: CGFloat = 1.0
     @State private var isDragging = false
+
+    public init(uiimage: UIImage, viewModel: GalleryViewModel? = nil) {
+        self.uiimage = uiimage
+        self.viewModel = viewModel
+    }
 
     var dragGesture: some Gesture {
         DragGesture(minimumDistance: 10, coordinateSpace: .local)
@@ -73,12 +78,12 @@ struct GalleryImageView: View {
                 isDragging = false
                 if value.translation.width > 100 {
                     // swipe right
-                    viewModel.swipeTo(.previous)
+                    viewModel?.swipeTo(.previous)
                 }
 
                 if value.translation.width < 100 {
                     // swipe left
-                    viewModel.swipeTo(.next)
+                    viewModel?.swipeTo(.next)
                 }
 
                 if value.translation.height > 100 {
@@ -101,7 +106,7 @@ struct GalleryImageView: View {
             }
     }
 
-    var body: some View {
+    public var body: some View {
         Image(uiImage: uiimage)
             .resizable()
             .aspectRatio(contentMode: .fit)
