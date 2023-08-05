@@ -41,7 +41,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading && !disableScrolling }
     public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom && !disableScrolling }
     public var sections: [MessageSection] = []
-    @Published public var selectedMessages: [Message] = []
     @Published public var editMessage: Message?
     public var replyMessage: Message?
     @Published public var isInEditMode: Bool = false
@@ -84,7 +83,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         return sheetViewModel
     }()
 
-    private var messageViewModels: [MessageRowViewModel] = []
+    public var messageViewModels: [MessageRowViewModel] = []
 
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.readOnly = readOnly
@@ -344,7 +343,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func deleteMessages(_ messages: [Message]) {
         let messagedIds = messages.compactMap(\.id)
         ChatManager.activeInstance?.message.delete(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true))
-        selectedMessages = []
+        clearSelection()
     }
 
     /// Delete a message with an Id is needed for when the message has persisted before.

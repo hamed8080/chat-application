@@ -16,13 +16,12 @@ struct TextMessageType: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     let viewModel: MessageRowViewModel
-    @State private var isSelected = false
     @State var isInSelectionMode = false
 
     var body: some View {
         HStack(spacing: 8) {
             if !viewModel.isMe {
-                selectRadio
+                SelectMessageRadio(isInSelectionMode: isInSelectionMode)
             }
 
             if message.isMe(currentUserId: AppState.shared.user?.id) {
@@ -30,16 +29,16 @@ struct TextMessageType: View {
             }
 
             MutableMessageView()
-                .environmentObject(viewModel)
 
             if !message.isMe(currentUserId: AppState.shared.user?.id) {
                 Spacer()
             }
 
             if viewModel.isMe {
-                selectRadio
+                SelectMessageRadio(isInSelectionMode: isInSelectionMode)
             }
         }
+        .environmentObject(viewModel)
         .onReceive(viewModel.objectWillChange) { _ in
             if viewModel.isInSelectMode != isInSelectionMode {
                 withAnimation {
@@ -47,18 +46,18 @@ struct TextMessageType: View {
                 }
             }
         }
-        .onChange(of: threadVM?.selectedMessages.contains(where: { $0.id == message.id }) == true) { newValue in
-            withAnimation {
-                isSelected = newValue
-            }
-        }
     }
+}
 
-    var selectRadio: some View {
+struct SelectMessageRadio: View {
+    @EnvironmentObject var viewModel: MessageRowViewModel
+    let isInSelectionMode: Bool
+
+    var body: some View {
         ZStack {
             Image(systemName: "checkmark.circle.fill")
                 .font(.title)
-                .scaleEffect(x: isSelected ? 1 : 0.001, y: isSelected ? 1 : 0.001, anchor: .center)
+                .scaleEffect(x: viewModel.isSelected ? 1 : 0.001, y: viewModel.isSelected ? 1 : 0.001, anchor: .center)
                 .foregroundColor(Color.blue)
 
             Image(systemName: "circle")
@@ -69,10 +68,11 @@ struct TextMessageType: View {
         .padding(isInSelectionMode ? 24 : 0.001)
         .scaleEffect(x: isInSelectionMode ? 1.0 : 0.001, y: isInSelectionMode ? 1.0 : 0.001, anchor: .center)
         .onTapGesture {
-            withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
-                isSelected.toggle()
+            withAnimation(!viewModel.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
+                viewModel.isSelected.toggle()
+                viewModel.animateObjectWillChange()
             }
-            threadVM?.toggleSelectedMessage(message, isSelected)
+            viewModel.threadVM?.animateObjectWillChange()
         }
     }
 }

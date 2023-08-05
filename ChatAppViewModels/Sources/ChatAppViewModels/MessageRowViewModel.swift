@@ -33,6 +33,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var isMe: Bool
     public var isHighlited: Bool = false
     public var highlightTimer: Timer?
+    public var isSelected = false
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
         if message.isFileType {

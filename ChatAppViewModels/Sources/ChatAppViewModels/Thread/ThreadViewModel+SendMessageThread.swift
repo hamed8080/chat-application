@@ -55,7 +55,7 @@ extension ThreadViewModel {
     public func sendForwardMessage(_ destinationThread: Conversation) {
         guard let destinationThreadId = destinationThread.id else { return }
         canScrollToBottomOfTheList = true
-        let messageIds = selectedMessages.compactMap(\.id)
+        let messageIds = selectedMessages.compactMap{$0.message.id}
         let req = ForwardMessageRequest(fromThreadId: threadId, threadId: destinationThreadId, messageIds: messageIds)
         ChatManager.activeInstance?.message.send(req)
         isInEditMode = false /// Close edit mode in ui
@@ -238,24 +238,6 @@ extension ThreadViewModel {
     public func cancelUnsentMessage(_ uniqueId: String) {
         ChatManager.activeInstance?.message.cancel(uniqueId: uniqueId)
         onDeleteMessage(ChatResponse(uniqueId: uniqueId, subjectId: threadId))
-    }
-
-    public func toggleSelectedMessage(_ message: Message, _ isSelected: Bool) {
-        if isSelected {
-            appendSelectedMessage(message)
-        } else {
-            removeSelectedMessage(message)
-        }
-    }
-
-    public func appendSelectedMessage(_ message: Message) {
-        selectedMessages.append(message)
-        animateObjectWillChange()
-    }
-
-    public func removeSelectedMessage(_ message: Message) {
-        guard let index = selectedMessages.firstIndex(of: message) else { return }
-        selectedMessages.remove(at: index)
     }
 
     public func send(completion: @escaping ()-> Void) {

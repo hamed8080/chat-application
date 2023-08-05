@@ -136,7 +136,7 @@ struct SelectionView: View {
                 .foregroundColor(Color.blue)
                 .onTapGesture {
                     viewModel.isInEditMode = false
-                    viewModel.selectedMessages = []
+                    viewModel.clearSelection()
                     viewModel.animateObjectWillChange()
                 }
 
@@ -161,9 +161,9 @@ struct SelectionView: View {
                     viewModel.animateObjectWillChange()
                 }
         }
-        .onReceive(viewModel.$selectedMessages) { newValue in
+        .onReceive(viewModel.objectWillChange) { _ in
             withAnimation {
-                selectedCount = newValue.count
+                selectedCount = viewModel.selectedMessages.count
             }
         }
     }
@@ -180,7 +180,7 @@ struct ReplyMessageViewPlaceholder: View {
                     .foregroundColor(Color.blue)
                     .onTapGesture {
                         viewModel.replyMessage = nil
-                        viewModel.selectedMessages = []
+                        viewModel.clearSelection()
                         viewModel.animateObjectWillChange()
                     }
                 Text(replyMessage.message ?? replyMessage.fileMetaData?.name ?? "")

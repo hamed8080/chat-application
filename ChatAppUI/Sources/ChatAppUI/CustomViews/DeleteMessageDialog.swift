@@ -10,9 +10,9 @@ import ChatModels
 import ChatAppViewModels
 
 public struct DeleteMessageDialog: View {
-    let viewModel:ThreadViewModel
+    let viewModel: ThreadViewModel
     @Binding var showDialog: Bool
-    private var messages: [Message] { viewModel.selectedMessages }
+    private var messages: [Message] { viewModel.selectedMessages.compactMap({$0.message}) }
 
     public init(viewModel: ThreadViewModel, showDialog: Binding<Bool>) {
         self.viewModel = viewModel
@@ -43,7 +43,7 @@ public struct DeleteMessageDialog: View {
 
             VStack {
                 Button(role: .destructive) {
-                    viewModel.deleteMessages(viewModel.selectedMessages)
+                    viewModel.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
                     viewModel.isInEditMode = false
                     showDialog = false
                     viewModel.animateObjectWillChange()
@@ -56,7 +56,7 @@ public struct DeleteMessageDialog: View {
                 .cornerRadius(8)
 
                 Button {
-                    viewModel.selectedMessages.removeAll()
+                    viewModel.clearSelection()
                     viewModel.isInEditMode = false
                     showDialog = false
                     viewModel.animateObjectWillChange()

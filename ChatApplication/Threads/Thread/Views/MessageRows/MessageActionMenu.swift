@@ -37,8 +37,10 @@ struct MessageActionMenu: View {
         Button {
             withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
                 threadVM?.forwardMessage = message
+                viewModel.isSelected = true
                 threadVM?.isInEditMode = true
-                threadVM?.objectWillChange.send()
+                viewModel.animateObjectWillChange()
+                threadVM?.animateObjectWillChange()
             }
         } label: {
             Label("forward", systemImage: "arrowshape.turn.up.forward")
@@ -79,7 +81,9 @@ struct MessageActionMenu: View {
         Button {
             withAnimation(animation(appear: threadVM?.isInEditMode == true)) {
                 threadVM?.isInEditMode = true
-                threadVM?.objectWillChange.send()
+                viewModel.isSelected = true
+                viewModel.animateObjectWillChange()
+                threadVM?.animateObjectWillChange()
             }
         } label: {
             Label("Select", systemImage: "checkmark.circle")

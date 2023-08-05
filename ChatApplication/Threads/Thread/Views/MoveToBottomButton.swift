@@ -22,13 +22,14 @@ struct MoveToBottomButton: View {
                 .scaledToFit()
                 .frame(width: isAtBottomOfTheList ? 0 : 16, height: isAtBottomOfTheList ? 0 : 16)
                 .padding()
-                .foregroundColor(Color.gray)
+                .foregroundColor(.primary)
                 .aspectRatio(contentMode: .fit)
                 .contentShape(Rectangle())
         }
         .frame(width: isAtBottomOfTheList ? 0 : 36, height: isAtBottomOfTheList ? 0 : 36)
-        .background(.ultraThickMaterial.blendMode(.luminosity))
+        .background(.ultraThinMaterial)
         .cornerRadius(36)
+        .shadow(color: .gray.opacity(0.4), radius: 10)
         .padding(.bottom, 16)
         .padding([.trailing], 8)
         .scaleEffect(x: isAtBottomOfTheList ? 0.0 : 1.0, y: isAtBottomOfTheList ? 0.0 : 1.0, anchor: .center)
@@ -51,8 +52,6 @@ struct MoveToBottomButton: View {
         .onReceive(viewModel.objectWillChange) { _ in
             if viewModel.isAtBottomOfTheList != isAtBottomOfTheList {
                 isAtBottomOfTheList = viewModel.isAtBottomOfTheList
-            } else {
-                var i = 0
             }
         }
     }
