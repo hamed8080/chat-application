@@ -155,14 +155,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             Logger.viewModels.info("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
             sendSeenMessageIfNeeded(message)
-            isAtBottomOfTheList = false
+            isAtBottomOfTheList = sectionIndex == sections.indices.last && messageIndex > section.messages.indices.last! - 3
             animateObjectWillChange()
         } else {
             // Last Item
             Logger.viewModels.info("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
             sendSeenMessageIfNeeded(message)
-            isAtBottomOfTheList = true
+            isAtBottomOfTheList = message.id == thread.lastMessageVO?.id
             animateObjectWillChange()
         }
 
