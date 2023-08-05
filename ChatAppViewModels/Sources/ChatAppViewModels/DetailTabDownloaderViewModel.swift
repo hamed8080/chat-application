@@ -75,8 +75,8 @@ public class DetailTabDownloaderViewModel: ObservableObject {
         offset += count
         requests[req.uniqueId] = req
         isLoading = true
-        ChatManager.activeInstance?.message.history(req)
         animateObjectWillChange()
+        ChatManager.activeInstance?.message.history(req)
     }
 
     public func itemWidth(readerWidth: CGFloat) -> CGFloat {

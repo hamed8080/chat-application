@@ -13,20 +13,22 @@ import ChatModels
 import SwiftUI
 
 struct PictureView: View {
-    @State var viewModel: DetailTabDownloaderViewModel
+    let viewModel: DetailTabDownloaderViewModel
     @State var viewWidth: CGFloat = 0
 
     init(conversation: Conversation, messageType: MessageType) {
         viewModel = .init(conversation: conversation, messageType: messageType)
-        viewModel.loadMore()
     }
 
     var body: some View {
         let itemWidth = viewModel.itemWidth(readerWidth: viewWidth)
         LazyVGrid(columns: Array(repeating: .init(.flexible(minimum: itemWidth, maximum: itemWidth), spacing: 0), count: viewModel.itemCount), spacing: 0) {
             if viewWidth != 0 {
-                MessageListPictureView(viewWidth: viewWidth)
+                MessageListPictureView(itemWidth: itemWidth)
             }
+        }
+        .task {
+            viewModel.loadMore()
         }
         .environmentObject(viewModel)
         .background {
@@ -40,13 +42,14 @@ struct PictureView: View {
 }
 
 struct MessageListPictureView: View {
-    let viewWidth: CGFloat
+    let itemWidth: CGFloat
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
 
     var body: some View {
-        let itemWidth = viewModel.itemWidth(readerWidth: viewWidth)
         ForEach(viewModel.messages) { message in
             PictureRowView(message: message, itemWidth: itemWidth)
+                .id(message.id)
+                .frame(width: itemWidth, height: itemWidth)
                 .onAppear {
                     if viewModel.isCloseToLastThree(message) {
                         viewModel.loadMore()
@@ -55,6 +58,7 @@ struct MessageListPictureView: View {
         }
         if viewModel.isLoading {
             LoadingView()
+                .id("MessageListPictureViewLoading")
                 .frame(width: 36, height: 36)
         }
     }
