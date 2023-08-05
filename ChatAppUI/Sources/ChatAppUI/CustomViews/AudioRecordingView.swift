@@ -43,7 +43,7 @@ public struct AudioRecordingView: View {
                     .foregroundStyle(.pink.opacity(opacity), .blue, .blue)
                     .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: opacity)
                     .onAppear {
-                        opacity = 1
+                        opacity = opacity == 1  ? 0 : 1
                     }
             }
             .animation(.easeInOut, value: viewModel.isRecording)
