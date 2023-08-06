@@ -28,9 +28,9 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     private(set) var cancelable: Set<AnyCancellable> = []
-    public weak var user: Participant?
-    public weak var contact: Contact?
-    public weak var thread: Conversation?
+    public var user: Participant?
+    public var contact: Contact?
+    public var thread: Conversation?
     public var isInMyContact: Bool { (user?.contactId != nil || contact != nil) && thread == nil }
     public var canBlock: Bool { thread == nil }
     public var title: String { thread?.title ?? user?.name ?? contact?.user?.name ?? "\(contact?.firstName ?? "") \(contact?.lastName ?? "")" }

@@ -24,7 +24,9 @@ struct JoinToPublicThreadView: View {
 
                 Section {
                     TextField("Enter name of the chat...", text: $publicThreadName)
-                        .textFieldStyle(.roundedBorder)
+                        .frame(minHeight: 36)
+                        .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 12))
+
                 } footer: {
                     if !isThreadExist, !publicThreadName.isEmpty {
                         Text("The thread name is not exist!")

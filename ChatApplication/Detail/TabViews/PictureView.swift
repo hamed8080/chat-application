@@ -59,7 +59,7 @@ struct MessageListPictureView: View {
         if viewModel.isLoading {
             LoadingView()
                 .id("MessageListPictureViewLoading")
-                .frame(width: 36, height: 36)
+                .frame(width: 24, height: 24)
         }
     }
 }

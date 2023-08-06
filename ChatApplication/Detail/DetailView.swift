@@ -9,6 +9,7 @@ import AdditiveUI
 import Chat
 import ChatAppUI
 import ChatAppViewModels
+import ChatModels
 import Photos
 import SwiftUI
 
@@ -18,8 +19,18 @@ struct DetailView: View {
 
     var body: some View {
         ScrollView {
-            InfoView()
-            DetailTopButtons()
+            VStack {
+                VStack(spacing: 12) {
+                    InfoView()
+                        .padding([.top], 16)
+                    DetailTopButtons()
+                        .padding([.bottom], 16)
+                }
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .background(.ultraThickMaterial)
+                .cornerRadius(12)
+            }
+            .padding([.leading, .trailing])
             TabDetail(viewModel: viewModel)
         }
         .environmentObject(viewModel)
@@ -71,7 +82,7 @@ struct InfoView: View {
     @StateObject private var fullScreenImageLoader: ImageLoaderViewModel = .init()
 
     var body: some View {
-        VStack(alignment: .center, spacing: 12) {
+        VStack(spacing: 12) {
             if let image = viewModel.url, let avatarVM = AppState.shared.navViewModel?.threadViewModel?.avatars(for: image) {
                 ImageLaoderView(imageLoader: avatarVM, url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
                     .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
@@ -88,36 +99,46 @@ struct InfoView: View {
                             showGalleryView = true
                         }
                     }
+                    .fullScreenCover(isPresented: $showGalleryView) {
+                        GalleryImageView(uiimage: fullScreenImageLoader.image)
+                    }
             }
 
-            let bgColor = viewModel.isInEditMode ? Color.primary.opacity(0.08) : Color.clear
-            if viewModel.thread?.canEditInfo == true {
-                PrimaryTextField(title: "Title", textBinding: $viewModel.editTitle, keyboardType: .alphabet, backgroundColor: bgColor)
-                    .disabled(!viewModel.isInEditMode)
-                    .multilineTextAlignment(.center)
-                    .font(.iransansBody)
-            } else {
-                Text(viewModel.title)
-                    .font(.iransansBoldTitle)
-            }
+            VStack(spacing: 8) {
+                if viewModel.thread?.canEditInfo == true {
+                    TextField("Title", text: $viewModel.editTitle)
+                        .frame(minHeight: 36)
+                        .textFieldStyle((!viewModel.isInEditMode) ? .clear : .customBorderedWith(minHeight: 36, cornerRadius: 12))
+                        .font(.iransansBody)
+                        .multilineTextAlignment(.center)
+                        .disabled(!viewModel.isInEditMode)
+                } else {
+                    Text(viewModel.title)
+                        .font(.iransansBoldTitle)
+                }
 
-            if viewModel.thread?.canEditInfo == true {
-                PrimaryTextField(title: "Description", textBinding: $viewModel.threadDescription, keyboardType: .alphabet, backgroundColor: bgColor)
-                    .disabled(!viewModel.isInEditMode)
-                    .multilineTextAlignment(.center)
-                    .font(.caption)
-            }
+                if viewModel.thread?.canEditInfo == true {
+                    TextField("Description", text: $viewModel.threadDescription)
+                        .frame(minHeight: 36)
+                        .textFieldStyle((!viewModel.isInEditMode) ? .clear : .customBorderedWith(minHeight: 36, cornerRadius: 12))
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                        .disabled(!viewModel.isInEditMode)
+                }
 
-            if let notSeenString = viewModel.notSeenString {
-                Text(notSeenString)
-                    .font(.iransansCaption3)
+                if let bio = viewModel.bio {
+                    Text(bio)
+                        .font(.iransansCaption)
+                        .foregroundColor(.gray)
+                }
+
+                if let notSeenString = viewModel.notSeenString {
+                    Text(notSeenString)
+                        .font(.iransansCaption3)
+                }
             }
         }
-        .noSeparators()
-        .frame(minWidth: 0, maxWidth: 312, alignment: .center)
-        .fullScreenCover(isPresented: $showGalleryView) {
-            GalleryImageView(uiimage: fullScreenImageLoader.image)
-        }
+        .padding([.leading, .trailing])
     }
 }
 
@@ -125,81 +146,61 @@ struct DetailTopButtons: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        Section {
-            HStack(spacing: 32) {
-                Spacer()
-                if viewModel.thread == nil {
-                    Button {
-                        viewModel.createThread()
-                    } label: {
-                        ActionImage(systemName: "message.fill")
-                    }
-                }
-
+        HStack(spacing: 16) {
+            if viewModel.thread == nil {
                 Button {
-                    viewModel.toggleMute()
+                    viewModel.createThread()
                 } label: {
-                    ActionImage(systemName: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill")
-                        .foregroundColor(viewModel.thread?.mute ?? false ? .red : .blue)
+                    ActionImage(systemName: "message.fill")
                 }
-
-                if viewModel.thread?.admin == true {
-                    Button {
-                        viewModel.toggleThreadVisibility()
-                    } label: {
-                        ActionImage(systemName: viewModel.thread?.isPrivate == true ? "lock.fill" : "lock.open.fill")
-                            .foregroundColor(viewModel.thread?.isPrivate ?? false ? .green : .blue)
-                    }
-                }
-
-                Button {} label: {
-                    ActionImage(systemName: "magnifyingglass")
-                }
-
-                Spacer()
             }
-            .buttonStyle(.bordered)
-            .foregroundColor(.blue)
+
+            Button {
+                viewModel.toggleMute()
+            } label: {
+                ActionImage(systemName: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill")
+                    .foregroundColor(viewModel.thread?.mute ?? false ? .red : .blue)
+            }
+
+            if viewModel.thread?.admin == true {
+                Button {
+                    viewModel.toggleThreadVisibility()
+                } label: {
+                    ActionImage(systemName: viewModel.thread?.isPrivate == true ? "lock.fill" : "lock.open.fill")
+                        .foregroundColor(viewModel.thread?.isPrivate ?? false ? .green : .blue)
+                }
+            }
+
+            Button {} label: {
+                ActionImage(systemName: "magnifyingglass")
+            }
         }
-        .noSeparators()
+        .padding([.leading, .trailing])
+        .buttonStyle(.bordered)
+        .foregroundColor(.blue)
 
         if viewModel.showInfoGroupBox {
-            GroupBox {
-                Section {
-                    if let bio = viewModel.bio {
-                        Text(bio)
-                            .font(.iransansCaption)
-                            .foregroundColor(.gray)
-                        if !viewModel.isInMyContact {
-                            Divider()
-                        }
-                    }
-                    if !viewModel.isInMyContact {
-                        SectionItem(title: "Add To contacts", systemName: "person.badge.plus") {
-                            viewModel.showAddToContactSheet.toggle()
-                        }
-                        if viewModel.cellPhoneNumber != nil {
-                            Divider()
-                        }
-                    }
-                    if let phone = viewModel.cellPhoneNumber {
-                        SectionItem(title: phone, systemName: "doc.on.doc") {
-                            viewModel.copyPhone()
-                        }
-                        if viewModel.canBlock {
-                            Divider()
-                        }
-                    }
-
-                    if viewModel.canBlock {
-                        SectionItem(title: "Block", systemName: "hand.raised.slash") {
-                            viewModel.blockUnBlock()
-                        }
-                        .foregroundColor(.red)
+            VStack {
+                if !viewModel.isInMyContact {
+                    SectionItem(title: "Add To contacts", systemName: "person.badge.plus") {
+                        viewModel.showAddToContactSheet.toggle()
                     }
                 }
+
+                if let phone = viewModel.cellPhoneNumber {
+                    SectionItem(title: phone, systemName: "doc.on.doc") {
+                        viewModel.copyPhone()
+                    }
+                }
+
+                if viewModel.canBlock {
+                    SectionItem(title: "Block", systemName: "hand.raised.slash") {
+                        viewModel.blockUnBlock()
+                    }
+                    .foregroundColor(.red)
+                }
             }
-            .noSeparators()
+            .padding([.leading, .trailing])
         }
     }
 }
@@ -209,11 +210,13 @@ struct TabDetail: View {
 
     var body: some View {
         if let thread = viewModel.thread, let participantViewModel = viewModel.participantViewModel {
-            Section {
+            VStack(spacing: 0) {
                 TabViewsContainer(thread: thread, selectedTabIndex: 0)
+                    .background(.ultraThickMaterial)
                     .environmentObject(participantViewModel)
             }
-            .noSeparators()
+            .cornerRadius(12)
+            .padding()
         }
     }
 }
@@ -225,7 +228,7 @@ struct ActionImage: View {
         Image(systemName: systemName)
             .resizable()
             .scaledToFit()
-            .frame(width: 24, height: 24)
+            .frame(width: 22, height: 22)
             .padding()
             .transition(.asymmetric(insertion: .scale.animation(.easeInOut(duration: 2)), removal: .scale.animation(.easeInOut(duration: 2))))
     }
@@ -237,25 +240,43 @@ struct SectionItem: View {
     var action: () -> Void
 
     var body: some View {
-        HStack {
-            Text(title)
-                .font(.body)
-                .foregroundColor(.blue)
-            Spacer()
-            Button {
-                action()
-            } label: {
-                ActionImage(systemName: systemName)
-                    .frame(width: 24, height: 24)
-            }
-            .buttonStyle(.bordered)
+        Button {
+            action()
+        } label: {
+            Label(title, systemImage: systemName)
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36, alignment: .leading)
         }
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+        .padding([.top, .bottom], 2)
+        .buttonStyle(.bordered)
+        .cornerRadius(12)
     }
 }
 
 struct DetailView_Previews: PreviewProvider {
+    static var contact: Contact {
+        let contact = MockData.contact
+        contact.image = "https://imgv3.fotor.com/images/gallery/Realistic-Male-Profile-Picture.jpg"
+        contact.user = User(cellphoneNumber: "+1 234 53 12",
+                            profile: .init(bio: "I wish the best for you.", metadata: nil))
+        AppState.shared.navViewModel = NavigationModel()
+        AppState.shared.navViewModel?.threadViewModel = .init()
+        return contact
+    }
+
     static var previews: some View {
+        NavigationSplitView {} content: {} detail: {
+            DetailView()
+                .environmentObject(DetailViewModel(thread: MockData.thread, contact: contact, user: nil))
+        }
+        .previewDisplayName("Detail With Thread in Ipad")
+
         DetailView()
-            .environmentObject(DetailViewModel(thread: MockData.thread, contact: MockData.contact, user: nil))
+            .environmentObject(DetailViewModel(thread: MockData.thread, contact: contact, user: nil))
+            .previewDisplayName("Detail With Thread in iPhone")
+
+        DetailView()
+            .environmentObject(DetailViewModel(thread: nil, contact: contact, user: nil))
+            .previewDisplayName("Detail With Contant")
     }
 }

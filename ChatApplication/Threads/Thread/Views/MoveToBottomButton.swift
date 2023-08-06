@@ -36,7 +36,7 @@ struct MoveToBottomButton: View {
         .animation(.easeInOut, value: isAtBottomOfTheList)
         .overlay(alignment: .top) {
             let unreadCount = viewModel.thread.unreadCount ?? 0
-            let hide = unreadCount == 0
+            let hide = unreadCount == 0 || isAtBottomOfTheList
             Text(verbatim: unreadCount == 0 ? "" : "\(viewModel.thread.unreadCountString ?? "")")
                 .font(.system(size: 12))
                 .fontDesign(.rounded)
@@ -70,6 +70,5 @@ struct MoveToBottomButton_Previews: PreviewProvider {
                 }
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-//        .background(.blue)
     }
 }

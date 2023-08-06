@@ -17,7 +17,7 @@ let package = Package(
             targets: ["ChatAppUI"]),
     ],
     dependencies: [
-        .package(url: "https://pubgi.fanapsoft.ir/chat/ios/additive-ui.git", exact: "1.0.1"),
+        .package(path: "../../AdditiveUI"),
         .package(path: "../ChatAppModels"),
         .package(path: "../ChatAppExtensions"),
         .package(path: "../ChatAppViewModels"),
@@ -26,7 +26,7 @@ let package = Package(
         .target(
             name: "ChatAppUI",
             dependencies: [
-                .product(name: "AdditiveUI", package: "additive-ui"),
+                "AdditiveUI",
                 "ChatAppModels",
                 "ChatAppExtensions",
                 "ChatAppViewModels"

@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "additive-ui",
-      "kind" : "remoteSourceControl",
-      "location" : "https://pubgi.fanapsoft.ir/chat/ios/additive-ui.git",
-      "state" : {
-        "revision" : "3b5e9298c85f5c430701155382eaf70e98db3ab9",
-        "version" : "1.0.1"
-      }
-    },
-    {
       "identity" : "starscream",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/daltoniam/Starscream.git",
