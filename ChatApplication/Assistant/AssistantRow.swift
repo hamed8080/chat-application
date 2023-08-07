@@ -5,19 +5,71 @@
 //
 
 import Chat
+import ChatAppUI
+import ChatAppViewModels
 import ChatModels
 import SwiftUI
 
 struct AssistantRow: View {
-    var assistant: Assistant
+    let assistant: Assistant
+    @StateObject var imageViewModel: ImageLoaderViewModel = .init()
+    @EnvironmentObject var viewModel: AssistantViewModel
 
     var body: some View {
-        ZStack(alignment: .leading) {
+        Button {} label: {
+            if viewModel.isInSelectionMode {
+                SelectAssistantRadio(assistant: assistant)
+            }
+            ImageLaoderView(imageLoader: imageViewModel, url: assistant.participant?.image, userName: assistant.participant?.name)
+                .frame(width: 28, height: 28)
+                .background(.blue.opacity(0.8))
+                .cornerRadius(18)
+
             Text(assistant.participant?.name ?? "")
                 .font(.iransansCaption)
-                .padding()
+            if assistant.block == true {
+                Spacer()
+                Text("Blocked")
+                    .font(.iransansCaption2)
+                    .padding([.leading, .trailing], 6)
+                    .padding([.top, .bottom], 2)
+                    .foregroundColor(Color.red)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.red)
+                    )
+            }
         }
-        .textSelection(.enabled)
+        .buttonStyle(.plain)
+    }
+}
+
+struct SelectAssistantRadio: View {
+    @EnvironmentObject var viewModel: AssistantViewModel
+    var isInSelectionMode: Bool { viewModel.isInSelectionMode }
+    @State var isSelected = false
+    let assistant: Assistant
+
+    var body: some View {
+        ZStack {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.title)
+                .scaleEffect(x: isSelected ? 1 : 0.001, y: isSelected ? 1 : 0.001, anchor: .center)
+                .foregroundColor(Color.blue)
+
+            Image(systemName: "circle")
+                .font(.title)
+                .foregroundColor(Color.blue)
+        }
+        .frame(width: isInSelectionMode ? 22 : 0.001, height: isInSelectionMode ? 22 : 0.001, alignment: .center)
+        .padding(isInSelectionMode ? 24 : 0.001)
+        .scaleEffect(x: isInSelectionMode ? 1.0 : 0.001, y: isInSelectionMode ? 1.0 : 0.001, anchor: .center)
+        .onTapGesture {
+            withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
+                isSelected.toggle()
+                viewModel.toggleSelectedAssistant(isSelected: isSelected, assistant: assistant)
+            }
+        }
     }
 }
 
@@ -25,7 +77,7 @@ struct AssistantRow_Previews: PreviewProvider {
     static var assistant: Assistant {
         let participant = Participant(name: "Hamed Hosseini")
         let roles: [Roles] = [.addNewUser, .editThread, .editMessageOfOthers]
-        return Assistant(id: 1, participant: participant, roles: roles)
+        return Assistant(id: 1, participant: participant, roles: roles, block: true)
     }
 
     static var previews: some View {

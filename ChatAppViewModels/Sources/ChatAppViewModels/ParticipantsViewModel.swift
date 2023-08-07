@@ -124,6 +124,10 @@ public final class ParticipantsViewModel: ObservableObject {
         }
     }
 
+    public var sorted: [Participant] {
+        filtered.sorted(by: { ($0.auditor ?? false && !($1.auditor ?? false)) || (($0.admin ?? false) && !($1.admin ?? false)) })
+    }
+
     public func loadMore() {
         if !hasNext { return }
         preparePaginiation()

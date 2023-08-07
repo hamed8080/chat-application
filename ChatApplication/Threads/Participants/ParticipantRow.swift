@@ -56,6 +56,20 @@ struct ParticipantRow: View {
                                     .stroke(Color.blue, lineWidth: 1)
                             )
                     }
+
+                    if participant.auditor == true {
+                        Spacer()
+
+                        Text("Assistant")
+                            .padding([.leading, .trailing], 4)
+                            .padding([.top, .bottom], 2)
+                            .foregroundColor(Color.orange)
+                            .font(.subheadline)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(Color.orange, lineWidth: 1)
+                            )
+                    }
                 }
                 Spacer()
             }

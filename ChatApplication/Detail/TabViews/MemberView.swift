@@ -17,7 +17,7 @@ struct MemberView: View {
     var body: some View {
         ParticipantSearchView()
         LazyVStack(spacing: 0) {
-            ForEach(viewModel.filtered) { participant in
+            ForEach(viewModel.sorted) { participant in
                 ParticipantRow(participant: participant)
                     .onAppear {
                         if viewModel.participants.last == participant {

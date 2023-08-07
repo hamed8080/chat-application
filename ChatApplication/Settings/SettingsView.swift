@@ -13,130 +13,19 @@ import ChatModels
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject var viewModel: SettingViewModel
-    @EnvironmentObject var container: ObjectsContainer
-    var user: User? { container.userConfigsVM.currentUserConfig?.user }
-
     var body: some View {
-        VStack(spacing: 0) {
-            List {
-                Section {
-                    HStack {
-                        Spacer()
-                        Circle()
-                            .fill(Color.gray.opacity(0.08))
-                            .frame(width: 128, height: 128)
-                            .shadow(color: .black, radius: 20, x: 0, y: 0)
-                            .overlay(
-                                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: user?.image, userName: user?.username ?? user?.name, size: .LARG)
-                                    .id("\(user?.image ?? "")\(user?.id ?? 0)")
-                                    .font(.system(size: 16).weight(.heavy))
-                                    .foregroundColor(.white)
-                                    .frame(width: 128, height: 128)
-                                    .background(Color.blue.opacity(0.4))
-                                    .cornerRadius(64)
-                            )
-                            .gesture(
-                                DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                                    .onEnded { value in
-                                        if value.translation.height != 0 {
-                                            // TODO: Switch user with swipe action
-//                                            viewModel.switchUser(isNext: value.translation.height < 0)
-                                        }
-                                    }
-                            )
-                        Spacer()
-                    }
-                    .noSeparators()
-
-                    HStack {
-                        Spacer()
-                        VStack(spacing: 12) {
-                            Text(user?.name ?? "")
-                                .font(.iransansBoldTitle)
-
-                            Text(user?.cellphoneNumber ?? "")
-                                .font(.iransansSubheadline)
-                        }
-                        Spacer()
-                    }
-                    .padding([.top, .bottom], 25)
-                    .noSeparators()
-                }
-                .padding()
-
-                Group {
-                    Section {
-                        NavigationLink {} label: {
-                            HStack {
-                                Image(systemName: "gear")
-                                    .foregroundColor(.blue)
-                                Text("Setting")
-                            }
-                        }
-                    }
-
-                    Section {
-                        NavigationLink {} label: {
-                            HStack {
-                                Image(systemName: "phone")
-                                    .foregroundColor(.green)
-                                Text("Calls")
-                            }
-                        }
-                    }
-
-                    NavigationLink {} label: {
-                        HStack {
-                            Image(systemName: "bookmark")
-                                .foregroundColor(.purple)
-                            Text("Saved Messages")
-                        }
-                    }
-
-                    NavigationLink {
-                        LogView()
-                    } label: {
-                        HStack {
-                            Image(systemName: "note.text")
-                                .foregroundColor(.purple)
-                            Text("Logs")
-                        }
-                    }
-
-                    NavigationLink {
-                        AssistantView()
-                    } label: {
-                        HStack {
-                            Image(systemName: "person.badge.shield.checkmark")
-                                .foregroundColor(.purple)
-                            Text("Assistants")
-                        }
-                    }
-
-                    Section(header: Text("Manage Calls").font(.headline)) {
-                        Button {
-                            ChatManager.activeInstance?.user.logOut()
-                            TokenManager.shared.clearToken()
-                            UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
-                            container.reset()
-                        } label: {
-                            HStack {
-                                Image(systemName: "arrow.backward.circle")
-                                    .foregroundColor(.red)
-                                    .font(.body.weight(.bold))
-                                Text("Logout")
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color.red)
-                                Spacer()
-                            }
-                        }
-                        TokenExpireView()
-                    }
-                }
-                .font(.iransansSubheadline)
-                .padding(8)
+        List {
+            UserProfileView()
+            Group {
+                SettingSettingSection()
+                SettingCallHistorySection()
+                SettingSavedMessagesSection()
+                SettingLogSection()
+                SettingAssistantSection()
+                SettingCallSection()
             }
+            .font(.iransansSubheadline)
+            .padding(8)
         }
         .listStyle(.insetGrouped)
         .toolbar {
@@ -158,6 +47,152 @@ struct SettingsView: View {
             }
         }
         .navigationTitle(Text("Settings"))
+    }
+}
+
+struct SettingSettingSection: View {
+    var body: some View {
+        Section {
+            NavigationLink {} label: {
+                HStack {
+                    Image(systemName: "gear")
+                        .foregroundColor(.blue)
+                    Text("Setting")
+                }
+            }
+        }
+    }
+}
+
+struct SettingCallHistorySection: View {
+    var body: some View {
+        Section {
+            NavigationLink {} label: {
+                HStack {
+                    Image(systemName: "phone")
+                        .foregroundColor(.green)
+                    Text("Calls")
+                }
+            }
+        }
+    }
+}
+
+struct SettingSavedMessagesSection: View {
+    var body: some View {
+        NavigationLink {} label: {
+            HStack {
+                Image(systemName: "bookmark")
+                    .foregroundColor(.purple)
+                Text("Saved Messages")
+            }
+        }
+    }
+}
+
+struct SettingLogSection: View {
+    var body: some View {
+        NavigationLink {
+            LogView()
+        } label: {
+            HStack {
+                Image(systemName: "note.text")
+                    .foregroundColor(.purple)
+                Text("Logs")
+            }
+        }
+    }
+}
+
+struct SettingAssistantSection: View {
+    var body: some View {
+        NavigationLink {
+            AssistantView()
+        } label: {
+            HStack {
+                Image(systemName: "person.badge.shield.checkmark")
+                    .foregroundColor(.purple)
+                Text("Assistants")
+            }
+        }
+    }
+}
+
+struct UserProfileView: View {
+    @EnvironmentObject var container: ObjectsContainer
+    var user: User? { container.userConfigsVM.currentUserConfig?.user }
+
+    var body: some View {
+        Section {
+            HStack {
+                Spacer()
+                Circle()
+                    .fill(Color.gray.opacity(0.08))
+                    .frame(width: 128, height: 128)
+                    .shadow(color: .black, radius: 20, x: 0, y: 0)
+                    .overlay(
+                        ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: user?.image, userName: user?.username ?? user?.name, size: .LARG)
+                            .id("\(user?.image ?? "")\(user?.id ?? 0)")
+                            .font(.system(size: 16).weight(.heavy))
+                            .foregroundColor(.white)
+                            .frame(width: 128, height: 128)
+                            .background(Color.blue.opacity(0.4))
+                            .cornerRadius(64)
+                    )
+                    .gesture(
+                        DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                            .onEnded { value in
+                                if value.translation.height != 0 {
+                                    // TODO: Switch user with swipe action
+                                    //                                            viewModel.switchUser(isNext: value.translation.height < 0)
+                                }
+                            }
+                    )
+                Spacer()
+            }
+            .noSeparators()
+
+            HStack {
+                Spacer()
+                VStack(spacing: 12) {
+                    Text(user?.name ?? "")
+                        .font(.iransansBoldTitle)
+
+                    Text(user?.cellphoneNumber ?? "")
+                        .font(.iransansSubheadline)
+                }
+                Spacer()
+            }
+            .padding([.top, .bottom], 25)
+            .noSeparators()
+        }
+        .padding()
+    }
+}
+
+struct SettingCallSection: View {
+    @EnvironmentObject var container: ObjectsContainer
+
+    var body: some View {
+        Section(header: Text("Manage Calls").font(.headline)) {
+            Button {
+                ChatManager.activeInstance?.user.logOut()
+                TokenManager.shared.clearToken()
+                UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
+                container.reset()
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.backward.circle")
+                        .foregroundColor(.red)
+                        .font(.body.weight(.bold))
+                    Text("Logout")
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.red)
+                    Spacer()
+                }
+            }
+            TokenExpireView()
+        }
     }
 }
 
