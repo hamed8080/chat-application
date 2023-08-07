@@ -45,6 +45,7 @@ public struct SectionImageView: View {
                 Spacer()
                 image
                     .resizable()
+                    .scaledToFit()
                     .frame(maxWidth: 96, maxHeight: 96)
                     .scaledToFit()
                     .padding()

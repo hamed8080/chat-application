@@ -9,6 +9,7 @@ import Chat
 import ChatAppUI
 import ChatAppViewModels
 import ChatCore
+import ChatDTO
 import ChatModels
 import Logger
 import SwiftUI
@@ -57,13 +58,25 @@ struct AssistantView: View {
                 }
                 .disabled(viewModel.assistants.count == 0)
 
-                NavigationLink(value: Assistant()) {
-                    Label("Histories", systemImage: "clock")
+                Menu {
+                    NavigationLink(value: Assistant()) {
+                        Label("Histories", systemImage: "clock")
+                    }
+
+                    NavigationLink(value: BlockedAssistantsRequest()) {
+                        Label("Blocked Assistants", systemImage: "hand.raised")
+                    }
+                } label: {
+                    Label("More", systemImage: "ellipsis.circle")
                 }
             }
         }
         .navigationDestination(for: Assistant.self) { _ in
             AssistantHistoryView()
+        }
+        .navigationDestination(for: BlockedAssistantsRequest.self) { _ in
+            BlockedAssistantsView()
+                .environmentObject(viewModel)
         }
         .sheet(isPresented: $viewModel.showAddAssistantSheet) {
             PickAssitstantListView()
@@ -77,18 +90,24 @@ struct PickAssitstantListView: View {
     @StateObject var contactsVM = ContactsViewModel()
 
     var body: some View {
-        List {
-            ForEach(contactsVM.contacts) { contact in
-                AddAssistantRow(contact: contact)
-                    .onTapGesture {
-                        viewModel.registerAssistant(contact)
-                        viewModel.showAddAssistantSheet = false
+        NavigationView {
+            Form {
+                List {
+                    SectionTitleView(title: "Select your assistant")
+                    SectionImageView(image: Image(systemName: "figure.stand.line.dotted.figure.stand"))
+                    ForEach(contactsVM.contacts) { contact in
+                        AddAssistantRow(contact: contact)
+                            .onTapGesture {
+                                viewModel.registerAssistant(contact)
+                                viewModel.showAddAssistantSheet = false
+                            }
+                            .onAppear {
+                                if contactsVM.contacts.last == contact {
+                                    contactsVM.loadMore()
+                                }
+                            }
                     }
-                    .onAppear {
-                        if contactsVM.contacts.last == contact {
-                            contactsVM.loadMore()
-                        }
-                    }
+                }
             }
         }
     }

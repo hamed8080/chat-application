@@ -7,6 +7,7 @@
 import Chat
 import ChatAppUI
 import ChatAppViewModels
+import ChatExtensions
 import ChatModels
 import SwiftUI
 
@@ -41,6 +42,24 @@ struct AssistantRow: View {
             }
         }
         .buttonStyle(.plain)
+        .contextMenu {
+            if assistant.block == nil || assistant.block == false {
+                Button {
+                    viewModel.block(assistant)
+                } label: {
+                    Label("Block", systemImage: "hand.raised")
+                        .foregroundStyle(.red)
+                }
+            }
+
+            if assistant.block == true {
+                Button {
+                    viewModel.unblock(assistant)
+                } label: {
+                    Label("UNBlock", systemImage: "hand.raised.slash")
+                }
+            }
+        }
     }
 }
 
@@ -62,7 +81,7 @@ struct SelectAssistantRadio: View {
                 .foregroundColor(Color.blue)
         }
         .frame(width: isInSelectionMode ? 22 : 0.001, height: isInSelectionMode ? 22 : 0.001, alignment: .center)
-        .padding(isInSelectionMode ? 24 : 0.001)
+        .padding([.trailing], isInSelectionMode ? 8 : 0.001)
         .scaleEffect(x: isInSelectionMode ? 1.0 : 0.001, y: isInSelectionMode ? 1.0 : 0.001, anchor: .center)
         .onTapGesture {
             withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {

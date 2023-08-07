@@ -22,6 +22,7 @@ public final class AssistantViewModel: ObservableObject {
     public private(set) var firstSuccessResponse = false
     private var canLoadNextPage: Bool { !isLoading && hasNext }
     @Published public private(set) var assistants: [Assistant] = []
+    @Published public private(set) var blockedAssistants: [Assistant] = []
     @Published public var isLoading = false
     @Published public var showAddAssistantSheet = false
     @Published public var isInSelectionMode = false
@@ -52,6 +53,12 @@ public final class AssistantViewModel: ObservableObject {
             onRegisterAssistant(response)
         case .deactive(let response):
             onDeactiveAssistant(response)
+        case .block(let response):
+            onBlockAssistant(response)
+        case .unblock(let response):
+            onUnBlockAssistant(response)
+        case .blockedList(let response):
+            onBlockedListAssistant(response)
         default:
             break
         }
@@ -120,9 +127,52 @@ public final class AssistantViewModel: ObservableObject {
         }
     }
 
+    public func block(_ assistant: Assistant) {
+        let req = BlockUnblockAssistantRequest(assistants: [assistant])
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.assistant.block(req)
+    }
+
+    public func onBlockAssistant(_ response: ChatResponse<[Assistant]>) {
+        if let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+            assistants.first(where: {$0.participant?.id == response.result?.first?.participant?.id})?.block = true
+            requests.removeValue(forKey: uniqueId)
+        }
+    }
+
+    public func unblock(_ assistant: Assistant) {
+        let req = BlockUnblockAssistantRequest(assistants: [assistant])
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.assistant.unblock(req)
+    }
+
+    public func onUnBlockAssistant(_ response: ChatResponse<[Assistant]>) {
+        if let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+            assistants.first(where: {$0.participant?.id == response.result?.first?.participant?.id})?.block = false
+            requests.removeValue(forKey: uniqueId)
+        }
+    }
+
+    public func blockedList() {
+        let req = BlockedAssistantsRequest()
+        requests[req.uniqueId] = req
+        ChatManager.activeInstance?.assistant.blockedList(req)
+    }
+
+    public func onBlockedListAssistant(_ response: ChatResponse<[Assistant]>) {
+        if let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+            response.result?.forEach{ blockedAssistant in
+                if !blockedAssistants.contains(where: {$0.id == blockedAssistant.id}) {
+                    blockedAssistants.append(blockedAssistant)
+                }
+            }
+            requests.removeValue(forKey: uniqueId)
+        }
+    }
+
     public func registerAssistant(_ contact: Contact) {
         let assistant = Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
-        let req = RegisterAssistantsRequest(assistants: [.init(assistant: assistant, roles: Roles.adminRoles)])
+        let req = RegisterAssistantsRequest(assistants: [.init(assistant: assistant, roles: Roles.allCases.filter({$0 != .unknown}))])
         requests[req.uniqueId] = req
         ChatManager.activeInstance?.assistant.register(req)
     }

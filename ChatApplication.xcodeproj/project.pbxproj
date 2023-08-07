@@ -14,6 +14,7 @@
 		0505C4E52869A1C90034A9F0 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E42869A1C90034A9F0 /* LogView.swift */; };
 		0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505C4E62869A4220034A9F0 /* LogRow.swift */; };
 		050C5AA22970861E00CD5702 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA0297082BE00CD5702 /* DetailView.swift */; };
+		0513A5C72A81590B007D5382 /* BlockedAssistantsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0513A5C62A81590B007D5382 /* BlockedAssistantsView.swift */; };
 		05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05140CD429C086BE00C8E22D /* MapPickerView.swift */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
@@ -142,6 +143,7 @@
 		0505C4E42869A1C90034A9F0 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		0505C4E62869A4220034A9F0 /* LogRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogRow.swift; sourceTree = "<group>"; };
 		050C5AA0297082BE00CD5702 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
+		0513A5C62A81590B007D5382 /* BlockedAssistantsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedAssistantsView.swift; sourceTree = "<group>"; };
 		05140CD429C086BE00C8E22D /* MapPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPickerView.swift; sourceTree = "<group>"; };
 		051D58E329926D7800DC066A /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
@@ -388,6 +390,7 @@
 			children = (
 				059281BE2A227961006C7E56 /* AssistantView.swift */,
 				05027FD42A7FAD7F00566C35 /* AssistantHistoryView.swift */,
+				0513A5C62A81590B007D5382 /* BlockedAssistantsView.swift */,
 				059281C02A227C3C006C7E56 /* AssistantRow.swift */,
 			);
 			path = Assistant;
@@ -805,6 +808,7 @@
 				05B7C8D92A566A6400171AF4 /* UnknownMessageType.swift in Sources */,
 				05297DEB2A4B26C600B14235 /* ThreadRowActionMenu.swift in Sources */,
 				05ED6AE22A5ABD7A006F0D77 /* ThreadViewCenterToolbar.swift in Sources */,
+				0513A5C72A81590B007D5382 /* BlockedAssistantsView.swift in Sources */,
 				05CC8A172A45D4180051B339 /* JoinToPublicThreadView.swift in Sources */,
 				050C5AA22970861E00CD5702 /* DetailView.swift in Sources */,
 				05297DD52A4B174500B14235 /* ForwardMessageRow.swift in Sources */,
