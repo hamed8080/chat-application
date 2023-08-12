@@ -79,7 +79,9 @@ extension ThreadViewModel {
 //                animateObjectWillChange()
 //            }
             onSearch(response)
-
+            if !response.cache, let messageIds = response.result?.filter({$0.reactionableType}).compactMap({$0.id}) {
+                getReaction(messageIds)
+            }
             break
         case .queueTextMessages(let response):
             onQueueTextMessages(response)

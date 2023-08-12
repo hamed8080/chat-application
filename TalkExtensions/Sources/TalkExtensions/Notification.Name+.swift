@@ -17,6 +17,7 @@ public extension Notification.Name {
     static let participant = Notification.Name("participant")
     static let tag = Notification.Name("tag")
     static let map = Notification.Name("map")
+    static let reaction = Notification.Name("reaction")
     static let user = Notification.Name("user")
     static let connect = Notification.Name("assistant")
     static let message = Notification.Name("message")
@@ -62,6 +63,8 @@ public extension NotificationCenter {
             Self.default.post(name: .participant, object: participantEventTypes)
         case let .map(mapEventTypes):
             Self.default.post(name: .map, object: mapEventTypes)
+        case let .reaction(reactionEventTypes):
+            Self.default.post(name: .reaction, object: reactionEventTypes)
         }
     }
 }

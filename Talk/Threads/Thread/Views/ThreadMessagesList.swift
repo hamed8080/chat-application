@@ -142,14 +142,14 @@ struct MessageList: View {
 
 struct ThreadMessagesList_Previews: PreviewProvider {
     struct Preview: View {
-        @State var viewModel = ThreadViewModel(thread: Conversation())
+        @StateObject var viewModel = ThreadViewModel(thread: Conversation(id: 1))
 
         var body: some View {
             ThreadMessagesList(viewModel: viewModel)
                 .environmentObject(viewModel)
                 .onAppear {
-                    viewModel.thread = Conversation(unreadCount: 1)
-                    viewModel.objectWillChange.send()
+                    viewModel.appendMessages([.init(threadId: 1, id: 1, message: "Test Message", messageType: .text, conversation: viewModel.thread)])
+                    viewModel.animateObjectWillChange()
                 }
         }
     }

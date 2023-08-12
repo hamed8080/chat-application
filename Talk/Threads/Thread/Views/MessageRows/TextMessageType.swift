@@ -17,9 +17,14 @@ struct TextMessageType: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     let viewModel: MessageRowViewModel
+    @State private var showReactionsOverlay = false
 
     var body: some View {
         HStack(spacing: 8) {
+            if showReactionsOverlay {
+                ReactionMenuView()
+            }
+
             if !viewModel.isMe {
                 SelectMessageRadio()
             }
@@ -29,6 +34,12 @@ struct TextMessageType: View {
             }
 
             MutableMessageView()
+            Button {
+                showReactionsOverlay.toggle()
+            } label: {
+                Image(systemName: "face.smiling.inverse")
+                    .frame(width: 36, height: 36)
+            }
 
             if !viewModel.isMe {
                 Spacer()
@@ -172,6 +183,7 @@ struct MutableMessageView: View {
                 UIApplication.shared.open(url)
             }
         }, including: message.isVideo ? .subviews : .all)
+        .contentShape(RoundedRectangle(cornerRadius: 12))
         .contextMenu {
             MessageActionMenu()
                 .environmentObject(viewModel)
@@ -185,21 +197,22 @@ struct MutableMessageView: View {
 
 struct TextMessageType_Previews: PreviewProvider {
     struct Preview: View {
-        var viewModel: MessageRowViewModel {
-            let message = MockData.mockDataModel.messages.first(where: {$0.id == 1212263417})
-            AppState.shared.cachedUser = .init(id: 3463768)
-            return MessageRowViewModel(
-                message: message!, viewModel: .init(thread: .init(id: 1))
-            )
-        }
+        @StateObject var viewModel: MessageRowViewModel = .init(
+            message: .init(
+                id: 1,
+                message: "TEST",
+                seen: true,
+                time: UInt(Date().millisecondsSince1970), participant: Participant(id: 0, name: "John Doe")
+            ),
+            viewModel: .init(thread: Conversation(id: 1))
+        )
 
         var body: some View {
-            TextMessageType(viewModel: viewModel)
-                .environmentObject(viewModel)
-                .environmentObject(NavigationModel())
-                .onAppear(perform: {
-
-                })
+            List {
+                TextMessageType(viewModel: viewModel)
+            }
+            .environmentObject(viewModel)
+            .environmentObject(NavigationModel())
         }
     }
 

@@ -47,6 +47,7 @@ public extension Message {
     var isImage: Bool { messageType == .podSpacePicture || messageType == .picture }
     var isAudio: Bool { [MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice].contains(messageType ?? .unknown) }
     var isVideo: Bool { [MessageType.video, .podSpaceVideo, .video].contains(messageType ?? .unknown) }
+    var reactionableType: Bool { ![MessageType.endCall, .endCall, .participantJoin, .participantLeft].contains(type) }
 
     var hardLink: URL? {
         guard
