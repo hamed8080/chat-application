@@ -36,6 +36,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var isSelected = false
     public var myReaction: Reaction?
     public var requests: [String: Any] = [:]
+    public var showReactionsOverlay = false
 
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
@@ -233,13 +234,13 @@ public final class MessageRowViewModel: ObservableObject {
         return calculatedWidth
     }
 
-    public func reaction(_ emoji: String) {
+    public func reaction(_ emojiId: Int) {
         if myReaction != nil {
-            let req = ReplaceReactionRequest(messageId: message.id ?? -1, conversationId: threadVM?.threadId ?? -1, reaction: emoji)
+            let req = ReplaceReactionRequest(messageId: message.id ?? -1, conversationId: threadVM?.threadId ?? -1, reaction: emojiId)
             requests[req.uniqueId] = req
             ChatManager.activeInstance?.reaction.replace(req)
         } else {
-            let req = AddReactionRequest(messageId: message.id ?? -1, conversationId: threadVM?.threadId ?? -1, reaction: emoji)
+            let req = AddReactionRequest(messageId: message.id ?? -1, conversationId: threadVM?.threadId ?? -1, reaction: emojiId)
             requests[req.uniqueId] = req
             ChatManager.activeInstance?.reaction.add(req)
         }

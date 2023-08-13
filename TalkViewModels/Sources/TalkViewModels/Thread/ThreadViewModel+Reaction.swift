@@ -26,6 +26,10 @@ extension ThreadViewModel {
                 viewModel.onReactionList()
             }
         }
-        ChatManager.activeInstance?.reaction.get(.init(messageIds: requestReactionIds, conversationId: threadId))
+//        ChatManager.activeInstance?.reaction.get(.init(messageIds: requestReactionIds, conversationId: threadId))
+    }
+
+    public func getReactionDetail(_ messageId: Int) {
+        ChatManager.activeInstance?.reaction.get(.init(messageId: messageId, conversationId: threadId))
     }
 }

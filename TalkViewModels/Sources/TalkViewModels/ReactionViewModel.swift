@@ -37,6 +37,10 @@ public final class ReactionViewModel: ObservableObject {
         }
     }
 
+    public func getDetail(for messageId: Int, conversationId: Int) {
+        ChatManager.activeInstance?.reaction.get(.init(messageId: messageId, conversationId: conversationId))
+    }
+
     public func onList(_ response: ChatResponse<[ReactionList]>) {
         response.result?.forEach{ list in
             if let messageId = list.messageId, let reactions = list.reactions {
