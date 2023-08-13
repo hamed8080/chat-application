@@ -55,6 +55,9 @@
 		05384A8227929F4A00D85A92 /* AddThreadToTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A8127929F4A00D85A92 /* AddThreadToTagsView.swift */; };
 		05384A842792A10100D85A92 /* TagRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A832792A10100D85A92 /* TagRow.swift */; };
 		053F455C2A65062800A84A83 /* SideBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053F455B2A65062800A84A83 /* SideBarView.swift */; };
+		054B09E82A88CC79001417DA /* MessageReactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054B09E72A88CC79001417DA /* MessageReactionDetailView.swift */; };
+		054B09EA2A88CCC1001417DA /* OverlayEmojiViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054B09E92A88CCC1001417DA /* OverlayEmojiViews.swift */; };
+		054B09EC2A88CDAA001417DA /* EmojiIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054B09EB2A88CDAA001417DA /* EmojiIcon.swift */; };
 		054B93312A5837350076BF0B /* MoveToBottomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054B93302A5837350076BF0B /* MoveToBottomButton.swift */; };
 		055024C22987E794009DDD18 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 055024C12987E794009DDD18 /* Swipy */; };
 		055B269827D5F9E40098D585 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B269727D5F9E40098D585 /* MemberView.swift */; };
@@ -184,6 +187,9 @@
 		053F969429EE6F6800DB8AEA /* ChatAppExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ChatAppExtensions; sourceTree = "<group>"; };
 		053F969529EE6F6800DB8AEA /* ChatAppModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ChatAppModels; sourceTree = "<group>"; };
 		053F969629EE6F6800DB8AEA /* ChatAppUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ChatAppUI; sourceTree = "<group>"; };
+		054B09E72A88CC79001417DA /* MessageReactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionDetailView.swift; sourceTree = "<group>"; };
+		054B09E92A88CCC1001417DA /* OverlayEmojiViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayEmojiViews.swift; sourceTree = "<group>"; };
+		054B09EB2A88CDAA001417DA /* EmojiIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiIcon.swift; sourceTree = "<group>"; };
 		054B93302A5837350076BF0B /* MoveToBottomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveToBottomButton.swift; sourceTree = "<group>"; };
 		055B269727D5F9E40098D585 /* MemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberView.swift; sourceTree = "<group>"; };
 		055B269927D5F9F00098D585 /* PictureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureView.swift; sourceTree = "<group>"; };
@@ -326,6 +332,8 @@
 				05B7C8D82A566A6400171AF4 /* UnknownMessageType.swift */,
 				0597FD602A56E1D1003E70FE /* UnreadMessagesBubble.swift */,
 				059C98732A873E890025BB53 /* ReactionMenuView.swift */,
+				054B09E92A88CCC1001417DA /* OverlayEmojiViews.swift */,
+				054B09EB2A88CDAA001417DA /* EmojiIcon.swift */,
 			);
 			path = MessageRows;
 			sourceTree = "<group>";
@@ -425,6 +433,7 @@
 				054B93302A5837350076BF0B /* MoveToBottomButton.swift */,
 				05ED6AE12A5ABD7A006F0D77 /* ThreadViewCenterToolbar.swift */,
 				05ED6AE32A5ABE19006F0D77 /* ThreadViewTrailingToolbar.swift */,
+				054B09E72A88CC79001417DA /* MessageReactionDetailView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -837,10 +846,12 @@
 				AC6D532426F1AE8C00CBC059 /* MessageRowFactory.swift in Sources */,
 				AC122EC4266B83A800C0630F /* SettingsView.swift in Sources */,
 				055B26A227D5FA180098D585 /* LinkView.swift in Sources */,
+				054B09E82A88CC79001417DA /* MessageReactionDetailView.swift in Sources */,
 				054B93312A5837350076BF0B /* MoveToBottomButton.swift in Sources */,
 				ACEAEDD7274CFA1100EC8252 /* AttachmentDialog.swift in Sources */,
 				051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */,
 				05297DDC2A4B17E600B14235 /* TextMessageType.swift in Sources */,
+				054B09EC2A88CDAA001417DA /* EmojiIcon.swift in Sources */,
 				05C5665429BEF32A002E72F7 /* ThreadSheetView.swift in Sources */,
 				05297DE12A4B24DE00B14235 /* ThreadImageView.swift in Sources */,
 				05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */,
@@ -863,6 +874,7 @@
 				052D5738279539840075BF8F /* TagParticipantRow.swift in Sources */,
 				AC10007926F46B4100C3AD67 /* LoginView.swift in Sources */,
 				059C98742A873E890025BB53 /* ReactionMenuView.swift in Sources */,
+				054B09EA2A88CCC1001417DA /* OverlayEmojiViews.swift in Sources */,
 				0505C4E72869A4220034A9F0 /* LogRow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

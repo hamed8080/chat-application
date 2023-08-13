@@ -48,6 +48,10 @@ struct ThreadMessagesList: View {
                 .onEnded { _ in
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     viewModel.isProgramaticallyScroll = false
+                    viewModel.messageViewModels.filter(\.showReactionsOverlay).forEach { rowViewModel in
+                        rowViewModel.showReactionsOverlay = false
+                        rowViewModel.animateObjectWillChange()
+                    }
                 }
         )
         .simultaneousGesture(
@@ -55,6 +59,10 @@ struct ThreadMessagesList: View {
                 .onChanged { _ in
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     viewModel.isProgramaticallyScroll = false
+                    viewModel.messageViewModels.filter(\.showReactionsOverlay).forEach { rowViewModel in
+                        rowViewModel.showReactionsOverlay = false
+                        rowViewModel.animateObjectWillChange()
+                    }
                 }
         )
     }

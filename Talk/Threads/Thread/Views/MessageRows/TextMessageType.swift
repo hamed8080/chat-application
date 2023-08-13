@@ -47,82 +47,6 @@ struct TextMessageType: View {
     }
 }
 
-struct EmojiIcon: View {
-    @EnvironmentObject var viewModel: MessageRowViewModel
-    @State private var showReactionDetail = false
-
-    var body: some View {
-        VStack {
-            HStack {
-                Image(systemName: "face.smiling.inverse")
-                    .frame(width: 36, height: 36)
-                    .foregroundColor(.orange)
-                    .offset(x: -8)
-                    .onTapGesture {
-                        withAnimation(.easeInOut) {
-                            viewModel.showReactionsOverlay.toggle()
-                            viewModel.animateObjectWillChange()
-                        }
-                    }
-                    .onLongPressGesture {
-                        withAnimation(.easeInOut) {
-                            showReactionDetail = true
-                        }
-                    }
-                    .fullScreenCover(isPresented: $showReactionDetail) {
-                        MessageReactionDetail(messageId: viewModel.message.id ?? -1, conversationId: viewModel.threadVM?.threadId ?? -1)
-                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                            .fullScreenBackgroundView()
-                            .ignoresSafeArea(.all)
-                    }
-            }
-            Spacer()
-        }
-    }
-}
-
-struct MessageReactionDetail: View {
-    @EnvironmentObject var viewModel: ReactionViewModel
-    let messageId: Int
-    let conversationId: Int
-    @Environment(\.dismiss) var dismiss
-
-    var body: some View {
-        List {
-            ForEach(viewModel.reactions.first(where: { $0.key == messageId })?.value ?? []) { reaction in
-                Text(reaction.reaction ?? "")
-            }
-        }
-        .task {
-            viewModel.getDetail(for: messageId, conversationId: conversationId)
-        }
-        .onTapGesture {
-            dismiss()
-        }
-    }
-}
-
-struct OverlayEmojiViews: View {
-    @EnvironmentObject var viewModel: MessageRowViewModel
-
-    var body: some View {
-        if viewModel.showReactionsOverlay {
-            HStack {
-                if viewModel.isMe {
-                    Spacer()
-                }
-
-                ReactionMenuView()
-                    .offset(y: -86)
-
-                if !viewModel.isMe {
-                    Spacer()
-                }
-            }
-        }
-    }
-}
-
 struct SelectMessageRadio: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
@@ -278,8 +202,10 @@ struct TextMessageType_Previews: PreviewProvider {
         )
 
         var body: some View {
-            List {
-                TextMessageType(viewModel: viewModel)
+            NavigationSplitView {} content: {} detail: {
+                ScrollView {
+                    TextMessageType(viewModel: viewModel)
+                }
             }
             .environmentObject(viewModel)
             .environmentObject(NavigationModel())

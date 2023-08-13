@@ -16,6 +16,7 @@ public final class ReactionViewModel: ObservableObject {
     public var reactions: [Int: [Reaction]] = [:]
     private var cancelable: Set<AnyCancellable> = []
     public static let shared: ReactionViewModel = .init()
+    @Published public var selectedMessageReactionDetails: ReactionList?
     
     private init() {
         NotificationCenter.default.publisher(for: .reaction)
@@ -29,7 +30,7 @@ public final class ReactionViewModel: ObservableObject {
     public func onReaction(_ event: ReactionEventTypes) {
         switch event {
         case .list(let chatResponse):
-            onList(chatResponse)
+            onDetail(chatResponse)
         case .add(let chatResponse):
             onAdd(chatResponse)
         case .reaplce(let chatResponse):
@@ -41,12 +42,16 @@ public final class ReactionViewModel: ObservableObject {
         ChatManager.activeInstance?.reaction.get(.init(messageId: messageId, conversationId: conversationId))
     }
 
-    public func onList(_ response: ChatResponse<[ReactionList]>) {
-        response.result?.forEach{ list in
-            if let messageId = list.messageId, let reactions = list.reactions {
-                self.reactions[messageId] = reactions
-            }
-        }
+//    public func onList(_ response: ChatResponse<[MessageReactionDetail]>) {
+//        response.result?.forEach{ list in
+//            if let messageId = list.messageId, let reactions = list.reactions {
+//                self.reactions[messageId] = reactions
+//            }
+//        }
+//    }
+
+    public func onDetail(_ response: ChatResponse<ReactionList>) {
+        selectedMessageReactionDetails = response.result
     }
 
     public func onAdd(_ response: ChatResponse<ReactionMessageResponse>) {

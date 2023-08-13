@@ -45,6 +45,7 @@ enum Emoji: Int, CaseIterable, Identifiable {
 
 struct ReactionMenuView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
+    @State var show = false
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -59,6 +60,15 @@ struct ReactionMenuView: View {
                             .frame(width: 36, height: 36)
                             .font(.system(size: 36))
                             .padding([isFirst ? .leading : isLast ? .trailing : .all], isFirst || isLast ? 16 : 0)
+                    }
+                    .scaleEffect(x: show ? 1.0 : 0.001, y: show ? 1.0 : 0.001, anchor: .center)
+                    .transition(.scale)
+                    .onAppear {
+                        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                            withAnimation(.spring(response: 0.55, dampingFraction: 0.55, blendDuration: 0.5)) {
+                                show = true
+                            }
+                        }
                     }
                 }
             }
@@ -77,11 +87,17 @@ struct ReactionMenuView: View {
 
 struct ReactionMenuView_Previews: PreviewProvider {
     struct Preview: View {
-        let message = Message(id: 1, message: "TEST", messageType: .text)
-
+        static let message = Message(id: 1, message: "TEST", messageType: .text)
+        @StateObject var viewModel = MessageRowViewModel(message: Preview.message, viewModel: ThreadViewModel(thread: Conversation(id: 1)))
         var body: some View {
             ReactionMenuView()
-                .environmentObject(MessageRowViewModel(message: message, viewModel: ThreadViewModel(thread: Conversation(id: 1))))
+                .environmentObject(viewModel)
+                .onAppear {
+                    Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
+                        viewModel.showReactionsOverlay = true
+                        viewModel.animateObjectWillChange()
+                    }
+                }
         }
     }
 

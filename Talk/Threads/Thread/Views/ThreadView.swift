@@ -16,7 +16,7 @@ import TalkViewModels
 struct ThreadView: View, DropDelegate {
     private var thread: Conversation { viewModel.thread }
     @EnvironmentObject var viewModel: ThreadViewModel
-    @EnvironmentObject var threadsVM: ThreadsViewModel
+    let threadsVM: ThreadsViewModel
     @State var isInEditMode: Bool = false
     @State var deleteDialaog: Bool = false
     @State var searchMessageText: String = ""
@@ -120,7 +120,7 @@ struct ThreadView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadView()
+        ThreadView(threadsVM: ThreadsViewModel())
             .environmentObject(ThreadViewModel(thread: MockData.thread))
             .environmentObject(AppState.shared)
             .onAppear {

@@ -53,8 +53,7 @@ struct iPadStackContentView<Content: View>: View {
                     }
                     .navigationDestination(for: Conversation.self) { thread in
                         if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
-                            ThreadView()
-                                .environmentObject(container.appOverlayVM)
+                            ThreadView(threadsVM: container.threadsVM)
                                 .environmentObject(viewModel)
                         }
                     }
@@ -103,8 +102,12 @@ struct iPhoneStackContentView<Content: View>: View {
                 }
                 .navigationDestination(for: Conversation.self) { thread in
                     if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
+<<<<<<< HEAD
                         ThreadView()
                             .environmentObject(container.appOverlayVM)
+=======
+                        ThreadView(threadsVM: container.threadsVM)
+>>>>>>> 96aedc0 (- Add ui for details when long press over reaction button)
                             .environmentObject(viewModel)
                     }
                 }
