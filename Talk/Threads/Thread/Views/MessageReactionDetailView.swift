@@ -16,14 +16,14 @@ struct MessageReactionDetailView: View {
     let conversationId: Int
     @Environment(\.dismiss) var dismiss
     @State private var reactionDeatils: ReactionList?
-    @StateObject private var imageLoader = ImageLoaderViewModel()
 
     var body: some View {
         List {
             ForEach(reactionDeatils?.reactions ?? []) { reaction in
                 HStack {
                     Text(Emoji(rawValue: reaction.reaction ?? -1)?.emoji ?? "")
-                    ImageLaoderView(imageLoader: imageLoader, url: reaction.participant?.image, userName: reaction.participant?.name)
+                    ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: reaction.participant?.image, userName: reaction.participant?.name)
+                        .id(reaction.participant?.id)
                         .font(.iransansBoldCaption2)
                         .foregroundColor(.white)
                         .frame(width: 24, height: 24)
