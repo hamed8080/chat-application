@@ -5,6 +5,7 @@
 //  Created by hamed on 8/13/23.
 //
 
+import Chat
 import ChatAppUI
 import ChatAppViewModels
 import ChatModels
@@ -40,6 +41,13 @@ struct MessageReactionDetailView: View {
                                 .font(.iransansCaption3)
                                 .foregroundColor(Color.gray)
                         }
+                    }
+                }
+                .contextMenu {
+                    Button(role: .destructive) {
+                        ChatManager.activeInstance?.reaction.delete(.init(reactionId: reaction.id ?? -1))
+                    } label: {
+                        Label("Remove", systemImage: "trash")
                     }
                 }
             }

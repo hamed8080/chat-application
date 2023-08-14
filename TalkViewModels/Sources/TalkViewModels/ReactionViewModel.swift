@@ -35,6 +35,8 @@ public final class ReactionViewModel: ObservableObject {
             onAdd(chatResponse)
         case .reaplce(let chatResponse):
             onReplace(chatResponse)
+        case .delete(let chatResponse):
+            onDelete(chatResponse)
         }
     }
 
@@ -64,6 +66,14 @@ public final class ReactionViewModel: ObservableObject {
         if let messageId = response.result?.messageId, let reaction = response.result?.reactoin {
             self.reactions[messageId]?.removeAll(where: {$0.participant?.id == AppState.shared.user?.id})
             self.reactions[messageId]?.append(reaction)
+        }
+    }
+
+    public func onDelete(_ response: ChatResponse<ReactionMessageResponse>) {
+        if let reactionId = response.result?.reactoin?.id, let messageId = response.result?.messageId {
+            self.reactions[messageId]?.removeAll(where: {$0.id == reactionId})
+            selectedMessageReactionDetails?.reactions?.removeAll(where: { $0.id == reactionId })
+            animateObjectWillChange()
         }
     }
 
