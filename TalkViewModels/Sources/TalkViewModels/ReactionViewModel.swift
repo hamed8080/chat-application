@@ -14,6 +14,7 @@ import ChatDTO
 
 public final class ReactionViewModel: ObservableObject {
     public var reactions: [Int: [Reaction]] = [:]
+    public var reactionCountList: [ReactionCountList] = []
     private var cancelable: Set<AnyCancellable> = []
     public static let shared: ReactionViewModel = .init()
     @Published public var selectedMessageReactionDetails: ReactionList?
@@ -29,6 +30,8 @@ public final class ReactionViewModel: ObservableObject {
 
     public func onReaction(_ event: ReactionEventTypes) {
         switch event {
+        case .count(let chatResponse):
+            onCount(chatResponse)
         case .list(let chatResponse):
             onDetail(chatResponse)
         case .add(let chatResponse):
@@ -40,17 +43,23 @@ public final class ReactionViewModel: ObservableObject {
         }
     }
 
+    public func onCount(_ response: ChatResponse<[ReactionCountList]>) {
+        response.result?.forEach{ item in
+            if let index = reactionCountList.firstIndex(where: {$0.messageId == item.messageId}) {
+                reactionCountList[index] = item
+            } else {
+                self.reactionCountList.append(item)
+            }
+        }
+
+        if response.result?.count ?? 0 > 0 {
+            animateObjectWillChange()
+        }
+    }
+
     public func getDetail(for messageId: Int, conversationId: Int) {
         ChatManager.activeInstance?.reaction.get(.init(messageId: messageId, conversationId: conversationId))
     }
-
-//    public func onList(_ response: ChatResponse<[MessageReactionDetail]>) {
-//        response.result?.forEach{ list in
-//            if let messageId = list.messageId, let reactions = list.reactions {
-//                self.reactions[messageId] = reactions
-//            }
-//        }
-//    }
 
     public func onDetail(_ response: ChatResponse<ReactionList>) {
         selectedMessageReactionDetails = response.result
