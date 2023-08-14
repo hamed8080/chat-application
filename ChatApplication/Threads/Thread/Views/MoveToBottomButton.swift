@@ -11,11 +11,14 @@ import SwiftUI
 struct MoveToBottomButton: View {
     @EnvironmentObject var viewModel: ThreadViewModel
     @State private var isAtBottomOfTheList: Bool = true
+    @State private var timerToUpdate: Timer?
 
     var body: some View {
         Button {
-            viewModel.scrollToBottom()
-            isAtBottomOfTheList = true
+            withAnimation {
+                viewModel.scrollToBottom()
+                isAtBottomOfTheList = true
+            }
         } label: {
             Image(systemName: "chevron.down")
                 .resizable()
@@ -32,8 +35,7 @@ struct MoveToBottomButton: View {
         .shadow(color: .gray.opacity(0.4), radius: 10)
         .padding(.bottom, 16)
         .padding([.trailing], 8)
-        .scaleEffect(x: isAtBottomOfTheList ? 0.0 : 1.0, y: isAtBottomOfTheList ? 0.0 : 1.0, anchor: .center)
-        .animation(.easeInOut, value: isAtBottomOfTheList)
+        .scaleEffect(x: isAtBottomOfTheList ? 0.0001 : 1.0, y: isAtBottomOfTheList ? 0.0001 : 1.0, anchor: .center)
         .overlay(alignment: .top) {
             let unreadCount = viewModel.thread.unreadCount ?? 0
             let hide = unreadCount == 0 || isAtBottomOfTheList
@@ -42,7 +44,7 @@ struct MoveToBottomButton: View {
                 .fontDesign(.rounded)
                 .frame(height: hide ? 0 : 24)
                 .frame(minWidth: hide ? 0 : 24)
-                .scaleEffect(x: hide ? 0.0 : 1.0, y: hide ? 0.0 : 1.0, anchor: .center)
+                .scaleEffect(x: hide ? 0.0001 : 1.0, y: hide ? 0.0001 : 1.0, anchor: .center)
                 .background(.orange)
                 .foregroundColor(.white)
                 .cornerRadius(hide ? 0 : 24)
@@ -51,7 +53,13 @@ struct MoveToBottomButton: View {
         }
         .onReceive(viewModel.objectWillChange) { _ in
             if viewModel.isAtBottomOfTheList != isAtBottomOfTheList {
-                isAtBottomOfTheList = viewModel.isAtBottomOfTheList
+                timerToUpdate?.invalidate()
+                timerToUpdate = nil
+                timerToUpdate = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                    withAnimation {
+                        isAtBottomOfTheList = viewModel.isAtBottomOfTheList
+                    }
+                }
             }
         }
     }
