@@ -14,13 +14,18 @@ import SwiftUI
 struct MessageReactionDetailView: View {
     let message: Message
     private var messageId: Int { message.id ?? -1 }
-    let conversationId: Int
+    private var conversationId: Int { message.conversation?.id ?? -1 }
     @Environment(\.dismiss) var dismiss
     @State private var reactionDeatils: ReactionList?
+    @State private var reactions: [Reaction] = []
+
+    init(message: Message) {
+        self.message = message
+    }
 
     var body: some View {
         List {
-            ForEach(reactionDeatils?.reactions ?? []) { reaction in
+            ForEach(reactions) { reaction in
                 HStack {
                     Text(Emoji(rawValue: reaction.reaction ?? -1)?.emoji ?? "")
                     ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: reaction.participant?.image, userName: reaction.participant?.name)
@@ -45,7 +50,7 @@ struct MessageReactionDetailView: View {
                 }
                 .contextMenu {
                     Button(role: .destructive) {
-                        ChatManager.activeInstance?.reaction.delete(.init(reactionId: reaction.id ?? -1))
+                        ChatManager.activeInstance?.reaction.delete(.init(reactionId: reaction.id ?? -1, conversationId: conversationId))
                     } label: {
                         Label("Remove", systemImage: "trash")
                     }
@@ -53,12 +58,16 @@ struct MessageReactionDetailView: View {
             }
         }
         .navigationTitle("Reactions to: \(message.messageTitle.trimmingCharacters(in: .whitespacesAndNewlines))")
-        .task {
+        .onAppear {
             ReactionViewModel.shared.getDetail(for: messageId, conversationId: conversationId)
         }
-        .onReceive(ReactionViewModel.shared.$selectedMessageReactionDetails) { newValue in
-            if messageId == newValue?.messageId {
-                reactionDeatils = newValue
+        .onDisappear {
+            ReactionViewModel.shared.selectedMessageReactionDetails = nil
+        }
+        .onReceive(ReactionViewModel.shared.objectWillChange) { _ in
+            if messageId == ReactionViewModel.shared.selectedMessageReactionDetails?.messageId {
+                reactionDeatils = ReactionViewModel.shared.selectedMessageReactionDetails
+                reactions = reactionDeatils?.reactions ?? []
             }
         }
         .onTapGesture {
@@ -69,6 +78,6 @@ struct MessageReactionDetailView: View {
 
 struct MessageReactionDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        MessageReactionDetailView(message: Message(id: 1, message: "TEST"), conversationId: 1)
+        MessageReactionDetailView(message: Message(id: 1, message: "TEST", conversation: Conversation(id: 1)))
     }
 }

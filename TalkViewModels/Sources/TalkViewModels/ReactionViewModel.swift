@@ -54,6 +54,7 @@ public final class ReactionViewModel: ObservableObject {
 
     public func onDetail(_ response: ChatResponse<ReactionList>) {
         selectedMessageReactionDetails = response.result
+        animateObjectWillChange()
     }
 
     public func onAdd(_ response: ChatResponse<ReactionMessageResponse>) {

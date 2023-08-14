@@ -31,7 +31,9 @@ struct EmojiIcon: View {
                         }
                     }
                     .navigationDestination(isPresented: $showReactionDetail) {
-                        MessageReactionDetailView(message: viewModel.message, conversationId: viewModel.threadVM?.threadId ?? -1)
+                        if showReactionDetail {
+                            MessageReactionDetailView(message: viewModel.message)
+                        }
                     }
             }
             Spacer()
