@@ -84,7 +84,7 @@ struct SplitView: View {
             }
             .toast(
                 isShowing: Binding(get: { AppState.shared.error != nil }, set: { _ in }),
-                title: "An error had happened with code: \(AppState.shared.error?.code ?? 0)",
+                title: String(format: String(localized: "Errors.occuredTitle"), AppState.shared.error?.code ?? 0),
                 message: AppState.shared.error?.message ?? "",
                 titleFont: .title2,
                 messageFont: .subheadline
@@ -106,7 +106,7 @@ struct SplitView: View {
             .onAppear {
                 AppState.shared.navViewModel = container.navVM
                 container.navVM.threadViewModel = container.threadsVM
-                container.threadsVM.title = "Chats"
+                container.threadsVM.title = "Tab.chats"
                 container.navVM.contactsViewModel = container.contactsVM
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }
@@ -120,9 +120,9 @@ struct SplitViewContentView: View {
     var body: some View {
         if container.navVM.isThreadType {
             ThreadContentList(container: container)
-        } else if container.navVM.selectedSideBarId == "Contacts" {
+        } else if container.navVM.selectedSideBarId == "Tab.contacts" {
             ContactContentList()
-        } else if container.navVM.selectedSideBarId == "Settings" {
+        } else if container.navVM.selectedSideBarId == "Tab.settings" {
             SettingsView()
         }
     }
@@ -185,13 +185,13 @@ struct DetailContentView: View {
                 .frame(width: 64, height: 64)
                 .opacity(0.2)
             VStack(spacing: 16) {
-                Text("Nothing has been selected. You can start a conversation right now!")
+                Text("General.nothingSelected")
                     .font(.iransansSubheadline)
                     .foregroundColor(.secondaryLabel)
                 Button {
                     threadsVM.sheetType = .startThread
                 } label: {
-                    Text("Start")
+                    Text("General.start")
                         .font(.iransansBoldBody)
                 }
             }

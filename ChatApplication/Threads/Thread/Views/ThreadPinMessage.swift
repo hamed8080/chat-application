@@ -85,7 +85,7 @@ struct ThreadPinMessage: View {
         Button {
             threadVM.unpinMessage(message?.messageId ?? -1)
         } label: {
-            Label("Un Pin", systemImage: "pin.fill")
+            Label("Thread.unpin", systemImage: "pin.fill")
                 .labelStyle(.iconOnly)
                 .foregroundColor(.orange)
         }

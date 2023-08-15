@@ -25,7 +25,7 @@ struct BlockedAssistantsView: View {
             }
             .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
         }
-        .navigationTitle("Blocked Assistants")
+        .navigationTitle("Assistant.blockedList")
         .animation(.easeInOut, value: viewModel.blockedAssistants.count)
         .task {
             viewModel.blockedList()

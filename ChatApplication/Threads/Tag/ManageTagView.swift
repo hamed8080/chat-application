@@ -38,13 +38,13 @@ struct ManageTagView: View {
 
                     HStack {
                         Spacer()
-                        Text("Manage folders")
+                        Text("Tags.manageFolders")
                             .font(.iransansSubtitle)
                             .foregroundColor(.gray)
                         Spacer()
                     }
 
-                    PrimaryTextField(title: "Folder Name",
+                    PrimaryTextField(title: "Tags.enterNewFolderName",
                                      textBinding: $tagName,
                                      isEditing: false,
                                      keyboardType: .default,
@@ -63,7 +63,7 @@ struct ManageTagView: View {
                                         Button(role: .destructive) {
                                             viewModel.deleteTagParticipant(tag.id, tagParticipant)
                                         } label: {
-                                            Label("Delete", systemImage: "trash")
+                                            Label("General.delete", systemImage: "trash")
                                         }.background(Color.red)
                                     })
                             }
@@ -75,7 +75,7 @@ struct ManageTagView: View {
                 }
                 .padding(16)
             }
-            .navigationTitle("Manage Folder")
+            .navigationTitle("Tags.manageFolders")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -84,12 +84,7 @@ struct ManageTagView: View {
                             viewModel.editTag(tag: tag)
                         }
                     } label: {
-                        Label {
-                            Text("Done")
-                                .font(.iransansBody)
-                        } icon: {
-                            Image(systemName: "square.and.arrow.down")
-                        }
+                        Label("General.done", systemImage: "square.and.arrow.down")
                     }
                 }
 

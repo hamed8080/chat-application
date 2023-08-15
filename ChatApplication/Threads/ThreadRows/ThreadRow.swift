@@ -100,7 +100,7 @@ struct ThreadRow: View {
                 viewModel.selectedThraed = thread
                 viewModel.sheetType = .firstConfrimation
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label("General.delete", systemImage: "trash")
             }
         }
         .contextMenu {

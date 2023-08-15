@@ -47,15 +47,15 @@ public extension AssistantActionTypes {
     var stringValue: String? {
         switch self {
         case .register:
-            return "activated"
+            return "Assistant.registered"
         case .activate:
-            return "activated"
+            return "Assistant.activated"
         case .deactivate:
-            return "deactivated"
+            return "Assistant.deactivated"
         case .block:
-            return "blocked"
+            return "Assistant.blocked"
         case .unblock:
-            return "unblocked"
+            return "Assistant.unblocked"
         case .unknown:
             return nil
         }

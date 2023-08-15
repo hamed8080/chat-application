@@ -11,47 +11,6 @@ import SwiftUI
 import NaturalLanguage
 
 public extension String {
-    func isTypingAnimationWithText(onStart: @escaping (String) -> Void, onChangeText: @escaping (String, Timer) -> Void, onEnd: @escaping () -> Void) {
-        onStart(self)
-        var count = 0
-        var indicatorCount = 0
-        Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { timer in
-            if count >= 100 {
-                onEnd()
-                timer.invalidate()
-            } else {
-                if indicatorCount == 3 {
-                    indicatorCount = 0
-                } else {
-                    indicatorCount += 1
-                }
-                onChangeText("typing" + String(repeating: "•", count: indicatorCount), timer)
-                count += 1
-            }
-        }
-    }
-
-    func signalMessage(signal: SMT, onStart: @escaping (String) -> Void, onChangeText: @escaping (String, Timer) -> Void, onEnd: @escaping () -> Void) {
-        onStart(self)
-        var count = 0
-        var indicatorCount = 0
-        Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { timer in
-            if count >= 15 {
-                onEnd()
-                timer.invalidate()
-            } else {
-                if indicatorCount == 3 {
-                    indicatorCount = 0
-                } else {
-                    indicatorCount += 1
-                }
-                if let typeString = getSystemTypeString(type: signal) {
-                    onChangeText(typeString + String(repeating: "•", count: indicatorCount), timer)
-                }
-                count += 1
-            }
-        }
-    }
 
     func getSystemTypeString(type: SMT) -> String? {
         switch type {

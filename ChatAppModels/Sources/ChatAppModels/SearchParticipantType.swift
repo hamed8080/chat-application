@@ -1,7 +1,7 @@
 public enum SearchParticipantType: String, CaseIterable, Identifiable {
     public var id: Self { self }
-    case name = "Name"
-    case username = "User Name"
-    case cellphoneNumber = "Mobile"
-    case admin = "Admin"
+    case name = "Participant.Search.Type.name"
+    case username = "Participant.Search.Type.username"
+    case cellphoneNumber = "Participant.Search.Type.cellphoneNumber"
+    case admin = "Participant.Search.Type.admin"
 }

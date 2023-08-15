@@ -23,7 +23,7 @@ struct ThreadEventView: View {
                     .foregroundColor(.orange)
                     .frame(width: 16, height: 16)
 
-                Text(event.title)
+                Text(.init(localized: .init(event.title)))
                     .lineLimit(1)
                     .font(.iransansBoldCaption2)
                     .foregroundColor(.orange)

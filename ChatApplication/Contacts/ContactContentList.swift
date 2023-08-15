@@ -23,7 +23,7 @@ struct ContactContentList: View {
             if viewModel.maxContactsCountInServer > 0 {
                 HStack(spacing: 4) {
                     Spacer()
-                    Text("Total contacts:".uppercased())
+                    Text("Contacts.total")
                         .font(.iransansBody)
                         .foregroundColor(.gray)
                     Text(verbatim: "\(viewModel.maxContactsCountInServer)")
@@ -34,7 +34,7 @@ struct ContactContentList: View {
             }
 
             if viewModel.searchedContacts.count > 0 {
-                Text("Searched contacts")
+                Text("Contacts.searched")
                     .font(.iransansSubheadline)
                     .foregroundColor(.gray)
                     .noSeparators()
@@ -62,22 +62,18 @@ struct ContactContentList: View {
             AddOrEditContactView()
                 .environmentObject(viewModel)
         }
-        .searchable(text: $viewModel.searchContactString, placement: .navigationBarDrawer, prompt: "Search...")
+        .searchable(text: $viewModel.searchContactString, placement: .navigationBarDrawer, prompt: "General.searchHere")
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
-        .navigationTitle(Text("Contacts"))
+        .navigationTitle("Tab.contacts")
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
                     modifyContactSheet.toggle()
                 } label: {
-                    Label {
-                        Text("Create new contacts")
-                    } icon: {
-                        Image(systemName: "person.badge.plus")
-                    }
+                    Label("Contacts.createNew", systemImage: "person.badge.plus")
                 }
             }
 
@@ -85,30 +81,20 @@ struct ContactContentList: View {
                 Button {
                     isInSelectionMode.toggle()
                 } label: {
-                    Label {
-                        Text("Selection")
-                    } icon: {
-                        Image(systemName: "filemenu.and.selection")
-                            .font(.body.bold())
-                    }
+                    Label("General.select", systemImage: "filemenu.and.selection")
                 }
 
                 NavigationLink {
                     BlockedContacts()
                 } label: {
-                    Label("Blocked", systemImage: "hand.raised.slash")
+                    Label("General.blocked", systemImage: "hand.raised.slash")
                 }
 
                 Button {
                     deleteDialog.toggle()
                 } label: {
-                    Label {
-                        Text("Delete")
-                    } icon: {
-                        Image(systemName: "trash")
-                            .foregroundColor(Color.red)
-                            .font(.body.bold())
-                    }
+                    Label("General.delete", systemImage: "trash")
+                        .foregroundColor(Color.red)
                 }
                 .opacity(isInSelectionMode ? 1 : 0.5)
                 .disabled(!isInSelectionMode)
@@ -117,7 +103,7 @@ struct ContactContentList: View {
                 ConnectionStatusToolbar()
             }
         }
-        .dialog("Delete selected contacts", "Do you want to delete selected contacts?", "trash", $deleteDialog) { _ in
+        .dialog(.init(localized: .init("Contacts.deleteSelectedTitle")), .init(localized: .init("Contacts.deleteSelectedSubTitle")), "trash", $deleteDialog) { _ in
             viewModel.deleteSelectedItems()
         }
     }

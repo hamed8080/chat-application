@@ -31,7 +31,7 @@ struct AssistantHistoryView: View {
             .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
         }
         .environmentObject(viewModel)
-        .navigationTitle("Actions History")
+        .navigationTitle("Assistant.History.title")
         .animation(.easeInOut, value: viewModel.histories.count)
     }
 }
@@ -56,7 +56,7 @@ struct AssistantActionRow: View {
             }
 
             Spacer()
-            Text(action.actionType?.stringValue ?? "unknown")
+            Text(.init(localized: .init(action.actionType?.stringValue ?? "General.unknown")))
                 .frame(width: 72)
                 .font(.iransansCaption2)
                 .padding([.leading, .trailing], 6)

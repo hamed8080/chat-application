@@ -32,7 +32,7 @@ public struct VideoPlayerView: View {
         }
         .padding()
         .overlay(alignment: .topLeading) {
-            Text(videoPlayerVM.timerString)
+            Text(String(localized:.init(videoPlayerVM.timerString)))
                 .padding(6)
                 .background(.ultraThinMaterial)
                 .cornerRadius(8)

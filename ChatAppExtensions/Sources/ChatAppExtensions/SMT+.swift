@@ -18,17 +18,17 @@ public extension SMT {
     var stringEvent: String? {
         switch self {
         case .isTyping:
-            return "is typing..."
+            return "SMT.isTyping"
         case .recordVoice:
-            return "is recording a voice"
+            return "SMT.recordVoice"
         case .uploadPicture:
-            return "is uploading an image"
+            return "SMT.uploadPicture"
         case .uploadVideo:
-            return "is uploading a video"
+            return "SMT.uploadVideo"
         case .uploadSound:
-            return "is uploading a sound"
+            return "SMT.uploadSound"
         case .uploadFile:
-            return "is uploading a file"
+            return "SMT.uploadFile"
         case .unknown, .serverTime:
             return nil
         }

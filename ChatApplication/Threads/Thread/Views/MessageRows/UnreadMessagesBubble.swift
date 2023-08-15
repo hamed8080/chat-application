@@ -13,7 +13,7 @@ struct UnreadMessagesBubble: View {
             .purple.opacity(0.8),
             .blue.opacity(0.5),
         ])
-        Text("Unread Messages".uppercased())
+        Text("Messages.unreadMessages")
             .font(.iransansCaption)
             .fontDesign(.rounded)
             .padding([.leading, .trailing], 16)

@@ -30,7 +30,7 @@ struct AssistantRow: View {
                 .font(.iransansCaption)
             if assistant.block == true {
                 Spacer()
-                Text("Blocked")
+                Text("General.blocked")
                     .font(.iransansCaption2)
                     .padding([.leading, .trailing], 6)
                     .padding([.top, .bottom], 2)
@@ -47,7 +47,7 @@ struct AssistantRow: View {
                 Button {
                     viewModel.block(assistant)
                 } label: {
-                    Label("Block", systemImage: "hand.raised")
+                    Label("General.block", systemImage: "hand.raised")
                         .foregroundStyle(.red)
                 }
             }
@@ -56,7 +56,7 @@ struct AssistantRow: View {
                 Button {
                     viewModel.unblock(assistant)
                 } label: {
-                    Label("UNBlock", systemImage: "hand.raised.slash")
+                    Label("General.unblock", systemImage: "hand.raised.slash")
                 }
             }
         }

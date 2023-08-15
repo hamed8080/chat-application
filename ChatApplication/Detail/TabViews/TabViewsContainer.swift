@@ -14,14 +14,14 @@ struct TabViewsContainer: View {
     var thread: Conversation
     @State var selectedTabIndex: Int
     let tabs: [Tab] = [
-        .init(title: "Members", icon: "person"),
-        .init(title: "Mutual Groups", icon: "person.3"),
-        .init(title: "Photos", icon: "photo.stack"),
-        .init(title: "Videos", icon: "play.tv"),
-        .init(title: "File", icon: "doc"),
-        .init(title: "Music", icon: "music.note"),
-        .init(title: "Voice", icon: "mic"),
-        .init(title: "Link", icon: "link"),
+        .init(title: "Thread.Tabs.members", icon: "person"),
+        .init(title: "Thread.Tabs.mutualgroup Groups", icon: "person.3"),
+        .init(title: "Thread.Tabs.photos", icon: "photo.stack"),
+        .init(title: "Thread.Tabs.videos", icon: "play.tv"),
+        .init(title: "Thread.Tabs.file", icon: "doc"),
+        .init(title: "Thread.Tabs.music", icon: "music.note"),
+        .init(title: "Thread.Tabs.voice", icon: "mic"),
+        .init(title: "Thread.Tabs.link", icon: "link"),
     ]
 
     var body: some View {
@@ -74,7 +74,7 @@ struct Tabs: View {
                                         .frame(width: 24, height: 24)
                                         .foregroundColor(Color.gray)
                                         .fixedSize()
-                                    Text(tab.title)
+                                    Text(String(localized: .init(tab.title)))
                                         .font(.iransansBoldBody)
                                         .fixedSize()
                                 }

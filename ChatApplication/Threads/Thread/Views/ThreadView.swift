@@ -30,7 +30,7 @@ struct ThreadView: View, DropDelegate {
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
-            .searchable(text: $searchMessageText, placement: .toolbar, prompt: "Search inside this chat")
+            .searchable(text: $searchMessageText, placement: .toolbar, prompt: "General.searchHere")
             .customDialog(isShowing: $deleteDialaog) {
                 DeleteMessageDialog(viewModel: viewModel, showDialog: $deleteDialaog)
             }

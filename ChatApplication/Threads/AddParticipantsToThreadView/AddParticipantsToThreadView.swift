@@ -24,7 +24,7 @@ struct AddParticipantsToThreadView: View {
                         onCompleted(contactsVM.selectedContacts)
                     }
                 } label: {
-                    Text("Add")
+                    Text("General.add")
                         .bold()
                 }
             }

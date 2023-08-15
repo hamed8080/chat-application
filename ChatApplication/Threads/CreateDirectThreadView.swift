@@ -23,29 +23,31 @@ struct CreateDirectThreadView: View {
     var body: some View {
         NavigationView {
             Form {
-                SectionTitleView(title: "Fast Message")
+                SectionTitleView(title: "ThreadList.Toolbar.fastMessage")
                 SectionImageView(image: Image("fast_message"))
 
                 Section {
                     Picker("Contact type", selection: $type) {
                         ForEach(types) { value in
-                            Text(verbatim: "\(value.title)")
+                            Text(.init(localized: .init(value.title)))
                                 .foregroundColor(.primary)
                         }
                     }
                     .pickerStyle(.navigationLink)
-                    TextField("Enter \(type.title) here...", text: $id)
+                    let typeString = String(localized: .init(type.title))
+                    let fastMessge = String(localized: .init("Thread.enterFastMessageType"))
+                    TextField(String(format: fastMessge, typeString), text: $id)
                         .keyboardType(type == .cellphoneNumber ? .phonePad : .default)
 
-                    TextField("Enter your message here...", text: $message)
+                    TextField("Thread.SendContainer.typeMessageHere", text: $message)
                 } footer: {
-                    Text("Create a thread immediately even though the person you are going to send a message to is not in the contact list.")
+                    Text("Thread.fastMessageFooter")
                 }
 
                 Button {
                     onCompeletion(Invitee(id: id, idType: type), message)
                 } label: {
-                    Label("Send".uppercased(), systemImage: "paperplane")
+                    Label("General.send", systemImage: "paperplane")
                         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                 }
                 .font(.iransansSubheadline)

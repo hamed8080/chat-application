@@ -37,7 +37,7 @@ struct ThreadContentList: View {
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
-        .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search...")
+        .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "General.searchHere")
         .onChange(of: searchText) { searchText in
             threadsVM.searchText = searchText
             threadsVM.getThreads()
@@ -54,7 +54,7 @@ struct ThreadContentList: View {
                 ConnectionStatusToolbar()
             }
         }
-        .navigationTitle(threadsVM.title)
+        .navigationTitle(String(localized: .init(threadsVM.title)))
         .sheet(isPresented: sheetBinding) {
             threadsVM.sheetType = nil
         } content: {
@@ -75,27 +75,27 @@ struct ThreadsTrailingToolbarView: View {
             Button {
                 threadsVM.sheetType = .startThread
             } label: {
-                Label("Start a new Chat", systemImage: "bubble.left.and.bubble.right.fill")
+                Label("ThreadList.Toolbar.startNewChat", systemImage: "bubble.left.and.bubble.right.fill")
             }
 
             Button {
                 threadsVM.sheetType = .joinToPublicThread
             } label: {
-                Label("Join a public Chat", systemImage: "door.right.hand.open")
+                Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
             }
 
             // Send a message to a user without creating a new contact. Directly by their userName or cellPhone number.
             Button {
                 threadsVM.sheetType = .fastMessage
             } label: {
-                Label("Fast Messaage", systemImage: "arrow.up.circle.fill")
+                Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
             }
 
             Button {} label: {
-                Label("Create a new Bot", systemImage: "face.dashed.fill")
+                Label("ThreadList.Toolbar.createABot", systemImage: "face.dashed.fill")
             }
         } label: {
-            Label("Start new Chat", systemImage: "plus.square")
+            Label("ThreadList.Toolbar.startNewChat", systemImage: "plus.square")
         }
 
         Menu {
@@ -106,7 +106,7 @@ struct ThreadsTrailingToolbarView: View {
                 if threadsVM.selectedFilterThreadType == nil {
                     Image(systemName: "checkmark")
                 }
-                Text("All")
+                Text("General.all")
             }
             ForEach(ThreadTypes.allCases) { item in
                 if let type = item.stringValue {
@@ -117,12 +117,12 @@ struct ThreadsTrailingToolbarView: View {
                         if threadsVM.selectedFilterThreadType == item {
                             Image(systemName: "checkmark")
                         }
-                        Text("\(type)")
+                        Text(.init(localized: .init(type)))
                     }
                 }
             }
         } label: {
-            Label("Filter threads", systemImage: "line.3.horizontal.decrease.circle")
+            Label("ThreadList.Toolbar.filter", systemImage: "line.3.horizontal.decrease.circle")
         }
     }
 }
@@ -138,7 +138,7 @@ private struct Preview: View {
                 .environmentObject(container.threadsVM)
                 .environmentObject(AppState.shared)
                 .onAppear {
-                    container.threadsVM.title = "Chats"
+                    container.threadsVM.title = "Tab.chats"
                     container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 5))
                     if let fileURL = Bundle.main.url(forResource: "new_message", withExtension: "mp3") {
                         container.audioPlayerVM.setup(fileURL: fileURL, ext: "mp3", title: "Note")

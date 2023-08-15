@@ -209,13 +209,13 @@ public extension Message {
         guard let requestType = addRemoveParticipant?.requestTypeEnum else { return "" }
         switch requestType {
         case .leaveThread:
-            return "\(participantName) has left the group"
+            return String(format: NSLocalizedString("Message.Participant.left", comment: ""), participantName)
         case .joinThread:
-            return "\(participantName) has joind the group"
+            return String(format: NSLocalizedString("Message.Participant.joined", comment: ""), participantName)
         case .removedFromThread:
-            return "\(effectedName) remvoed by \(participantName)"
+            return String(format: NSLocalizedString("Message.Participant.removed", comment: ""), effectedName, participantName)
         case .addParticipant:
-            return "\(effectedName) added by \(participantName)"
+            return String(format: NSLocalizedString("Message.Participant.added", comment: ""), effectedName, participantName)
         default:
             return ""
         }

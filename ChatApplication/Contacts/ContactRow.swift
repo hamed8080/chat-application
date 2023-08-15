@@ -48,7 +48,7 @@ struct ContactRow: View {
                     }
                     Spacer()
                     if contact.blocked == true {
-                        Text("Blocked")
+                        Text("General.blocked")
                             .font(.iransansCaption2)
                             .padding(4)
                             .foregroundColor(Color.red)

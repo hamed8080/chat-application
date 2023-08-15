@@ -23,26 +23,27 @@ struct AddThreadToTagsView: View {
             List {
                 ForEach(viewModel.tags) { tag in
                     TagRow(tag: tag, viewModel: viewModel)
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true, content: {
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive) {
                                 viewModel.deleteTag(tag)
                             } label: {
-                                Label("Delete", systemImage: "trash")
-                            }.background(Color.red)
-                        })
+                                Label("General.delete", systemImage: "trash")
+                            }
+                            .background(Color.red)
+                        }
                 }
             }
             .listStyle(.plain)
             .padding(0)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("Add To Folder")
+            .navigationTitle("Tags.addToFolder")
             .customDialog(isShowing: $showAddNewFolderDialog) {
-                PrimaryCustomDialog(title: "Add Folder",
-                                    message: "Enter folder name to add threads to this folder you can manage folders from settings.",
+                PrimaryCustomDialog(title: "Tags.addNewFolder",
+                                    message: "Tags.addNewFolderSubtitle",
                                     systemImageName: "folder.badge.plus",
                                     textBinding: $tagName,
                                     hideDialog: $showAddNewFolderDialog,
-                                    textPlaceholder: "Enter Folder Name") { _ in
+                                    textPlaceholder: "Tags.enterNewFolderName") { _ in
                     viewModel.createTag(name: tagName)
                 }
                 .keyboardResponsive()
@@ -57,12 +58,7 @@ struct AddThreadToTagsView: View {
                             }
                         }
                     } label: {
-                        Label {
-                            Text("Done")
-                                .font(.iransansCaption)
-                        } icon: {
-                            Image(systemName: "square.and.arrow.down")
-                        }
+                        Label("General.done", systemImage: "square.and.arrow.down")
                     }
                 }
 
@@ -72,12 +68,7 @@ struct AddThreadToTagsView: View {
                             showAddNewFolderDialog.toggle()
                         }
                     } label: {
-                        Label {
-                            Text("Add")
-                                .font(.iransansCaption)
-                        } icon: {
-                            Image(systemName: "folder.badge.plus")
-                        }
+                        Label("General.add", systemImage: "folder.badge.plus")
                     }
                 }
 

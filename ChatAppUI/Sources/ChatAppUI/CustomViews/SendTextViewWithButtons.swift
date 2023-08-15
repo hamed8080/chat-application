@@ -18,11 +18,11 @@ public struct SendTextViewWithButtons: View {
             Button(role: .destructive) {
                 onCancel()
             } label: {
-                Label("Close", systemImage: "xmark")
+                Label("General.close", systemImage: "xmark")
                     .labelStyle(.iconOnly)
             }
 
-            MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black, mention: true)
+            MultilineTextField(text.isEmpty == true ? String(localized: .init("General.typeMessageHere")) : "", text: $text, textColor: Color.black, mention: true)
                 .cornerRadius(16)
                 .onChange(of: viewModel.textMessage ?? "") { newValue in
                     viewModel.sendStartTyping(newValue)
@@ -31,7 +31,7 @@ public struct SendTextViewWithButtons: View {
             Button {
                 onSubmit()
             } label: {
-                Label("Send", systemImage: "paperplane.fill")
+                Label("General.send", systemImage: "paperplane.fill")
                     .labelStyle(.iconOnly)
             }
         }

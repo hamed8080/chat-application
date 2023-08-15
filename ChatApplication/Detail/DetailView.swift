@@ -35,7 +35,7 @@ struct DetailView: View {
         }
         .environmentObject(viewModel)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarTitle("Info")
+        .navigationBarTitle("General.info")
         .sheet(isPresented: $viewModel.showAddToContactSheet) {
             AddOrEditContactView()
         }
@@ -56,7 +56,7 @@ struct DetailView: View {
                             }
                             viewModel.isInEditMode.toggle()
                         } label: {
-                            Text(viewModel.isInEditMode ? "Done" : "Edit")
+                            Text(viewModel.isInEditMode ? "General.done" : "General.edit")
                         }
                     }
                 }
@@ -106,7 +106,7 @@ struct InfoView: View {
 
             VStack(spacing: 8) {
                 if viewModel.thread?.canEditInfo == true {
-                    TextField("Title", text: $viewModel.editTitle)
+                    TextField("General.title", text: $viewModel.editTitle)
                         .frame(minHeight: 36)
                         .textFieldStyle((!viewModel.isInEditMode) ? .clear : .customBorderedWith(minHeight: 36, cornerRadius: 12))
                         .font(.iransansBody)
@@ -118,7 +118,7 @@ struct InfoView: View {
                 }
 
                 if viewModel.thread?.canEditInfo == true {
-                    TextField("Description", text: $viewModel.threadDescription)
+                    TextField("General.description", text: $viewModel.threadDescription)
                         .frame(minHeight: 36)
                         .textFieldStyle((!viewModel.isInEditMode) ? .clear : .customBorderedWith(minHeight: 36, cornerRadius: 12))
                         .font(.caption)
@@ -182,7 +182,7 @@ struct DetailTopButtons: View {
         if viewModel.showInfoGroupBox {
             VStack {
                 if !viewModel.isInMyContact {
-                    SectionItem(title: "Add To contacts", systemName: "person.badge.plus") {
+                    SectionItem(title: "General.addToContact", systemName: "person.badge.plus") {
                         viewModel.showAddToContactSheet.toggle()
                     }
                 }
@@ -194,7 +194,7 @@ struct DetailTopButtons: View {
                 }
 
                 if viewModel.canBlock {
-                    SectionItem(title: "Block", systemName: "hand.raised.slash") {
+                    SectionItem(title: "General.block", systemName: "hand.raised.slash") {
                         viewModel.blockUnBlock()
                     }
                     .foregroundColor(.red)
@@ -243,7 +243,7 @@ struct SectionItem: View {
         Button {
             action()
         } label: {
-            Label(title, systemImage: systemName)
+            Label(String(localized: .init(title)), systemImage: systemName)
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36, alignment: .leading)
         }
         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)

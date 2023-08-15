@@ -42,21 +42,21 @@ public extension CallParticipant {
     var callStatusString: String? {
         switch callStatus {
         case .requested:
-            return nil
+            return "Call.requested"
         case .canceled:
-            return "Rejected"
+            return "Call.canceled"
         case .miss:
-            return "Didn't answer"
+            return "Call.miss"
         case .declined:
-            return "Declined"
+            return "Call.declined"
         case .accepted:
-            return nil
+            return "Call.accepted"
         case .started:
-            return nil
+            return "Call.started"
         case .ended:
-            return nil
+            return "Call.ended"
         case .leave:
-            return "Left"
+            return "Call.leave"
         case .unknown:
             return nil
         case .none:

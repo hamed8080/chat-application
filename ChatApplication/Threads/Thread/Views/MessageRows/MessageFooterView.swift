@@ -31,7 +31,7 @@ struct MessageFooterView: View {
                 .font(.iransansBoldCaption2)
 
             if message.edited == true {
-                Text("Edited")
+                Text("Messages.Footer.edited")
                     .foregroundColor(.darkGreen.opacity(0.8))
                     .font(.caption2)
             }

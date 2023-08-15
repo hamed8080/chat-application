@@ -20,17 +20,17 @@ struct LogView: View {
                 .listRowSeparator(.hidden)
                 .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
         }
-        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer, prompt: "Search inside Logs...") {
+        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer, prompt: "General.searchHere") {
             if viewModel.searchText.isEmpty == false, viewModel.filtered.count < 1 {
                 HStack {
                     Image(systemName: "doc.text.magnifyingglass")
                         .foregroundColor(.gray.opacity(0.8))
-                    Text("Nothind has found.")
+                    Text("General.nothingFound")
                         .foregroundColor(.gray.opacity(0.8))
                 }
             }
         }
-        .navigationTitle("Logs")
+        .navigationTitle("Logs.title")
         .animation(.easeInOut, value: viewModel.filtered.count)
         .listStyle(.plain)
         .toolbar {
@@ -45,7 +45,7 @@ struct LogView: View {
             viewModel.deleteLogs()
         } label: {
             Label {
-                Text("Delete")
+                Text("General.delete")
             } icon: {
                 Image(systemName: "trash")
             }
@@ -58,7 +58,7 @@ struct LogView: View {
                 if viewModel.type == nil {
                     Image(systemName: "checkmark")
                 }
-                Text("All")
+                Text("General.all")
             }
             ForEach(LogEmitter.allCases) { item in
                 Button {
@@ -67,11 +67,11 @@ struct LogView: View {
                     if viewModel.type == item {
                         Image(systemName: "checkmark")
                     }
-                    Text(item.title)
+                    Text(.init(localized: .init(item.title)))
                 }
             }
         } label: {
-            Label("Filter by", systemImage: "line.3.horizontal.decrease.circle")
+            Label("", systemImage: "line.3.horizontal.decrease.circle")
         }
     }
 }

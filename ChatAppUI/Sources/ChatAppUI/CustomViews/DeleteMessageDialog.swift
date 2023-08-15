@@ -21,10 +21,10 @@ public struct DeleteMessageDialog: View {
 
     public var body: some View {
         VStack(spacing: 24) {
-            Text("Delete selected messages")
+            Text("DeleteMessageDialog.title")
                 .font(.iransansTitle.bold())
                 .foregroundColor(.red)
-            Text("Are you sure you want to delete all selected messages?")
+            Text("DeleteMessageDialog.subtitle")
                 .foregroundColor(.secondaryLabel)
                 .font(.subheadline)
             VStack {
@@ -48,7 +48,7 @@ public struct DeleteMessageDialog: View {
                     showDialog = false
                     viewModel.animateObjectWillChange()
                 } label: {
-                    Label("Delete", systemImage: "trash.circle.fill")
+                    Label("General.delete", systemImage: "trash.circle.fill")
                         .frame(minWidth: 256)
                 }
                 .padding(8)
@@ -61,7 +61,7 @@ public struct DeleteMessageDialog: View {
                     showDialog = false
                     viewModel.animateObjectWillChange()
                 } label: {
-                    Label("Cancel", systemImage: "xmark.circle.fill")
+                    Label("General.cancel", systemImage: "xmark.circle.fill")
                         .frame(minWidth: 256)
                 }
                 .padding(8)

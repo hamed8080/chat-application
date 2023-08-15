@@ -19,20 +19,20 @@ struct JoinToPublicThreadView: View {
     var body: some View {
         NavigationView {
             Form {
-                SectionTitleView(title: "Join")
+                SectionTitleView(title: "Thread.Join.title")
                 SectionImageView(image: Image("link"))
 
                 Section {
-                    TextField("Enter name of the chat...", text: $publicThreadName)
+                    TextField("Thread.Join.enterThreadNameHere", text: $publicThreadName)
                         .frame(minHeight: 36)
                         .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 12))
 
                 } footer: {
                     if !isThreadExist, !publicThreadName.isEmpty {
-                        Text("The thread name is not exist!")
+                        Text("Thread.Join.duplicateName")
                             .foregroundColor(.red)
                     } else {
-                        Text("Join to a public thread by it's unique name.")
+                        Text("Thread.Join.footer")
                     }
                 }
                 .listRowBackground(Color.clear)
@@ -41,7 +41,7 @@ struct JoinToPublicThreadView: View {
                     Button {
                         onCompeletion(publicThreadName)
                     } label: {
-                        Label("Join".uppercased(), systemImage: "door.right.hand.open")
+                        Label("Thread.Join.title".uppercased(), systemImage: "door.right.hand.open")
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                     }
                     .opacity(isThreadExist ? 1.0 : 0.5)

@@ -44,31 +44,31 @@ struct AddOrEditContactView: View {
                         }
                     }
                     .pickerStyle(.segmented)
-                    TextField("Contact", text: $contactValue)
+                    TextField("General.contact", text: $contactValue)
                         .focused($focusState, equals: .contactValue)
                         .keyboardType(contactType == .phoneNumber ? .phonePad : .default)
-                    TextField("First Name", text: $firstName)
+                    TextField("General.firstName", text: $firstName)
                         .focused($focusState, equals: .firstName)
                         .textContentType(.name)
-                    TextField("Last Name", text: $lastName)
+                    TextField("General.lastName", text: $lastName)
                         .focused($focusState, equals: .lastName)
                         .textContentType(.familyName)
                 } header: {
-                    Text("General Information")
+                    Text("Contacts.Add.headerTitle")
                 } footer: {
-                    Text("In the Contact filed you could enter either username or phone number.")
+                    Text("Contacts.Add.footerTitle")
                 }
             }
             .headerProminence(.increased)
-            .navigationTitle("\(editContact != nil ? "Edit" : "Add") Contact")
+            .navigationTitle(editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button("General.done") {
                         submit()
                     }
                 }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", role: .cancel) {
+                    Button("General.cancel", role: .cancel) {
                         dismiss()
                     }
                 }

@@ -29,7 +29,7 @@ struct MemberView: View {
                             Button {
                                 viewModel.makeAdmin(participant)
                             } label: {
-                                Label("Add Admin Access", systemImage: "person.badge.key.fill")
+                                Label("Participant.addAdminAccess", systemImage: "person.badge.key.fill")
                             }
                         }
 
@@ -37,14 +37,14 @@ struct MemberView: View {
                             Button {
                                 viewModel.removeAdminRole(participant)
                             } label: {
-                                Label("Remove Admin Access", systemImage: "person.crop.circle.badge.minus")
+                                Label("Participant.removeAdminAccess", systemImage: "person.crop.circle.badge.minus")
                             }
                         }
 
                         Button(role: .destructive) {
                             viewModel.removePartitipant(participant)
                         } label: {
-                            Label("Delete", systemImage: "trash")
+                            Label("General.delete", systemImage: "trash")
                         }
                     }
             }
@@ -70,7 +70,7 @@ struct ParticipantSearchView: View {
         HStack {
             Picker("", selection: $viewModel.searchType) {
                 ForEach(SearchParticipantType.allCases) { item in
-                    Text(item.rawValue)
+                    Text(String(localized: .init(item.rawValue)))
                         .font(.iransansBoldCaption3)
                 }
             }
@@ -79,7 +79,7 @@ struct ParticipantSearchView: View {
             .layoutPriority(0)
             .frame(width: 128)
 
-            TextField("Search for users in thread", text: $viewModel.searchText)
+            TextField("General.searchHere", text: $viewModel.searchText)
                 .textFieldStyle(.customBorderedWith(minHeight: 24, cornerRadius: 12))
                 .frame(minWidth: 0, maxWidth: 420)
                 .layoutPriority(1)

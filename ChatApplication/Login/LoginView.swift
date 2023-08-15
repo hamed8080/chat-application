@@ -58,13 +58,17 @@ struct VerifyContentView: View {
                 .frame(width: 72, height: 72)
                 .scaledToFit()
                 .cornerRadius(8)
-            Text("Enter Verication Code")
+            Text("Login.Verfiy.enterCode")
                 .font(.iransansTitle)
                 .foregroundColor(.textBlueColor)
 
-            Text("Verification code sent to: **\(viewModel.text)**")
-                .font(.iransansSubheadline)
-                .foregroundColor(.textBlueColor)
+            HStack(spacing: 2) {
+                Text("Login.Verfiy.verificationCodeSentTo")
+                Text(viewModel.text)
+                    .fontWeight(.heavy)
+            }
+            .font(.iransansSubheadline)
+            .foregroundColor(.textBlueColor)
 
             HStack(spacing: 16) {
                 ForEach(0 ..< VerifyFocusFileds.allCases.endIndex, id: \.self) { i in
@@ -103,7 +107,7 @@ struct VerifyContentView: View {
                     if viewModel.isLoading {
                         ProgressView()
                     }
-                    Label("Verify".uppercased(), systemImage: "checkmark.shield")
+                    Label("Login.Verify.title", systemImage: "checkmark.shield")
                 }
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
             }
@@ -112,7 +116,7 @@ struct VerifyContentView: View {
             .buttonStyle(.bordered)
 
             if viewModel.state == .failed || viewModel.state == .verificationCodeIncorrect {
-                let error = viewModel.state == .verificationCodeIncorrect ? "An error occured! try again." : "Your verification code is incorrect."
+                let error = viewModel.state == .verificationCodeIncorrect ? "Errors.failedTryAgain" : "Errors.Login.Verify.incorrectCode"
                 ErrorView(error: error)
             }
         }
@@ -144,22 +148,21 @@ struct LoginContentView: View {
                 .frame(width: 72, height: 72)
                 .scaledToFit()
                 .cornerRadius(8)
-            Text("Login")
+            Text("Login.title")
                 .font(.iransansTitle)
                 .foregroundColor(.textBlueColor)
-            Text("**Welcome** to Fanap Chats")
+            Text("Login.welcome")
                 .font(.iransansSubheadline)
                 .foregroundColor(.textBlueColor.opacity(0.7))
 
-            let titleString = viewModel.selectedServerType == .integration ? "Enter your static token here." : "Enter your Phone number here."
-            TextField(titleString, text: $viewModel.text)
+            TextField(viewModel.selectedServerType == .integration ? "Login.staticToken" : "Login.phoneNumber", text: $viewModel.text)
                 .keyboardType(.phonePad)
                 .font(.iransansSubtitle)
                 .textFieldStyle(.customBorderedWith(minHeight: 36, cornerRadius: 8))
                 .focused($isFocused)
 
             if viewModel.isValidPhoneNumber == false {
-                ErrorView(error: "Please input correct phone number")
+                ErrorView(error: "Errors.Login.invalidPhoneNumber")
             }
 
             Button {
@@ -173,7 +176,7 @@ struct LoginContentView: View {
                     if viewModel.isLoading {
                         ProgressView()
                     }
-                    Label("Login".uppercased(), systemImage: "door.left.hand.open")
+                    Label("Login.title", systemImage: "door.left.hand.open")
                         .font(.iransansBody)
                 }
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
@@ -183,10 +186,10 @@ struct LoginContentView: View {
             .buttonStyle(.bordered)
 
             if viewModel.state == .failed {
-                ErrorView(error: "An error occured! try again.")
+                ErrorView(error: "Errors.failedTryAgain")
             }
 
-            Text("Contact the support team if you have gotten into trouble with the login.")
+            Text("Login.footer")
                 .multilineTextAlignment(.center)
                 .font(.iransansFootnote)
                 .fixedSize(horizontal: false, vertical: true)

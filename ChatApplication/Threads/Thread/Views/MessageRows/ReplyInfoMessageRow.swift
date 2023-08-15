@@ -39,7 +39,7 @@ struct ReplyInfoMessageRow: View {
                     }
 
                     if message.replyInfo?.deleted == true {
-                        Text("Message deleted.")
+                        Text("Messages.deletedMessageReply")
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             .foregroundColor(.redSoft)

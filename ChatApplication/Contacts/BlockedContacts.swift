@@ -21,7 +21,7 @@ struct BlockedContacts: View {
                 }
             }
         }
-        .navigationTitle(Text("Blocked Contacts"))
+        .navigationTitle("Contacts.blockedList")
         .listStyle(.plain)
     }
 }

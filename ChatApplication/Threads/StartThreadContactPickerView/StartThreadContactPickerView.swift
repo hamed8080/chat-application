@@ -27,7 +27,7 @@ struct StartThreadContactPickerView: View {
                         model.selectedContacts.append(contentsOf: contactsVM.selectedContacts)
                         onCompletedConfigCreateThread(model.build)
                     } label: {
-                        Label("Create", systemImage: "plus.square")
+                        Label("General.create", systemImage: "plus.square")
                     }
                     .foregroundColor(.green)
                 }
@@ -35,22 +35,22 @@ struct StartThreadContactPickerView: View {
             }
 
             Group {
-                StartThreadButton(name: "bookmark.circle", title: "Save Message", color: .blue) {
+                StartThreadButton(name: "bookmark.circle", title: "Thread.selfThread", color: .blue) {
                     model.setSelfThread()
                     onCompletedConfigCreateThread(model.build)
                 }
 
-                StartThreadButton(name: "person.2", title: "New Group", color: .blue) {
+                StartThreadButton(name: "person.2", title: "Thread.newGroup", color: .blue) {
                     model.toggleGroup()
                 }
 
-                StartThreadButton(name: "megaphone", title: "New Channel", color: .blue) {
+                StartThreadButton(name: "megaphone", title: "Thread.newChannel", color: .blue) {
                     model.toggleChannel()
                 }
 
                 if model.showGroupTitleView {
                     HStack {
-                        MultilineTextField("Enter group name", text: $model.title, backgroundColor: Color.gray.opacity(0.2))
+                        MultilineTextField("Thread.enterGroupNameHere", text: $model.title, backgroundColor: Color.gray.opacity(0.2))
                             .cornerRadius(8)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
@@ -66,14 +66,14 @@ struct StartThreadContactPickerView: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     if model.isPublic {
-                        Text("Public threads are available to everyone on the internet.")
+                        Text("Thread.publicThreadFooter")
                             .transition(.push(from: .bottom))
-                        Text("Public threads names should have a unique names without any whitespace and special characters.")
+                        Text("Thread.publicThreadStructrue")
                             .transition(.push(from: .bottom))
                     }
 
                     if model.hasError {
-                        Text("Enter the name of the conversation.")
+                        Text("Thread.enterValidName")
                             .transition(.push(from: .bottom))
                             .foregroundColor(.red)
                     }
@@ -84,7 +84,7 @@ struct StartThreadContactPickerView: View {
                 .font(.caption)
 
                 if model.type == .channel || model.isGroup {
-                    Toggle("Public", isOn: $model.isPublic)
+                    Toggle("Thread.public", isOn: $model.isPublic)
                         .padding()
                 }
             }
@@ -134,7 +134,7 @@ struct StartThreadButton: View {
         } label: {
             HStack {
                 Image(systemName: name)
-                Text(title)
+                Text(String(localized: .init(title)))
                 Spacer()
             }
         }

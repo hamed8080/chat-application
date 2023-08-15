@@ -11,11 +11,11 @@ public extension LogEmitter {
     var title: String {
         switch self {
         case .internalLog:
-            return "Internal Logs"
+            return "Log.internalLog"
         case .sent:
-            return "Sent"
+            return "Log.sent"
         case .received:
-            return "Received"
+            return "Log.received"
         }
     }
 

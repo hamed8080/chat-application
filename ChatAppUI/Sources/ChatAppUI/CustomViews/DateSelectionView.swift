@@ -25,7 +25,7 @@ public struct DateSelectionView: View {
         ZStack {
             if !showEndDate {
                 VStack {
-                    Text("Start Date")
+                    Text(.init(localized: .init("ExportChat.startTitle")))
                         .foregroundColor(.textBlueColor)
                         .font(.iransansBoldTitle)
 
@@ -35,7 +35,7 @@ public struct DateSelectionView: View {
                     Button {
                         showEndDate.toggle()
                     } label: {
-                        Label("Next".uppercased(), systemImage: "arrow.forward")
+                        Label("General.next", systemImage: "arrow.forward")
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                     }
                     .font(.iransansSubheadline)
@@ -44,7 +44,7 @@ public struct DateSelectionView: View {
                 }
             } else {
                 VStack {
-                    Text("End Date")
+                    Text("ExportChat.endTitle")
                         .foregroundColor(.textBlueColor)
                         .font(.iransansBoldTitle)
                     DatePicker("", selection: $endDate)
@@ -53,7 +53,7 @@ public struct DateSelectionView: View {
                         Button {
                             showEndDate.toggle()
                         } label: {
-                            Label("Back".uppercased(), systemImage: "arrow.backward")
+                            Label("General.back", systemImage: "arrow.backward")
                                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                         }
                         .font(.iransansSubheadline)
@@ -63,7 +63,7 @@ public struct DateSelectionView: View {
                             showEndDate.toggle()
                             completion(startDate, endDate)
                         } label: {
-                            Label("Export".uppercased(), systemImage: "tray.and.arrow.down")
+                            Label("ExportChat.export", systemImage: "tray.and.arrow.down")
                                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                         }
                         .font(.iransansSubheadline)

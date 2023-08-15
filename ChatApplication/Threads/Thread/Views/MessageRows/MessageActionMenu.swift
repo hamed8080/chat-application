@@ -23,7 +23,7 @@ struct MessageActionMenu: View {
                 threadVM?.objectWillChange.send()
             }
         } label: {
-            Label("Reply", systemImage: "arrowshape.turn.up.left")
+            Label("Messages.ActionMenu.reply", systemImage: "arrowshape.turn.up.left")
         }
 
         Button {
@@ -31,7 +31,7 @@ struct MessageActionMenu: View {
             AppState.shared.replyPrivately = message
             AppState.shared.openThread(participant: participant)
         } label: {
-            Label("ReplyPrivately", systemImage: "arrowshape.turn.up.left")
+            Label("Messages.ActionMenu.replyPrivately", systemImage: "arrowshape.turn.up.left")
         }
 
         Button {
@@ -43,7 +43,7 @@ struct MessageActionMenu: View {
                 threadVM?.animateObjectWillChange()
             }
         } label: {
-            Label("forward", systemImage: "arrowshape.turn.up.forward")
+            Label("Messages.ActionMenu.forward", systemImage: "arrowshape.turn.up.forward")
         }
 
         Button {
@@ -52,14 +52,14 @@ struct MessageActionMenu: View {
                 threadVM?.objectWillChange.send()
             }
         } label: {
-            Label("Edit", systemImage: "pencil.circle")
+            Label("General.edit", systemImage: "pencil.circle")
         }
         .disabled(message.editable == false)
 
         Button {
             UIPasteboard.general.string = message.message
         } label: {
-            Label("Copy", systemImage: "doc.on.doc")
+            Label("Messages.ActionMenu.copy", systemImage: "doc.on.doc")
         }
 
         if message.isFileType == true {
@@ -67,7 +67,7 @@ struct MessageActionMenu: View {
                 threadVM?.clearCacheFile(message: message)
                 threadVM?.animateObjectWillChange()
             } label: {
-                Label("Delete file from cache", systemImage: "cylinder.split.1x2")
+                Label("Messages.ActionMenu.deleteCache", systemImage: "cylinder.split.1x2")
             }
         }
 
@@ -75,7 +75,7 @@ struct MessageActionMenu: View {
             threadVM?.togglePinMessage(message)
             threadVM?.animateObjectWillChange()
         } label: {
-            Label((message.pinned ?? false) ? "UnPin" : "Pin", systemImage: "pin")
+            Label((message.pinned ?? false) ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.unpinMessage", systemImage: "pin")
         }
 
         Button {
@@ -86,14 +86,14 @@ struct MessageActionMenu: View {
                 threadVM?.animateObjectWillChange()
             }
         } label: {
-            Label("Select", systemImage: "checkmark.circle")
+            Label("General.select", systemImage: "checkmark.circle")
         }
 
         Button(role: .destructive) {
             threadVM?.deleteMessages([message])
             threadVM?.animateObjectWillChange()
         } label: {
-            Label("Delete", systemImage: "trash")
+            Label("General.delete", systemImage: "trash")
         }
         .disabled(message.deletable == false)
     }

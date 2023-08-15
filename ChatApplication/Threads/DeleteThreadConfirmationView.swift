@@ -19,7 +19,7 @@ struct DeleteThreadConfirmationView: View {
     var body: some View {
         NavigationView {
             Form {
-                SectionTitleView(title: "Delete \(viewModel.selectedThraed?.title ?? "")")
+                SectionTitleView(title: "\(String(localized: .init("General.delete"))) \(viewModel.selectedThraed?.title ?? "")")
                 SectionImageView(image: Image("delete"))
                 Section {
                     Button {
@@ -29,14 +29,14 @@ struct DeleteThreadConfirmationView: View {
                             viewModel.delete()
                         }
                     } label: {
-                        Label("\(viewModel.sheetType == .secondConfirmation ? "Permanently Delete" : "Confirm")".uppercased(), systemImage: "trash")
+                        Label(viewModel.sheetType == .secondConfirmation ? "Thread.Delete.permanentlyDelete" : "Genreal.confirm", systemImage: "trash")
                             .foregroundColor(.red)
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                     }
                     .font(.iransansSubheadline)
                     .buttonStyle(.bordered)
                 } footer: {
-                    Text("With deleting a thread, you cannot restore or join it again.")
+                    Text("Thread.Delete.footer")
                 }
                 .listRowBackground(Color.clear)
             }

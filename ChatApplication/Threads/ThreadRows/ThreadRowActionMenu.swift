@@ -19,37 +19,37 @@ struct ThreadRowActionMenu: View {
         Button {
             viewModel.togglePin(thread)
         } label: {
-            Label((thread.pin ?? false) ? "UnPin" : "Pin", systemImage: "pin")
+            Label((thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", systemImage: "pin")
         }
 
         Button {
             viewModel.clearHistory(thread)
         } label: {
-            Label("Clear History", systemImage: "clock")
+            Label("Thread.clearHistory", systemImage: "clock")
         }
 
         Button {
             viewModel.toggleMute(thread)
         } label: {
-            Label((thread.mute ?? false) ? "Unmute" : "Mute", systemImage: "speaker.slash")
+            Label((thread.mute ?? false) ? "Thread.unmute" : "Thread.mute", systemImage: "speaker.slash")
         }
 
         Button {
             viewModel.showAddThreadToTag(thread)
         } label: {
-            Label("Add To Folder", systemImage: "folder.badge.plus")
+            Label("Thread.addToFolder", systemImage: "folder.badge.plus")
         }
 
         Button {
             viewModel.spamPV(thread)
         } label: {
-            Label("Spam", systemImage: "ladybug")
+            Label("Thread.spam", systemImage: "ladybug")
         }
 
         Button(role: .destructive) {
             viewModel.leave(thread)
         } label: {
-            Label("Leave", systemImage: "rectangle.portrait.and.arrow.right")
+            Label("Thread.leave", systemImage: "rectangle.portrait.and.arrow.right")
         }
 
         if thread.admin == true {
@@ -57,21 +57,21 @@ struct ThreadRowActionMenu: View {
                 viewModel.selectedThraed = thread
                 viewModel.sheetType = .firstConfrimation
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label("General.delete", systemImage: "trash")
             }
         }
 
         Button {
             viewModel.toggleArchive(thread)
         } label: {
-            Label(thread.isArchive == false ? "Archive" : "Unarchive", systemImage: thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
+            Label(thread.isArchive == false ? "Thread.archive" : "Thread.unarchive", systemImage: thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
         }
 
         if canAddParticipant {
             Button {
                 viewModel.showAddParticipants(thread)
             } label: {
-                Label("Invite", systemImage: "person.crop.circle.badge.plus")
+                Label("Thread.invite", systemImage: "person.crop.circle.badge.plus")
             }
         }
 
@@ -79,7 +79,7 @@ struct ThreadRowActionMenu: View {
             Button {
                 viewModel.makeThreadPublic(thread)
             } label: {
-                Label("Switch to public thread", systemImage: "arrow.triangle.swap")
+                Label("Thread.switchToPublic", systemImage: "arrow.triangle.swap")
             }
         }
     }

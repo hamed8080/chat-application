@@ -5,7 +5,7 @@ import ChatAppModels
 import ChatModels
 
 public final class NavigationModel: ObservableObject {
-    @Published public var selectedSideBarId: String? = "Chats"
+    @Published public var selectedSideBarId: String? = "Tab.chats"
     @Published public var selectedThreadId: Conversation.ID? {
         didSet {
             if let selectedThread = selectedThread {
@@ -31,15 +31,15 @@ public final class NavigationModel: ObservableObject {
 
     public func setup() {
         sections.append(
-            .init(title: "Chats", items:
+            .init(title: "Tab.chats", items:
                     [
-                        .init(id: "Contacts", title: "Contacts", icon: "person.icloud"),
-                        .init(id: "Chats", title: "Chats", icon: "captions.bubble"),
-                        .init(id: "Archives", title: "Archives", icon: "tray.and.arrow.down"),
+                        .init(id: "Tab.contacts", title: "Tab.contacts", icon: "person.icloud"),
+                        .init(id: "Tab.chats", title: "Tab.chats", icon: "captions.bubble"),
+                        .init(id: "Tab.archives", title: "Tab.archives", icon: "tray.and.arrow.down"),
                     ]))
 
-        sections.append(.init(title: "Folders", items: []))
-        sections.append(.init(title: "Settings", items: [.init(id: "Settings", title: "Settings", icon: "gear")]))
+        sections.append(.init(title: "Tab.folders", items: []))
+        sections.append(.init(title: "Tab.settings", items: [.init(id: "Tab.settings", title: "Tab.settings", icon: "gear")]))
         cancelable = $selectedSideBarId.sink { [weak self] newValue in
             if newValue != self?.selectedSideBarId {
                 self?.manageThreadChange(newValue)
@@ -50,9 +50,9 @@ public final class NavigationModel: ObservableObject {
 
     public func manageThreadChange(_ newValue: String?) {
         threadViewModel?.title = sectionItem(newValue)?.title ?? ""
-        if newValue == "Archives" {
+        if newValue == "Tab.archives" {
             threadViewModel?.getArchivedThreads()
-        } else if selectedSideBarId == "Archives" {
+        } else if selectedSideBarId == "Tab.archives" {
             threadViewModel?.resetArchiveSettings()
         }
 
@@ -69,14 +69,14 @@ public final class NavigationModel: ObservableObject {
     }
 
     var selectedSideBarIdStorage: String {
-        UserDefaults.standard.string(forKey: "selectedSideBarId") ?? "Chats"
+        UserDefaults.standard.string(forKey: "selectedSideBarId") ?? "Tab.chats"
     }
 
     public func addTags(_ tags: [Tag]) {
         if tags.count == 0 { return }
         tags.forEach { tag in
             let tagId = "Tag-\(tag.id)"
-            let foldersSectionIndex = sections.firstIndex(where: { $0.title == "Folders" })
+            let foldersSectionIndex = sections.firstIndex(where: { $0.title == "Tab.folders" })
             guard let foldersSectionIndex = foldersSectionIndex else { return }
             if !sections[foldersSectionIndex].items.contains(where: { $0.id == tagId }) {
                 sections[foldersSectionIndex].items.append(.init(id: tagId, tag: tag, title: tag.name, icon: "folder"))
@@ -94,11 +94,11 @@ public final class NavigationModel: ObservableObject {
 
     public var isThreadType: Bool {
         let type = selectedSideBarId ?? ""
-        return type.contains("Tag") || type == "Chats" || type == "Archives"
+        return type.contains("Tag") || type == "Tab.chats" || type == "Tab.archives"
     }
 
     public func folder(_ selectedSideBarId: String?) -> Tag? {
-        sections.first(where: { $0.title == "Folders" })?.items.first(where: { $0.id == selectedSideBarId })?.tag
+        sections.first(where: { $0.title == "Tab.folders" })?.items.first(where: { $0.id == selectedSideBarId })?.tag
     }
 
     public var selectedThread: Conversation? {

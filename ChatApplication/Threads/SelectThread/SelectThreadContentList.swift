@@ -20,9 +20,9 @@ struct SelectThreadContentList: View {
 
     var body: some View {
         Form {
-            SectionTitleView(title: "Select to start a conversation")
+            SectionTitleView(title: "Thread.selectToStartConversation")
             Section {
-                MultilineTextField("Search ...", text: $searechInsideThread, backgroundColor: Color.gray.opacity(0.2))
+                MultilineTextField("General.searchHere", text: $searechInsideThread, backgroundColor: Color.gray.opacity(0.2))
                     .cornerRadius(16)
                     .noSeparators()
                     .onChange(of: searechInsideThread) { _ in

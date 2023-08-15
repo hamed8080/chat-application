@@ -22,7 +22,7 @@ public struct SectionTitleView: View {
                            startPoint: .topLeading,
                            endPoint: .bottomTrailing)
             .mask {
-                Text(title)
+                Text(String(localized: .init(title)))
                     .font(.system(size: 36).weight(.bold))
                     .fontDesign(.rounded)
             }

@@ -41,7 +41,7 @@ struct ThreadViewTrailingToolbar: View {
                 viewModel.animateObjectWillChange()
             } label: {
                 Label {
-                    Text("Export")
+                    Text("Thread.export")
                 } icon: {
                     Image(systemName: "square.and.arrow.up")
                         .resizable()

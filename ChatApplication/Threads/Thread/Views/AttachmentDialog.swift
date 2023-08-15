@@ -34,13 +34,19 @@ struct MutableAttachmentDialog: View {
 
     var body: some View {
         let count = viewModel.selectedImageItems.count
-        let text = count > 0 ? "\(count) selected" : "Nothing Has been selected."
-        Text(verbatim: text)
-            .multilineTextAlignment(.center)
-            .foregroundColor(Color(uiColor: .systemGray))
-            .font(.iransansCaption)
-            .frame(minWidth: 0, maxWidth: .infinity)
-            .animation(.easeInOut, value: viewModel.selectedImageItems.count)
+        HStack(spacing: 2) {
+            if count > 0 {
+                Text("\(count)")
+                    .fontWeight(.bold)
+            }
+            Text(count > 0 ? "General.selected" : "General.nothingSelected")
+        }
+        .multilineTextAlignment(.center)
+        .foregroundColor(Color(uiColor: .systemGray))
+        .font(.iransansCaption)
+        .frame(minWidth: 0, maxWidth: .infinity)
+        .animation(.easeInOut, value: viewModel.selectedImageItems.count)
+
         if viewModel.selectedImageItems.count > 0 {
             SendTextViewWithButtons {
                 viewModel.sendSelectedPhotos()
@@ -63,28 +69,28 @@ struct MutableAttachmentDialog: View {
                 threadVM.sheetType = .galleryPicker
                 threadVM.animateObjectWillChange()
             } label: {
-                Label("Photo or Video", systemImage: "photo")
+                Label("General.photoOrVideo", systemImage: "photo")
             }
 
             Button {
                 threadVM.sheetType = .filePicker
                 threadVM.animateObjectWillChange()
             } label: {
-                Label("File", systemImage: "doc")
+                Label("General.file", systemImage: "doc")
             }
 
             Button {
                 threadVM.sheetType = .locationPicker
                 threadVM.animateObjectWillChange()
             } label: {
-                Label("Location", systemImage: "location.viewfinder")
+                Label("General.location", systemImage: "location.viewfinder")
             }
 
             Button {
                 threadVM.sheetType = .contactPicker
                 threadVM.animateObjectWillChange()
             } label: {
-                Label("Contact", systemImage: "person.2.crop.square.stack")
+                Label("General.contact", systemImage: "person.2.crop.square.stack")
             }
         }
         .font(.iransansBody)

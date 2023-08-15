@@ -21,7 +21,7 @@ struct SideBarView: View {
             SideBarSectionsView()
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Chat Application")
+        .navigationTitle("General.appName")
         .sheet(isPresented: $showLoginSheet) {
             LoginView {
                 container.reset()
@@ -34,7 +34,7 @@ struct SideBarView: View {
                     container.loginVM.resetState()
                     showLoginSheet.toggle()
                 } label: {
-                    Label("Add User", systemImage: "plus.app")
+                    Label("General.add", systemImage: "plus.app")
                 }
             }
         }
@@ -86,14 +86,14 @@ struct SwipyView: View {
 struct SideBarSectionsView: View {
     @EnvironmentObject var container: ObjectsContainer
     @State private var sections: [ChatAppModels.Section] = []
-    @State var selectedSideBarId: String? = "Chats"
+    @State var selectedSideBarId: String? = "Tab.chats"
 
     var body: some View {
         List(sections, selection: $container.navVM.selectedSideBarId) { section in
-            Section(section.title) {
+            Section(String(localized: .init(section.title))) {
                 ForEach(section.items) { item in
                     NavigationLink(value: item.id) {
-                        Label(item.title, systemImage: item.icon)
+                        Label(String(localized: .init(item.title)), systemImage: item.icon)
                     }
                 }
             }

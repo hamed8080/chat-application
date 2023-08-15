@@ -20,10 +20,14 @@ struct CallMessageType: View {
         HStack(alignment: .center) {
             if let time = message.time {
                 let date = Date(milliseconds: Int64(time))
-                Text("Call \(message.type == .endCall ? "ended" : "started") - \(date.timeAgoSinceDateCondense ?? "")")
-                    .foregroundColor(Color.primary.opacity(0.8))
-                    .font(.iransansSubheadline)
-                    .padding(2)
+                HStack(spacing: 2) {
+                    Text(message.type == .endCall ? "Thread.callEnded" : "Thread.callStarted")
+                    Text("\(date.timeAgoSinceDateCondense ?? "")")
+                        .fontWeight(.bold)
+                }
+                .foregroundColor(Color.primary.opacity(0.8))
+                .font(.iransansSubheadline)
+                .padding(2)
             }
 
             Image(systemName: message.type == .startCall ? "arrow.down.left" : "arrow.up.right")

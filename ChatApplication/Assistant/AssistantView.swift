@@ -26,14 +26,14 @@ struct AssistantView: View {
             .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
         }
         .environmentObject(viewModel)
-        .navigationTitle("Assistants")
+        .navigationTitle("Assistant.Assistants")
         .animation(.easeInOut, value: viewModel.assistants.count)
         .toolbar {
             ToolbarItemGroup {
                 Button {
                     viewModel.deactiveSelectedAssistants()
                 } label: {
-                    Label("Delete", systemImage: "trash")
+                    Label("General.delete", systemImage: "trash")
                 }
                 .foregroundStyle(.red)
                 .opacity(viewModel.selectedAssistant.count == 0 ? 0.2 : 1)
@@ -42,7 +42,7 @@ struct AssistantView: View {
                 Button {
                     viewModel.showAddAssistantSheet = true
                 } label: {
-                    Label("Add", systemImage: "plus")
+                    Label("General.add", systemImage: "plus")
                 }
 
                 Button {
@@ -50,24 +50,20 @@ struct AssistantView: View {
                         viewModel.isInSelectionMode.toggle()
                     }
                 } label: {
-                    Label {
-                        Text("Selection")
-                    } icon: {
-                        Image(systemName: "filemenu.and.selection")
-                    }
+                    Label("General.select", systemImage: "filemenu.and.selection")
                 }
                 .disabled(viewModel.assistants.count == 0)
 
                 Menu {
                     NavigationLink(value: Assistant()) {
-                        Label("Histories", systemImage: "clock")
+                        Label("Assistant.histories", systemImage: "clock")
                     }
 
                     NavigationLink(value: BlockedAssistantsRequest()) {
-                        Label("Blocked Assistants", systemImage: "hand.raised")
+                        Label("Assistant.blockedList", systemImage: "hand.raised")
                     }
                 } label: {
-                    Label("More", systemImage: "ellipsis.circle")
+                    Label("General.more", systemImage: "ellipsis.circle")
                 }
             }
         }
@@ -93,7 +89,7 @@ struct PickAssitstantListView: View {
         NavigationView {
             Form {
                 List {
-                    SectionTitleView(title: "Select your assistant")
+                    SectionTitleView(title: String(localized: .init("Assistant.selectAssistant")))
                     SectionImageView(image: Image(systemName: "figure.stand.line.dotted.figure.stand"))
                     ForEach(contactsVM.contacts) { contact in
                         AddAssistantRow(contact: contact)
@@ -131,7 +127,7 @@ struct AddAssistantRow: View {
                     .padding(.leading, 4)
                     .lineLimit(1)
                     .font(.headline)
-                Text(contact.notSeenString ?? "Not specified.")
+                Text(String(localized: .init(contact.notSeenString ?? "General.notSpecified")))
                     .padding(.leading, 4)
                     .font(.iransansCaption3)
                     .foregroundColor(Color.gray)

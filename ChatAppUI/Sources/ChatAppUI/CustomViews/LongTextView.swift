@@ -67,7 +67,7 @@ public struct LongTextView: View {
                 self.expanded.toggle()
             }
         } label: {
-            Text(self.expanded ? "Show less" : "Show more")
+            Text(self.expanded ? "General.showLess" : "General.showMore")
                 .font(.caption)
         }
     }

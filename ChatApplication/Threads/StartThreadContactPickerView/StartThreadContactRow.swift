@@ -55,7 +55,7 @@ struct StartThreadContactRow: View {
                     }
                     Spacer()
                     if contact.blocked == true {
-                        Text("Blocked")
+                        Text("General.blocked")
                             .font(.caption2.weight(.medium))
                             .padding(4)
                             .foregroundColor(.redSoft)

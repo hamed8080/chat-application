@@ -13,17 +13,17 @@ public extension InviteeTypes {
     var title: String {
         switch self {
         case .ssoId:
-            return "SSO ID"
+            return "Invitee.ssoId"
         case .contactId:
-            return "Contact ID"
+            return "Invitee.contactId"
         case .cellphoneNumber:
-            return "Cell Phone Number"
+            return "Invitee.cellphoneNumber"
         case .username:
-            return "UserName"
+            return "Invitee.username"
         case .userId:
-            return "User ID"
+            return "Invitee.userId"
         case .coreUserId:
-            return "Core User ID"
+            return "Invitee.coreUserId"
         case .unknown:
             return ""
         }

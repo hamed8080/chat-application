@@ -86,7 +86,7 @@ public final class AppState: ObservableObject {
     public func showThread(thread: Conversation) {
         withAnimation {
             isLoading = false
-            navViewModel?.selectedSideBarId = "Chats"
+            navViewModel?.selectedSideBarId = "Tab.chats"
             navViewModel?.selectedThreadId = thread.id
         }
     }

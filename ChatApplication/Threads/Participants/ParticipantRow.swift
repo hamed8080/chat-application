@@ -37,7 +37,7 @@ struct ParticipantRow: View {
                                 .foregroundColor(.primary.opacity(0.5))
                         }
                         if participant.online == true {
-                            Text("online")
+                            Text("Participant.online")
                                 .font(.caption2)
                                 .foregroundColor(.blue)
                         }
@@ -46,7 +46,7 @@ struct ParticipantRow: View {
                     if participant.admin == true {
                         Spacer()
 
-                        Text("Admin")
+                        Text("Participant.admin")
                             .padding([.leading, .trailing], 4)
                             .padding([.top, .bottom], 2)
                             .foregroundColor(Color.blue)
@@ -60,7 +60,7 @@ struct ParticipantRow: View {
                     if participant.auditor == true {
                         Spacer()
 
-                        Text("Assistant")
+                        Text("Participant.assistant")
                             .padding([.leading, .trailing], 4)
                             .padding([.top, .bottom], 2)
                             .foregroundColor(Color.orange)

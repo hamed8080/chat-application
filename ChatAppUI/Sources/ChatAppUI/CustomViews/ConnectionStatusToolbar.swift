@@ -20,7 +20,7 @@ public struct ConnectionStatusToolbar: View {
     @ViewBuilder
     public var body: some View {
         if connectionStatus != .connected {
-            Text("\(connectionStatus.stringValue) ...")
+            Text("\(String(localized: .init(connectionStatus.stringValue))) ...")
                 .font(.iransansBoldBody)
                 .foregroundColor(.textBlueColor)
                 .onReceive(appstate.$connectionStatus) { newSate in

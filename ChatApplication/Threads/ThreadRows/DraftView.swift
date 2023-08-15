@@ -12,7 +12,7 @@ struct DraftView: View {
     let draft: String
 
     var body: some View {
-        Text("DRAFT:")
+        Text("Thread.draft")
             .font(.iransansBody)
             .foregroundColor(.red)
         Text(draft)

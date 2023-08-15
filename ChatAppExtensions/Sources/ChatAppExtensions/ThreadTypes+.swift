@@ -11,23 +11,23 @@ public extension ThreadTypes {
     var stringValue: String? {
         switch self {
         case .normal:
-            return "Normal(P2P/Group)"
+            return "Thread.normal"
         case .ownerGroup:
-            return "Owner group"
+            return "Thread.ownerGroup"
         case .publicGroup:
-            return "Public Group"
+            return "Thread.publicGroup"
         case .channelGroup:
-            return "Channel Group"
+            return "Thread.channelGroup"
         case .channel:
-            return "Channel"
+            return "Thread.channel"
         case .notificationChannel:
-            return "Notification Channel"
+            return "Thread.notificationChannel"
         case .publicThread:
-            return "Public thread"
+            return "Thread.publicThread"
         case .publicChannel:
-            return "Public Channel"
+            return "Thread.publicChannel"
         case .selfThread:
-            return "Saved Messages"
+            return "Thread.selfThread"
         case .unknown:
             return nil
         }

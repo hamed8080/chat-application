@@ -8,11 +8,11 @@ public enum ConnectionStatus: Int {
 
     public var stringValue: String {
         switch self {
-        case .connecting: return "connecting"
-        case .connected: return "connected"
-        case .disconnected: return "disconnected"
-        case .reconnecting: return "reconnectiong"
-        case .unauthorized: return "un authorized"
+        case .connecting: return "ConnectionStatus.connecting"
+        case .connected: return "ConnectionStatus.connected"
+        case .disconnected: return "ConnectionStatus.disconnected"
+        case .reconnecting: return "ConnectionStatus.reconnecting"
+        case .unauthorized: return "ConnectionStatus.unauthorized"
         }
     }
 }

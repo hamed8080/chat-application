@@ -35,7 +35,7 @@ struct ThreadSearchList: View {
             .background(.ultraThickMaterial)
         } else if viewModel.isInSearchMode {
             ZStack {
-                Text("Nothing found.")
+                Text("General.nothingFound")
                     .font(.iransansTitle)
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)

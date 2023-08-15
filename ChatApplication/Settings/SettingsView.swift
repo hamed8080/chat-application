@@ -33,12 +33,8 @@ struct SettingsView: View {
                 Button {
                     // TODO: - Must be added after server fix the problem
                 } label: {
-                    Label {
-                        Text("Edit")
-                    } icon: {
-                        Image(systemName: "square.and.pencil")
-                            .font(.iransansBody)
-                    }
+                    Label("General.edit", systemImage: "square.and.pencil")
+                        .font(.iransansBody)
                 }
             }
 
@@ -46,7 +42,7 @@ struct SettingsView: View {
                 ConnectionStatusToolbar()
             }
         }
-        .navigationTitle(Text("Settings"))
+        .navigationTitle("Tab.settings")
     }
 }
 
@@ -57,7 +53,7 @@ struct SettingSettingSection: View {
                 HStack {
                     Image(systemName: "gear")
                         .foregroundColor(.blue)
-                    Text("Setting")
+                    Text("Settings.title")
                 }
             }
         }
@@ -71,7 +67,7 @@ struct SettingCallHistorySection: View {
                 HStack {
                     Image(systemName: "phone")
                         .foregroundColor(.green)
-                    Text("Calls")
+                    Text("Settings.calls")
                 }
             }
         }
@@ -84,7 +80,7 @@ struct SettingSavedMessagesSection: View {
             HStack {
                 Image(systemName: "bookmark")
                     .foregroundColor(.purple)
-                Text("Saved Messages")
+                Text("Settings.savedMessage")
             }
         }
     }
@@ -98,7 +94,7 @@ struct SettingLogSection: View {
             HStack {
                 Image(systemName: "note.text")
                     .foregroundColor(.purple)
-                Text("Logs")
+                Text("Settings.logs")
             }
         }
     }
@@ -112,7 +108,7 @@ struct SettingAssistantSection: View {
             HStack {
                 Image(systemName: "person.badge.shield.checkmark")
                     .foregroundColor(.purple)
-                Text("Assistants")
+                Text("Settings.assistants")
             }
         }
     }
@@ -174,7 +170,7 @@ struct SettingCallSection: View {
     @EnvironmentObject var container: ObjectsContainer
 
     var body: some View {
-        Section(header: Text("Manage Calls").font(.headline)) {
+        Section(header: Text("Settings.manageCalls")) {
             Button {
                 ChatManager.activeInstance?.user.logOut()
                 TokenManager.shared.clearToken()
@@ -185,7 +181,7 @@ struct SettingCallSection: View {
                     Image(systemName: "arrow.backward.circle")
                         .foregroundColor(.red)
                         .font(.body.weight(.bold))
-                    Text("Logout")
+                    Text("Settings.logout")
                         .fontWeight(.bold)
                         .foregroundColor(Color.red)
                     Spacer()

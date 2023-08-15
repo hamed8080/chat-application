@@ -9,7 +9,7 @@ public struct ErrorView: View {
 
     public var body: some View {
         HStack {
-            Text(error.capitalizingFirstLetter())
+            Text(String(localized: .init(error)))
                 .font(.iransansCaption2)
                 .foregroundColor(.red.opacity(0.7))
         }

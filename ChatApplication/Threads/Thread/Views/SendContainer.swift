@@ -42,27 +42,27 @@ struct SendContainer: View {
                     }
                     HStack {
                         if isRecording == false {
-                            GradientImageButton(image: "paperclip", title: "Voice Recording") {
+                            GradientImageButton(image: "paperclip", title: "Thread.SendContainer.attachment") {
                                 viewModel.sheetType = .attachment
                                 viewModel.animateObjectWillChange()
                             }
                             .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
                         }
 
-                        MultilineTextField(text.isEmpty == true ? "Type message here ..." : "", text: $text, textColor: Color.black, mention: true)
+                        MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "", text: $text, textColor: Color.black, mention: true)
                             .cornerRadius(16)
                             .onChange(of: viewModel.textMessage ?? "") { newValue in
                                 viewModel.sendStartTyping(newValue)
                             }
                         if isRecording == false {
-                            GradientImageButton(image: "mic.fill", title: "Voice Recording") {
+                            GradientImageButton(image: "mic.fill", title: "Thread.SendContainer.voiceRecording") {
                                 viewModel.setupRecording()
                                 isRecording = true
                             }
                             .keyboardShortcut(.init("r"), modifiers: [.command])
                         }
 
-                        GradientImageButton(image: "arrow.up.circle.fill", title: "Send") {
+                        GradientImageButton(image: "arrow.up.circle.fill", title: "General.send") {
                             if isRecording {
                                 viewModel.audioRecoderVM?.stopAndSend()
                                 isRecording = false
@@ -140,8 +140,15 @@ struct SelectionView: View {
                     viewModel.animateObjectWillChange()
                 }
 
-            Text("\(selectedCount) selected \(viewModel.forwardMessage != nil ? "to forward" : "")")
-                .offset(x: 8)
+            HStack(spacing: 2) {
+                Text("\(selectedCount)")
+                    .fontWeight(.bold)
+                Text("General.selected")
+                if viewModel.forwardMessage != nil {
+                    Text("Thread.SendContainer.toForward")
+                }
+            }
+            .offset(x: 8)
             Spacer()
 
             Image(systemName: "trash.fill")
@@ -244,7 +251,7 @@ struct GradientImageButton: View {
             action()
         } label: {
             ZStack {
-                Text(title)
+                Text(String(localized: .init(title)))
                     .frame(width: 0, height: 0)
                     .allowsHitTesting(false)
                     .disabled(true)
