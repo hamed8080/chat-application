@@ -48,6 +48,11 @@ struct MessageReactionDetailView: View {
                         }
                     }
                 }
+                .onAppear {
+                    if reactions.last == reaction {
+                        ReactionViewModel.shared.getDetail(for: messageId, offset: reactions.count, conversationId: conversationId)
+                    }
+                }
                 .contextMenu {
                     Button(role: .destructive) {
                         ChatManager.activeInstance?.reaction.delete(.init(reactionId: reaction.id ?? -1, conversationId: conversationId))
