@@ -1,0 +1,255 @@
+/* 
+  Localizable.strings
+  ChatApplication
+
+  Created by hamed on 3/7/23.
+  
+*/
+
+/* Errores */
+"Errors.occuredTitle"= "Ha ocurrido un error con el código: %@";
+"Errors.Login.invalidPhoneNumber" = "Por favor, ingrese un número de teléfono válido";
+"Errors.failedTryAgain" = "¡Se produjo un error! Inténtalo de nuevo.";
+"Errors.Login.Verify.incorrectCode" = "Tu código de verificación es incorrecto.";
+
+/* General */
+"General.next" = "Siguiente";
+"General.back" = "Atrás";
+"General.delete" = "Eliminar";
+"General.cancel" = "Cancelar";
+"General.showMore" = "Mostrar más";
+"General.showLess" = "Mostrar menos";
+"General.close" = "Cerrar";
+"General.send" = "Enviar";
+"General.add" = "Agregar";
+"General.select" = "Seleccionar";
+"General.typeMessageHere" = "Escribe el mensaje aquí ...";
+"General.more" = "Más";
+"General.notSpecified" = "No especificado";
+"General.unknown" = "Desconocido";
+"General.block" = "Bloquear";
+"General.unblock" = "Desbloquear";
+"General.blocked" = "Bloqueado";
+"General.searchHere" = "Buscar aquí...";
+"General.firstName" = "Nombre";
+"General.lastName" = "Apellido";
+"General.contact" = "Contacto";
+"General.done" = "Hecho";
+"General.nothingSelected" = "No se ha seleccionado nada. ¡Puedes iniciar una conversación ahora mismo!";
+"General.start" = "Comenzar";
+"General.appName" = "Aplicación de Chat";
+"General.nothingFound" = "No se encontró nada";
+"General.all" = "Todo";
+"General.submit" = "Enviar";
+"General.create" = "Crear";
+"General.nothingSelected" = "No se ha seleccionado nada.";
+"General.selected" = "Seleccionado";
+"General.photoOrVideo" = "Foto o Video";
+"General.file" = "Archivo";
+"General.location" = "Ubicación";
+"Genreal.confirm" = "Confirmar";
+"Genreal.accept" = "Aceptar";
+"General.info" = "Información";
+"General.title" = "Título";
+"General.description" = "Descripción";
+"General.addToContact" = "Agregar a Contactos";
+"General.edit" = "editar";
+
+/* Pestañas */
+"Tab.chats" = "Chats";
+"Tab.contacts" = "Contactos";
+"Tab.archives" = "Archivos";
+"Tab.folders" = "Carpetas";
+"Tab.settings" = "Configuración";
+
+/* Asistentes */
+"Assistant.Assistants" = "Asistentes";
+"Assistant.histories" = "Historias";
+"Assistant.selectAssistant" = "Selecciona tu asistente";
+"Assistant.blockedList" = "Asistentes bloqueados";
+"Assistant.registered" = "registrado";
+"Assistant.activated" = "activado";
+"Assistant.deactivated" = "desactivado";
+"Assistant.blocked" = "bloqueado";
+"Assistant.unblocked" = "desbloqueado";
+"Assistant.History.title" = "Historial de acciones";
+
+/* Contactos */
+"Contacts.total" = "Total de contactos";
+"Contacts.searched" = "Contactos buscados";
+"Contacts.createNew" = "Crear nuevos contactos";
+"Contacts.deleteSelectedTitle" = "Eliminar contactos seleccionados";
+"Contacts.deleteSelectedSubTitle" = "¿Deseas eliminar los contactos seleccionados?";
+"Contacts.blockedList" = "Contactos bloqueados";
+"Contacts.Add.headerTitle" = "Información general";
+"Contacts.Add.footerTitle" = "En el campo de contacto, puedes ingresar tanto el nombre de usuario como el número de teléfono.";
+"Contacts.Edit.title" = "Editar contactos";
+"Contacts.Add.title" = "Agregar contactos";
+
+/* Llamada */
+"Call.requested" = "Solicitada";
+"Call.canceled" = "Cancelada";
+"Call.miss" = "No respondida";
+"Call.declined" = "Rechazada";
+"Call.accepted" = "Contestada";
+"Call.started" = "Iniciada";
+"Call.ended" = "Finalizada";
+"Call.leave" = "Salir";
+
+/* Invitado */
+"Invitee.ssoId" = "ID de SSO";
+"Invitee.contactId" = "ID de contacto";
+"Invitee.cellphoneNumber" = "Número de teléfono celular";
+"Invitee.username" = "Nombre de usuario";
+"Invitee.userId" = "ID de usuario";
+"Invitee.coreUserId" = "ID de usuario principal";
+
+/* Registro */
+"Logs.title" = "Registros";
+"Log.internalLog" = "Registros internos";
+"Log.sent" = "Enviado";
+"Log.received" = "Recibido";
+
+/* Mensaje */
+"Message.Participant.left" = "%@ ha abandonado el grupo";
+"Message.Participant.removed" = "%@ eliminado por %@";
+"Message.Participant.joined" = "%@ se ha unido al grupo";
+"Message.Participant.added" = "%@ añadido por %@";
+
+/* Eventos del sistema */
+"SMT.isTyping" = "está escribiendo...";
+"SMT.recordVoice" = "está grabando un mensaje de voz";
+"SMT.uploadPicture" = "está subiendo una imagen";
+"SMT.uploadVideo" = "está subiendo un video";
+"SMT.uploadSound" = "está subiendo un sonido";
+"SMT.uploadFile" = "está subiendo un archivo";
+
+/* Hilo */
+"Thread.normal" = "Normal (P2P/Grupo)";
+"Thread.ownerGroup" = "Grupo del propietario";
+"Thread.publicGroup" = "Grupo público";
+"Thread.channelGroup" = "Grupo de canal";
+"Thread.channel" = "Canal";
+"Thread.notificationChannel" = "Canal de notificaciones";
+"Thread.publicThread" = "Hilo público";
+"Thread.publicChannel" = "Canal público";
+"Thread.selfThread" = "Mensajes guardados";
+"Thread.draft" = "Borrador:";
+"Thread.callStarted" = "Llamada iniciada";
+"Thread.callEnded" = "Llamada finalizada";
+"Thread.unpin" = "Desanclar";
+"Thread.pin" = "Anclar";
+"Thread.mute" = "Silenciar";
+"Thread.unmute" = "Desactivar silencio";
+"Thread.addToFolder" = "Agregar a carpeta";
+"Thread.clearHistory" = "Borrar historial";
+"Thread.spam" = "Spam";
+"Thread.leave" = "Salir";
+"Thread.archive" = "Archivar";
+"Thread.unarchive" = "Desarchivar";
+"Thread.invite" = "Invitar";
+"Thread.switchToPublic" = "Cambiar a hilo público";
+"Thread.selectToStartConversation" = "Seleccionar para iniciar una conversación";
+"Thread.newGroup" = "Nuevo grupo";
+"Thread.newChannel" = "Nuevo canal";
+"Thread.enterGroupNameHere" = "Ingresa el nombre del grupo aquí...";
+"Thread.publicThreadFooter" = "Los hilos públicos están disponibles para todos en Internet.";
+"Thread.publicThreadStructrue" = "Los nombres de los hilos públicos deben ser únicos y no contener espacios ni caracteres especiales.";
+"Thread.enterValidName" = "Ingresa el nombre de la conversación.";
+"Thread.public" = "Público";
+"Thread.SendContainer.voiceRecording" = "Grabación de voz";
+"Thread.SendContainer.attachment" = "Adjunto";
+"Thread.SendContainer.typeMessageHere" = "Escribe el mensaje aquí ...";
+"Thread.SendContainer.toForward" = "para reenviar";
+"Thread.export" = "Exportar";
+"ThreadList.Toolbar.startNewChat" = "Iniciar un nuevo chat";
+"ThreadList.Toolbar.joinToPublicThread" = "Unirse a un hilo público";
+"ThreadList.Toolbar.fastMessage" = "Mensaje rápido";
+"ThreadList.Toolbar.createABot" = "Crear un nuevo bot";
+"ThreadList.Toolbar.filter" = "Filtrar";
+"Thread.Join.title" = "Unirse";
+"Thread.Join.enterThreadNameHere" = "Ingresa el nombre del chat...";
+"Thread.Join.duplicateName" = "¡El nombre del hilo no existe!";
+"Thread.Join.footer" = "Únete a un hilo público por su nombre único.";
+"Thread.Delete.permanentlyDelete" = "Eliminar permanentemente";
+"Thread.Delete.footer" = "Al eliminar un hilo, no podrás restaurarlo ni unirte a él nuevamente.";
+"Thread.fastMessageFooter" = "Crea un hilo de inmediato aunque la persona a la que vas a enviar un mensaje no esté en la lista de contactos.";
+"Thread.enterFastMessageType" = "Ingresa %@ aquí...";
+"Thread.Tabs.members" = "Miembros";
+"Thread.Tabs.mutualgroup" = "Grupos mutuos";
+"Thread.Tabs.photos" = "Fotos";
+"Thread.Tabs.videos" = "Videos";
+"Thread.Tabs.file" = "Archivo";
+"Thread.Tabs.music" = "Música";
+"Thread.Tabs.voice" = "Voz";
+"Thread.Tabs.link" = "Enlace";
+
+/* Estado de conexión */
+"ConnectionStatus.connecting" = "conectando";
+"ConnectionStatus.connected" = "conectado";
+"ConnectionStatus.disconnected" = "desconectado";
+"ConnectionStatus.reconnecting" = "reconectando";
+"ConnectionStatus.unauthorized" = "no autorizado";
+
+/* Participante */
+"Participant.Search.Type.name" = "Nombre";
+"Participant.Search.Type.username" = "Nombre de usuario";
+"Participant.Search.Type.cellphoneNumber" = "Teléfono móvil";
+"Participant.Search.Type.admin" = "Administrador";
+"Participant.admin" = "Administrador";
+"Participant.online" = "En línea";
+"Participant.assistant" = "Asistente";
+"Participant.addAdminAccess" = "Agregar acceso de administrador";
+"Participant.removeAdminAccess" = "Eliminar acceso de administrador";
+
+/* Exportar chat */
+"ExportChat.startTitle" = "Fecha de inicio";
+"ExportChat.endTitle" = "Fecha de fin";
+"ExportChat.export" = "Exportar";
+
+/* Cuadro de diálogo Eliminar mensaje */
+"DeleteMessageDialog.title" = "Eliminar mensajes seleccionados";
+"DeleteMessageDialog.subtitle" = "¿Estás seguro de que deseas eliminar todos los mensajes seleccionados?";
+
+/* Inicio de sesión */
+"Login.title" = "Iniciar sesión";
+"Login.welcome" = "Bienvenido a la aplicación de chat";
+"Login.staticToken" = "Ingresa tu token estático aquí.";
+"Login.phoneNumber" = "Ingresa tu número de teléfono aquí.";
+"Login.footer" = "Contacta al equipo de soporte si tienes problemas con el inicio de sesión.";
+"Login.Verify.enterCode" = "Ingresa el código de verificación";
+"Login.Verfiy.verificationCodeSentTo" = "Código de verificación enviado a: ";
+"Login.Verify.title" = "Verificar";
+
+/* Configuración */
+"Settings.title" = "Configuración";
+"Settings.calls" = "Llamadas";
+"Settings.savedMessage" = "Mensajes guardados";
+"Settings.logs" = "Registros";
+"Settings.assistants" = "Asistentes";
+"Settings.manageCalls" = "Administrar llamadas";
+"Settings.logout" = "Cerrar sesión";
+
+/* Etiquetas */
+"Tags.addToFolder" = "Agregar a carpeta";
+"Tags.addNewFolder" = "Agregar carpeta";
+"Tags.addNewFolderSubtitle" = "Ingresa el nombre de la carpeta para agregar hilos a esta carpeta. Puedes gestionar las carpetas desde la configuración.";
+"Tags.enterNewFolderName" = "Ingresa el nombre de la carpeta aquí...";
+"Tags.manageFolders" = "Gestionar carpetas";
+
+/* Mensajes */
+"Messages.deletedMessageReply" = "Mensaje eliminado.";
+"Messages.Footer.edited" = "Editado";
+"Messages.resend" = "Reenviar";
+"Messages.ActionMenu.reply" = "Responder";
+"Messages.ActionMenu.replyPrivately" = "Responder en privado";
+"Messages.ActionMenu.forward" = "Reenviar";
+"Messages.ActionMenu.copy" = "Copiar";
+"Messages.ActionMenu.deleteCache" = "Eliminar caché para este mensaje";
+"Messages.ActionMenu.pinMessage" = "Anclar";
+"Messages.ActionMenu.unpinMessage" = "Desanclar";
+"Messages.unreadMessages" = "Mensajes sin leer";
+
+/* Mapa */
+"Map.mayLocation" = "Mi ubicación";
+"Map.hereIAm" = "¡Aquí estoy!";

@@ -81,6 +81,7 @@ struct SplitView: View {
                                 .environmentObject(container.navVM.currentThreadVM!)
                         }
                 }
+                .environment(\.layoutDirection, .leftToRight)
             }
             .toast(
                 isShowing: Binding(get: { AppState.shared.error != nil }, set: { _ in }),
@@ -135,6 +136,7 @@ struct StackContentView: View {
     var body: some View {
         if let viewModel = navVM.currentThreadVM {
             ThreadView()
+                .environment(\.layoutDirection, .leftToRight)
                 .environmentObject(viewModel)
                 .id(viewModel.thread.id) // don't remove this from here it leads to never change in view
         } else {

@@ -26,7 +26,7 @@ struct ContactContentList: View {
                     Text("Contacts.total")
                         .font(.iransansBody)
                         .foregroundColor(.gray)
-                    Text(verbatim: "\(viewModel.maxContactsCountInServer)")
+                    Text("\(viewModel.maxContactsCountInServer)")
                         .font(.iransansBoldBody)
                     Spacer()
                 }

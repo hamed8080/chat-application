@@ -250,20 +250,19 @@ struct GradientImageButton: View {
         Button {
             action()
         } label: {
-            ZStack {
-                Text(String(localized: .init(title)))
-                    .frame(width: 0, height: 0)
-                    .allowsHitTesting(false)
-                    .disabled(true)
-                LinearGradient(gradient: Gradient(colors: [.blue, .teal]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .mask {
-                        Image(systemName: image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                    }
-                    .frame(maxWidth: 24, maxHeight: 24)
-            }
+            Text(String(localized: .init(title)))
+                .frame(width: 0, height: 0)
+                .hidden()
+                .allowsHitTesting(false)
+                .disabled(true)
+            LinearGradient(gradient: Gradient(colors: [.blue, .teal]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                .mask {
+                    Image(systemName: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                }
+                .frame(maxWidth: 24, maxHeight: 24)
         }
     }
 }

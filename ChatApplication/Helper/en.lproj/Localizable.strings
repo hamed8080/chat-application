@@ -52,7 +52,8 @@
 "General.info" = "Info";
 "General.title" = "Title";
 "General.description" = "Description";
-"General.addToContact" = "AddToContact";
+"General.addToContact" = "Add To Contact";
+"General.edit" = "edit";
 
 /* Tabs */
 "Tab.chats" = "Chats";
