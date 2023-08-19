@@ -76,7 +76,7 @@ struct MutableDownloadViews: View {
             if let fileURL = viewModel.fileURL, let scaledImage = fileURL.imageScale(width: 420)?.image {
                 Image(cgImage: scaledImage)
                     .resizable()
-                    .scaledToFit()
+                    .scaledToFill()
             } else if message?.isVideo == true, let fileURL = viewModel.fileURL {
                 VideoPlayerView()
                     .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
@@ -130,13 +130,13 @@ struct MutableDownloadViews: View {
                 Image(uiImage: image)
                     .resizable()
                     .blur(radius: 5, opaque: true)
-                    .scaledToFit()
+                    .scaledToFill()
                     .zIndex(0)
             }
 
             Image(systemName: "arrow.down.circle")
                 .resizable()
-                .font(config.circleConfig.progressFont)
+                .font(.headline.weight(.thin))
                 .padding(8)
                 .frame(width: config.iconWidth, height: config.iconHeight)
                 .scaledToFit()

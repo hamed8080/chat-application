@@ -17,26 +17,17 @@ struct AvatarView: View {
     var message: Message
     let viewModel: ThreadViewModel?
 
-    var body: some View {
-        if !(viewModel?.isSameUser(message: message) == true), message.participant != nil {
-            Button {
-                if let participant = message.participant {
-                    navVM.append(participantDetail: participant)
-                }
-            } label: {
+    @ViewBuilder var body: some View {
+        if viewModel?.thread.group == true,
+           !message.isMe(currentUserId: AppState.shared.user?.id),
+           !(viewModel?.isSameUser(message: message) == true), message.participant != nil
+        {
+            HStack {
                 HStack(spacing: 8) {
-                    if message.isMe(currentUserId: AppState.shared.user?.id) {
-                        Spacer()
-                        Text("\(message.participant?.name ?? "")")
-                            .font(.iransansBoldCaption)
-                            .foregroundColor(.darkGreen)
-                            .lineLimit(1)
-                    }
-
                     if let image = message.participant?.image, let imageLoaderVM = viewModel?.threadsViewModel?.avatars(for: image) {
                         ImageLaoderView(imageLoader: imageLoaderVM, url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
                             .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
-                            .font(.iransansSubheadline)
+                            .font(.iransansCaption)
                             .foregroundColor(.white)
                             .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
                             .background(Color.blue.opacity(0.4))
@@ -44,27 +35,39 @@ struct AvatarView: View {
                     } else {
                         Text(verbatim: String(message.participant?.name?.first ?? message.participant?.username?.first ?? " "))
                             .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
-                            .font(.iransansSubheadline)
+                            .font(.iransansCaption)
                             .foregroundColor(.white)
                             .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
                             .background(Color.blue.opacity(0.4))
                             .cornerRadius(MessageRowViewModel.avatarSize / 2)
                     }
-                    if !message.isMe(currentUserId: AppState.shared.user?.id) {
-                        Text("\(message.participant?.name ?? "")")
-                            .font(.iransansBoldCaption)
-                            .foregroundColor(.blue)
-                            .lineLimit(1)
-                        Spacer()
-                    }
+                    Text("\(message.participant?.name ?? "")")
+                        .font(.iransansBoldCaption)
+                        .foregroundColor(message.isImage ? Color.primary : .blue)
+                        .lineLimit(1)
                 }
-                .padding(.bottom, 4)
-                .padding([.leading, .trailing, .top])
+                .padding(4)
+                .background(background)
+                Spacer()
             }
-        } else {
+            .padding([.leading, .top], 4)
+            .onTapGesture {
+                if let participant = message.participant {
+                    navVM.append(participantDetail: participant)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder var background: some View {
+        if message.isImage {
             Rectangle()
-                .frame(width: 36, height: 0)
-                .hidden()
+                .fill(.clear)
+                .background(.ultraThinMaterial)
+                .background(.white.opacity(0.8))
+                .cornerRadius((MessageRowViewModel.avatarSize / 2) + 4)
+        } else {
+            Color.clear
         }
     }
 }

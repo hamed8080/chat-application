@@ -84,7 +84,6 @@ struct MutableMessageView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            AvatarView(message: message, viewModel: threadVM)
             if message.replyInfo != nil {
                 ReplyInfoMessageRow()
                     .environmentObject(viewModel)
@@ -99,10 +98,14 @@ struct MutableMessageView: View {
                     .frame(maxHeight: 320)
             }
 
-            if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
-                DownloadFileView(viewModel: downloadVM)
-                    .frame(maxHeight: 320)
+            ZStack(alignment: .topLeading) {
+                if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
+                    DownloadFileView(viewModel: downloadVM)
+                        .frame(maxHeight: 320)
+                }
+                AvatarView(message: message, viewModel: threadVM)
             }
+            .clipped()
 
             if let fileName = message.fileName {
                 Text("\(fileName)\(message.fileExtension ?? "")")
@@ -152,7 +155,7 @@ struct MutableMessageView: View {
                 Color.blue.opacity(0.3)
             }
         }
-        .cornerRadius(12)
+        .cornerRadius(18)
         .simultaneousGesture(TapGesture().onEnded { _ in
             if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
@@ -170,19 +173,23 @@ struct MutableMessageView: View {
 
 struct TextMessageType_Previews: PreviewProvider {
     struct Preview: View {
-        var body: some View {
+        var viewModel: MessageRowViewModel {
             let participant = Participant(id: 0, name: "John Doe")
-            TextMessageType(
-                viewModel: MessageRowViewModel(
-                    message: .init(
-                        id: 1,
-                        message: "TEST",
-                        seen: true,
-                        time: UInt(Date().millisecondsSince1970), participant: participant
-                    ),
-                    viewModel: .init(thread: Conversation(id: 1))
-                )
+            return MessageRowViewModel(
+                message: .init(
+                    id: 1,
+                    message: "TEST",
+                    seen: true,
+                    time: UInt(Date().millisecondsSince1970),
+                    participant: participant
+                ), viewModel: .init(thread: .init(id: 1))
             )
+        }
+
+        var body: some View {
+            TextMessageType(viewModel: viewModel)
+                .environmentObject(viewModel)
+                .environmentObject(NavigationModel())
         }
     }
 

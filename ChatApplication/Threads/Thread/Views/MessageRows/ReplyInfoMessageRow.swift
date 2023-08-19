@@ -62,10 +62,10 @@ struct ReplyInfoMessageRow: View {
             }
         }
         .buttonStyle(.plain)
-        .frame(width: viewModel.widthOfRow - 32, height: message.replyInfo?.deleted == true ? 32 : 48)
+        .frame(width: viewModel.widthOfRow - 16, height: message.replyInfo?.deleted == true ? 32 : 48)
         .background(Color.replyBg)
-        .cornerRadius(8)
-        .padding([.top, .leading, .trailing], 12)
+        .cornerRadius(12)
+        .padding([.top, .leading, .trailing], 8)
         .truncationMode(.tail)
         .lineLimit(1)
         .onAppear {
