@@ -17,6 +17,7 @@
 		0513A5C72A81590B007D5382 /* BlockedAssistantsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0513A5C62A81590B007D5382 /* BlockedAssistantsView.swift */; };
 		05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05140CD429C086BE00C8E22D /* MapPickerView.swift */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
+		051B84CE2A94B0B80058898E /* ReactionCountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051B84CD2A94B0B80058898E /* ReactionCountView.swift */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
 		0523E31429ED1DE3000D63C2 /* ChatAppUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0523E31329ED1DE3000D63C2 /* ChatAppUI */; };
@@ -149,6 +150,7 @@
 		050C5AA0297082BE00CD5702 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		0513A5C62A81590B007D5382 /* BlockedAssistantsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedAssistantsView.swift; sourceTree = "<group>"; };
 		05140CD429C086BE00C8E22D /* MapPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPickerView.swift; sourceTree = "<group>"; };
+		051B84CD2A94B0B80058898E /* ReactionCountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionCountView.swift; sourceTree = "<group>"; };
 		051D58E329926D7800DC066A /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
@@ -334,6 +336,7 @@
 				059C98732A873E890025BB53 /* ReactionMenuView.swift */,
 				054B09E92A88CCC1001417DA /* OverlayEmojiViews.swift */,
 				054B09EB2A88CDAA001417DA /* EmojiIcon.swift */,
+				051B84CD2A94B0B80058898E /* ReactionCountView.swift */,
 			);
 			path = MessageRows;
 			sourceTree = "<group>";
@@ -856,6 +859,7 @@
 				05297DE12A4B24DE00B14235 /* ThreadImageView.swift in Sources */,
 				05140CD529C086BE00C8E22D /* MapPickerView.swift in Sources */,
 				AC6D532026F1ADD000CBC059 /* ThreadView.swift in Sources */,
+				051B84CE2A94B0B80058898E /* ReactionCountView.swift in Sources */,
 				0500F7292A13FFD000F51EDA /* CreateDirectThreadView.swift in Sources */,
 				AC1D2CCD2662016E00AA351A /* SceneDelegate.swift in Sources */,
 				0528CFBF2A36377900A671A8 /* BlockedContacts.swift in Sources */,

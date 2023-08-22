@@ -28,4 +28,12 @@ extension ThreadViewModel {
         }
         ChatManager.activeInstance?.reaction.count(.init(messageIds: requestReactionIds, conversationId: threadId))
     }
+
+    public func onReactionCount(_ response: ChatResponse<[ReactionCountList]>) {
+        response.result?.forEach{ messageReactionList in
+            if let viewModel = messageViewModels.first(where: { $0.message.id ==  messageReactionList.messageId}) {
+                viewModel.updateReactionCount(messageReactionList)
+            }
+        }
+    }
 }

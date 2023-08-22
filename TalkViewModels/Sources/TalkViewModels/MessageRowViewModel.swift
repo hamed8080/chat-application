@@ -37,6 +37,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var myReaction: Reaction?
     public var requests: [String: Any] = [:]
     public var showReactionsOverlay = false
+    public var reactionCountList: ReactionCountList?
 
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
@@ -252,6 +253,12 @@ public final class MessageRowViewModel: ObservableObject {
 
     public var reactionList: [Reaction]? {
         ReactionViewModel.shared.reactions.first(where: {$0.key == message.id})?.value
+    }
+
+    public func updateReactionCount(_ messageReactionList: ReactionCountList) {
+        if messageReactionList.reactionCounts?.count ?? 0 == 0 { return }
+        reactionCountList = messageReactionList
+        recalculateWithAnimation()
     }
 
     deinit {

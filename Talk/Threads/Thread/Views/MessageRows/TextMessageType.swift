@@ -142,6 +142,10 @@ struct MutableMessageView: View {
                 .font(.caption.bold())
             }
 
+            if let reactionCountList = viewModel.reactionCountList {
+                ReactionCountView(reactionCountList: reactionCountList)
+            }
+
             MessageFooterView(message: message)
                 .padding(.bottom, 8)
                 .padding([.leading, .trailing])
