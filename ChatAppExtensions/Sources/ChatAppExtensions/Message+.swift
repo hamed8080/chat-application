@@ -37,7 +37,7 @@ public extension Message {
     var fileExtension: String? { uploadFile?.uploadFileRequest?.fileExtension ?? uploadFile?.uploadImageRequest?.fileExtension }
     var fileName: String? { uploadFile?.uploadFileRequest?.fileName ?? uploadFile?.uploadImageRequest?.fileName }
     var type: ChatModels.MessageType? { messageType ?? .unknown }
-    var isTextMessageType: Bool { type == .text || isFileType }
+    var isTextMessageType: Bool { type == .text || type == .link || isFileType }
     func isMe(currentUserId: Int?) -> Bool { (ownerId ?? 0 == currentUserId ?? 0) || isUnsentMessage || isUploadMessage }
     /// We should check metadata to be nil. If it has a value, it means that the message file has been successfully uploaded and sent to the chat server.
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol && metadata == nil }
