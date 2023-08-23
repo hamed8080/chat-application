@@ -36,8 +36,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public var thread: Conversation
     public var centerLoading = false
-    @Published public var topLoading = false
-    @Published public var bottomLoading = false
+    public var topLoading = false
+    public var bottomLoading = false
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading && !disableScrolling }
     public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom && !disableScrolling }
     public var sections: [MessageSection] = []
@@ -455,11 +455,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         Logger.viewModels.info("Send request with key:\(key)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
             if ((self?.requests.keys.contains(where: { $0 == key})) != nil) {
-                withAnimation {
                     self?.requests.removeValue(forKey: key)
                     self?.topLoading = false
                     self?.bottomLoading = false
-                }
+                    self?.animateObjectWillChange()
             }
         }
     }

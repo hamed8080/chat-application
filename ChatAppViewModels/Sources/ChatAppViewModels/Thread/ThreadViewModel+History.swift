@@ -93,7 +93,11 @@ extension ThreadViewModel {
         }
         withAnimation(.spring()) {
             if !response.cache {
-                hasNextTop = response.hasNext
+                if key == "TO_TIME" {
+                    hasNextTop = response.hasNext
+                } else if key == "FROM_TIME" {
+                    hasNextBottom = response.hasNext
+                }
                 isFetchedServerFirstResponse = true
                 requests.removeValue(forKey: "\(key)-\(uniqueId)")
                 topLoading = false
@@ -125,6 +129,7 @@ extension ThreadViewModel {
             isFetchedServerFirstResponse = true
             bottomLoading = false
             requests.removeValue(forKey: "LAST_MESSAGE_HISTORY-\(uniqueId)")
+            animateObjectWillChange()
         }
         /// If a message deleted from bottom of a history lastSeenMessageId is not exist in message response so we should move to lastMessageVO?.id
         let lastSeenUniqueId = messages.first(where: {$0.id == thread.lastSeenMessageId })?.uniqueId
@@ -135,9 +140,8 @@ extension ThreadViewModel {
 
     public func moreTop(_ toTime: UInt?) {
         if !canLoadMoreTop { return }
-        withAnimation {
-            topLoading = true
-        }
+        topLoading = true
+        animateObjectWillChange()
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
         let key = "MORE_TOP-\(req.uniqueId)"
         requests[key] = (req, sections.first?.messages.first?.uniqueId)
@@ -176,9 +180,8 @@ extension ThreadViewModel {
 
     public func moreBottom(_ fromTime: UInt?) {
         if !canLoadMoreBottom { return }
-        withAnimation {
-            bottomLoading = true
-        }
+        bottomLoading = true
+        animateObjectWillChange()
         let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "desc", readOnly: readOnly)
         let key = "MORE_BOTTOM-\(req.uniqueId)"
         requests[key] = (req, lastVisibleUniqueId)

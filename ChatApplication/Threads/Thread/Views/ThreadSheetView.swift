@@ -20,7 +20,9 @@ struct ThreadSheetView: View {
             case .attachment:
                 AttachmentDialog(viewModel: actionSheetViewModel)
                     .onDisappear {
-                        closeSheet()
+                        if viewModel.sheetType == .attachment {
+                            closeSheet()
+                        }
                     }
             case .dropItems:
                 DropItemsView()

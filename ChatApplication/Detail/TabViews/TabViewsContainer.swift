@@ -15,7 +15,7 @@ struct TabViewsContainer: View {
     @State var selectedTabIndex: Int
     let tabs: [Tab] = [
         .init(title: "Thread.Tabs.members", icon: "person"),
-        .init(title: "Thread.Tabs.mutualgroup Groups", icon: "person.3"),
+        .init(title: "Thread.Tabs.mutualgroup", icon: "person.3"),
         .init(title: "Thread.Tabs.photos", icon: "photo.stack"),
         .init(title: "Thread.Tabs.videos", icon: "play.tv"),
         .init(title: "Thread.Tabs.file", icon: "doc"),

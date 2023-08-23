@@ -32,7 +32,7 @@ extension ThreadViewModel: ScrollToPositionProtocol {
     public func setNewOrigin(newOriginY: CGFloat) {
         scrollingUP = lastOrigin > newOriginY
         lastOrigin = newOriginY
-        if scrollingUP, newOriginY < 0, canLoadMoreTop {
+        if scrollingUP, newOriginY < 0, canLoadMoreTop, isFetchedServerFirstResponse {
             moreTop(sections.first?.messages.first?.time?.advanced(by: -1))
         }
     }

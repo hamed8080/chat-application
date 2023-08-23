@@ -130,11 +130,11 @@ struct MutableMessageView: View {
             if message.isUnsentMessage {
                 HStack {
                     Spacer()
-                    Button("Messages.resend".uppercased()) {
+                    Button("Messages.resend") {
                         threadVM?.resendUnsetMessage(message)
                     }
 
-                    Button("General.cancel".uppercased(), role: .destructive) {
+                    Button("General.cancel", role: .destructive) {
                         threadVM?.cancelUnsentMessage(message.uniqueId ?? "")
                     }
                 }

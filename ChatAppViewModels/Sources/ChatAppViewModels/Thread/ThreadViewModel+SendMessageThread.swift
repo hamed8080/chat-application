@@ -216,11 +216,11 @@ extension ThreadViewModel {
         case let req as UploadFileMessage:
             // remove unset message type to start upload again the new one.
             removeByUniqueId(req.uniqueId)
-            if message.isImage {
-                let imageMessage = UploadFileWithTextMessage(imageFileRequest: req.uploadImageRequest!, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
+            if message.isImage, let imageRequest = req.uploadImageRequest {
+                let imageMessage = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
                 appendMessages([imageMessage])
-            } else {
-                let fileMessage = UploadFileWithTextMessage(uploadFileRequest: req.uploadFileRequest!, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
+            } else if let fileRequest = req.uploadFileRequest {
+                let fileMessage = UploadFileWithTextMessage(uploadFileRequest: fileRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
                 appendMessages([fileMessage])
             }
         default:

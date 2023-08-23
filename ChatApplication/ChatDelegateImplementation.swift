@@ -27,7 +27,7 @@ final class ChatDelegateImplementation: ChatDelegate {
 
         Task {
             await MainActor.run {
-                let ssoToken = SSOTokenResponseResult(accessToken: "a93ec72ce88f4090889e67e60a5858f8.XzIwMjM4", expiresIn: 900)
+                let ssoToken = SSOTokenResponseResult(accessToken: "f63c11ada0f84751acf5e41ec6800b9f.XzIwMjM4", expiresIn: 900)
                 let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
                 let user = User(id: 3_463_768)
                 TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
@@ -53,11 +53,6 @@ final class ChatDelegateImplementation: ChatDelegate {
         case .chatReady:
             print("🟢 chat ready Called\(String(describing: currentUser))")
             AppState.shared.connectionStatus = .connected
-//            NotificationCenter.default.post(name: .connect, object: nil)
-//
-//            let roles = [UserRoleRequest(userId: 5_017_569, roles: [.callAdmin])]
-//            let req = RolesRequest(userRoles: roles, threadId: 462_032)
-//            ChatManager.activeInstance?.user.set(req)
         case .uninitialized:
             print("Chat object is not initialized.")
         }
