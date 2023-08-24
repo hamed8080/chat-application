@@ -66,12 +66,11 @@ public final class LoginViewModel: ObservableObject {
     }
 
     public func requestOTP(identity: String, handskahe: HandshakeResponse) async {
-        guard let keyId = handskahe.result?.keyId else { return }
+        guard let keyId = handskahe.keyId else { return }
         showLoading(true)
-        let req = AuthorizeRequest(identity: identity, keyId: keyId)
         var urlReq = URLRequest(url: URL(string: AppRoutes.authorize)!)
-        urlReq.allHTTPHeaderFields = ["keyId": req.keyId]
-        urlReq.httpBody = req.parameterData
+        urlReq.url?.append(queryItems: [.init(name: "identity", value: identity)])
+        urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post
         do {
             let resp = try await session.data(for: urlReq)
@@ -98,10 +97,9 @@ public final class LoginViewModel: ObservableObject {
     public func verifyCode() async {
         guard let keyId = keyId else { return }
         showLoading(true)
-        let req = VerifyRequest(identity: text, keyId: keyId, otp: verifyCodes.joined())
         var urlReq = URLRequest(url: URL(string: AppRoutes.verify)!)
-        urlReq.allHTTPHeaderFields = ["keyId": req.keyId]
-        urlReq.httpBody = req.parameterData
+        urlReq.url?.append(queryItems: [.init(name: "identity", value: text)])
+        urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post
         do {
             let resp = try await session.data(for: urlReq)
