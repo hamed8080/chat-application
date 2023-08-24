@@ -43,33 +43,7 @@ struct ParticipantRow: View {
                         }
                     }
 
-                    if participant.admin == true {
-                        Spacer()
-
-                        Text("Participant.admin")
-                            .padding([.leading, .trailing], 4)
-                            .padding([.top, .bottom], 2)
-                            .foregroundColor(Color.blue)
-                            .font(.subheadline)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.blue, lineWidth: 1)
-                            )
-                    }
-
-                    if participant.auditor == true {
-                        Spacer()
-
-                        Text("Participant.assistant")
-                            .padding([.leading, .trailing], 4)
-                            .padding([.top, .bottom], 2)
-                            .foregroundColor(Color.orange)
-                            .font(.subheadline)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.orange, lineWidth: 1)
-                            )
-                    }
+                    ParticipantRowLables(participant: participant)
                 }
                 Spacer()
             }
@@ -80,6 +54,51 @@ struct ParticipantRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 12)
         .padding([.top, .bottom], 6)
+    }
+}
+
+struct ParticipantRowLables: View {
+    let participant: Participant
+    @EnvironmentObject var viewModel: ParticipantsViewModel
+
+    var body: some View {
+        HStack {
+            Spacer()
+
+            if viewModel.thread?.inviter?.id == participant.id, AppState.shared.user?.id != participant.id {
+                Text("Participant.inviter")
+                    .padding([.leading, .trailing], 4)
+                    .padding([.top, .bottom], 2)
+                    .foregroundColor(.orange)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.orange, lineWidth: 1)
+                    )
+            }
+
+            if participant.auditor == true {
+                Text("Participant.assistant")
+                    .padding([.leading, .trailing], 4)
+                    .padding([.top, .bottom], 2)
+                    .foregroundColor(.green)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.green, lineWidth: 1)
+                    )
+            }
+
+            if participant.admin == true {
+                Text("Participant.admin")
+                    .padding([.leading, .trailing], 4)
+                    .padding([.top, .bottom], 2)
+                    .foregroundColor(.blue)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.blue, lineWidth: 1)
+                    )
+            }
+        }
+        .font(.subheadline)
     }
 }
 

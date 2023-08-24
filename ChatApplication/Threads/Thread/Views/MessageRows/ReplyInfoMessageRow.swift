@@ -35,7 +35,7 @@ struct ReplyInfoMessageRow: View {
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: name.naturalTextAlignment == .leading ? .leading : .trailing)
                             .foregroundColor(.orange)
-                            .padding([.leading, .trailing], 4)
+                            .padding([.leading, .trailing, .top], 8)
                     }
 
                     if message.replyInfo?.deleted == true {
@@ -43,18 +43,33 @@ struct ReplyInfoMessageRow: View {
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             .foregroundColor(.redSoft)
-                            .padding([.leading, .trailing], 4)
+                            .padding([.leading, .trailing], 8)
                     }
 
                     if let message = message.replyInfo?.message?.replacingOccurrences(of: "\n", with: " ") {
                         Text(message)
                             .font(.iransansCaption3)
-                            .padding([.leading, .trailing], 4)
+                            .padding([.leading, .trailing], 8)
                             .cornerRadius(8, corners: .allCorners)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: message.naturalTextAlignment == .leading ? .leading : .trailing)
                             .foregroundColor(.primary)
                             .lineLimit(1)
                     }
+
+                    if canShowIconFile {
+                        HStack {
+                            Image(systemName: message.iconName)
+                                .resizable()
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(.blue)
+
+                            Text(message.fileStringName)
+                                .font(.iransansCaption2)
+                                .foregroundStyle(.blue)
+                            Spacer()
+                        }
+                    }
+                    Spacer()
                 }
                 if message.replyInfo?.deleted == true {
                     Spacer()
@@ -63,15 +78,14 @@ struct ReplyInfoMessageRow: View {
         }
         .buttonStyle(.plain)
         .frame(width: viewModel.widthOfRow - 16, height: message.replyInfo?.deleted == true ? 32 : 48)
-        .background(Color.replyBg)
+        .background(.ultraThickMaterial)
         .cornerRadius(12)
         .padding([.top, .leading, .trailing], 8)
         .truncationMode(.tail)
         .lineLimit(1)
-        .onAppear {
-            viewModel.calculate()
-        }
     }
+
+    var canShowIconFile: Bool { message.isFileType == true && message.message.isEmptyOrNil == true }
 }
 
 struct ReplyInfo_Previews: PreviewProvider {

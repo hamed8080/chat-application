@@ -198,6 +198,7 @@
 "Participant.Search.Type.admin" = "Administratör";
 "Participant.admin" = "Administratör";
 "Participant.online" = "Online";
+"Participant.inviter" = "Inbjudare";
 "Participant.assistant" = "Assistent";
 "Participant.addAdminAccess" = "Lägg till administratörsbehörighet";
 "Participant.removeAdminAccess" = "Ta bort administratörsbehörighet";

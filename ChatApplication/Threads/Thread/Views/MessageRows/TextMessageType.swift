@@ -84,26 +84,27 @@ struct MutableMessageView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if message.replyInfo != nil {
-                ReplyInfoMessageRow()
-                    .environmentObject(viewModel)
-            }
-
-            if let forwardInfo = message.forwardInfo {
-                ForwardMessageRow(forwardInfo: forwardInfo)
-            }
-
-            if message.isUploadMessage {
-                UploadMessageType(message: message)
-                    .frame(maxHeight: 320)
-            }
-
             ZStack(alignment: .topLeading) {
                 if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
                     DownloadFileView(viewModel: downloadVM)
                         .frame(maxHeight: 320)
                 }
-                AvatarView(message: message, viewModel: threadVM)
+                VStack {
+                    if message.replyInfo != nil {
+                        ReplyInfoMessageRow()
+                            .environmentObject(viewModel)
+                    }
+
+                    if let forwardInfo = message.forwardInfo {
+                        ForwardMessageRow(forwardInfo: forwardInfo)
+                    }
+
+                    if message.isUploadMessage {
+                        UploadMessageType(message: message)
+                            .frame(maxHeight: 320)
+                    }
+                    AvatarView(message: message, viewModel: threadVM)
+                }
             }
             .clipped()
 
@@ -146,7 +147,7 @@ struct MutableMessageView: View {
                 .padding(.bottom, 8)
                 .padding([.leading, .trailing])
         }
-        .frame(maxWidth: viewModel.widthOfRow, alignment: .leading)
+        .frame(maxWidth: viewModel.widthOfRow)
         .padding([.leading, .trailing], 0)
         .contentShape(Rectangle())
         .background(message.isMe(currentUserId: AppState.shared.user?.id) ? Color.chatMeBg : Color.chatSenderBg)

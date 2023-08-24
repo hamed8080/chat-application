@@ -78,8 +78,8 @@ struct SendContainer: View {
                     }
                 }
             }
-            .opacity(viewModel.thread.disableSend ? 0.3 : 1.0)
-            .disabled(viewModel.thread.disableSend)
+            .opacity(disableSend ? 0.3 : 1.0)
+            .disabled(disableSend)
             .padding(.bottom, 4)
             .padding([.leading, .trailing], 8)
             .padding(.top, 18)
@@ -122,6 +122,8 @@ struct SendContainer: View {
     private func animation(appear: Bool) -> Animation {
         appear ? .spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2) : .easeOut(duration: 0.13)
     }
+
+    private var disableSend: Bool { viewModel.thread.disableSend && isInEditMode == false }
 }
 
 struct SelectionView: View {
@@ -151,13 +153,16 @@ struct SelectionView: View {
             .offset(x: 8)
             Spacer()
 
-            Image(systemName: "trash.fill")
-                .font(.system(size: 20))
-                .foregroundColor(.redSoft)
-                .padding()
-                .onTapGesture {
-                    deleteMessagesDialog.toggle()
-                }
+            /// Disable showing the delete button when forwarding in a conversation where we are not the admin and we just want to forward messages, so the delete button should be hidden.
+            if !viewModel.thread.disableSend {
+                Image(systemName: "trash.fill")
+                    .font(.system(size: 20))
+                    .foregroundColor(.redSoft)
+                    .padding()
+                    .onTapGesture {
+                        deleteMessagesDialog.toggle()
+                    }
+            }
 
             Image(systemName: "arrowshape.turn.up.right.fill")
                 .font(.system(size: 20))

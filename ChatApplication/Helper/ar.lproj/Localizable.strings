@@ -198,6 +198,7 @@
 "Participant.Search.Type.admin" = "المشرف";
 "Participant.admin" = "مشرف";
 "Participant.online" = "متصل";
+"Participant.inviter" = "الداعي";
 "Participant.assistant" = "مساعد";
 "Participant.addAdminAccess" = "إضافة صلاحيات المشرف";
 "Participant.removeAdminAccess" = "إزالة صلاحيات المشرف";

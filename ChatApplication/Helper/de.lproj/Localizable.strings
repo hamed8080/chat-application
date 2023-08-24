@@ -198,6 +198,7 @@
 "Participant.Search.Type.admin" = "Administrator";
 "Participant.admin" = "Administrator";
 "Participant.online" = "Online";
+"Participant.inviter" = "Einladender";
 "Participant.assistant" = "Assistent";
 "Participant.addAdminAccess" = "Administratorzugriff hinzufügen";
 "Participant.removeAdminAccess" = "Administratorzugriff entfernen";

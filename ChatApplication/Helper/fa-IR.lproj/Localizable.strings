@@ -198,6 +198,7 @@
 "Participant.Search.Type.admin" = "مدیر";
 "Participant.admin" = "مدیر";
 "Participant.online" = "آنلاین";
+"Participant.inviter" = "دعوت کننده";
 "Participant.assistant" = "دستیار";
 "Participant.addAdminAccess" = "دادن دسترسی مدیر";
 "Participant.removeAdminAccess" = "حذف دسترسی مدیر";
