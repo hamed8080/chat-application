@@ -37,7 +37,12 @@ struct DetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarTitle("General.info")
         .sheet(isPresented: $viewModel.showAddToContactSheet) {
-            AddOrEditContactView()
+            if let user = viewModel.user {
+                let editContact = Contact(firstName: user.firstName ?? "",
+                                          lastName: user.lastName ?? "",
+                                          user: .init(username: user.username ?? ""))
+                AddOrEditContactView(editContact: editContact, contactType: .userName)
+            }
         }
         .sheet(isPresented: $viewModel.showImagePicker) {
             ImagePicker(sourceType: .photoLibrary) { image, assestResources in

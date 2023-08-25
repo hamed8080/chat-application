@@ -77,7 +77,7 @@ struct ReplyInfoMessageRow: View {
             }
         }
         .buttonStyle(.plain)
-        .frame(width: viewModel.widthOfRow - 16, height: message.replyInfo?.deleted == true ? 32 : 48)
+        .frame(width: viewModel.widthOfRow - 16, height: message.replyInfo?.deleted == true ? 32 : 52)
         .background(.ultraThickMaterial)
         .cornerRadius(12)
         .padding([.top, .leading, .trailing], 8)
@@ -85,7 +85,7 @@ struct ReplyInfoMessageRow: View {
         .lineLimit(1)
     }
 
-    var canShowIconFile: Bool { message.isFileType == true && message.message.isEmptyOrNil == true }
+    var canShowIconFile: Bool { message.isFileType == true && message.replyInfo?.message.isEmptyOrNil == true }
 }
 
 struct ReplyInfo_Previews: PreviewProvider {

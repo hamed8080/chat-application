@@ -100,6 +100,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
             onBlock(chatResponse)
         case .unblocked(let chatResponse):
             onUNBlock(chatResponse)
+        case .add(let chatResponse):
+            onAddContact(chatResponse)
         default:
             break
         }
@@ -227,6 +229,15 @@ public final class DetailViewModel: ObservableObject, Hashable {
 
     private func onChangeThreadType(_ response: ChatResponse<Conversation>) {
         self.thread?.type = response.result?.type
+        animateObjectWillChange()
+    }
+
+    private func onAddContact(_ response: ChatResponse<[Contact]>) {
+        response.result?.forEach{ contact in
+            if contact.user?.username == user?.username {
+                user?.contactId = contact.id
+            }
+        }
         animateObjectWillChange()
     }
 }
