@@ -13,7 +13,6 @@ import ChatModels
 import ChatAppModels
 import ChatDTO
 import ChatCore
-import ChatExtensions
 
 public final class ParticipantsViewModel: ObservableObject {
     public weak var thread: Conversation?

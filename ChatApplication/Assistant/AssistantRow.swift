@@ -7,7 +7,6 @@
 import Chat
 import ChatAppUI
 import ChatAppViewModels
-import ChatExtensions
 import ChatModels
 import SwiftUI
 

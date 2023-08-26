@@ -10,7 +10,6 @@ import Combine
 import Foundation
 import Photos
 import SwiftUI
-import ChatExtensions
 import ChatDTO
 import ChatAppModels
 import ChatCore

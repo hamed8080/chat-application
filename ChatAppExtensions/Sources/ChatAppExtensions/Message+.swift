@@ -10,7 +10,6 @@ import ChatCore
 import MapKit
 import ChatAppModels
 import ChatDTO
-import ChatExtensions
 
 public extension Message {
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }

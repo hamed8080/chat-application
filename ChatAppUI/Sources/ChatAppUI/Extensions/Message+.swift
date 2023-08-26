@@ -1,5 +1,4 @@
 import SwiftUI
-import ChatExtensions
 import ChatModels
 
 public extension Message {

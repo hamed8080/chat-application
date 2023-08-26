@@ -1,7 +1,6 @@
 import Combine
 import Chat
 import ChatModels
-import ChatExtensions
 import Foundation
 import ChatCore
 import ChatDTO
