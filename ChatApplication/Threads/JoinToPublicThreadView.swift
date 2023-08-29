@@ -41,7 +41,7 @@ struct JoinToPublicThreadView: View {
                     Button {
                         onCompeletion(publicThreadName)
                     } label: {
-                        Label("Thread.Join.title".uppercased(), systemImage: "door.right.hand.open")
+                        Label("Thread.Join.title", systemImage: "door.right.hand.open")
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                     }
                     .opacity(isThreadExist ? 1.0 : 0.5)

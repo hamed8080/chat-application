@@ -464,6 +464,15 @@ public final class ThreadsViewModel: ObservableObject {
             avatarsVM.removeValue(forKey: key)
         }
     }
+
+    public func onJoinedToPublicConversatin(_ response: ChatResponse<Conversation>) {
+        if let conversation = response.result {
+            threads.insert(conversation, at: 0)
+            AppState.shared.showThread(thread: conversation)
+            selectedThraed = conversation
+            sheetType = nil
+        }
+    }
 }
 
 public struct CallToJoin {

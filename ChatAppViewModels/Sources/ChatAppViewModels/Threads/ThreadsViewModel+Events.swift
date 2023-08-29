@@ -79,6 +79,8 @@ extension ThreadsViewModel {
             onUserRemovedByAdmin(response)
         case .lastSeenMessageUpdated(let response):
             onLastSeenMessageUpdated(response)
+        case .joined(let response):
+            onJoinedToPublicConversatin(response)
         default:
             break
         }
