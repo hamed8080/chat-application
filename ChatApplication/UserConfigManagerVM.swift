@@ -61,7 +61,6 @@ class UserConfigManagerVM: ObservableObject, Equatable {
 
     public func setCurrentUserAndSwitch(_ userConfig: UserConfig) {
         UserDefaults.standard.setValue(userConfig.toData(), forKey: "userConfigData")
-        ChatManager.switchToUser(userId: userConfig.user.id ?? -1)
     }
 
     public func createChatObjectAndConnect(userId: Int?, config: ChatConfig) {

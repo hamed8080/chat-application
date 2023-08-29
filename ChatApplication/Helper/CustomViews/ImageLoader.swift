@@ -44,12 +44,6 @@ class ImageLoader: ObservableObject {
     private var fileMetadataModel: FileMetaData? { try? JSONDecoder().decode(FileMetaData.self, from: fileMetadata?.data(using: .utf8) ?? Data()) }
     private var fileURL: URL? {
         guard let URLObject = URLObject else { return nil }
-        let cf = AppState.shared.cacheFileManager
-        if cf?.isFileExist(url: URLObject) == true {
-            return cf?.filePath(url: URLObject)
-        } else if cf?.isFileExistInGroup(url: URLObject) == true {
-            return cf?.filePathInGroup(url: URLObject)
-        }
         return nil
     }
 
@@ -91,7 +85,6 @@ class ImageLoader: ObservableObject {
         ChatManager.activeInstance?.getImage(.init(hashCode: hashCode, size: size ?? .LARG)) { _ in
         } completion: { [weak self] data, _, _, _ in
             self?.update(data: data)
-            self?.storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
         } cacheResponse: { [weak self] _, fileURL, _, _ in
             guard let cgImage = fileURL?.imageScale(width: 128)?.image else { return }
             self?.image = UIImage(cgImage: cgImage)
@@ -102,7 +95,6 @@ class ImageLoader: ObservableObject {
         guard let req = reqWithHeader else { return }
         let task = URLSession.shared.dataTask(with: req) { [weak self] data, _, _ in
             self?.update(data: data)
-            self?.storeInCache(data: data)
         }
         task.resume()
     }
@@ -112,15 +104,6 @@ class ImageLoader: ObservableObject {
         if !isRealImage(data: data) { return }
         DispatchQueue.main.async {
             self.setImage(data: data)
-        }
-    }
-
-    private func storeInCache(data: Data?) {
-        guard let data = data else { return }
-        if !isRealImage(data: data) { return }
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self, let url = URL(string: self.url ?? "") else { return }
-            AppState.shared.cacheFileManager?.saveFileInGroup(url: url, data: data) { _ in }
         }
     }
 

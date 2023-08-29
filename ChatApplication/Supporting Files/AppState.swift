@@ -15,7 +15,6 @@ class AppState: ObservableObject {
     var navViewModel: NavigationModel?
     @Published var error: ChatError?
     @Published var isLoading: Bool = false
-    var cacheFileManager: CacheFileManagerProtocol? { ChatManager.activeInstance?.cacheFileManager }
     @Published var callLogs: [URL]?
     @Published var connectionStatusString = ""
     @Published var connectionStatus: ConnectionStatus = .connecting {

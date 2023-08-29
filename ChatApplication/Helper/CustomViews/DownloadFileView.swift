@@ -126,11 +126,9 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     @Published var state: DownloadFileState = .UNDEFINED
     @Published var data: Data?
     var fileHashCode: String { message?.metaData?.fileHash ?? message?.metaData?.file?.hashCode ?? "" }
-    let cm: CacheFileManagerProtocol? = AppState.shared.cacheFileManager
 
     var fileURL: URL? {
-        guard let url = url else { return nil }
-        return cm?.filePath(url: url) ?? cm?.filePathInGroup(url: url)
+        return nil
     }
 
     var url: URL? {
@@ -147,9 +145,6 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
 
     func setMessage(message: Message) {
         self.message = message
-        if isInCache {
-            state = .COMPLETED
-        }
         NotificationCenter.default.publisher(for: .fileDeletedFromCacheName)
             .compactMap { $0.object as? Message }
             .filter { $0.id == message.id }
@@ -159,13 +154,8 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
             .store(in: &cancelable)
     }
 
-    var isInCache: Bool {
-        guard let url = url else { return false }
-        return cm?.isFileExist(url: url) ?? false || cm?.isFileExistInGroup(url: url) ?? false
-    }
-
     func startDownload() {
-        if !isInCache, message?.isImage == true {
+        if message?.isImage == true {
             downloadImage()
         } else {
             downloadFile()
@@ -179,11 +169,8 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
             self.downloadPercent = downloadProgress.percent
         } completion: { [weak self] data, _, _, _ in
             self?.onResponse(data: data)
-        } cacheResponse: { [weak self] _, url, _, _ in
-            if let url = url, let data = self?.cm?.getData(url: url) {
-                self?.onResponse(data: data)
-            }
-        } uniqueIdResult: { uniqueId in
+        } cacheResponse: { _, url, _, _ in}
+        uniqueIdResult: { uniqueId in
             self.downloadUniqueId = uniqueId
         }
     }
@@ -195,11 +182,8 @@ class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
             self?.downloadPercent = downloadProgress.percent
         } completion: { [weak self] data, _, _, _ in
             self?.onResponse(data: data)
-        } cacheResponse: { [weak self] _, url, _, _ in
-            if let url = url, let data = self?.cm?.getData(url: url) {
-                self?.onResponse(data: data)
-            }
-        } uniqueIdResult: { [weak self] uniqueId in
+        } cacheResponse: { _, url, _, _ in}
+        uniqueIdResult: { [weak self] uniqueId in
             self?.downloadUniqueId = uniqueId
         }
     }

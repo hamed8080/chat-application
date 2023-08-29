@@ -353,10 +353,6 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func clearCacheFile(message: Message) {
-        if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
-            let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(FanapPodChatSDK.Routes.files.rawValue)/\(fileHashCode)"
-            AppState.shared.cacheFileManager?.deleteFile(at: URL(string: url)!)
-            NotificationCenter.default.post(.init(name: .fileDeletedFromCacheName, object: message))
-        }
+        NotificationCenter.default.post(.init(name: .fileDeletedFromCacheName, object: message))
     }
 }
