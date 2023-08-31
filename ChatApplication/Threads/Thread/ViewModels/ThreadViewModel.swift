@@ -325,7 +325,8 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
 
     func togglePinMessage(_ message: Message) {
         guard let messageId = message.id else { return }
-        if message.pinned == false {
+        let isPined = message.pinned == true
+        if !isPined {
             pin(messageId)
         } else {
             unpin(messageId)
@@ -337,9 +338,14 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     }
 
     func pin(_ messageId: Int) {
-        ChatManager.activeInstance?.pinMessage(.init(messageId: messageId)) { [weak self] _ in
+        ChatManager.activeInstance?.pinMessage(.init(messageId: messageId)) { [weak self] response in
             if let index = self?.firstMessageIndex(messageId) {
                 self?.messages[index].pinned = true
+                if self?.thread?.pinMessages == nil {
+                    self?.thread?.pinMessages = []
+                }
+                self?.thread?.pinMessages?.append(.init(id: messageId, message: response.result?.text))
+                self?.animateObjectWillChange()
             }
         }
     }
@@ -348,6 +354,8 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
         ChatManager.activeInstance?.unpinMessage(.init(messageId: messageId)) { [weak self] _ in
             if let index = self?.firstMessageIndex(messageId) {
                 self?.messages[index].pinned = false
+                self?.thread?.pinMessages?.removeAll(where: { $0.id == messageId })
+                self?.animateObjectWillChange()
             }
         }
     }
@@ -355,4 +363,5 @@ class ThreadViewModel: ObservableObject, ThreadViewModelProtocols, Identifiable,
     func clearCacheFile(message: Message) {
         NotificationCenter.default.post(.init(name: .fileDeletedFromCacheName, object: message))
     }
+
 }

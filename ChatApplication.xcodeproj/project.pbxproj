@@ -23,6 +23,7 @@
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
+		05236F6D2AA125A300105A39 /* ObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05236F6C2AA125A300105A39 /* ObservableObject.swift */; };
 		05238719295F52CC00650241 /* URL+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05238718295F52CC00650241 /* URL+.swift */; };
 		0523871C295F7EBD00650241 /* Image+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0523871B295F7EBD00650241 /* Image+.swift */; };
 		0525CDBC292CA06B004E1C7B /* ViewOffsetKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */; };
@@ -176,6 +177,7 @@
 		05121E952A6F8D3B00DD82C6 /* chat */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = chat; path = ../chat; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
+		05236F6C2AA125A300105A39 /* ObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableObject.swift; sourceTree = "<group>"; };
 		05238718295F52CC00650241 /* URL+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+.swift"; sourceTree = "<group>"; };
 		0523871B295F7EBD00650241 /* Image+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image+.swift"; sourceTree = "<group>"; };
 		0525CDBB292CA06B004E1C7B /* ViewOffsetKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOffsetKey.swift; sourceTree = "<group>"; };
@@ -571,6 +573,7 @@
 				0594E194298E5F420090D540 /* SMT+.swift */,
 				05610BA8298FDC6B00947E29 /* ThreadTypes+.swift */,
 				05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */,
+				05236F6C2AA125A300105A39 /* ObservableObject.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -885,6 +888,7 @@
 				AC5646A027006DF600DE9805 /* UINavigationontroller.swift in Sources */,
 				AC62919B2750EC3900190975 /* DownloadFileView.swift in Sources */,
 				AC2E474A274B6FB40073E8E4 /* AppGroup.swift in Sources */,
+				05236F6D2AA125A300105A39 /* ObservableObject.swift in Sources */,
 				05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */,
 				AC122EC8266BA17C00C0630F /* PullToRefresh.swift in Sources */,
 				AC1D2CCF2662016E00AA351A /* ThreadsViewModel.swift in Sources */,
