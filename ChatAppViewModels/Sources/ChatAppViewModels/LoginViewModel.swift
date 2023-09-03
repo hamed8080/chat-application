@@ -37,7 +37,7 @@ public final class LoginViewModel: ObservableObject {
     public func login() async {
         showLoading(true)
         if selectedServerType == .integration {
-            let ssoToken = SSOTokenResponseResult(accessToken: text,
+            let ssoToken = SSOTokenResponse(accessToken: text,
                                                   expiresIn: Int(Calendar.current.date(byAdding: .year, value: 1, to: .now)?.millisecondsSince1970 ?? 0),
                                                   idToken: nil,
                                                   refreshToken: nil,
@@ -85,7 +85,7 @@ public final class LoginViewModel: ObservableObject {
         showLoading(false)
     }
 
-    public func saveTokenAndCreateChatObject(_ ssoToken: SSOTokenResponseResult) async {
+    public func saveTokenAndCreateChatObject(_ ssoToken: SSOTokenResponse) async {
         await MainActor.run {
             TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
             let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: selectedServerType)
@@ -98,12 +98,12 @@ public final class LoginViewModel: ObservableObject {
         guard let keyId = keyId else { return }
         showLoading(true)
         var urlReq = URLRequest(url: URL(string: AppRoutes.verify)!)
-        urlReq.url?.append(queryItems: [.init(name: "identity", value: text)])
+        urlReq.url?.append(queryItems: [.init(name: "identity", value: text), .init(name: "otp", value: verifyCodes.joined())])
         urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post
         do {
             let resp = try await session.data(for: urlReq)
-            guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }
+            let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
             await saveTokenAndCreateChatObject(ssoToken)
         } catch {
             showError(.verificationCodeIncorrect)

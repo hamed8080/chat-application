@@ -33,7 +33,7 @@ public final class TokenManager: ObservableObject {
         refreshTokenTask = Task {
             do {
                 let resp = try await session.data(for: urlReq)
-                guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }
+                let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
                 await MainActor.run {
                     saveSSOToken(ssoToken: ssoToken)
                     ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
@@ -48,8 +48,8 @@ public final class TokenManager: ObservableObject {
     }
 
     @discardableResult
-    public func getSSOTokenFromUserDefaults() -> SSOTokenResponseResult? {
-        if let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey), let ssoToken = try? JSONDecoder().decode(SSOTokenResponseResult.self, from: data) {
+    public func getSSOTokenFromUserDefaults() -> SSOTokenResponse? {
+        if let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey), let ssoToken = try? JSONDecoder().decode(SSOTokenResponse.self, from: data) {
             return ssoToken
         } else {
             return nil
@@ -61,7 +61,7 @@ public final class TokenManager: ObservableObject {
         setIsLoggedIn(isLoggedIn: getSSOTokenFromUserDefaults() != nil)
     }
 
-    public func saveSSOToken(ssoToken: SSOTokenResponseResult) {
+    public func saveSSOToken(ssoToken: SSOTokenResponse) {
         let data = (try? JSONEncoder().encode(ssoToken)) ?? Data()
         let str = String(data: data, encoding: .utf8)
         Logger.viewModels.info("save token:\n\(str ?? "", privacy: .sensitive)")
