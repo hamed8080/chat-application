@@ -325,12 +325,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             removeAllUnreadSeen()
             return
         }
-        guard isToTime,
-              let lastSeenMessageId = thread.lastSeenMessageId,
-              let indices = indicesByMessageId(lastSeenMessageId)
-        else { return }
+        guard isToTime, let lastSeenMessageId = thread.lastSeenMessageId else { return }
         removeAllUnreadSeen()
-        sections[indices.sectionIndex].messages.append(UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: (sections[indices.sectionIndex].messages[indices.messageIndex].time ?? 0) + 1))
+        if let indices = indicesByMessageId(lastSeenMessageId) {
+            let time = (sections[indices.sectionIndex].messages[indices.messageIndex].time ?? 0) + 1
+            let unreadMessage = UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: time)
+            sections[indices.sectionIndex].messages.append(unreadMessage)
+        }
     }
 
     func removeAllUnreadSeen() {
