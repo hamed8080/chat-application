@@ -40,9 +40,10 @@ struct HomeContentView: View {
 
 struct LoginHomeView: View {
     let container: ObjectsContainer
+    @EnvironmentObject var tokenManager: TokenManager
 
     var body: some View {
-        if TokenManager.shared.isLoggedIn == false {
+        if tokenManager.isLoggedIn == false {
             LoginView()
         }
     }
@@ -50,67 +51,80 @@ struct LoginHomeView: View {
 
 struct SplitView: View {
     let container: ObjectsContainer
+    @State private var isLoggedIn: Bool = false
+
+    @ViewBuilder var body: some View {
+        Group {
+            if isLoggedIn {
+                SplitViewContent(container: container)
+            }
+        }
+        .animation(.easeInOut, value: isLoggedIn)
+        .onReceive(TokenManager.shared.$isLoggedIn) { isLoggedIn in
+            if self.isLoggedIn != isLoggedIn {
+                self.isLoggedIn = isLoggedIn
+            }
+        }
+    }
+}
+
+struct SplitViewContent: View {
+    let container: ObjectsContainer
     @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @EnvironmentObject var navVM: NavigationModel
 
-    @ViewBuilder var body: some View {
-        bodyView
-    }
-
-    @ViewBuilder var bodyView: some View {
-        if TokenManager.shared.isLoggedIn {
-            NavigationSplitView {
-                SideBarView(container: container)
-            } content: {
-                SplitViewContentView()
-            } detail: {
-                NavigationStack(path: $navVM.paths) {
-                    StackContentView()
-                        .navigationDestination(for: Conversation.self) { thread in
-                            if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
-                                ThreadView()
-                                    .environmentObject(viewModel)
-                            }
-                        }
-                        .navigationDestination(for: DetailViewModel.self) { viewModel in
-                            DetailView()
+    var body: some View {
+        NavigationSplitView {
+            SideBarView(container: container)
+        } content: {
+            SplitViewContentView()
+        } detail: {
+            NavigationStack(path: $navVM.paths) {
+                StackContentView()
+                    .navigationDestination(for: Conversation.self) { thread in
+                        if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
+                            ThreadView()
                                 .environmentObject(viewModel)
-                                .environmentObject(container.threadsVM)
-                                .environmentObject(container.navVM.currentThreadVM!)
-                        }
-                }
-                .environment(\.layoutDirection, .leftToRight)
-            }
-            .toast(
-                isShowing: Binding(get: { AppState.shared.error != nil }, set: { _ in }),
-                title: String(format: String(localized: "Errors.occuredTitle"), AppState.shared.error?.code ?? 0),
-                message: AppState.shared.error?.message ?? "",
-                titleFont: .title2,
-                messageFont: .subheadline
-            ) {
-                Image(systemName: "xmark.square.fill")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .onTapGesture {
-                        withAnimation {
-                            AppState.shared.error = nil
                         }
                     }
+                    .navigationDestination(for: DetailViewModel.self) { viewModel in
+                        DetailView()
+                            .environmentObject(viewModel)
+                            .environmentObject(container.threadsVM)
+                            .environmentObject(container.navVM.currentThreadVM!)
+                    }
             }
-            .onReceive(container.$columnVisibility) { newValue in
-                if newValue != columnVisibility {
-                    columnVisibility = newValue
+            .environment(\.layoutDirection, .leftToRight)
+        }
+        .toast(
+            isShowing: Binding(get: { AppState.shared.error != nil }, set: { _ in }),
+            title: String(format: String(localized: "Errors.occuredTitle"), AppState.shared.error?.code ?? 0),
+            message: AppState.shared.error?.message ?? "",
+            titleFont: .title2,
+            messageFont: .subheadline
+        ) {
+            Image(systemName: "xmark.square.fill")
+                .resizable()
+                .frame(width: 24, height: 24)
+                .onTapGesture {
+                    withAnimation {
+                        AppState.shared.error = nil
+                    }
                 }
+        }
+        .onReceive(container.$columnVisibility) { newValue in
+            if newValue != columnVisibility {
+                columnVisibility = newValue
             }
-            .onAppear {
-                AppState.shared.navViewModel = container.navVM
-                container.navVM.threadViewModel = container.threadsVM
-                container.threadsVM.title = "Tab.chats"
-                container.navVM.contactsViewModel = container.contactsVM
-                self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
-            }
+        }
+        .onAppear {
+            AppState.shared.navViewModel = container.navVM
+            container.navVM.threadViewModel = container.threadsVM
+            container.threadsVM.title = "Tab.chats"
+            container.navVM.contactsViewModel = container.contactsVM
+            self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
         }
     }
 }

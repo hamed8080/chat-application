@@ -28,13 +28,20 @@ public final class TokenManager: ObservableObject {
 
     public func getNewTokenWithRefreshToken() {
         if refreshTokenTask != nil { return }
-        guard let refreshToken = getSSOTokenFromUserDefaults()?.refreshToken else { return }
-        let urlReq = URLRequest(url: URL(string: AppRoutes.refreshToken + "?refreshToken=\(refreshToken)")!, timeoutInterval: 5)
+        guard let ssoTokenModel = getSSOTokenFromUserDefaults(),
+              let refreshToken = ssoTokenModel.refreshToken,
+              let keyId = ssoTokenModel.keyId
+        else { return }
         refreshTokenTask = Task {
             do {
+                var urlReq = URLRequest(url: URL(string: AppRoutes.refreshToken)!)
+                urlReq.url?.append(queryItems: [.init(name: "refreshToken", value: refreshToken)])
+                urlReq.allHTTPHeaderFields = ["keyId": keyId]
                 let resp = try await session.data(for: urlReq)
                 let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
                 await MainActor.run {
+                    var ssoToken = ssoToken
+                    ssoToken.keyId = keyId
                     saveSSOToken(ssoToken: ssoToken)
                     ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
                     AppState.shared.connectionStatus = .connected

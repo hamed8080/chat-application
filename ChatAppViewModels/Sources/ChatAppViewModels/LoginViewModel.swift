@@ -103,7 +103,8 @@ public final class LoginViewModel: ObservableObject {
         urlReq.method = .post
         do {
             let resp = try await session.data(for: urlReq)
-            let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
+            var ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
+            ssoToken.keyId = keyId
             await saveTokenAndCreateChatObject(ssoToken)
         } catch {
             showError(.verificationCodeIncorrect)
