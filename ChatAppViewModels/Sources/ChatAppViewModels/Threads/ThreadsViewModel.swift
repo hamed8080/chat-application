@@ -83,6 +83,8 @@ public final class ThreadsViewModel: ObservableObject {
             if threads[index].pin == false {
                 sort()
             }
+        } else if let threadId = response.result?.conversation?.id {
+            getThreadsWith([threadId])
         }
     }
 
