@@ -73,6 +73,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     var lastOrigin: CGFloat = 0
     public var lastVisibleUniqueId: String?
     public weak var forwardMessage: Message?
+    public var seenPublisher = PassthroughSubject<Message, Never>()
     /// The property `DisableScrolling` works as a mechanism to prevent sending a new request to the server every time SwiftUI tries to calculate and layout our views rows, because SwiftUI starts rendering at the top when we load more top.
     public var disableScrolling: Bool = false
     var createThreadCompletion: (()-> Void)?
@@ -101,6 +102,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             .compactMap { $0.object as? ChatEventType }
             .sink { [weak self] event in
                 self?.onChatEvent(event)
+            }
+            .store(in: &cancelable)
+        seenPublisher
+            .filter{ [weak self] in $0.id ?? -1 > self?.thread.lastSeenMessageId ?? 0 }
+            .debounce(for: 0.5, scheduler: RunLoop.main)
+            .removeDuplicates()
+            .sink { [weak self] newVlaue in
+                self?.sendSeen(for: newVlaue)
             }
             .store(in: &cancelable)
     }
@@ -152,14 +161,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             let message = section.messages[messageIndex - 1]
             Logger.viewModels.info("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
-            sendSeenMessageIfNeeded(message)
+            seenPublisher.send(message)
             isAtBottomOfTheList = sectionIndex == sections.indices.last && messageIndex > section.messages.indices.last! - 3
             animateObjectWillChange()
         } else {
             // Last Item
             Logger.viewModels.info("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
             lastVisibleUniqueId = message.uniqueId
-            sendSeenMessageIfNeeded(message)
+            seenPublisher.send(message)
             isAtBottomOfTheList = message.id == thread.lastMessageVO?.id
             animateObjectWillChange()
         }
@@ -215,7 +224,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    public func sendSeenMessageIfNeeded(_ message: Message) {
+    public func sendSeen(for message: Message) {
         let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, !isMe {
             thread.lastSeenMessageId = messageId

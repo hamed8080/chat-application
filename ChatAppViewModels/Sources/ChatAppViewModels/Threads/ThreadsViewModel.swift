@@ -75,7 +75,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func onNewMessage(_ response: ChatResponse<Message>) {
-        if let message = response.result, let index = threads.firstIndex(where: { $0.id == message.conversation?.id }) {
+        if let message = response.result, let index = firstIndex(message.conversation?.id) {
             threads[index].time = response.result?.conversation?.time
             threads[index].unreadCount = (threads[index].unreadCount ?? 0) + 1
             threads[index].lastMessageVO = response.result
@@ -89,7 +89,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onChangedType(_ response: ChatResponse<Conversation>) {
-        if let index = threads.firstIndex(where: {$0.id == response.result?.id })  {
+        if let index = firstIndex(response.result?.id)  {
             threads[index].type = .publicGroup
         }
     }
@@ -311,13 +311,13 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func muteUnMuteThread(_ threadId: Int?, isMute: Bool) {
-        if let threadId = threadId, let index = threads.firstIndex(where: { $0.id == threadId }) {
+        if let threadId = threadId, let index = firstIndex(threadId) {
             threads[index].mute = isMute
         }
     }
 
     public func removeThread(_ thread: Conversation) {
-        guard let index = threads.firstIndex(where: { $0.id == thread.id }) else { return }
+        guard let index = firstIndex(thread.id) else { return }
         withAnimation {
             _ = threads.remove(at: index)
         }
@@ -373,7 +373,7 @@ public final class ThreadsViewModel: ObservableObject {
 
     func onUnreadCounts(_ response: ChatResponse<[String : Int]>) {
         response.result?.forEach { key, value in
-            if let index = threads.firstIndex(where: { $0.id == Int(key) ?? -1 }) {
+            if let index = firstIndex(Int(key)) {
                 threads[index].unreadCount = value
             }
         }
@@ -384,22 +384,14 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func updateThreadInfo(_ thread: Conversation) {
-        if let index = threads.firstIndex(where: { $0.id == thread.id }) {
-            threads[index].title = thread.title
-            threads[index].partner = thread.partner
-            threads[index].image = thread.image
-            threads[index].metadata = thread.metadata
-            threads[index].description = thread.description
-            threads[index].type = thread.type
-            threads[index].userGroupHash = thread.userGroupHash
-            threads[index].time = thread.time
-            threads[index].group = thread.group
+        if let index = firstIndex(thread.id) {
+            threads[index].updateValues(thread)
             animateObjectWillChange()
         }
     }
 
     public func onLastMessageChanged(_ thread: Conversation) {
-        if let index = threads.firstIndex(where: { $0.id == thread.id }) {
+        if let index = firstIndex(thread.id) {
             threads[index].lastMessage = thread.lastMessage
             threads[index].lastMessageVO = thread.lastMessageVO
             animateObjectWillChange()
@@ -407,7 +399,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func onMuteThreadChanged(mute: Bool, threadId: Int?) {
-        if let index = threads.firstIndex(where: { $0.id == threadId }) {
+        if let index = firstIndex(threadId) {
             threads[index].mute = mute
             sort()
             animateObjectWillChange()
@@ -415,14 +407,14 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
-        if let id = response.result, let index = self.threads.firstIndex(where: {$0.id == id}) {
+        if let id = response.result, let index = self.firstIndex(id) {
             threads.remove(at: index)
         }
     }
 
     /// This method will be called whenver we send seen for an unseen message by ourself.
     public func onLastSeenMessageUpdated(_ response: ChatResponse<LastSeenMessageResponse>) {
-        if let index = threads.firstIndex(where: {$0.id == response.subjectId }) {
+        if let index = firstIndex(response.subjectId) {
             threads[index].lastSeenMessageTime = response.result?.lastSeenMessageTime
             threads[index].lastSeenMessageId = response.result?.lastSeenMessageId
             threads[index].lastSeenMessageNanos = response.result?.lastSeenMessageNanos

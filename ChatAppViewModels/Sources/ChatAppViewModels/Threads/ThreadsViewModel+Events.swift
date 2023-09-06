@@ -53,7 +53,7 @@ extension ThreadsViewModel {
                 updateThreadInfo(thread)
             }
         case .updatedUnreadCount(let response):
-            if let index = threads.firstIndex(where: { $0.id == response.result?.threadId }) {
+            if let index = firstIndex(response.result?.threadId) {
                 threads[index].unreadCount = response.result?.unreadCount
                 animateObjectWillChange()
             }
