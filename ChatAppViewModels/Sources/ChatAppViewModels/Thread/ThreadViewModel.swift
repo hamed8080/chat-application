@@ -250,8 +250,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         messages.forEach { message in
             insertOrUpdate(message)
         }
-        appenedUnreadMessagesBannerIfNeeed(isToTime)
         sort()
+        appenedUnreadMessagesBannerIfNeeed(isToTime)
     }
 
     func insertOrUpdate(_ message: Message) {

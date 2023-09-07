@@ -18,8 +18,7 @@ extension ThreadViewModel {
 
     /// On Thread view, it will start calculating to fetch what part of [top, bottom, both top and bottom] receive.
     public func startFetchingHistory() {
-        if threadId == LocalId.emptyThread.rawValue { return }
-        if isFetchedServerFirstResponse == true { return }
+        if threadId == LocalId.emptyThread.rawValue || isFetchedServerFirstResponse == true { return }
         if thread.lastSeenMessageId == thread.lastMessageVO?.id {
             moveToLastMessage()
         } else if thread.lastSeenMessageId ?? 0 < thread.lastMessageVO?.id ?? 0, let lastMessageSeenTime = thread.lastSeenMessageTime, let messageId = thread.lastSeenMessageId {
@@ -129,8 +128,8 @@ extension ThreadViewModel {
             isFetchedServerFirstResponse = true
             bottomLoading = false
             requests.removeValue(forKey: "LAST_MESSAGE_HISTORY-\(uniqueId)")
-            animateObjectWillChange()
         }
+        animateObjectWillChange()
         /// If a message deleted from bottom of a history lastSeenMessageId is not exist in message response so we should move to lastMessageVO?.id
         let lastSeenUniqueId = messages.first(where: {$0.id == thread.lastSeenMessageId })?.uniqueId
         let lastMessageVOUniqueId = messages.first(where: {$0.id == thread.lastMessageVO?.id })?.uniqueId
