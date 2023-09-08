@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "chat",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hamed8080/chat",
+      "state" : {
+        "revision" : "530f2407d2610e30b9ff71d422e236eac54f230f",
+        "version" : "1.2.3"
+      }
+    },
+    {
       "identity" : "fanappodasyncsdk",
       "kind" : "remoteSourceControl",
       "location" : "https://pubgi.fanapsoft.ir/chat/ios/fanappodasyncsdk.git",
@@ -16,24 +25,6 @@
       "state" : {
         "revision" : "a063fda2b8145a231953c20e7a646be254365396",
         "version" : "3.1.2"
-      }
-    },
-    {
-      "identity" : "swift-docc-plugin",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-docc-plugin",
-      "state" : {
-        "branch" : "main",
-        "revision" : "6a6577adb48651a1ca7dee6861c894ee6ca66021"
-      }
-    },
-    {
-      "identity" : "swift-docc-symbolkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-docc-symbolkit",
-      "state" : {
-        "branch" : "main",
-        "revision" : "b45d1f2ed151d057b54504d653e0da5552844e34"
       }
     }
   ],

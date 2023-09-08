@@ -19,7 +19,6 @@
 		050B1BE7292F93020025D4ED /* ThreadsViewModel+MuteThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B1BE6292F93020025D4ED /* ThreadsViewModel+MuteThread.swift */; };
 		050C5AA22970861E00CD5702 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA0297082BE00CD5702 /* DetailView.swift */; };
 		050C5AA42970863B00CD5702 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C5AA32970863B00CD5702 /* DetailViewModel.swift */; };
-		05121E972A6F8DC400DD82C6 /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 05121E962A6F8DC400DD82C6 /* FanapPodChatSDK */; };
 		051ACDF6280848C500B77DA2 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 05DCB6872806102B00D7F37A /* MockData.json */; };
 		051DAF1227B919DC002876C9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */; };
 		051DAF1427B91A01002876C9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051DAF1327B91A01002876C9 /* SelectThreadRow.swift */; };
@@ -63,6 +62,7 @@
 		059914B029262FF60070BD89 /* Conversation+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059914AF29262FF60070BD89 /* Conversation+.swift */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
+		05B91F1B2AAB6F8F003BC2F6 /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 05B91F1A2AAB6F8F003BC2F6 /* FanapPodChatSDK */; };
 		05BD143029850D600015A6F6 /* UserConfigManagerVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD142F29850D600015A6F6 /* UserConfigManagerVM.swift */; };
 		05C0098B2931F61D002ED678 /* Contact+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C0098A2931F61D002ED678 /* Contact+.swift */; };
 		05C42B0F29606F4000A870B3 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C42B0E29606F4000A870B3 /* Data+.swift */; };
@@ -174,7 +174,6 @@
 		050B1BE6292F93020025D4ED /* ThreadsViewModel+MuteThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadsViewModel+MuteThread.swift"; sourceTree = "<group>"; };
 		050C5AA0297082BE00CD5702 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		050C5AA32970863B00CD5702 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
-		05121E952A6F8D3B00DD82C6 /* chat */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = chat; path = ../chat; sourceTree = "<group>"; };
 		051DAF1127B919A4002876C9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
 		051DAF1327B91A01002876C9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
 		05236F6C2AA125A300105A39 /* ObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableObject.swift; sourceTree = "<group>"; };
@@ -312,7 +311,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				05121E972A6F8DC400DD82C6 /* FanapPodChatSDK in Frameworks */,
+				05B91F1B2AAB6F8F003BC2F6 /* FanapPodChatSDK in Frameworks */,
 				055024C22987E794009DDD18 /* Swipy in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -361,7 +360,6 @@
 			isa = PBXGroup;
 			children = (
 				054FFC8B2A5E9AB8008C65EF /* Swipy */,
-				05121E952A6F8D3B00DD82C6 /* chat */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -746,7 +744,7 @@
 			name = ChatApplication;
 			packageProductDependencies = (
 				055024C12987E794009DDD18 /* Swipy */,
-				05121E962A6F8DC400DD82C6 /* FanapPodChatSDK */,
+				05B91F1A2AAB6F8F003BC2F6 /* FanapPodChatSDK */,
 			);
 			productName = ChatApplication;
 			productReference = AC1D2CA42661FFAC00AA351A /* ChatApplication.app */;
@@ -778,6 +776,7 @@
 			mainGroup = AC1D2C9B2661FFAC00AA351A;
 			packageReferences = (
 				055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */,
+				05B91F192AAB6F8F003BC2F6 /* XCRemoteSwiftPackageReference "chat" */,
 			);
 			productRefGroup = AC1D2CA52661FFAC00AA351A /* Products */;
 			projectDirPath = "";
@@ -1211,17 +1210,26 @@
 				kind = branch;
 			};
 		};
+		05B91F192AAB6F8F003BC2F6 /* XCRemoteSwiftPackageReference "chat" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hamed8080/chat";
+			requirement = {
+				kind = exactVersion;
+				version = 1.2.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		05121E962A6F8DC400DD82C6 /* FanapPodChatSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = FanapPodChatSDK;
-		};
 		055024C12987E794009DDD18 /* Swipy */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */;
 			productName = Swipy;
+		};
+		05B91F1A2AAB6F8F003BC2F6 /* FanapPodChatSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05B91F192AAB6F8F003BC2F6 /* XCRemoteSwiftPackageReference "chat" */;
+			productName = FanapPodChatSDK;
 		};
 /* End XCSwiftPackageProductDependency section */
 
