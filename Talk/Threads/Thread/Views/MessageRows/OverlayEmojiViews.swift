@@ -6,6 +6,7 @@
 //
 
 import ChatAppViewModels
+import ChatModels
 import SwiftUI
 
 struct OverlayEmojiViews: View {
@@ -31,6 +32,12 @@ struct OverlayEmojiViews: View {
             )
             .onAppear {
                 show = true
+                if ReactionViewModel.shared.userSelectedReactions.first(where: { $0.key == viewModel.message.id }) == nil,
+                   let messageId = viewModel.message.id,
+                   let conversationId = viewModel.threadVM?.threadId
+                {
+                    ReactionViewModel.shared.getCurrentUserReaction(for: messageId, conversationId: conversationId)
+                }
             }
             .onDisappear {
                 show = false

@@ -17,8 +17,6 @@ extension ThreadViewModel {
             onThreadEvent(threadEventTypes)
         case .participant(let participantEventTypes):
             onParticipantEvent(participantEventTypes)
-        case .reaction(let reactionEventTypes):
-            onReactionEvent(reactionEventTypes)
         default:
             break
         }
@@ -45,15 +43,6 @@ extension ThreadViewModel {
             onLastSeenMessageUpdated(response)
         case .created(let response):
             onCreateP2PThread(response)
-        default:
-            break
-        }
-    }
-
-    public func onReactionEvent(_ event: ReactionEventTypes?) {
-        switch event {
-        case .count(let response):
-            onReactionCount(response)
         default:
             break
         }
@@ -91,7 +80,7 @@ extension ThreadViewModel {
 //            }
             onSearch(response)
             if !response.cache, let messageIds = response.result?.filter({$0.reactionableType}).compactMap({$0.id}) {
-                getReaction(messageIds)
+                ReactionViewModel.shared.getReaction(messageIds, conversationId: threadId)
             }
             break
         case .queueTextMessages(let response):

@@ -45,22 +45,27 @@ enum Emoji: Int, CaseIterable, Identifiable {
 
 struct ReactionMenuView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
+    var currentSelectedReaction: Reaction? { ReactionViewModel.shared.userSelectedReactions.first(where: { $0.key == viewModel.message.id })?.value }
     @State var show = false
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
                 ForEach(Emoji.allCases, id: \.self) { emoji in
+                    let isFirst = emoji == Emoji.allCases.first
+                    let isLast = emoji == Emoji.allCases.last
                     Button {
-                        viewModel.reaction(emoji.rawValue)
+                        if let messageId = viewModel.message.id, let conversationId = viewModel.threadVM?.threadId {
+                            ReactionViewModel.shared.reaction(emoji.rawValue, messageId: messageId, conversationId: conversationId)
+                        }
                     } label: {
-                        let isFirst = emoji == Emoji.allCases.first
-                        let isLast = emoji == Emoji.allCases.last
                         Text(verbatim: emoji.emoji)
                             .frame(width: 36, height: 36)
                             .font(.system(size: 36))
-                            .padding([isFirst ? .leading : isLast ? .trailing : .all], isFirst || isLast ? 16 : 0)
+                            .background(currentSelectedReaction?.reaction == emoji.rawValue ? Color.blue : Color.clear)
+                            .cornerRadius(currentSelectedReaction?.reaction == emoji.rawValue ? 4 : 0)
                     }
+                    .padding([isFirst ? .leading : isLast ? .trailing : .all], isFirst || isLast ? 16 : 0)
                     .scaleEffect(x: show ? 1.0 : 0.001, y: show ? 1.0 : 0.001, anchor: .center)
                     .transition(.scale)
                     .onAppear {

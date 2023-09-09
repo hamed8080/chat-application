@@ -34,10 +34,8 @@ public final class MessageRowViewModel: ObservableObject {
     public var isHighlited: Bool = false
     public var highlightTimer: Timer?
     public var isSelected = false
-    public var myReaction: Reaction?
     public var requests: [String: Any] = [:]
     public var showReactionsOverlay = false
-    public var reactionCountList: ReactionCountList?
 
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
@@ -233,32 +231,6 @@ public final class MessageRowViewModel: ObservableObject {
         let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth, uploadFileProgressWidth, unsentFileWidth, videoWidth].max() ?? 0
         let calculatedWidth: CGFloat = min(contentWidth, maxAllowedWidth)
         return calculatedWidth
-    }
-
-    public func reaction(_ emojiId: Int) {
-        if myReaction != nil {
-            let req = ReplaceReactionRequest(messageId: message.id ?? -1, conversationId: threadVM?.threadId ?? -1, reaction: emojiId)
-            requests[req.uniqueId] = req
-            ChatManager.activeInstance?.reaction.replace(req)
-        } else {
-            let req = AddReactionRequest(messageId: message.id ?? -1, conversationId: threadVM?.threadId ?? -1, reaction: emojiId)
-            requests[req.uniqueId] = req
-            ChatManager.activeInstance?.reaction.add(req)
-        }
-    }
-
-    public func onReactionList() {
-        self.animateObjectWillChange()
-    }
-
-    public var reactionList: [Reaction]? {
-        ReactionViewModel.shared.reactions.first(where: {$0.key == message.id})?.value
-    }
-
-    public func updateReactionCount(_ messageReactionList: ReactionCountList) {
-        if messageReactionList.reactionCounts?.count ?? 0 == 0 { return }
-        reactionCountList = messageReactionList
-        recalculateWithAnimation()
     }
 
     deinit {
