@@ -32,8 +32,10 @@ struct ReactionCountView: View {
             }
         }
         .onAppear {
-            if let reactionCountList = ReactionViewModel.shared.reactionCountList.first(where: { $0.messageId == messageId })?.reactionCounts {
-                self.reactionCountList = reactionCountList
+            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                if let reactionCountList = ReactionViewModel.shared.reactionCountList.first(where: { $0.messageId == messageId })?.reactionCounts {
+                    self.reactionCountList = reactionCountList
+                }
             }
         }
     }
