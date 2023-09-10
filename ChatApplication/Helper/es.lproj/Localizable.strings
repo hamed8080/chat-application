@@ -85,6 +85,9 @@
 "Contacts.Add.footerTitle" = "En el campo de contacto, puedes ingresar tanto el nombre de usuario como el número de teléfono.";
 "Contacts.Edit.title" = "Editar contactos";
 "Contacts.Add.title" = "Agregar contactos";
+"Contacts.Sync.sync" = "Sincronizar";
+"Contacts.Sync.contacts" = "Sincronizar contactos.";
+"Contacts.Sync.subtitle" = "Con la sincronización de contactos, puedes estar en contacto con tus amigos y familiares sin esfuerzo.";
 
 /* Llamada */
 "Call.requested" = "Solicitada";

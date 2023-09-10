@@ -33,6 +33,8 @@ struct ContactContentList: View {
                 .noSeparators()
             }
 
+            SyncView()
+
             if viewModel.searchedContacts.count > 0 {
                 Text("Contacts.searched")
                     .font(.iransansSubheadline)

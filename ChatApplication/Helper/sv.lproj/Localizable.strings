@@ -85,6 +85,9 @@
 "Contacts.Add.footerTitle" = "I fältet Kontakter kan du ange antingen användarnamn eller telefonnummer.";
 "Contacts.Edit.title" = "Redigera kontakter";
 "Contacts.Add.title" = "Lägg till kontakter";
+"Contacts.Sync.sync" = "Synkronisera";
+"Contacts.Sync.contacts" = "Synkronisera kontakter.";
+"Contacts.Sync.subtitle" = "Med synkronisering av kontakter kan du vara i kontakt med dina vänner och familj utan ansträngning.";
 
 /* Call */
 "Call.requested" = "Begärd";

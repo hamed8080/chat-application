@@ -64,6 +64,7 @@
 		055B26A027D5FA0F0098D585 /* VoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B269F27D5FA0F0098D585 /* VoiceView.swift */; };
 		055B26A227D5FA180098D585 /* LinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A127D5FA180098D585 /* LinkView.swift */; };
 		055B26A627D602CD0098D585 /* TabViewsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B26A527D602CD0098D585 /* TabViewsContainer.swift */; };
+		055E63332AAD7F7D0028134B /* SyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055E63322AAD7F7D0028134B /* SyncView.swift */; };
 		057B9A9D293797600089ACC9 /* ThreadEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057B9A9C293797600089ACC9 /* ThreadEventView.swift */; };
 		059281BF2A227961006C7E56 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059281BE2A227961006C7E56 /* AssistantView.swift */; };
 		059281C12A227C3C006C7E56 /* AssistantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059281C02A227C3C006C7E56 /* AssistantRow.swift */; };
@@ -191,6 +192,7 @@
 		055B269F27D5FA0F0098D585 /* VoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceView.swift; sourceTree = "<group>"; };
 		055B26A127D5FA180098D585 /* LinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
 		055B26A527D602CD0098D585 /* TabViewsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabViewsContainer.swift; sourceTree = "<group>"; };
+		055E63322AAD7F7D0028134B /* SyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncView.swift; sourceTree = "<group>"; };
 		057B9A9C293797600089ACC9 /* ThreadEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEventView.swift; sourceTree = "<group>"; };
 		0590ACBC29E802C60041E9D7 /* ChatApplication.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChatApplication.xctestplan; sourceTree = "<group>"; };
 		059281BE2A227961006C7E56 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
@@ -580,6 +582,7 @@
 				ACFBF1B826FCA51300DD27AE /* AddOrEditContactView.swift */,
 				AC23695527439478008195D7 /* SearchContactRow.swift */,
 				0528CFBE2A36377900A671A8 /* BlockedContacts.swift */,
+				055E63322AAD7F7D0028134B /* SyncView.swift */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -807,6 +810,7 @@
 				05297DDE2A4B235500B14235 /* MessageActionMenu.swift in Sources */,
 				05297DE32A4B251100B14235 /* SecondaryMessageView.swift in Sources */,
 				053F455C2A65062800A84A83 /* SideBarView.swift in Sources */,
+				055E63332AAD7F7D0028134B /* SyncView.swift in Sources */,
 				AC7EBFF4266CAF2500984E81 /* ContactContentList.swift in Sources */,
 				AC1D2CD12662016E00AA351A /* ThreadRow.swift in Sources */,
 				AC1D2CD22662016E00AA351A /* AppDelegate.swift in Sources */,

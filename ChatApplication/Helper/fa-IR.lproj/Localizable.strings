@@ -85,6 +85,9 @@
 "Contacts.Add.footerTitle" = "در ورودی می توانید نام کاربری یا شماره تماس مخاطب مورد نظر را وارد کنید.";
 "Contacts.Edit.title" = "ویرایش مخاطب";
 "Contacts.Add.title" = "اضافه کردن مخاطب";
+"Contacts.Sync.sync" = "همسان سازی";
+"Contacts.Sync.contacts" = "همسان سازی مخاطبان";
+"Contacts.Sync.subtitle" = "با همسان سازی مخاطبان شما می توانید با دوستان و نزدیکان خود راحت تر صحبت کنید.";
 
 /* Call */
 "Call.requested" = "درخواست";

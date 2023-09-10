@@ -49,7 +49,9 @@ struct SettingsView: View {
 struct SettingSettingSection: View {
     var body: some View {
         Section {
-            NavigationLink {} label: {
+            NavigationLink {
+                PreferenceView()
+            } label: {
                 HStack {
                     Image(systemName: "gear")
                         .foregroundColor(.blue)
@@ -57,6 +59,24 @@ struct SettingSettingSection: View {
                 }
             }
         }
+    }
+}
+
+struct PreferenceView: View {
+    @AppStorage("sync_contacts") var isSyncOn: Bool = false
+
+    var body: some View {
+        List {
+            Section("Tab.contacts") {
+                VStack(alignment: .leading, spacing: 2) {
+                    Toggle("Contacts.Sync.sync", isOn: $isSyncOn)
+                    Text("Contacts.Sync.subtitle")
+                        .foregroundColor(.gray)
+                        .font(.iransansCaption3)
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
     }
 }
 

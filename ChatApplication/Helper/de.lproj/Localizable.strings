@@ -85,6 +85,9 @@
 "Contacts.Add.footerTitle" = "Im Feld 'Kontakt' können Sie entweder einen Benutzernamen oder eine Telefonnummer eingeben.";
 "Contacts.Edit.title" = "Kontakte bearbeiten";
 "Contacts.Add.title" = "Kontakte hinzufügen";
+"Contacts.Sync.sync" = "Synchronisieren";
+"Contacts.Sync.contacts" = "Kontakte synchronisieren.";
+"Contacts.Sync.subtitle" = "Durch die Synchronisierung von Kontakten können Sie mühelos mit Ihren Freunden und Ihrer Familie in Kontakt bleiben.";
 
 /* Call */
 "Call.requested" = "Angefordert";

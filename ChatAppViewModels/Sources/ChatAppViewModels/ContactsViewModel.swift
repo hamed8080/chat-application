@@ -34,6 +34,7 @@ public final class ContactsViewModel: ObservableObject {
             if self?.firstSuccessResponse == false, status == .connected {
                 self?.getContacts()
                 ChatManager.activeInstance?.contact.getBlockedList()
+                self?.sync()
             }
         }
         .store(in: &canceableSet)
@@ -257,6 +258,12 @@ public final class ContactsViewModel: ObservableObject {
             addToSelctedContacts(contact)
         }
         animateObjectWillChange()
+    }
+
+    public func sync() {
+        if UserDefaults.standard.bool(forKey: "sync_contacts") == true {
+            ChatManager.activeInstance?.contact.sync()
+        }
     }
 
     public func updateContact(contact _: Contact, contactValue: String, firstName: String?, lastName: String?) {

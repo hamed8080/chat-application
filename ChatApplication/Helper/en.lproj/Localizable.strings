@@ -85,6 +85,10 @@
 "Contacts.Add.footerTitle" = "In the Contact filed you could enter either username or phone number.";
 "Contacts.Edit.title" = "Edit Contacts";
 "Contacts.Add.title" = "Add Contacts";
+"Contacts.Sync.sync" = "Sync";
+"Contacts.Sync.contacts" = "Sync contacts.";
+"Contacts.Sync.subtitle" = "With syncing contacts, you can be in touch with your friends and family effortlessly.";
+
 
 /* Call */
 "Call.requested" = "Requested";
