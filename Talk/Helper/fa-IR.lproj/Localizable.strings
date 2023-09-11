@@ -1,0 +1,259 @@
+/* 
+  Localizable.strings
+  Talk
+
+  Created by hamed on 3/7/23.
+  
+*/
+
+/* Errors */
+"Errors.occuredTitle"= "یک خطا رخ داده است با کد: %@.";
+"Errors.Login.invalidPhoneNumber" = "شماره تلفن معتبر نیست.";
+"Errors.failedTryAgain" = "یک خطایی رخ داده مجدد سعی کنید.";
+"Errors.Login.Verify.incorrectCode" = "کد تایید صحیح نمی باشد.";
+
+/* General */
+"General.next" = "بعدی";
+"General.back" = "برگشت";
+"General.delete" = "حذف";
+"General.cancel" = "لغو";
+"General.showMore" = "نمایش بیشتر";
+"General.showLess" = "نمایش کمتر";
+"General.close" = "بستن";
+"General.send" = "ارسال";
+"General.add" = "اضافه";
+"General.select" = "انتخاب";
+"General.typeMessageHere" = "پیام خود را اینجا بنویسید...";
+"General.more" = "بیشتر";
+"General.notSpecified" = "مشخص نشده است";
+"General.unknown" = "نا مشخص";
+"General.block" = "مسدود کردن";
+"General.unblock" = "رفع مسدودی";
+"General.blocked" = "مسدود شده";
+"General.searchHere" = "جستجو کنید...";
+"General.firstName" = "نام";
+"General.lastName" = "نام خانوادگی";
+"General.contact" = "مخاطب";
+"General.done" = "انجام";
+"General.nothingSelected" = "چیزی انتخاب نشده است. برای شروع یک گفتگو روی شروع کلیک کنید.";
+"General.start" = "شروع";
+"General.appName" = "تاک";
+"General.nothingFound" = "چیزی پیدا نشد";
+"General.all" = "همه";
+"General.submit" = "تایید";
+"General.create" = "ساخت";
+"General.nothingSelected" = "چیزی انتخاب نشده است.";
+"General.selected" = "انتخاب شده";
+"General.photoOrVideo" = "عکس یا ویدیو";
+"General.file" = "فایل";
+"General.location" = "موقعیت مکانی";
+"Genreal.confirm" = "تایید";
+"Genreal.accept" = "تایید";
+"General.info" = "اطلاعات";
+"General.title" = "عنوان";
+"General.description" = "توضیحات";
+"General.addToContact" = "اضافه کردن به مخاطبان";
+"General.edit" = "ویرایش";
+
+/* Tabs */
+"Tab.chats" = "گفتگو ها";
+"Tab.contacts" = "مخاطبان";
+"Tab.archives" = "آرشیو";
+"Tab.folders" = "پوشه ها";
+"Tab.settings" = "تنظیمات";
+
+/* Assistants */
+"Assistant.Assistants" = "دستیار ها";
+"Assistant.histories" = "تاریخچه";
+"Assistant.selectAssistant" = "دستیار خود را انتخاب کنید";
+"Assistant.blockedList" = "دستیار های بلاک شده";
+"Assistant.registered" = "ثبت شده";
+"Assistant.activated" = "فعال شده";
+"Assistant.deactivated" = "غیر فعال شده";
+"Assistant.blocked" = "بلاک شده";
+"Assistant.unblocked" = "رفع بلاک شده";
+"Assistant.History.title" = "تاریخچه عملیات";
+
+/* Contacts */
+"Contacts.total" = "مجموع مخاطبان";
+"Contacts.searched" = "مخاطبان جستجو شده";
+"Contacts.createNew" = "ساخت مخاطب جدید";
+"Contacts.deleteSelectedTitle" = "حذف مخاطبان انتخاب شده";
+"Contacts.deleteSelectedSubTitle" = "آیا مطمئن هستید که می خواهید مخاطبان انتخاب شده را حذف کنید؟";
+"Contacts.blockedList" = "لیست مسدودی ها";
+"Contacts.Add.headerTitle" = "اطلاعات عمومی";
+"Contacts.Add.footerTitle" = "در ورودی می توانید نام کاربری یا شماره تماس مخاطب مورد نظر را وارد کنید.";
+"Contacts.Edit.title" = "ویرایش مخاطب";
+"Contacts.Add.title" = "اضافه کردن مخاطب";
+"Contacts.Sync.sync" = "همسان سازی";
+"Contacts.Sync.contacts" = "همسان سازی مخاطبان";
+"Contacts.Sync.subtitle" = "با همسان سازی مخاطبان شما می توانید با دوستان و نزدیکان خود راحت تر صحبت کنید.";
+
+/* Call */
+"Call.requested" = "درخواست";
+"Call.canceled" = "لغو شده";
+"Call.miss" = "جواب نداد";
+"Call.declined" = "رد شده";
+"Call.accepted" = "جواب داد";
+"Call.started" = "شروع شده";
+"Call.ended" = "پایان یافته";
+"Call.leave" = "ترک کرد";
+
+/* Invitee */
+"Invitee.ssoId" = "آیدی SSO";
+"Invitee.contactId" = "آیدی مخاطب";
+"Invitee.cellphoneNumber" = "شماره تلفن";
+"Invitee.username" = "نام کاربری";
+"Invitee.userId" = "آیدی کاربری";
+"Invitee.coreUserId" = "آیدی Core";
+
+/* Log */
+"Logs.title" = "لاگ ها";
+"Log.internalLog" = "داخلی";
+"Log.sent" = "ارسال شده";
+"Log.received" = "دریافت شده";
+
+/* Message */
+"Message.Participant.left" = " کاربر %@ گروه را ترک کرد";
+"Message.Participant.removed" = "کاربر %@ توسط %@ از گروه حذف شد.";
+"Message.Participant.joined" = "کاربر %@ به گروه پیوست.";
+"Message.Participant.added" = "کاربر %@ توسط %@ به گروه اضافه شد.";
+
+/* System Events */
+"SMT.isTyping" = "در حای تایپ...";
+"SMT.recordVoice" = "در حال ضبط صدا";
+"SMT.uploadPicture" = "در حال ارسال تصویر";
+"SMT.uploadVideo" = "در حال ارسال ویدیو";
+"SMT.uploadSound" = "در حال ارسال فایل صوتی";
+"SMT.uploadFile" = "در حال ارسال فایل";
+
+/* Thread */
+"Thread.normal" = "معمولی(دو نفره یا گروهی)";
+"Thread.ownerGroup" = "مالک کروهی";
+"Thread.publicGroup" = "گروه عمومی";
+"Thread.channelGroup" = "کانال گروهی";
+"Thread.channel" = "کانال";
+"Thread.notificationChannel" = "کانال اطلاع رسانی";
+"Thread.publicThread" = "گروه عمومی";
+"Thread.publicChannel" = "کانال عمومی گروهی";
+"Thread.selfThread" = "پیام های ذخیره شده";
+"Thread.draft" = "پیش نویش:";
+"Thread.callStarted" = "تماس شروع شد";
+"Thread.callEnded" = "تماس پایان یافت";
+"Thread.unpin" = "از سنجاق در آوردن";
+"Thread.pin" = "سنجاق کردن";
+"Thread.mute" = "بی صدا کردن";
+"Thread.unmute" = "از بی صدا در آوردن";
+"Thread.addToFolder" = "اضافه کردن به پوشه";
+"Thread.clearHistory" = "حذف تاریخچه";
+"Thread.spam" = "اعلام به عنوان مزاحم";
+"Thread.leave" = "ترک کردن";
+"Thread.archive" = "آرشیو کردن";
+"Thread.unarchive" = "از آرشیو خارج کردن";
+"Thread.invite" = "دعوت کردن";
+"Thread.switchToPublic" = "تغییر به گروهی";
+"Thread.selectToStartConversation" = "یک گفتگو را انتخاب کنید.";
+"Thread.newGroup" = "گروه جدید";
+"Thread.newChannel" = "کانال جدید";
+"Thread.enterGroupNameHere" = "نام گروه را اینجا وارد کنید...";
+"Thread.publicThreadFooter" = "گروه های عمومی در بستر اینترنت قابل دسترسی هستند و همه می توانند به آه ملحق یا محتوای آن را مشاهده کنند.";
+"Thread.publicThreadStructrue" = "نام گروه های عمومی باید منحصر به فرد و بدون علامت های خاص باشند.";
+"Thread.enterValidName" = "نام گفتگو را اینجا وارد کنید";
+"Thread.public" = "عمومی";
+"Thread.SendContainer.voiceRecording" = "در حال ضبط صدا";
+"Thread.SendContainer.attachment" = "پیوست ها";
+"Thread.SendContainer.typeMessageHere" = "پیام خود را اینجا وارد کنید...";
+"Thread.SendContainer.toForward" = "ارسال به";
+"Thread.export" = "خروجی گرفتن";
+"ThreadList.Toolbar.startNewChat" = "یک گفتگوی جدید ایجاد کنید";
+"ThreadList.Toolbar.joinToPublicThread" = "پیوستن به یک گروه عمومی";
+"ThreadList.Toolbar.fastMessage" = "پیام مستقیم";
+"ThreadList.Toolbar.createABot" = "ساخت بات جدید";
+"ThreadList.Toolbar.filter" = "فیلتر";
+"Thread.Join.title" = "پیوستن";
+"Thread.Join.enterThreadNameHere" = "نام گفتگو را وارد کنید.";
+"Thread.Join.duplicateName" = "گفتگو پیدا نشد";
+"Thread.Join.footer" = "پیوستن به یک گروه عمومی با نام منحصر به فرد";
+"Thread.Delete.permanentlyDelete" = "حذف دائمی";
+"Thread.Delete.footer" = "با حذف یک گفتگو شما نمی توانید آن را بازیابی کنید.";
+"Thread.fastMessageFooter" = "ساخت یک گفتگو بدون وارد کردن فرد مورد نظر در لیست مخاطبان";
+"Thread.enterFastMessageType" = "%@ را اینجا وارد کنید...";
+"Thread.Tabs.members" = "اعضا";
+"Thread.Tabs.mutualgroup" = "گروه های مشترک";
+"Thread.Tabs.photos" = "تصویر";
+"Thread.Tabs.videos" = "ویدیو";
+"Thread.Tabs.file" = "فایل";
+"Thread.Tabs.music" = "موزیک";
+"Thread.Tabs.voice" = "صدا";
+"Thread.Tabs.link" = "لینک";
+
+/* ConnectionStatus */
+"ConnectionStatus.connecting" = "در حال اتصال";
+"ConnectionStatus.connected" = "متصل شده";
+"ConnectionStatus.disconnected" = "قطع شده";
+"ConnectionStatus.reconnecting" = "در حال اتصال مجدد";
+"ConnectionStatus.unauthorized" = "عدم احراز هویت";
+
+/* Participant */
+"Participant.Search.Type.name" = "نام";
+"Participant.Search.Type.username" = "نام کاربری";
+"Participant.Search.Type.cellphoneNumber" = "شماره تماس";
+"Participant.Search.Type.admin" = "مدیر";
+"Participant.admin" = "مدیر";
+"Participant.online" = "آنلاین";
+"Participant.inviter" = "دعوت کننده";
+"Participant.assistant" = "دستیار";
+"Participant.addAdminAccess" = "دادن دسترسی مدیر";
+"Participant.removeAdminAccess" = "حذف دسترسی مدیر";
+
+/* Export Chat */
+"ExportChat.startTitle" = "تاریخ شروع";
+"ExportChat.endTitle" = "تاریخ پایان";
+"ExportChat.export" = "گرفتن خروجی";
+
+/* DeleteMessageDialog */
+"DeleteMessageDialog.title" = "حذف پیام های انتخاب شده";
+"DeleteMessageDialog.subtitle" = "آیا شما مطمئن هستید می خواهید پیام های انتخاب شده را پاک کنید؟";
+
+/* Login */
+"Login.title" = "ورود";
+"Login.welcome" = "به برنامه **تاک** خوش آمدید.";
+"Login.staticToken" = "توکن ثابت خود را اینجا وارد کنید.";
+"Login.phoneNumber" = "شماره تماس خود را اینجا وارد کنی.";
+"Login.footer" = "در صورت بروز مشکل در ورود با پشتیبانی تماس بگیرید.";
+"Login.Verify.enterCode" = "کد ارسال شده را وارد کنید.";
+"Login.Verfiy.verificationCodeSentTo" = "کد ارسال شده به شماره:‌";
+"Login.Verify.title" = "تایید";
+
+/* Settings */
+"Settings.title" = "تنظیمات";
+"Settings.calls" = "تماس ها";
+"Settings.savedMessage" = "پیام های ذخیره شده";
+"Settings.logs" = "لاگ ها";
+"Settings.assistants" = "دستیار ها";
+"Settings.manageCalls" = "مدیریت تماس ها";
+"Settings.logout" = "خروج";
+
+/* Tags */
+"Tags.addToFolder" = "اضافه کردن به پوشه";
+"Tags.addNewFolder" = "ساخت پوشه";
+"Tags.addNewFolderSubtitle" = "نام پوشه را وارد کنید و در مراحل بعدی گفتگو های خود را به این پوشه اضافه کنید";
+"Tags.enterNewFolderName" = "نام پوشه را وارد کنید";
+"Tags.manageFolders" = "مدیریت پوشه ها";
+
+/*  Messages */
+"Messages.deletedMessageReply" = "پیام حذف شده.";
+"Messages.Footer.edited" = "اصلاح شده";
+"Messages.resend" = "ارسال مجدد";
+"Messages.ActionMenu.reply" = "پاسخ";
+"Messages.ActionMenu.replyPrivately" = "پاسخ خصوصی";
+"Messages.ActionMenu.forward" = "ارسال";
+"Messages.ActionMenu.copy" = "کپی";
+"Messages.ActionMenu.deleteCache" = "حذف کش برای این پیام";
+"Messages.ActionMenu.pinMessage" = "سنجاق کردن";
+"Messages.ActionMenu.unpinMessage" = "از سنجاق در آوردن";
+"Messages.unreadMessages" = "پیام های خوانده نشده";
+
+/* Map */
+"Map.mayLocation" = "موقعیت من";
+"Map.hereIAm" = "من اینجا هستم!";

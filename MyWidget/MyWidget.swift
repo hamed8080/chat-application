@@ -6,11 +6,11 @@
 
 import AdditiveUI
 import Chat
-import ChatAppExtensions
-import ChatAppModels
 import ChatModels
 import Intents
 import SwiftUI
+import TalkExtensions
+import TalkModels
 import WidgetKit
 
 private var previewThreads: [ThreadWithImageData] {

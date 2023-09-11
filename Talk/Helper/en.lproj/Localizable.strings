@@ -1,0 +1,260 @@
+/* 
+  Localizable.strings
+  Talk
+
+  Created by hamed on 3/7/23.
+  
+*/
+
+/* Errors */
+"Errors.occuredTitle"= "An error had happened with code: %@";
+"Errors.Login.invalidPhoneNumber" = "Please input correct phone number";
+"Errors.failedTryAgain" = "An error occured! try again.";
+"Errors.Login.Verify.incorrectCode" = "Your verification code is incorrect.";
+
+/* General */
+"General.next" = "Next";
+"General.back" = "Back";
+"General.delete" = "Delete";
+"General.cancel" = "Cancel";
+"General.showMore" = "Show more";
+"General.showLess" = "Show less";
+"General.close" = "Close";
+"General.send" = "Send";
+"General.add" = "Add";
+"General.select" = "Select";
+"General.typeMessageHere" = "Type message here ...";
+"General.more" = "More";
+"General.notSpecified" = "Not specified";
+"General.unknown" = "unknown";
+"General.block" = "Block";
+"General.unblock" = "UNBlock";
+"General.blocked" = "Blocked";
+"General.searchHere" = "Search here...";
+"General.firstName" = "First Name";
+"General.lastName" = "Last Name";
+"General.contact" = "Contact";
+"General.done" = "Done";
+"General.nothingSelected" = "Nothing has been selected. You can start a conversation right now!";
+"General.start" = "Start";
+"General.appName" = "Talk";
+"General.nothingFound" = "Nothing found";
+"General.all" = "All";
+"General.submit" = "Submit";
+"General.create" = "Create";
+"General.nothingSelected" = "Nothing Has been selected.";
+"General.selected" = "Selected";
+"General.photoOrVideo" = "Photo Or Video";
+"General.file" = "File";
+"General.location" = "Location";
+"Genreal.confirm" = "Confirm";
+"Genreal.accept" = "Accept";
+"General.info" = "Info";
+"General.title" = "Title";
+"General.description" = "Description";
+"General.addToContact" = "Add To Contact";
+"General.edit" = "edit";
+
+/* Tabs */
+"Tab.chats" = "Chats";
+"Tab.contacts" = "Contacts";
+"Tab.archives" = "Archives";
+"Tab.folders" = "Folders";
+"Tab.settings" = "Settings";
+
+/* Assistants */
+"Assistant.Assistants" = "Assistants";
+"Assistant.histories" = "Histories";
+"Assistant.selectAssistant" = "Select your assistant";
+"Assistant.blockedList" = "Blocked Assistants";
+"Assistant.registered" = "registered";
+"Assistant.activated" = "activated";
+"Assistant.deactivated" = "deactivated";
+"Assistant.blocked" = "blocked";
+"Assistant.unblocked" = "unblocked";
+"Assistant.History.title" = "Actions History";
+
+/* Contacts */
+"Contacts.total" = "Total contacts";
+"Contacts.searched" = "Searched contacts";
+"Contacts.createNew" = "Create new contacts";
+"Contacts.deleteSelectedTitle" = "Delete selected contacts";
+"Contacts.deleteSelectedSubTitle" = "Do you want to delete selected contacts?";
+"Contacts.blockedList" = "Blocked Contacts";
+"Contacts.Add.headerTitle" = "General Information";
+"Contacts.Add.footerTitle" = "In the Contact filed you could enter either username or phone number.";
+"Contacts.Edit.title" = "Edit Contacts";
+"Contacts.Add.title" = "Add Contacts";
+"Contacts.Sync.sync" = "Sync";
+"Contacts.Sync.contacts" = "Sync contacts.";
+"Contacts.Sync.subtitle" = "With syncing contacts, you can be in touch with your friends and family effortlessly.";
+
+
+/* Call */
+"Call.requested" = "Requested";
+"Call.canceled" = "Rejected";
+"Call.miss" = "Didn't answer";
+"Call.declined" = "Declined";
+"Call.accepted" = "answered";
+"Call.started" = "Started";
+"Call.ended" = "Ended";
+"Call.leave" = "Left";
+
+/* Invitee */
+"Invitee.ssoId" = "SSO ID";
+"Invitee.contactId" = "Contact ID";
+"Invitee.cellphoneNumber" = "Cell Phone Number";
+"Invitee.username" = "UserName";
+"Invitee.userId" = "User ID";
+"Invitee.coreUserId" = "Core User ID";
+
+/* Log */
+"Logs.title" = "Logs";
+"Log.internalLog" = "Internal Logs";
+"Log.sent" = "Sent";
+"Log.received" = "Received";
+
+/* Message */
+"Message.Participant.left" = "%@ has left the group";
+"Message.Participant.removed" = "%@ remvoed by %@";
+"Message.Participant.joined" = "%@ has joind the group";
+"Message.Participant.added" = "%@ added by %@";
+
+/* System Events */
+"SMT.isTyping" = "is typing...";
+"SMT.recordVoice" = "is recording a voice";
+"SMT.uploadPicture" = "is uploading an image";
+"SMT.uploadVideo" = "is uploading a video";
+"SMT.uploadSound" = "is uploading a sound";
+"SMT.uploadFile" = "is uploading a file";
+
+/* Thread */
+"Thread.normal" = "Normal(P2P/Group)";
+"Thread.ownerGroup" = "Owner group";
+"Thread.publicGroup" = "Public Group";
+"Thread.channelGroup" = "Channel Group";
+"Thread.channel" = "Channel";
+"Thread.notificationChannel" = "Notification Channel";
+"Thread.publicThread" = "Public thread";
+"Thread.publicChannel" = "Public Channel";
+"Thread.selfThread" = "Saved Messages";
+"Thread.draft" = "Draft:";
+"Thread.callStarted" = "Call started";
+"Thread.callEnded" = "Call ended";
+"Thread.unpin" = "UNPin";
+"Thread.pin" = "Pin";
+"Thread.mute" = "Mute";
+"Thread.unmute" = "UNMute";
+"Thread.addToFolder" = "Add To Folder";
+"Thread.clearHistory" = "Clear History";
+"Thread.spam" = "Spam";
+"Thread.leave" = "Leave";
+"Thread.archive" = "Archive";
+"Thread.unarchive" = "UNArchive";
+"Thread.invite" = "Invite";
+"Thread.switchToPublic" = "Switch to public thread";
+"Thread.selectToStartConversation" = "Select to start a conversation";
+"Thread.newGroup" = "New Group";
+"Thread.newChannel" = "New Channel";
+"Thread.enterGroupNameHere" = "Enter group name here...";
+"Thread.publicThreadFooter" = "Public threads are available to everyone on the internet.";
+"Thread.publicThreadStructrue" = "Public threads names should have a unique names without any whitespace and special characters.";
+"Thread.enterValidName" = "Enter the name of the conversation.";
+"Thread.public" = "Public";
+"Thread.SendContainer.voiceRecording" = "Voice Recording";
+"Thread.SendContainer.attachment" = "Attachment";
+"Thread.SendContainer.typeMessageHere" = "Type message here ...";
+"Thread.SendContainer.toForward" = "to forward";
+"Thread.export" = "Export";
+"ThreadList.Toolbar.startNewChat" = "Start a new Chat";
+"ThreadList.Toolbar.joinToPublicThread" = "Join to a public Chat";
+"ThreadList.Toolbar.fastMessage" = "Fast Message";
+"ThreadList.Toolbar.createABot" = "Create a new Bot";
+"ThreadList.Toolbar.filter" = "Filter";
+"Thread.Join.title" = "Join";
+"Thread.Join.enterThreadNameHere" = "Enter name of the chat...";
+"Thread.Join.duplicateName" = "The thread name is not exist!";
+"Thread.Join.footer" = "Join to a public thread by it's unique name.";
+"Thread.Delete.permanentlyDelete" = "Permanently Delete";
+"Thread.Delete.footer" = "With deleting a thread, you cannot restore or join it again.";
+"Thread.fastMessageFooter" = "Create a thread immediately even though the person you are going to send a message to is not in the contact list.";
+"Thread.enterFastMessageType" = "Enter %@ here...";
+"Thread.Tabs.members" = "Members";
+"Thread.Tabs.mutualgroup" = "Mutual Groups";
+"Thread.Tabs.photos" = "Photos";
+"Thread.Tabs.videos" = "Videos";
+"Thread.Tabs.file" = "File";
+"Thread.Tabs.music" = "Music";
+"Thread.Tabs.voice" = "Voice";
+"Thread.Tabs.link" = "Link";
+
+/* ConnectionStatus */
+"ConnectionStatus.connecting" = "connecting";
+"ConnectionStatus.connected" = "connected";
+"ConnectionStatus.disconnected" = "disconnected";
+"ConnectionStatus.reconnecting" = "reconnectiong";
+"ConnectionStatus.unauthorized" = "un authorized";
+
+/* Participant */
+"Participant.Search.Type.name" = "Name";
+"Participant.Search.Type.username" = "User Name";
+"Participant.Search.Type.cellphoneNumber" = "Mobile";
+"Participant.Search.Type.admin" = "Admin";
+"Participant.admin" = "Admin";
+"Participant.online" = "Online";
+"Participant.inviter" = "Inviter";
+"Participant.assistant" = "Assistant";
+"Participant.addAdminAccess" = "Add Admin Access";
+"Participant.removeAdminAccess" = "Remove Admin Access";
+
+/* Export Chat */
+"ExportChat.startTitle" = "Start Date";
+"ExportChat.endTitle" = "End Date";
+"ExportChat.export" = "Export";
+
+/* DeleteMessageDialog */
+"DeleteMessageDialog.title" = "Delete selected messages";
+"DeleteMessageDialog.subtitle" = "Are you sure you want to delete all selected messages?";
+
+/* Login */
+"Login.title" = "Login";
+"Login.welcome" = "**Welcome** to Talk";
+"Login.staticToken" = "Enter your static token here.";
+"Login.phoneNumber" = "Enter your Phone number here.";
+"Login.footer" = "Contact the support team if you have gotten into trouble with the login.";
+"Login.Verify.enterCode" = "Enter Verication Code";
+"Login.Verfiy.verificationCodeSentTo" = "Verification code sent to: ";
+"Login.Verify.title" = "Verify";
+
+/* Settings */
+"Settings.title" = "Settings";
+"Settings.calls" = "Calls";
+"Settings.savedMessage" = "Saved Messages";
+"Settings.logs" = "Logs";
+"Settings.assistants" = "Assistants";
+"Settings.manageCalls" = "Manage Calls";
+"Settings.logout" = "Logout";
+
+/* Tags */
+"Tags.addToFolder" = "Add to folder";
+"Tags.addNewFolder" = "Add Folder";
+"Tags.addNewFolderSubtitle" = "Enter folder name to add threads to this folder you can manage folders from settings.";
+"Tags.enterNewFolderName" = "Enter the folder name here...";
+"Tags.manageFolders" = "Manage folders";
+
+/*  Messages */
+"Messages.deletedMessageReply" = "Message deleted.";
+"Messages.Footer.edited" = "Edited";
+"Messages.resend" = "Resend";
+"Messages.ActionMenu.reply" = "Reply";
+"Messages.ActionMenu.replyPrivately" = "Reply Privately";
+"Messages.ActionMenu.forward" = "Forward";
+"Messages.ActionMenu.copy" = "Copy";
+"Messages.ActionMenu.deleteCache" = "Delete cache for this message";
+"Messages.ActionMenu.pinMessage" = "Pin";
+"Messages.ActionMenu.unpinMessage" = "UNPin";
+"Messages.unreadMessages" = "Unread Messages";
+
+/* Map */
+"Map.mayLocation" = "My location";
+"Map.hereIAm" = "I'm here!";
