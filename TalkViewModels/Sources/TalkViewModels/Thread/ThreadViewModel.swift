@@ -330,17 +330,23 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     func appenedUnreadMessagesBannerIfNeeed(_ isToTime: Bool) {
-        if thread.lastMessageVO?.ownerId == AppState.shared.user?.id {
-            removeAllUnreadSeen()
-            return
-        }
-        guard isToTime, let lastSeenMessageId = thread.lastSeenMessageId else { return }
-        removeAllUnreadSeen()
+        removeAllUnreadSeen();
+        guard !canAppendMessageBanner, isToTime, let lastSeenMessageId = thread.lastSeenMessageId else { return }
         if let indices = indicesByMessageId(lastSeenMessageId) {
             let time = (sections[indices.sectionIndex].messages[indices.messageIndex].time ?? 0) + 1
             let unreadMessage = UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: time)
             sections[indices.sectionIndex].messages.append(unreadMessage)
         }
+    }
+
+    private func lastMessageSeenIndicies(isToTime: Bool) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
+        guard isToTime, let lastSeenMessageId = thread.lastSeenMessageId else { return nil }
+        return indicesByMessageId(lastSeenMessageId)
+    }
+
+    private var canAppendMessageBanner: Bool {
+        let lastMSG = thread.lastMessageVO
+        return lastMSG?.time ?? 0 <= thread.lastSeenMessageTime ?? 0 || thread.unreadCount == 0 || lastMSG?.ownerId == AppState.shared.user?.id
     }
 
     func removeAllUnreadSeen() {
