@@ -5,7 +5,7 @@
 //  Created by hamed on 8/13/23.
 //
 
-import ChatAppViewModels
+import TalkViewModels
 import SwiftUI
 
 struct EmojiIcon: View {

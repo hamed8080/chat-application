@@ -5,8 +5,8 @@
 //  Created by hamed on 8/22/23.
 //
 
-import ChatAppExtensions
-import ChatAppViewModels
+import TalkExtensions
+import TalkViewModels
 import ChatModels
 import SwiftUI
 
