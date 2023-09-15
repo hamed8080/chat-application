@@ -64,49 +64,66 @@ struct ContactContentList: View {
             AddOrEditContactView()
                 .environmentObject(viewModel)
         }
-        .searchable(text: $viewModel.searchContactString, placement: .navigationBarDrawer, prompt: "General.searchHere")
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
-        .navigationTitle("Tab.contacts")
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Button {
-                    modifyContactSheet.toggle()
-                } label: {
-                    Label("Contacts.createNew", systemImage: "person.badge.plus")
-                }
-            }
-
-            ToolbarItemGroup(placement: .navigationBarLeading) {
-                Button {
-                    isInSelectionMode.toggle()
-                } label: {
-                    Label("General.select", systemImage: "filemenu.and.selection")
-                }
-
-                NavigationLink {
-                    BlockedContacts()
-                } label: {
-                    Label("General.blocked", systemImage: "hand.raised.slash")
-                }
-
-                Button {
-                    deleteDialog.toggle()
-                } label: {
-                    Label("General.delete", systemImage: "trash")
-                        .foregroundColor(Color.red)
-                }
-                .opacity(isInSelectionMode ? 1 : 0.5)
-                .disabled(!isInSelectionMode)
-            }
-            ToolbarItem(placement: .principal) {
-                ConnectionStatusToolbar()
+        .safeAreaInset(edge: .top) {
+            EmptyView()
+                .frame(height: 48)
+        }
+        .overlay(alignment: .top) {
+            ToolbarView(
+                title: "Tab.contacts",
+                searchPlaceholder: "General.searchHere",
+                leadingViews: leadingViews,
+                centerViews: centerViews,
+                trailingViews: trailingViews
+            ) { searchValue in
+                viewModel.searchContactString = searchValue
             }
         }
         .dialog(.init(localized: .init("Contacts.deleteSelectedTitle")), .init(localized: .init("Contacts.deleteSelectedSubTitle")), "trash", $deleteDialog) { _ in
             viewModel.deleteSelectedItems()
+        }
+    }
+
+  @ViewBuilder var leadingViews: some View {
+        Button {
+            isInSelectionMode.toggle()
+        } label: {
+            Image(systemName: "filemenu.and.selection")
+                .accessibilityHint("General.select")
+        }
+
+        NavigationLink {
+            BlockedContacts()
+        } label: {
+            Image(systemName: "hand.raised.slash")
+                .accessibilityHint("General.blocked")
+        }
+
+        Button {
+            deleteDialog.toggle()
+        } label: {
+            Image(systemName: "trash")
+                .accessibilityHint("General.delete")
+                .foregroundColor(Color.red)
+        }
+        .opacity(isInSelectionMode ? 1 : 0.5)
+        .disabled(!isInSelectionMode)
+    }
+
+    @ViewBuilder var centerViews: some View {
+        ConnectionStatusToolbar()
+    }
+
+    @ViewBuilder var trailingViews: some View {
+        Button {
+            modifyContactSheet.toggle()
+        } label: {
+            Image(systemName: "person.badge.plus")
+                .accessibilityHint("Contacts.createNew")
         }
     }
 }

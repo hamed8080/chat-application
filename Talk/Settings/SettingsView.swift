@@ -11,46 +11,79 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
+import Swipy
 
 struct SettingsView: View {
+    let container: ObjectsContainer
+    @State private var showLoginSheet = false
+    
     var body: some View {
         List {
             UserProfileView()
             Group {
                 SettingSettingSection()
-                SettingCallHistorySection()
-                SettingSavedMessagesSection()
+//                SettingCallHistorySection()
+//                SettingSavedMessagesSection()
                 SettingLogSection()
                 SettingAssistantSection()
-                SettingCallSection()
+//                SettingCallSection()
             }
             .font(.iransansSubheadline)
             .padding(8)
         }
         .listStyle(.insetGrouped)
-        .toolbar {
-            ToolbarItemGroup {
-                Button {
-                    // TODO: - Must be added after server fix the problem
-                } label: {
-                    Label("General.edit", systemImage: "square.and.pencil")
-                        .font(.iransansBody)
-                }
-            }
-
-            ToolbarItem(placement: .principal) {
-                ConnectionStatusToolbar()
+        .safeAreaInset(edge: .top) {
+            EmptyView()
+                .frame(height: 36)
+        }
+        .overlay(alignment: .top) {
+            ToolbarView(
+                title: "Tab.settings",
+                leadingViews: leadingViews,
+                centerViews: centerViews,
+                trailingViews: trailingViews
+            )
+        }
+        .sheet(isPresented: $showLoginSheet) {
+            LoginView {
+                container.reset()
+                showLoginSheet.toggle()
             }
         }
-        .navigationTitle("Tab.settings")
+    }
+
+    var leadingViews: some View {
+        Button {
+            // TODO: - Must be added after server fix the problem
+        } label: {
+            Image(systemName: "square.and.pencil")
+                .accessibilityHint("General.edit")
+        }
+    }
+
+    var centerViews: some View {
+        ConnectionStatusToolbar()
+    }
+
+    var trailingViews: some View {
+        Button {
+            container.loginVM.resetState()
+            showLoginSheet.toggle()
+        } label: {
+            Image(systemName: "plus.app")
+                .accessibilityHint("General.add")
+        }
     }
 }
 
 struct SettingSettingSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
     var body: some View {
         Section {
-            NavigationLink {
-                PreferenceView()
+            Button {
+                navModel.paths.append(PreferenceNavigationValue())
             } label: {
                 HStack {
                     Image(systemName: "gear")
@@ -107,9 +140,11 @@ struct SettingSavedMessagesSection: View {
 }
 
 struct SettingLogSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
     var body: some View {
-        NavigationLink {
-            LogView()
+        Button {
+            navModel.paths.append(LogNavigationValue())
         } label: {
             HStack {
                 Image(systemName: "note.text")
@@ -121,9 +156,11 @@ struct SettingLogSection: View {
 }
 
 struct SettingAssistantSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
     var body: some View {
-        NavigationLink {
-            AssistantView()
+        Button {
+            navModel.paths.append(AssistantNavigationValue())
         } label: {
             HStack {
                 Image(systemName: "person.badge.shield.checkmark")
@@ -139,50 +176,10 @@ struct UserProfileView: View {
     var user: User? { container.userConfigsVM.currentUserConfig?.user }
 
     var body: some View {
-        Section {
-            HStack {
-                Spacer()
-                Circle()
-                    .fill(Color.gray.opacity(0.08))
-                    .frame(width: 128, height: 128)
-                    .shadow(color: .black, radius: 20, x: 0, y: 0)
-                    .overlay(
-                        ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: user?.image, userName: user?.username ?? user?.name, size: .LARG)
-                            .id("\(user?.image ?? "")\(user?.id ?? 0)")
-                            .font(.system(size: 16).weight(.heavy))
-                            .foregroundColor(.white)
-                            .frame(width: 128, height: 128)
-                            .background(Color.blue.opacity(0.4))
-                            .cornerRadius(64)
-                    )
-                    .gesture(
-                        DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                            .onEnded { value in
-                                if value.translation.height != 0 {
-                                    // TODO: Switch user with swipe action
-                                    //                                            viewModel.switchUser(isNext: value.translation.height < 0)
-                                }
-                            }
-                    )
-                Spacer()
-            }
-            .noSeparators()
-
-            HStack {
-                Spacer()
-                VStack(spacing: 12) {
-                    Text(user?.name ?? "")
-                        .font(.iransansBoldTitle)
-
-                    Text(user?.cellphoneNumber ?? "")
-                        .font(.iransansSubheadline)
-                }
-                Spacer()
-            }
-            .padding([.top, .bottom], 25)
-            .noSeparators()
+        HStack {
+            SwipyView(container: container)
         }
-        .padding()
+        .noSeparators()
     }
 }
 
@@ -208,6 +205,79 @@ struct SettingCallSection: View {
                 }
             }
             TokenExpireView()
+        }
+    }
+}
+
+struct SwipyView: View {
+    let container: ObjectsContainer
+    private var userConfigsVM: UserConfigManagerVM { container.userConfigsVM }
+    private let containerHeight: CGFloat = 72
+    @State private var selectedUser: UserConfig.ID?
+    @State private var userConfigs: [UserConfig] = []
+
+    var body: some View {
+        HStack {
+            VSwipy(userConfigs, selection: $selectedUser) { item in
+                UserConfigView(userConfig: item)
+                    .frame(height: containerHeight)
+                    .background(Color.swipyBackground)
+                    .cornerRadius(12)
+            } onSwipe: { item in
+                DispatchQueue.main.async {
+                    if item.user.id == container.userConfigsVM.currentUserConfig?.id { return }
+                    ChatManager.activeInstance?.dispose()
+                    userConfigsVM.switchToUser(item, delegate: ChatDelegateImplementation.sharedInstance)
+                    container.reset()
+                }
+            }
+            .frame(height: containerHeight)
+            .background(Color.orange.opacity(0.3))
+            .cornerRadius(12)
+        }
+        .padding()
+        .onAppear {
+            selectedUser = UserConfigManagerVM.instance.currentUserConfig?.id
+        }
+        .onReceive(userConfigsVM.objectWillChange) { _ in
+            if userConfigsVM.currentUserConfig?.id != selectedUser {
+                selectedUser = userConfigsVM.currentUserConfig?.id
+            }
+
+            if userConfigsVM.userConfigs.count != userConfigs.count {
+                userConfigs = userConfigsVM.userConfigs
+            }
+        }
+    }
+}
+
+struct UserConfigView: View {
+    let userConfig: UserConfig
+
+    var body: some View {
+        HStack {
+            ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: userConfig.user.image, userName: userConfig.user.name)
+                .id("\(userConfig.user.image ?? "")\(userConfig.user.id ?? 0)")
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
+                .padding()
+            VStack(alignment: .leading) {
+                Text(userConfig.user.name ?? "")
+                    .font(.iransansBoldSubtitle)
+                    .foregroundColor(.primary)
+
+                HStack {
+                    Text(userConfig.user.cellphoneNumber ?? "")
+                        .font(.iransansBody)
+                        .fontDesign(.rounded)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text(Config.serverType(config: userConfig.config)?.rawValue ?? "")
+                        .font(.iransansBody)
+                        .foregroundColor(.green)
+                }
+            }
+            Spacer()
         }
     }
 }
@@ -242,7 +312,7 @@ struct SettingsMenu_Previews: PreviewProvider {
 
     static var previews: some View {
         NavigationStack {
-            SettingsView()
+            SettingsView(container: container)
                 .environmentObject(vm)
                 .environmentObject(container)
                 .environmentObject(TokenManager.shared)

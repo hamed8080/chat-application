@@ -27,6 +27,7 @@ public extension Notification.Name {
     static let login = Notification.Name("login")
     static let logs = Notification.Name("logs")
     static let windowMode = Notification.Name("windowMode")
+    static let closeSideBar = Notification.Name("closeSideBar")
 }
 
 

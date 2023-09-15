@@ -74,30 +74,34 @@ struct SplitViewContent: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @EnvironmentObject var navVM: NavigationModel
+    @Environment(\.horizontalSizeClass) var sizeClass
 
     var body: some View {
-        NavigationSplitView {
-            SideBarView(container: container)
-        } content: {
-            SplitViewContentView()
-        } detail: {
-            NavigationStack(path: $navVM.paths) {
-                StackContentView()
-                    .navigationDestination(for: Conversation.self) { thread in
-                        if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
-                            ThreadView()
-                                .environmentObject(viewModel)
-                        }
-                    }
-                    .navigationDestination(for: DetailViewModel.self) { viewModel in
-                        DetailView()
-                            .environmentObject(viewModel)
-                            .environmentObject(container.threadsVM)
-                            .environmentObject(container.navVM.currentThreadVM!)
-                    }
-            }
-            .environment(\.layoutDirection, .leftToRight)
-        }
+        ContainerSplitView(
+            sidebarView:
+                TabContainerView(
+                    tabs: [
+                        .init(
+                            tabContent: ContactContentList(),
+                            contextMenus: Button("Contact Context Menu") {},
+                            title: "contacts",
+                            iconName: "person.crop.circle"
+                        ),
+                        .init(
+                            tabContent: ThreadContentList(container: container),
+                            contextMenus: Button("Thread Context Menu") {},
+                            title: "chats",
+                            iconName: "ellipsis.message.fill"
+                        ),
+                        .init(
+                            tabContent: SettingsView(container: container),
+                            contextMenus: Button("Setting Context Menu") {},
+                            title: "settings",
+                            iconName: "gear"
+                        )
+                    ]
+                ), container: container
+        )
         .toast(
             isShowing: Binding(get: { AppState.shared.error != nil }, set: { _ in }),
             title: String(format: String(localized: "Errors.occuredTitle"), AppState.shared.error?.code ?? 0),
@@ -123,99 +127,8 @@ struct SplitViewContent: View {
             AppState.shared.navViewModel = container.navVM
             container.navVM.threadViewModel = container.threadsVM
             container.threadsVM.title = "Tab.chats"
-            container.navVM.contactsViewModel = container.contactsVM
             self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
         }
-    }
-}
-
-struct SplitViewContentView: View {
-    @EnvironmentObject var container: ObjectsContainer
-
-    var body: some View {
-        if container.navVM.isThreadType {
-            ThreadContentList(container: container)
-        } else if container.navVM.selectedSideBarId == "Tab.contacts" {
-            ContactContentList()
-        } else if container.navVM.selectedSideBarId == "Tab.settings" {
-            SettingsView()
-        }
-    }
-}
-
-struct StackContentView: View {
-    @EnvironmentObject var navVM: NavigationModel
-    @EnvironmentObject var container: ObjectsContainer
-
-    var body: some View {
-        if let viewModel = navVM.currentThreadVM {
-            ThreadView()
-                .environment(\.layoutDirection, .leftToRight)
-                .environmentObject(viewModel)
-                .id(viewModel.thread.id) // don't remove this from here it leads to never change in view
-        } else {
-            DetailContentView(threadsVM: container.threadsVM)
-        }
-    }
-}
-
-struct UserConfigView: View {
-    let userConfig: UserConfig
-
-    var body: some View {
-        HStack {
-            ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: userConfig.user.image, userName: userConfig.user.name)
-                .id("\(userConfig.user.image ?? "")\(userConfig.user.id ?? 0)")
-                .frame(width: 48, height: 48)
-                .cornerRadius(24)
-                .padding()
-            VStack(alignment: .leading) {
-                Text(userConfig.user.name ?? "")
-                    .font(.iransansBoldSubtitle)
-                    .foregroundColor(.primary)
-
-                HStack {
-                    Text(userConfig.user.cellphoneNumber ?? "")
-                        .font(.iransansBody)
-                        .fontDesign(.rounded)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Text(Config.serverType(config: userConfig.config)?.rawValue ?? "")
-                        .font(.iransansBody)
-                        .foregroundColor(.green)
-                }
-            }
-            Spacer()
-        }
-    }
-}
-
-struct DetailContentView: View {
-    let threadsVM: ThreadsViewModel
-
-    var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "doc.text.magnifyingglass")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 64, height: 64)
-                .opacity(0.2)
-            VStack(spacing: 16) {
-                Text("General.nothingSelected")
-                    .font(.iransansSubheadline)
-                    .foregroundColor(.secondaryLabel)
-                Button {
-                    threadsVM.sheetType = .startThread
-                } label: {
-                    Text("General.start")
-                        .font(.iransansBoldBody)
-                }
-            }
-        }
-        .padding([.leading, .trailing], 48)
-        .padding([.bottom, .top], 96)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(12)
     }
 }
 

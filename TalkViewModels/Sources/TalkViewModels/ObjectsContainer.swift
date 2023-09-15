@@ -34,7 +34,6 @@ public final class ObjectsContainer: ObservableObject {
         tagsVM.clear()
         tagsVM.getTagList()
         navVM.clear()
-        navVM.setup()
         threadsVM.getThreads()
         contactsVM.getContacts()
         logVM.clearLogs()

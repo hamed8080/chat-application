@@ -14,14 +14,15 @@ import TalkViewModels
 struct ThreadContentList: View {
     let container: ObjectsContainer
     @EnvironmentObject var threadsVM: ThreadsViewModel
-    @State private var searchText: String = ""
     @State var selectedThreadId: Conversation.ID?
     @EnvironmentObject var navVM: NavigationModel
     private var sheetBinding: Binding<Bool> { Binding(get: { threadsVM.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
-        List(threadsVM.filtered, selection: $navVM.selectedThreadId) { thread in
-            NavigationLink(value: thread.id) {
+        List(threadsVM.filtered) { thread in
+            Button {
+                navVM.append(thread: thread)
+            } label: {
                 ThreadRow(thread: thread)
                     .onAppear {
                         if self.threadsVM.filtered.last == thread {
@@ -37,29 +38,44 @@ struct ThreadContentList: View {
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
-        .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "General.searchHere")
-        .onChange(of: searchText) { searchText in
-            threadsVM.searchText = searchText
-            threadsVM.getThreads()
-        }
         .animation(.easeInOut, value: threadsVM.filtered)
         .animation(.easeInOut, value: threadsVM.isLoading)
         .listStyle(.plain)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                ThreadsTrailingToolbarView(threadsVM: threadsVM)
-            }
-
-            ToolbarItem(placement: .principal) {
-                ConnectionStatusToolbar()
+        .safeAreaInset(edge: .top) {
+            EmptyView()
+                .frame(height: 36)
+        }
+        .overlay(alignment: .top) {
+            ToolbarView(
+                title: "Tab.chats",
+                searchPlaceholder: "General.searchHere",
+                leadingViews: leadingViews,
+                centerViews: centerViews,
+                trailingViews: trailingViews
+            ) { searchValue in
+                threadsVM.searchText = searchValue
+                threadsVM.getThreads()
             }
         }
-        .navigationTitle(String(localized: .init(threadsVM.title)))
         .sheet(isPresented: sheetBinding) {
             threadsVM.sheetType = nil
         } content: {
             ThreadsSheetFactoryView()
         }
+    }
+
+    var leadingViews: some View {
+        EmptyView()
+            .frame(width: 0, height: 0)
+            .hidden()
+    }
+
+    var centerViews: some View {
+        ConnectionStatusToolbar()
+    }
+
+    var trailingViews: some View {
+        ThreadsTrailingToolbarView(threadsVM: threadsVM)
     }
 }
 
@@ -95,7 +111,8 @@ struct ThreadsTrailingToolbarView: View {
                 Label("ThreadList.Toolbar.createABot", systemImage: "face.dashed.fill")
             }
         } label: {
-            Label("ThreadList.Toolbar.startNewChat", systemImage: "plus.square")
+            Image(systemName: "plus.square")
+                .accessibilityHint("ThreadList.Toolbar.startNewChat")
         }
 
         Menu {
@@ -122,7 +139,8 @@ struct ThreadsTrailingToolbarView: View {
                 }
             }
         } label: {
-            Label("ThreadList.Toolbar.filter", systemImage: "line.3.horizontal.decrease.circle")
+            Image(systemName: "line.3.horizontal.decrease.circle")
+                .accessibilityHint("ThreadList.Toolbar.filter")
         }
     }
 }

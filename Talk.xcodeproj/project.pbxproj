@@ -7,10 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		050B29102AB40DC20072706C /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290A2AB40DC20072706C /* TabContainerView.swift */; };
+		050B29112AB40DC20072706C /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290A2AB40DC20072706C /* TabContainerView.swift */; };
+		050B29122AB40DC20072706C /* TabItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290B2AB40DC20072706C /* TabItems.swift */; };
+		050B29132AB40DC20072706C /* TabItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290B2AB40DC20072706C /* TabItems.swift */; };
+		050B29142AB40DC20072706C /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290C2AB40DC20072706C /* TabButtonItem.swift */; };
+		050B29152AB40DC20072706C /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290C2AB40DC20072706C /* TabButtonItem.swift */; };
+		050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
+		050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
+		050B29182AB40DC20072706C /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290E2AB40DC20072706C /* ToolbarView.swift */; };
+		050B29192AB40DC20072706C /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290E2AB40DC20072706C /* ToolbarView.swift */; };
+		050B291A2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */; };
+		050B291B2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */; };
 		0570CBDF2AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */; };
 		0570CBE02AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */; };
-		0570CBE12AAEE98F001832E9 /* SideBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB652AAEE98C001832E9 /* SideBarView.swift */; };
-		0570CBE22AAEE98F001832E9 /* SideBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB652AAEE98C001832E9 /* SideBarView.swift */; };
 		0570CBE32AAEE98F001832E9 /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB662AAEE98C001832E9 /* HomeContentView.swift */; };
 		0570CBE42AAEE98F001832E9 /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB662AAEE98C001832E9 /* HomeContentView.swift */; };
 		0570CBE52AAEE98F001832E9 /* CreateDirectThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB682AAEE98C001832E9 /* CreateDirectThreadView.swift */; };
@@ -202,10 +212,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		050B290A2AB40DC20072706C /* TabContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerView.swift; sourceTree = "<group>"; };
+		050B290B2AB40DC20072706C /* TabItems.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabItems.swift; sourceTree = "<group>"; };
+		050B290C2AB40DC20072706C /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
+		050B290D2AB40DC20072706C /* ContainerSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerSplitView.swift; sourceTree = "<group>"; };
+		050B290E2AB40DC20072706C /* ToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
+		050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NothingHasBeenSelectedView.swift; sourceTree = "<group>"; };
 		0570CB172AAEE02A001832E9 /* Talk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Talk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0570CB332AAEE04B001832E9 /* Talk-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Talk-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatDelegateImplementation.swift; sourceTree = "<group>"; };
-		0570CB652AAEE98C001832E9 /* SideBarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarView.swift; sourceTree = "<group>"; };
 		0570CB662AAEE98C001832E9 /* HomeContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeContentView.swift; sourceTree = "<group>"; };
 		0570CB682AAEE98C001832E9 /* CreateDirectThreadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateDirectThreadView.swift; sourceTree = "<group>"; };
 		0570CB6A2AAEE98C001832E9 /* ParticipantRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParticipantRow.swift; sourceTree = "<group>"; };
@@ -340,6 +355,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		050B29082AB40DC20072706C /* NavigationViews */ = {
+			isa = PBXGroup;
+			children = (
+				050B29092AB40DC20072706C /* TabViews */,
+				050B290D2AB40DC20072706C /* ContainerSplitView.swift */,
+				050B290E2AB40DC20072706C /* ToolbarView.swift */,
+				050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */,
+			);
+			path = NavigationViews;
+			sourceTree = "<group>";
+		};
+		050B29092AB40DC20072706C /* TabViews */ = {
+			isa = PBXGroup;
+			children = (
+				050B290A2AB40DC20072706C /* TabContainerView.swift */,
+				050B290B2AB40DC20072706C /* TabItems.swift */,
+				050B290C2AB40DC20072706C /* TabButtonItem.swift */,
+			);
+			path = TabViews;
+			sourceTree = "<group>";
+		};
 		0570CB0E2AAEE02A001832E9 = {
 			isa = PBXGroup;
 			children = (
@@ -384,7 +420,7 @@
 		0570CB642AAEE98C001832E9 /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				0570CB652AAEE98C001832E9 /* SideBarView.swift */,
+				050B29082AB40DC20072706C /* NavigationViews */,
 				0570CB662AAEE98C001832E9 /* HomeContentView.swift */,
 			);
 			path = Home;
@@ -794,6 +830,7 @@
 			files = (
 				0570CBE32AAEE98F001832E9 /* HomeContentView.swift in Sources */,
 				0570CC1B2AAEE98F001832E9 /* MessageActionMenu.swift in Sources */,
+				050B29182AB40DC20072706C /* ToolbarView.swift in Sources */,
 				0570CC512AAEE98F001832E9 /* VideoView.swift in Sources */,
 				0570CC6D2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
 				0570CBE52AAEE98F001832E9 /* CreateDirectThreadView.swift in Sources */,
@@ -821,6 +858,7 @@
 				0570CC072AAEE98F001832E9 /* CallMessageType.swift in Sources */,
 				0570CC092AAEE98F001832E9 /* UploadMessageType.swift in Sources */,
 				0570CC032AAEE98F001832E9 /* ThreadSearchList.swift in Sources */,
+				050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC252AAEE98F001832E9 /* MentionList.swift in Sources */,
 				0570CC212AAEE98F001832E9 /* AttachmentDialog.swift in Sources */,
 				0570CC492AAEE98F001832E9 /* LogView.swift in Sources */,
@@ -833,10 +871,14 @@
 				0570CC192AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */,
 				0570CC732AAEE98F001832E9 /* AssistantHistoryView.swift in Sources */,
 				0570CC352AAEE98F001832E9 /* MoveToBottomButton.swift in Sources */,
+				050B29102AB40DC20072706C /* TabContainerView.swift in Sources */,
 				0570CC6B2AAEE98F001832E9 /* ContactContentList.swift in Sources */,
 				0570CC552AAEE98F001832E9 /* VoiceView.swift in Sources */,
+				050B29142AB40DC20072706C /* TabButtonItem.swift in Sources */,
 				0570CC572AAEE98F001832E9 /* MusicView.swift in Sources */,
+				050B291A2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CBFF2AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
+				050B29122AB40DC20072706C /* TabItems.swift in Sources */,
 				0570CC012AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
 				0570CC232AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC0D2AAEE98F001832E9 /* MessageRowFactory.swift in Sources */,
@@ -853,7 +895,6 @@
 				0570CC612AAEE98F001832E9 /* DetailView.swift in Sources */,
 				0570CBED2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				0570CC5F2AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
-				0570CBE12AAEE98F001832E9 /* SideBarView.swift in Sources */,
 				0570CBF92AAEE98F001832E9 /* SelectThreadContentList.swift in Sources */,
 				0570CC1D2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
 				0570CC412AAEE98F001832E9 /* StartThreadContactRow.swift in Sources */,
@@ -878,6 +919,7 @@
 			files = (
 				0570CBE42AAEE98F001832E9 /* HomeContentView.swift in Sources */,
 				0570CC1C2AAEE98F001832E9 /* MessageActionMenu.swift in Sources */,
+				050B29192AB40DC20072706C /* ToolbarView.swift in Sources */,
 				0570CC522AAEE98F001832E9 /* VideoView.swift in Sources */,
 				0570CC6E2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
 				0570CBE62AAEE98F001832E9 /* CreateDirectThreadView.swift in Sources */,
@@ -905,6 +947,7 @@
 				0570CC082AAEE98F001832E9 /* CallMessageType.swift in Sources */,
 				0570CC0A2AAEE98F001832E9 /* UploadMessageType.swift in Sources */,
 				0570CC042AAEE98F001832E9 /* ThreadSearchList.swift in Sources */,
+				050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC262AAEE98F001832E9 /* MentionList.swift in Sources */,
 				0570CC222AAEE98F001832E9 /* AttachmentDialog.swift in Sources */,
 				0570CC4A2AAEE98F001832E9 /* LogView.swift in Sources */,
@@ -917,10 +960,14 @@
 				0570CC1A2AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */,
 				0570CC742AAEE98F001832E9 /* AssistantHistoryView.swift in Sources */,
 				0570CC362AAEE98F001832E9 /* MoveToBottomButton.swift in Sources */,
+				050B29112AB40DC20072706C /* TabContainerView.swift in Sources */,
 				0570CC6C2AAEE98F001832E9 /* ContactContentList.swift in Sources */,
 				0570CC562AAEE98F001832E9 /* VoiceView.swift in Sources */,
+				050B29152AB40DC20072706C /* TabButtonItem.swift in Sources */,
 				0570CC582AAEE98F001832E9 /* MusicView.swift in Sources */,
+				050B291B2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CC002AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
+				050B29132AB40DC20072706C /* TabItems.swift in Sources */,
 				0570CC022AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
 				0570CC242AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC0E2AAEE98F001832E9 /* MessageRowFactory.swift in Sources */,
@@ -937,7 +984,6 @@
 				0570CC622AAEE98F001832E9 /* DetailView.swift in Sources */,
 				0570CBEE2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				0570CC602AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
-				0570CBE22AAEE98F001832E9 /* SideBarView.swift in Sources */,
 				0570CBFA2AAEE98F001832E9 /* SelectThreadContentList.swift in Sources */,
 				0570CC1E2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
 				0570CC422AAEE98F001832E9 /* StartThreadContactRow.swift in Sources */,

@@ -45,6 +45,16 @@ struct ThreadView: View, DropDelegate {
                 ThreadPinMessage(threadVM: viewModel)
             }
             .toolbar {
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    ToolbarItemGroup(placement: .navigationBarLeading) {
+                        Button {
+                            NotificationCenter.default.post(name: Notification.Name.closeSideBar, object: nil)
+                        } label : {
+                            Image(systemName: "sidebar.left")
+                        }
+                    }
+                }
+
                 if thread.type == .channel {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         Image(systemName: "megaphone.fill")
