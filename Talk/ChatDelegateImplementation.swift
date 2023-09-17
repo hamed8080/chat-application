@@ -27,28 +27,34 @@ final class ChatDelegateImplementation: ChatDelegate {
     }
 
     func chatState(state: ChatState, currentUser: User?, error _: ChatError?) {
-        switch state {
-        case .connecting:
-            print("🔄 chat connecting")
-            AppState.shared.connectionStatus = .connecting
-        case .connected:
-            print("🟡 chat connected")
-            AppState.shared.connectionStatus = .connecting
-        case .closed:
-            print("🔴 chat Disconnect")
-            AppState.shared.connectionStatus = .disconnected
-        case .asyncReady:
-            print("🟡 Async ready")
-        case .chatReady:
-            print("🟢 chat ready Called\(String(describing: currentUser))")
-            AppState.shared.connectionStatus = .connected
-        case .uninitialized:
-            print("Chat object is not initialized.")
+        Task.detached(priority: .userInitiated) {
+            await MainActor.run {
+                switch state {
+                case .connecting:
+                    print("🔄 chat connecting")
+                    AppState.shared.connectionStatus = .connecting
+                case .connected:
+                    print("🟡 chat connected")
+                    AppState.shared.connectionStatus = .connecting
+                case .closed:
+                    print("🔴 chat Disconnect")
+                    AppState.shared.connectionStatus = .disconnected
+                case .asyncReady:
+                    print("🟡 Async ready")
+                case .chatReady:
+                    print("🟢 chat ready Called\(String(describing: currentUser))")
+                    AppState.shared.connectionStatus = .connected
+                case .uninitialized:
+                    print("Chat object is not initialized.")
+                }
+            }
         }
     }
 
     func chatEvent(event: ChatEventType) {
-        print(dump(event))
+        #if DEBUG
+//        print(dump(event))
+        #endif
         NotificationCenter.post(event: event)
         switch event {
         case let .system(systemEventTypes):

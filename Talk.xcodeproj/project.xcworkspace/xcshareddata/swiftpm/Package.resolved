@@ -17,15 +17,6 @@
         "revision" : "937e904258d22af6e447a0b72c0bc67583ef64a2",
         "version" : "1.0.4"
       }
-    },
-    {
-      "identity" : "swipy",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/hamed8080/Swipy",
-      "state" : {
-        "branch" : "main",
-        "revision" : "3a7e57d73b12aadee86888a22c2befdcc945fc7e"
-      }
     }
   ],
   "version" : 2

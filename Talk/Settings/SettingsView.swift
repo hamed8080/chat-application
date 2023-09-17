@@ -212,26 +212,19 @@ struct SettingCallSection: View {
 struct SwipyView: View {
     let container: ObjectsContainer
     private var userConfigsVM: UserConfigManagerVM { container.userConfigsVM }
-    private let containerHeight: CGFloat = 72
+    private let containerSize: CGFloat = 72
     @State private var selectedUser: UserConfig.ID?
     @State private var userConfigs: [UserConfig] = []
 
     var body: some View {
         HStack {
-            VSwipy(userConfigs, selection: $selectedUser) { item in
+            VSwipy(viewModel: .init(userConfigs, itemSize: containerSize, containerSize: containerSize, onSwipe: onSwiped)) { item in
                 UserConfigView(userConfig: item)
-                    .frame(height: containerHeight)
+                    .frame(height: containerSize)
                     .background(Color.swipyBackground)
                     .cornerRadius(12)
-            } onSwipe: { item in
-                DispatchQueue.main.async {
-                    if item.user.id == container.userConfigsVM.currentUserConfig?.id { return }
-                    ChatManager.activeInstance?.dispose()
-                    userConfigsVM.switchToUser(item, delegate: ChatDelegateImplementation.sharedInstance)
-                    container.reset()
-                }
             }
-            .frame(height: containerHeight)
+            .frame(height: containerSize)
             .background(Color.orange.opacity(0.3))
             .cornerRadius(12)
         }
@@ -242,12 +235,20 @@ struct SwipyView: View {
         .onReceive(userConfigsVM.objectWillChange) { _ in
             if userConfigsVM.currentUserConfig?.id != selectedUser {
                 selectedUser = userConfigsVM.currentUserConfig?.id
+                container.reset()
             }
 
             if userConfigsVM.userConfigs.count != userConfigs.count {
                 userConfigs = userConfigsVM.userConfigs
             }
         }
+    }
+
+    public func onSwiped(item: UserConfig) {
+        if item.user.id == container.userConfigsVM.currentUserConfig?.id { return }
+        ChatManager.activeInstance?.dispose()
+        userConfigsVM.switchToUser(item, delegate: ChatDelegateImplementation.sharedInstance)
+        container.reset()
     }
 }
 

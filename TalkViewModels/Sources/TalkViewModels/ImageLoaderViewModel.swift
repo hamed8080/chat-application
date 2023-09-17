@@ -58,11 +58,17 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     private func setImage(data: Data) {
         autoreleasepool {
+            var image: UIImage? = nil
             if size == nil || size == .ACTUAL {
                 image = UIImage(data: data) ?? UIImage()
             } else {
                 guard let cgImage = data.imageScale(width: size == .SMALL ? 128 : 256)?.image else { return }
                 image = UIImage(cgImage: cgImage)
+            }
+
+            DispatchQueue.main.async { [weak self] in
+                guard let image = image else { return }
+                self?.image = image
             }
         }
     }
@@ -155,7 +161,7 @@ public final class ImageLoaderViewModel: ObservableObject {
     private func update(data: Data?) {
         guard let data = data else { return }
         if !isRealImage(data: data) { return }
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.global(qos: .background).async { [weak self] in
             self?.setImage(data: data)
         }
     }

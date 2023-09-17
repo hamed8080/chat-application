@@ -19,6 +19,7 @@
 		050B29192AB40DC20072706C /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290E2AB40DC20072706C /* ToolbarView.swift */; };
 		050B291A2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */; };
 		050B291B2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */; };
+		056A1E7B2AB564DA00B51359 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 056A1E7A2AB564DA00B51359 /* Swipy */; };
 		0570CBDF2AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */; };
 		0570CBE02AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */; };
 		0570CBE32AAEE98F001832E9 /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB662AAEE98C001832E9 /* HomeContentView.swift */; };
@@ -203,8 +204,6 @@
 		0570CCAD2AAEEE22001832E9 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCAC2AAEEE22001832E9 /* TalkModels */; };
 		0570CCAF2AAEEE22001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCAE2AAEEE22001832E9 /* TalkUI */; };
 		0570CCB12AAEEE22001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB02AAEEE22001832E9 /* TalkViewModels */; };
-		0570CCB42AAEEE5A001832E9 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB32AAEEE5A001832E9 /* Swipy */; };
-		0570CCB62AAEEE67001832E9 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB52AAEEE67001832E9 /* Swipy */; };
 		0570CCB82AAEEE78001832E9 /* TalkExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB72AAEEE78001832E9 /* TalkExtensions */; };
 		0570CCBA2AAEEE78001832E9 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB92AAEEE78001832E9 /* TalkModels */; };
 		0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBB2AAEEE78001832E9 /* TalkUI */; };
@@ -218,6 +217,7 @@
 		050B290D2AB40DC20072706C /* ContainerSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerSplitView.swift; sourceTree = "<group>"; };
 		050B290E2AB40DC20072706C /* ToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NothingHasBeenSelectedView.swift; sourceTree = "<group>"; };
+		056A1E792AB564BE00B51359 /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		0570CB172AAEE02A001832E9 /* Talk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Talk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0570CB332AAEE04B001832E9 /* Talk-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Talk-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatDelegateImplementation.swift; sourceTree = "<group>"; };
@@ -334,7 +334,6 @@
 			files = (
 				0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */,
 				0570CCB82AAEEE78001832E9 /* TalkExtensions in Frameworks */,
-				0570CCB42AAEEE5A001832E9 /* Swipy in Frameworks */,
 				0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */,
 				0570CCBA2AAEEE78001832E9 /* TalkModels in Frameworks */,
 			);
@@ -344,7 +343,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0570CCB62AAEEE67001832E9 /* Swipy in Frameworks */,
+				056A1E7B2AB564DA00B51359 /* Swipy in Frameworks */,
 				0570CCAF2AAEEE22001832E9 /* TalkUI in Frameworks */,
 				0570CCB12AAEEE22001832E9 /* TalkViewModels in Frameworks */,
 				0570CCAD2AAEEE22001832E9 /* TalkModels in Frameworks */,
@@ -666,6 +665,7 @@
 		0570CCA32AAEECF5001832E9 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				056A1E792AB564BE00B51359 /* Swipy */,
 				0570CCA82AAEED33001832E9 /* TalkExtensions */,
 				0570CCA62AAEED33001832E9 /* TalkModels */,
 				0570CCA52AAEED33001832E9 /* TalkUI */,
@@ -698,7 +698,6 @@
 			);
 			name = Talk;
 			packageProductDependencies = (
-				0570CCB32AAEEE5A001832E9 /* Swipy */,
 				0570CCB72AAEEE78001832E9 /* TalkExtensions */,
 				0570CCB92AAEEE78001832E9 /* TalkModels */,
 				0570CCBB2AAEEE78001832E9 /* TalkUI */,
@@ -726,7 +725,7 @@
 				0570CCAC2AAEEE22001832E9 /* TalkModels */,
 				0570CCAE2AAEEE22001832E9 /* TalkUI */,
 				0570CCB02AAEEE22001832E9 /* TalkViewModels */,
-				0570CCB52AAEEE67001832E9 /* Swipy */,
+				056A1E7A2AB564DA00B51359 /* Swipy */,
 			);
 			productName = Talk;
 			productReference = 0570CB332AAEE04B001832E9 /* Talk-Test.app */;
@@ -766,7 +765,6 @@
 			);
 			mainGroup = 0570CB0E2AAEE02A001832E9;
 			packageReferences = (
-				0570CCB22AAEEE5A001832E9 /* XCRemoteSwiftPackageReference "Swipy" */,
 			);
 			productRefGroup = 0570CB182AAEE02A001832E9 /* Products */;
 			projectDirPath = "";
@@ -1317,18 +1315,11 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		0570CCB22AAEEE5A001832E9 /* XCRemoteSwiftPackageReference "Swipy" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/hamed8080/Swipy";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
+		056A1E7A2AB564DA00B51359 /* Swipy */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Swipy;
+		};
 		0570CCAA2AAEEE22001832E9 /* TalkExtensions */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TalkExtensions;
@@ -1344,16 +1335,6 @@
 		0570CCB02AAEEE22001832E9 /* TalkViewModels */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TalkViewModels;
-		};
-		0570CCB32AAEEE5A001832E9 /* Swipy */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0570CCB22AAEEE5A001832E9 /* XCRemoteSwiftPackageReference "Swipy" */;
-			productName = Swipy;
-		};
-		0570CCB52AAEEE67001832E9 /* Swipy */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0570CCB22AAEEE5A001832E9 /* XCRemoteSwiftPackageReference "Swipy" */;
-			productName = Swipy;
 		};
 		0570CCB72AAEEE78001832E9 /* TalkExtensions */ = {
 			isa = XCSwiftPackageProductDependency;

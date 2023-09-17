@@ -197,10 +197,15 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func updateWidgetPreferenceThreads(_ threads: [Conversation]) {
-        var storageThreads = (try? JSONDecoder().decode([Conversation].self, from: threadsData ?? Data())) ?? []
-        storageThreads.append(contentsOf: threads)
-        let data = try? JSONEncoder().encode(Array(Set(storageThreads)))
-        threadsData = data
+        Task.detached(priority: .background) { [weak self] in
+            guard let self else { return }
+            var storageThreads = (try? JSONDecoder().decode([Conversation].self, from: threadsData ?? Data())) ?? []
+            storageThreads.append(contentsOf: threads)
+            let data = try? JSONEncoder().encode(Array(Set(storageThreads)))
+            await MainActor.run { [weak self] in
+                self?.threadsData = data
+            }
+        }
     }
 
     public func refresh() {
@@ -308,6 +313,7 @@ public final class ThreadsViewModel: ObservableObject {
         count = 0
         threads = []
         firstSuccessResponse = false
+        animateObjectWillChange()
     }
 
     public func muteUnMuteThread(_ threadId: Int?, isMute: Bool) {

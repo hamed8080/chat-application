@@ -51,10 +51,12 @@ public final class UserConfigManagerVM: ObservableObject, Equatable {
     }
 
     public func createChatObjectAndConnect(userId: Int?, config: ChatConfig, delegate: ChatDelegate?) {
-        ChatManager.activeInstance?.dispose()
-        ChatManager.instance.createOrReplaceUserInstance(userId: userId, config: config)
-        ChatManager.activeInstance?.delegate = delegate
-        ChatManager.activeInstance?.connect()
+        Task.detached(priority: .background) {
+            ChatManager.activeInstance?.dispose()
+            ChatManager.instance.createOrReplaceUserInstance(userId: userId, config: config)
+            ChatManager.activeInstance?.delegate = delegate
+            ChatManager.activeInstance?.connect()
+        }
     }
 
     public func switchToUser(_ userConfig: UserConfig, delegate: ChatDelegate) {

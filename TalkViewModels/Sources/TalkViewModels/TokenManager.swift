@@ -75,14 +75,22 @@ public final class TokenManager: ObservableObject {
         refreshCreateTokenDate()
         startTimerToGetNewToken()
         if let encodedData = try? JSONEncoder().encode(ssoToken) {
-            UserDefaults.standard.set(encodedData, forKey: TokenManager.ssoTokenKey)
-            UserDefaults.standard.synchronize()
+            Task.detached(priority: .background) {
+                await MainActor.run {
+                    UserDefaults.standard.set(encodedData, forKey: TokenManager.ssoTokenKey)
+                    UserDefaults.standard.synchronize()
+                }
+            }
         }
         setIsLoggedIn(isLoggedIn: true)
     }
 
     public func refreshCreateTokenDate() {
-        UserDefaults.standard.set(Date(), forKey: TokenManager.ssoTokenCreateDate)
+        Task.detached(priority: .background) {
+            await MainActor.run {
+                UserDefaults.standard.set(Date(), forKey: TokenManager.ssoTokenCreateDate)
+            }
+        }
     }
 
     public func getCreateTokenDate() -> Date? {
@@ -100,7 +108,11 @@ public final class TokenManager: ObservableObject {
     }
 
     public func setIsLoggedIn(isLoggedIn: Bool) {
-        self.isLoggedIn = isLoggedIn
+        Task {
+            await MainActor.run {
+                self.isLoggedIn = isLoggedIn
+            }
+        }
     }
 
     public func clearToken() {
