@@ -29,8 +29,14 @@ struct TextMessageType: View {
                 Spacer()
             }
 
+            if viewModel.isMe {
+                EmojiIcon()
+            }
             MutableMessageView()
-            EmojiIcon()
+
+            if !viewModel.isMe {
+                EmojiIcon()
+            }
 
             if !viewModel.isMe {
                 Spacer()

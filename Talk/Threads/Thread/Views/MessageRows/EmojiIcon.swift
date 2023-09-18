@@ -18,7 +18,7 @@ struct EmojiIcon: View {
                 Image(systemName: "face.smiling.inverse")
                     .frame(width: 36, height: 36)
                     .foregroundColor(.orange)
-                    .offset(x: -8)
+                    .offset(x: viewModel.isMe ? 8 : -8)
                     .onTapGesture {
                         withAnimation(.easeInOut) {
                             viewModel.showReactionsOverlay.toggle()
