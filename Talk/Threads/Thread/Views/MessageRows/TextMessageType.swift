@@ -24,13 +24,13 @@ struct TextMessageType: View {
                 SelectMessageRadio(isInSelectionMode: isInSelectionMode)
             }
 
-            if message.isMe(currentUserId: AppState.shared.user?.id) {
+            if viewModel.isMe {
                 Spacer()
             }
 
             MutableMessageView()
 
-            if !message.isMe(currentUserId: AppState.shared.user?.id) {
+            if !viewModel.isMe {
                 Spacer()
             }
 
@@ -150,7 +150,7 @@ struct MutableMessageView: View {
         .frame(maxWidth: viewModel.widthOfRow)
         .padding([.leading, .trailing], 0)
         .contentShape(Rectangle())
-        .background(message.isMe(currentUserId: AppState.shared.user?.id) ? Color.chatMeBg : Color.chatSenderBg)
+        .background(viewModel.isMe ? Color.chatMeBg : Color.chatSenderBg)
         .overlay {
             if viewModel.isHighlited {
                 Color.blue.opacity(0.3)

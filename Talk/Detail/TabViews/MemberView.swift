@@ -41,10 +41,12 @@ struct MemberView: View {
                             }
                         }
 
-                        Button(role: .destructive) {
-                            viewModel.removePartitipant(participant)
-                        } label: {
-                            Label("General.delete", systemImage: "trash")
+                        if viewModel.thread?.admin == true {
+                            Button(role: .destructive) {
+                                viewModel.removePartitipant(participant)
+                            } label: {
+                                Label("General.delete", systemImage: "trash")
+                            }
                         }
                     }
             }

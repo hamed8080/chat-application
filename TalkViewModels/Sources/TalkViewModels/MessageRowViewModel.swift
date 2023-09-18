@@ -179,7 +179,7 @@ public final class MessageRowViewModel: ObservableObject {
     public func footerWidth() -> CGFloat {
         let timeWidth = message.time?.date.timeAgoSinceDateCondense?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
         let fileSizeWidth = fileSizeString?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
-        let statusWidth: CGFloat = message.isMe(currentUserId: AppState.shared.user?.id) ? 14 : 0
+        let statusWidth: CGFloat = isMe ? 14 : 0
         let isEditedWidth: CGFloat = message.edited ?? false ? 24 : 0
         let messageStatusIconWidth: CGFloat = 24
         return timeWidth + fileSizeWidth + statusWidth + isEditedWidth + messageStatusIconWidth
