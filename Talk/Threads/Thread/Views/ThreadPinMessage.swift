@@ -22,7 +22,7 @@ struct ThreadPinMessage: View {
     var isEnglish: Bool { message?.text?.naturalTextAlignment == .leading }
     private var title: String {
         if let text = message?.text, !text.isEmpty {
-            return text
+            return text.prefix(150).replacingOccurrences(of: "\n", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         } else if let fileName = fileMetadata?.name {
             return fileName
         } else {
