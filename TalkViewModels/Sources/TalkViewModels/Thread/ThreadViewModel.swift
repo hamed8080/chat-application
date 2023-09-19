@@ -209,6 +209,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         else { return }
         let oldMessage = sections[indices.sectionIndex].messages[indices.messageIndex]
         oldMessage.updateMessage(message: editedMessage)
+        updateIfIsPinMessage(editedMessage: editedMessage)
+    }
+
+    func updateIfIsPinMessage(editedMessage: Message) {
+        if editedMessage.id == thread.pinMessage?.id {
+            thread.pinMessage = PinMessage(message: editedMessage)
+        }
     }
 
     public func threadName(_ threadId: Int) -> String? {

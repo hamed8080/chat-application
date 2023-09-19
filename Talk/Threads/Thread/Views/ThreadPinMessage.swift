@@ -157,6 +157,12 @@ struct ThreadPinMessage: View {
                     message = nil
                 }
             }
+        case .edited(let response):
+            if response.result?.id == message?.id, let message = response.result {
+                withAnimation(.easeInOut) {
+                    self.message = PinMessage(message: message)
+                }
+            }
         default:
             break
         }

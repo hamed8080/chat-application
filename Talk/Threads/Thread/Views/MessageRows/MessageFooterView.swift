@@ -45,14 +45,13 @@ struct MessageFooterView: View {
                     .font(.subheadline)
             }
 
-            if message.pinned == true {
-                Image(systemName: "pin")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 14, height: 14)
-                    .foregroundColor(.orange)
-                    .font(.subheadline)
-            }
+            let isPinned = message.id == viewModel.threadVM?.thread.pinMessage?.id
+            Image(systemName: "pin")
+                .resizable()
+                .scaledToFit()
+                .frame(width: isPinned ? 14 : 0, height: isPinned ? 14 : 0)
+                .foregroundColor(.orange)
+                .font(.subheadline)
         }
         .padding(.top, 4)
     }

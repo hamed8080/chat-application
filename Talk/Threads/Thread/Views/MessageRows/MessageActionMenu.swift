@@ -75,7 +75,8 @@ struct MessageActionMenu: View {
             threadVM?.togglePinMessage(message)
             threadVM?.animateObjectWillChange()
         } label: {
-            Label((message.pinned ?? false) ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", systemImage: "pin")
+            let isPinned = message.id == viewModel.threadVM?.thread.pinMessage?.id && viewModel.threadVM?.thread.pinMessage != nil
+            Label(isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", systemImage: "pin")
         }
 
         Button {

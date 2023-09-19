@@ -133,13 +133,13 @@ public final class MessageRowViewModel: ObservableObject {
         if case let .pin(response) = event, message.id == response.result?.messageId {
             message.pinned = true
             message.pinTime = response.result?.time
-            updateWithAnimation()
+            recalculateWithAnimation()
         }
 
         if case let .unpin(response) = event, message.id == response.result?.messageId {
             message.pinned = false
             message.pinTime = nil
-            updateWithAnimation()
+            recalculateWithAnimation()
         }
     }
 
@@ -181,8 +181,9 @@ public final class MessageRowViewModel: ObservableObject {
         let fileSizeWidth = fileSizeString?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
         let statusWidth: CGFloat = isMe ? 14 : 0
         let isEditedWidth: CGFloat = message.edited ?? false ? 24 : 0
+        let isPinnedWidth: CGFloat = message.id == threadVM?.thread.pinMessage?.id && threadVM?.thread.pinMessage != nil ? 24 : 0
         let messageStatusIconWidth: CGFloat = 24
-        return timeWidth + fileSizeWidth + statusWidth + isEditedWidth + messageStatusIconWidth
+        return timeWidth + fileSizeWidth + statusWidth + isEditedWidth + messageStatusIconWidth + isPinnedWidth
     }
 
     public var maxAllowedWidth: CGFloat {
