@@ -54,7 +54,7 @@ public final class ReactionViewModel: ObservableObject {
             onDetail(chatResponse)
         case .add(let chatResponse):
             onAdd(chatResponse)
-        case .reaplce(let chatResponse):
+        case .replace(let chatResponse):
             onReplace(chatResponse)
         case .delete(let chatResponse):
             onDelete(chatResponse)
