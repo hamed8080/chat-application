@@ -14,13 +14,14 @@ struct ReactionCountView: View {
     let message: Message
     private var messageId: Int { message.id ?? -1 }
     @State var reactionCountList: [ReactionCount] = []
+    @State var selectedUserReaction: Reaction?
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
                 Spacer()
                 ForEach(reactionCountList) { reactionCount in
-                    ReactionCountRow(messageId: messageId, reactionCount: reactionCount)
+                    ReactionCountRow(messageId: messageId, reactionCount: reactionCount, selectedUserReaction: selectedUserReaction)
                 }
                 Spacer()
             }
@@ -28,13 +29,16 @@ struct ReactionCountView: View {
         .animation(.easeInOut, value: reactionCountList.count)
         .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { newValue in
             if newValue.object as? Int == messageId {
-                reactionCountList = ReactionViewModel.shared.reactionCountList.first(where: { $0.messageId == messageId })?.reactionCounts ?? []
+                let reactionCountList = ReactionViewModel.shared.reactionCountList.first(where: { $0.messageId == messageId })
+                self.reactionCountList = reactionCountList?.reactionCounts ?? []
+                selectedUserReaction = reactionCountList?.userReaction
             }
         }
         .onAppear {
             Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                if let reactionCountList = ReactionViewModel.shared.reactionCountList.first(where: { $0.messageId == messageId })?.reactionCounts {
-                    self.reactionCountList = reactionCountList
+                if let reactionCountList = ReactionViewModel.shared.reactionCountList.first(where: { $0.messageId == messageId }) {
+                    self.reactionCountList = reactionCountList.reactionCounts ?? []
+                    selectedUserReaction = reactionCountList.userReaction
                 }
             }
         }
@@ -45,6 +49,7 @@ struct ReactionCountRow: View {
     let messageId: Int
     @State var count: Int = 0
     let reactionCount: ReactionCount
+    @State var selectedUserReaction: Reaction?
 
     var body: some View {
         HStack {
@@ -61,7 +66,7 @@ struct ReactionCountRow: View {
         .animation(.easeInOut, value: count)
         .padding([.leading, .trailing], count > 0 ? 8 : 0)
         .padding([.top, .bottom], count > 0 ? 6 : 0)
-        .background(.ultraThinMaterial)
+        .background(background)
         .cornerRadius(18)
         .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { newValue in
             onNewValue(newValue.object as? Int)
@@ -71,6 +76,16 @@ struct ReactionCountRow: View {
         }
         .onTapGesture {
             print("tapped on \(Emoji(rawValue: reactionCount.sticker ?? 1)?.emoji ?? "") with messageId: \(messageId)")
+        }
+    }
+
+    @ViewBuilder
+    var background: some View {
+        if selectedUserReaction?.reaction == reactionCount.sticker {
+            Color.blue.opacity(0.8).cornerRadius(18)
+        } else {
+            Rectangle()
+                .background(Material.ultraThinMaterial)
         }
     }
 
