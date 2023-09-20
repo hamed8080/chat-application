@@ -54,7 +54,7 @@ struct ReactionCountRow: View {
     var body: some View {
         HStack {
             if count > 0 {
-                if let sticker = reactionCount.sticker, let sticker = Emoji(rawValue: sticker) {
+                if let sticker = reactionCount.sticker {
                     Text(verbatim: sticker.emoji)
                         .frame(width: 20, height: 20)
                         .font(.system(size: 14))
@@ -75,7 +75,7 @@ struct ReactionCountRow: View {
             count = reactionCount.count ?? 0
         }
         .onTapGesture {
-            print("tapped on \(Emoji(rawValue: reactionCount.sticker ?? 1)?.emoji ?? "") with messageId: \(messageId)")
+            print("tapped on \(reactionCount.sticker?.emoji ?? "") with messageId: \(messageId)")
         }
     }
 
@@ -102,10 +102,10 @@ struct ReactionCountView_Previews: PreviewProvider {
     static var previews: some View {
         ReactionCountView(message: .init(id: 1),
                           reactionCountList: [
-                              .init(sticker: 1, count: 10),
-                              .init(sticker: 2, count: 40),
-                              .init(sticker: 3, count: 2),
-                              .init(sticker: 4, count: 5),
+                            .init(sticker: .cry, count: 10),
+                            .init(sticker: .happy, count: 40),
+                            .init(sticker: .hifive, count: 2),
+                            .init(sticker: .like, count: 5),
                           ])
     }
 }

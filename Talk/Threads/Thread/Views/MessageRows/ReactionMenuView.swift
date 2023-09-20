@@ -1,5 +1,5 @@
 //
-//  ReactionMenuView.swift
+//  Sticker+.swift
 //  Talk
 //
 //  Created by hamed on 8/12/23.
@@ -8,40 +8,7 @@
 import TalkViewModels
 import ChatModels
 import SwiftUI
-
-enum Emoji: Int, CaseIterable, Identifiable {
-    var id: Self { self }
-    case hifive = 1
-    case like = 2
-    case happy = 3
-    case cry = 4
-
-    var string: String {
-        switch self {
-        case .hifive:
-            return "hifive"
-        case .like:
-            return "like"
-        case .happy:
-            return "happy"
-        case .cry:
-            return "cry"
-        }
-    }
-
-    var emoji: String {
-        switch self {
-        case .hifive:
-            return "👋"
-        case .like:
-            return "❤️"
-        case .happy:
-            return "😂"
-        case .cry:
-            return "😭"
-        }
-    }
-}
+import TalkExtensions
 
 struct ReactionMenuView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
@@ -51,19 +18,19 @@ struct ReactionMenuView: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                ForEach(Emoji.allCases, id: \.self) { emoji in
-                    let isFirst = emoji == Emoji.allCases.first
-                    let isLast = emoji == Emoji.allCases.last
+                ForEach(Sticker.allCases, id: \.self) { sticker in
+                    let isFirst = sticker == Sticker.allCases.first
+                    let isLast = sticker == Sticker.allCases.last
                     Button {
                         if let messageId = viewModel.message.id, let conversationId = viewModel.threadVM?.threadId {
-                            ReactionViewModel.shared.reaction(emoji.rawValue, messageId: messageId, conversationId: conversationId)
+                            ReactionViewModel.shared.reaction(sticker, messageId: messageId, conversationId: conversationId)
                         }
                     } label: {
-                        Text(verbatim: emoji.emoji)
+                        Text(verbatim: sticker.emoji)
                             .frame(width: 36, height: 36)
                             .font(.system(size: 36))
-                            .background(currentSelectedReaction?.reaction == emoji.rawValue ? Color.blue : Color.clear)
-                            .cornerRadius(currentSelectedReaction?.reaction == emoji.rawValue ? 4 : 0)
+                            .background(currentSelectedReaction?.reaction == sticker ? Color.blue : Color.clear)
+                            .cornerRadius(currentSelectedReaction?.reaction == sticker ? 4 : 0)
                     }
                     .padding([isFirst ? .leading : isLast ? .trailing : .all], isFirst || isLast ? 16 : 0)
                     .scaleEffect(x: show ? 1.0 : 0.001, y: show ? 1.0 : 0.001, anchor: .center)

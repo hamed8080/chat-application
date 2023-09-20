@@ -10,6 +10,7 @@ import TalkUI
 import TalkViewModels
 import ChatModels
 import SwiftUI
+import TalkExtensions
 
 struct MessageReactionDetailView: View {
     let message: Message
@@ -27,7 +28,7 @@ struct MessageReactionDetailView: View {
         List {
             ForEach(reactions) { reaction in
                 HStack {
-                    Text(Emoji(rawValue: reaction.reaction ?? -1)?.emoji ?? "")
+                    Text(reaction.reaction?.emoji ?? "")
                     ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: reaction.participant?.image, userName: reaction.participant?.name)
                         .id(reaction.participant?.id)
                         .font(.iransansBoldCaption2)

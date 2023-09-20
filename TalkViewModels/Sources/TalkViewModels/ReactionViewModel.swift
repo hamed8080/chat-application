@@ -30,16 +30,19 @@ public final class ReactionViewModel: ObservableObject {
     }
 
     /// Add/Remove/Replace
-    public func reaction(_ emojiId: Int, messageId: Int, conversationId: Int) {
+    public func reaction(_ sticker: Sticker, messageId: Int, conversationId: Int) {
         let myReaction = userSelectedReactions.first(where: {$0.key == messageId})?.value
-        if myReaction?.reaction == emojiId, let reactionId = myReaction?.id {
+        if myReaction?.reaction == sticker, let reactionId = myReaction?.id {
             let req = DeleteReactionRequest(reactionId: reactionId, conversationId: conversationId)
             ChatManager.activeInstance?.reaction.delete(req)
         } else if let reacrionId = myReaction?.id {
-            let req = ReplaceReactionRequest(messageId: messageId, conversationId: conversationId, reactionId: reacrionId, reaction: emojiId)
+            let req = ReplaceReactionRequest(messageId: messageId, conversationId: conversationId, reactionId: reacrionId, reaction: sticker)
             ChatManager.activeInstance?.reaction.replace(req)
         } else {
-            let req = AddReactionRequest(messageId: messageId, conversationId: conversationId, reaction: emojiId)
+            let req = AddReactionRequest(messageId: messageId,
+                                         conversationId: conversationId,
+                                         reaction: sticker
+            )
             ChatManager.activeInstance?.reaction.add(req)
         }
     }
@@ -151,7 +154,7 @@ public final class ReactionViewModel: ObservableObject {
         reactionCountList.firstIndex(where: {$0.messageId == messageId})
     }
 
-    private func itemIndex(messageId: Int, reactionSticker: Int?) -> Int? {
+    private func itemIndex(messageId: Int, reactionSticker: Sticker?) -> Int? {
         reactionCountList.first(where: {$0.messageId == messageId})?.reactionCounts?.firstIndex(where: {$0.sticker == reactionSticker })
     }
 
