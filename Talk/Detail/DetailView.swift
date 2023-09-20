@@ -82,8 +82,8 @@ struct DetailView: View {
 }
 
 struct InfoView: View {
+    @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     @EnvironmentObject var viewModel: DetailViewModel
-    @State private var showGalleryView = false
     @StateObject private var fullScreenImageLoader: ImageLoaderViewModel = .init()
 
     var body: some View {
@@ -101,11 +101,12 @@ struct InfoView: View {
                             viewModel.showImagePicker = true
                         } else {
                             fullScreenImageLoader.fetch(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title, size: .ACTUAL, forceToDownloadFromServer: true)
-                            showGalleryView = true
                         }
                     }
-                    .fullScreenCover(isPresented: $showGalleryView) {
-                        GalleryImageView(uiimage: fullScreenImageLoader.image)
+                    .onReceive(fullScreenImageLoader.$image) { newValue in
+                        if newValue.size.width > 0 {
+                            appOverlayVM.galleryImageView = newValue
+                        }
                     }
             }
 

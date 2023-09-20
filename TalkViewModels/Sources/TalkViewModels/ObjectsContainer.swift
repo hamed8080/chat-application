@@ -18,6 +18,8 @@ public final class ObjectsContainer: ObservableObject {
     @Published public var tokenVM = TokenManager.shared
     @Published public var audioPlayerVM = AVAudioPlayerViewModel()
     @Published public var messagePlayer = AVAudioPlayerViewModel()
+    @Published public var appOverlayVM = AppOverlayViewModel()
+
     public init(delegate: ChatDelegate) {
         loginVM = LoginViewModel(delegate: delegate)
         NotificationCenter.default.publisher(for: .message)
@@ -37,6 +39,7 @@ public final class ObjectsContainer: ObservableObject {
         threadsVM.getThreads()
         contactsVM.getContacts()
         logVM.clearLogs()
+        appOverlayVM.clear()
     }
 
     private func onMessageEvent(_ event: MessageEventTypes) {

@@ -45,27 +45,33 @@ struct iPadStackContentView<Content: View>: View {
                 NothingHasBeenSelectedView(threadsVM: container.threadsVM)
                     .navigationDestination(for: Contact.self) { value in
                         Text(value.firstName ?? "")
+                            .environmentObject(container.appOverlayVM)
                     }
                     .navigationDestination(for: PreferenceNavigationValue.self) { value in
                         PreferenceView()
+                            .environmentObject(container.appOverlayVM)
                     }
                     .navigationDestination(for: Conversation.self) { thread in
                         if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
                             ThreadView()
+                                .environmentObject(container.appOverlayVM)
                                 .environmentObject(viewModel)
                         }
                     }
                     .navigationDestination(for: DetailViewModel.self) { viewModel in
                         DetailView()
+                            .environmentObject(container.appOverlayVM)
                             .environmentObject(viewModel)
                             .environmentObject(container.threadsVM)
                             .environmentObject(container.navVM.currentThreadVM!)
                     }
                     .navigationDestination(for: AssistantNavigationValue.self) { _ in
                         AssistantView()
+                            .environmentObject(container.appOverlayVM)
                     }
                     .navigationDestination(for: LogNavigationValue.self) { _ in
                         LogView()
+                            .environmentObject(container.appOverlayVM)
                     }
             }
             .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: showSideBar)
@@ -96,23 +102,28 @@ struct iPhoneStackContentView<Content: View>: View {
                 .navigationDestination(for: Conversation.self) { thread in
                     if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
                         ThreadView()
+                            .environmentObject(container.appOverlayVM)
                             .environmentObject(viewModel)
                     }
                 }
                 .navigationDestination(for: DetailViewModel.self) { viewModel in
                     DetailView()
+                        .environmentObject(container.appOverlayVM)
                         .environmentObject(viewModel)
                         .environmentObject(container.threadsVM)
                         .environmentObject(container.navVM.currentThreadVM!)
                 }
                 .navigationDestination(for: PreferenceNavigationValue.self) { value in
                     PreferenceView()
+                        .environmentObject(container.appOverlayVM)
                 }
                 .navigationDestination(for: AssistantNavigationValue.self) { _ in
                     AssistantView()
+                        .environmentObject(container.appOverlayVM)
                 }
                 .navigationDestination(for: LogNavigationValue.self) { _ in
                     LogView()
+                        .environmentObject(container.appOverlayVM)
                 }
         }
         .environment(\.layoutDirection, .leftToRight)

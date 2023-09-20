@@ -208,6 +208,8 @@
 		0570CCBA2AAEEE78001832E9 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB92AAEEE78001832E9 /* TalkModels */; };
 		0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBB2AAEEE78001832E9 /* TalkUI */; };
 		0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBD2AAEEE78001832E9 /* TalkViewModels */; };
+		05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
+		05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -325,6 +327,7 @@
 		0570CCA62AAEED33001832E9 /* TalkModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkModels; sourceTree = "<group>"; };
 		0570CCA72AAEED33001832E9 /* TalkViewModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkViewModels; sourceTree = "<group>"; };
 		0570CCA82AAEED33001832E9 /* TalkExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkExtensions; sourceTree = "<group>"; };
+		05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverlayFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -361,6 +364,7 @@
 				050B290D2AB40DC20072706C /* ContainerSplitView.swift */,
 				050B290E2AB40DC20072706C /* ToolbarView.swift */,
 				050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */,
+				05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */,
 			);
 			path = NavigationViews;
 			sourceTree = "<group>";
@@ -835,6 +839,7 @@
 				0570CC712AAEE98F001832E9 /* AssistantRow.swift in Sources */,
 				0570CC332AAEE98F001832E9 /* SendContainer.swift in Sources */,
 				0570CC272AAEE98F001832E9 /* ThreadViewCenterToolbar.swift in Sources */,
+				05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */,
 				0570CC3B2AAEE98F001832E9 /* TagParticipantRow.swift in Sources */,
 				0570CC4F2AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC292AAEE98F001832E9 /* ThreadView.swift in Sources */,
@@ -924,6 +929,7 @@
 				0570CC722AAEE98F001832E9 /* AssistantRow.swift in Sources */,
 				0570CC342AAEE98F001832E9 /* SendContainer.swift in Sources */,
 				0570CC282AAEE98F001832E9 /* ThreadViewCenterToolbar.swift in Sources */,
+				05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */,
 				0570CC3C2AAEE98F001832E9 /* TagParticipantRow.swift in Sources */,
 				0570CC502AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC2A2AAEE98F001832E9 /* ThreadView.swift in Sources */,

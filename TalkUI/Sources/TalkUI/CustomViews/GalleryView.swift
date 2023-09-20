@@ -49,10 +49,19 @@ struct GalleryProgressView: View {
 
 struct GalleryImageViewData: View {
     @EnvironmentObject var viewModel: GalleryViewModel
+    @State var image: UIImage?
 
     var body: some View {
-        if let data = viewModel.currentData, let uiimage = UIImage(data: data) {
-            GalleryImageView(uiimage: uiimage, viewModel: viewModel)
+        ZStack {
+            if let image {
+                GalleryImageView(uiimage: image, viewModel: viewModel)
+                    .transition(.opacity)
+            }
+        }
+        .onChange(of: viewModel.currentData) { newVlaue in
+            if let data = viewModel.currentData, let uiimage = UIImage(data: data) {
+                image = uiimage
+            }
         }
     }
 }
@@ -60,7 +69,7 @@ struct GalleryImageViewData: View {
 public struct GalleryImageView: View {
     let uiimage: UIImage
     let viewModel: GalleryViewModel?
-    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     @GestureState private var scaleBy: CGFloat = 1.0
     @State private var endScale: CGFloat = 1.0
     @State private var isDragging = false
@@ -98,7 +107,8 @@ public struct GalleryImageView: View {
 
                 if value.translation.height > 100, endScale <= 1.0, abs(value.translation.width) < 42 {
                     // swipe down
-                    dismiss()
+                    appOverlayVM.isPresented = false
+                    appOverlayVM.clear()
                 }
                 logger.info("OnEnded dragGesture after: endScale: \(endScale) isDragging: \(isDragging) valueTRanslation: \(value.translation.debugDescription)")
             }
@@ -122,46 +132,15 @@ public struct GalleryImageView: View {
     }
 
     public var body: some View {
-        ZStack {
-            Image(uiImage: uiimage)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .scaleEffect(scaleBy, anchor: .center)
-                .scaleEffect(endScale, anchor: .center)
-                .offset(dragOffset)
-                .gesture(dragGesture)
-                .gesture(zoomGesture)
-                .animation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.9), value: scaleBy)
-            DismissGalleryButton()
-        }
-    }
-}
-
-struct DismissGalleryButton: View {
-    @Environment(\.dismiss) var dismiss
-
-    var body: some View {
-        VStack {
-            HStack {
-                Button {
-                    withAnimation {
-                        dismiss()
-                    }
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundStyle(.orange, .ultraThinMaterial)
-                        .background(.ultraThinMaterial)
-                        .frame(width: 36, height: 36)
-                        .cornerRadius(22)
-                        .padding([.top])
-                }
-                Spacer()
-            }
-            Spacer()
-        }
-        .padding()
+        Image(uiImage: uiimage)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .scaleEffect(scaleBy, anchor: .center)
+            .scaleEffect(endScale, anchor: .center)
+            .offset(dragOffset)
+            .gesture(dragGesture)
+            .gesture(zoomGesture)
+            .animation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.9), value: scaleBy)
     }
 }
 

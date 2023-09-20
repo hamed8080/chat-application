@@ -14,10 +14,10 @@ import ChatModels
 import AVKit
 
 public struct DownloadFileView: View {
+    @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     let viewModel: DownloadFileViewModel
     var message: Message? { viewModel.message }
     @State var shareDownloadedFile: Bool = false
-    @State var presentViewGallery = false
     let config: DownloadFileViewConfig
 
     public init(viewModel: DownloadFileViewModel, config: DownloadFileViewConfig = .normal) {
@@ -42,19 +42,11 @@ public struct DownloadFileView: View {
         }
         .onTapGesture {
             if message?.isImage == true {
-                presentViewGallery = true
+                appOverlayVM.galleryMessage = message
             } else if message?.isVideo == true {
                 // Enter to full screen
             } else if viewModel.state == .COMPLETED {
                 shareDownloadedFile.toggle()
-            }
-        }
-        .fullScreenCover(isPresented: $presentViewGallery) {
-            if let message {
-                GalleryView(message: message)
-                    .id(message.id)
-            } else {
-                EmptyView()
             }
         }
         .onAppear {

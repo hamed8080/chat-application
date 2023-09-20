@@ -60,11 +60,21 @@ struct SplitView: View {
             }
         }
         .animation(.easeInOut, value: isLoggedIn)
+        .overlay {
+            AppOverlayView(onDismiss: onDismiss) {
+                AppOverlayFactory()
+            }
+            .environmentObject(container.appOverlayVM)
+        }
         .onReceive(TokenManager.shared.$isLoggedIn) { isLoggedIn in
             if self.isLoggedIn != isLoggedIn {
                 self.isLoggedIn = isLoggedIn
             }
         }
+    }
+
+    private func onDismiss() {
+        container.appOverlayVM.clear()
     }
 }
 

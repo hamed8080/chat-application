@@ -66,9 +66,9 @@ struct MessageListPictureView: View {
 
 struct PictureRowView: View {
     let message: Message
+    @EnvironmentObject var appOverlayViewModel: AppOverlayViewModel
     @EnvironmentObject var threadVM: ThreadViewModel
     @EnvironmentObject var viewModel: DetailViewModel
-    @State private var presentViewGallery = false
     let itemWidth: CGFloat
 
     init(message: Message, itemWidth: CGFloat) {
@@ -88,11 +88,7 @@ struct PictureRowView: View {
                     Label("Show Message", systemImage: "bubble.middle.top")
                 }
             }.onTapGesture {
-                presentViewGallery = true
-            }
-            .fullScreenCover(isPresented: $presentViewGallery) {
-                GalleryView(message: message)
-                    .id(message.id)
+                appOverlayViewModel.galleryMessage = message
             }
         if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
             view
