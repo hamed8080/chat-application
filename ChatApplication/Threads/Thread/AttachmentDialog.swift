@@ -46,7 +46,6 @@ struct AttachmentDialog: View {
                 }
 
                 Button {
-                    showAttachmentDialog.toggle()
                     showDocumentPicker = true
                 } label: {
                     Label("File", systemImage: "doc")
@@ -67,9 +66,13 @@ struct AttachmentDialog: View {
         }
         .animation(.easeInOut, value: viewModel.selectedImageItems.count)
         .padding()
-        .sheet(isPresented: $showDocumentPicker, onDismiss: nil) {
+        .sheet(isPresented: $showDocumentPicker, onDismiss: onDismiss) {
             DocumentPicker(fileUrl: $viewModel.selectedFileUrl, showDocumentPicker: $showDocumentPicker)
         }
+    }
+
+    private func onDismiss() {
+        showAttachmentDialog = false
     }
 }
 
