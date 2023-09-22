@@ -13,6 +13,7 @@ import TalkViewModels
 
 struct ContactContentList: View {
     @EnvironmentObject var viewModel: ContactsViewModel
+    @EnvironmentObject var navVM: NavigationModel
     @State var modifyContactSheet = false
     @State var isInSelectionMode = false
     @State var deleteDialog = false
@@ -89,29 +90,26 @@ struct ContactContentList: View {
     }
 
   @ViewBuilder var leadingViews: some View {
-        Button {
-            isInSelectionMode.toggle()
-        } label: {
-            Image(systemName: "filemenu.and.selection")
-                .accessibilityHint("General.select")
-        }
+      ToolbarButtonItem(imageName: "filemenu.and.selection", hint: "General.select") {
+          withAnimation {
+              isInSelectionMode.toggle()
+          }
+      }
 
-        NavigationLink {
-            BlockedContacts()
-        } label: {
-            Image(systemName: "hand.raised.slash")
-                .accessibilityHint("General.blocked")
-        }
+      ToolbarButtonItem(imageName: "hand.raised.slash", hint: "General.blocked") {
+          withAnimation {
+              navVM.paths.append(BlockedContactsNavigationValue())
+          }
+      }
 
-        Button {
-            deleteDialog.toggle()
-        } label: {
-            Image(systemName: "trash")
-                .accessibilityHint("General.delete")
-                .foregroundColor(Color.red)
-        }
-        .opacity(isInSelectionMode ? 1 : 0.5)
-        .disabled(!isInSelectionMode)
+      ToolbarButtonItem(imageName: "trash.square", hint: "General.delete") {
+          withAnimation {
+              deleteDialog.toggle()
+          }
+      }
+      .foregroundStyle(.red)
+      .opacity(isInSelectionMode ? 1 : 0.2)
+      .disabled(!isInSelectionMode)
     }
 
     @ViewBuilder var centerViews: some View {
@@ -119,11 +117,8 @@ struct ContactContentList: View {
     }
 
     @ViewBuilder var trailingViews: some View {
-        Button {
+        ToolbarButtonItem(imageName: "plus.square", hint: "Contacts.createNew") {
             modifyContactSheet.toggle()
-        } label: {
-            Image(systemName: "person.badge.plus")
-                .accessibilityHint("Contacts.createNew")
         }
     }
 }

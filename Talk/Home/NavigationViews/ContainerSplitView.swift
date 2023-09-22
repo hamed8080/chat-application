@@ -12,6 +12,7 @@ import ChatModels
 struct PreferenceNavigationValue: Hashable {}
 struct AssistantNavigationValue: Hashable {}
 struct LogNavigationValue: Hashable {}
+struct BlockedContactsNavigationValue: Hashable {}
 
 struct ContainerSplitView<SidebarView: View>: View {
     let sidebarView: SidebarView
@@ -73,6 +74,10 @@ struct iPadStackContentView<Content: View>: View {
                         LogView()
                             .environmentObject(container.appOverlayVM)
                     }
+                    .navigationDestination(for: BlockedContactsNavigationValue.self) { _ in
+                        BlockedContacts()
+                            .environmentObject(container.appOverlayVM)
+                    }
             }
             .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: showSideBar)
             .environment(\.layoutDirection, .leftToRight)
@@ -123,6 +128,10 @@ struct iPhoneStackContentView<Content: View>: View {
                 }
                 .navigationDestination(for: LogNavigationValue.self) { _ in
                     LogView()
+                        .environmentObject(container.appOverlayVM)
+                }
+                .navigationDestination(for: BlockedContactsNavigationValue.self) { _ in
+                    BlockedContacts()
                         .environmentObject(container.appOverlayVM)
                 }
         }

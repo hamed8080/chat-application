@@ -107,11 +107,14 @@ struct ThreadsTrailingToolbarView: View {
                 Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
             }
 
-            Button {} label: {
-                Label("ThreadList.Toolbar.createABot", systemImage: "face.dashed.fill")
-            }
+//            Button {} label: {
+//                Label("ThreadList.Toolbar.createABot", systemImage: "face.dashed.fill")
+//            }
         } label: {
             Image(systemName: "plus.square")
+                .resizable()
+                .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth)
+                .scaledToFit()
                 .accessibilityHint("ThreadList.Toolbar.startNewChat")
         }
 
@@ -140,6 +143,9 @@ struct ThreadsTrailingToolbarView: View {
             }
         } label: {
             Image(systemName: "line.3.horizontal.decrease.circle")
+                .resizable()
+                .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth)
+                .scaledToFit()
                 .accessibilityHint("ThreadList.Toolbar.filter")
         }
     }

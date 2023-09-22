@@ -54,12 +54,7 @@ struct SettingsView: View {
     }
 
     var leadingViews: some View {
-        Button {
-            // TODO: - Must be added after server fix the problem
-        } label: {
-            Image(systemName: "square.and.pencil")
-                .accessibilityHint("General.edit")
-        }
+        ToolbarButtonItem(imageName: "square.and.pencil", hint: "General.edit") {}
     }
 
     var centerViews: some View {
@@ -67,12 +62,11 @@ struct SettingsView: View {
     }
 
     var trailingViews: some View {
-        Button {
-            container.loginVM.resetState()
-            showLoginSheet.toggle()
-        } label: {
-            Image(systemName: "plus.app")
-                .accessibilityHint("General.add")
+        ToolbarButtonItem(imageName: "plus.app", hint: "General.add") {
+            withAnimation {
+                container.loginVM.resetState()
+                showLoginSheet.toggle()
+            }
         }
     }
 }

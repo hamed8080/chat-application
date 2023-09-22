@@ -21,6 +21,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     var maxWidth: CGFloat { sizeClass == .compact || !isIpad ? .infinity : ipadSidebarWidth }
     @State var searchText: String = ""
     @State var isInSearchMode: Bool = false
+    let toolbarHeight: CGFloat = 36
 
     enum Field: Hashable {
         case saerch
@@ -44,7 +45,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     }
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: isInSearchMode ? 0 : 8) {
             toolbars
         }
         .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: isInSearchMode)
@@ -59,12 +60,12 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             VStack(spacing: 2) {
                 if let title {
                     Text(String(localized: String.LocalizationValue(title)))
-                        .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 32)
+                        .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 48)
                         .font(.iransansBoldTitle)
                         .clipped()
                 }
                 centerNavigationViews
-                    .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 32)
+                    .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 48)
                     .clipped()
             }
         }
@@ -72,7 +73,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
 
     @ViewBuilder var toolbars: some View {
         leadingNavigationViews
-            .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 32)
+            .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
         if !isInSearchMode {
             Spacer()
@@ -83,9 +84,9 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             Spacer()
         }
         searchView
+            .frame(minHeight: 0, maxHeight: toolbarHeight)
         trailingNavigationViews
-            .padding(.leading, 4)
-            .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 32)
+            .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
     }
 
@@ -113,22 +114,45 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 }
             } label: {
                 Text("General.cancel")
+                    .padding(.leading)
             }
             .buttonStyle(.borderless)
-            .frame(minWidth: 0, maxWidth: isInSearchMode ? nil : 0, minHeight: 0, maxHeight: isInSearchMode ? 32 : 0)
+            .frame(minWidth: 0, maxWidth: isInSearchMode ? nil : 0, minHeight: 0, maxHeight: isInSearchMode ? toolbarHeight : 0)
             .clipped()
 
-            Button {
+            ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search") {
                 withAnimation {
                     isInSearchMode.toggle()
                     searchFocus = isInSearchMode ? .saerch : .none
                 }
-            } label: {
-                Image(systemName: "magnifyingglass")
-                    .accessibilityHint("Search")
             }
-            .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 24)
+            .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
+        }
+    }
+}
+
+public struct ToolbarButtonItem: View {
+    let imageName: String
+    let hint: String
+    let action: () -> Void
+    static let buttonWidth: CGFloat = 20
+
+    init(imageName: String, hint: String = "", action: @escaping () -> Void) {
+        self.imageName = imageName
+        self.hint = hint
+        self.action = action
+    }
+
+    public var body: some View {
+        Button {
+            action()
+        } label: {
+            Image(systemName: imageName)
+                .resizable()
+                .scaledToFit()
+                .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth)
+                .accessibilityHint(hint)
         }
     }
 }

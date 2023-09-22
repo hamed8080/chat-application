@@ -26,6 +26,8 @@ struct TabButtonItem: View {
                 .font(.caption2)
                 .foregroundColor(isSelected ? .orange : .gray)
         }
+        .contentShape(Rectangle())
+        .padding(4)
         .contextMenu {
             if let contextMenu {
                 AnyView(contextMenu)
