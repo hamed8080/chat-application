@@ -14,6 +14,13 @@ import ChatCore
 import Combine
 import ChatDTO
 
+public enum AppLifeCycleState {
+    case foreground
+    case background
+    case inactive
+    case active
+}
+
 public final class AppState: ObservableObject {
     public static let shared = AppState()
     public var cachedUser = UserConfigManagerVM.instance.currentUserConfig?.user
@@ -28,6 +35,7 @@ public final class AppState: ObservableObject {
     public var windowMode: WindowMode = .iPhone
     public var userToCreateThread: User?
     public var replyPrivately: Message?
+    public var lifeCycleState: AppLifeCycleState?
 
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {

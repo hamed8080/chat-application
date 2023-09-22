@@ -310,7 +310,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func clear() {
         hasNext = false
         offset = 0
-        count = 0
+        count = 15
         threads = []
         firstSuccessResponse = false
         animateObjectWillChange()

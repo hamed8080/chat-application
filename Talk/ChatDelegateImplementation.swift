@@ -24,6 +24,8 @@ final class ChatDelegateImplementation: ChatDelegate {
             UserConfigManagerVM.instance.createChatObjectAndConnect(userId: userId, config: userConfig.config, delegate: self)
             TokenManager.shared.initSetIsLogin()
         }
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in}
     }
 
     func chatState(state: ChatState, currentUser: User?, error _: ChatError?) {
@@ -61,6 +63,8 @@ final class ChatDelegateImplementation: ChatDelegate {
             onSystemEvent(systemEventTypes)
         case let .user(userEventTypes):
             onUserEvent(userEventTypes)
+        case let .message(response):
+            onMessageEvent(response)
         default:
             break
         }
@@ -96,6 +100,16 @@ final class ChatDelegateImplementation: ChatDelegate {
                 AppState.shared.animateAndShowError(error)
             }
         }
+    }
+
+    private func onMessageEvent(_ event: MessageEventTypes) {
+        if case .new(let response) = event, let message = response.result, canNotify(response) {
+            UNUserNotificationCenter.localNewMessageNotif(message)
+        }
+    }
+
+    private func canNotify(_ response: ChatResponse<Message>) -> Bool {
+        response.result?.isMe(currentUserId: AppState.shared.user?.id) == false && AppState.shared.lifeCycleState == .background
     }
 
     func onLog(log: Log) {

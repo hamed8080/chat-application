@@ -215,32 +215,49 @@ struct SwipyView: View {
     private let containerSize: CGFloat = 72
     @State private var selectedUser: UserConfig.ID?
     @State private var userConfigs: [UserConfig] = []
+    @StateObject private var swipyVM: VSwipyViewModel<UserConfig> = .init([], itemSize: 72, containerSize: 72)
 
     var body: some View {
-        HStack {
-            VSwipy(viewModel: .init(userConfigs, itemSize: containerSize, containerSize: containerSize, onSwipe: onSwiped)) { item in
-                UserConfigView(userConfig: item)
-                    .frame(height: containerSize)
-                    .background(Color.swipyBackground)
-                    .cornerRadius(12)
+       return HStack {
+            if swipyVM.items.count > 0 {
+                VSwipy(viewModel: swipyVM) { item in
+                    UserConfigView(userConfig: item)
+                        .frame(height: containerSize)
+                        .background(Color.swipyBackground)
+                        .cornerRadius(12)
+                }
+                .frame(height: containerSize)
+                .background(Color.orange.opacity(0.3))
+                .cornerRadius(12)
             }
-            .frame(height: containerSize)
-            .background(Color.orange.opacity(0.3))
-            .cornerRadius(12)
         }
         .padding()
         .onAppear {
             selectedUser = UserConfigManagerVM.instance.currentUserConfig?.id
+            setViewModel()
         }
         .onReceive(userConfigsVM.objectWillChange) { _ in
             if userConfigsVM.currentUserConfig?.id != selectedUser {
                 selectedUser = userConfigsVM.currentUserConfig?.id
                 container.reset()
+                setViewModel()
             }
 
             if userConfigsVM.userConfigs.count != userConfigs.count {
                 userConfigs = userConfigsVM.userConfigs
+                setViewModel()
             }
+        }
+    }
+
+    public func setViewModel() {
+        if swipyVM.items.count == 0 {
+            swipyVM.items = userConfigs
+            swipyVM.containerSize = containerSize
+            swipyVM.itemSize = containerSize
+            swipyVM.selection = selectedUser
+            swipyVM.onSwipe = onSwiped(item:)
+            swipyVM.animateObjectWillChange()
         }
     }
 

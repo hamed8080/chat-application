@@ -65,7 +65,7 @@ public final class TokenManager: ObservableObject {
 
     /// For checking the user is login at application launch
     public func initSetIsLogin() {
-        setIsLoggedIn(isLoggedIn: getSSOTokenFromUserDefaults() != nil)
+        isLoggedIn = getSSOTokenFromUserDefaults() != nil
     }
 
     public func saveSSOToken(ssoToken: SSOTokenResponse) {

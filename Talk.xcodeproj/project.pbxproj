@@ -208,6 +208,7 @@
 		0570CCBA2AAEEE78001832E9 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB92AAEEE78001832E9 /* TalkModels */; };
 		0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBB2AAEEE78001832E9 /* TalkUI */; };
 		0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBD2AAEEE78001832E9 /* TalkViewModels */; };
+		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
 		05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
 		05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
 /* End PBXBuildFile section */
@@ -335,6 +336,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */,
 				0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */,
 				0570CCB82AAEEE78001832E9 /* TalkExtensions in Frameworks */,
 				0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */,
@@ -706,6 +708,7 @@
 				0570CCB92AAEEE78001832E9 /* TalkModels */,
 				0570CCBB2AAEEE78001832E9 /* TalkUI */,
 				0570CCBD2AAEEE78001832E9 /* TalkViewModels */,
+				05D1DB8B2ABC0E2000513DE5 /* Swipy */,
 			);
 			productName = Talk;
 			productReference = 0570CB172AAEE02A001832E9 /* Talk.app */;
@@ -1357,6 +1360,10 @@
 		0570CCBD2AAEEE78001832E9 /* TalkViewModels */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TalkViewModels;
+		};
+		05D1DB8B2ABC0E2000513DE5 /* Swipy */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Swipy;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

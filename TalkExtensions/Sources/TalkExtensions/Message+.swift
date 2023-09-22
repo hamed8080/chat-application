@@ -10,6 +10,7 @@ import ChatCore
 import MapKit
 import ChatModels
 import ChatDTO
+import Chat
 
 public extension Message {
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
@@ -46,6 +47,19 @@ public extension Message {
     var isImage: Bool { messageType == .podSpacePicture || messageType == .picture }
     var isAudio: Bool { [MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice].contains(messageType ?? .unknown) }
     var isVideo: Bool { [MessageType.video, .podSpaceVideo, .video].contains(messageType ?? .unknown) }
+
+    var hardLink: URL? {
+        guard
+            let name = fileMetaData?.name,
+            let link = fileMetaData?.file?.link,
+            let ext = fileMetaData?.file?.extension,
+            let url = URL(string: link),
+            let diskURL = ChatManager.activeInstance?.file.filePath(url)
+        else { return nil }
+        let hardLink = diskURL.appendingPathComponent(name).appendingPathExtension(ext)
+        try? FileManager.default.linkItem(at: diskURL, to: hardLink)
+        return hardLink
+    }
 
     func updateMessage(message: Message) {
         deletable = message.deletable ?? deletable
