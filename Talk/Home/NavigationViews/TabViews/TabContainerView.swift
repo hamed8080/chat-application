@@ -24,31 +24,29 @@ struct TabItem: Identifiable {
 
 struct TabContainerView: View {
     @Environment(\.horizontalSizeClass) var sizeClass
-    @State var ipadSidebarWidth: CGFloat = 400
-    var isIpad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    let ipadSidebarWidth: CGFloat = 400
+    let isIpad: Bool = UIDevice.current.userInterfaceIdiom == .pad
     var maxWidth: CGFloat { sizeClass == .compact || !isIpad ? .infinity : ipadSidebarWidth }
+    /// We need to get min because in if maxWidth is equal to '.infinity' it is always bigger than all views.
+    var computedWidth: CGFloat { min(maxWidth, ipadSidebarWidth) }
     @State var selectedId = "chats"
     let tabs: [TabItem]
 
     var body: some View {
-        GeometryReader { reader in
-            let screenWidth = reader.size.width
-            ZStack {
-                ForEach(tabs) { tab in
-                    AnyView(tab.tabContent)
-                        .offset(x: selectedId == tab.title ? 0 : -(screenWidth + 200))
-                }
-            }
-            .safeAreaInset(edge: .bottom) {
-                EmptyView()
-                    .frame(width: 0, height: 46)
-            }
-            .frame(minWidth: 0, maxWidth: maxWidth)
-            .overlay(alignment: .bottom) {
-                TabItems(selectedId: $selectedId, tabs: tabs)
+        ZStack {
+            ForEach(tabs) { tab in
+                AnyView(tab.tabContent)
+                    .offset(x: selectedId == tab.title ? 0 : -(computedWidth))
             }
         }
-        .frame(minWidth: 0, maxWidth: maxWidth)
+        .safeAreaInset(edge: .bottom) {
+            EmptyView()
+                .frame(width: 0, height: 46)
+        }
+        .frame(minWidth: 0, maxWidth: computedWidth)
+        .overlay(alignment: .bottom) {
+            TabItems(selectedId: $selectedId, tabs: tabs)
+        }
     }
 }
 

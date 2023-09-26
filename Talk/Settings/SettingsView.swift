@@ -212,7 +212,7 @@ struct SwipyView: View {
     @StateObject private var swipyVM: VSwipyViewModel<UserConfig> = .init([], itemSize: 72, containerSize: 72)
 
     var body: some View {
-       return HStack {
+        HStack {
             if swipyVM.items.count > 0 {
                 VSwipy(viewModel: swipyVM) { item in
                     UserConfigView(userConfig: item)
@@ -228,6 +228,7 @@ struct SwipyView: View {
         .padding()
         .onAppear {
             selectedUser = UserConfigManagerVM.instance.currentUserConfig?.id
+            userConfigs = userConfigsVM.userConfigs
             setViewModel()
         }
         .onReceive(userConfigsVM.objectWillChange) { _ in

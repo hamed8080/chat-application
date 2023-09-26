@@ -34,13 +34,17 @@ struct iPadStackContentView<Content: View>: View {
     let sidebarView: Content
     @EnvironmentObject var navVM: NavigationModel
     let container: ObjectsContainer
+    @Environment(\.horizontalSizeClass) var sizeClass
     @State var showSideBar: Bool = true
+    let ipadSidebarWidth: CGFloat = 400
+    let isIpad: Bool = UIDevice.current.userInterfaceIdiom == .pad
+    var maxWidth: CGFloat { sizeClass == .compact || !isIpad ? .infinity : ipadSidebarWidth }
+    var maxComputed: CGFloat { min(maxWidth, ipadSidebarWidth) }
 
     var body: some View {
         HStack(spacing: 0) {
-            if showSideBar {
-                sidebarView
-            }
+            sidebarView
+                .frame(width: showSideBar ? maxComputed : 0)
 
             NavigationStack(path: $navVM.paths) {
                 NothingHasBeenSelectedView(threadsVM: container.threadsVM)

@@ -21,6 +21,7 @@ struct ThreadView: View, DropDelegate {
     @State var deleteDialaog: Bool = false
     @State var searchMessageText: String = ""
     var sheetBinding: Binding<Bool> { Binding(get: { viewModel.sheetType != nil }, set: { _ in }) }
+    @Environment(\.horizontalSizeClass) var sizeClass
 
     var body: some View {
         ThreadMessagesList(viewModel: viewModel)
@@ -45,7 +46,7 @@ struct ThreadView: View, DropDelegate {
                 ThreadPinMessage(threadVM: viewModel)
             }
             .toolbar {
-                if UIDevice.current.userInterfaceIdiom == .pad {
+                if UIDevice.current.userInterfaceIdiom == .pad && sizeClass != .compact {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         Button {
                             NotificationCenter.default.post(name: Notification.Name.closeSideBar, object: nil)
