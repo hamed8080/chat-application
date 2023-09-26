@@ -43,7 +43,7 @@ struct ThreadContentList: View {
         .listStyle(.plain)
         .safeAreaInset(edge: .top) {
             EmptyView()
-                .frame(height: 36)
+                .frame(height: 46)
         }
         .overlay(alignment: .top) {
             ToolbarView(
@@ -116,6 +116,7 @@ struct ThreadsTrailingToolbarView: View {
                 .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth)
                 .scaledToFit()
                 .accessibilityHint("ThreadList.Toolbar.startNewChat")
+                .fontWeight(.thin)
         }
 
         Menu {
@@ -147,6 +148,7 @@ struct ThreadsTrailingToolbarView: View {
                 .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth)
                 .scaledToFit()
                 .accessibilityHint("ThreadList.Toolbar.filter")
+                .fontWeight(.thin)
         }
     }
 }

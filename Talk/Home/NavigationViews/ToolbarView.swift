@@ -45,7 +45,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     }
 
     var body: some View {
-        HStack(spacing: isInSearchMode ? 0 : 8) {
+        HStack(spacing: isInSearchMode ? 0 : 24) {
             toolbars
         }
         .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: isInSearchMode)
@@ -153,6 +153,7 @@ public struct ToolbarButtonItem: View {
                 .scaledToFit()
                 .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth)
                 .accessibilityHint(hint)
+                .fontWeight(.thin)
         }
     }
 }

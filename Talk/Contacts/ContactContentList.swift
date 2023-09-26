@@ -90,7 +90,7 @@ struct ContactContentList: View {
     }
 
   @ViewBuilder var leadingViews: some View {
-      ToolbarButtonItem(imageName: "filemenu.and.selection", hint: "General.select") {
+      ToolbarButtonItem(imageName: "list.bullet", hint: "General.select") {
           withAnimation {
               isInSelectionMode.toggle()
           }
@@ -102,7 +102,7 @@ struct ContactContentList: View {
           }
       }
 
-      ToolbarButtonItem(imageName: "trash.square", hint: "General.delete") {
+      ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
           withAnimation {
               deleteDialog.toggle()
           }

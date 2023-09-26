@@ -80,7 +80,6 @@ struct SplitView: View {
 
 struct SplitViewContent: View {
     let container: ObjectsContainer
-    @State private var columnVisibility: NavigationSplitViewVisibility = .detailOnly
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @EnvironmentObject var navVM: NavigationModel
@@ -127,11 +126,6 @@ struct SplitViewContent: View {
                         AppState.shared.error = nil
                     }
                 }
-        }
-        .onReceive(container.$columnVisibility) { newValue in
-            if newValue != columnVisibility {
-                columnVisibility = newValue
-            }
         }
         .onAppear {
             AppState.shared.navViewModel = container.navVM

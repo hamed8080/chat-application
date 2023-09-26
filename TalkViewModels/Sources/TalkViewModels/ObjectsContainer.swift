@@ -6,7 +6,6 @@ import ChatModels
 
 public final class ObjectsContainer: ObservableObject {
     public private(set) var cancellableSet: Set<AnyCancellable> = []
-    @Published public var columnVisibility: NavigationSplitViewVisibility = .detailOnly
     @Published public var userConfigsVM = UserConfigManagerVM.instance
     @Published public var navVM = NavigationModel()
     @Published public var loginVM: LoginViewModel
