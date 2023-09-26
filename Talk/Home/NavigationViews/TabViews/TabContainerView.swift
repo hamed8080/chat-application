@@ -33,20 +33,24 @@ struct TabContainerView: View {
     let tabs: [TabItem]
 
     var body: some View {
-        ZStack {
-            ForEach(tabs) { tab in
-                AnyView(tab.tabContent)
-                    .offset(x: selectedId == tab.title ? 0 : -(computedWidth))
+        GeometryReader { reader in
+            let screenWidth = reader.size.width
+            ZStack {
+                ForEach(tabs) { tab in
+                    AnyView(tab.tabContent)
+                        .offset(x: selectedId == tab.title ? 0 : -(screenWidth + 200))
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                EmptyView()
+                    .frame(width: 0, height: 46)
+            }
+            .frame(minWidth: 0, maxWidth: maxWidth)
+            .overlay(alignment: .bottom) {
+                TabItems(selectedId: $selectedId, tabs: tabs)
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            EmptyView()
-                .frame(width: 0, height: 46)
-        }
-        .frame(minWidth: 0, maxWidth: computedWidth)
-        .overlay(alignment: .bottom) {
-            TabItems(selectedId: $selectedId, tabs: tabs)
-        }
+        .frame(minWidth: 0, maxWidth: maxWidth)
     }
 }
 
