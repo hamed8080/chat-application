@@ -50,6 +50,7 @@ struct LoginHomeView: View {
 }
 
 struct SplitView: View {
+    @Environment(\.colorScheme) var colorScheme
     let container: ObjectsContainer
     @State private var isLoggedIn: Bool = false
 
@@ -59,6 +60,7 @@ struct SplitView: View {
                 SplitViewContent(container: container)
             }
         }
+        .background(colorScheme == .dark ? .black : .white)
         .animation(.easeInOut, value: isLoggedIn)
         .overlay {
             AppOverlayView(onDismiss: onDismiss) {
