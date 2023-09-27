@@ -19,7 +19,6 @@ public final class GalleryViewModel: ObservableObject {
     public var percent: Int64 = 0
     public var state: DownloadFileState = .UNDEFINED
     private var cancelable: Set<AnyCancellable> = []
-    private var requests: [String: Any] = [:]
     public var currentData: Data? {
         guard let hashCode = currentImageMessage?.fileMetaData?.fileHash else { return nil }
         return downloadedImages[hashCode]
@@ -76,20 +75,17 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func onImage(_ response: ChatResponse<Data>, _ fileURL: URL?) {
-        if let data = response.result, let uniqueId = response.uniqueId, let request = requests[uniqueId] as? ImageRequest {
+        if let data = response.result, let request = response.value as? ImageRequest {
             state = .COMPLETED
             downloadedImages[request.hashCode] = data
         }
 
-        if response.cache == false, let uniqueId = response.uniqueId {
-            requests.removeValue(forKey: uniqueId)
-        }
         isLoading = false
         animateObjectWillChange()
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
-        if let progress = progress, requests[uniqueId] != nil {
+        if let progress = progress, RequestsManager.shared.value(for: uniqueId) != nil {
             state = .DOWNLOADING
             percent = progress.percent
             animateObjectWillChange()
@@ -104,7 +100,7 @@ public final class GalleryViewModel: ObservableObject {
                                     messageType: ChatCore.MessageType.podSpacePicture.rawValue,
                                     toTime: toTime
         )
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.message.history(req)
     }
 
@@ -114,7 +110,7 @@ public final class GalleryViewModel: ObservableObject {
         animateObjectWillChange()
         guard let hashCode = currentImageMessage?.fileMetaData?.file?.hashCode else { return }
         let req = ImageRequest(hashCode: hashCode, size: .ACTUAL)
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.file.get(req)
 
     }

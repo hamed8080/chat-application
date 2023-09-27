@@ -252,7 +252,7 @@ struct SwipyView: View {
             swipyVM.itemSize = containerSize
             swipyVM.selection = selectedUser
             swipyVM.onSwipe = onSwiped(item:)
-            swipyVM.animateObjectWillChange()
+            swipyVM.updateForSelectedItem()
         }
     }
 
@@ -266,6 +266,7 @@ struct SwipyView: View {
 
 struct UserConfigView: View {
     let userConfig: UserConfig
+    @EnvironmentObject var viewModel: SettingViewModel
 
     var body: some View {
         HStack {
@@ -274,6 +275,10 @@ struct UserConfigView: View {
                 .frame(width: 48, height: 48)
                 .cornerRadius(24)
                 .padding()
+                .onTapGesture {
+                    viewModel.showImagePicker.toggle()
+                }
+
             VStack(alignment: .leading) {
                 Text(userConfig.user.name ?? "")
                     .font(.iransansBoldSubtitle)
@@ -291,6 +296,14 @@ struct UserConfigView: View {
                 }
             }
             Spacer()
+        }
+        .sheet(isPresented: $viewModel.showImagePicker) {
+            ImagePicker(sourceType: .photoLibrary) { image, assestResources in
+                viewModel.showImagePicker.toggle()
+                Task {
+                    await viewModel.updateProfilePicture(image: image)
+                }
+            }
         }
     }
 }

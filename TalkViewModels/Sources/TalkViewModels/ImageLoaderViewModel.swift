@@ -31,9 +31,9 @@ public final class ImageLoaderViewModel: ObservableObject {
     private(set) var fileMetadata: String?
     private(set) var size: ImageSize?
     private(set) var userName: String?
-    private var requests: [String: Any] = [:]
     public private(set) var cancelable: Set<AnyCancellable> = []
-    
+    var uniqueId: String = ""
+
     public init() {
         NotificationCenter.default.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
@@ -133,16 +133,16 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     private func getFromSDK(forceToDownloadFromServer: Bool = false) {
         let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: forceToDownloadFromServer, size: size ?? .LARG)
-        requests[req.uniqueId] = req
+        uniqueId = req.uniqueId
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.file.get(req)
     }
 
     private func onGetImage(_ response: ChatResponse<Data>, _ url: URL?) {
-        guard let uniqueId = response.uniqueId, requests[uniqueId] != nil else { return }
-        if response.cache == false, let data = response.result {
+        guard response.uniqueId == uniqueId, RequestsManager.shared.value(for: uniqueId) != nil else { return }
+        if response.uniqueId == uniqueId, response.cache == false, let data = response.result {
             update(data: data)
             storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
-            requests.removeValue(forKey: uniqueId)
         } else {
             guard let url = url else { return }
             setImage(fileURL: url)
@@ -185,6 +185,7 @@ public final class ImageLoaderViewModel: ObservableObject {
     private var reqWithHeader: URLRequest? {
         guard let URLObject else { return nil }
         let req = URLRequest(url: URLObject)
+        uniqueId = "\(req.hashValue)"
         var request = URLRequest(url: URLObject)
         headers.forEach { key, value in
             request.addValue(value, forHTTPHeaderField: key)

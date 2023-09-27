@@ -65,7 +65,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var signalMessageText: String?
     public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
-    var requests: [String: Any] = [:]
     public var isAtBottomOfTheList: Bool = false    
     var searchOffset: Int = 0
     public var scrollProxy: ScrollViewProxy?
@@ -406,10 +405,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
             let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
             let req = ThreadParticipantRequest(threadId: threadId, name: rangeText)
-            let key = req.uniqueId
-            requests[key] = req
+            RequestsManager.shared.append(value: req)
             ChatManager.activeInstance?.conversation.participant.get(req)
-            addCancelTimer(key: key)
         } else {
             let mentionListWasFill = mentionList.count > 0
             mentionList = []
@@ -420,9 +417,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     func onMentionParticipants(_ response: ChatResponse<[Participant]>) {
-        if let mentionList = response.result, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+        if let mentionList = response.result, response.value != nil {
             self.mentionList = mentionList
-            requests.removeValue(forKey: uniqueId)
             animateObjectWillChange()
         }
     }
@@ -472,16 +468,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    /// Automatically cancel a request if there is no response come back from the chat server after 5 seconds.
-    func addCancelTimer(key: String) {
-        Logger.viewModels.info("Send request with key:\(key)")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-            if ((self?.requests.keys.contains(where: { $0 == key})) != nil) {
-                    self?.requests.removeValue(forKey: key)
-                    self?.topLoading = false
-                    self?.bottomLoading = false
-                    self?.animateObjectWillChange()
-            }
+    func onCancelTimer(key: String) {
+        let keys = ["GET-HISTORY", "TO-TIME", "FROM-TIME", "LAST-MESSAGE-HISTORY", "MORE-TOP", "MORE-BOTTOM"]
+        if keys.contains(where: {key.contains($0)}) {
+            RequestsManager.shared.remove(key: key)
+            topLoading = false
+            bottomLoading = false
+            animateObjectWillChange()
         }
     }
 

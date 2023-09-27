@@ -10,12 +10,17 @@ import Combine
 import SwiftUI
 import ChatModels
 import TalkModels
+import Additive
 
 public final class SettingViewModel: ObservableObject {
     public private(set) var cancellableSet: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
+    public var isLoading: Bool = false
+    @Published public var showImagePicker: Bool = false
+    public let session: URLSession
 
-    public init() {
+    public init(session: URLSession = .shared) {
+        self.session = session
         AppState.shared.$connectionStatus
             .sink{ [weak self] status in
                 self?.onConnectionStatusChanged(status)
@@ -26,6 +31,28 @@ public final class SettingViewModel: ObservableObject {
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
         if firstSuccessResponse == false, status == .connected {
             firstSuccessResponse = true
+        }
+    }
+
+    public func updateProfilePicture(image: UIImage?) async {
+        guard let image = image else { return }        
+        showLoading(true)
+        var urlReq = URLRequest(url: URL(string: AppRoutes.updateProfileImage)!)
+        urlReq.url?.appendQueryItems(with: ["token": ChatManager.activeInstance?.config.token ?? ""])
+        urlReq.method = .post
+        urlReq.httpBody = image.pngData()
+        do {
+            let resp = try await session.data(for: urlReq)
+            let _ = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
+        } catch {}
+        showLoading(false)
+    }
+
+    public func showLoading(_ show: Bool) {
+        Task {
+            await MainActor.run {
+                isLoading = show
+            }
         }
     }
 }

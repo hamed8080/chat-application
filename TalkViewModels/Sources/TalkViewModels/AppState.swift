@@ -31,7 +31,6 @@ public final class AppState: ObservableObject {
     @Published public var callLogs: [URL]?
     @Published public var connectionStatusString = ""
     private var cancelable: Set<AnyCancellable> = []
-    private var requests: [String: Any] = [:]
     public var windowMode: WindowMode = .iPhone
     public var userToCreateThread: User?
     public var replyPrivately: Message?
@@ -80,14 +79,12 @@ public final class AppState: ObservableObject {
     }
 
     func onGetThreads(_ response: ChatResponse<[Conversation]>) {
-        if let uniqueId = response.uniqueId, let thraed = response.result?.first, requests[uniqueId] != nil {
+        if response.value != nil, let thraed = response.result?.first {
             showThread(thread: thraed)
-            requests.removeValue(forKey: uniqueId)
         }
 
-        if let uniqueId = response.uniqueId, requests["SEARCH_P2P_\(uniqueId)"] as? ThreadsRequest != nil, !response.cache {
+        if (response.value(prepend: "SEARCH-P2P") as? ThreadsRequest) != nil, !response.cache {
             onSearchP2PThreads(thread: response.result?.first)
-            requests.removeValue(forKey: "SEARCH_P2P_\(uniqueId)")
         }
     }
 
@@ -119,7 +116,7 @@ public final class AppState: ObservableObject {
             return
         }
         let req = ThreadsRequest(type: .normal, partnerCoreUserId: coreUserId)
-        requests["SEARCH_P2P_\(req.uniqueId)"] = req
+        RequestsManager.shared.append(prepend: "SEARCH-P2P", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 

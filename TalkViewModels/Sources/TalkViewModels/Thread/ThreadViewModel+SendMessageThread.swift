@@ -256,15 +256,12 @@ extension ThreadViewModel {
     public func createP2PThread() {
         guard let coreuserId = AppState.shared.userToCreateThread?.id else { return }
         let req = CreateThreadRequest(invitees: [.init(id: "\(coreuserId)", idType: .coreUserId)], title: "")
-        requests["CREATE_P2P-\(req.uniqueId)"] = req
+        RequestsManager.shared.append(prepend: "CREATE-P2P", value: req)
         ChatManager.activeInstance?.conversation.create(req)
     }
 
     public func onCreateP2PThread(_ response: ChatResponse<Conversation>) {
-        guard let uniqueId = response.uniqueId,
-              requests["CREATE_P2P-\(uniqueId)"] != nil,
-              let thread = response.result
-        else { return }
+        guard response.value(prepend: "CREATE-P2P") != nil, let thread = response.result else { return }
         self.thread = thread
         AppState.shared.userToCreateThread = nil
         animateObjectWillChange()

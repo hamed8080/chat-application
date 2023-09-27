@@ -20,7 +20,6 @@ public final class TagsViewModel: ObservableObject {
     @Published public var showAddParticipants = false
     public private(set) var firstSuccessResponse = false
     private var cancelable: Set<AnyCancellable> = []
-    private var requests: [String: Any] = [:]
 
     public init() {
         AppState.shared.$connectionStatus
@@ -142,14 +141,13 @@ public final class TagsViewModel: ObservableObject {
 
     public func deleteTagParticipant(_ tagId: Int, _ tagParticipant: TagParticipant) {
         let req = RemoveTagParticipantsRequest(tagId: tagId, tagParticipants: [tagParticipant])
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.tag.remove(req)
     }
 
     private func onRemoveTagParticipant(_ response: ChatResponse<[TagParticipant]>) {
-        if let tagParticipants = response.result, let uniqueId = response.uniqueId, let request = requests[uniqueId] as? RemoveTagParticipantsRequest {
+        if let tagParticipants = response.result, let request = response.value as? RemoveTagParticipantsRequest {
             removeParticipants(request.tagId, tagParticipants)
-            requests.removeValue(forKey: uniqueId)
         }
         isLoading = false
     }

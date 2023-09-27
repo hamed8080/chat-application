@@ -37,8 +37,6 @@ public final class ThreadsViewModel: ObservableObject {
     public var folder: Tag?
     public var title: String = ""
     @Published public var selectedFilterThreadType: ThreadTypes?
-    private var requests: [String: Any] = [:]
-    private var searchRequests: [String: Any] = [:]
     private var canLoadMore: Bool { hasNext && !isLoading }
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
 
@@ -61,7 +59,21 @@ public final class ThreadsViewModel: ObservableObject {
             .filter { $0.count > 1 }
             .removeDuplicates()
             .sink { [weak self] newValue in
-                self?.searchThreads(newValue)
+                if newValue.first == "@", newValue.count > 2 {
+                    let startIndex = newValue.index(newValue.startIndex, offsetBy: 1)
+                    let newString = newValue[startIndex..<newValue.endIndex]
+                    self?.searchPublicThreads(String(newString))
+                } else if newValue.first != "@" {
+                    self?.searchThreads(newValue)
+                }
+            }
+            .store(in: &cancelable)
+
+        RequestsManager.shared.$cancelRequest
+            .sink { [weak self] newValue in
+                if let newValue {
+                    self?.onCancelTimer(key: newValue)
+                }
             }
             .store(in: &cancelable)
     }
@@ -107,18 +119,15 @@ public final class ThreadsViewModel: ObservableObject {
     public func getThreads() {
         isLoading = true
         let req = ThreadsRequest(count: count, offset: offset, type: selectedFilterThreadType)
-        let key = req.uniqueId
+        RequestsManager.shared.append(prepend: "GET-THREADS", value: req)
         ChatManager.activeInstance?.conversation.get(req)
-        addCancelTimer(key: key)
     }
 
     public func getArchivedThreads() {
         archived = true
         isLoading = true
         let req = ThreadsRequest(count: count, offset: archivedOffset, archived: true)
-        let key = req.uniqueId
         ChatManager.activeInstance?.conversation.get(req)
-        addCancelTimer(key: key)
     }
 
     public func resetArchiveSettings() {
@@ -144,23 +153,30 @@ public final class ThreadsViewModel: ObservableObject {
         if threadIds.count == 0 { return }
         isLoading = true
         let req = ThreadsRequest(threadIds: threadIds)
-        let key = req.uniqueId
         ChatManager.activeInstance?.conversation.get(req)
-        addCancelTimer(key: key)
     }
 
     public func searchThreads(_ text: String) {
-        let req = ThreadsRequest(name: text, type: .publicGroup)
-        requests[req.uniqueId] = req
-        let key = req.uniqueId
+        let req = ThreadsRequest(name: text)
+        RequestsManager.shared.append(prepend: "SEARCH", value: req)
         ChatManager.activeInstance?.conversation.get(req)
-        addCancelTimer(key: key)
+    }
+
+    public func searchPublicThreads(_ text: String) {
+        let req = ThreadsRequest(name: text, type: .publicGroup)
+        RequestsManager.shared.append(prepend: "SEARCH-PUBLIC-THREAD", value: req)
+        ChatManager.activeInstance?.conversation.get(req)
     }
 
     func onSearch(_ response: ChatResponse<[Conversation]>) {
-        if let threads = response.result, let uniqueId = response.uniqueId, searchRequests[uniqueId] != nil {
+        if !response.cache, let threads = response.result, response.value(prepend: "SEARCH") != nil {
             appendThreads(threads: threads)
-            searchRequests.removeValue(forKey: uniqueId)
+        }
+    }
+
+    func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) {
+        if !response.cache, let threads = response.result, response.value(prepend: "SEARCH-PUBLIC-THREAD") != nil {
+            appendThreads(threads: threads)
         }
     }
 
@@ -169,7 +185,7 @@ public final class ThreadsViewModel: ObservableObject {
             return folder.tagParticipants?
                 .compactMap(\.conversation?.id)
                 .compactMap { id in threads.first { $0.id == id } }
-                ?? []
+            ?? []
         } else if searchText.isEmpty {
             return threads.filter { ($0.isArchive ?? false) == archived }
         } else {
@@ -219,9 +235,7 @@ public final class ThreadsViewModel: ObservableObject {
             Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
         }
         let req = CreateThreadRequest(invitees: invitees, title: model.title, type: model.type, uniqueName: model.isPublic ? model.title : nil)
-        let key = req.uniqueId
         ChatManager.activeInstance?.conversation.create(req)
-        addCancelTimer(key: key)
     }
 
     /// Create a thread and send a message without adding a contact.
@@ -229,18 +243,14 @@ public final class ThreadsViewModel: ObservableObject {
         isLoading = true
         let messageREQ = CreateThreadMessage(text: message, messageType: .text)
         let req = CreateThreadWithMessage(invitees: [invitee], title: "", type: .normal, message: messageREQ)
-        let key = req.uniqueId
         ChatManager.activeInstance?.conversation.create(req)
-        addCancelTimer(key: key)
     }
 
     /// Join to a public thread by it's unqiue name.
     public func joinToPublicThread(_ publicThreadName: String) {
         isLoading = true
         let req = JoinPublicThreadRequest(threadName: publicThreadName)
-        let key = req.uniqueId
         ChatManager.activeInstance?.conversation.join(req)
-        addCancelTimer(key: key)
     }
 
     public func searchInsideAllThreads(text _: String) {
@@ -262,8 +272,7 @@ public final class ThreadsViewModel: ObservableObject {
         isLoading = true
         guard let threadId = selectedThraed?.id else { return }
         let contactIds = contacts.compactMap(\.id)
-        let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)
-        requests[req.uniqueId] = req
+        let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)        
         ChatManager.activeInstance?.conversation.participant.add(req)
     }
 
@@ -429,16 +438,9 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    /// Automatically cancel a request if there is no response come back from the chat server after 5 seconds.
-    func addCancelTimer(key: String) {
-        Logger.viewModels.info("Send request with key:\(key)")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-            if ((self?.requests.keys.contains(where: { $0 == key})) != nil) {
-                withAnimation {
-                    self?.requests.removeValue(forKey: key)
-                    self?.isLoading = false
-                }
-            }
+    func onCancelTimer(key: String) {
+        withAnimation {
+            isLoading = false
         }
     }
 

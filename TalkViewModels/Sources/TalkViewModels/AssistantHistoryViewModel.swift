@@ -23,7 +23,6 @@ public final class AssistantHistoryViewModel: ObservableObject {
     @Published public private(set) var histories: [AssistantAction] = []
     @Published public var isLoading = false
     private var cancelable: Set<AnyCancellable> = []
-    private var requests: [String: Any] = [:]
 
     public init() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
@@ -56,10 +55,9 @@ public final class AssistantHistoryViewModel: ObservableObject {
             hasNext = response.hasNext
         }
 
-        if !response.cache, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+        if !response.cache, response.value != nil {
             firstSuccessResponse = true
             isLoading = false
-            requests.removeValue(forKey: uniqueId)
         }
     }
 
@@ -67,7 +65,7 @@ public final class AssistantHistoryViewModel: ObservableObject {
         if isLoading { return }
         isLoading = true
         let req = AssistantsHistoryRequest(count: count, offset: offset, fromTime: UInt(Date().advanced(by: 15 * 24 * 3600).timeIntervalSince1970))
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.assistant.history(req)
     }
 

@@ -25,7 +25,6 @@ public final class ExportMessagesViewModel: ObservableObject, ExportMessagesView
     public var threadId: Int { thread?.id ?? 0 }
     public var filePath: URL?
     private var cancelable: Set<AnyCancellable> = []
-    private var requests: [String: Any] = [:]
 
     public init() {
         NotificationCenter.default.publisher(for: .message)

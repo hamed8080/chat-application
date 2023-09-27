@@ -24,14 +24,12 @@ extension ThreadViewModel {
         animateObjectWillChange()
         guard text.count >= 2 else { return }
         let req = GetHistoryRequest(threadId: threadId, count: 50, offset: searchOffset, query: "\(text)")
-        let key = "SEARCH-\(req.uniqueId)"
-        requests[key] = req
+        RequestsManager.shared.append(prepend: "SEARCH", value: req)
         ChatManager.activeInstance?.message.history(req)
-        addCancelTimer(key: key)
     }
 
     func onSearch(_ response: ChatResponse<[Message]>) {
-        guard let uniqueId = response.uniqueId, requests["SEARCH-\(uniqueId)"] != nil else { return }
+        guard response.value(prepend: "SEARCH") != nil else { return }
         searchedMessages.removeAll()
         response.result?.forEach { message in
             if !(searchedMessages.contains(where: { $0.id == message.id })) {
@@ -39,6 +37,5 @@ extension ThreadViewModel {
             }
         }
         animateObjectWillChange()
-        requests.removeValue(forKey: "SEARCH-\(uniqueId)")
     }
 }

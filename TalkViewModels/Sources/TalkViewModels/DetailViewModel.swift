@@ -51,7 +51,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
     @Published public var isInEditMode = false
     @Published public var showImagePicker: Bool = false
     public var assetResources: [PHAssetResource] = []
-    private var requests: [String: Any] = [:]
     @Published public var dismiss = false
 
     public init(thread: Conversation? = nil, contact: Contact? = nil, user: Participant? = nil) {
@@ -122,11 +121,11 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public func blockUnBlock() {
         if contact?.blocked == true {
             let req = UnBlockRequest(userId: contact?.userId ?? user?.coreUserId)
-            requests[req.uniqueId] = req
+            RequestsManager.shared.append(value: req)
             ChatManager.activeInstance?.contact.unBlock(req)
         } else {
             let req = BlockRequest(userId: contact?.userId ?? user?.coreUserId)
-            requests[req.uniqueId] = req
+            RequestsManager.shared.append(value: req)
             ChatManager.activeInstance?.contact.block(req)
         }
     }
@@ -179,13 +178,13 @@ public final class DetailViewModel: ObservableObject, Hashable {
 
     public func mute(_ threadId: Int) {
         let req = GeneralSubjectIdRequest(subjectId: threadId)
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.conversation.mute(req)
     }
 
     public func unmute(_ threadId: Int) {
         let req = GeneralSubjectIdRequest(subjectId: threadId)
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.conversation.unmute(req)
     }
 
@@ -207,7 +206,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
         guard let userId = (thread?.partner ?? contact?.userId ?? user?.id) else { return }
         let invitee = Invitee(id: "\(userId)", idType: .userId)
         let req = MutualGroupsRequest(toBeUser: invitee)
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.conversation.mutual(req)
     }
 
@@ -222,7 +221,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
         guard let thread = thread, let threadId = thread.id else { return }
         let type: ThreadTypes = thread.isPrivate ? thread.publicType : thread.privateType
         let req = ChangeThreadTypeRequest(threadId: threadId, type: type)
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.conversation.changeType(req)
     }
 

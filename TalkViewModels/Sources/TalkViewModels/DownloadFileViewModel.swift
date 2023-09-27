@@ -29,6 +29,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public var data: Data?
     public var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
     var chat: Chat? { ChatManager.activeInstance }
+    var uniqueId: String = ""
 
     public var fileURL: URL? {
         guard let url = url else { return nil }
@@ -41,8 +42,6 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         return URL(string: url)
     }
 
-    public var requests: [String: Any] = [:]
-    public var thumbRequests: [String: Any] = [:]
     public weak var message: Message?
     private var messageCancelable: AnyCancellable?
     private var downloadCancelable: AnyCancellable?
@@ -105,7 +104,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     private func downloadFile() {
         state = .DOWNLOADING
         let req = FileRequest(hashCode: fileHashCode)
-        requests[req.uniqueId] = req
+        uniqueId = req.uniqueId
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.file.get(req)
         animateObjectWillChange()
     }
@@ -113,7 +113,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     private func downloadImage() {
         state = .DOWNLOADING
         let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
-        requests[req.uniqueId] = req
+        uniqueId = req.uniqueId
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.file.get(req)
         animateObjectWillChange()
     }
@@ -121,25 +122,25 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public func downloadBlurImage() {
         state = .DOWNLOADING
         let req = ImageRequest(hashCode: fileHashCode, quality: 0.1, size: .SMALL, thumbnail: true)
-        thumbRequests[req.uniqueId] = req
+        uniqueId = req.uniqueId
+        RequestsManager.shared.append(prepend: "THUMBNAIL", value: req)
         ChatManager.activeInstance?.file.get(req)
         animateObjectWillChange()
     }
 
     private func onResponse(_ response: ChatResponse<Data>, _ url: URL?) {
-        if let uniqueId = response.uniqueId, thumbRequests[uniqueId] != nil, let data = response.result {
+        if response.uniqueId != uniqueId { return }
+        if RequestsManager.shared.value(prepend: "THUMBNAIL", for: uniqueId) != nil, let data = response.result {
             //State is not completed and blur view can show the thumbnail
             state = .THUMBNAIL
             autoreleasepool {
                 self.tumbnailData = data
-                thumbRequests.removeValue(forKey: uniqueId)
                 animateObjectWillChange()
             }
             return
         }
-        if let data = response.result, let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+        if RequestsManager.shared.value(for: uniqueId) != nil, let data = response.result {
             autoreleasepool {
-                requests.removeValue(forKey: uniqueId)
                 state = .COMPLETED
                 downloadPercent = 100
                 self.data = data
@@ -148,7 +149,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         }
 
         /// When the user clicks on the side of an image not directly hit the download button, it triggers gallery view, and therefore after the user is back to the view the image and file should update properly.
-        if url?.absoluteString == fileURL?.absoluteString, !response.cache {
+        if RequestsManager.shared.value(for: uniqueId) != nil, url?.absoluteString == fileURL?.absoluteString, !response.cache {
             autoreleasepool {
                 state = .COMPLETED
                 downloadPercent = 100
@@ -159,34 +160,32 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     private func onSuspend(_ uniqueId: String) {
-        if requests[uniqueId] != nil {
+        if RequestsManager.shared.value(for: self.uniqueId) != nil {
             state = .PAUSED
             animateObjectWillChange()
         }
     }
 
     private func onResumed(_ uniqueId: String) {
-        if requests[uniqueId] != nil {
+        if RequestsManager.shared.value(for: self.uniqueId) != nil {
             state = .DOWNLOADING
             animateObjectWillChange()
         }
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
-        if requests[uniqueId] != nil {
+        if RequestsManager.shared.value(for: self.uniqueId) != nil {
             self.downloadPercent = progress?.percent ?? 0
             animateObjectWillChange()
         }
     }
 
     public func pauseDownload() {
-        guard let uniaueId = requests.first?.key else { return }
-        ChatManager.activeInstance?.file.manageDownload(uniqueId: uniaueId, action: .suspend)
+        ChatManager.activeInstance?.file.manageDownload(uniqueId: uniqueId, action: .suspend)
     }
 
     public func resumeDownload() {
-        guard let uniaueId = requests.first?.key else { return }
-        ChatManager.activeInstance?.file.manageDownload(uniqueId: uniaueId, action: .resume)
+        ChatManager.activeInstance?.file.manageDownload(uniqueId: uniqueId, action: .resume)
     }
 
     public func cancelObservers(){

@@ -19,7 +19,6 @@ public final class BotViewModel: ObservableObject {
     @Published public var isLoading = false
     public private(set) var firstSuccessResponse = false
     private var cancelable: Set<AnyCancellable> = []
-    private var requests: [String: Any] = [:]
 
     public init() {
         AppState.shared.$connectionStatus
@@ -80,30 +79,29 @@ public final class BotViewModel: ObservableObject {
     }
 
     public func onCreate(_ response: ChatResponse<BotInfo>) {
-        if let uniqueId = response.uniqueId, requests[uniqueId] != nil {
+        if response.value != nil {
             appendBots(bots: [.init(name: response.result?.name, botUserId: response.result?.botUserId)])
-            requests.removeValue(forKey: uniqueId)
         }
         isLoading = false
     }
 
     public func getBotList() {
         let req = GetUserBotsRequest()
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.bot.get(req)
     }
 
     public func stopBot(_ bot: BotInfo, threadId: Int) {
         guard let name = bot.name else { return }
         let req = StartStopBotRequest(botName: name, threadId: threadId)
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.bot.stop(req)
     }
 
     public func startBot(_ bot: BotInfo, threadId: Int) {
         guard let name = bot.name else { return }
         let req = StartStopBotRequest(botName: name, threadId: threadId)
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.bot.start(req)
     }
 
@@ -120,7 +118,7 @@ public final class BotViewModel: ObservableObject {
     public func createBot(name: String) {
         isLoading = true
         let req = CreateBotRequest(botName: name)
-        requests[req.uniqueId] = req
+        RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.bot.create(req)
     }
 
