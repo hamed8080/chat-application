@@ -17,16 +17,20 @@ class RequestsManager: ObservableObject {
 
     private init(){}
 
-    func append(value: ChatDTO.UniqueIdProtocol) {
+    func append(value: ChatDTO.UniqueIdProtocol, autoCancel: Bool = true) {
         let key = "\(value.uniqueId)"
         requests[key] = value
-        addCancelTimer(key: key)
+        if autoCancel {
+            addCancelTimer(key: key)
+        }
     }
 
-    func append(prepend: String, value: ChatDTO.UniqueIdProtocol) {
+    func append(prepend: String, value: ChatDTO.UniqueIdProtocol, autoCancel: Bool = true) {
         let key = "\(prepend)-\(value.uniqueId)"
         requests[key] = value
-        addCancelTimer(key: key)
+        if autoCancel {
+            addCancelTimer(key: key)
+        }
     }
 
     @discardableResult

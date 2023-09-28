@@ -105,7 +105,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         state = .DOWNLOADING
         let req = FileRequest(hashCode: fileHashCode)
         uniqueId = req.uniqueId
-        RequestsManager.shared.append(value: req)
+        RequestsManager.shared.append(value: req, autoCancel: false)
         ChatManager.activeInstance?.file.get(req)
         animateObjectWillChange()
     }
@@ -114,7 +114,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         state = .DOWNLOADING
         let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
         uniqueId = req.uniqueId
-        RequestsManager.shared.append(value: req)
+        RequestsManager.shared.append(value: req, autoCancel: false)
         ChatManager.activeInstance?.file.get(req)
         animateObjectWillChange()
     }
@@ -123,7 +123,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         state = .DOWNLOADING
         let req = ImageRequest(hashCode: fileHashCode, quality: 0.1, size: .SMALL, thumbnail: true)
         uniqueId = req.uniqueId
-        RequestsManager.shared.append(prepend: "THUMBNAIL", value: req)
+        RequestsManager.shared.append(prepend: "THUMBNAIL", value: req, autoCancel: false)
         ChatManager.activeInstance?.file.get(req)
         animateObjectWillChange()
     }
@@ -133,6 +133,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         if RequestsManager.shared.value(prepend: "THUMBNAIL", for: uniqueId) != nil, let data = response.result {
             //State is not completed and blur view can show the thumbnail
             state = .THUMBNAIL
+            RequestsManager.shared.remove(prepend: "THUMBNAIL", for: uniqueId)
             autoreleasepool {
                 self.tumbnailData = data
                 animateObjectWillChange()
@@ -151,6 +152,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         /// When the user clicks on the side of an image not directly hit the download button, it triggers gallery view, and therefore after the user is back to the view the image and file should update properly.
         if RequestsManager.shared.value(for: uniqueId) != nil, url?.absoluteString == fileURL?.absoluteString, !response.cache {
             autoreleasepool {
+                RequestsManager.shared.remove(key: uniqueId)
                 state = .COMPLETED
                 downloadPercent = 100
                 self.data = response.result

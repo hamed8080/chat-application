@@ -18,6 +18,7 @@ public final class SettingViewModel: ObservableObject {
     public var isLoading: Bool = false
     @Published public var showImagePicker: Bool = false
     public let session: URLSession
+    @Published public var isEditing: Bool = false
 
     public init(session: URLSession = .shared) {
         self.session = session

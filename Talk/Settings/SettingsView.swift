@@ -13,29 +13,30 @@ import TalkUI
 import TalkViewModels
 import TalkModels
 import Swipy
+import Additive
 
 struct SettingsView: View {
     let container: ObjectsContainer
     @State private var showLoginSheet = false
     
     var body: some View {
-        List {
-            UserProfileView()
-            Group {
-                SettingSettingSection()
-//                SettingCallHistorySection()
-//                SettingSavedMessagesSection()
-                SettingLogSection()
-                SettingAssistantSection()
-//                SettingCallSection()
+        ScrollView(.vertical) {
+            VStack(spacing: 16) {
+                UserProfileView()
+                CustomSection {
+                    SettingSettingSection()
+                    // SettingCallHistorySection()
+                    // SettingSavedMessagesSection()
+                    // SettingCallSection()
+                    SettingLogSection()
+                    SettingAssistantSection()
+                }
             }
-            .font(.iransansSubheadline)
-            .padding(8)
+            .padding(16)
         }
-        .listStyle(.insetGrouped)
         .safeAreaInset(edge: .top) {
             EmptyView()
-                .frame(height: 36)
+                .frame(height: 48)
         }
         .overlay(alignment: .top) {
             ToolbarView(
@@ -54,7 +55,9 @@ struct SettingsView: View {
     }
 
     var leadingViews: some View {
-        ToolbarButtonItem(imageName: "square.and.pencil", hint: "General.edit") {}
+        HStack {
+            ToolbarButtonItem(imageName: "qrcode", hint: "General.edit") {}
+        }
     }
 
     var centerViews: some View {
@@ -75,16 +78,8 @@ struct SettingSettingSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        Section {
-            Button {
-                navModel.paths.append(PreferenceNavigationValue())
-            } label: {
-                HStack {
-                    Image(systemName: "gear")
-                        .foregroundColor(.blue)
-                    Text("Settings.title")
-                }
-            }
+        SectionButton(imageName: "gearshape.fill", title: "Settings.title", color: .gray) {
+            navModel.paths.append(PreferenceNavigationValue())
         }
     }
 }
@@ -137,14 +132,8 @@ struct SettingLogSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        Button {
+        SectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown) {
             navModel.paths.append(LogNavigationValue())
-        } label: {
-            HStack {
-                Image(systemName: "note.text")
-                    .foregroundColor(.purple)
-                Text("Settings.logs")
-            }
         }
     }
 }
@@ -153,14 +142,8 @@ struct SettingAssistantSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        Button {
+        SectionButton(imageName: "person.fill", title: "Settings.assistants", color: .blue, showDivider: false) {
             navModel.paths.append(AssistantNavigationValue())
-        } label: {
-            HStack {
-                Image(systemName: "person.badge.shield.checkmark")
-                    .foregroundColor(.purple)
-                Text("Settings.assistants")
-            }
         }
     }
 }
@@ -170,10 +153,7 @@ struct UserProfileView: View {
     var user: User? { container.userConfigsVM.currentUserConfig?.user }
 
     var body: some View {
-        HStack {
-            SwipyView(container: container)
-        }
-        .noSeparators()
+        SwipyView(container: container)
     }
 }
 
@@ -225,7 +205,6 @@ struct SwipyView: View {
                 .cornerRadius(12)
             }
         }
-        .padding()
         .onAppear {
             selectedUser = UserConfigManagerVM.instance.currentUserConfig?.id
             userConfigs = userConfigsVM.userConfigs
@@ -275,8 +254,25 @@ struct UserConfigView: View {
                 .frame(width: 48, height: 48)
                 .cornerRadius(24)
                 .padding()
-                .onTapGesture {
-                    viewModel.showImagePicker.toggle()
+                .overlay {
+                    ZStack {
+                        Image(systemName: "square.and.arrow.up.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundStyle(.white)
+                            .frame(width: 22, height: 22)
+                    }
+                    .frame(width: 48, height: 48)
+                    .background(.blue)
+                    .cornerRadius(24, corners: .allCorners)
+                    .scaleEffect(x: viewModel.isEditing ? 1 : 0.001,
+                                 y: viewModel.isEditing ? 1 : 0.001,
+                                 anchor: .center)
+                    .onTapGesture {
+                        if viewModel.isEditing {
+                            viewModel.showImagePicker.toggle()
+                        }
+                    }
                 }
 
             VStack(alignment: .leading) {
@@ -290,13 +286,20 @@ struct UserConfigView: View {
                         .fontDesign(.rounded)
                         .foregroundColor(.secondary)
                     Spacer()
-                    Text(Config.serverType(config: userConfig.config)?.rawValue ?? "")
-                        .font(.iransansBody)
-                        .foregroundColor(.green)
                 }
             }
             Spacer()
+            VStack {
+                ToolbarButtonItem(imageName: "square.and.pencil", hint: "General.edit") {
+                    viewModel.isEditing.toggle()
+                }
+                Text(Config.serverType(config: userConfig.config)?.rawValue ?? "")
+                    .font(.iransansBody)
+                    .foregroundColor(.green)
+            }
+            .padding(.trailing)
         }
+        .animation(.spring(), value: viewModel.isEditing)
         .sheet(isPresented: $viewModel.showImagePicker) {
             ImagePicker(sourceType: .photoLibrary) { image, assestResources in
                 viewModel.showImagePicker.toggle()
@@ -326,6 +329,100 @@ struct TokenExpireView: View {
                 viewModel.startTokenTimer()
             }
         #endif
+    }
+}
+
+struct MyButtonStyle: ButtonStyle {
+
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .background(configuration.isPressed ? Color.gray.opacity(0.3) : Color.clear)
+            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
+
+struct CustomSection<Content>: View where Content: View {
+    let header: String?
+    let footer: String?
+    let content: () -> (Content)
+
+    init(header: String? = nil, footer: String? = nil, @ViewBuilder content: @escaping () -> (Content)) {
+        self.header = header
+        self.footer = footer
+        self.content = content
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            if let header {
+                Text(header)
+                    .font(.iransansCaption2)
+            }
+
+            content()
+
+            if let footer {
+                Text(footer)
+                    .font(.iransansCaption2)
+            }
+        }
+        .background(.ultraThickMaterial)
+        .cornerRadius(12, corners: .allCorners)
+    }
+}
+
+struct SectionButton: View {
+    let imageName: String
+    let title: String
+    let color: Color
+    let showDivider: Bool
+    let shownavigationButton: Bool
+    let action: () -> ()
+
+    init(imageName: String, title: String, color: Color, showDivider: Bool = true, shownavigationButton: Bool = true, action: @escaping () -> Void) {
+        self.imageName = imageName
+        self.title = title
+        self.color = color
+        self.showDivider = showDivider
+        self.action = action
+        self.shownavigationButton = shownavigationButton
+    }
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            VStack(alignment: .leading) {
+                HStack {
+                    Image(systemName: imageName)
+                        .padding(4)
+                        .background(color)
+                        .cornerRadius(8, corners: .allCorners)
+                        .foregroundColor(.white)
+                    Text(String(localized: .init(title)))
+                    if shownavigationButton {
+                        Spacer()
+                        Image(systemName: "chevron.forward")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 12, height: 12)
+                            .foregroundStyle(.gray.opacity(0.8))
+                    }
+                }
+                if showDivider {
+                    Rectangle()
+                        .fill(.gray.opacity(0.35))
+                        .frame(height: 0.5)
+                        .padding([.leading])
+                }
+            }
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36, alignment: .leading)
+            .contentShape(Rectangle())
+            .padding([.leading, .trailing, .top], 12)
+            .padding(.bottom, showDivider ? 0 : 8)
+        }
+        .buttonStyle(MyButtonStyle())
+        .contentShape(Rectangle())
     }
 }
 

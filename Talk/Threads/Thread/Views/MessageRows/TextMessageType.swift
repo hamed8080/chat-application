@@ -84,34 +84,36 @@ struct MutableMessageView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            if message.replyInfo != nil {
+                ReplyInfoMessageRow()
+                    .background(Color.replyBg)
+                    .environmentObject(viewModel)
+            }
+
+            if let forwardInfo = message.forwardInfo {
+                ForwardMessageRow(forwardInfo: forwardInfo)
+            }
+
+            if message.isUploadMessage {
+                UploadMessageType(message: message)
+                    .frame(maxHeight: 320)
+            }
+
             ZStack(alignment: .topLeading) {
                 if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
                     DownloadFileView(viewModel: downloadVM)
                         .frame(maxHeight: 320)
+                        .clipped()
+                        .contentShape(Rectangle())
                 }
-                VStack {
-                    if message.replyInfo != nil {
-                        ReplyInfoMessageRow()
-                            .environmentObject(viewModel)
-                    }
-
-                    if let forwardInfo = message.forwardInfo {
-                        ForwardMessageRow(forwardInfo: forwardInfo)
-                    }
-
-                    if message.isUploadMessage {
-                        UploadMessageType(message: message)
-                            .frame(maxHeight: 320)
-                    }
-                    AvatarView(message: message, viewModel: threadVM)
-                }
+                AvatarView(message: message, viewModel: threadVM)
             }
-            .clipped()
 
             if let fileName = message.fileName {
                 Text("\(fileName)\(message.fileExtension ?? "")")
                     .foregroundColor(.darkGreen.opacity(0.8))
                     .font(.caption)
+                    .clipped()
             }
 
             // TODO: TEXT must be alignment and image must be fit
@@ -120,6 +122,7 @@ struct MutableMessageView: View {
                 .padding(8)
                 .font(.iransansBody)
                 .foregroundColor(.black)
+                .clipped()
 
             if let addressDetail = viewModel.addressDetail {
                 Text(addressDetail)

@@ -33,7 +33,7 @@ struct ReplyInfoMessageRow: View {
                     if let name = message.replyInfo?.participant?.name {
                         Text("\(name)")
                             .font(.iransansBoldCaption2)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: name.naturalTextAlignment == .leading ? .leading : .trailing)
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             .foregroundColor(.orange)
                             .padding([.leading, .trailing, .top], 8)
                     }
@@ -52,7 +52,7 @@ struct ReplyInfoMessageRow: View {
                             .padding([.leading, .trailing], 8)
                             .cornerRadius(8, corners: .allCorners)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: message.naturalTextAlignment == .leading ? .leading : .trailing)
-                            .foregroundColor(.primary)
+                            .foregroundStyle(Color.primary)
                             .lineLimit(1)
                     }
 
@@ -61,11 +61,11 @@ struct ReplyInfoMessageRow: View {
                             Image(systemName: message.iconName)
                                 .resizable()
                                 .frame(width: 16, height: 16)
-                                .foregroundColor(.blue)
+                                .foregroundColor(Color.textBlueColor)
 
                             Text(message.fileStringName)
                                 .font(.iransansCaption2)
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(Color.textBlueColor)
                             Spacer()
                         }
                     }
@@ -75,13 +75,12 @@ struct ReplyInfoMessageRow: View {
                     Spacer()
                 }
             }
+            .frame(width: viewModel.widthOfRow, height: message.replyInfo?.deleted == true ? 32 : 52)
         }
-        .buttonStyle(.plain)
-        .frame(width: viewModel.widthOfRow - 16, height: message.replyInfo?.deleted == true ? 32 : 52)
-        .background(.ultraThickMaterial)
-        .cornerRadius(12)
-        .padding([.top, .leading, .trailing], 8)
+        .buttonStyle(.borderless)
+        .frame(width: viewModel.widthOfRow, height: message.replyInfo?.deleted == true ? 32 : 52)
         .truncationMode(.tail)
+        .contentShape(Rectangle())
         .lineLimit(1)
     }
 
