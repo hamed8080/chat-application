@@ -28,8 +28,7 @@ struct UploadMessageType: View {
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: 320)
-                } else {
-                    let iconName = message.iconName
+                } else if let iconName = message.iconName {
                     Image(systemName: iconName)
                         .resizable()
                         .frame(width: 64, height: 64)

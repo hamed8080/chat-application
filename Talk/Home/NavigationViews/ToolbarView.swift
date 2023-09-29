@@ -22,6 +22,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     @State var searchText: String = ""
     @State var isInSearchMode: Bool = false
     let toolbarHeight: CGFloat = 36
+    let searchKeyboardType: UIKeyboardType
 
     enum Field: Hashable {
         case saerch
@@ -31,6 +32,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
 
     init(title: String? = nil,
          searchPlaceholder: String? = nil,
+         searchKeyboardType: UIKeyboardType = .default,
          leadingViews:  LeadingContentView? = nil,
          centerViews: CenterContentView? = nil,
          trailingViews: TrailingContentView? = nil,
@@ -42,6 +44,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
         self.leadingNavigationViews = leadingViews
         self.centerNavigationViews = centerViews
         self.trailingNavigationViews = trailingViews
+        self.searchKeyboardType = searchKeyboardType
     }
 
     var body: some View {
@@ -93,7 +96,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     @ViewBuilder var searchView: some View {
         if searchCompletion != nil {
             TextField(String(localized: String.LocalizationValue(searchPlaceholder ?? "" )), text: $searchText)
-                .keyboardType(.phonePad)
+                .keyboardType(searchKeyboardType)
                 .font(.iransansSubtitle)
                 .textFieldStyle(.clear)
                 .focused($searchFocus, equals: .saerch)

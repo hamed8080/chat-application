@@ -43,7 +43,7 @@ struct ReplyInfoMessageRow: View {
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             .foregroundColor(.redSoft)
-                            .padding([.leading, .trailing], 8)
+                            .padding([.top, .leading, .trailing], 8)
                     }
 
                     if let message = message.replyInfo?.message?.replacingOccurrences(of: "\n", with: " ") {
@@ -58,33 +58,35 @@ struct ReplyInfoMessageRow: View {
 
                     if canShowIconFile {
                         HStack {
-                            Image(systemName: message.iconName)
-                                .resizable()
-                                .frame(width: 16, height: 16)
-                                .foregroundColor(Color.textBlueColor)
+                            if let iconName = message.iconName {
+                                Image(systemName: iconName)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(Color.textBlueColor)
+                            }
 
-                            Text(message.fileStringName)
-                                .font(.iransansCaption2)
-                                .foregroundStyle(Color.textBlueColor)
-                            Spacer()
+                            if let fileStringName = message.fileStringName {
+                                Text(fileStringName)
+                                    .font(.iransansCaption2)
+                                    .foregroundStyle(Color.textBlueColor)
+                                Spacer()
+                            }
                         }
                     }
                     Spacer()
                 }
-                if message.replyInfo?.deleted == true {
-                    Spacer()
-                }
             }
-            .frame(width: viewModel.widthOfRow, height: message.replyInfo?.deleted == true ? 32 : 52)
+            .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 52, maxHeight: 52)
         }
         .buttonStyle(.borderless)
-        .frame(width: viewModel.widthOfRow, height: message.replyInfo?.deleted == true ? 32 : 52)
+        .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 52, maxHeight: 52)
         .truncationMode(.tail)
         .contentShape(Rectangle())
         .lineLimit(1)
     }
 
-    var canShowIconFile: Bool { message.isFileType == true && message.replyInfo?.message.isEmptyOrNil == true }
+    var canShowIconFile: Bool { message.replyInfo?.messageType != .text && message.replyInfo?.message.isEmptyOrNil == true && message.replyInfo?.deleted == false }
 }
 
 struct ReplyInfo_Previews: PreviewProvider {

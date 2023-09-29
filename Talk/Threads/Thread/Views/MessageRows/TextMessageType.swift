@@ -11,17 +11,17 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import Combine
 
 struct TextMessageType: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     let viewModel: MessageRowViewModel
-    @State var isInSelectionMode = false
 
     var body: some View {
         HStack(spacing: 8) {
             if !viewModel.isMe {
-                SelectMessageRadio(isInSelectionMode: isInSelectionMode)
+                SelectMessageRadio()
             }
 
             if viewModel.isMe {
@@ -35,23 +35,15 @@ struct TextMessageType: View {
             }
 
             if viewModel.isMe {
-                SelectMessageRadio(isInSelectionMode: isInSelectionMode)
+                SelectMessageRadio()
             }
         }
         .environmentObject(viewModel)
-        .onReceive(viewModel.objectWillChange) { _ in
-            if viewModel.isInSelectMode != isInSelectionMode {
-                withAnimation {
-                    isInSelectionMode = viewModel.isInSelectMode
-                }
-            }
-        }
     }
 }
 
 struct SelectMessageRadio: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
-    let isInSelectionMode: Bool
 
     var body: some View {
         ZStack {
@@ -64,9 +56,9 @@ struct SelectMessageRadio: View {
                 .font(.title)
                 .foregroundColor(Color.blue)
         }
-        .frame(width: isInSelectionMode ? 22 : 0.001, height: isInSelectionMode ? 22 : 0.001, alignment: .center)
-        .padding(isInSelectionMode ? 24 : 0.001)
-        .scaleEffect(x: isInSelectionMode ? 1.0 : 0.001, y: isInSelectionMode ? 1.0 : 0.001, anchor: .center)
+        .frame(width: viewModel.isInSelectMode ? 22 : 0.001, height: viewModel.isInSelectMode ? 22 : 0.001, alignment: .center)
+        .padding(viewModel.isInSelectMode ? 24 : 0.001)
+        .scaleEffect(x: viewModel.isInSelectMode ? 1.0 : 0.001, y: viewModel.isInSelectMode ? 1.0 : 0.001, anchor: .center)
         .onTapGesture {
             withAnimation(!viewModel.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
                 viewModel.isSelected.toggle()
@@ -175,18 +167,14 @@ struct MutableMessageView: View {
     }
 }
 
+
 struct TextMessageType_Previews: PreviewProvider {
     struct Preview: View {
         var viewModel: MessageRowViewModel {
-            let participant = Participant(id: 0, name: "John Doe")
+            let message = MockData.mockDataModel.messages.first(where: {$0.id == 1212263417})
+            AppState.shared.cachedUser = .init(id: 3463768)
             return MessageRowViewModel(
-                message: .init(
-                    id: 1,
-                    message: "TEST",
-                    seen: true,
-                    time: UInt(Date().millisecondsSince1970),
-                    participant: participant
-                ), viewModel: .init(thread: .init(id: 1))
+                message: message!, viewModel: .init(thread: .init(id: 1))
             )
         }
 
@@ -194,6 +182,9 @@ struct TextMessageType_Previews: PreviewProvider {
             TextMessageType(viewModel: viewModel)
                 .environmentObject(viewModel)
                 .environmentObject(NavigationModel())
+                .onAppear(perform: {
+
+                })
         }
     }
 
