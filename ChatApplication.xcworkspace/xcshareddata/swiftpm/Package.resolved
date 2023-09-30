@@ -1,33 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "chat",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/hamed8080/chat",
-      "state" : {
-        "revision" : "530f2407d2610e30b9ff71d422e236eac54f230f",
-        "version" : "1.2.3"
-      }
-    },
-    {
-      "identity" : "fanappodasyncsdk",
-      "kind" : "remoteSourceControl",
-      "location" : "https://pubgi.fanapsoft.ir/chat/ios/fanappodasyncsdk.git",
-      "state" : {
-        "revision" : "d9f8d1b0f9874320453fb7e2e124a607d9af56fa",
-        "version" : "1.2.0"
-      }
-    },
-    {
-      "identity" : "starscream",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/daltoniam/Starscream.git",
-      "state" : {
-        "revision" : "a063fda2b8145a231953c20e7a646be254365396",
-        "version" : "3.1.2"
-      }
-    },
-    {
       "identity" : "swipy",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hamed8080/Swipy",

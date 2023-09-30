@@ -58,6 +58,7 @@ extension Config {
             .isDebuggingLogEnabled(true)
             .persistLogsOnServer(true)
             .appGroup(AppGroup.group)
+            .enableQueue(true)
             .sendLogInterval(15)
             .build()
         return chatConfig

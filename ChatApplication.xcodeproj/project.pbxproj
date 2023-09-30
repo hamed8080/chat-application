@@ -34,7 +34,6 @@
 		05384A862792CE5E00D85A92 /* CustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A852792CE5E00D85A92 /* CustomDialog.swift */; };
 		05384A8A2792F3FC00D85A92 /* KeyboardResponsiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A892792F3FC00D85A92 /* KeyboardResponsiveModifier.swift */; };
 		05384A8C2792FB5000D85A92 /* PrimaryCustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05384A8B2792FB3200D85A92 /* PrimaryCustomDialog.swift */; };
-		055024C22987E794009DDD18 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 055024C12987E794009DDD18 /* Swipy */; };
 		0555905529311C3E000D2407 /* ThreadViewModel+SendMessageThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0555905429311C3E000D2407 /* ThreadViewModel+SendMessageThread.swift */; };
 		055B269827D5F9E40098D585 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B269727D5F9E40098D585 /* MemberView.swift */; };
 		055B269A27D5F9F00098D585 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055B269927D5F9F00098D585 /* MediaView.swift */; };
@@ -62,7 +61,7 @@
 		059914B029262FF60070BD89 /* Conversation+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059914AF29262FF60070BD89 /* Conversation+.swift */; };
 		05AA72A227E0AB8B00F004BA /* ToastViewModifire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */; };
 		05ABB2B12861EB3E00FB2DF8 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */; };
-		05B91F1B2AAB6F8F003BC2F6 /* FanapPodChatSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 05B91F1A2AAB6F8F003BC2F6 /* FanapPodChatSDK */; };
+		05B83BC12AC86778006058F0 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05B83BC02AC86778006058F0 /* Swipy */; };
 		05BD143029850D600015A6F6 /* UserConfigManagerVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BD142F29850D600015A6F6 /* UserConfigManagerVM.swift */; };
 		05C0098B2931F61D002ED678 /* Contact+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C0098A2931F61D002ED678 /* Contact+.swift */; };
 		05C42B0F29606F4000A870B3 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C42B0E29606F4000A870B3 /* Data+.swift */; };
@@ -146,9 +145,20 @@
 		ACFADE8227675C29007C555F /* PrimaryTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADE8127675C29007C555F /* PrimaryTextField.swift */; };
 		ACFADE8427675DA5007C555F /* DeepButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFADE8327675DA5007C555F /* DeepButtonStyle.swift */; };
 		ACFBF1B926FCA51300DD27AE /* AddOrEditContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFBF1B826FCA51300DD27AE /* AddOrEditContactView.swift */; };
+		ADDD64FBD7EF18E5337448D8 /* Pods_ChatApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05B83BC42AC86793006058F0 /* Pods_ChatApplication.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		05B83BC92AC86799006058F0 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AC924CBC274A6D7300E33BD1 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 8;
@@ -215,6 +225,9 @@
 		059914AF29262FF60070BD89 /* Conversation+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conversation+.swift"; sourceTree = "<group>"; };
 		05AA72A127E0AB8B00F004BA /* ToastViewModifire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifire.swift; sourceTree = "<group>"; };
 		05ABB2B02861EB3E00FB2DF8 /* SearchMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
+		05B83BC22AC86793006058F0 /* FanapPodAsyncSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FanapPodAsyncSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		05B83BC32AC86793006058F0 /* FanapPodChatSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FanapPodChatSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		05B83BC42AC86793006058F0 /* Pods_ChatApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_ChatApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		05BD142F29850D600015A6F6 /* UserConfigManagerVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConfigManagerVM.swift; sourceTree = "<group>"; };
 		05C0098A2931F61D002ED678 /* Contact+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Contact+.swift"; sourceTree = "<group>"; };
 		05C42B0E29606F4000A870B3 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
@@ -228,6 +241,9 @@
 		05E2F6FA2989781900AAA288 /* ObjectsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectsContainer.swift; sourceTree = "<group>"; };
 		05F6C70F2808BB1800C2EEF4 /* Message+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Message+.swift"; sourceTree = "<group>"; };
 		05FEB00E29AC6B8A00E13C58 /* Notification.Name+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification.Name+.swift"; sourceTree = "<group>"; };
+		27042BE09CF7B4F4B693906B /* Pods_ChatApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2609956E8006D6C34CF9C1C /* Pods-ChatApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApplication.release.xcconfig"; path = "Target Support Files/Pods-ChatApplication/Pods-ChatApplication.release.xcconfig"; sourceTree = "<group>"; };
+		A5EA74774455635DC4163556 /* Pods-ChatApplication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatApplication.debug.xcconfig"; path = "Target Support Files/Pods-ChatApplication/Pods-ChatApplication.debug.xcconfig"; sourceTree = "<group>"; };
 		AC008F3B268C4FA500B008FF /* HomeContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContentView.swift; sourceTree = "<group>"; };
 		AC0435FA26998D0C00B1C87B /* ParticipantsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsViewModel.swift; sourceTree = "<group>"; };
 		AC0435FE26998D4400B1C87B /* ParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantRow.swift; sourceTree = "<group>"; };
@@ -310,8 +326,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				05B91F1B2AAB6F8F003BC2F6 /* FanapPodChatSDK in Frameworks */,
-				055024C22987E794009DDD18 /* Swipy in Frameworks */,
+				05B83BC12AC86778006058F0 /* Swipy in Frameworks */,
+				ADDD64FBD7EF18E5337448D8 /* Pods_ChatApplication.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,6 +381,10 @@
 		0532461428D8455B00FC9C22 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				05B83BC22AC86793006058F0 /* FanapPodAsyncSDK.framework */,
+				05B83BC32AC86793006058F0 /* FanapPodChatSDK.framework */,
+				05B83BC42AC86793006058F0 /* Pods_ChatApplication.framework */,
+				27042BE09CF7B4F4B693906B /* Pods_ChatApplication.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -432,6 +452,15 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		467FD35A3506DCD0386A0434 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A5EA74774455635DC4163556 /* Pods-ChatApplication.debug.xcconfig */,
+				A2609956E8006D6C34CF9C1C /* Pods-ChatApplication.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		AC0435F926998CF300B1C87B /* Participants */ = {
 			isa = PBXGroup;
 			children = (
@@ -486,6 +515,7 @@
 				AC1D2CA62661FFAC00AA351A /* ChatApplication */,
 				AC1D2CA52661FFAC00AA351A /* Products */,
 				0532461428D8455B00FC9C22 /* Frameworks */,
+				467FD35A3506DCD0386A0434 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -728,12 +758,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AC1D2CB82661FFAD00AA351A /* Build configuration list for PBXNativeTarget "ChatApplication" */;
 			buildPhases = (
+				ACC28066C5970349C0D1ECB3 /* [CP] Check Pods Manifest.lock */,
 				AC1D2CA02661FFAC00AA351A /* Sources */,
 				AC1D2CA12661FFAC00AA351A /* Frameworks */,
 				AC1D2CA22661FFAC00AA351A /* Resources */,
 				AC924CBC274A6D7300E33BD1 /* Embed Foundation Extensions */,
 				0503A6DB2929F51300CA10DC /* SwiftLint */,
 				0597057629431DFC008CA2EE /* Swift Format */,
+				3D3230A3DA606697B1CB286E /* [CP] Embed Pods Frameworks */,
+				05B83BC92AC86799006058F0 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -741,8 +774,7 @@
 			);
 			name = ChatApplication;
 			packageProductDependencies = (
-				055024C12987E794009DDD18 /* Swipy */,
-				05B91F1A2AAB6F8F003BC2F6 /* FanapPodChatSDK */,
+				05B83BC02AC86778006058F0 /* Swipy */,
 			);
 			productName = ChatApplication;
 			productReference = AC1D2CA42661FFAC00AA351A /* ChatApplication.app */;
@@ -773,8 +805,7 @@
 			);
 			mainGroup = AC1D2C9B2661FFAC00AA351A;
 			packageReferences = (
-				055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */,
-				05B91F192AAB6F8F003BC2F6 /* XCRemoteSwiftPackageReference "chat" */,
+				05B83BBF2AC86778006058F0 /* XCRemoteSwiftPackageReference "Swipy" */,
 			);
 			productRefGroup = AC1D2CA52661FFAC00AA351A /* Products */;
 			projectDirPath = "";
@@ -820,8 +851,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "
-";
+			shellScript = "\n";
 		};
 		0597057629431DFC008CA2EE /* Swift Format */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -840,8 +870,46 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "
-";
+			shellScript = "\n";
+		};
+		3D3230A3DA606697B1CB286E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ChatApplication/Pods-ChatApplication-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ChatApplication/Pods-ChatApplication-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ChatApplication/Pods-ChatApplication-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		ACC28066C5970349C0D1ECB3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ChatApplication-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1117,8 +1185,8 @@
 		};
 		AC1D2CB92661FFAD00AA351A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5EA74774455635DC4163556 /* Pods-ChatApplication.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
@@ -1148,8 +1216,8 @@
 		};
 		AC1D2CBA2661FFAD00AA351A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A2609956E8006D6C34CF9C1C /* Pods-ChatApplication.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
@@ -1200,7 +1268,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */ = {
+		05B83BBF2AC86778006058F0 /* XCRemoteSwiftPackageReference "Swipy" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hamed8080/Swipy";
 			requirement = {
@@ -1208,26 +1276,13 @@
 				version = 1.0.4;
 			};
 		};
-		05B91F192AAB6F8F003BC2F6 /* XCRemoteSwiftPackageReference "chat" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/hamed8080/chat";
-			requirement = {
-				kind = exactVersion;
-				version = 1.2.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		055024C12987E794009DDD18 /* Swipy */ = {
+		05B83BC02AC86778006058F0 /* Swipy */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 055024C02987E794009DDD18 /* XCRemoteSwiftPackageReference "Swipy" */;
+			package = 05B83BBF2AC86778006058F0 /* XCRemoteSwiftPackageReference "Swipy" */;
 			productName = Swipy;
-		};
-		05B91F1A2AAB6F8F003BC2F6 /* FanapPodChatSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 05B91F192AAB6F8F003BC2F6 /* XCRemoteSwiftPackageReference "chat" */;
-			productName = FanapPodChatSDK;
 		};
 /* End XCSwiftPackageProductDependency section */
 

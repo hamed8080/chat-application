@@ -1,35 +1,29 @@
 PODS:
-  - FanapPodAsyncSDK (0.10.0.2):
+  - FanapPodAsyncSDK (1.2.0):
     - Starscream (~> 3.0.5)
-  - FanapPodChatSDK (0.10.3.1):
-    - FanapPodAsyncSDK (~> 0.10.0.2)
-    - Sentry (~> 4.3.1)
-  - Sentry (4.3.4):
-    - Sentry/Core (= 4.3.4)
-  - Sentry/Core (4.3.4)
+  - FanapPodChatSDK (1.2.3):
+    - FanapPodAsyncSDK (~> 1.2.0)
   - Starscream (3.0.6)
 
 DEPENDENCIES:
-  - FanapPodAsyncSDK (from `/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Async-SDK`)
-  - FanapPodChatSDK (from `/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK`)
+  - FanapPodAsyncSDK (from `/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/async`)
+  - FanapPodChatSDK (from `/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat`)
 
 SPEC REPOS:
   trunk:
-    - Sentry
     - Starscream
 
 EXTERNAL SOURCES:
   FanapPodAsyncSDK:
-    :path: "/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Async-SDK"
+    :path: "/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/async"
   FanapPodChatSDK:
-    :path: "/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK"
+    :path: "/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat"
 
 SPEC CHECKSUMS:
-  FanapPodAsyncSDK: ac17746fbf5fabea957469d8a260fc57637f1380
-  FanapPodChatSDK: 81c5d3c89ddcd427bfd345b92087d51a2d20fd97
-  Sentry: 26f0e6492b103e87434d1a5eea2d241a36f2c2a2
+  FanapPodAsyncSDK: e2beeb0f464937444bb1416076630ecae8a02c6a
+  FanapPodChatSDK: 0b3026891e03e2c2dc4951b424614ecf84764aaa
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
 
-PODFILE CHECKSUM: 36f826158e21ee69deb57978336d119eb205b94f
+PODFILE CHECKSUM: 56237b1039218717d176ac7c908ae879a6b2c108
 
 COCOAPODS: 1.11.3

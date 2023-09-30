@@ -4,16 +4,12 @@ platform :ios, '12.0'
 
 def shared_pods
 #  pod 'FanapPodChatSDK', '0.10.3.0'
-  pod 'FanapPodAsyncSDK', :path => '/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Async-SDK'
-  pod 'FanapPodChatSDK', :path => '/Users/hamed/Desktop/WorkSpace/ios/Fanap/Fanap-Chat-SDK'
+  pod 'FanapPodAsyncSDK', :path => '/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/async'
+  pod 'FanapPodChatSDK', :path => '/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat'
 end
 
 target 'ChatApplication' do
   shared_pods
-end
-
-target 'MyWidgetExtension' do
-    shared_pods
 end
 
 #post_install do |installer|
@@ -26,3 +22,14 @@ end
 #    end
 #  end
 #end
+
+
+post_install do |installer|
+  installer.generated_projects.each do |project|
+    project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      end
+    end
+  end
+end
