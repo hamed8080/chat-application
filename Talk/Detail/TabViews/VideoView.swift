@@ -33,6 +33,14 @@ struct MessageListVideoView: View {
     var body: some View {
         ForEach(viewModel.messages) { message in
             VideoRowView(message: message)
+                .overlay(alignment: .bottom) {
+                    if message != viewModel.messages.last {
+                        Rectangle()
+                            .fill(.gray.opacity(0.3))
+                            .frame(height: 1)
+                            .padding(.leading)
+                    }
+                }
                 .onAppear {
                     if message == viewModel.messages.last {
                         viewModel.loadMore()
@@ -52,27 +60,23 @@ struct VideoRowView: View {
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        VStack {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(message.fileMetaData?.name ?? message.messageTitle)
-                        .font(.iransansTitle)
-                    Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
-                        .foregroundColor(.secondaryLabel)
-                        .font(.iransansSubtitle)
-                }
-                Spacer()
-
-                let view = DownloadVideoButtonView()
-                if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
-                    view.environmentObject(downloadVM)
-                } else {
-                    view
-                }
+        HStack {
+            VStack(alignment: .leading) {
+                Text(message.fileMetaData?.name ?? message.messageTitle)
+                    .font(.iransansBody)
+                Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
+                    .foregroundColor(.secondaryLabel)
+                    .font(.iransansCaption2)
             }
-            Rectangle()
-                .fill(.gray.opacity(0.3))
-                .frame(height: 1)
+            Spacer()
+
+            let view = DownloadVideoButtonView(threadVM: threadVM)
+                .padding(4)
+            if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+                view.environmentObject(downloadVM)
+            } else {
+                view
+            }
         }
         .padding([.leading, .trailing])
         .onTapGesture {
@@ -83,6 +87,7 @@ struct VideoRowView: View {
 }
 
 struct DownloadVideoButtonView: View {
+    let threadVM: ThreadViewModel
     @EnvironmentObject var viewModel: DownloadFileViewModel
     private var message: Message? { viewModel.message }
     static var config: DownloadFileViewConfig = {
@@ -95,10 +100,14 @@ struct DownloadVideoButtonView: View {
     var body: some View {
         switch viewModel.state {
         case .COMPLETED:
-            if let fileURL = viewModel.fileURL, let scaledImage = fileURL.imageScale(width: 420)?.image {
-                Image(cgImage: scaledImage)
-                    .resizable()
-                    .scaledToFit()
+            if message?.isVideo == true, let fileURL = viewModel.fileURL {
+                VideoPlayerView()
+                    .frame(width: 196, height: 196)
+                    .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
+                                                            ext: message?.fileMetaData?.file?.mimeType?.ext,
+                                                            title: message?.fileMetaData?.name,
+                                                            subtitle: message?.fileMetaData?.file?.originalName ?? ""))
+                    .id(fileURL)
             }
         case .DOWNLOADING, .STARTED:
             CircularProgressView(percent: $viewModel.downloadPercent, config: DownloadVideoButtonView.config.circleConfig)

@@ -31,6 +31,14 @@ struct MessageListLinkView: View {
     var body: some View {
         ForEach(viewModel.messages) { message in
             LinkRowView(message: message)
+                .overlay(alignment: .bottom) {
+                    if message != viewModel.messages.last {
+                        Rectangle()
+                            .fill(.gray.opacity(0.3))
+                            .frame(height: 1)
+                            .padding(.leading)
+                    }
+                }
                 .onAppear {
                     if message == viewModel.messages.last {
                         viewModel.loadMore()
@@ -50,26 +58,23 @@ struct LinkRowView: View {
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        VStack {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(message.fileMetaData?.name ?? message.messageTitle)
-                        .font(.iransansTitle)
-                    Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
-                        .foregroundColor(.secondaryLabel)
-                        .font(.iransansSubtitle)
-                }
-                Spacer()
-                let view = DownloadLinkButtonView()
-                if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
-                    view.environmentObject(downloadVM)
-                } else {
-                    view
-                }
+        HStack {
+            VStack(alignment: .leading) {
+                Text(message.fileMetaData?.name ?? message.messageTitle)
+                    .font(.iransansBody)
+                Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
+                    .foregroundColor(.secondaryLabel)
+                    .font(.iransansSubtitle)
             }
-            Rectangle()
-                .fill(.gray.opacity(0.3))
-                .frame(height: 1)
+            Spacer()
+            let view = DownloadLinkButtonView()
+                .frame(width: 48, height: 48)
+                .padding(4)
+            if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+                view.environmentObject(downloadVM)
+            } else {
+                view
+            }
         }
         .padding([.leading, .trailing])
         .onTapGesture {

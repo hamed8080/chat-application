@@ -18,7 +18,12 @@ struct AppOverlayFactory: View {
             GalleryView(message: message)
                 .id(message.id)
         case .galleryImageView(let image):
-            GalleryImageView(uiimage: image)
+            ZStack {
+                GalleryImageView(uiimage: image)
+            }
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+            .fullScreenBackgroundView()
+            .ignoresSafeArea(.all)
         case .none:
             EmptyView()
                 .frame(width: 0, height: 0)

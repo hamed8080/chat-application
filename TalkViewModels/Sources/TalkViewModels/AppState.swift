@@ -91,7 +91,7 @@ public final class AppState: ObservableObject {
     public func showThread(thread: Conversation) {
         withAnimation {
             isLoading = false
-            navViewModel?.selectedThreadId = thread.id
+            navViewModel?.append(thread: thread)
         }
     }
 

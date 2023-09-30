@@ -47,9 +47,11 @@ struct ParticipantRow: View {
                 }
                 Spacer()
             }
-            Rectangle()
-                .fill(.gray.opacity(0.2))
-                .frame(height: 0.5)
+            if participant != viewModel.sorted.last {
+                Rectangle()
+                    .fill(.gray.opacity(0.2))
+                    .frame(height: 0.5)
+            }
         }
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 12)

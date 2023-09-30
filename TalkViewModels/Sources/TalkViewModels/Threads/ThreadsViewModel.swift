@@ -234,8 +234,12 @@ public final class ThreadsViewModel: ObservableObject {
         let invitees = model.selectedContacts.map { contact in
             Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
         }
-        let req = CreateThreadRequest(invitees: invitees, title: model.title, type: model.type, uniqueName: model.isPublic ? model.title : nil)
-        ChatManager.activeInstance?.conversation.create(req)
+        if model.isGroup {
+            let req = CreateThreadRequest(invitees: invitees, title: model.title, type: model.type, uniqueName: model.isPublic ? model.title : nil)
+            ChatManager.activeInstance?.conversation.create(req)
+        } else if let contact = model.selectedContacts.first {
+            AppState.shared.openThread(contact: contact)
+        }
     }
 
     /// Create a thread and send a message without adding a contact.
