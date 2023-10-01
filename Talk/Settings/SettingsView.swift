@@ -31,6 +31,10 @@ struct SettingsView: View {
                     SettingLogSection()
                     SettingAssistantSection()
                 }
+
+                CustomSection {
+                    TokenExpireSection()
+                }
             }
             .padding(16)
         }
@@ -54,10 +58,10 @@ struct SettingsView: View {
         }
     }
 
-    var leadingViews: some View {
-        HStack {
-            ToolbarButtonItem(imageName: "qrcode", hint: "General.edit") {}
-        }
+   @ViewBuilder var leadingViews: some View {
+       #if DEBUG
+       ToolbarButtonItem(imageName: "qrcode", hint: "General.edit")
+       #endif
     }
 
     var centerViews: some View {
@@ -132,9 +136,11 @@ struct SettingLogSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
+        #if DEBUG
         SectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown) {
             navModel.paths.append(LogNavigationValue())
         }
+        #endif
     }
 }
 
@@ -178,7 +184,6 @@ struct SettingCallSection: View {
                     Spacer()
                 }
             }
-            TokenExpireView()
         }
     }
 }
@@ -311,20 +316,14 @@ struct UserConfigView: View {
     }
 }
 
-struct TokenExpireView: View {
+struct TokenExpireSection: View {
     @EnvironmentObject var viewModel: TokenManager
+    @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
         #if DEBUG
-            HStack {
-                Image(systemName: "key.fill")
-                    .foregroundColor(Color.yellow)
-                    .frame(width: 24, height: 24)
-                let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0)))
-                Text("Token expire in: \(secondToExpire)")
-                    .foregroundColor(Color.gray)
-                Spacer()
-            }
+        let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0)))
+        SectionButton(imageName: "key.fill", title: "Token expire in: \(secondToExpire)", color: .yellow, showDivider: false, shownavigationButton: false)
             .onAppear {
                 viewModel.startTokenTimer()
             }
@@ -377,9 +376,9 @@ struct SectionButton: View {
     let color: Color
     let showDivider: Bool
     let shownavigationButton: Bool
-    let action: () -> ()
+    let action: (() -> ())?
 
-    init(imageName: String, title: String, color: Color, showDivider: Bool = true, shownavigationButton: Bool = true, action: @escaping () -> Void) {
+    init(imageName: String, title: String, color: Color, showDivider: Bool = true, shownavigationButton: Bool = true, action: (() -> Void)? = nil) {
         self.imageName = imageName
         self.title = title
         self.color = color
@@ -390,15 +389,22 @@ struct SectionButton: View {
 
     var body: some View {
         Button {
-            action()
+            action?()
         } label: {
             VStack(alignment: .leading) {
                 HStack {
-                    Image(systemName: imageName)
-                        .padding(4)
-                        .background(color)
-                        .cornerRadius(8, corners: .allCorners)
-                        .foregroundColor(.white)
+                    HStack {
+                        Image(systemName: imageName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(.white)
+                    }
+                    .padding(4)
+                    .frame(width: 28, height: 28)
+                    .background(color)
+                    .cornerRadius(8, corners: .allCorners)
+
                     Text(String(localized: .init(title)))
                     if shownavigationButton {
                         Spacer()

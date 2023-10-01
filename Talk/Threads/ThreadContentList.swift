@@ -111,12 +111,7 @@ struct ThreadsTrailingToolbarView: View {
 //                Label("ThreadList.Toolbar.createABot", systemImage: "face.dashed.fill")
 //            }
         } label: {
-            Image(systemName: "plus.square")
-                .resizable()
-                .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth)
-                .scaledToFit()
-                .accessibilityHint("ThreadList.Toolbar.startNewChat")
-                .fontWeight(.thin)
+            ToolbarButtonItem(imageName: "plus.square", hint: "ThreadList.Toolbar.startNewChat")
         }
 
         Menu {
@@ -143,12 +138,7 @@ struct ThreadsTrailingToolbarView: View {
                 }
             }
         } label: {
-            Image(systemName: "line.3.horizontal.decrease.circle")
-                .resizable()
-                .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth)
-                .scaledToFit()
-                .accessibilityHint("ThreadList.Toolbar.filter")
-                .fontWeight(.thin)
+            ToolbarButtonItem(imageName: "line.3.horizontal.decrease.circle", hint: "ThreadList.Toolbar.filter")            
         }
     }
 }
