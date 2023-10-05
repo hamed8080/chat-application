@@ -9,38 +9,38 @@ import TalkExtensions
 import TalkViewModels
 import ChatModels
 import SwiftUI
+import Chat
 
 struct ReactionCountView: View {
     let message: Message
     private var messageId: Int { message.id ?? -1 }
     @State var reactionCountList: [ReactionCount] = []
-    @State var selectedUserReaction: Reaction?
+    var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
                 Spacer()
                 ForEach(reactionCountList) { reactionCount in
-                    ReactionCountRow(messageId: messageId, reactionCount: reactionCount, selectedUserReaction: selectedUserReaction)
+                    ReactionCountRow(messageId: messageId, reactionCount: reactionCount)
                 }
                 Spacer()
             }
         }
         .animation(.easeInOut, value: reactionCountList.count)
-        .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { newValue in
-            if newValue.object as? Int == messageId {
-                let reactionCountList = ReactionViewModel.shared.reactionCountList.first(where: { $0.messageId == messageId })
-                self.reactionCountList = reactionCountList?.reactionCounts ?? []
-                selectedUserReaction = reactionCountList?.userReaction
+        .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { notification in
+            if notification.object as? Int == messageId {
+                setCountList()
             }
         }
         .onAppear {
-            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                if let reactionCountList = ReactionViewModel.shared.reactionCountList.first(where: { $0.messageId == messageId }) {
-                    self.reactionCountList = reactionCountList.reactionCounts ?? []
-                    selectedUserReaction = reactionCountList.userReaction
-                }
-            }
+            setCountList()
+        }
+    }
+
+    func setCountList() {
+        if let reactionCountList = inMemoryReaction?.summary(for: messageId), reactionCountList != self.reactionCountList {
+            self.reactionCountList = reactionCountList
         }
     }
 }
@@ -49,7 +49,8 @@ struct ReactionCountRow: View {
     let messageId: Int
     @State var count: Int = 0
     let reactionCount: ReactionCount
-    @State var selectedUserReaction: Reaction?
+    @State var currentUserReaction: Reaction?
+    var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
 
     var body: some View {
         HStack {
@@ -68,11 +69,15 @@ struct ReactionCountRow: View {
         .padding([.top, .bottom], count > 0 ? 6 : 0)
         .background(background)
         .cornerRadius(18)
-        .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { newValue in
-            onNewValue(newValue.object as? Int)
+        .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { notification in
+            if notification.object as? Int == messageId {
+                onNewValue(notification.object as? Int)
+                setCurrentUserReaction()
+            }
         }
         .onAppear {
             count = reactionCount.count ?? 0
+            setCurrentUserReaction()
         }
         .onTapGesture {
             print("tapped on \(reactionCount.sticker?.emoji ?? "") with messageId: \(messageId)")
@@ -81,7 +86,7 @@ struct ReactionCountRow: View {
 
     @ViewBuilder
     var background: some View {
-        if selectedUserReaction?.reaction == reactionCount.sticker {
+        if currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue {
             Color.blue.opacity(0.8).cornerRadius(18)
         } else {
             Rectangle()
@@ -91,9 +96,16 @@ struct ReactionCountRow: View {
 
     func onNewValue(_ messageId: Int?) {
         if messageId == self.messageId {
-            count = ReactionViewModel.shared.reactionCountList
-                .first(where: { $0.messageId == messageId })?
-                .reactionCounts?.first(where: { $0.sticker == reactionCount.sticker })?.count ?? 0
+            count = inMemoryReaction?.summary(for: self.messageId)
+                .first(where: { $0.sticker == reactionCount.sticker })?.count ?? 0
+        }
+    }
+
+    func setCurrentUserReaction() {
+        if let userReaction = inMemoryReaction?.currentReaction(messageId) {
+            currentUserReaction = userReaction
+        } else {
+            currentUserReaction = nil
         }
     }
 }

@@ -17,7 +17,7 @@ struct EmojiIcon: View {
             HStack {
                 Image(systemName: "face.smiling.inverse")
                     .frame(width: 36, height: 36)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.orange.opacity(0.6))
                     .offset(x: -8)
                     .onTapGesture {
                         withAnimation(.easeInOut) {

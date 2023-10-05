@@ -40,7 +40,7 @@ public final class ObjectsContainer: ObservableObject {
         contactsVM.getContacts()
         logVM.clearLogs()
         appOverlayVM.clear()
-        reactions.clearLogs()
+        reactions.clear()
     }
 
     private func onMessageEvent(_ event: MessageEventTypes) {

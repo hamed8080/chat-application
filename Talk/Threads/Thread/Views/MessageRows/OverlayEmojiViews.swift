@@ -8,6 +8,7 @@
 import TalkViewModels
 import ChatModels
 import SwiftUI
+import Chat
 
 struct OverlayEmojiViews: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
@@ -32,7 +33,7 @@ struct OverlayEmojiViews: View {
             )
             .onAppear {
                 show = true
-                if ReactionViewModel.shared.userSelectedReactions.first(where: { $0.key == viewModel.message.id }) == nil,
+                if ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(viewModel.message.id ?? 0) == nil,
                    let messageId = viewModel.message.id,
                    let conversationId = viewModel.threadVM?.threadId
                 {

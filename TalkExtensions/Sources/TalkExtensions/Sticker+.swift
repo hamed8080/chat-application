@@ -27,9 +27,9 @@ public extension Sticker {
     var emoji: String {
         switch self {
         case .hifive:
-            return "👋"
+            return "🙏"
         case .like:
-            return "❤️"
+            return "👍"
         case .happy:
             return "😂"
         case .cry:

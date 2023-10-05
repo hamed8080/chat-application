@@ -16,16 +16,64 @@ struct MessageReactionDetailView: View {
     let message: Message
     private var messageId: Int { message.id ?? -1 }
     private var conversationId: Int { message.conversation?.id ?? -1 }
-    @Environment(\.dismiss) var dismiss
-    @State private var reactionDeatils: ReactionList?
-    @State private var reactions: [Reaction] = []
 
     init(message: Message) {
         self.message = message
     }
 
     var body: some View {
+        TabContainerView(
+            selectedId: "all",
+            tabs: tabItems,
+            config: .init(alignment: .top)
+        )
+        .navigationTitle("Reactions to: \(message.messageTitle.trimmingCharacters(in: .whitespacesAndNewlines))")
+    }
+
+    var tabItems: [TabItem] {
+        var items = ChatManager.activeInstance?.reaction.inMemoryReaction.summary(for: messageId)
+            .compactMap { reaction in
+                TabItem(
+                    tabContent: ParticiapntsPageSticker(
+                        sticker: reaction.sticker ?? .unknown,
+                        messageId: messageId,
+                        conversationId: conversationId
+                    ),
+                    title: "\(reaction.sticker?.emoji ?? "all") \(reaction.count ?? 0)"
+                )
+            } ?? []
+        if items.count > 0 {
+            items.insert(TabItem(
+                tabContent: ParticiapntsPageSticker(
+                    sticker: .unknown,
+                    messageId: messageId,
+                    conversationId: conversationId
+                ),
+                title: "all"
+            ), at: 0)
+            return items
+        } else {
+            return []
+        }
+    }
+}
+
+struct ParticiapntsPageSticker: View {
+    let sticker: Sticker
+    @State private var reactions: [Reaction] = []
+    private let messageId: Int
+    private let conversationId: Int
+
+    init(sticker: Sticker, reactions: [Reaction] = [], messageId: Int, conversationId: Int) {
+        self.sticker = sticker
+        self.reactions = reactions
+        self.messageId = messageId
+        self.conversationId = conversationId
+    }
+
+    var body: some View {
         List {
+            Color.random
             ForEach(reactions) { reaction in
                 HStack {
                     Text(reaction.reaction?.emoji ?? "")
@@ -51,33 +99,18 @@ struct MessageReactionDetailView: View {
                 }
                 .onAppear {
                     if reactions.last == reaction {
-                        ReactionViewModel.shared.getDetail(for: messageId, offset: reactions.count, conversationId: conversationId)
-                    }
-                }
-                .contextMenu {
-                    Button(role: .destructive) {
-                        ChatManager.activeInstance?.reaction.delete(.init(reactionId: reaction.id ?? -1, conversationId: conversationId))
-                    } label: {
-                        Label("Remove", systemImage: "trash")
+                        ReactionViewModel.shared.getDetail(for: messageId,
+                                                           offset: reactions.count,
+                                                           conversationId: conversationId,
+                                                           sticker: sticker
+                        )
                     }
                 }
             }
         }
-        .navigationTitle("Reactions to: \(message.messageTitle.trimmingCharacters(in: .whitespacesAndNewlines))")
-        .onAppear {
-            ReactionViewModel.shared.getDetail(for: messageId, conversationId: conversationId)
-        }
-        .onDisappear {
-            ReactionViewModel.shared.selectedMessageReactionDetails = nil
-        }
-        .onReceive(ReactionViewModel.shared.objectWillChange) { _ in
-            if messageId == ReactionViewModel.shared.selectedMessageReactionDetails?.messageId {
-                reactionDeatils = ReactionViewModel.shared.selectedMessageReactionDetails
-                reactions = reactionDeatils?.reactions ?? []
-            }
-        }
-        .onTapGesture {
-            dismiss()
+        .safeAreaInset(edge: .top) {
+            EmptyView()
+                .frame(width: 0, height: 12)
         }
     }
 }
