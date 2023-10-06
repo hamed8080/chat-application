@@ -39,6 +39,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var bottomLoading = false
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading && !disableScrolling }
     public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom && !disableScrolling }
+    public var canShowMute: Bool { (thread.type == .channel || thread.type == .channelGroup) && thread.admin == false && !isInEditMode }
     public var sections: [MessageSection] = []
     @Published public var editMessage: Message?
     public var replyMessage: Message?

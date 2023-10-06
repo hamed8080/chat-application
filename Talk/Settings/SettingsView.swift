@@ -25,6 +25,7 @@ struct SettingsView: View {
                 UserProfileView()
                 CustomSection {
                     SettingSettingSection()
+                    SavedMessageSection()
                     // SettingCallHistorySection()
                     // SettingSavedMessagesSection()
                     // SettingCallSection()
@@ -142,6 +143,16 @@ struct SettingLogSection: View {
             navModel.appendLog()
         }
         #endif
+    }
+}
+
+struct SavedMessageSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
+    var body: some View {
+        SectionButton(imageName: "bookmark.fill", title: "Thread.selfThread", color: .purple) {
+            ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
+        }
     }
 }
 

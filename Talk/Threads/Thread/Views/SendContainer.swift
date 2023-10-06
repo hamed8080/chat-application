@@ -11,6 +11,7 @@ import Combine
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import Chat
 
 struct SendContainer: View {
     @State private var isInEditMode: Bool = false
@@ -28,56 +29,58 @@ struct SendContainer: View {
             VStack(spacing: 0) {
                 if isInEditMode {
                     SelectionView(viewModel: viewModel, deleteMessagesDialog: $deleteMessagesDialog)
+                } else if viewModel.canShowMute {
+                    MuteChannelViewPlaceholder()
                 } else {
                     ReplyMessageViewPlaceholder()
-                        .environmentObject(viewModel)
-                    MentionList(text: $text)
-                        .frame(maxHeight: 320)
-                        .environmentObject(viewModel)
-                    EditMessagePlaceholderView()
-                        .environmentObject(viewModel)
-                    if let recordingVM = viewModel.audioRecoderVM {
-                        AudioRecordingView(isRecording: $isRecording, nameSpace: id)
-                            .environmentObject(recordingVM)
-                    }
-                    HStack {
-                        if isRecording == false {
-                            GradientImageButton(image: "paperclip", title: "Thread.SendContainer.attachment") {
-                                viewModel.sheetType = .attachment
+                            .environmentObject(viewModel)
+                        MentionList(text: $text)
+                            .frame(maxHeight: 320)
+                            .environmentObject(viewModel)
+                        EditMessagePlaceholderView()
+                            .environmentObject(viewModel)
+                        if let recordingVM = viewModel.audioRecoderVM {
+                            AudioRecordingView(isRecording: $isRecording, nameSpace: id)
+                                .environmentObject(recordingVM)
+                        }
+                        HStack {
+                            if isRecording == false {
+                                GradientImageButton(image: "paperclip", title: "Thread.SendContainer.attachment") {
+                                    viewModel.sheetType = .attachment
+                                    viewModel.animateObjectWillChange()
+                                }
+                                .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
+                            }
+
+                            MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "", text: $text, textColor: Color.black, mention: true)
+                                .cornerRadius(16)
+                                .onChange(of: viewModel.textMessage ?? "") { newValue in
+                                    viewModel.sendStartTyping(newValue)
+                                }
+                            if isRecording == false {
+                                GradientImageButton(image: "mic.fill", title: "Thread.SendContainer.voiceRecording") {
+                                    viewModel.setupRecording()
+                                    isRecording = true
+                                }
+                                .keyboardShortcut(.init("r"), modifiers: [.command])
+                            }
+
+                            GradientImageButton(image: "arrow.up.circle.fill", title: "General.send") {
+                                if isRecording {
+                                    viewModel.audioRecoderVM?.stopAndSend()
+                                    isRecording = false
+                                } else if !text.isEmpty {
+                                    viewModel.sendTextMessage(text)
+                                }
+                                text = ""
+                                viewModel.sheetType = nil
                                 viewModel.animateObjectWillChange()
+                                UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
                             }
-                            .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
+                            .keyboardShortcut(.return, modifiers: [.command])
                         }
-
-                        MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "", text: $text, textColor: Color.black, mention: true)
-                            .cornerRadius(16)
-                            .onChange(of: viewModel.textMessage ?? "") { newValue in
-                                viewModel.sendStartTyping(newValue)
-                            }
-                        if isRecording == false {
-                            GradientImageButton(image: "mic.fill", title: "Thread.SendContainer.voiceRecording") {
-                                viewModel.setupRecording()
-                                isRecording = true
-                            }
-                            .keyboardShortcut(.init("r"), modifiers: [.command])
-                        }
-
-                        GradientImageButton(image: "arrow.up.circle.fill", title: "General.send") {
-                            if isRecording {
-                                viewModel.audioRecoderVM?.stopAndSend()
-                                isRecording = false
-                            } else if !text.isEmpty {
-                                viewModel.sendTextMessage(text)
-                            }
-                            text = ""
-                            viewModel.sheetType = nil
-                            viewModel.animateObjectWillChange()
-                            UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
-                        }
-                        .keyboardShortcut(.return, modifiers: [.command])
                     }
                 }
-            }
             .opacity(disableSend ? 0.3 : 1.0)
             .disabled(disableSend)
             .padding(.bottom, 4)
@@ -123,7 +126,7 @@ struct SendContainer: View {
         appear ? .spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2) : .easeOut(duration: 0.13)
     }
 
-    private var disableSend: Bool { viewModel.thread.disableSend && isInEditMode == false }
+    private var disableSend: Bool { viewModel.thread.disableSend && isInEditMode == false && !viewModel.canShowMute }
 }
 
 struct SelectionView: View {
@@ -209,6 +212,47 @@ struct ReplyMessageViewPlaceholder: View {
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
             .padding(8)
+        }
+    }
+}
+
+struct MuteChannelViewPlaceholder: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+    @State var mute: Bool = false
+
+    var body: some View {
+        if viewModel.canShowMute {
+            HStack(spacing: 0) {
+                Spacer()
+                Image(systemName: mute ? "speaker.fill" : "speaker.slash.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(Color.blue)
+                Text(mute ? "Thread.unmute" : "Thread.mute")
+                    .font(.iransansBody)
+                    .offset(x: 8)
+                Spacer()
+            }
+            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+            .onTapGesture {
+                viewModel.threadsViewModel?.toggleMute(viewModel.thread)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .thread)) { newValue in
+                if let event = newValue.object as? ThreadEventTypes {
+                    if case let .mute(response) = event, response.subjectId == viewModel.threadId {
+                        mute = true
+                    }
+
+                    if case let .unmute(response) = event, response.subjectId == viewModel.threadId {
+                        mute = false
+                    }
+                }
+            }
+            .onAppear {
+                mute = viewModel.thread.mute ?? false
+            }
+            .animation(.easeInOut, value: mute)
         }
     }
 }

@@ -239,6 +239,8 @@ public final class ThreadsViewModel: ObservableObject {
             ChatManager.activeInstance?.conversation.create(req)
         } else if let contact = model.selectedContacts.first {
             AppState.shared.openThread(contact: contact)
+        } else if model.type == .selfThread {
+            ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
         }
     }
 
