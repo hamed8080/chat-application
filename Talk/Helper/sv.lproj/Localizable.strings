@@ -35,7 +35,7 @@
 "General.lastName" = "Efternamn";
 "General.contact" = "Kontakt";
 "General.done" = "Klar";
-"General.nothingSelected" = "Inget har valts. Du kan starta en konversation nu!";
+"General.nothingSelectedConversation" = "Inget har valts. Du kan starta en konversation nu!";
 "General.start" = "Starta";
 "General.appName" = "Talk";
 "General.nothingFound" = "Inget hittades";
@@ -249,7 +249,7 @@
 "Messages.ActionMenu.replyPrivately" = "Svara privat";
 "Messages.ActionMenu.forward" = "Vidarebefordra";
 "Messages.ActionMenu.copy" = "Kopiera";
-"Messages.ActionMenu.deleteCache" = "Radera cache för detta meddelande";
+"Messages.ActionMenu.deleteCache" = "Ta bort cachad fil";
 "Messages.ActionMenu.pinMessage" = "Nåla";
 "Messages.ActionMenu.unpinMessage" = "Avnåla";
 "Messages.unreadMessages" = "Olästa meddelanden";

@@ -22,7 +22,15 @@ struct BlockedContacts: View {
             }
         }
         .navigationTitle("Contacts.blockedList")
+        .navigationBarBackButtonHidden(true)
         .listStyle(.plain)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                NavigationBackButton {
+                    AppState.shared.navViewModel?.remove(type: BlockedContactsNavigationValue.self)
+                }
+            }
+        }
     }
 }
 

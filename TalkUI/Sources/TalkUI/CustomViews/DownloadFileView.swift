@@ -28,6 +28,7 @@ public struct DownloadFileView: View {
     public var body: some View {
         HStack {
             ZStack(alignment: .center) {
+                DownloadImagethumbnail(viewModel: viewModel)
                 MutableDownloadViews(config: config)
                     .environmentObject(viewModel)
             }
@@ -50,7 +51,7 @@ public struct DownloadFileView: View {
             }
         }
         .onAppear {
-            if message?.isImage == true, !viewModel.isInCache, viewModel.tumbnailData == nil {
+            if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
                 viewModel.downloadBlurImage()
             }
         }
@@ -118,14 +119,6 @@ struct MutableDownloadViews: View {
                     viewModel.resumeDownload()
                 }
         case .UNDEFINED, .THUMBNAIL:
-            if message?.isImage == true, let data = viewModel.tumbnailData, let image = UIImage(data: data) {
-                Image(uiImage: image)
-                    .resizable()
-                    .blur(radius: 5, opaque: true)
-                    .scaledToFill()
-                    .zIndex(0)
-            }
-
             Image(systemName: "arrow.down.circle")
                 .resizable()
                 .font(.headline.weight(.thin))
@@ -140,6 +133,28 @@ struct MutableDownloadViews: View {
         default:
             EmptyView()
         }
+    }
+}
+
+struct DownloadImagethumbnail: View {
+    @State var thumbnailData: Data?
+    let viewModel: DownloadFileViewModel
+    var message: Message? { viewModel.message }
+
+    var body: some View {
+        Image(uiImage: UIImage(data: thumbnailData ?? Data()) ?? UIImage())
+            .resizable()
+            .blur(radius: 5, opaque: true)
+            .scaledToFill()
+            .zIndex(0)
+            .onReceive(viewModel.objectWillChange) { _ in
+                if viewModel.thumbnailData != self.thumbnailData,
+                   message?.isImage == true,
+                   viewModel.state != .COMPLETED
+                {
+                    self.thumbnailData = viewModel.thumbnailData
+                }
+            }
     }
 }
 

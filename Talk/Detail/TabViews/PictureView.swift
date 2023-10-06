@@ -153,7 +153,7 @@ struct DownloadPictureButtonView: View {
                 }
         case .UNDEFINED, .THUMBNAIL:
             ZStack {
-                if message?.isImage == true, let data = viewModel.tumbnailData, let image = UIImage(data: data) {
+                if message?.isImage == true, let data = viewModel.thumbnailData, let image = UIImage(data: data) {
                     Image(uiImage: image)
                         .resizable(resizingMode: .stretch)
                         .frame(width: itemWidth, height: itemWidth)
@@ -175,7 +175,7 @@ struct DownloadPictureButtonView: View {
                         viewModel.startDownload()
                     }
                     .onAppear {
-                        if message?.isImage == true, !viewModel.isInCache, viewModel.tumbnailData == nil {
+                        if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
                             viewModel.downloadBlurImage()
                         }
                     }

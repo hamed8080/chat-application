@@ -25,7 +25,7 @@ public protocol DownloadFileViewModelProtocol {
 public final class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     public var downloadPercent: Int64 = 0
     public var state: DownloadFileState = .UNDEFINED
-    public var tumbnailData: Data?
+    public var thumbnailData: Data?
     public var data: Data?
     public var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
     var chat: Chat? { ChatManager.activeInstance }
@@ -135,7 +135,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             state = .THUMBNAIL
             RequestsManager.shared.remove(prepend: "THUMBNAIL", for: uniqueId)
             autoreleasepool {
-                self.tumbnailData = data
+                self.thumbnailData = data
                 animateObjectWillChange()
             }
             return

@@ -129,7 +129,7 @@ struct DownloadVideoButtonView: View {
                     viewModel.resumeDownload()
                 }
         case .UNDEFINED, .THUMBNAIL:
-            if message?.isImage == true, let data = viewModel.tumbnailData, let image = UIImage(data: data) {
+            if message?.isImage == true, let data = viewModel.thumbnailData, let image = UIImage(data: data) {
                 Image(uiImage: image)
                     .resizable()
                     .blur(radius: 5, opaque: true)

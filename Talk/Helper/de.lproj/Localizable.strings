@@ -35,7 +35,7 @@
 "General.lastName" = "Nachname";
 "General.contact" = "Kontakt";
 "General.done" = "Fertig";
-"General.nothingSelected" = "Es wurde nichts ausgewählt. Sie können jetzt ein Gespräch beginnen!";
+"General.nothingSelectedConversation" = "Es wurde nichts ausgewählt. Sie können jetzt ein Gespräch beginnen!";
 "General.start" = "Start";
 "General.appName" = "Talk";
 "General.nothingFound" = "Nichts gefunden";
@@ -249,7 +249,7 @@
 "Messages.ActionMenu.replyPrivately" = "Privat antworten";
 "Messages.ActionMenu.forward" = "Weiterleiten";
 "Messages.ActionMenu.copy" = "Kopieren";
-"Messages.ActionMenu.deleteCache" = "Cache für diese Nachricht löschen";
+"Messages.ActionMenu.deleteCache" = "Zwischengespeicherte Datei löschen";
 "Messages.ActionMenu.pinMessage" = "Anheften";
 "Messages.ActionMenu.unpinMessage" = "Lösen";
 "Messages.unreadMessages" = "Ungelesene Nachrichten";

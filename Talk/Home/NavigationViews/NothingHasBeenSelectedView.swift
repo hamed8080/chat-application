@@ -27,7 +27,7 @@ struct NothingHasBeenSelectedView: View {
                     .frame(width: 64, height: 64)
                     .opacity(0.2)
                 VStack(spacing: 16) {
-                    Text("General.nothingSelected")
+                    Text("General.nothingSelectedConversation")
                         .font(.iransansSubheadline)
                         .foregroundColor(.secondaryLabel)
                     Button {

@@ -4,16 +4,46 @@ import SwiftUI
 import TalkModels
 import ChatModels
 
+public struct PreferenceNavigationValue: Hashable {}
+public struct AssistantNavigationValue: Hashable {}
+public struct LogNavigationValue: Hashable {}
+public struct BlockedContactsNavigationValue: Hashable {}
+
 public final class NavigationModel: ObservableObject {
     @Published public var selectedThreadId: Conversation.ID?
     public var threadViewModel: ThreadsViewModel?
     @Published public var paths = NavigationPath()
     public var currentThreadVM: ThreadViewModel?
     var threadStack: [ThreadViewModel] = []
+    var pathsTracking: [Any] = []
     public init() {}
 
     public func clear() {
         animateObjectWillChange()
+    }
+
+    public func appendBlockedContacts() {
+        let blockedContacts = BlockedContactsNavigationValue()
+        paths.append(blockedContacts)
+        pathsTracking.append(blockedContacts)
+    }
+
+    public func appendPreference() {
+        let preference = PreferenceNavigationValue()
+        paths.append(preference)
+        pathsTracking.append(preference)
+    }
+
+    public func appendAssistant() {
+        let assistant = AssistantNavigationValue()
+        paths.append(assistant)
+        pathsTracking.append(assistant)
+    }
+
+    public func appendLog() {
+        let log = LogNavigationValue()
+        paths.append(log)
+        pathsTracking.append(log)
     }
 
     public func append(participantDetail: Participant) {
@@ -21,14 +51,18 @@ public final class NavigationModel: ObservableObject {
     }
 
     public func append(threadDetail: Conversation) {
-        paths.append(DetailViewModel(thread: threadDetail))
+        let detailViewModel = DetailViewModel(thread: threadDetail)
+        paths.append(detailViewModel)
+        pathsTracking.append(detailViewModel)
         selectedThreadId = threadDetail.id
         setCurrentThreadViewModel()
     }
 
     public func append(thread: Conversation) {
         if !threadStack.contains(where: {$0.threadId == thread.id}) {
-            threadStack.append(ThreadViewModel(thread: thread, threadsViewModel: threadViewModel))
+            let threadViewModel = ThreadViewModel(thread: thread, threadsViewModel: threadViewModel)
+            threadStack.append(threadViewModel)
+            pathsTracking.append(threadViewModel)
         }
         paths.append(thread)
         selectedThreadId = thread.id
@@ -36,8 +70,8 @@ public final class NavigationModel: ObservableObject {
     }
 
     func setCurrentThreadViewModel() {
-        guard let thread = threadViewModel?.threads.first(where: { $0.id  == selectedThreadId }) else { return }
-        currentThreadVM = ThreadViewModel(thread: thread)
+        guard let threadViewModel = threadStack.first(where: { $0.threadId == selectedThreadId }) else { return }
+        currentThreadVM = threadViewModel
     }
 
     public func threadViewModel(threadId: Int) -> ThreadViewModel? {
@@ -51,5 +85,44 @@ public final class NavigationModel: ObservableObject {
 
     var presentedThreadViewModel: ThreadViewModel? {
         threadStack.last
+    }
+
+    public func remove<T>(type: T.Type, threadId: Int? = nil) {
+        if pathsTracking.filter({$0 is T }).count == 1 {
+            if type is ThreadViewModel.Type {
+                threadStack.removeAll(where: { $0.threadId == threadId })
+            }
+            pathsTracking.removeAll(where: {($0 is T)})
+        } else if let index = pathsTracking.firstIndex(where: {$0 is T }) {
+            pathsTracking.remove(at: index)
+        }
+    }
+
+    public var previousItem: Any? {
+        if pathsTracking.count > 1 {
+            return pathsTracking[pathsTracking.count - 2]
+        } else {
+            return nil
+        }
+    }
+
+    public var previousTitle: String {
+        if let thread = previousItem as? Conversation {
+            return thread.computedTitle
+        } else if let threadVM = previousItem as? ThreadViewModel {
+            return threadVM.thread.computedTitle
+        } else if previousItem is PreferenceNavigationValue {
+            return "Settings.title"
+        } else if previousItem is BlockedContactsNavigationValue {
+            return "Contacts.blockedList"
+        } else if let detail = previousItem as? DetailViewModel {
+            return detail.title
+        } else if previousItem is LogNavigationValue {
+            return "Logs.title"
+        } else if previousItem is AssistantNavigationValue {
+            return "Assistant.Assistants"
+        } else {
+            return ""
+        }
     }
 }

@@ -35,14 +35,14 @@
 "General.lastName" = "Last Name";
 "General.contact" = "Contact";
 "General.done" = "Done";
-"General.nothingSelected" = "Nothing has been selected. You can start a conversation right now!";
+"General.nothingSelectedConversation" = "Nothing has been selected. You can start a conversation right now!";
 "General.start" = "Start";
 "General.appName" = "Talk";
 "General.nothingFound" = "Nothing found";
 "General.all" = "All";
 "General.submit" = "Submit";
 "General.create" = "Create";
-"General.nothingSelected" = "Nothing Has been selected.";
+"General.nothingSelected" = "Nothing has been selected.";
 "General.selected" = "Selected";
 "General.photoOrVideo" = "Photo Or Video";
 "General.file" = "File";
@@ -250,7 +250,7 @@
 "Messages.ActionMenu.replyPrivately" = "Reply Privately";
 "Messages.ActionMenu.forward" = "Forward";
 "Messages.ActionMenu.copy" = "Copy";
-"Messages.ActionMenu.deleteCache" = "Delete cache for this message";
+"Messages.ActionMenu.deleteCache" = "Delete cached file";
 "Messages.ActionMenu.pinMessage" = "Pin";
 "Messages.ActionMenu.unpinMessage" = "UNPin";
 "Messages.unreadMessages" = "Unread Messages";

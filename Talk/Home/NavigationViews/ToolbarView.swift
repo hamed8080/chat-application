@@ -48,7 +48,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     }
 
     var body: some View {
-        HStack(spacing: isInSearchMode ? 0 : 24) {
+        HStack(spacing: isInSearchMode ? 0 : 8) {
             toolbars
         }
         .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: isInSearchMode)
@@ -78,6 +78,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
         leadingNavigationViews
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
+            .disabled(isInSearchMode)
         if !isInSearchMode {
             Spacer()
         }
@@ -91,6 +92,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
         trailingNavigationViews
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
+            .disabled(isInSearchMode)
     }
 
     @ViewBuilder var searchView: some View {
@@ -120,7 +122,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                     .padding(.leading)
             }
             .buttonStyle(.borderless)
-            .frame(minWidth: 0, maxWidth: isInSearchMode ? nil : 0, minHeight: 0, maxHeight: isInSearchMode ? toolbarHeight : 0)
+            .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? toolbarHeight : 0)
             .clipped()
 
             ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search") {

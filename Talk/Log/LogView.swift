@@ -33,9 +33,16 @@ struct LogView: View {
         .navigationTitle("Logs.title")
         .animation(.easeInOut, value: viewModel.filtered.count)
         .listStyle(.plain)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItemGroup {
                 trailingToolbars
+            }
+
+            ToolbarItemGroup(placement: .navigation) {
+                NavigationBackButton {
+                    AppState.shared.navViewModel?.remove(type: LogNavigationValue.self)
+                }
             }
         }
     }

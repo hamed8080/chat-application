@@ -35,7 +35,7 @@
 "General.lastName" = "Apellido";
 "General.contact" = "Contacto";
 "General.done" = "Hecho";
-"General.nothingSelected" = "No se ha seleccionado nada. ¡Puedes iniciar una conversación ahora mismo!";
+"General.nothingSelectedConversation" = "No se ha seleccionado nada. ¡Puedes iniciar una conversación ahora mismo!";
 "General.start" = "Comenzar";
 "General.appName" = "Talk";
 "General.nothingFound" = "No se encontró nada";
@@ -249,7 +249,7 @@
 "Messages.ActionMenu.replyPrivately" = "Responder en privado";
 "Messages.ActionMenu.forward" = "Reenviar";
 "Messages.ActionMenu.copy" = "Copiar";
-"Messages.ActionMenu.deleteCache" = "Eliminar caché para este mensaje";
+"Messages.ActionMenu.deleteCache" = "Eliminar archivo en caché";
 "Messages.ActionMenu.pinMessage" = "Anclar";
 "Messages.ActionMenu.unpinMessage" = "Desanclar";
 "Messages.unreadMessages" = "Mensajes sin leer";

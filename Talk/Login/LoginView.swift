@@ -11,6 +11,7 @@ import TalkExtensions
 import TalkModels
 import TalkUI
 import TalkViewModels
+import Combine
 
 struct LoginView: View {
     @EnvironmentObject var viewModel: LoginViewModel
@@ -79,15 +80,31 @@ struct VerifyContentView: View {
                         .multilineTextAlignment(.center)
                         .font(.iransansBoldLargeTitle)
                         .focused($focusField, equals: VerifyFocusFileds.allCases.first(where: { i == $0.rawValue })!)
-                        .onChange(of: viewModel.verifyCodes[i]) { _ in
-                            if viewModel.verifyCodes[i].count == 1 {
+                        .disabled(viewModel.isLoading)
+                        .opacity(viewModel.isLoading ? 0.5 : 1)
+                        .onChange(of: viewModel.verifyCodes[i]) { newString in
+
+                            if newString.count > 2, i == VerifyFocusFileds.allCases.count - 1 {
+                                viewModel.verifyCodes[i] = String(newString[newString.startIndex..<newString.index(newString.startIndex, offsetBy: 2)])
+                                return
+                            }
+
+                            if !newString.hasPrefix("\u{200B}") {
+                                viewModel.verifyCodes[i] = "\u{200B}" + newString
+                            }
+
+                            if newString.count == 0 , i > 0 {
+                                viewModel.verifyCodes[i - 1] = "\u{200B}"
+                                focusField = VerifyFocusFileds.allCases.first(where: { $0.rawValue == i - 1 })
+                            }
+
+                            /// Move focus to the next textfield if there is something inside the textfield.
+                            if viewModel.verifyCodes[i].count == 2, i < VerifyFocusFileds.allCases.count - 1 {
+                                viewModel.verifyCodes[i + 1] = "\u{200B}"
                                 focusField = VerifyFocusFileds.allCases.first(where: { $0.rawValue == i + 1 })
                             }
-                            if viewModel.verifyCodes[i].count > 1 {
-                                let firstChar = viewModel.verifyCodes[i][viewModel.verifyCodes[i].startIndex]
-                                viewModel.verifyCodes[i] = String(firstChar)
-                            }
-                            if viewModel.verifyCodes[i].count == 1, i == VerifyFocusFileds.allCases.count - 1 {
+
+                            if viewModel.verifyCodes[i].count == 2, i == VerifyFocusFileds.allCases.count - 1 {
                                 // Submit automatically
                                 Task {
                                     await viewModel.verifyCode()
@@ -97,6 +114,10 @@ struct VerifyContentView: View {
                 }
             }
             .transition(.asymmetric(insertion: .scale(scale: 1), removal: .scale(scale: 0)))
+            .onAppear {
+                /// Add Zero-Width space 'hidden character' for using as a backspace.
+                viewModel.verifyCodes[0] = "\u{200B}"
+            }
 
             Button {
                 Task {
@@ -194,13 +215,14 @@ struct LoginContentView: View {
                 .font(.iransansFootnote)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(.gray.opacity(1))
-
+            #if DEBUG
             Picker("Server", selection: $viewModel.selectedServerType) {
                 ForEach(ServerTypes.allCases) { server in
                     Text(server.rawValue)
                 }
             }
             .pickerStyle(.menu)
+            #endif
         }
         .frame(maxWidth: 420)
         .onChange(of: viewModel.state) { newState in

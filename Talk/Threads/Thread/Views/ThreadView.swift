@@ -27,6 +27,7 @@ struct ThreadView: View, DropDelegate {
         ThreadMessagesList(viewModel: viewModel)
             .id(thread.id)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
             .navigationTitle(thread.computedTitle)
             .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
@@ -46,6 +47,12 @@ struct ThreadView: View, DropDelegate {
                 ThreadPinMessage(threadVM: viewModel)
             }
             .toolbar {
+                ToolbarItemGroup(placement: .navigation) {
+                    NavigationBackButton {
+                        AppState.shared.navViewModel?.remove(type: ThreadViewModel.self, threadId: thread.id)
+                    }
+                }
+
                 if UIDevice.current.userInterfaceIdiom == .pad && sizeClass != .compact {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         Button {

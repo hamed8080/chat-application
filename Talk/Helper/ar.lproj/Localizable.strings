@@ -35,10 +35,9 @@
 "General.lastName" = "اسم العائلة";
 "General.contact" = "جهة الاتصال";
 "General.done" = "تم";
-"General.nothingSelected" = "لم يتم تحديد أي شيء. يمكنك بدء محادثة الآن!";
+"General.nothingSelectedConversation" = "لم يتم تحديد أي شيء. يمكنك بدء محادثة الآن!";
 "General.start" = "بدء";
 "General.appName" = "Talk";
-"General.nothingFound" = "لم يتم العثور على شيء";
 "General.all" = "الكل";
 "General.submit" = "إرسال";
 "General.create" = "إنشاء";
@@ -249,7 +248,7 @@
 "Messages.ActionMenu.replyPrivately" = "الرد بشكل خاص";
 "Messages.ActionMenu.forward" = "إعادة التوجيه";
 "Messages.ActionMenu.copy" = "نسخ";
-"Messages.ActionMenu.deleteCache" = "حذف ذاكرة التخزين المؤقت لهذه الرسالة";
+"Messages.ActionMenu.deleteCache" = "حذف الملف المخزن مؤقتا";
 "Messages.ActionMenu.pinMessage" = "تثبيت";
 "Messages.ActionMenu.unpinMessage" = "إلغاء تثبيت";
 "Messages.unreadMessages" = "رسائل غير مقروءة";

@@ -9,11 +9,6 @@ import SwiftUI
 import TalkViewModels
 import ChatModels
 
-struct PreferenceNavigationValue: Hashable {}
-struct AssistantNavigationValue: Hashable {}
-struct LogNavigationValue: Hashable {}
-struct BlockedContactsNavigationValue: Hashable {}
-
 struct ContainerSplitView<SidebarView: View>: View {
     let sidebarView: SidebarView
     @Environment(\.horizontalSizeClass) var sizeClass

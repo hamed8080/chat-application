@@ -83,7 +83,7 @@ struct SettingSettingSection: View {
 
     var body: some View {
         SectionButton(imageName: "gearshape.fill", title: "Settings.title", color: .gray) {
-            navModel.paths.append(PreferenceNavigationValue())
+            navModel.appendPreference()
         }
     }
 }
@@ -103,6 +103,7 @@ struct PreferenceView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .navigationTitle("Settings.title")
     }
 }
 
@@ -138,7 +139,7 @@ struct SettingLogSection: View {
     var body: some View {
         #if DEBUG
         SectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown) {
-            navModel.paths.append(LogNavigationValue())
+            navModel.appendLog()
         }
         #endif
     }
@@ -149,7 +150,7 @@ struct SettingAssistantSection: View {
 
     var body: some View {
         SectionButton(imageName: "person.fill", title: "Settings.assistants", color: .blue, showDivider: false) {
-            navModel.paths.append(AssistantNavigationValue())
+            navModel.appendAssistant()
         }
     }
 }

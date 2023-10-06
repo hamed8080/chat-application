@@ -98,7 +98,7 @@ struct ContactContentList: View {
 
       ToolbarButtonItem(imageName: "hand.raised.slash", hint: "General.blocked") {
           withAnimation {
-              navVM.paths.append(BlockedContactsNavigationValue())
+              navVM.appendBlockedContacts()
           }
       }
 

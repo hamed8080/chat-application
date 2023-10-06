@@ -9,21 +9,23 @@ import SwiftUI
 
 struct TabButtonItem: View {
     var title: String
-    var image: Image
+    var image: Image?
     let contextMenu: (any View)?
     var isSelected: Bool
     var onClick: () -> Void
 
     var body: some View {
         VStack {
-            image
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-                .foregroundColor(isSelected ? .orange : .primary)
+            if let image {
+                image
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(isSelected ? .orange : .primary)
+            }
 
-            Text(title)
-                .font(.caption2)
+            Text(String(localized: .init(title)))
+                .font(.iransansBoldCaption)
                 .foregroundColor(isSelected ? .orange : .gray)
         }
         .contentShape(Rectangle())

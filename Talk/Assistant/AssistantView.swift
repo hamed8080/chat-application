@@ -26,9 +26,15 @@ struct AssistantView: View {
             .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
         }
         .environmentObject(viewModel)
-        .navigationTitle("Assistant.Assistants")
+        .navigationBarBackButtonHidden(true)
         .animation(.easeInOut, value: viewModel.assistants.count)
         .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                NavigationBackButton {
+                    AppState.shared.navViewModel?.remove(type: AssistantNavigationValue.self)
+                }
+            }
+
             ToolbarItemGroup {
                 Button {
                     viewModel.deactiveSelectedAssistants()

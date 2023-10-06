@@ -12,7 +12,7 @@ public struct ToolbarButtonItem: View {
     let imageName: String
     let hint: String
     let action: (() -> Void)?
-    static let buttonWidth: CGFloat = 20
+    static let buttonWidth: CGFloat = 38
 
     init(imageName: String, hint: String = "", action: (() -> Void)? = nil) {
         self.imageName = imageName
@@ -27,9 +27,11 @@ public struct ToolbarButtonItem: View {
             Image(systemName: imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth)
+                .padding(10)
+                .frame(width: ToolbarButtonItem.buttonWidth, height: ToolbarButtonItem.buttonWidth)
                 .accessibilityHint(hint)
                 .fontWeight(.light)
         }
+        .frame(width: ToolbarButtonItem.buttonWidth, height: ToolbarButtonItem.buttonWidth)
     }
 }

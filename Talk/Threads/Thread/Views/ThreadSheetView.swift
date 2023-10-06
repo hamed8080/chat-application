@@ -19,6 +19,9 @@ struct ThreadSheetView: View {
             switch viewModel.sheetType {
             case .attachment:
                 AttachmentDialog(viewModel: actionSheetViewModel)
+                    .onAppear {
+                        actionSheetViewModel.oneTimeSetup()
+                    }
                     .onDisappear {
                         if viewModel.sheetType == .attachment {
                             closeSheet()
@@ -27,6 +30,9 @@ struct ThreadSheetView: View {
             case .dropItems:
                 DropItemsView()
                     .environmentObject(viewModel)
+                    .onAppear {
+                        actionSheetViewModel.oneTimeSetup()
+                    }
                     .onDisappear {
                         viewModel.exportMessagesVM?.deleteFile()
                         viewModel.dropItems.removeAll()
@@ -62,6 +68,9 @@ struct ThreadSheetView: View {
                     actionSheetViewModel.selectedFileUrls = urls
                     viewModel.sheetType = nil
                     viewModel.animateObjectWillChange()
+                }
+                .onAppear {
+                    actionSheetViewModel.oneTimeSetup()
                 }
                 .onDisappear {
                     closeSheet()

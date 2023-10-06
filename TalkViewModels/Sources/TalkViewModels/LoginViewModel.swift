@@ -98,7 +98,7 @@ public final class LoginViewModel: ObservableObject {
         guard let keyId = keyId else { return }
         showLoading(true)
         var urlReq = URLRequest(url: URL(string: AppRoutes.verify)!)
-        urlReq.url?.append(queryItems: [.init(name: "identity", value: text), .init(name: "otp", value: verifyCodes.joined())])
+        urlReq.url?.append(queryItems: [.init(name: "identity", value: text), .init(name: "otp", value: verifyCodes.joined(separator:"").replacingOccurrences(of: "\u{200B}", with: ""))])
         urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post
         do {

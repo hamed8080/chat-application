@@ -36,6 +36,7 @@ struct DetailView: View {
         .environmentObject(viewModel)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarTitle("General.info")
+        .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $viewModel.showAddToContactSheet) {
             if let user = viewModel.user {
                 let editContact = Contact(firstName: user.firstName ?? "",
@@ -64,6 +65,12 @@ struct DetailView: View {
                             Text(viewModel.isInEditMode ? "General.done" : "General.edit")
                         }
                     }
+                }
+            }
+
+            ToolbarItemGroup(placement: .navigation) {
+                NavigationBackButton {
+                    AppState.shared.navViewModel?.remove(type: DetailViewModel.self)
                 }
             }
         }

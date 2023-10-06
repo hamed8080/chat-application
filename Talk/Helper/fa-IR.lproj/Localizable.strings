@@ -35,7 +35,7 @@
 "General.lastName" = "نام خانوادگی";
 "General.contact" = "مخاطب";
 "General.done" = "انجام";
-"General.nothingSelected" = "چیزی انتخاب نشده است. برای شروع یک گفتگو روی شروع کلیک کنید.";
+"General.nothingSelectedConversation" = "چیزی انتخاب نشده است. برای شروع یک گفتگو روی شروع کلیک کنید.";
 "General.start" = "شروع";
 "General.appName" = "تاک";
 "General.nothingFound" = "چیزی پیدا نشد";
@@ -249,7 +249,7 @@
 "Messages.ActionMenu.replyPrivately" = "پاسخ خصوصی";
 "Messages.ActionMenu.forward" = "ارسال";
 "Messages.ActionMenu.copy" = "کپی";
-"Messages.ActionMenu.deleteCache" = "حذف کش برای این پیام";
+"Messages.ActionMenu.deleteCache" = "حذف فایل کش شده";
 "Messages.ActionMenu.pinMessage" = "سنجاق کردن";
 "Messages.ActionMenu.unpinMessage" = "از سنجاق در آوردن";
 "Messages.unreadMessages" = "پیام های خوانده نشده";

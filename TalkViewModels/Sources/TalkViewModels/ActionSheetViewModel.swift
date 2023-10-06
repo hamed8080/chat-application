@@ -21,6 +21,7 @@ public final class ActionSheetViewModel: ObservableObject {
     public var offset = 0
     public var hasNext: Bool { totalCount > offset }
     private var isAuthorized: Bool = false
+    private var isSetupBefore: Bool = false
     @Published public var selectedFileUrls: [URL] = [] {
         didSet {
             if selectedFileUrls.count != 0 {
@@ -55,7 +56,11 @@ public final class ActionSheetViewModel: ObservableObject {
         return IndexSet(offset + 1 ... lastIndex)
     }
 
-    public init() {
+    public init() {}
+
+    public func oneTimeSetup() {
+        if isSetupBefore { return }
+        isSetupBefore = true
         setTotalImageCount()
         let state = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         if state != .authorized {

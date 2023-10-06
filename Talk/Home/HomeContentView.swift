@@ -91,6 +91,8 @@ struct SplitViewContent: View {
         ContainerSplitView(
             sidebarView:
                 TabContainerView(
+                    iPadMaxAllowedWidth: 400,
+                    selectedId: "chats",
                     tabs: [
                         .init(
                             tabContent: ContactContentList(),
@@ -110,7 +112,8 @@ struct SplitViewContent: View {
                             title: "settings",
                             iconName: "gear"
                         )
-                    ]
+                    ],
+                    config: .init(alignment: .bottom)
                 ), container: container
         )
         .toast(

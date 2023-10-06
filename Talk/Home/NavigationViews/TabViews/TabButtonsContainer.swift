@@ -1,5 +1,5 @@
 //
-//  TabItems.swift
+//  TabButtonsContainer.swift
 //  Talk
 //
 //  Created by hamed on 9/14/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TabItems: View {
+struct TabButtonsContainer: View {
     @Binding var selectedId: String
     let tabs: [TabItem]
 
@@ -15,7 +15,10 @@ struct TabItems: View {
         HStack {
             ForEach(tabs) { tab in
                 Spacer()
-                TabButtonItem(title: tab.title, image: Image(systemName: tab.iconName), contextMenu: tab.contextMenus, isSelected: selectedId == tab.title) {
+                TabButtonItem(title: tab.title,
+                              image: tab.image,
+                              contextMenu: tab.contextMenus,
+                              isSelected: selectedId == tab.title) {
                     selectedId = tab.title
                 }
                 Spacer()
@@ -23,7 +26,7 @@ struct TabItems: View {
         }
         .frame(minWidth: 0, maxWidth: .infinity)
         .frame(height: 36)
-        .padding(.top, 12)
+        .padding(.top, 16)
         .padding(.bottom, 4)
         .background(.ultraThinMaterial)
     }
@@ -31,6 +34,6 @@ struct TabItems: View {
 
 struct TabItems_Previews: PreviewProvider {
     static var previews: some View {
-        TabItems(selectedId: .constant(""), tabs: [])
+        TabButtonsContainer(selectedId: .constant(""), tabs: [])
     }
 }

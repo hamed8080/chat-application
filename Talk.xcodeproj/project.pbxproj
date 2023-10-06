@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		050B29102AB40DC20072706C /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290A2AB40DC20072706C /* TabContainerView.swift */; };
 		050B29112AB40DC20072706C /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290A2AB40DC20072706C /* TabContainerView.swift */; };
-		050B29122AB40DC20072706C /* TabItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290B2AB40DC20072706C /* TabItems.swift */; };
-		050B29132AB40DC20072706C /* TabItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290B2AB40DC20072706C /* TabItems.swift */; };
 		050B29142AB40DC20072706C /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290C2AB40DC20072706C /* TabButtonItem.swift */; };
 		050B29152AB40DC20072706C /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290C2AB40DC20072706C /* TabButtonItem.swift */; };
 		050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
@@ -210,6 +208,10 @@
 		0570CCBA2AAEEE78001832E9 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB92AAEEE78001832E9 /* TalkModels */; };
 		0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBB2AAEEE78001832E9 /* TalkUI */; };
 		0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBD2AAEEE78001832E9 /* TalkViewModels */; };
+		05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
+		05B4C1792ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
+		05B4C17B2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */; };
+		05B4C17C2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */; };
 		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
 		05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
 		05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
@@ -217,7 +219,6 @@
 
 /* Begin PBXFileReference section */
 		050B290A2AB40DC20072706C /* TabContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerView.swift; sourceTree = "<group>"; };
-		050B290B2AB40DC20072706C /* TabItems.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabItems.swift; sourceTree = "<group>"; };
 		050B290C2AB40DC20072706C /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
 		050B290D2AB40DC20072706C /* ContainerSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerSplitView.swift; sourceTree = "<group>"; };
 		050B290E2AB40DC20072706C /* ToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
@@ -331,6 +332,8 @@
 		0570CCA62AAEED33001832E9 /* TalkModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkModels; sourceTree = "<group>"; };
 		0570CCA72AAEED33001832E9 /* TalkViewModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkViewModels; sourceTree = "<group>"; };
 		0570CCA82AAEED33001832E9 /* TalkExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkExtensions; sourceTree = "<group>"; };
+		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
+		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverlayFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -369,6 +372,7 @@
 				050B290D2AB40DC20072706C /* ContainerSplitView.swift */,
 				050B290E2AB40DC20072706C /* ToolbarView.swift */,
 				050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */,
+				05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */,
 				05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */,
 				0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */,
 			);
@@ -378,8 +382,8 @@
 		050B29092AB40DC20072706C /* TabViews */ = {
 			isa = PBXGroup;
 			children = (
+				05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */,
 				050B290A2AB40DC20072706C /* TabContainerView.swift */,
-				050B290B2AB40DC20072706C /* TabItems.swift */,
 				050B290C2AB40DC20072706C /* TabButtonItem.swift */,
 			);
 			path = TabViews;
@@ -871,6 +875,7 @@
 				0570CC032AAEE98F001832E9 /* ThreadSearchList.swift in Sources */,
 				050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC252AAEE98F001832E9 /* MentionList.swift in Sources */,
+				05B4C17B2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */,
 				0570CC212AAEE98F001832E9 /* AttachmentDialog.swift in Sources */,
 				0570CC492AAEE98F001832E9 /* LogView.swift in Sources */,
 				0570CC0B2AAEE98F001832E9 /* ForwardMessageRow.swift in Sources */,
@@ -889,7 +894,6 @@
 				0570CC572AAEE98F001832E9 /* MusicView.swift in Sources */,
 				050B291A2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CBFF2AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
-				050B29122AB40DC20072706C /* TabItems.swift in Sources */,
 				0570CC012AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
 				0570CC232AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC0D2AAEE98F001832E9 /* MessageRowFactory.swift in Sources */,
@@ -920,6 +924,7 @@
 				0570CC5B2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC6F2AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
 				0570CC392AAEE98F001832E9 /* TagRow.swift in Sources */,
+				05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */,
 				0570CC752AAEE98F001832E9 /* AssistantView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -962,6 +967,7 @@
 				0570CC042AAEE98F001832E9 /* ThreadSearchList.swift in Sources */,
 				050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC262AAEE98F001832E9 /* MentionList.swift in Sources */,
+				05B4C17C2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */,
 				0570CC222AAEE98F001832E9 /* AttachmentDialog.swift in Sources */,
 				0570CC4A2AAEE98F001832E9 /* LogView.swift in Sources */,
 				0570CC0C2AAEE98F001832E9 /* ForwardMessageRow.swift in Sources */,
@@ -980,7 +986,6 @@
 				0570CC582AAEE98F001832E9 /* MusicView.swift in Sources */,
 				050B291B2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CC002AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
-				050B29132AB40DC20072706C /* TabItems.swift in Sources */,
 				0570CC022AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
 				0570CC242AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC0E2AAEE98F001832E9 /* MessageRowFactory.swift in Sources */,
@@ -1011,6 +1016,7 @@
 				0570CC5C2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC702AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
 				0570CC3A2AAEE98F001832E9 /* TagRow.swift in Sources */,
+				05B4C1792ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */,
 				0570CC762AAEE98F001832E9 /* AssistantView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
