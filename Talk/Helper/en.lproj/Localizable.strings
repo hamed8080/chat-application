@@ -187,6 +187,7 @@
 "Thread.Tabs.music" = "Music";
 "Thread.Tabs.voice" = "Voice";
 "Thread.Tabs.link" = "Link";
+"Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";

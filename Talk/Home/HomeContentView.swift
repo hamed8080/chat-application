@@ -85,7 +85,6 @@ struct SplitViewContent: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.localStatusBarStyle) var statusBarStyle
     @EnvironmentObject var navVM: NavigationModel
-    @Environment(\.horizontalSizeClass) var sizeClass
 
     var body: some View {
         ContainerSplitView(
@@ -116,22 +115,6 @@ struct SplitViewContent: View {
                     config: .init(alignment: .bottom)
                 ), container: container
         )
-        .toast(
-            isShowing: Binding(get: { AppState.shared.error != nil }, set: { _ in }),
-            title: String(format: String(localized: "Errors.occuredTitle"), AppState.shared.error?.code ?? 0),
-            message: AppState.shared.error?.message ?? "",
-            titleFont: .title2,
-            messageFont: .subheadline
-        ) {
-            Image(systemName: "xmark.square.fill")
-                .resizable()
-                .frame(width: 24, height: 24)
-                .onTapGesture {
-                    withAnimation {
-                        AppState.shared.error = nil
-                    }
-                }
-        }
         .onAppear {
             AppState.shared.navViewModel = container.navVM
             container.navVM.threadViewModel = container.threadsVM

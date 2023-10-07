@@ -8,16 +8,32 @@
 import Combine
 import ChatModels
 import SwiftUI
+import ChatCore
 
 public enum AppOverlayTypes {
     case gallery(message: Message)
     case galleryImageView(uiimage: UIImage)
+    case error(error: ChatError?)
     case none
 }
 
 public class AppOverlayViewModel: ObservableObject {
     @Published public var isPresented = false
     public var type: AppOverlayTypes = .none
+    private var cancelableSet: Set<AnyCancellable> = .init()
+
+    init() {
+        AppState.shared.$error.sink { [weak self] newValue in
+            if let error = newValue {
+                self?.type = .error(error: error)
+                self?.isPresented = true
+            } else if newValue == nil {
+                self?.type = .none
+                self?.isPresented = false
+            }
+        }
+        .store(in: &cancelableSet)
+    }
 
     public var galleryMessage: Message? = nil {
         didSet {

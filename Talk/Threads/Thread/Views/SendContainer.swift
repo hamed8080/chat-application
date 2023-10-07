@@ -105,6 +105,9 @@ struct SendContainer: View {
                     isInEditMode = newValue
                 }
             }
+            .onReceive(Just(viewModel.audioRecoderVM?.isRecording)) { newValue in
+                isRecording = newValue ?? false
+            }
             .onChange(of: text) { newValue in
                 viewModel.searchForParticipantInMentioning(newValue)
                 viewModel.textMessage = newValue

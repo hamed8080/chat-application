@@ -186,6 +186,7 @@
 "Thread.Tabs.music" = "موزیک";
 "Thread.Tabs.voice" = "صدا";
 "Thread.Tabs.link" = "لینک";
+"Thread.accessMicrophonePermission" = "لطفا به قسمت تنظیمات و سپس اپلیکیشن تاک مراجعه کنید و سپس میکروفن را روشن کنید.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "در حال اتصال";

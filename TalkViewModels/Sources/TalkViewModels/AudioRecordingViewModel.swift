@@ -105,7 +105,17 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
             let recordingSession = AVAudioSession.sharedInstance()
             try recordingSession.setCategory(.playAndRecord, mode: .default)
             try recordingSession.setActive(true)
-            recordingSession.requestRecordPermission { _ in
+            recordingSession.requestRecordPermission { granted in
+                if granted {
+                    Task {
+                        await MainActor.run { [weak self] in
+                            self?.start()
+                        }
+                    }
+                } else {
+                    AppState.shared.animateAndShowError(.init(message: String(localized: .init("Thread.accessMicrophonePermission")), code: 0, hasError: true))
+                    self.stop()
+                }
             }
         } catch {
             Logger.viewModels.info("error to get recording permission")

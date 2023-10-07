@@ -22,13 +22,16 @@ public struct NavigationBackButton: View {
             action?()
             dismiss()
         } label : {
-            HStack {
+            HStack(spacing: 4) {
                 Image(systemName: "chevron.backward")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
                 let localized = String(localized: .init(navViewModel.previousTitle))
                 let maxLength = UIDevice.current.userInterfaceIdiom == .pad ? 35 : 15
                 let string = String(localized.prefix(maxLength))
                 Text(string)
-                    .font(.iransansSubtitle)
+                    .font(.iransansBody)
             }
         }
     }

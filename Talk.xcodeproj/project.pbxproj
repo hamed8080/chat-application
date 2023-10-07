@@ -212,6 +212,8 @@
 		05B4C1792ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
 		05B4C17B2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */; };
 		05B4C17C2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */; };
+		05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
+		05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
 		05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
 		05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
@@ -334,6 +336,7 @@
 		0570CCA82AAEED33001832E9 /* TalkExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkExtensions; sourceTree = "<group>"; };
 		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
+		05C099C22AD1135D007AAC6C /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverlayFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -375,6 +378,7 @@
 				05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */,
 				05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */,
 				0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */,
+				05C099C22AD1135D007AAC6C /* ToastView.swift */,
 			);
 			path = NavigationViews;
 			sourceTree = "<group>";
@@ -869,6 +873,7 @@
 				0570CBEF2AAEE98F001832E9 /* ThreadImageView.swift in Sources */,
 				0570CC2F2AAEE98F001832E9 /* ThreadMessagesList.swift in Sources */,
 				0570CC132AAEE98F001832E9 /* AvatarView.swift in Sources */,
+				05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */,
 				0570CC152AAEE98F001832E9 /* UnreadMessagesBubble.swift in Sources */,
 				0570CC072AAEE98F001832E9 /* CallMessageType.swift in Sources */,
 				0570CC092AAEE98F001832E9 /* UploadMessageType.swift in Sources */,
@@ -961,6 +966,7 @@
 				0570CBF02AAEE98F001832E9 /* ThreadImageView.swift in Sources */,
 				0570CC302AAEE98F001832E9 /* ThreadMessagesList.swift in Sources */,
 				0570CC142AAEE98F001832E9 /* AvatarView.swift in Sources */,
+				05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */,
 				0570CC162AAEE98F001832E9 /* UnreadMessagesBubble.swift in Sources */,
 				0570CC082AAEE98F001832E9 /* CallMessageType.swift in Sources */,
 				0570CC0A2AAEE98F001832E9 /* UploadMessageType.swift in Sources */,
