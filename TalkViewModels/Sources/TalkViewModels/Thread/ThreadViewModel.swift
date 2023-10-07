@@ -74,6 +74,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var lastVisibleUniqueId: String?
     public weak var forwardMessage: Message?
     public var seenPublisher = PassthroughSubject<Message, Never>()
+    public var participantsViewModel: ParticipantsViewModel
     /// The property `DisableScrolling` works as a mechanism to prevent sending a new request to the server every time SwiftUI tries to calculate and layout our views rows, because SwiftUI starts rendering at the top when we load more top.
     public var disableScrolling: Bool = false
     var createThreadCompletion: (()-> Void)?
@@ -89,6 +90,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.readOnly = readOnly
         self.thread = thread
         self.threadsViewModel = threadsViewModel
+        self.participantsViewModel = ParticipantsViewModel(thread: thread)
         setupNotificationObservers()
     }
 

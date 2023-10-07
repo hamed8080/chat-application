@@ -55,7 +55,7 @@ struct MessageListVideoView: View {
 
 struct VideoRowView: View {
     let message: Message
-    @EnvironmentObject var threadVM: ThreadViewModel
+    var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
 
@@ -70,9 +70,9 @@ struct VideoRowView: View {
             }
             Spacer()
 
-            let view = DownloadVideoButtonView(threadVM: threadVM)
+            let view = DownloadVideoButtonView()
                 .padding(4)
-            if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+            if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
                 view.environmentObject(downloadVM)
             } else {
                 view
@@ -80,14 +80,13 @@ struct VideoRowView: View {
         }
         .padding([.leading, .trailing])
         .onTapGesture {
-            threadVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+            threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
             viewModel.dismiss = true
         }
     }
 }
 
 struct DownloadVideoButtonView: View {
-    let threadVM: ThreadViewModel
     @EnvironmentObject var viewModel: DownloadFileViewModel
     private var message: Message? { viewModel.message }
     static var config: DownloadFileViewConfig = {

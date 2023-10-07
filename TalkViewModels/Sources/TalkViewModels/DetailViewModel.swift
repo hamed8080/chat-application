@@ -39,7 +39,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var bio: String? { contact?.user?.chatProfileVO?.bio ?? user?.chatProfileVO?.bio }
     public var showInfoGroupBox: Bool { bio != nil || cellPhoneNumber != nil || canBlock == true }
     public var url: String? { thread?.computedImageURL ?? user?.image ?? contact?.image }
-    public var participantViewModel: ParticipantsViewModel?
+    public var participantViewModel: ParticipantsViewModel? { threadVM?.participantsViewModel }
     public var mutualThreads: [Conversation] = []
     public weak var threadVM: ThreadViewModel?
 
@@ -57,9 +57,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
         self.user = user
         self.thread = thread
         self.contact = contact
-        if let thread = thread {
-            participantViewModel = ParticipantsViewModel(thread: thread)
-        }
         editTitle = title
         threadDescription = thread?.description ?? ""
         fetchMutualThreads()

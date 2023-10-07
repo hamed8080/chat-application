@@ -28,6 +28,7 @@ struct MentionList: View {
             }
             .listStyle(.plain)
             .transition(.asymmetric(insertion: .opacity, removal: .move(edge: .bottom)))
+            .environmentObject(viewModel.participantsViewModel)
         } else {
             EmptyView()
         }

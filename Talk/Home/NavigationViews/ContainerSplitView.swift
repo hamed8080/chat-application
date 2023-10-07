@@ -63,7 +63,6 @@ struct iPadStackContentView<Content: View>: View {
                             .environmentObject(container.appOverlayVM)
                             .environmentObject(viewModel)
                             .environmentObject(container.threadsVM)
-                            .environmentObject(container.navVM.currentThreadVM!)
                     }
                     .navigationDestination(for: AssistantNavigationValue.self) { _ in
                         AssistantView()
@@ -115,7 +114,6 @@ struct iPhoneStackContentView<Content: View>: View {
                         .environmentObject(container.appOverlayVM)
                         .environmentObject(viewModel)
                         .environmentObject(container.threadsVM)
-                        .environmentObject(container.navVM.currentThreadVM!)
                 }
                 .navigationDestination(for: PreferenceNavigationValue.self) { value in
                     PreferenceView()

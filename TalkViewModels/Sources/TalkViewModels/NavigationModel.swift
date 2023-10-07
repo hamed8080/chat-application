@@ -13,7 +13,6 @@ public final class NavigationModel: ObservableObject {
     @Published public var selectedThreadId: Conversation.ID?
     public var threadViewModel: ThreadsViewModel?
     @Published public var paths = NavigationPath()
-    public var currentThreadVM: ThreadViewModel?
     var threadStack: [ThreadViewModel] = []
     var pathsTracking: [Any] = []
     public init() {}
@@ -52,10 +51,12 @@ public final class NavigationModel: ObservableObject {
 
     public func append(threadDetail: Conversation) {
         let detailViewModel = DetailViewModel(thread: threadDetail)
+        detailViewModel.threadVM = pathsTracking
+            .compactMap{$0 as? ThreadViewModel}
+            .first(where: {$0.threadId == threadDetail.id})
         paths.append(detailViewModel)
         pathsTracking.append(detailViewModel)
         selectedThreadId = threadDetail.id
-        setCurrentThreadViewModel()
     }
 
     public func append(thread: Conversation) {
@@ -66,12 +67,6 @@ public final class NavigationModel: ObservableObject {
         }
         paths.append(thread)
         selectedThreadId = thread.id
-        setCurrentThreadViewModel()
-    }
-
-    func setCurrentThreadViewModel() {
-        guard let threadViewModel = threadStack.first(where: { $0.threadId == selectedThreadId }) else { return }
-        currentThreadVM = threadViewModel
     }
 
     public func threadViewModel(threadId: Int) -> ThreadViewModel? {

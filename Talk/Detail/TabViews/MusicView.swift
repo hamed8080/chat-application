@@ -53,7 +53,7 @@ struct MessageListMusicView: View {
 
 struct MusicRowView: View {
     let message: Message
-    @EnvironmentObject var threadVM: ThreadViewModel
+    var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
 
@@ -70,7 +70,7 @@ struct MusicRowView: View {
             let view = DownloadMusicButtonView()
                 .frame(width: 48, height: 48)
                 .padding(4)
-            if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+            if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
                 view.environmentObject(downloadVM)
             } else {
                 view
@@ -78,7 +78,7 @@ struct MusicRowView: View {
         }
         .padding([.leading, .trailing])
         .onTapGesture {
-            threadVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+            threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
             viewModel.dismiss = true
         }
     }

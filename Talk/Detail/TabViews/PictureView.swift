@@ -67,7 +67,7 @@ struct MessageListPictureView: View {
 struct PictureRowView: View {
     let message: Message
     @EnvironmentObject var appOverlayViewModel: AppOverlayViewModel
-    @EnvironmentObject var threadVM: ThreadViewModel
+    var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: DetailViewModel
     let itemWidth: CGFloat
 
@@ -82,7 +82,7 @@ struct PictureRowView: View {
             .clipped()
             .contextMenu {
                 Button {
-                    threadVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                    threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
                     viewModel.dismiss = true
                 } label: {
                     Label("Show Message", systemImage: "bubble.middle.top")
@@ -90,7 +90,7 @@ struct PictureRowView: View {
             }.onTapGesture {
                 appOverlayViewModel.galleryMessage = message
             }
-        if let downloadVM = threadVM.messageViewModel(for: message).downloadFileVM {
+        if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
             view
                 .environmentObject(downloadVM)
         } else {
