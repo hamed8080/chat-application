@@ -107,14 +107,14 @@ struct DownloadPictureButtonView: View {
     static var config: DownloadFileViewConfig = {
         var config: DownloadFileViewConfig = .small
         config.circleConfig.forgroundColor = .green
-        config.iconColor = .orange
+        config.iconColor = Color.main
         config.showSkeleton = true
         return config
     }()
 
     var body: some View {
         switch viewModel.state {
-        case .COMPLETED:
+        case .completed:
             if let fileURL = viewModel.fileURL, let scaledImage = fileURL.imageScale(width: 128)?.image {
                 Image(cgImage: scaledImage)
                     .resizable(resizingMode: .stretch)
@@ -123,7 +123,7 @@ struct DownloadPictureButtonView: View {
                     .clipped()
                     .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
             }
-        case .DOWNLOADING, .STARTED:
+        case .downloading, .started:
             if config.showSkeleton {
                 Image(systemName: "photo.artframe")
                     .resizable()
@@ -140,7 +140,7 @@ struct DownloadPictureButtonView: View {
                         viewModel.pauseDownload()
                     }
             }
-        case .PAUSED:
+        case .paused:
             Image(systemName: "pause.circle")
                 .resizable()
                 .padding(8)
@@ -151,7 +151,7 @@ struct DownloadPictureButtonView: View {
                 .onTapGesture {
                     viewModel.resumeDownload()
                 }
-        case .UNDEFINED, .THUMBNAIL:
+        case .undefined, .thumbnail:
             ZStack {
                 if message?.isImage == true, let data = viewModel.thumbnailData, let image = UIImage(data: data) {
                     Image(uiImage: image)

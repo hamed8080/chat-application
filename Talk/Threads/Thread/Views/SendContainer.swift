@@ -33,69 +33,122 @@ struct SendContainer: View {
                     MuteChannelViewPlaceholder()
                 } else {
                     ReplyMessageViewPlaceholder()
-                            .environmentObject(viewModel)
-                        MentionList(text: $text)
-                            .frame(maxHeight: 320)
-                            .environmentObject(viewModel)
-                        EditMessagePlaceholderView()
-                            .environmentObject(viewModel)
-                        if let recordingVM = viewModel.audioRecoderVM {
-                            AudioRecordingView(isRecording: $isRecording, nameSpace: id)
-                                .environmentObject(recordingVM)
-                        }
-                        HStack {
-                            if isRecording == false {
-                                GradientImageButton(image: "paperclip", title: "Thread.SendContainer.attachment") {
-                                    viewModel.sheetType = .attachment
-                                    viewModel.animateObjectWillChange()
-                                }
-                                .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
-                            }
-
-                            MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "", text: $text, textColor: Color.black, mention: true)
-                                .cornerRadius(16)
-                                .onChange(of: viewModel.textMessage ?? "") { newValue in
-                                    viewModel.sendStartTyping(newValue)
-                                }
-                            if isRecording == false {
-                                GradientImageButton(image: "mic.fill", title: "Thread.SendContainer.voiceRecording") {
-                                    viewModel.setupRecording()
-                                    isRecording = true
-                                }
-                                .keyboardShortcut(.init("r"), modifiers: [.command])
-                            }
-
-                            GradientImageButton(image: "arrow.up.circle.fill", title: "General.send") {
-                                if isRecording {
-                                    viewModel.audioRecoderVM?.stopAndSend()
-                                    isRecording = false
-                                } else if !text.isEmpty {
-                                    viewModel.sendTextMessage(text)
-                                }
-                                text = ""
-                                viewModel.sheetType = nil
+                        .environmentObject(viewModel)
+                    MentionList(text: $text)
+                        .frame(maxHeight: 320)
+                        .environmentObject(viewModel)
+                    EditMessagePlaceholderView()
+                        .environmentObject(viewModel)
+                    if let recordingVM = viewModel.audioRecoderVM {
+                        AudioRecordingView(isRecording: $isRecording, nameSpace: id)
+                            .environmentObject(recordingVM)
+                            .padding([.trailing], 12)
+                    }
+                    HStack(spacing: 0) {
+                        if isRecording == false {
+                            Button {
+                                viewModel.sheetType = .attachment
                                 viewModel.animateObjectWillChange()
-                                UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .resizable()
+                                    .symbolRenderingMode(.palette)
+                                    .foregroundStyle(Color.white, Color.main)
+                                    .frame(width: 26, height: 26)
                             }
-                            .keyboardShortcut(.return, modifiers: [.command])
+                            .frame(width: 48, height: 48)
+                            .cornerRadius(24)
+                            .buttonStyle(.borderless)
+                            .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
+                            .fontWeight(.light)
                         }
+
+                        MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
+                                           text: $text,
+                                           textColor: UIColor(named: "message_text"),
+                                           backgroundColor: Color.bgChatBox,
+                                           mention: true)
+                        .cornerRadius(24)
+                        .onChange(of: viewModel.textMessage ?? "") { newValue in
+                            viewModel.sendStartTyping(newValue)
+                        }
+
+                        if isRecording == false {
+                            Button {
+                                viewModel.setupRecording()
+                                isRecording = true
+                            } label: {
+                                Image(systemName: "mic.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 26, height: 24)
+                                    .symbolRenderingMode(.palette)
+                                    .foregroundStyle(Color.hint)
+                            }
+                            .frame(width: 48, height: 48)
+                            .buttonStyle(.borderless)
+                            .fontWeight(.light)
+                            .keyboardShortcut(.init("r"), modifiers: [.command])
+                        }
+
+                        Button {
+                            viewModel.setupRecording()
+                            isRecording = true
+                        } label: {
+                            Image(systemName: "camera")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 26, height: 26)
+                                .symbolRenderingMode(.palette)
+                                .foregroundStyle(Color.hint)
+                        }
+                        .frame(width: 48, height: 48)
+                        .buttonStyle(.borderless)
+                        .fontWeight(.light)
+                        .keyboardShortcut(.init("r"), modifiers: [.command])
+                        .disabled(true)
+                        .opacity(0.2)
+
+                        Button {
+                            if isRecording {
+                                viewModel.audioRecoderVM?.stopAndSend()
+                                isRecording = false
+                            } else if !text.isEmpty {
+                                viewModel.sendTextMessage(text)
+                            }
+                            text = ""
+                            viewModel.sheetType = nil
+                            viewModel.animateObjectWillChange()
+                            UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
+                        } label: {
+                            Image(systemName: "arrow.up.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 26, height: 26)
+                                .symbolRenderingMode(.palette)
+                                .foregroundStyle(Color.white, Color.main)
+                        }
+                        .frame(width: 48, height: 48)
+                        .buttonStyle(.borderless)
+                        .fontWeight(.light)
+                        .keyboardShortcut(.return, modifiers: [.command])
                     }
                 }
+            }
             .opacity(disableSend ? 0.3 : 1.0)
             .disabled(disableSend)
             .padding(.bottom, 4)
             .padding([.leading, .trailing], 8)
-            .padding(.top, 18)
+            .padding(.top, 12)
             .animation(isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: isRecording)
             .background(
                 VStack {
                     Spacer()
                     Rectangle()
-                        .fill(Color.clear)
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(24, corners: [.topRight, .topLeft])
+                        .fill(Color.bgMessage.opacity(0.5))
+                        .background(.ultraThickMaterial)
                 }
-                .ignoresSafeArea()
+                    .ignoresSafeArea()
             )
             .onReceive(viewModel.$editMessage) { editMessage in
                 text = editMessage?.message ?? ""
@@ -139,14 +192,22 @@ struct SelectionView: View {
 
     var body: some View {
         HStack {
-            Image(systemName: "xmark.circle.fill")
-                .font(.system(size: 24))
-                .foregroundColor(Color.blue)
-                .onTapGesture {
-                    viewModel.isInEditMode = false
-                    viewModel.clearSelection()
-                    viewModel.animateObjectWillChange()
-                }
+
+            Button {
+                viewModel.isInEditMode = false
+                viewModel.clearSelection()
+                viewModel.animateObjectWillChange()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .resizable()
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.white, Color.main)
+                    .frame(width: 26, height: 26)
+            }
+            .frame(width: 48, height: 48)
+            .cornerRadius(24)
+            .buttonStyle(.borderless)
+            .fontWeight(.light)
 
             HStack(spacing: 2) {
                 Text("\(selectedCount)")
@@ -156,6 +217,7 @@ struct SelectionView: View {
                     Text("Thread.SendContainer.toForward")
                 }
             }
+            .font(.iransansBody)
             .offset(x: 8)
             Spacer()
 
@@ -193,14 +255,22 @@ struct ReplyMessageViewPlaceholder: View {
     var body: some View {
         if let replyMessage = viewModel.replyMessage {
             HStack {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(Color.blue)
-                    .onTapGesture {
-                        viewModel.replyMessage = nil
-                        viewModel.clearSelection()
-                        viewModel.animateObjectWillChange()
-                    }
+                Button {
+                    viewModel.replyMessage = nil
+                    viewModel.clearSelection()
+                    viewModel.animateObjectWillChange()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .resizable()
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.white, Color.main)
+                        .frame(width: 26, height: 26)
+                }
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
+                .buttonStyle(.borderless)
+                .fontWeight(.light)
+
                 Text(replyMessage.message ?? replyMessage.fileMetaData?.name ?? "")
                     .font(.iransansBody)
                     .offset(x: 8)
@@ -214,7 +284,6 @@ struct ReplyMessageViewPlaceholder: View {
                     .foregroundColor(Color.gray)
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
-            .padding(8)
         }
     }
 }
@@ -266,15 +335,22 @@ struct EditMessagePlaceholderView: View {
     var body: some View {
         if let editMessage = viewModel.editMessage {
             HStack {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(Color.blue)
-                    .onTapGesture {
-                        viewModel.isInEditMode = false
-                        viewModel.editMessage = nil
-                        viewModel.textMessage = nil
-                        viewModel.animateObjectWillChange()
-                    }
+                Button {
+                    viewModel.isInEditMode = false
+                    viewModel.editMessage = nil
+                    viewModel.textMessage = nil
+                    viewModel.animateObjectWillChange()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .resizable()
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.white, Color.main)
+                        .frame(width: 26, height: 26)
+                }
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
+                .buttonStyle(.borderless)
+                .fontWeight(.light)
 
                 Text("\(editMessage.message ?? "")")
                     .font(.iransansBody)

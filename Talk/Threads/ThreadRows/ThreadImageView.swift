@@ -20,9 +20,9 @@ struct ThreadImageView: View {
             Circle()
                 .foregroundColor(.clear)
                 .scaledToFit()
-                .frame(width: 48, height: 48)
+                .frame(width: 54, height: 54)
                 .background(.ultraThickMaterial)
-                .cornerRadius(32)
+                .cornerRadius(24)
                 .overlay {
                     Image("bookmark")
                         .resizable()
@@ -34,17 +34,17 @@ struct ThreadImageView: View {
                 .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
-                .frame(width: 48, height: 48)
+                .frame(width: 54, height: 54)
                 .background(Color.blue.opacity(0.4))
-                .cornerRadius(32)
+                .cornerRadius(24)
         } else {
             Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
                 .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
-                .frame(width: 48, height: 48)
+                .frame(width: 54, height: 54)
                 .background(Color.blue.opacity(0.4))
-                .cornerRadius(32)
+                .cornerRadius(24)
         }
     }
 }

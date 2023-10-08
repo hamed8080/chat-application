@@ -87,7 +87,7 @@ struct ThreadPinMessage: View {
         } label: {
             Label("Thread.unpin", systemImage: "pin.fill")
                 .labelStyle(.iconOnly)
-                .foregroundColor(.orange)
+                .foregroundColor(.main)
         }
     }
 

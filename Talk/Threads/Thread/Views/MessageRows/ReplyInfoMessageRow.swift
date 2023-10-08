@@ -28,13 +28,13 @@ struct ReplyInfoMessageRow: View {
                     .resizable()
                     .frame(width: 3)
                     .frame(minHeight: 0, maxHeight: .infinity)
-                    .foregroundColor(message.replyInfo?.deleted == true ? .redSoft : .orange)
+                    .foregroundColor(message.replyInfo?.deleted == true ? .redSoft : .main)
                 VStack(spacing: 4) {
                     if let name = message.replyInfo?.participant?.name {
                         Text("\(name)")
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.main)
                             .padding([.leading, .trailing, .top], 8)
                     }
 

@@ -23,16 +23,16 @@ struct MessageFooterView: View {
                 Text(fileSize)
                     .multilineTextAlignment(.leading)
                     .font(.iransansBody)
-                    .foregroundColor(.darkGreen.opacity(0.8))
+                    .foregroundColor(.hintText)
             }
             Spacer()
             Text(viewModel.timeString)
-                .foregroundColor(.darkGreen.opacity(0.8))
+                .foregroundColor(.hintText)
                 .font(.iransansBoldCaption2)
 
             if message.edited == true {
                 Text("Messages.Footer.edited")
-                    .foregroundColor(.darkGreen.opacity(0.8))
+                    .foregroundColor(.hintText)
                     .font(.caption2)
             }
 
@@ -50,7 +50,7 @@ struct MessageFooterView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: isPinned ? 14 : 0, height: isPinned ? 14 : 0)
-                .foregroundColor(.orange)
+                .foregroundColor(.main)
                 .font(.subheadline)
         }
         .padding(.top, 4)

@@ -89,7 +89,7 @@ struct DownloadMusicButtonView: View {
     static var config: DownloadFileViewConfig = {
         var config: DownloadFileViewConfig = .small
         config.circleConfig.forgroundColor = .green
-        config.iconColor = .orange
+        config.iconColor = Color.main
         return config
     }()
 

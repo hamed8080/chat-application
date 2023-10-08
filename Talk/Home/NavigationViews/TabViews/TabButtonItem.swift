@@ -21,12 +21,12 @@ struct TabButtonItem: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24)
-                    .foregroundColor(isSelected ? .orange : .primary)
+                    .foregroundColor(isSelected ? Color.main : .primary)
             }
 
             Text(String(localized: .init(title)))
                 .font(.iransansBoldCaption)
-                .foregroundColor(isSelected ? .orange : .gray)
+                .foregroundColor(isSelected ? Color.main : .gray)
         }
         .contentShape(Rectangle())
         .padding(4)

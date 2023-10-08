@@ -45,7 +45,7 @@ struct MoveToBottomButton: View {
                 .frame(height: hide ? 0 : 24)
                 .frame(minWidth: hide ? 0 : 24)
                 .scaleEffect(x: hide ? 0.0001 : 1.0, y: hide ? 0.0001 : 1.0, anchor: .center)
-                .background(.orange)
+                .background(Color.main)
                 .foregroundColor(.white)
                 .cornerRadius(hide ? 0 : 24)
                 .offset(x: -3, y: -16)

@@ -20,13 +20,13 @@ struct ThreadEventView: View {
             HStack {
                 Image(systemName: event.image)
                     .resizable()
-                    .foregroundColor(.orange)
+                    .foregroundColor(.main)
                     .frame(width: 16, height: 16)
 
                 Text(.init(localized: .init(event.title)))
                     .lineLimit(1)
                     .font(.iransansBoldCaption2)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.main)
             }
             .frame(height: viewModel.isShowingEvent ? 16 : 0)
         }

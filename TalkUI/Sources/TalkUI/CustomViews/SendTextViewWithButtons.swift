@@ -22,7 +22,7 @@ public struct SendTextViewWithButtons: View {
                     .labelStyle(.iconOnly)
             }
 
-            MultilineTextField(text.isEmpty == true ? String(localized: .init("General.typeMessageHere")) : "", text: $text, textColor: Color.black, mention: true)
+            MultilineTextField(text.isEmpty == true ? String(localized: .init("General.typeMessageHere")) : "", text: $text, textColor: UIColor(named: "message_text"), mention: true)
                 .cornerRadius(16)
                 .onChange(of: viewModel.textMessage ?? "") { newValue in
                     viewModel.sendStartTyping(newValue)

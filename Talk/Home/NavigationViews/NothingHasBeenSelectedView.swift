@@ -13,23 +13,16 @@ struct NothingHasBeenSelectedView: View {
 
     var body: some View {
         ZStack {
-            Image("chat_bg")
-                .renderingMode(.template)
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
-                .foregroundStyle(Color.mint.gradient.opacity(0.3))
-
             VStack(spacing: 12) {
-                Image(systemName: "doc.text.magnifyingglass")
+                Image("talk_first_page")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 64, height: 64)
-                    .opacity(0.2)
+                    .frame(width: 320, height: 222)
                 VStack(spacing: 16) {
                     Text("General.nothingSelectedConversation")
                         .font(.iransansSubheadline)
                         .foregroundColor(.secondaryLabel)
+                        .multilineTextAlignment(.center)
                     Button {
                         threadsVM.sheetType = .startThread
                     } label: {
@@ -38,10 +31,10 @@ struct NothingHasBeenSelectedView: View {
                     }
                 }
             }
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .padding([.leading, .trailing], 96)
             .padding([.bottom, .top], 96)
             .background(.ultraThinMaterial)
-            .cornerRadius(12)
         }
     }
 }

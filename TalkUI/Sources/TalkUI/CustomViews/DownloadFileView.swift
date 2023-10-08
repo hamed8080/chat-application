@@ -46,7 +46,7 @@ public struct DownloadFileView: View {
                 appOverlayVM.galleryMessage = message
             } else if message?.isVideo == true {
                 // Enter to full screen
-            } else if viewModel.state == .COMPLETED {
+            } else if viewModel.state == .completed {
                 shareDownloadedFile.toggle()
             }
         }
@@ -65,7 +65,7 @@ struct MutableDownloadViews: View {
 
     var body: some View {
         switch viewModel.state {
-        case .COMPLETED:
+        case .completed:
             if let fileURL = viewModel.fileURL, let scaledImage = fileURL.imageScale(width: 420)?.image {
                 Image(cgImage: scaledImage)
                     .resizable()
@@ -91,7 +91,7 @@ struct MutableDownloadViews: View {
                     .scaledToFit()
                     .frame(width: config.iconWidth, height: config.iconHeight)
             }
-        case .DOWNLOADING, .STARTED:
+        case .downloading, .started:
             if config.showSkeleton {
                 Rectangle()
                     .fill(.secondary)
@@ -106,7 +106,7 @@ struct MutableDownloadViews: View {
                         viewModel.pauseDownload()
                     }
             }
-        case .PAUSED:
+        case .paused:
             Image(systemName: "pause.circle")
                 .resizable()
                 .padding(8)
@@ -118,7 +118,7 @@ struct MutableDownloadViews: View {
                 .onTapGesture {
                     viewModel.resumeDownload()
                 }
-        case .UNDEFINED, .THUMBNAIL:
+        case .undefined, .thumbnail:
             Image(systemName: "arrow.down.circle")
                 .resizable()
                 .font(.headline.weight(.thin))
@@ -150,10 +150,13 @@ struct DownloadImagethumbnail: View {
             .onReceive(viewModel.objectWillChange) { _ in
                 if viewModel.thumbnailData != self.thumbnailData,
                    message?.isImage == true,
-                   viewModel.state != .COMPLETED
+                   viewModel.state != .completed
                 {
                     self.thumbnailData = viewModel.thumbnailData
                 }
+            }
+            .onAppear {
+                thumbnailData = viewModel.thumbnailData
             }
     }
 }

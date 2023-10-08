@@ -11,7 +11,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
     typealias UIViewType = UITextView
 
     @Binding var text: String
-    var textColor: Color
+    var textColor: UIColor
     @Binding var calculatedHeight: CGFloat
     var keyboardReturnType: UIReturnKeyType = .done
     var mention: Bool = false
@@ -22,12 +22,12 @@ private struct UITextViewWrapper: UIViewRepresentable {
         textField.delegate = context.coordinator
 
         textField.isEditable = true
-        textField.font = UIFont.preferredFont(forTextStyle: .body)
+        textField.font = UIFont(name: "IRANSansX", size: 13)
         textField.isSelectable = true
         textField.isUserInteractionEnabled = true
         textField.isScrollEnabled = false
         textField.backgroundColor = UIColor.clear
-        textField.textColor = UIColor(cgColor: textColor.cgColor!)
+        textField.textColor = textColor
         textField.returnKeyType = keyboardReturnType
         textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textField
@@ -93,7 +93,8 @@ public struct MultilineTextField: View {
     private var placeholder: String
     private var onDone: ((String?) -> Void)?
     var backgroundColor: Color = .white
-    var textColor: Color?
+    var placeholderColor: Color = .placeholder
+    var textColor: UIColor?
     @Environment(\.colorScheme) var colorScheme
     var keyboardReturnType: UIReturnKeyType = .done
     var mention: Bool = false
@@ -113,8 +114,9 @@ public struct MultilineTextField: View {
 
     public init(_ placeholder: String = "",
          text: Binding<String>,
-         textColor: Color? = nil,
+         textColor: UIColor? = nil,
          backgroundColor: Color = .white,
+         placeholderColor: Color = Color.placeholder,
          keyboardReturnType: UIReturnKeyType = .done,
          mention: Bool = false,
          onDone: ((String?) -> Void)? = nil)
@@ -126,12 +128,13 @@ public struct MultilineTextField: View {
         self.backgroundColor = backgroundColor
         self.keyboardReturnType = keyboardReturnType
         self.mention = mention
+        self.placeholderColor = placeholderColor
         _showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
 
     public var body: some View {
         UITextViewWrapper(text: self.internalText,
-                          textColor: textColor ?? (colorScheme == .dark ? Color.white : Color.black),
+                          textColor: textColor ?? (colorScheme == .dark ? UIColor.white : UIColor.black),
                           calculatedHeight: $dynamicHeight,
                           keyboardReturnType: keyboardReturnType,
                           mention: mention,
@@ -146,7 +149,7 @@ public struct MultilineTextField: View {
             if showingPlaceholder {
                 Text(String(localized: .init(placeholder)))
                     .font(.iransansBody)
-                    .foregroundColor(.gray)
+                    .foregroundColor(placeholderColor)
                     .padding(.leading, 8)
                     .padding(.top, 8)
             }

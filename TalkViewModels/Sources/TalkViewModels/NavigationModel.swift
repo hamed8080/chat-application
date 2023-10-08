@@ -90,7 +90,15 @@ public final class NavigationModel: ObservableObject {
             pathsTracking.removeAll(where: {($0 is T)})
         } else if let index = pathsTracking.firstIndex(where: {$0 is T }) {
             pathsTracking.remove(at: index)
+            if threadStack.filter({$0.threadId == threadId}).count == 1, let index = threadStack.lastIndex(where: {$0.threadId == threadId}) {
+                threadStack.remove(at: index)
+            }
         }
+        setSelectedThreadId()
+    }
+
+    public func setSelectedThreadId() {
+        selectedThreadId = threadStack.last?.threadId
     }
 
     public var previousItem: Any? {

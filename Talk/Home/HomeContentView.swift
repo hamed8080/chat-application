@@ -91,30 +91,31 @@ struct SplitViewContent: View {
             sidebarView:
                 TabContainerView(
                     iPadMaxAllowedWidth: 400,
-                    selectedId: "chats",
+                    selectedId: "Tab.chats",
                     tabs: [
                         .init(
                             tabContent: ContactContentList(),
                             contextMenus: Button("Contact Context Menu") {},
-                            title: "contacts",
+                            title: "Tab.contacts",
                             iconName: "person.crop.circle"
                         ),
                         .init(
                             tabContent: ThreadContentList(container: container),
                             contextMenus: Button("Thread Context Menu") {},
-                            title: "chats",
+                            title: "Tab.chats",
                             iconName: "ellipsis.message.fill"
                         ),
                         .init(
                             tabContent: SettingsView(container: container),
                             contextMenus: Button("Setting Context Menu") {},
-                            title: "settings",
+                            title: "Tab.settings",
                             iconName: "gear"
                         )
                     ],
                     config: .init(alignment: .bottom)
                 ), container: container
         )
+        .background(Color.bgMain)
         .onAppear {
             AppState.shared.navViewModel = container.navVM
             container.navVM.threadViewModel = container.threadsVM

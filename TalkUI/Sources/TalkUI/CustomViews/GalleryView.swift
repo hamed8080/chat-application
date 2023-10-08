@@ -39,7 +39,7 @@ struct GalleryProgressView: View {
     @EnvironmentObject var viewModel: GalleryViewModel
 
     var body: some View {
-        if viewModel.state == .DOWNLOADING {
+        if viewModel.state == .downloading {
             CircularProgressView(percent: $viewModel.percent, config: .normal)
                 .padding()
                 .frame(maxWidth: 128)

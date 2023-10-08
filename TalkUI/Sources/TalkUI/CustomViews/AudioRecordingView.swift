@@ -23,15 +23,24 @@ public struct AudioRecordingView: View {
     public var body: some View {
         if viewModel.isRecording {
             HStack(spacing: 0) {
-                Image(systemName: "xmark.circle.fill")
-                    .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
-                    .font(.system(size: 24))
-                    .foregroundColor(Color.blue)
-                    .onTapGesture {
-                        viewModel.isRecording = false
-                        viewModel.stop()
-                        isRecording = false
-                    }
+
+                Button {
+                    viewModel.isRecording = false
+                    viewModel.stop()
+                    isRecording = false
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .resizable()
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.white, Color.main)
+                        .frame(width: 26, height: 26)
+                }
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
+                .buttonStyle(.borderless)
+                .fontWeight(.light)
+                .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
+
                 Text(viewModel.timerString)
                     .font(.iransansBody)
                     .offset(x: 8)
@@ -40,7 +49,8 @@ public struct AudioRecordingView: View {
                 Spacer()
                 Image(systemName: "record.circle")
                     .font(.system(size: 24))
-                    .foregroundStyle(.pink.opacity(opacity), .blue, .blue)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.pink.opacity(opacity), Color.main, Color.main)
                     .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: opacity)
                     .onAppear {
                         opacity = opacity == 1  ? 0 : 1

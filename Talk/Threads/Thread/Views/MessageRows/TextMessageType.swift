@@ -47,14 +47,13 @@ struct SelectMessageRadio: View {
 
     var body: some View {
         ZStack {
-            Image(systemName: "checkmark.circle.fill")
+            Image(systemName: viewModel.isSelected ? "checkmark.circle.fill" : "circle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
                 .font(.title)
-                .scaleEffect(x: viewModel.isSelected ? 1 : 0.001, y: viewModel.isSelected ? 1 : 0.001, anchor: .center)
-                .foregroundColor(Color.blue)
-
-            Image(systemName: "circle")
-                .font(.title)
-                .foregroundColor(Color.blue)
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(viewModel.isSelected ? Color.bgChatContainer : Color.hint, Color.main)
         }
         .frame(width: viewModel.isInSelectMode ? 22 : 0.001, height: viewModel.isInSelectMode ? 22 : 0.001, alignment: .center)
         .padding(viewModel.isInSelectMode ? 24 : 0.001)
@@ -113,7 +112,7 @@ struct MutableMessageView: View {
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
                 .padding(8)
                 .font(.iransansBody)
-                .foregroundColor(.black)
+                .foregroundColor(.messageText)
                 .clipped()
 
             if let addressDetail = viewModel.addressDetail {
@@ -145,13 +144,29 @@ struct MutableMessageView: View {
         .frame(maxWidth: viewModel.widthOfRow)
         .padding([.leading, .trailing], 0)
         .contentShape(Rectangle())
-        .background(viewModel.isMe ? Color.chatMeBg : Color.chatSenderBg)
+        .background(viewModel.isMe ? Color.bgMessageMe : Color.bgMessage)
         .overlay {
             if viewModel.isHighlited {
                 Color.blue.opacity(0.3)
             }
         }
-        .cornerRadius(18)
+        .cornerRadius(12, corners: [.topLeft, .topRight, viewModel.isMe ? .bottomLeft : .bottomRight])
+        .overlay(alignment: .bottom) {
+            HStack {
+                if viewModel.isMe {
+                    Spacer()
+                }
+                Image(uiImage: viewModel.isMe ? Message.trailingTail : Message.leadingTail)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 9, height: 18)
+                    .offset(x: viewModel.isMe ? 9 : -9)
+                    .foregroundStyle(viewModel.isMe ? Color.bgMessageMe : Color.bgMessage)
+                if !viewModel.isMe {
+                    Spacer()
+                }
+            }
+        }
         .simultaneousGesture(TapGesture().onEnded { _ in
             if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)

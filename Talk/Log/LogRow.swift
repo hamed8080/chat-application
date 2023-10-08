@@ -14,7 +14,7 @@ struct LogRow: View {
     var color: Color {
         let type = log.type
         if type == .internalLog {
-            return .orange
+            return Color.main
         } else if type == .received {
             return .red
         } else {

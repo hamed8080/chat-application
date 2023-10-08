@@ -43,7 +43,7 @@ struct AvatarView: View {
                     }
                     Text("\(message.participant?.name ?? "")")
                         .font(.iransansBoldCaption)
-                        .foregroundColor(message.isImage ? Color.primary : .blue)
+                        .foregroundColor(Color.hintText)
                         .lineLimit(1)
                 }
                 .padding(4)

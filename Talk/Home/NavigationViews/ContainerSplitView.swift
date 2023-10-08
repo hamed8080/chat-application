@@ -78,7 +78,6 @@ struct iPadStackContentView<Content: View>: View {
                     }
             }
             .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: showSideBar)
-            .environment(\.layoutDirection, .leftToRight)
             .onReceive(NotificationCenter.default.publisher(for: .closeSideBar)) { newVlaue in
                 showSideBar.toggle()
             }
@@ -132,7 +131,6 @@ struct iPhoneStackContentView<Content: View>: View {
                         .environmentObject(container.appOverlayVM)
                 }
         }
-        .environment(\.layoutDirection, .leftToRight)
     }
 }
 

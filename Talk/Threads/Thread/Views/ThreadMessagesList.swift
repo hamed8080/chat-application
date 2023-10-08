@@ -58,13 +58,6 @@ struct ThreadbackgroundView: View {
             .opacity(colorScheme == .dark ? 0.9 : 0.25)
             .colorInvert()
             .colorMultiply(colorScheme == .dark ? Color.white : Color.cyan)
-            .overlay {
-                let darkColors: [Color] = [.gray.opacity(0.5), .white.opacity(0.001)]
-                let lightColors: [Color] = [.white.opacity(0.1), .gray.opacity(0.5)]
-                LinearGradient(gradient: Gradient(colors: colorScheme == .dark ? darkColors : lightColors),
-                               startPoint: .top,
-                               endPoint: .bottom)
-            }
     }
 }
 
@@ -83,6 +76,7 @@ struct MessagesLazyStack: View {
             ListLoadingView(isLoading: $viewModel.bottomLoading)
                 .id(-2)
         }
+        .environment(\.layoutDirection, .leftToRight)
         .background(
             GeometryReader {
                 Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
@@ -100,7 +94,7 @@ struct SectionView: View {
             .font(.iransansCaption)
             .padding([.leading, .trailing], 8)
             .padding([.top, .bottom], 4)
-            .background(.orange.opacity(0.1))
+            .background(Color.main.opacity(0.1))
             .background(.ultraThinMaterial)
             .cornerRadius(8)
             .foregroundColor(.secondaryLabel)

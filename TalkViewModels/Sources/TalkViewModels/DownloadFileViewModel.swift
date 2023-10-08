@@ -24,7 +24,7 @@ public protocol DownloadFileViewModelProtocol {
 
 public final class DownloadFileViewModel: ObservableObject, DownloadFileViewModelProtocol {
     public var downloadPercent: Int64 = 0
-    public var state: DownloadFileState = .UNDEFINED
+    public var state: DownloadFileState = .undefined
     public var thumbnailData: Data?
     public var data: Data?
     public var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
@@ -49,7 +49,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public init(message: Message) {
         self.message = message
         if isInCache {
-            state = .COMPLETED
+            state = .completed
             animateObjectWillChange()
         }
         setObservers()
@@ -60,7 +60,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             .compactMap { $0.object as? Message }
             .filter { $0.id == self.message?.id }
             .sink { [weak self] _ in
-                self?.state = .UNDEFINED
+                self?.state = .undefined
                 self?.animateObjectWillChange()
             }
        messageCancelable = NotificationCenter.default.publisher(for: .download)
@@ -102,7 +102,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     private func downloadFile() {
-        state = .DOWNLOADING
+        state = .downloading
         let req = FileRequest(hashCode: fileHashCode)
         uniqueId = req.uniqueId
         RequestsManager.shared.append(value: req, autoCancel: false)
@@ -111,7 +111,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     private func downloadImage() {
-        state = .DOWNLOADING
+        state = .downloading
         let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
         uniqueId = req.uniqueId
         RequestsManager.shared.append(value: req, autoCancel: false)
@@ -120,7 +120,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     public func downloadBlurImage() {
-        state = .DOWNLOADING
+        state = .thumbnailDownloaing
         let req = ImageRequest(hashCode: fileHashCode, quality: 0.1, size: .SMALL, thumbnail: true)
         uniqueId = req.uniqueId
         RequestsManager.shared.append(prepend: "THUMBNAIL", value: req, autoCancel: false)
@@ -132,7 +132,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         if response.uniqueId != uniqueId { return }
         if RequestsManager.shared.value(prepend: "THUMBNAIL", for: uniqueId) != nil, let data = response.result {
             //State is not completed and blur view can show the thumbnail
-            state = .THUMBNAIL
+            state = .thumbnail
             RequestsManager.shared.remove(prepend: "THUMBNAIL", for: uniqueId)
             autoreleasepool {
                 self.thumbnailData = data
@@ -142,7 +142,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         }
         if RequestsManager.shared.value(for: uniqueId) != nil, let data = response.result {
             autoreleasepool {
-                state = .COMPLETED
+                state = .completed
                 downloadPercent = 100
                 self.data = data
                 animateObjectWillChange()
@@ -153,7 +153,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         if RequestsManager.shared.value(for: uniqueId) != nil, url?.absoluteString == fileURL?.absoluteString, !response.cache {
             autoreleasepool {
                 RequestsManager.shared.remove(key: uniqueId)
-                state = .COMPLETED
+                state = .completed
                 downloadPercent = 100
                 self.data = response.result
                 animateObjectWillChange()
@@ -163,14 +163,14 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     private func onSuspend(_ uniqueId: String) {
         if RequestsManager.shared.value(for: self.uniqueId) != nil {
-            state = .PAUSED
+            state = .paused
             animateObjectWillChange()
         }
     }
 
     private func onResumed(_ uniqueId: String) {
         if RequestsManager.shared.value(for: self.uniqueId) != nil {
-            state = .DOWNLOADING
+            state = .downloading
             animateObjectWillChange()
         }
     }

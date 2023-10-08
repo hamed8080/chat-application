@@ -218,7 +218,7 @@ struct SwipyView: View {
                         .cornerRadius(12)
                 }
                 .frame(height: containerSize)
-                .background(Color.orange.opacity(0.3))
+                .background(Color.main.opacity(0.3))
                 .cornerRadius(12)
             }
         }

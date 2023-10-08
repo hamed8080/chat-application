@@ -71,10 +71,10 @@ struct ParticipantRowLables: View {
                 Text("Participant.inviter")
                     .padding([.leading, .trailing], 4)
                     .padding([.top, .bottom], 2)
-                    .foregroundColor(.orange)
+                    .foregroundColor(Color.main)
                     .overlay(
                         RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.orange, lineWidth: 1)
+                            .stroke(Color.main, lineWidth: 1)
                     )
             }
 

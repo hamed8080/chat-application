@@ -66,7 +66,7 @@ struct ContactRow: View {
             }
             .modifier(AnimatingCellHeight(height: self.showActionViews ? 148 : 64))
             .padding(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
-            .background(Color.primary.opacity(0.08))
+            .background(Color.hint.opacity(0.08))
             .cornerRadius(16)
         }
         .animation(.easeInOut, value: showActionViews)

@@ -7,11 +7,11 @@ extension Conversation {
     public func messageStatusIcon(currentUserId: Int?) -> MessageIconStatus? {
         if !isLastMessageMine(currentUserId: currentUserId) { return nil }
         if partnerLastSeenMessageId == lastMessageVO?.id {
-            return (Message.seenImage!, .orange)
+            return (Message.seenImage!, Color.main)
         } else if partnerLastDeliveredMessageId == lastMessageVO?.id ?? 0 {
-            return (Message.seenImage!, .gray.opacity(0.7))
+            return (Message.seenImage!, Color.hint)
         } else if lastMessageVO?.id ?? 0 > partnerLastSeenMessageId ?? 0 {
-            return (Message.sentImage!, .gray.opacity(0.7))
+            return (Message.sentImage!, Color.hint)
         } else { return nil }
     }
 }

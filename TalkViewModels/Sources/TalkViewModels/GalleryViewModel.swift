@@ -17,7 +17,7 @@ public final class GalleryViewModel: ObservableObject {
     public var currentImageMessage: Message?
     public var downloadedImages: [String: Data] = [:]
     public var percent: Int64 = 0
-    public var state: DownloadFileState = .UNDEFINED
+    public var state: DownloadFileState = .undefined
     private var cancelable: Set<AnyCancellable> = []
     public var currentData: Data? {
         guard let hashCode = currentImageMessage?.fileMetaData?.fileHash else { return nil }
@@ -76,7 +76,7 @@ public final class GalleryViewModel: ObservableObject {
 
     private func onImage(_ response: ChatResponse<Data>, _ fileURL: URL?) {
         if let data = response.result, let request = response.value as? ImageRequest {
-            state = .COMPLETED
+            state = .completed
             downloadedImages[request.hashCode] = data
         }
 
@@ -86,7 +86,7 @@ public final class GalleryViewModel: ObservableObject {
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
         if let progress = progress, RequestsManager.shared.value(for: uniqueId) != nil {
-            state = .DOWNLOADING
+            state = .downloading
             percent = progress.percent
             animateObjectWillChange()
         }

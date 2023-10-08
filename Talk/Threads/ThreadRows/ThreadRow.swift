@@ -23,7 +23,8 @@ struct ThreadRow: View {
                 HStack {
                     Text(thread.computedTitle)
                         .lineLimit(1)
-                        .font(.iransansBoldSubheadline)
+                        .font(.iransansSubheadline)
+                        .fontWeight(.light)
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()
@@ -64,7 +65,7 @@ struct ThreadRow: View {
                             .frame(height: 24)
                             .frame(minWidth: 24)
                             .foregroundColor(Color.white)
-                            .background(Color.orange)
+                            .background(Color.main)
                             .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
                     }
 
@@ -72,7 +73,7 @@ struct ThreadRow: View {
                         Image(systemName: "at.circle.fill")
                             .resizable()
                             .frame(width: 24, height: 24)
-                            .foregroundColor(Color.orange)
+                            .foregroundStyle(Color.main)
                     }
 
                     if thread.pin == true {
@@ -80,7 +81,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundColor(Color.orange)
+                            .foregroundStyle(Color.main)
                     }
                 }
                 ThreadEventView()

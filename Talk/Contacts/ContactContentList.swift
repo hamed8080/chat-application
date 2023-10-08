@@ -31,19 +31,23 @@ struct ContactContentList: View {
                         .font(.iransansBoldBody)
                     Spacer()
                 }
+                .listRowBackground(Color.clear)
                 .noSeparators()
             }
 
             SyncView()
+                .listRowBackground(Color.clear)
 
             if viewModel.searchedContacts.count > 0 {
                 Text("Contacts.searched")
                     .font(.iransansSubheadline)
                     .foregroundColor(.gray)
                     .noSeparators()
+                    .listRowBackground(Color.clear)
                 ForEach(viewModel.searchedContacts) { contact in
                     SearchContactRow(contact: contact)
                         .noSeparators()
+                        .listRowBackground(Color.clear)
                 }
             }
 
@@ -56,6 +60,7 @@ struct ContactContentList: View {
                         }
                     }
                     .animation(.spring(), value: isInSelectionMode)
+                    .listRowBackground(Color.clear)
             }
             .onDelete(perform: viewModel.delete)
             .padding(0)

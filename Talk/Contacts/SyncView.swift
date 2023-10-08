@@ -40,7 +40,7 @@ struct SyncView: View {
                     ChatManager.activeInstance?.contact.sync()
                 } label: {
                     Text("Contacts.Sync.sync")
-                        .foregroundColor(.orange)
+                        .foregroundColor(Color.main)
                         .font(.iransansBoldTitle)
                         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                 }

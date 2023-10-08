@@ -30,7 +30,8 @@ struct ThreadContentList: View {
                         }
                     }
             }
-            .listRowBackground(container.navVM.selectedThreadId == thread.id ? Color.orange.opacity(0.5) : Color(UIColor.systemBackground))
+            .listRowSeparatorTint(Color.separator)
+            .listRowBackground(container.navVM.selectedThreadId == thread.id ? Color.main.opacity(0.5) : thread.pin == true ? Color.bgPin : Color.bgMain)
         }
         .safeAreaInset(edge: .top) {
             AudioPlayerView()
@@ -43,7 +44,7 @@ struct ThreadContentList: View {
         .listStyle(.plain)
         .safeAreaInset(edge: .top) {
             EmptyView()
-                .frame(height: 46)
+                .frame(height: 45)
         }
         .overlay(alignment: .top) {
             ToolbarView(

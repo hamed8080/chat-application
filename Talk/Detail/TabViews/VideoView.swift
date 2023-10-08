@@ -92,13 +92,13 @@ struct DownloadVideoButtonView: View {
     static var config: DownloadFileViewConfig = {
         var config: DownloadFileViewConfig = .small
         config.circleConfig.forgroundColor = .green
-        config.iconColor = .orange
+        config.iconColor = Color.main
         return config
     }()
 
     var body: some View {
         switch viewModel.state {
-        case .COMPLETED:
+        case .completed:
             if message?.isVideo == true, let fileURL = viewModel.fileURL {
                 VideoPlayerView()
                     .frame(width: 196, height: 196)
@@ -108,14 +108,14 @@ struct DownloadVideoButtonView: View {
                                                             subtitle: message?.fileMetaData?.file?.originalName ?? ""))
                     .id(fileURL)
             }
-        case .DOWNLOADING, .STARTED:
+        case .downloading, .started:
             CircularProgressView(percent: $viewModel.downloadPercent, config: DownloadVideoButtonView.config.circleConfig)
                 .padding(8)
                 .frame(maxWidth: DownloadVideoButtonView.config.circleProgressMaxWidth)
                 .onTapGesture {
                     viewModel.pauseDownload()
                 }
-        case .PAUSED:
+        case .paused:
             Image(systemName: "pause.circle")
                 .resizable()
                 .padding(8)
@@ -127,7 +127,7 @@ struct DownloadVideoButtonView: View {
                 .onTapGesture {
                     viewModel.resumeDownload()
                 }
-        case .UNDEFINED, .THUMBNAIL:
+        case .undefined, .thumbnail:
             if message?.isImage == true, let data = viewModel.thumbnailData, let image = UIImage(data: data) {
                 Image(uiImage: image)
                     .resizable()
