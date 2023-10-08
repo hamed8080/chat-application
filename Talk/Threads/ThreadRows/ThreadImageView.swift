@@ -21,13 +21,14 @@ struct ThreadImageView: View {
                 .foregroundColor(.clear)
                 .scaledToFit()
                 .frame(width: 54, height: 54)
-                .background(.ultraThickMaterial)
+                .background(Color("bg_self_thread"))
                 .cornerRadius(24)
                 .overlay {
                     Image("bookmark")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 24, height: 24)
+                        .frame(width: 27, height: 27)
+                        .foregroundColor(Color("icon_self_thread"))
                 }
         } else if let image = thread.computedImageURL {
             ImageLaoderView(imageLoader: threadsVM.avatars(for: image), url: thread.computedImageURL, metaData: image, userName: thread.title)
