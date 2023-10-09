@@ -29,6 +29,7 @@ struct LogRow: View {
                 .font(.iransansCaption)
                 .padding()
         }
+        .environment(\.layoutDirection, .leftToRight)
         .overlay(alignment: .bottom) {
             Color
                 .gray

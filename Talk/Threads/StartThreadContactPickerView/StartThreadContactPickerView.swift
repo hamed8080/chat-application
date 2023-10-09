@@ -35,10 +35,10 @@ struct StartThreadContactPickerView: View {
             }
 
             Group {
-                StartThreadButton(name: "bookmark.circle", title: "Thread.selfThread", color: .blue) {
-                    model.setSelfThread()
-                    onCompletedConfigCreateThread(model.build)
-                }
+//                StartThreadButton(name: "bookmark.circle", title: "Thread.selfThread", color: .blue) {
+//                    model.setSelfThread()
+//                    onCompletedConfigCreateThread(model.build)
+//                }
 
                 StartThreadButton(name: "person.2", title: "Thread.newGroup", color: .blue) {
                     model.toggleGroup()

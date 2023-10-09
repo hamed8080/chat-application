@@ -59,7 +59,7 @@ struct VerifyContentView: View {
                 .frame(width: 72, height: 72)
                 .scaledToFit()
                 .cornerRadius(8)
-            Text("Login.Verfiy.enterCode")
+            Text("Login.Verify.enterCode")
                 .font(.iransansTitle)
                 .foregroundColor(.textBlueColor)
 
@@ -113,6 +113,7 @@ struct VerifyContentView: View {
                         }
                 }
             }
+            .environment(\.layoutDirection, .leftToRight)
             .transition(.asymmetric(insertion: .scale(scale: 1), removal: .scale(scale: 0)))
             .onAppear {
                 /// Add Zero-Width space 'hidden character' for using as a backspace.

@@ -190,11 +190,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* ConnectionStatus */
-"ConnectionStatus.connecting" = "ansluter";
-"ConnectionStatus.connected" = "ansluten";
-"ConnectionStatus.disconnected" = "frånkopplad";
-"ConnectionStatus.reconnecting" = "återansluter";
-"ConnectionStatus.unauthorized" = "oauktoriserad";
+"ConnectionStatus.connecting" = "ansluter %@";
+"ConnectionStatus.connected" = "ansluten %@";
+"ConnectionStatus.disconnected" = "frånkopplad %@";
+"ConnectionStatus.reconnecting" = "återansluter %@";
+"ConnectionStatus.unauthorized" = "oauktoriserad %@";
 
 /* Participant */
 "Participant.Search.Type.name" = "Namn";

@@ -39,13 +39,36 @@ struct ThreadMessagesList: View {
             .onAppear {
                 viewModel.scrollProxy = scrollProxy
             }
+            .overlay(alignment: .center) {
+                CenterLoading()
+            }
         }
-        .simultaneousGesture(TapGesture().onEnded { _ in
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        })
+        .simultaneousGesture(
+            TapGesture()
+                .onEnded { _ in
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    viewModel.isProgramaticallyScroll = false
+                }
+        )
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 10, coordinateSpace: .global)
+                .onChanged { _ in
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    viewModel.isProgramaticallyScroll = false
+                }
+        )
     }
 }
 
+struct CenterLoading: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+    
+    var body: some View {
+        ListLoadingView(isLoading: $viewModel.centerLoading)
+            .frame(width: viewModel.centerLoading ? 48 : 0, height: viewModel.centerLoading ? 48 : 0)
+            .id(-3)
+    }
+}
 struct ThreadbackgroundView: View {
     @Environment(\.colorScheme) var colorScheme
     let threadId: Int

@@ -47,7 +47,7 @@ extension ThreadViewModel {
                                              messageType: .text)
             let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
             let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().millisecondsSince1970), uniqueId: req.uniqueId, conversation: thread)
-            appendMessages([message])
+            appendMessagesAndSort([message])
             ChatManager.activeInstance?.message.send(req)
         }
     }
@@ -78,7 +78,7 @@ extension ThreadViewModel {
                 let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: self.textMessage ?? "", messageType: .picture)
                 let request = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
-                self.appendMessages([request])
+                self.appendMessagesAndSort([request])
             }
         }
     }
@@ -99,7 +99,7 @@ extension ThreadViewModel {
                 let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: self.textMessage ?? "", messageType: messageType)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
-                self.appendMessages([request])
+                self.appendMessagesAndSort([request])
             }
         }
     }
@@ -118,7 +118,7 @@ extension ThreadViewModel {
                 let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: self.textMessage ?? "", messageType: .file)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
-                self.appendMessages([request])
+                self.appendMessagesAndSort([request])
             }
         }
     }
@@ -218,10 +218,10 @@ extension ThreadViewModel {
             removeByUniqueId(req.uniqueId)
             if message.isImage, let imageRequest = req.uploadImageRequest {
                 let imageMessage = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
-                appendMessages([imageMessage])
+                appendMessagesAndSort([imageMessage])
             } else if let fileRequest = req.uploadFileRequest {
                 let fileMessage = UploadFileWithTextMessage(uploadFileRequest: fileRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
-                appendMessages([fileMessage])
+                appendMessagesAndSort([fileMessage])
             }
         default:
             Logger.viewModels.info("Type not detected!")
@@ -231,7 +231,7 @@ extension ThreadViewModel {
     public func onUnSentEditCompletionResult(_ response: ChatResponse<Message>) {
         if let message = response.result, threadId == message.conversation?.id {
             onDeleteMessage(response)
-            appendMessages([message])
+            appendMessagesAndSort([message])
         }
     }
 

@@ -32,7 +32,7 @@ extension ThreadViewModel: ScrollToPositionProtocol {
     public func setNewOrigin(newOriginY: CGFloat) {
         scrollingUP = lastOrigin > newOriginY
         lastOrigin = newOriginY
-        if scrollingUP, newOriginY < 0, canLoadMoreTop, isFetchedServerFirstResponse {
+        if !isProgramaticallyScroll, scrollingUP, newOriginY < 0, canLoadMoreTop, isFetchedServerFirstResponse {
             moreTop(sections.first?.messages.first?.time?.advanced(by: -1))
         }
     }
@@ -49,16 +49,6 @@ extension ThreadViewModel: ScrollToPositionProtocol {
                 self?.scrollToBottom()
             }
         }
-    }
-
-    /// Search for a message with an id in the messages array, and if it can find the message, it will redirect to that message locally, and there is no request sent to the server.
-    /// - Returns: Indicate that it moved loclally or not.
-    func moveToMessageLocally(_ messageId: Int, highlight: Bool) -> Bool {
-        if let indices = indicesByMessageId(messageId), let uniqueId = sections[indices.sectionIndex].messages[indices.messageIndex].uniqueId {
-            showHighlighted(uniqueId, messageId, highlight: highlight)
-            return true
-        }
-        return false
     }
 
     func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true) {

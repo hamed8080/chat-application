@@ -51,13 +51,35 @@ extension ThreadViewModel {
     public func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
         case .history(let response):
-            onLastMessageHistory(response)
-            onHistory(response)
+            if !response.cache {
+                /// For the first scenario.
+                onMoreTopFirstScenario(response)
+                onMoreBottomFirstScenario(response)
+                
+                /// For the second scenario.
+                onMoreTopSecondScenario(response)
+                
+                /// For the scenario three and four.
+                onMoreTop(response)
+                
+                /// For the scenario three and four.
+                onMoreBottom(response)
+                
+                /// For the fifth scenario.
+                onMoreBottomFifthScenario(response)
+
+                /// For the sixth scenario.
+                onMoveToTime(response)
+                onMoveFromTime(response)
+            }
+
+//            if response.cache == true {
+//                isProgramaticallyScroll = true
+//                appendMessagesAndSort(response.result ?? [])
+//                animateObjectWillChange()
+//            }
             onSearch(response)
-            onMoveToTime(response)
-            onMoveFromTime(response)
-            onMoreTop(response)
-            onMoreBottom(response)
+
             break
         case .queueTextMessages(let response):
             onQueueTextMessages(response)

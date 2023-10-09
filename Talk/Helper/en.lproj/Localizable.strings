@@ -191,11 +191,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* ConnectionStatus */
-"ConnectionStatus.connecting" = "connecting";
-"ConnectionStatus.connected" = "connected";
-"ConnectionStatus.disconnected" = "disconnected";
-"ConnectionStatus.reconnecting" = "reconnectiong";
-"ConnectionStatus.unauthorized" = "un authorized";
+"ConnectionStatus.connecting" = "connecting %@";
+"ConnectionStatus.connected" = "connected %@";
+"ConnectionStatus.disconnected" = "disconnected %@";
+"ConnectionStatus.reconnecting" = "reconnectiong %@";
+"ConnectionStatus.unauthorized" = "un authorized %@";
 
 /* Participant */
 "Participant.Search.Type.name" = "Name";

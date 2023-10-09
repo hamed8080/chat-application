@@ -189,11 +189,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* ConnectionStatus */
-"ConnectionStatus.connecting" = "جاري الاتصال";
-"ConnectionStatus.connected" = "متصل";
-"ConnectionStatus.disconnected" = "غير متصل";
-"ConnectionStatus.reconnecting" = "إعادة الاتصال";
-"ConnectionStatus.unauthorized" = "غير مصرح به";
+"ConnectionStatus.connecting" = "جاري الاتصال %@";
+"ConnectionStatus.connected" = "متصل %@";
+"ConnectionStatus.disconnected" = "غير متصل %@";
+"ConnectionStatus.reconnecting" = "إعادة الاتصال %@";
+"ConnectionStatus.unauthorized" = "غير مصرح به %@";
 
 /* Participant */
 "Participant.Search.Type.name" = "الاسم";

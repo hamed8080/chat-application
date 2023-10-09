@@ -14,6 +14,7 @@ import ChatModels
 extension ThreadViewModel {
     public func searchInsideThread(text: String, offset: Int = 0) {
         searchTextTimer?.invalidate()
+        searchTextTimer = nil
         searchTextTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
             self?.doSearch(text: text, offset: offset)
         }

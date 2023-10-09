@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0506DE1F2AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
+		0506DE202AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
 		050B29102AB40DC20072706C /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290A2AB40DC20072706C /* TabContainerView.swift */; };
 		050B29112AB40DC20072706C /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290A2AB40DC20072706C /* TabContainerView.swift */; };
 		050B29142AB40DC20072706C /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290C2AB40DC20072706C /* TabButtonItem.swift */; };
@@ -220,6 +222,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0506DE1E2AD42AF00009701E /* Talk.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Talk.docc; sourceTree = "<group>"; };
 		050B290A2AB40DC20072706C /* TabContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerView.swift; sourceTree = "<group>"; };
 		050B290C2AB40DC20072706C /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
 		050B290D2AB40DC20072706C /* ContainerSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerSplitView.swift; sourceTree = "<group>"; };
@@ -430,6 +433,7 @@
 				0570CBA12AAEE98D001832E9 /* SceneDelegate.swift */,
 				0570CC962AAEE9B2001832E9 /* Info-Test.plist */,
 				0570CC952AAEE9B2001832E9 /* Info.plist */,
+				0506DE1E2AD42AF00009701E /* Talk.docc */,
 			);
 			path = Talk;
 			sourceTree = "<group>";
@@ -857,6 +861,7 @@
 				0570CC272AAEE98F001832E9 /* ThreadViewCenterToolbar.swift in Sources */,
 				05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */,
 				0570CC3B2AAEE98F001832E9 /* TagParticipantRow.swift in Sources */,
+				0506DE1F2AD42AF00009701E /* Talk.docc in Sources */,
 				0570CC4F2AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC292AAEE98F001832E9 /* ThreadView.swift in Sources */,
 				0570CC932AAEE98F001832E9 /* AppDelegate.swift in Sources */,
@@ -950,6 +955,7 @@
 				0570CC282AAEE98F001832E9 /* ThreadViewCenterToolbar.swift in Sources */,
 				05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */,
 				0570CC3C2AAEE98F001832E9 /* TagParticipantRow.swift in Sources */,
+				0506DE202AD42AF00009701E /* Talk.docc in Sources */,
 				0570CC502AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC2A2AAEE98F001832E9 /* ThreadView.swift in Sources */,
 				0570CC942AAEE98F001832E9 /* AppDelegate.swift in Sources */,

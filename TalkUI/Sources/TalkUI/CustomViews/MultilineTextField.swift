@@ -22,7 +22,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         textField.delegate = context.coordinator
 
         textField.isEditable = true
-        textField.font = UIFont(name: "IRANSansX", size: 13)
+        textField.font = UIFont(name: "IRANSansX", size: 16)
         textField.isSelectable = true
         textField.isUserInteractionEnabled = true
         textField.isScrollEnabled = false
@@ -44,7 +44,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
             } else {
                 uiView.text = text
             }
-            uiView.font = UIFont.systemFont(ofSize: 16)
+            uiView.font = UIFont(name: "IRANSansX", size: 16)
+            uiView.textColor = textColor
         }
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
     }

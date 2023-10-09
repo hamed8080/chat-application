@@ -68,6 +68,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
     public var isAtBottomOfTheList: Bool = false    
     var searchOffset: Int = 0
+    public var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false
     var lastOrigin: CGFloat = 0
@@ -118,14 +119,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
         if status == .connected, isFetchedServerFirstResponse == true, isActiveThread {
-            // After connecting again get latest messages
-            getHistory()
+            // After connecting again get latest messages.
+            tryFifthScenario(status: status)
         }
     }
 
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
-            appendMessages([message])
+            appendMessagesAndSort([message])
             animateObjectWillChange()
             scrollToLastMessageIfLastMessageIsVisible()
         }
@@ -175,31 +176,31 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             animateObjectWillChange()
         }
 
-        if scrollingUP, let lastIndex = sections.first?.messages.firstIndex(where: { lastVisibleUniqueId == $0.uniqueId }), lastIndex < 3 {
-            moreTop(sections.first?.messages.first?.time?.advanced(by: 100))
+        if !isProgramaticallyScroll, scrollingUP, let lastIndex = sections.first?.messages.firstIndex(where: { lastVisibleUniqueId == $0.uniqueId }), lastIndex < 3 {
+            moreTop(sections.first?.messages.first?.time)
         }
 
-        if !scrollingUP, message.id == sections.last?.messages.last?.id {
+        if !isProgramaticallyScroll, !scrollingUP, message.id == sections.last?.messages.last?.id {
             moreBottom(sections.last?.messages.last?.time?.advanced(by: 1))
         }
     }
 
     func onQueueTextMessages(_ response: ChatResponse<[SendTextMessageRequest]>) {
-        appendMessages(response.result?.compactMap { SendTextMessage(from: $0, thread: thread) } ?? [])
+        appendMessagesAndSort(response.result?.compactMap { SendTextMessage(from: $0, thread: thread) } ?? [])
     }
 
     func onQueueEditMessages(_ response: ChatResponse<[EditMessageRequest]>) {
-        appendMessages(response.result?.compactMap { EditTextMessage(from: $0, thread: thread) } ?? [])
+        appendMessagesAndSort(response.result?.compactMap { EditTextMessage(from: $0, thread: thread) } ?? [])
     }
 
     func onQueueForwardMessages(_ response: ChatResponse<[ForwardMessageRequest]>) {
-        appendMessages(response.result?.compactMap { ForwardMessage(from: $0,
+        appendMessagesAndSort(response.result?.compactMap { ForwardMessage(from: $0,
                                                                     destinationThread: .init(id: $0.threadId, title: threadName($0.threadId)),
                                                                     thread: thread) } ?? [])
     }
 
     func onQueueFileMessages(_ response: ChatResponse<[(UploadFileRequest, SendTextMessageRequest)]>) {
-        appendMessages(response.result?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: thread) } ?? [])
+        appendMessagesAndSort(response.result?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: thread) } ?? [])
     }
 
     public func onEditedMessage(_ response: ChatResponse<Message>) {
@@ -254,13 +255,12 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         ChatManager.activeInstance?.system.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
     }
 
-    public func appendMessages(_ messages: [Message], isToTime: Bool = false) {
+    public func appendMessagesAndSort(_ messages: [Message], isToTime: Bool = false) {
         guard messages.count > 0 else { return }
         messages.forEach { message in
             insertOrUpdate(message)
         }
         sort()
-        appenedUnreadMessagesBannerIfNeeed(isToTime)
     }
 
     func insertOrUpdate(_ message: Message) {
@@ -336,32 +336,11 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func removeByUniqueId(_ uniqueId: String?) {
         guard let uniqueId = uniqueId, let indices = indicesByMessageUniqueId(uniqueId) else { return }
         sections[indices.sectionIndex].messages.remove(at: indices.messageIndex)
-    }
-
-    func appenedUnreadMessagesBannerIfNeeed(_ isToTime: Bool) {
-        removeAllUnreadSeen();
-        guard !canAppendMessageBanner, isToTime, let lastSeenMessageId = thread.lastSeenMessageId else { return }
-        if let indices = indicesByMessageId(lastSeenMessageId) {
-            let time = (sections[indices.sectionIndex].messages[indices.messageIndex].time ?? 0) + 1
-            let unreadMessage = UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: time)
-            sections[indices.sectionIndex].messages.append(unreadMessage)
-        }
-    }
+    }    
 
     private func lastMessageSeenIndicies(isToTime: Bool) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
         guard isToTime, let lastSeenMessageId = thread.lastSeenMessageId else { return nil }
         return indicesByMessageId(lastSeenMessageId)
-    }
-
-    private var canAppendMessageBanner: Bool {
-        let lastMSG = thread.lastMessageVO
-        return lastMSG?.time ?? 0 <= thread.lastSeenMessageTime ?? 0 || thread.unreadCount == 0 || lastMSG?.ownerId == AppState.shared.user?.id
-    }
-
-    func removeAllUnreadSeen() {
-        sections.indices.forEach { sectionIndex in
-            sections[sectionIndex].messages.removeAll(where: {$0 is UnreadMessageProtocol})
-        }
     }
 
     public func deleteMessages(_ messages: [Message]) {
@@ -387,6 +366,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func sort() {
         sections.indices.forEach { sectionIndex in
             sections[sectionIndex].messages.sort { m1, m2 in
+                if m1 is UnreadMessageProtocol {
+                    return false
+                }
                 if let t1 = m1.time, let t2 = m2.time {
                     return t1 < t2
                 } else {
@@ -467,16 +449,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             thread.lastSeenMessageId = response.result?.lastSeenMessageId
             thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
             thread.unreadCount = response.contentCount
-            animateObjectWillChange()
-        }
-    }
-
-    func onCancelTimer(key: String) {
-        let keys = ["GET-HISTORY", "TO-TIME", "FROM-TIME", "LAST-MESSAGE-HISTORY", "MORE-TOP", "MORE-BOTTOM"]
-        if keys.contains(where: {key.contains($0)}) {
-            RequestsManager.shared.remove(key: key)
-            topLoading = false
-            bottomLoading = false
             animateObjectWillChange()
         }
     }

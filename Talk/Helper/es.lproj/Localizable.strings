@@ -190,11 +190,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* Estado de conexión */
-"ConnectionStatus.connecting" = "conectando";
-"ConnectionStatus.connected" = "conectado";
-"ConnectionStatus.disconnected" = "desconectado";
-"ConnectionStatus.reconnecting" = "reconectando";
-"ConnectionStatus.unauthorized" = "no autorizado";
+"ConnectionStatus.connecting" = "conectando %@";
+"ConnectionStatus.connected" = "conectado %@";
+"ConnectionStatus.disconnected" = "desconectado %@";
+"ConnectionStatus.reconnecting" = "reconectando %@";
+"ConnectionStatus.unauthorized" = "no autorizado %@";
 
 /* Participante */
 "Participant.Search.Type.name" = "Nombre";

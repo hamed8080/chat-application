@@ -190,11 +190,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* ConnectionStatus */
-"ConnectionStatus.connecting" = "در حال اتصال";
-"ConnectionStatus.connected" = "متصل شده";
-"ConnectionStatus.disconnected" = "قطع شده";
-"ConnectionStatus.reconnecting" = "در حال اتصال مجدد";
-"ConnectionStatus.unauthorized" = "عدم احراز هویت";
+"ConnectionStatus.connecting" = "در حال اتصال %@";
+"ConnectionStatus.connected" = "متصل شده %@";
+"ConnectionStatus.disconnected" = "قطع شده %@";
+"ConnectionStatus.reconnecting" = "در حال اتصال مجدد %@";
+"ConnectionStatus.unauthorized" = "عدم احراز هویت %@";
 
 /* Participant */
 "Participant.Search.Type.name" = "نام";
@@ -230,7 +230,7 @@
 /* Settings */
 "Settings.title" = "تنظیمات";
 "Settings.calls" = "تماس ها";
-"Settings.savedMessage" = "پیام های ذخیره شده";
+"Settings.savedMessage" = "صندوق پیام";
 "Settings.logs" = "لاگ ها";
 "Settings.assistants" = "دستیار ها";
 "Settings.manageCalls" = "مدیریت تماس ها";

@@ -9,22 +9,12 @@ import SwiftUI
 
 struct UnreadMessagesBubble: View {
     var body: some View {
-        let gradient = Gradient(colors: [
-            .purple.opacity(0.8),
-            .blue.opacity(0.5),
-        ])
         Text("Messages.unreadMessages")
             .font(.iransansCaption)
-            .fontDesign(.rounded)
             .padding([.leading, .trailing], 16)
             .padding([.bottom, .top], 6)
-            .background(
-                LinearGradient(gradient: gradient,
-                               startPoint: .leading,
-                               endPoint: .trailing)
-                    .background(.thinMaterial.blendMode(.color))
-            )
-            .cornerRadius(10)
+            .background(Color.hint)
+            .cornerRadius(16)
             .foregroundColor(Color.white.opacity(1))
     }
 }
