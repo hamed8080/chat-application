@@ -9,10 +9,6 @@
 /* Begin PBXBuildFile section */
 		0506DE1F2AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
 		0506DE202AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
-		050B29102AB40DC20072706C /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290A2AB40DC20072706C /* TabContainerView.swift */; };
-		050B29112AB40DC20072706C /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290A2AB40DC20072706C /* TabContainerView.swift */; };
-		050B29142AB40DC20072706C /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290C2AB40DC20072706C /* TabButtonItem.swift */; };
-		050B29152AB40DC20072706C /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290C2AB40DC20072706C /* TabButtonItem.swift */; };
 		050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
 		050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
 		050B29182AB40DC20072706C /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290E2AB40DC20072706C /* ToolbarView.swift */; };
@@ -196,8 +192,8 @@
 		0570CC802AAEE98F001832E9 /* webrtc_user_b.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD02AAEE98E001832E9 /* webrtc_user_b.mp4 */; };
 		0570CC812AAEE98F001832E9 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD22AAEE98E001832E9 /* Config.json */; };
 		0570CC822AAEE98F001832E9 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD22AAEE98E001832E9 /* Config.json */; };
-		0570CC832AAEE98F001832E9 /* .MockData.strings.swp in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD32AAEE98E001832E9 /* .MockData.strings.swp */; };
-		0570CC842AAEE98F001832E9 /* .MockData.strings.swp in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD32AAEE98E001832E9 /* .MockData.strings.swp */; };
+		0570CC832AAEE98F001832E9 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		0570CC842AAEE98F001832E9 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		0570CC852AAEE98F001832E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD42AAEE98E001832E9 /* Assets.xcassets */; };
 		0570CC862AAEE98F001832E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD42AAEE98E001832E9 /* Assets.xcassets */; };
 		0570CC872AAEE98F001832E9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBD62AAEE98E001832E9 /* LaunchScreen.storyboard */; };
@@ -210,8 +206,8 @@
 		0570CC8E2AAEE98F001832E9 /* Ringtone.aif in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBDB2AAEE98E001832E9 /* Ringtone.aif */; };
 		0570CC8F2AAEE98F001832E9 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBDC2AAEE98E001832E9 /* MockData.json */; };
 		0570CC902AAEE98F001832E9 /* MockData.json in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBDC2AAEE98E001832E9 /* MockData.json */; };
-		0570CC912AAEE98F001832E9 /* .MockData.strings.swo in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBDD2AAEE98E001832E9 /* .MockData.strings.swo */; };
-		0570CC922AAEE98F001832E9 /* .MockData.strings.swo in Resources */ = {isa = PBXBuildFile; fileRef = 0570CBDD2AAEE98E001832E9 /* .MockData.strings.swo */; };
+		0570CC912AAEE98F001832E9 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		0570CC922AAEE98F001832E9 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		0570CC932AAEE98F001832E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBDE2AAEE98E001832E9 /* AppDelegate.swift */; };
 		0570CC942AAEE98F001832E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBDE2AAEE98E001832E9 /* AppDelegate.swift */; };
 		0570CCAB2AAEEE22001832E9 /* TalkExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCAA2AAEEE22001832E9 /* TalkExtensions */; };
@@ -224,8 +220,6 @@
 		0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBD2AAEEE78001832E9 /* TalkViewModels */; };
 		05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
 		05B4C1792ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
-		05B4C17B2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */; };
-		05B4C17C2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */; };
 		05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
@@ -241,8 +235,6 @@
 
 /* Begin PBXFileReference section */
 		0506DE1E2AD42AF00009701E /* Talk.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Talk.docc; sourceTree = "<group>"; };
-		050B290A2AB40DC20072706C /* TabContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerView.swift; sourceTree = "<group>"; };
-		050B290C2AB40DC20072706C /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
 		050B290D2AB40DC20072706C /* ContainerSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerSplitView.swift; sourceTree = "<group>"; };
 		050B290E2AB40DC20072706C /* ToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NothingHasBeenSelectedView.swift; sourceTree = "<group>"; };
@@ -344,7 +336,6 @@
 		0570CBD02AAEE98E001832E9 /* webrtc_user_b.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = webrtc_user_b.mp4; sourceTree = "<group>"; };
 		0570CBD12AAEE98E001832E9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		0570CBD22AAEE98E001832E9 /* Config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Config.json; sourceTree = "<group>"; };
-		0570CBD32AAEE98E001832E9 /* .MockData.strings.swp */ = {isa = PBXFileReference; lastKnownFileType = file; path = .MockData.strings.swp; sourceTree = "<group>"; };
 		0570CBD42AAEE98E001832E9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0570CBD52AAEE98E001832E9 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		0570CBD72AAEE98E001832E9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -353,7 +344,6 @@
 		0570CBDA2AAEE98E001832E9 /* new_message.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = new_message.mp3; sourceTree = "<group>"; };
 		0570CBDB2AAEE98E001832E9 /* Ringtone.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ringtone.aif; sourceTree = "<group>"; };
 		0570CBDC2AAEE98E001832E9 /* MockData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = MockData.json; sourceTree = "<group>"; };
-		0570CBDD2AAEE98E001832E9 /* .MockData.strings.swo */ = {isa = PBXFileReference; lastKnownFileType = file; path = .MockData.strings.swo; sourceTree = "<group>"; };
 		0570CBDE2AAEE98E001832E9 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0570CC952AAEE9B2001832E9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0570CC962AAEE9B2001832E9 /* Info-Test.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-Test.plist"; sourceTree = "<group>"; };
@@ -414,39 +404,14 @@
 			path = NavigationViews;
 			sourceTree = "<group>";
 		};
-		050B29092AB40DC20072706C /* TabViews */ = {
+		052196872AD536B000FD3902 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
 				05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */,
-				050B290A2AB40DC20072706C /* TabContainerView.swift */,
-				050B290C2AB40DC20072706C /* TabButtonItem.swift */,
 			);
-			path = TabViews;
-		050DE1D72AB1DCF500418463 /* MessageRows */ = {
-			isa = PBXGroup;
-			children = (
-				050DE1D82AB1DCF500418463 /* CallMessageType.swift */,
-				050DE1D92AB1DCF500418463 /* ReactionMenuView.swift */,
-				050DE1DA2AB1DCF500418463 /* UploadMessageType.swift */,
-				050DE1DB2AB1DCF500418463 /* ForwardMessageRow.swift */,
-				050DE1DC2AB1DCF500418463 /* ReactionCountView.swift */,
-				050DE1DD2AB1DCF500418463 /* MessageRowFactory.swift */,
-				050DE1DE2AB1DCF500418463 /* MessageFooterView.swift */,
-				050DE1DF2AB1DCF500418463 /* UnknownMessageType.swift */,
-				050DE1E02AB1DCF500418463 /* AvatarView.swift */,
-				050DE1E12AB1DCF500418463 /* OverlayEmojiViews.swift */,
-				050DE1E22AB1DCF500418463 /* UnreadMessagesBubble.swift */,
-				050DE1E32AB1DCF500418463 /* ReplyInfoMessageRow.swift */,
-				050DE1E42AB1DCF500418463 /* ParticipantMessageType.swift */,
-				050DE1E52AB1DCF500418463 /* MessageActionMenu.swift */,
-				050DE1E62AB1DCF500418463 /* TextMessageType.swift */,
-				050DE1E72AB1DCF500418463 /* EmojiIcon.swift */,
-			);
-			name = MessageRows;
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
-=======
->>>>>>> 64fddf8 (- Some UI changes)
 		0560C35A2AB77B0B009F6A58 /* TabViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -464,6 +429,7 @@
 				0570CB192AAEE02A001832E9 /* Talk */,
 				0570CB182AAEE02A001832E9 /* Products */,
 				0570CCA92AAEEE22001832E9 /* Frameworks */,
+				052196872AD536B000FD3902 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -737,14 +703,12 @@
 				0570CBCE2AAEE98E001832E9 /* webrtc_user_a.mp4 */,
 				0570CBD02AAEE98E001832E9 /* webrtc_user_b.mp4 */,
 				0570CBD22AAEE98E001832E9 /* Config.json */,
-				0570CBD32AAEE98E001832E9 /* .MockData.strings.swp */,
 				0570CBD42AAEE98E001832E9 /* Assets.xcassets */,
 				0570CBD62AAEE98E001832E9 /* LaunchScreen.storyboard */,
 				0570CBD92AAEE98E001832E9 /* sent_message.mp3 */,
 				0570CBDA2AAEE98E001832E9 /* new_message.mp3 */,
 				0570CBDB2AAEE98E001832E9 /* Ringtone.aif */,
 				0570CBDC2AAEE98E001832E9 /* MockData.json */,
-				0570CBDD2AAEE98E001832E9 /* .MockData.strings.swo */,
 				0570CBDE2AAEE98E001832E9 /* AppDelegate.swift */,
 			);
 			path = "Supporting Files";
@@ -878,9 +842,9 @@
 				0570CC892AAEE98F001832E9 /* sent_message.mp3 in Resources */,
 				0570CC7B2AAEE98F001832E9 /* LaunchScreen.strings in Resources */,
 				0570CC7F2AAEE98F001832E9 /* webrtc_user_b.mp4 in Resources */,
-				0570CC832AAEE98F001832E9 /* .MockData.strings.swp in Resources */,
+				0570CC832AAEE98F001832E9 /* (null) in Resources */,
 				0570CC8D2AAEE98F001832E9 /* Ringtone.aif in Resources */,
-				0570CC912AAEE98F001832E9 /* .MockData.strings.swo in Resources */,
+				0570CC912AAEE98F001832E9 /* (null) in Resources */,
 				0570CC852AAEE98F001832E9 /* Assets.xcassets in Resources */,
 				0570CC792AAEE98F001832E9 /* Localizable.strings in Resources */,
 				0570CC8B2AAEE98F001832E9 /* new_message.mp3 in Resources */,
@@ -899,9 +863,9 @@
 				0570CC8A2AAEE98F001832E9 /* sent_message.mp3 in Resources */,
 				0570CC7C2AAEE98F001832E9 /* LaunchScreen.strings in Resources */,
 				0570CC802AAEE98F001832E9 /* webrtc_user_b.mp4 in Resources */,
-				0570CC842AAEE98F001832E9 /* .MockData.strings.swp in Resources */,
+				0570CC842AAEE98F001832E9 /* (null) in Resources */,
 				0570CC8E2AAEE98F001832E9 /* Ringtone.aif in Resources */,
-				0570CC922AAEE98F001832E9 /* .MockData.strings.swo in Resources */,
+				0570CC922AAEE98F001832E9 /* (null) in Resources */,
 				0570CC862AAEE98F001832E9 /* Assets.xcassets in Resources */,
 				0570CC7A2AAEE98F001832E9 /* Localizable.strings in Resources */,
 				0570CC8C2AAEE98F001832E9 /* new_message.mp3 in Resources */,
@@ -948,17 +912,12 @@
 				0570CC2F2AAEE98F001832E9 /* ThreadMessagesList.swift in Sources */,
 				0570CC132AAEE98F001832E9 /* AvatarView.swift in Sources */,
 				05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */,
-				050DE1F22AB1DCF500418463 /* MessageRowFactory.swift in Sources */,
-				050DE1FE2AB1DCF500418463 /* ReplyInfoMessageRow.swift in Sources */,
-				050DE1FC2AB1DCF500418463 /* UnreadMessagesBubble.swift in Sources */,
-				050DE2002AB1DCF500418463 /* ParticipantMessageType.swift in Sources */,
 				0570CC152AAEE98F001832E9 /* UnreadMessagesBubble.swift in Sources */,
 				0570CC072AAEE98F001832E9 /* CallMessageType.swift in Sources */,
 				0570CC092AAEE98F001832E9 /* UploadMessageType.swift in Sources */,
 				0570CC032AAEE98F001832E9 /* ThreadSearchList.swift in Sources */,
 				050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC252AAEE98F001832E9 /* MentionList.swift in Sources */,
-				05B4C17B2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */,
 				0570CC212AAEE98F001832E9 /* AttachmentDialog.swift in Sources */,
 				0570CC492AAEE98F001832E9 /* LogView.swift in Sources */,
 				0570CC0B2AAEE98F001832E9 /* ForwardMessageRow.swift in Sources */,
@@ -1053,17 +1012,12 @@
 				0570CC302AAEE98F001832E9 /* ThreadMessagesList.swift in Sources */,
 				0570CC142AAEE98F001832E9 /* AvatarView.swift in Sources */,
 				05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */,
-				050DE1F32AB1DCF500418463 /* MessageRowFactory.swift in Sources */,
-				050DE1FF2AB1DCF500418463 /* ReplyInfoMessageRow.swift in Sources */,
-				050DE1FD2AB1DCF500418463 /* UnreadMessagesBubble.swift in Sources */,
-				050DE2012AB1DCF500418463 /* ParticipantMessageType.swift in Sources */,
 				0570CC162AAEE98F001832E9 /* UnreadMessagesBubble.swift in Sources */,
 				0570CC082AAEE98F001832E9 /* CallMessageType.swift in Sources */,
 				0570CC0A2AAEE98F001832E9 /* UploadMessageType.swift in Sources */,
 				0570CC042AAEE98F001832E9 /* ThreadSearchList.swift in Sources */,
 				050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC262AAEE98F001832E9 /* MentionList.swift in Sources */,
-				05B4C17C2ACEF2AF00FBC4DC /* TabButtonsContainer.swift in Sources */,
 				0570CC222AAEE98F001832E9 /* AttachmentDialog.swift in Sources */,
 				0570CC4A2AAEE98F001832E9 /* LogView.swift in Sources */,
 				0570CC0C2AAEE98F001832E9 /* ForwardMessageRow.swift in Sources */,

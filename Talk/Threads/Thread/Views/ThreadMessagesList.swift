@@ -156,7 +156,10 @@ struct ThreadMessagesList_Previews: PreviewProvider {
             ThreadMessagesList(viewModel: viewModel)
                 .environmentObject(viewModel)
                 .onAppear {
-                    viewModel.appendMessages([.init(threadId: 1, id: 1, message: "Test Message", messageType: .text, conversation: viewModel.thread)])
+                    viewModel.appendMessagesAndSort([.init(threadId: 1, id: 1,
+                                                    message: "Test Message",
+                                                    messageType: .text,
+                                                    conversation: viewModel.thread)])
                     viewModel.animateObjectWillChange()
                 }
         }
