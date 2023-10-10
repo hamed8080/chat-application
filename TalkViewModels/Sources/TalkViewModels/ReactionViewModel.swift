@@ -67,7 +67,7 @@ public final class ReactionViewModel: ObservableObject {
         ChatManager.activeInstance?.reaction.reaction(.init(messageId: messageId, conversationId: conversationId))
     }
 
-    public func getDetail(for messageId: Int, offset: Int = 0, conversationId: Int, sticker: Sticker) {
+    public func getDetail(for messageId: Int, offset: Int = 0, conversationId: Int, sticker: Sticker? = nil) {
         ChatManager.activeInstance?.reaction.get(.init(messageId: messageId,
                                                        offset: offset,
                                                        count: 25,

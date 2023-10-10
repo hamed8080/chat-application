@@ -23,15 +23,37 @@ struct MessageReactionDetailView: View {
 
     var body: some View {
         TabContainerView(
-            selectedId: "all",
-            tabs: tabItems,
+            selectedId: "General.all",
+            tabs: tabs,
             config: .init(alignment: .top)
         )
+        .background(Color.bgMain)
         .navigationTitle("Reactions to: \(message.messageTitle.trimmingCharacters(in: .whitespacesAndNewlines))")
     }
 
-    var tabItems: [TabItem] {
-        var items = ChatManager.activeInstance?.reaction.inMemoryReaction.summary(for: messageId)
+    var tabs: [TabItem] {
+        if summarTabs.count > 0 {
+            var tabs = summarTabs
+            tabs.insert(allTab, at: 0)
+            return tabs
+        } else {
+            return []
+        }
+    }
+
+    var allTab: TabItem {
+        TabItem(
+            tabContent: ParticiapntsPageSticker(
+                sticker: nil,
+                messageId: messageId,
+                conversationId: conversationId
+            ),
+            title: "General.all"
+        )
+    }
+
+    var summarTabs: [TabItem] {
+        ChatManager.activeInstance?.reaction.inMemoryReaction.summary(for: messageId)
             .compactMap { reaction in
                 TabItem(
                     tabContent: ParticiapntsPageSticker(
@@ -42,29 +64,17 @@ struct MessageReactionDetailView: View {
                     title: "\(reaction.sticker?.emoji ?? "all") \(reaction.count ?? 0)"
                 )
             } ?? []
-        if items.count > 0 {
-            items.insert(TabItem(
-                tabContent: ParticiapntsPageSticker(
-                    sticker: .unknown,
-                    messageId: messageId,
-                    conversationId: conversationId
-                ),
-                title: "all"
-            ), at: 0)
-            return items
-        } else {
-            return []
-        }
     }
 }
 
 struct ParticiapntsPageSticker: View {
-    let sticker: Sticker
+    let sticker: Sticker?
     @State private var reactions: [Reaction] = []
     private let messageId: Int
     private let conversationId: Int
+    @State var viewHasAppeared = false
 
-    init(sticker: Sticker, reactions: [Reaction] = [], messageId: Int, conversationId: Int) {
+    init(sticker: Sticker?, reactions: [Reaction] = [], messageId: Int, conversationId: Int) {
         self.sticker = sticker
         self.reactions = reactions
         self.messageId = messageId
@@ -73,44 +83,103 @@ struct ParticiapntsPageSticker: View {
 
     var body: some View {
         List {
-            Color.random
             ForEach(reactions) { reaction in
-                HStack {
-                    Text(reaction.reaction?.emoji ?? "")
-                    ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: reaction.participant?.image, userName: reaction.participant?.name)
-                        .id(reaction.participant?.id)
-                        .font(.iransansBoldCaption2)
-                        .foregroundColor(.white)
-                        .frame(width: 24, height: 24)
-                        .background(Color.blue.opacity(0.4))
-                        .cornerRadius(12)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(reaction.participant?.name ?? "")
-                            .padding(.leading, 4)
-                            .lineLimit(1)
-                            .font(.headline)
-                        if let time = reaction.time {
-                            Text(time.date.timeAgoSinceDateCondense ?? "")
-                                .padding(.leading, 4)
-                                .font(.iransansCaption3)
-                                .foregroundColor(Color.gray)
+                ReactionParticipantRow(reaction: reaction)
+                    .listRowBackground(Color.bgMain)
+                    .onAppear {
+                        if reactions.last == reaction {
+                            ReactionViewModel.shared.getDetail(for: messageId,
+                                                               offset: reactions.count,
+                                                               conversationId: conversationId,
+                                                               sticker: sticker
+                            )
                         }
                     }
+            }
+        }
+        .listStyle(.plain)
+        .safeAreaInset(edge: .top) {
+            EmptyView()
+                .frame(width: 0, height: 48)
+        }
+        .onAppear {
+            if !viewHasAppeared {
+                viewHasAppeared = true
+                ReactionViewModel.shared.getDetail(for: messageId,
+                                                   offset: reactions.count,
+                                                   conversationId: conversationId,
+                                                   sticker: sticker
+                )
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .reaction)) { newValue in
+            guard let event = newValue.object as? ReactionEventTypes,
+                  case let .list(resposne) = event,
+                  resposne.result?.messageId == messageId,
+                  let reactions = resposne.result?.reactions
+            else { return }
+            let groups = Dictionary(grouping: reactions.compactMap{$0.reaction}, by: {$0})
+            if self.sticker == nil {
+                reactions.forEach { reaction in
+                    if !self.reactions.contains(where: {$0.id == reaction.id}) {
+                        self.reactions.append( reaction)
+                    }
                 }
-                .onAppear {
-                    if reactions.last == reaction {
-                        ReactionViewModel.shared.getDetail(for: messageId,
-                                                           offset: reactions.count,
-                                                           conversationId: conversationId,
-                                                           sticker: sticker
-                        )
+            } else if groups.count == 1, sticker == groups.first?.value.first {
+                reactions.forEach { reaction in
+                    if !self.reactions.contains(where: {$0.id == reaction.id}) {
+                        self.reactions.append( reaction)
                     }
                 }
             }
         }
-        .safeAreaInset(edge: .top) {
-            EmptyView()
-                .frame(width: 0, height: 12)
+    }
+}
+
+struct ReactionParticipantRow: View {
+    let reaction: Reaction
+
+    var body: some View {
+        HStack {
+            ZStack(alignment: .leading) {
+                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: reaction.participant?.image, userName: reaction.participant?.name)
+                    .scaledToFit()
+                    .id(reaction.participant?.id)
+                    .font(.iransansBoldCaption2)
+                    .foregroundColor(.white)
+                    .background(Color.blue.opacity(0.4))
+                    .frame(width: 64, height: 64)
+                    .cornerRadius(24)
+                Circle()
+                    .fill(.red)
+                    .frame(width: 28, height: 28)
+                    .offset(x: 0, y: 26)
+                    .blendMode(.destinationOut)
+                    .overlay {
+                        Text(verbatim: reaction.reaction?.emoji ?? "")
+                            .font(.system(size: 13))
+                            .frame(width: 22, height: 22)
+                            .background(Color.main.opacity(0.3))
+                            .cornerRadius(18)
+                            .offset(x: 0, y: 26)
+
+                    }
+            }
+            .compositingGroup()
+            .opacity(0.9)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(reaction.participant?.name ?? "")
+                    .padding(.leading, 4)
+                    .lineLimit(1)
+                    .font(.iransansSubtitle)
+                if let time = reaction.time {
+                    Text(time.date.timeAgoSinceDateCondense ?? "")
+                        .padding(.leading, 4)
+                        .font(.iransansCaption3)
+                        .foregroundColor(Color.gray)
+                }
+            }
         }
     }
 }
@@ -118,5 +187,8 @@ struct ParticiapntsPageSticker: View {
 struct MessageReactionDetailView_Previews: PreviewProvider {
     static var previews: some View {
         MessageReactionDetailView(message: Message(id: 1, message: "TEST", conversation: Conversation(id: 1)))
+
+        ReactionParticipantRow(reaction: .init(id: 1, reaction: .like, participant: .init(image: "https://imgv3.fotor.com/images/cover-photo-image/a-beautiful-girl-with-gray-hair-and-lucxy-neckless-generated-by-Fotor-AI.jpg"), time: nil))
+            .frame(width: 300, height: 300)
     }
 }
