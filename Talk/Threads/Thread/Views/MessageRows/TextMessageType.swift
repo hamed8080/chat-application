@@ -27,6 +27,8 @@ struct TextMessageType: View {
 
             if viewModel.isMe {
                 Spacer()
+                EmojiIcon()
+                    .offset(x: 16)
             }
 
             MutableMessageView()

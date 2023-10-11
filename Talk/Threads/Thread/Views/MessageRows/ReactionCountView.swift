@@ -62,6 +62,7 @@ struct ReactionCountRow: View {
                 }
                 Text("\(count)")
                     .font(.iransansBody)
+                    .foregroundStyle(isMyReaction ? Color.white : .hintText)
             }
         }
         .animation(.easeInOut, value: count)
@@ -83,14 +84,17 @@ struct ReactionCountRow: View {
             print("tapped on \(reactionCount.sticker?.emoji ?? "") with messageId: \(messageId)")
         }
     }
+    var isMyReaction: Bool {
+        currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue
+    }
 
     @ViewBuilder
     var background: some View {
-        if currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue {
-            Color.blue.opacity(0.8).cornerRadius(18)
+        if isMyReaction {
+            Color.blue.opacity(0.7).cornerRadius(18)
         } else {
             Rectangle()
-                .background(Material.ultraThinMaterial)
+                .fill(Color.main.opacity(0.1))
         }
     }
 
