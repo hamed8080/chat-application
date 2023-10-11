@@ -21,7 +21,7 @@ struct ParticipantRow: View {
             HStack {
                 ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: participant.image, userName: participant.name ?? participant.username)
                     .id("\(participant.image ?? "")\(participant.id ?? 0)")
-                    .font(.system(size: 16).weight(.heavy))
+                    .font(.iransansBoldBody)
                     .foregroundColor(.white)
                     .frame(width: 48, height: 48)
                     .background(Color.blue.opacity(0.4))
@@ -100,7 +100,7 @@ struct ParticipantRowLables: View {
                     )
             }
         }
-        .font(.subheadline)
+        .font(.iransansCaption)
     }
 }
 

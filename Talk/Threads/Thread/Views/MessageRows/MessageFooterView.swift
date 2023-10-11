@@ -22,18 +22,18 @@ struct MessageFooterView: View {
             if let fileSize = viewModel.fileSizeString {
                 Text(fileSize)
                     .multilineTextAlignment(.leading)
-                    .font(.iransansBody)
+                    .font(.iransansCaption2)
                     .foregroundColor(.hintText)
             }
             Spacer()
             Text(viewModel.timeString)
                 .foregroundColor(.hintText)
-                .font(.iransansBoldCaption2)
+                .font(.iransansCaption2)
 
             if message.edited == true {
                 Text("Messages.Footer.edited")
                     .foregroundColor(.hintText)
-                    .font(.caption2)
+                    .font(.iransansCaption2)
             }
 
             if viewModel.isMe {

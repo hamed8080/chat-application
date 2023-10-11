@@ -32,6 +32,8 @@ extension ThreadViewModel {
 
     /// On Thread view, it will start calculating to fetch what part of [top, bottom, both top and bottom] receive.
     public func startFetchingHistory() {
+        /// We check this to prevent recalling these methods when the view reappears again.
+        if sections.count > 0 { return }
         tryFirstScenario()
         trySecondScenario()
         trySeventhScenario()
