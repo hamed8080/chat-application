@@ -19,10 +19,8 @@
 		050DE1D62AB1DCEA00418463 /* EmojiIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050DE1D42AB1DCEA00418463 /* EmojiIcon.swift */; };
 		050DE2092AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */; };
 		050DE20A2AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */; };
-		0512EA1F2ACEA8E000E6D8EB /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05565E782ACEA82500BE061B /* NavigationBackButton.swift */; };
 		0516ACF82AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */; };
 		0516ACF92AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */; };
-		05565E792ACEA82500BE061B /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05565E782ACEA82500BE061B /* NavigationBackButton.swift */; };
 		0560C35E2AB77B0B009F6A58 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */; };
 		0560C35F2AB77B0B009F6A58 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */; };
 		0560C3602AB77B0B009F6A58 /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */; };
@@ -219,7 +217,6 @@
 		0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBB2AAEEE78001832E9 /* TalkUI */; };
 		0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBD2AAEEE78001832E9 /* TalkViewModels */; };
 		05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
-		05B4C1792ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
 		05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
@@ -233,6 +230,7 @@
 		05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
 		05FE15F12ADA5591009AC44A /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FE15F02ADA5591009AC44A /* SupportView.swift */; };
 		05FE15F22ADA5974009AC44A /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FE15F02ADA5591009AC44A /* SupportView.swift */; };
+		05FE15F32ADA82D9009AC44A /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -243,7 +241,6 @@
 		050DE1D42AB1DCEA00418463 /* EmojiIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiIcon.swift; sourceTree = "<group>"; };
 		050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageReactionDetailView.swift; sourceTree = "<group>"; };
 		0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButtonItem.swift; sourceTree = "<group>"; };
-		05565E782ACEA82500BE061B /* NavigationBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerView.swift; sourceTree = "<group>"; };
 		0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
@@ -402,7 +399,6 @@
 				05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */,
 				0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */,
 				05C099C22AD1135D007AAC6C /* ToastView.swift */,
-				05565E782ACEA82500BE061B /* NavigationBackButton.swift */,
 			);
 			path = NavigationViews;
 			sourceTree = "<group>";
@@ -944,7 +940,6 @@
 				0570CC232AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC0D2AAEE98F001832E9 /* MessageRowFactory.swift in Sources */,
 				0570CC472AAEE98F001832E9 /* LogRow.swift in Sources */,
-				05565E792ACEA82500BE061B /* NavigationBackButton.swift in Sources */,
 				0570CC632AAEE98F001832E9 /* SearchContactRow.swift in Sources */,
 				0570CC672AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC0F2AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
@@ -1021,6 +1016,7 @@
 				0570CC082AAEE98F001832E9 /* CallMessageType.swift in Sources */,
 				0570CC0A2AAEE98F001832E9 /* UploadMessageType.swift in Sources */,
 				0570CC042AAEE98F001832E9 /* ThreadSearchList.swift in Sources */,
+				05FE15F32ADA82D9009AC44A /* NavigationBackButton.swift in Sources */,
 				050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC262AAEE98F001832E9 /* MentionList.swift in Sources */,
 				0570CC222AAEE98F001832E9 /* AttachmentDialog.swift in Sources */,
@@ -1044,7 +1040,6 @@
 				0570CC242AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC0E2AAEE98F001832E9 /* MessageRowFactory.swift in Sources */,
 				0570CC482AAEE98F001832E9 /* LogRow.swift in Sources */,
-				0512EA1F2ACEA8E000E6D8EB /* NavigationBackButton.swift in Sources */,
 				0570CC642AAEE98F001832E9 /* SearchContactRow.swift in Sources */,
 				0570CC682AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC102AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
@@ -1074,7 +1069,6 @@
 				0570CC5C2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC702AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
 				0570CC3A2AAEE98F001832E9 /* TagRow.swift in Sources */,
-				05B4C1792ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */,
 				05EC8A332ACBED930016361F /* ReactionMenuView.swift in Sources */,
 				0570CC762AAEE98F001832E9 /* AssistantView.swift in Sources */,
 				05EC8A352ACBED930016361F /* OverlayEmojiViews.swift in Sources */,

@@ -10,6 +10,7 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkExtensions
 
 struct LinkView: View {
     @State var viewModel: DetailTabDownloaderViewModel
@@ -60,42 +61,16 @@ struct LinkRowView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(message.fileMetaData?.name ?? message.messageTitle)
+                Text(message.markdownTitle)
                     .font(.iransansBody)
-                Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
-                    .foregroundColor(.secondaryLabel)
-                    .font(.iransansSubtitle)
             }
             Spacer()
-            let view = DownloadLinkButtonView()
-                .frame(width: 48, height: 48)
-                .padding(4)
-            if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
-                view.environmentObject(downloadVM)
-            } else {
-                view
-            }
         }
-        .padding([.leading, .trailing])
+        .padding()
         .onTapGesture {
             threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
             viewModel.dismiss = true
         }
-    }
-}
-
-struct DownloadLinkButtonView: View {
-    @EnvironmentObject var veiwModel: DownloadFileViewModel
-    static var config: DownloadFileViewConfig = {
-        var config: DownloadFileViewConfig = .small
-        config.circleConfig.forgroundColor = .green
-        config.iconColor = Color.main
-        return config
-    }()
-
-    var body: some View {
-        DownloadFileView(viewModel: veiwModel, config: DownloadFileButtonView.config)
-            .frame(width: 72, height: 72)
     }
 }
 

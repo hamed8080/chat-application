@@ -33,7 +33,8 @@ extension ThreadViewModel {
     /// On Thread view, it will start calculating to fetch what part of [top, bottom, both top and bottom] receive.
     public func startFetchingHistory() {
         /// We check this to prevent recalling these methods when the view reappears again.
-        if sections.count > 0 { return }
+        /// If centerLoading is true it is mean theat the array has gotten clear for Scenario 6 to move to a time.
+        if sections.count > 0 || centerLoading { return }
         tryFirstScenario()
         trySecondScenario()
         trySeventhScenario()
@@ -299,7 +300,7 @@ extension ThreadViewModel {
             let indices = indicesByMessageId(request.messageId),
             let uniqueId = sections[indices.sectionIndex].messages[indices.messageIndex].uniqueId
         else { return }
-        scrollTo(uniqueId)
+        showHighlighted(uniqueId, request.messageId)
         /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
         let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "desc", readOnly: readOnly)
         let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)

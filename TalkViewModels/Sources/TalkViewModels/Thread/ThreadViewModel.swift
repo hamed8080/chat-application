@@ -274,6 +274,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                 sections.append(.init(date: message.time?.date ?? Date(), messages: [message]))
             }
         }
+        /// Create if there is no viewModel inside messageViewModels array. It is essential for highlighting and more
+        messageViewModel(for: message)
     }
 
     func indicesByMessageId(_ id: Int) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
@@ -477,6 +479,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         animateObjectWillChange()
     }
 
+    @discardableResult
     public func messageViewModel(for message: Message) -> MessageRowViewModel {
         if let viewModel = messageViewModels.first(where: { $0.message.id == message.id }){
             return viewModel

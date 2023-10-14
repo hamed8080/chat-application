@@ -44,12 +44,10 @@ public final class MessageRowViewModel: ObservableObject {
         }
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        setupObservers()
     }
 
-    @MainActor
-    public func calculate() {
-        if isCalculated { return }
-        isCalculated = true
+    func setupObservers() {
         NotificationCenter.default.publisher(for: .windowMode)
             .sink { [weak self] newValue in
                 self?.recalculateWithAnimation()
@@ -90,6 +88,12 @@ public final class MessageRowViewModel: ObservableObject {
             }
         }
         .store(in: &cancelableSet)
+    }
+
+    @MainActor
+    public func calculate() {
+        if isCalculated { return }
+        isCalculated = true
         Task.detached(priority: .background) { [weak self] in
             await self?.performaCalculation()
         }
