@@ -26,15 +26,16 @@ public struct AudioPlayerView: View {
                         }
                         VStack(alignment: .leading) {
                             Text(verbatim: audioPlayerVM.title)
-                                .font(.subheadline)
+                                .font(.iransansSubtitle)
                             Text(verbatim: audioPlayerVM.subtitle)
-                                .font(.caption2.weight(.light))
+                                .font(.iransansCaption)
                                 .foregroundColor(.gray)
                         }
                         Spacer()
                         Text(verbatim: audioPlayerVM.currentTime.timerString ?? "")
                             .foregroundColor(.gray)
                             .animation(.none)
+                            .font(.iransansCaption2)
                         Button {
                             audioPlayerVM.close()
                         } label: {

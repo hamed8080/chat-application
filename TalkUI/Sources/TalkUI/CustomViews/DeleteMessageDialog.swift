@@ -26,7 +26,7 @@ public struct DeleteMessageDialog: View {
                 .foregroundColor(.red)
             Text("DeleteMessageDialog.subtitle")
                 .foregroundColor(.secondaryLabel)
-                .font(.subheadline)
+                .font(.iransansSubheadline)
             VStack {
                 ForEach(messages.prefix(3)) { message in
                     Text(message.message ?? "")
@@ -50,6 +50,7 @@ public struct DeleteMessageDialog: View {
                 } label: {
                     Label("General.delete", systemImage: "trash.circle.fill")
                         .frame(minWidth: 256)
+                        .font(.iransansBody)
                 }
                 .padding(8)
                 .background(.ultraThinMaterial)
@@ -63,6 +64,7 @@ public struct DeleteMessageDialog: View {
                 } label: {
                     Label("General.cancel", systemImage: "xmark.circle.fill")
                         .frame(minWidth: 256)
+                        .font(.iransansBody)
                 }
                 .padding(8)
                 .background(.ultraThinMaterial)

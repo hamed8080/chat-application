@@ -132,7 +132,7 @@ struct AddAssistantRow: View {
                 Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                     .padding(.leading, 4)
                     .lineLimit(1)
-                    .font(.headline)
+                    .font(.iransansSubheadline)
                 Text(String(localized: .init(contact.notSeenString ?? "General.notSpecified")))
                     .padding(.leading, 4)
                     .font(.iransansCaption3)

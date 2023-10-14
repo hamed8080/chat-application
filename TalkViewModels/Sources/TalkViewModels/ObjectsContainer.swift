@@ -57,8 +57,21 @@ public final class ObjectsContainer: ObservableObject {
     }
 
     private func onNewMessage(_ response: ChatResponse<Message>) {
-        if AppState.shared.user?.id != response.result?.ownerId, threadsVM.threads.first(where: { $0.id == response.result?.conversation?.id })?.mute == false {
+        let notificationSettings = AppSettingsModel.restore().notificationSettings
+        guard notificationSettings.soundEnable,
+              AppState.shared.user?.id != response.result?.ownerId,
+              let conversation = threadsVM.threads.first(where: { $0.id == response.result?.conversation?.id })
+        else { return }
+        if conversation.group == false, notificationSettings.privateChat.sound {
             playMessageSound(sent: false)
+        } else if conversation.group == true, notificationSettings.group.sound {
+            playMessageSound(sent: false)
+        } else if conversation.type == .channel || conversation.type == .channelGroup, notificationSettings.channel.sound {
+            playMessageSound(sent: false)
+        }
+
+        if notificationSettings.vibration {
+            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
         }
     }
 

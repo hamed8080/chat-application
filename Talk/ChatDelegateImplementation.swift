@@ -104,7 +104,7 @@ final class ChatDelegateImplementation: ChatDelegate {
 
     private func onMessageEvent(_ event: MessageEventTypes) {
         if case .new(let response) = event, let message = response.result, canNotify(response) {
-            UNUserNotificationCenter.localNewMessageNotif(message)
+            UNUserNotificationCenter.localNewMessageNotif(message, showName: AppSettingsModel.restore().notificationSettings.showDetails)
         }
     }
 

@@ -28,7 +28,7 @@ struct SearchContactRow: View {
                 Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                     .padding(.leading, 4)
                     .lineLimit(1)
-                    .font(.headline)
+                    .font(.iransansCaption)
                 if let notSeenDuration = contact.notSeenString {
                     Text(notSeenDuration)
                         .padding(.leading, 4)

@@ -23,7 +23,7 @@ struct ConversationCallMessageType: View {
                     Text("\(date.timeAgoSinceDateCondense ?? "")")
                         .fontWeight(.bold)
                 }
-                .font(.footnote)
+                .font(.iransansFootnote)
                 .foregroundColor(color == .dark ? .white.opacity(0.7) : .black.opacity(0.7))
                 .padding(2)
             }

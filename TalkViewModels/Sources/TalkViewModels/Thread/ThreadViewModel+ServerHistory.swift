@@ -209,11 +209,13 @@ extension ThreadViewModel {
               let messages = response.result,
               !response.cache
         else { return }
-        /// 2- Append and sort the array but not call to update the view.
-        appendMessagesAndSort(messages)
-        /// 3- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
-        diableScrollingForHalfASecond()
-        /// 4- Update all the views to draw for the top part.
+        if response.result?.count ?? 0 > 0 {
+            /// 2- Append and sort the array but not call to update the view.
+            appendMessagesAndSort(messages)
+            /// 3- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
+            diableScrollingForHalfASecond()
+            /// 4- Update all the views to draw for the top part.
+        }
         animateObjectWillChange()
         /// 5- Get the thread last message uniqueId to scroll to.
         guard let uniqueId = thread.lastMessageVO?.uniqueId else { return }
@@ -235,24 +237,25 @@ extension ThreadViewModel {
            isFetchedServerFirstResponse == true,
            isActiveThread,
            let lastMessageInListTime = sections.last?.messages.last?.time {
-            moreBottom(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", lastMessageInListTime)
+            moreBottom(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", lastMessageInListTime.advanced(by: 1))
         }
     }
 
     public func onMoreBottomFifthScenario(_ response: ChatResponse<[Message]>) {
         guard response.value(prepend: "MORE-BOTTOM-FIFTH-SCENARIO") != nil,
               let messages = response.result,
-              !response.cache,
-              response.result?.count ?? 0 > 0
+              !response.cache
         else { return }
         /// 2- Store the uniqueId before the appending to scroll to position we where.
         let beforeLastMessageInListUniqueId = sections.last?.messages.last?.uniqueId
         /// 3- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
-        appenedUnreadMessagesBannerIfNeeed()
-        /// 4- Append and sort the array but not call to update the view.
-        appendMessagesAndSort(messages)
-        /// 5- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
-        diableScrollingForHalfASecond()
+        if response.result?.count ?? 0 > 0 {
+            appenedUnreadMessagesBannerIfNeeed()
+            /// 4- Append and sort the array but not call to update the view.
+            appendMessagesAndSort(messages)
+            /// 5- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
+            diableScrollingForHalfASecond()
+        }
         /// 6- Update all the views to draw for the bottom part.
         animateObjectWillChange()
         /// 7- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.

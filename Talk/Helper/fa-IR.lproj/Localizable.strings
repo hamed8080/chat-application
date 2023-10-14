@@ -190,11 +190,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* ConnectionStatus */
-"ConnectionStatus.connecting" = "در حال اتصال %@";
-"ConnectionStatus.connected" = "متصل شده %@";
-"ConnectionStatus.disconnected" = "قطع شده %@";
-"ConnectionStatus.reconnecting" = "در حال اتصال مجدد %@";
-"ConnectionStatus.unauthorized" = "عدم احراز هویت %@";
+"ConnectionStatus.connecting" = "در حال اتصال";
+"ConnectionStatus.connected" = "متصل شده";
+"ConnectionStatus.disconnected" = "قطع شده";
+"ConnectionStatus.reconnecting" = "در حال اتصال مجدد";
+"ConnectionStatus.unauthorized" = "عدم احراز هویت";
 
 /* Participant */
 "Participant.Search.Type.name" = "نام";
@@ -235,6 +235,20 @@
 "Settings.assistants" = "دستیار ها";
 "Settings.manageCalls" = "مدیریت تماس ها";
 "Settings.logout" = "خروج";
+"Settings.notifictionSettings" = "تنظیمات اعلانات";
+"Settings.support" = "پشتیبانی";
+
+/* Support */
+"Support.version" = "نسخه: %@";
+"Support.aboutUsText" = "تاک، در سال 1396 متولد شد. این پیام رسان با هدف ایجاد ارتباط عمیق و سازنده و درک نیازمندی های سازمانی و غیر سازمانی تولید و توسعه داده شده است.  امید است با توجه به شرایط حال حاضر تاک هر روز در مسیر توسعه پایدار و ایجاد بستری امن و سریع قدمی محکمتر بردارد.";
+
+/* NotificationSettings */
+"Notification.Sound" = "صدا";
+"Notification.ShowDetails" = "اطلاعات بیشتر";
+"Notification.Vibration" = "ویبره";
+"Notification.PrivateSettings" = "تنظیمات پیام خصوصی";
+"Notification.GroupSettings" = "تنظیمات گروهی";
+"Notification.ChannelSettings" = "تنظیمات کانال";
 
 /* Tags */
 "Tags.addToFolder" = "اضافه کردن به پوشه";

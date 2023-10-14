@@ -189,11 +189,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* ConnectionStatus */
-"ConnectionStatus.connecting" = "جاري الاتصال %@";
-"ConnectionStatus.connected" = "متصل %@";
-"ConnectionStatus.disconnected" = "غير متصل %@";
-"ConnectionStatus.reconnecting" = "إعادة الاتصال %@";
-"ConnectionStatus.unauthorized" = "غير مصرح به %@";
+"ConnectionStatus.connecting" = "جاري الاتصال";
+"ConnectionStatus.connected" = "متصل";
+"ConnectionStatus.disconnected" = "غير متصل";
+"ConnectionStatus.reconnecting" = "إعادة الاتصال";
+"ConnectionStatus.unauthorized" = "غير مصرح به";
 
 /* Participant */
 "Participant.Search.Type.name" = "الاسم";
@@ -234,6 +234,20 @@
 "Settings.assistants" = "المساعدين";
 "Settings.manageCalls" = "إدارة المكالمات";
 "Settings.logout" = "تسجيل الخروج";
+"Settings.notifictionSettings" = "إعدادات الإشعار";
+"Settings.support" = "دعم";
+
+/* Support */
+"Support.version" = "إصدار: %@";
+"Support.aboutUsText" = "ولد Talk في عام 2016. تم إنتاج وتطوير هذا الرسول بهدف خلق تواصل عميق وبناء وفهم الاحتياجات التنظيمية وغير التنظيمية. ومن المأمول أنه وفقًا للظروف الحالية، سيتخذ تاك خطوة أقوى كل يوم على طريق التنمية المستدامة وإنشاء منصة آمنة وسريعة.";
+
+/* NotificationSettings */
+"Notification.Sound" = "صوت";
+"Notification.ShowDetails" = "إظهار التفاصيل";
+"Notification.Vibration" = "اهتزاز";
+"Notification.PrivateSettings" = "الإعدادات الخاصة";
+"Notification.GroupSettings" = "إعدادات المجموعة";
+"Notification.ChannelSettings" = "إعدادات القناة";
 
 /* Tags */
 "Tags.addToFolder" = "إضافة إلى المجلد";

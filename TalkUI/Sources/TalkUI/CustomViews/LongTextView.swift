@@ -37,13 +37,13 @@ public struct LongTextView: View {
         VStack(alignment: .leading, spacing: 10) {
             if expanded {
                 Text(self.text)
-                    .font(.system(size: 16))
+                    .font(.iransansBody)
                     .matchedGeometryEffect(id: 1, in: id, anchor: .top, isSource: false)
                     .multilineTextAlignment(text.naturalTextAlignment)
                     .lineLimit(nil)
             } else {
                 Text(self.text)
-                    .font(.system(size: 16))
+                    .font(.iransansBody)
                     .lineLimit(3)
                     .multilineTextAlignment(text.naturalTextAlignment)
                     .matchedGeometryEffect(id: 1, in: id, anchor: .bottom, isSource: true)
@@ -68,7 +68,7 @@ public struct LongTextView: View {
             }
         } label: {
             Text(self.expanded ? "General.showLess" : "General.showMore")
-                .font(.caption)
+                .font(.iransansCaption)
         }
     }
 }

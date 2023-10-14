@@ -113,7 +113,7 @@ struct MutableMessageView: View {
             if let fileName = message.fileName {
                 Text("\(fileName)\(message.fileExtension ?? "")")
                     .foregroundColor(.darkGreen.opacity(0.8))
-                    .font(.caption)
+                    .font(.iransansCaption)
                     .clipped()
             }
 
@@ -128,7 +128,7 @@ struct MutableMessageView: View {
             if let addressDetail = viewModel.addressDetail {
                 Text(addressDetail)
                     .foregroundColor(.darkGreen.opacity(0.8))
-                    .font(.caption)
+                    .font(.iransansCaption)
                     .padding([.leading, .trailing])
             }
 
@@ -144,7 +144,7 @@ struct MutableMessageView: View {
                     }
                 }
                 .padding()
-                .font(.caption.bold())
+                .font(.iransansCaption.bold())
             }
 
             ReactionCountView(message: message)

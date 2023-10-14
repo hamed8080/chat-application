@@ -31,6 +31,7 @@ public struct ImageLaoderView: View {
         ZStack {
             if !imageLoader.isImageReady {
                 Text(String(userName?.first ?? " "))
+                    .font(.iransansBody)
             } else if imageLoader.isImageReady {
                 Image(uiImage: imageLoader.image)
                     .resizable()

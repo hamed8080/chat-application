@@ -99,7 +99,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
         if searchCompletion != nil {
             TextField(String(localized: String.LocalizationValue(searchPlaceholder ?? "" )), text: $searchText)
                 .keyboardType(searchKeyboardType)
-                .font(.iransansSubtitle)
+                .font(.iransansBody)
                 .textFieldStyle(.clear)
                 .focused($searchFocus, equals: .saerch)
                 .frame(minWidth: 0, maxWidth: isInSearchMode ? nil : 0, minHeight: 0, maxHeight: isInSearchMode ? 32 : 0)
@@ -120,6 +120,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             } label: {
                 Text("General.cancel")
                     .padding(.leading)
+                    .font(.iransansBody)
             }
             .buttonStyle(.borderless)
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? toolbarHeight : 0)

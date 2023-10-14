@@ -191,11 +191,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* ConnectionStatus */
-"ConnectionStatus.connecting" = "connecting %@";
-"ConnectionStatus.connected" = "connected %@";
-"ConnectionStatus.disconnected" = "disconnected %@";
-"ConnectionStatus.reconnecting" = "reconnectiong %@";
-"ConnectionStatus.unauthorized" = "un authorized %@";
+"ConnectionStatus.connecting" = "connecting";
+"ConnectionStatus.connected" = "connected";
+"ConnectionStatus.disconnected" = "disconnected";
+"ConnectionStatus.reconnecting" = "reconnectiong";
+"ConnectionStatus.unauthorized" = "un authorized";
 
 /* Participant */
 "Participant.Search.Type.name" = "Name";
@@ -236,6 +236,20 @@
 "Settings.assistants" = "Assistants";
 "Settings.manageCalls" = "Manage Calls";
 "Settings.logout" = "Logout";
+"Settings.notifictionSettings" = "Notification Settings";
+
+/* Support */
+"Support.version" = "Version: %@";
+"Support.aboutUsText" = "Talk was born in 2016. This messenger was produced and developed with the aim of creating deep and constructive communication and understanding organizational and non-organizational needs. It is hoped that according to the current conditions, Tak will take a stronger step every day on the path of sustainable development and creating a safe and fast platform.";
+
+/* NotificationSettings */
+"Notification.Sound" = "Sound";
+"Notification.ShowDetails" = "Show details";
+"Notification.Vibration" = "Vibration";
+"Notification.PrivateSettings" = "Private settings";
+"Notification.GroupSettings" = "Group settings";
+"Notification.ChannelSettings" = "Channel settings";
+"Settings.support" = "Support";
 
 /* Tags */
 "Tags.addToFolder" = "Add to folder";

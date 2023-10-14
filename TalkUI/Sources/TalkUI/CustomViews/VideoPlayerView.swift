@@ -37,6 +37,7 @@ public struct VideoPlayerView: View {
                 .background(.ultraThinMaterial)
                 .cornerRadius(8)
                 .offset(x: 24, y: 24)
+                .font(.iransansCaption)
         }
         .overlay(alignment: .center) {
             Circle()

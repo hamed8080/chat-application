@@ -63,6 +63,7 @@ struct DetailView: View {
                             viewModel.isInEditMode.toggle()
                         } label: {
                             Text(viewModel.isInEditMode ? "General.done" : "General.edit")
+                                .font(.iransansBody)
                         }
                     }
                 }
@@ -134,7 +135,7 @@ struct InfoView: View {
                     TextField("General.description", text: $viewModel.threadDescription)
                         .frame(minHeight: 36)
                         .textFieldStyle((!viewModel.isInEditMode) ? .clear : .customBorderedWith(minHeight: 36, cornerRadius: 12))
-                        .font(.caption)
+                        .font(.iransansCaption)
                         .multilineTextAlignment(.center)
                         .disabled(!viewModel.isInEditMode)
                 }

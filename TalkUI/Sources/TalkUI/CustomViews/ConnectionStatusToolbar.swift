@@ -20,13 +20,18 @@ public struct ConnectionStatusToolbar: View {
     @ViewBuilder
     public var body: some View {
         if connectionStatus != .connected {
-            let localized = String(localized: .init(connectionStatus.stringValue))
-            Text(String(format: localized, "..."))
-                .font(.iransansBoldBody)
-                .foregroundColor(.textBlueColor)
-                .onReceive(appstate.$connectionStatus) { newSate in
-                    self.connectionStatus = newSate
-                }
+            HStack {
+                let localized = String(localized: .init(connectionStatus.stringValue))
+                Text(localized)
+                    .font(.iransansBoldBody)
+                    .foregroundColor(.textBlueColor)
+                    .onReceive(appstate.$connectionStatus) { newSate in
+                        self.connectionStatus = newSate
+                    }
+                ThreeDotAnimation()
+                    .frame(width: 26, height: 8)
+
+            }
         } else {
             EmptyView()
                 .hidden()

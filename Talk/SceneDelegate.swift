@@ -21,6 +21,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Create the SwiftUI view that provides the window contents.
         let contentView = HomeContentView()
+            .font(.iransansBody)
 
         if #available(iOS 15.0, *) {
             let appearance = UITabBarAppearance()

@@ -190,11 +190,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* ConnectionStatus */
-"ConnectionStatus.connecting" = "ansluter %@";
-"ConnectionStatus.connected" = "ansluten %@";
-"ConnectionStatus.disconnected" = "frånkopplad %@";
-"ConnectionStatus.reconnecting" = "återansluter %@";
-"ConnectionStatus.unauthorized" = "oauktoriserad %@";
+"ConnectionStatus.connecting" = "ansluter";
+"ConnectionStatus.connected" = "ansluten";
+"ConnectionStatus.disconnected" = "frånkopplad";
+"ConnectionStatus.reconnecting" = "återansluter";
+"ConnectionStatus.unauthorized" = "oauktoriserad";
 
 /* Participant */
 "Participant.Search.Type.name" = "Namn";
@@ -235,6 +235,20 @@
 "Settings.assistants" = "Assistenter";
 "Settings.manageCalls" = "Hantera samtal";
 "Settings.logout" = "Logga ut";
+"Settings.notifictionSettings" = "Aviseringsinställningar";
+"Settings.support" = "Stöd";
+
+/* Support */
+"Support.version" = "Version: %@";
+"Support.aboutUsText" = "Talk föddes 2016. Denna budbärare producerades och utvecklades med syftet att skapa djup och konstruktiv kommunikation och förstå organisatoriska och icke-organisatoriska behov. Förhoppningen är att Tak, enligt rådande förutsättningar, varje dag tar ett starkare steg på vägen mot hållbar utveckling och att skapa en säker och snabb plattform.";
+
+/* NotificationSettings */
+"Notification.Sound" = "Ljud";
+"Notification.ShowDetails" = "Visa detaljer";
+"Notification.Vibration" = "Vibration";
+"Notification.PrivateSettings" = "Privata inställningar";
+"Notification.GroupSettings" = "Gruppinställningar";
+"Notification.ChannelSettings" = "Kanalinställningar";
 
 /* Tags */
 "Tags.addToFolder" = "Lägg till i mapp";

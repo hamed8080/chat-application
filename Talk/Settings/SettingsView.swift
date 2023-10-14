@@ -34,11 +34,20 @@ struct SettingsView: View {
                 }
 
                 CustomSection {
+                    SettingNotificationSection()
+                }
+
+                CustomSection {
+                    SupportSection()
+                }
+
+                CustomSection {
                     TokenExpireSection()
                 }
             }
             .padding(16)
         }
+        .font(.iransansSubheadline)
         .safeAreaInset(edge: .top) {
             EmptyView()
                 .frame(height: 48)
@@ -70,12 +79,14 @@ struct SettingsView: View {
     }
 
     var trailingViews: some View {
+#if DEBUG
         ToolbarButtonItem(imageName: "plus.app", hint: "General.add") {
             withAnimation {
                 container.loginVM.resetState()
                 showLoginSheet.toggle()
             }
         }
+#endif
     }
 }
 
@@ -90,13 +101,13 @@ struct SettingSettingSection: View {
 }
 
 struct PreferenceView: View {
-    @AppStorage("sync_contacts") var isSyncOn: Bool = false
+    @State var model = AppSettingsModel.restore()
 
     var body: some View {
         List {
             Section("Tab.contacts") {
                 VStack(alignment: .leading, spacing: 2) {
-                    Toggle("Contacts.Sync.sync", isOn: $isSyncOn)
+                    Toggle("Contacts.Sync.sync", isOn: $model.isSyncOn)
                     Text("Contacts.Sync.subtitle")
                         .foregroundColor(.gray)
                         .font(.iransansCaption3)
@@ -105,6 +116,99 @@ struct PreferenceView: View {
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Settings.title")
+        .onChange(of: model) { _ in
+            model.save()
+        }
+    }
+}
+
+struct NotificationSettings: View {
+    @State var model = AppSettingsModel.restore()
+
+    var body: some View {
+        List {
+            Section {
+                Toggle("Notification.Sound", isOn: $model.notificationSettings.soundEnable)
+                Toggle("Notification.ShowDetails", isOn: $model.notificationSettings.showDetails)
+                Toggle("Notification.Vibration", isOn: $model.notificationSettings.vibration)
+            }
+            .toggleStyle(.switch)
+            .toggleStyle(MyToggleStyle())
+
+            Section {
+                NavigationLink {
+                    PrivateNotificationSetting()
+                } label: {
+                    SectionNavigationLabel(imageName: "person.fill",
+                                           title: "Notification.PrivateSettings",
+                                           color: .purple)
+                }
+
+                NavigationLink {
+                    GroupNotificationSetting()
+                } label: {
+                    SectionNavigationLabel(imageName: "person.3.fill",
+                                           title: "Notification.GroupSettings",
+                                           color: .green)
+                }
+
+                NavigationLink {
+                    ChannelNotificationSetting()
+                } label: {
+                    SectionNavigationLabel(imageName: "megaphone.fill",
+                                           title: "Notification.ChannelSettings",
+                                           color: .yellow)
+                }
+            }
+        }
+        .font(.iransansSubheadline)
+        .listStyle(.insetGrouped)
+        .navigationTitle("Settings.notifictionSettings")
+        .onChange(of: model) { _ in
+            model.save()
+        }
+    }
+}
+
+struct PrivateNotificationSetting: View {
+    @State var model = AppSettingsModel.restore()
+
+    var body: some View {
+        List {
+            Toggle("Notification.Sound", isOn: $model.notificationSettings.privateChat.sound)
+        }
+        .listStyle(.insetGrouped)
+        .onChange(of: model) { _ in
+            model.save()
+        }
+    }
+}
+
+struct GroupNotificationSetting: View {
+    @State var model = AppSettingsModel.restore()
+
+    var body: some View {
+        List {
+            Toggle("Notification.Sound", isOn: $model.notificationSettings.group.sound)
+        }
+        .listStyle(.insetGrouped)
+        .onChange(of: model) { _ in
+            model.save()
+        }
+    }
+}
+
+struct ChannelNotificationSetting: View {
+    @State var model = AppSettingsModel.restore()
+
+    var body: some View {
+        List {
+            Toggle("Notification.Sound", isOn: $model.notificationSettings.channel.sound)
+        }
+        .listStyle(.insetGrouped)
+        .onChange(of: model) { _ in
+            model.save()
+        }
     }
 }
 
@@ -156,6 +260,26 @@ struct SavedMessageSection: View {
     }
 }
 
+struct SettingNotificationSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
+    var body: some View {
+        SectionButton(imageName: "bell.fill", title: "Settings.notifictionSettings", color: .red, showDivider: false) {
+            navModel.appendNotificationSetting()
+        }
+    }
+}
+
+struct SupportSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
+    var body: some View {
+        SectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.support", color: .green, showDivider: false) {
+            navModel.appendSupport()
+        }
+    }
+}
+
 struct SettingAssistantSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
@@ -197,6 +321,14 @@ struct SettingCallSection: View {
                 }
             }
         }
+    }
+}
+struct MyToggleStyle: ToggleStyle {
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .background(configuration.isOn ? Color.gray.opacity(0.3) : Color.clear)
+            .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
+            .padding([.top, .bottom], 16)
     }
 }
 
@@ -379,6 +511,39 @@ struct CustomSection<Content>: View where Content: View {
         }
         .background(.ultraThickMaterial)
         .cornerRadius(12, corners: .allCorners)
+    }
+}
+
+struct SectionNavigationLabel: View {
+    @Environment(\.colorScheme) var scheme
+    let imageName: String
+    let title: String
+    let color: Color
+
+    init(imageName: String, title: String, color: Color) {
+        self.imageName = imageName
+        self.title = title
+        self.color = color
+    }
+
+    var body: some View {
+        HStack {
+            HStack {
+                Image(systemName: imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(.white)
+            }
+            .padding(4)
+            .frame(width: 28, height: 28)
+            .background(color)
+            .cornerRadius(8, corners: .allCorners)
+
+            Text(String(localized: .init(title)))
+                .foregroundColor(scheme == .dark ? .white : .black)
+        }
+        .padding([.top, .bottom], 5)
     }
 }
 

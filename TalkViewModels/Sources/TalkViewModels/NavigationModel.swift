@@ -8,6 +8,8 @@ public struct PreferenceNavigationValue: Hashable {}
 public struct AssistantNavigationValue: Hashable {}
 public struct LogNavigationValue: Hashable {}
 public struct BlockedContactsNavigationValue: Hashable {}
+public struct NotificationSettingsNavigationValue: Hashable {}
+public struct SupportNavigationValue: Hashable {}
 
 public final class NavigationModel: ObservableObject {
     @Published public var selectedThreadId: Conversation.ID?
@@ -37,6 +39,18 @@ public final class NavigationModel: ObservableObject {
         let assistant = AssistantNavigationValue()
         paths.append(assistant)
         pathsTracking.append(assistant)
+    }
+
+    public func appendNotificationSetting() {
+        let notification = NotificationSettingsNavigationValue()
+        paths.append(notification)
+        pathsTracking.append(notification)
+    }
+
+    public func appendSupport() {
+        let support = SupportNavigationValue()
+        paths.append(support)
+        pathsTracking.append(support)
     }
 
     public func appendLog() {

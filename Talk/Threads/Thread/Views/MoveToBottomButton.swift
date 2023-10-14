@@ -40,7 +40,7 @@ struct MoveToBottomButton: View {
             let unreadCount = viewModel.thread.unreadCount ?? 0
             let hide = unreadCount == 0 || isAtBottomOfTheList
             Text(verbatim: unreadCount == 0 ? "" : "\(viewModel.thread.unreadCountString ?? "")")
-                .font(.system(size: 12))
+                .font(.iransansCaption)
                 .fontDesign(.rounded)
                 .frame(height: hide ? 0 : 24)
                 .frame(minWidth: hide ? 0 : 24)

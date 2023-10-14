@@ -190,11 +190,11 @@
 "Thread.Row.lastMessageSender" = "%@:";
 
 /* Estado de conexión */
-"ConnectionStatus.connecting" = "conectando %@";
-"ConnectionStatus.connected" = "conectado %@";
-"ConnectionStatus.disconnected" = "desconectado %@";
-"ConnectionStatus.reconnecting" = "reconectando %@";
-"ConnectionStatus.unauthorized" = "no autorizado %@";
+"ConnectionStatus.connecting" = "conectando";
+"ConnectionStatus.connected" = "conectado";
+"ConnectionStatus.disconnected" = "desconectado";
+"ConnectionStatus.reconnecting" = "reconectando";
+"ConnectionStatus.unauthorized" = "no autorizado";
 
 /* Participante */
 "Participant.Search.Type.name" = "Nombre";
@@ -235,6 +235,20 @@
 "Settings.assistants" = "Asistentes";
 "Settings.manageCalls" = "Administrar llamadas";
 "Settings.logout" = "Cerrar sesión";
+"Settings.notifictionSettings" = "Configuración de las notificaciones";
+"Settings.support" = "Soporte";
+
+/* Support */
+"Support.version" = "Versión: %@";
+"Support.aboutUsText" = "Talk nació en 2016. Este mensajero fue producido y desarrollado con el objetivo de crear una comunicación profunda y constructiva y comprender las necesidades organizacionales y no organizacionales. Se espera que, de acuerdo con las condiciones actuales, Tak dé cada día un paso más fuerte en el camino del desarrollo sostenible y la creación de una plataforma segura y rápida.";
+
+/* NotificationSettings */
+"Notification.Sound" = "Sonido";
+"Notification.ShowDetails" = "Mostrar detalles";
+"Notification.Vibration" = "Vibración";
+"Notification.PrivateSettings" = "Configuración privada";
+"Notification.GroupSettings" = "Configuración de grupo";
+"Notification.ChannelSettings" = "Configuración de canal";
 
 /* Etiquetas */
 "Tags.addToFolder" = "Agregar a carpeta";

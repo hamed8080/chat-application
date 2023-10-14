@@ -55,8 +55,10 @@ struct AddOrEditContactView: View {
                         .textContentType(.familyName)
                 } header: {
                     Text("Contacts.Add.headerTitle")
+                        .font(.iransansTitle)
                 } footer: {
                     Text("Contacts.Add.footerTitle")
+                        .font(.iransansCaption)
                 }
             }
             .headerProminence(.increased)
@@ -79,6 +81,7 @@ struct AddOrEditContactView: View {
                 contactValue = editContact?.computedUserIdentifire ?? ""
             }
         }
+        .font(.iransansBody)
     }
 
     func submit() {

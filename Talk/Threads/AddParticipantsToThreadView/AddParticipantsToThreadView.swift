@@ -26,6 +26,7 @@ struct AddParticipantsToThreadView: View {
                 } label: {
                     Text("General.add")
                         .bold()
+                        .font(.iransansBody)
                 }
             }
             .padding(16)

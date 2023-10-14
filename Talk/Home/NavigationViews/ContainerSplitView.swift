@@ -76,6 +76,12 @@ struct iPadStackContentView<Content: View>: View {
                         BlockedContacts()
                             .environmentObject(container.appOverlayVM)
                     }
+                    .navigationDestination(for: NotificationSettingsNavigationValue.self) { _ in
+                        NotificationSettings()
+                    }
+                    .navigationDestination(for: SupportNavigationValue.self) { _ in
+                        SupportView()
+                    }
             }
             .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: showSideBar)
             .onReceive(NotificationCenter.default.publisher(for: .closeSideBar)) { newVlaue in
@@ -129,6 +135,12 @@ struct iPhoneStackContentView<Content: View>: View {
                 .navigationDestination(for: BlockedContactsNavigationValue.self) { _ in
                     BlockedContacts()
                         .environmentObject(container.appOverlayVM)
+                }
+                .navigationDestination(for: NotificationSettingsNavigationValue.self) { _ in
+                    NotificationSettings()
+                }
+                .navigationDestination(for: SupportNavigationValue.self) { _ in
+                    SupportView()
                 }
         }
     }
