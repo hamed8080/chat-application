@@ -1,6 +1,6 @@
 public final class AppRoutes {
-    //    public static var authBaseUrl = "https://talkotp-d.fanapsoft.ir/api/oauth2/"
-    //    public static var authBaseUrl = "https://talkotp-s.fanapsoft.ir/api/oauth2/"
+//    public static let authBaseUrl = "https://talkotp-d.fanapsoft.ir/"
+//    public static let authBaseUrl = "https://talkotp-s.fanapsoft.ir/"
     public static let authBaseUrl = "https://talkback.pod.ir/"
     public static let api = "api/"
     public static let oauth = "oauth2/"
