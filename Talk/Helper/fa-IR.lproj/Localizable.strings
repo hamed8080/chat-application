@@ -136,7 +136,7 @@
 "Thread.notificationChannel" = "کانال اطلاع رسانی";
 "Thread.publicThread" = "گروه عمومی";
 "Thread.publicChannel" = "کانال عمومی گروهی";
-"Thread.selfThread" = "پیام های ذخیره شده";
+"Thread.selfThread" = "صندوق پیام";
 "Thread.draft" = "پیش نویش:";
 "Thread.callStarted" = "تماس شروع شد";
 "Thread.callEnded" = "تماس پایان یافت";

@@ -78,6 +78,7 @@ struct SettingsView: View {
         ConnectionStatusToolbar()
     }
 
+    @ViewBuilder
     var trailingViews: some View {
 #if DEBUG
         ToolbarButtonItem(imageName: "plus.app", hint: "General.add") {
@@ -254,7 +255,7 @@ struct SavedMessageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        SectionButton(imageName: "bookmark.fill", title: "Thread.selfThread", color: .purple) {
+        SectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: .purple) {
             ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
         }
     }

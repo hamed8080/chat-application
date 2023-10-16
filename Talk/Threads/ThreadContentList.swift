@@ -55,7 +55,6 @@ struct ThreadContentList: View {
                 trailingViews: trailingViews
             ) { searchValue in
                 threadsVM.searchText = searchValue
-                threadsVM.getThreads()
             }
         }
         .sheet(isPresented: sheetBinding) {

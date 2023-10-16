@@ -31,12 +31,14 @@ public extension Config {
                                              logServerMethod: "PUT",
                                              persistLogsOnServer: true,
                                              isDebuggingLogEnabled: true,
+                                             sendLogInterval: 5 * 60,
                                              logServerRequestheaders: ["Authorization": "Basic Y2hhdDpjaGF0MTIz", "Content-Type": "application/json"])
         let chatLoggerConfig = LoggerConfig(prefix: "CHAT_SDK",
                                             logServerURL: "http://10.56.34.61:8080/1m-http-server-test-chat",
                                             logServerMethod: "PUT",
                                             persistLogsOnServer: true,
                                             isDebuggingLogEnabled: true,
+                                            sendLogInterval: 5 * 60,
                                             logServerRequestheaders: ["Authorization": "Basic Y2hhdDpjaGF0MTIz", "Content-Type": "application/json"])
         let asyncConfig = try! AsyncConfigBuilder()
             .socketAddress(config.socketAddresss)

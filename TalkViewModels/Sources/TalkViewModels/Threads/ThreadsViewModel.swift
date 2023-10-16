@@ -22,6 +22,7 @@ public final class ThreadsViewModel: ObservableObject {
     @Published public var toggle = false
     @AppStorage("Threads", store: UserDefaults.group) public var threadsData: Data?
     @Published public var threads: OrderedSet<Conversation> = []
+    @Published public var searchedConversations: OrderedSet<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
     @Published public var sheetType: ThreadsSheetType?
@@ -157,12 +158,14 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func searchThreads(_ text: String) {
-        let req = ThreadsRequest(name: text)
+        searchedConversations.removeAll()
+        let req = ThreadsRequest(searchText: text)
         RequestsManager.shared.append(prepend: "SEARCH", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
     public func searchPublicThreads(_ text: String) {
+        searchedConversations.removeAll()
         let req = ThreadsRequest(name: text, type: .publicGroup)
         RequestsManager.shared.append(prepend: "SEARCH-PUBLIC-THREAD", value: req)
         ChatManager.activeInstance?.conversation.get(req)
@@ -170,13 +173,13 @@ public final class ThreadsViewModel: ObservableObject {
 
     func onSearch(_ response: ChatResponse<[Conversation]>) {
         if !response.cache, let threads = response.result, response.value(prepend: "SEARCH") != nil {
-            appendThreads(threads: threads)
+            searchedConversations.append(contentsOf: threads)
         }
     }
 
     func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) {
         if !response.cache, let threads = response.result, response.value(prepend: "SEARCH-PUBLIC-THREAD") != nil {
-            appendThreads(threads: threads)
+            searchedConversations.append(contentsOf: threads)
         }
     }
 
@@ -189,7 +192,9 @@ public final class ThreadsViewModel: ObservableObject {
         } else if searchText.isEmpty {
             return threads.filter { ($0.isArchive ?? false) == archived }
         } else {
-            return threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == archived }
+            let local = threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == archived }
+            let server = searchedConversations
+            return local + server
         }
     }
 
