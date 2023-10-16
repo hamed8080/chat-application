@@ -114,6 +114,7 @@ struct ThreadsTrailingToolbarView: View {
             ToolbarButtonItem(imageName: "plus.square", hint: "ThreadList.Toolbar.startNewChat")
         }
 
+        #if DEBUG
         Menu {
             Button {
                 threadsVM.selectedFilterThreadType = nil
@@ -140,6 +141,7 @@ struct ThreadsTrailingToolbarView: View {
         } label: {
             ToolbarButtonItem(imageName: "line.3.horizontal.decrease.circle", hint: "ThreadList.Toolbar.filter")            
         }
+        #endif
     }
 }
 

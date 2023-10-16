@@ -21,6 +21,7 @@
 		050DE20A2AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */; };
 		0516ACF82AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */; };
 		0516ACF92AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */; };
+		051F26C72ADD0F8F00BF9841 /* SwipyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F26C62ADD0F8F00BF9841 /* SwipyView.swift */; };
 		0560C35E2AB77B0B009F6A58 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */; };
 		0560C35F2AB77B0B009F6A58 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */; };
 		0560C3602AB77B0B009F6A58 /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */; };
@@ -226,6 +227,7 @@
 		05EC8A332ACBED930016361F /* ReactionMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */; };
 		05EC8A342ACBED930016361F /* OverlayEmojiViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */; };
 		05EC8A352ACBED930016361F /* OverlayEmojiViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */; };
+		05F89CC02ADD105500A28EBB /* SwipyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F26C62ADD0F8F00BF9841 /* SwipyView.swift */; };
 		05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
 		05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
 		05FE15F12ADA5591009AC44A /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FE15F02ADA5591009AC44A /* SupportView.swift */; };
@@ -241,6 +243,7 @@
 		050DE1D42AB1DCEA00418463 /* EmojiIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiIcon.swift; sourceTree = "<group>"; };
 		050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageReactionDetailView.swift; sourceTree = "<group>"; };
 		0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButtonItem.swift; sourceTree = "<group>"; };
+		051F26C62ADD0F8F00BF9841 /* SwipyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipyView.swift; sourceTree = "<group>"; };
 		0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerView.swift; sourceTree = "<group>"; };
 		0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
@@ -627,6 +630,7 @@
 			children = (
 				0570CBA82AAEE98D001832E9 /* SettingsView.swift */,
 				05FE15F02ADA5591009AC44A /* SupportView.swift */,
+				051F26C62ADD0F8F00BF9841 /* SwipyView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -968,6 +972,7 @@
 				0570CC5B2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC6F2AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
 				0570CC392AAEE98F001832E9 /* TagRow.swift in Sources */,
+				051F26C72ADD0F8F00BF9841 /* SwipyView.swift in Sources */,
 				05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */,
 				05EC8A322ACBED930016361F /* ReactionMenuView.swift in Sources */,
 				0570CC752AAEE98F001832E9 /* AssistantView.swift in Sources */,
@@ -1068,6 +1073,7 @@
 				0570CC442AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
 				0570CC5C2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC702AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
+				05F89CC02ADD105500A28EBB /* SwipyView.swift in Sources */,
 				0570CC3A2AAEE98F001832E9 /* TagRow.swift in Sources */,
 				05EC8A332ACBED930016361F /* ReactionMenuView.swift in Sources */,
 				0570CC762AAEE98F001832E9 /* AssistantView.swift in Sources */,
