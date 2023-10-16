@@ -34,7 +34,9 @@ public final class TokenManager: ObservableObject {
         else { return }
         refreshTokenTask = Task {
             do {
-                var urlReq = URLRequest(url: URL(string: AppRoutes.refreshToken)!)
+                let config = ChatManager.activeInstance?.config
+                let serverType = Config.serverType(config: config) ?? .main
+                var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: serverType).refreshToken)!)
                 urlReq.url?.append(queryItems: [.init(name: "refreshToken", value: refreshToken)])
                 urlReq.allHTTPHeaderFields = ["keyId": keyId]
                 let resp = try await session.data(for: urlReq)

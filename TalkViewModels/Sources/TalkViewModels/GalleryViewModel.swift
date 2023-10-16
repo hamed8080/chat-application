@@ -78,6 +78,9 @@ public final class GalleryViewModel: ObservableObject {
         if let data = response.result, let request = response.value as? ImageRequest {
             state = .completed
             downloadedImages[request.hashCode] = data
+            /// Send a notification to update the original.
+            NotificationCenter.default.post(name: .galleryDownload, object: (request, data))
+            RequestsManager.shared.remove(key: request.uniqueId)
         }
 
         isLoading = false
@@ -112,7 +115,6 @@ public final class GalleryViewModel: ObservableObject {
         let req = ImageRequest(hashCode: hashCode, size: .ACTUAL)
         RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.file.get(req)
-
     }
 
     public func fecthMoreLeadingMessages() {

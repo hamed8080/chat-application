@@ -31,6 +31,7 @@ public extension Notification.Name {
     static let windowMode = Notification.Name("windowMode")
     static let closeSideBar = Notification.Name("closeSideBar")
     static let reactionMessageUpdated = Notification.Name("reactionMessageUpdated")
+    static let galleryDownload = Notification.Name("galleryDownload")
 }
 
 

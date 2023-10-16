@@ -30,6 +30,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
     var chat: Chat? { ChatManager.activeInstance }
     var uniqueId: String = ""
+     public weak var message: Message?
+    private var cancellableSet: Set<AnyCancellable> = .init()
 
     public var fileURL: URL? {
         guard let url = url else { return nil }
@@ -42,10 +44,6 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         return URL(string: url)
     }
 
-    public weak var message: Message?
-    private var messageCancelable: AnyCancellable?
-    private var downloadCancelable: AnyCancellable?
-
     public init(message: Message) {
         self.message = message
         if isInCache {
@@ -56,18 +54,28 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     public func setObservers() {
-       downloadCancelable = NotificationCenter.default.publisher(for: .message)
-            .compactMap { $0.object as? Message }
-            .filter { $0.id == self.message?.id }
-            .sink { [weak self] _ in
-                self?.state = .undefined
-                self?.animateObjectWillChange()
-            }
-       messageCancelable = NotificationCenter.default.publisher(for: .download)
+        NotificationCenter.default.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
             .sink { [weak self] value in
                 self?.onDownloadEvent(value)
             }
+            .store(in: &cancellableSet)
+
+        NotificationCenter.default.publisher(for: .galleryDownload)
+            .compactMap { $0.object as? (request: ImageRequest, data: Data) }
+            .sink { [weak self] result in
+                self?.onGalleryDownload(result)
+            }
+            .store(in: &cancellableSet)
+    }
+
+    private func onGalleryDownload(_ result: (request: ImageRequest, data: Data)) {
+        if result.request.hashCode == fileHashCode {
+            state = .completed
+            downloadPercent = 100
+            data = result.data
+            animateObjectWillChange()
+        }
     }
 
     private func onDownloadEvent(_ event: DownloadEventTypes){
@@ -140,6 +148,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             }
             return
         }
+
+        if response.uniqueId != uniqueId { return }
         if RequestsManager.shared.value(for: uniqueId) != nil, let data = response.result {
             autoreleasepool {
                 state = .completed
@@ -191,15 +201,14 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     public func cancelObservers(){
-        messageCancelable?.cancel()
-        downloadCancelable?.cancel()
-
-        messageCancelable = nil
-        downloadCancelable = nil
+        cancellableSet.forEach { cancellable in
+            cancellable.cancel()
+        }
     }
 
     deinit {
-        messageCancelable?.cancel()
-        downloadCancelable?.cancel()
+        cancellableSet.forEach { cancellable in
+            cancellable.cancel()
+        }
     }
 }

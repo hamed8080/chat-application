@@ -52,7 +52,7 @@ public final class LoginViewModel: ObservableObject {
                                          deviceOsVersion: UIDevice.current.systemVersion,
                                          deviceType: "MOBILE_PHONE",
                                          deviceUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
-        var urlReq = URLRequest(url: URL(string: AppRoutes.handshake)!)
+        var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).handshake)!)
         urlReq.httpBody = req.parameterData
         urlReq.method = .post
         do {
@@ -68,7 +68,8 @@ public final class LoginViewModel: ObservableObject {
     public func requestOTP(identity: String, handskahe: HandshakeResponse) async {
         guard let keyId = handskahe.keyId else { return }
         showLoading(true)
-        var urlReq = URLRequest(url: URL(string: AppRoutes.authorize)!)
+
+        var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).authorize)!)
         urlReq.url?.append(queryItems: [.init(name: "identity", value: identity)])
         urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post
@@ -97,7 +98,7 @@ public final class LoginViewModel: ObservableObject {
     public func verifyCode() async {
         guard let keyId = keyId else { return }
         showLoading(true)
-        var urlReq = URLRequest(url: URL(string: AppRoutes.verify)!)
+        var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).verify)!)
         urlReq.url?.append(queryItems: [.init(name: "identity", value: text), .init(name: "otp", value: verifyCodes.joined(separator:"").replacingOccurrences(of: "\u{200B}", with: ""))])
         urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post

@@ -38,7 +38,9 @@ public final class SettingViewModel: ObservableObject {
     public func updateProfilePicture(image: UIImage?) async {
         guard let image = image else { return }        
         showLoading(true)
-        var urlReq = URLRequest(url: URL(string: AppRoutes.updateProfileImage)!)
+        let config = ChatManager.activeInstance?.config
+        let serverType = Config.serverType(config: config) ?? .main
+        var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: serverType).updateProfileImage)!)
         urlReq.url?.appendQueryItems(with: ["token": ChatManager.activeInstance?.config.token ?? ""])
         urlReq.method = .post
         urlReq.httpBody = image.pngData()

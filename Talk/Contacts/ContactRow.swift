@@ -116,11 +116,11 @@ struct ContactRow: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.title)
                 .scaleEffect(x: isSelected ? 1 : 0.001, y: isSelected ? 1 : 0.001, anchor: .center)
-                .foregroundColor(Color.blue)
+                .foregroundColor(Color.main)
 
             Image(systemName: "circle")
                 .font(.title)
-                .foregroundColor(Color.blue)
+                .foregroundColor(Color.main)
         }
         .frame(width: isInSelectionMode ? 22 : 0.001, height: isInSelectionMode ? 22 : 0.001, alignment: .center)
         .padding(isInSelectionMode ? 24 : 0.001)
