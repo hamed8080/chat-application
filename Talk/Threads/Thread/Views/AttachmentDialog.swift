@@ -65,11 +65,13 @@ struct MutableAttachmentDialog: View {
 
     @ViewBuilder var buttons: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Button {
-                threadVM.sheetType = .galleryPicker
-                threadVM.animateObjectWillChange()
-            } label: {
-                Label("General.photoOrVideo", systemImage: "photo")
+            if EnvironmentValues.isTalkTest {
+                Button {
+                    threadVM.sheetType = .galleryPicker
+                    threadVM.animateObjectWillChange()
+                } label: {
+                    Label("General.photoOrVideo", systemImage: "photo")
+                }
             }
 
             Button {
@@ -86,11 +88,13 @@ struct MutableAttachmentDialog: View {
                 Label("General.location", systemImage: "location.viewfinder")
             }
 
-            Button {
-                threadVM.sheetType = .contactPicker
-                threadVM.animateObjectWillChange()
-            } label: {
-                Label("General.contact", systemImage: "person.2.crop.square.stack")
+            if EnvironmentValues.isTalkTest {
+                Button {
+                    threadVM.sheetType = .contactPicker
+                    threadVM.animateObjectWillChange()
+                } label: {
+                    Label("General.contact", systemImage: "person.2.crop.square.stack")
+                }
             }
         }
         .font(.iransansBody)

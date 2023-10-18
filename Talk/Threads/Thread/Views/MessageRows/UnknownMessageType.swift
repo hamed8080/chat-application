@@ -7,23 +7,24 @@
 
 import ChatModels
 import SwiftUI
+import TalkUI
 
 struct UnknownMessageType: View {
     let message: Message
 
     var body: some View {
-        #if DEBUG
+        if EnvironmentValues.isTalkTest {
             VStack {
                 Text("something is wrong")
                 Rectangle()
                     .fill(Color.green)
             }
-        #else
+        } else {
             EmptyView()
                 .frame(height: 0)
                 .padding(0)
                 .hidden()
-        #endif
+        }
     }
 }
 

@@ -25,7 +25,7 @@ struct ParticipantRow: View {
                     .foregroundColor(.white)
                     .frame(width: 48, height: 48)
                     .background(Color.blue.opacity(0.4))
-                    .cornerRadius(24)
+                    .cornerRadius(22)
 
                 HStack(alignment: .center, spacing: 8) {
                     VStack(alignment: .leading, spacing: 6) {

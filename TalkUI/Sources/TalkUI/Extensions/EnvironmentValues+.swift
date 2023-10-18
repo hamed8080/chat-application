@@ -8,4 +8,6 @@ public extension EnvironmentValues {
         return false
 #endif
     }
+
+    static var isTalkTest: Bool { Bundle.main.bundleIdentifier?.contains("talk-test") ?? false }
 }

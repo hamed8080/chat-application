@@ -4,19 +4,32 @@ import SwiftUI
 import TalkModels
 import ChatModels
 
-public struct PreferenceNavigationValue: Hashable {}
-public struct AssistantNavigationValue: Hashable {}
-public struct LogNavigationValue: Hashable {}
-public struct BlockedContactsNavigationValue: Hashable {}
-public struct NotificationSettingsNavigationValue: Hashable {}
-public struct SupportNavigationValue: Hashable {}
+public enum NavigationType: Hashable {
+    case conversation(Conversation)
+    case contact(Contact)
+    case detail(DetailViewModel)
+    case preference(PreferenceNavigationValue)
+    case assistant(AssistantNavigationValue)
+    case log(LogNavigationValue)
+    case blockedContacts(BlockedContactsNavigationValue)
+    case notificationSettings(NotificationSettingsNavigationValue)
+    case support(SupportNavigationValue)
+}
+
+public protocol NavigaitonValueProtocol: Hashable {}
+public struct PreferenceNavigationValue: NavigaitonValueProtocol {}
+public struct AssistantNavigationValue: NavigaitonValueProtocol {}
+public struct LogNavigationValue: NavigaitonValueProtocol {}
+public struct BlockedContactsNavigationValue: NavigaitonValueProtocol {}
+public struct NotificationSettingsNavigationValue: NavigaitonValueProtocol {}
+public struct SupportNavigationValue: NavigaitonValueProtocol {}
 
 public final class NavigationModel: ObservableObject {
     @Published public var selectedThreadId: Conversation.ID?
-    public var threadViewModel: ThreadsViewModel?
+    public var threadsViewModel: ThreadsViewModel?
     @Published public var paths = NavigationPath()
-    var threadStack: [ThreadViewModel] = []
     var pathsTracking: [Any] = []
+    private var threadStack: [ThreadViewModel] { pathsTracking.compactMap{ $0 as? ThreadViewModel}}
     public init() {}
 
     public func clear() {
@@ -25,42 +38,44 @@ public final class NavigationModel: ObservableObject {
 
     public func appendBlockedContacts() {
         let blockedContacts = BlockedContactsNavigationValue()
-        paths.append(blockedContacts)
+        paths.append(NavigationType.blockedContacts(blockedContacts))
         pathsTracking.append(blockedContacts)
     }
 
     public func appendPreference() {
         let preference = PreferenceNavigationValue()
-        paths.append(preference)
+        paths.append(NavigationType.preference(preference))
         pathsTracking.append(preference)
     }
 
     public func appendAssistant() {
         let assistant = AssistantNavigationValue()
-        paths.append(assistant)
+        paths.append(NavigationType.assistant(assistant))
         pathsTracking.append(assistant)
     }
 
     public func appendNotificationSetting() {
         let notification = NotificationSettingsNavigationValue()
-        paths.append(notification)
+        paths.append(NavigationType.notificationSettings(notification))
         pathsTracking.append(notification)
     }
 
     public func appendSupport() {
         let support = SupportNavigationValue()
-        paths.append(support)
+        paths.append(NavigationType.support(support))
         pathsTracking.append(support)
     }
 
     public func appendLog() {
         let log = LogNavigationValue()
-        paths.append(log)
+        paths.append(NavigationType.log(log))
         pathsTracking.append(log)
     }
 
     public func append(participantDetail: Participant) {
-        paths.append(DetailViewModel(user: participantDetail))
+        let detailViewModel = DetailViewModel(user: participantDetail)
+        paths.append(NavigationType.detail(detailViewModel))
+        pathsTracking.append(detailViewModel)
     }
 
     public func append(threadDetail: Conversation) {
@@ -68,18 +83,19 @@ public final class NavigationModel: ObservableObject {
         detailViewModel.threadVM = pathsTracking
             .compactMap{$0 as? ThreadViewModel}
             .first(where: {$0.threadId == threadDetail.id})
-        paths.append(detailViewModel)
+        paths.append(NavigationType.detail(detailViewModel))
         pathsTracking.append(detailViewModel)
         selectedThreadId = threadDetail.id
     }
 
     public func append(thread: Conversation) {
         if !threadStack.contains(where: {$0.threadId == thread.id}) {
-            let threadViewModel = ThreadViewModel(thread: thread, threadsViewModel: threadViewModel)
-            threadStack.append(threadViewModel)
+            let threadViewModel = ThreadViewModel(thread: thread, threadsViewModel: threadsViewModel)
+            pathsTracking.append(threadViewModel)
+        } else if let threadViewModel = threadViewModel(threadId: thread.id ?? 0) {
             pathsTracking.append(threadViewModel)
         }
-        paths.append(thread)
+        paths.append(NavigationType.conversation(thread))
         selectedThreadId = thread.id
     }
 
@@ -88,27 +104,22 @@ public final class NavigationModel: ObservableObject {
         return threadStack.first(where: {$0.threadId == threadId}) ?? threadStack.last
     }
 
-    public func clearThreadStack() {
-        threadStack.removeAll()
-    }
-
     var presentedThreadViewModel: ThreadViewModel? {
         threadStack.last
     }
 
     public func remove<T>(type: T.Type, threadId: Int? = nil) {
-        if pathsTracking.filter({$0 is T }).count == 1 {
-            if type is ThreadViewModel.Type {
-                threadStack.removeAll(where: { $0.threadId == threadId })
-            }
-            pathsTracking.removeAll(where: {($0 is T)})
-        } else if let index = pathsTracking.firstIndex(where: {$0 is T }) {
-            pathsTracking.remove(at: index)
-            if threadStack.filter({$0.threadId == threadId}).count == 1, let index = threadStack.lastIndex(where: {$0.threadId == threadId}) {
-                threadStack.remove(at: index)
+        if pathsTracking.count > 0 {
+            pathsTracking.removeLast()
+            if pathsTracking.count == 0, paths.count > 0 {
+                paths.removeLast()
             }
         }
         setSelectedThreadId()
+    }
+
+    private func index(of conversationId: Int?) -> Array<Conversation>.Index? {
+        pathsTracking.lastIndex(where: {($0 as? ThreadViewModel)?.threadId == conversationId})
     }
 
     public func setSelectedThreadId() {

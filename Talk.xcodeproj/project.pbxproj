@@ -53,8 +53,8 @@
 		0570CBF62AAEE98F001832E9 /* ThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB722AAEE98C001832E9 /* ThreadRow.swift */; };
 		0570CBF72AAEE98F001832E9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB742AAEE98C001832E9 /* SelectThreadRow.swift */; };
 		0570CBF82AAEE98F001832E9 /* SelectThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB742AAEE98C001832E9 /* SelectThreadRow.swift */; };
-		0570CBF92AAEE98F001832E9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB752AAEE98C001832E9 /* SelectThreadContentList.swift */; };
-		0570CBFA2AAEE98F001832E9 /* SelectThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB752AAEE98C001832E9 /* SelectThreadContentList.swift */; };
+		0570CBF92AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB752AAEE98C001832E9 /* SelectConversationOrContactList.swift */; };
+		0570CBFA2AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB752AAEE98C001832E9 /* SelectConversationOrContactList.swift */; };
 		0570CBFB2AAEE98F001832E9 /* ThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB762AAEE98C001832E9 /* ThreadContentList.swift */; };
 		0570CBFC2AAEE98F001832E9 /* ThreadContentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB762AAEE98C001832E9 /* ThreadContentList.swift */; };
 		0570CBFD2AAEE98F001832E9 /* AddParticipantsToThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB782AAEE98C001832E9 /* AddParticipantsToThreadView.swift */; };
@@ -262,7 +262,7 @@
 		0570CB712AAEE98C001832E9 /* DraftView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraftView.swift; sourceTree = "<group>"; };
 		0570CB722AAEE98C001832E9 /* ThreadRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadRow.swift; sourceTree = "<group>"; };
 		0570CB742AAEE98C001832E9 /* SelectThreadRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectThreadRow.swift; sourceTree = "<group>"; };
-		0570CB752AAEE98C001832E9 /* SelectThreadContentList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectThreadContentList.swift; sourceTree = "<group>"; };
+		0570CB752AAEE98C001832E9 /* SelectConversationOrContactList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectConversationOrContactList.swift; sourceTree = "<group>"; };
 		0570CB762AAEE98C001832E9 /* ThreadContentList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadContentList.swift; sourceTree = "<group>"; };
 		0570CB782AAEE98C001832E9 /* AddParticipantsToThreadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddParticipantsToThreadView.swift; sourceTree = "<group>"; };
 		0570CB792AAEE98C001832E9 /* JoinToPublicThreadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JoinToPublicThreadView.swift; sourceTree = "<group>"; };
@@ -521,7 +521,7 @@
 			isa = PBXGroup;
 			children = (
 				0570CB742AAEE98C001832E9 /* SelectThreadRow.swift */,
-				0570CB752AAEE98C001832E9 /* SelectThreadContentList.swift */,
+				0570CB752AAEE98C001832E9 /* SelectConversationOrContactList.swift */,
 			);
 			path = SelectThread;
 			sourceTree = "<group>";
@@ -957,7 +957,7 @@
 				0570CC612AAEE98F001832E9 /* DetailView.swift in Sources */,
 				0570CBED2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				0570CC5F2AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
-				0570CBF92AAEE98F001832E9 /* SelectThreadContentList.swift in Sources */,
+				0570CBF92AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				0570CC1D2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
 				0570CC412AAEE98F001832E9 /* StartThreadContactRow.swift in Sources */,
 				0570CBE92AAEE98F001832E9 /* ThreadRowActionMenu.swift in Sources */,
@@ -1058,7 +1058,7 @@
 				0570CC622AAEE98F001832E9 /* DetailView.swift in Sources */,
 				0570CBEE2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				0570CC602AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
-				0570CBFA2AAEE98F001832E9 /* SelectThreadContentList.swift in Sources */,
+				0570CBFA2AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				0570CC1E2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
 				0570CC422AAEE98F001832E9 /* StartThreadContactRow.swift in Sources */,
 				0570CBEA2AAEE98F001832E9 /* ThreadRowActionMenu.swift in Sources */,

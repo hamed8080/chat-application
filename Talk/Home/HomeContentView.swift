@@ -88,41 +88,42 @@ struct SplitViewContent: View {
     @EnvironmentObject var navVM: NavigationModel
 
     var body: some View {
-        ContainerSplitView(
-            sidebarView:
-                TabContainerView(
-                    iPadMaxAllowedWidth: 400,
-                    selectedId: "Tab.chats",
-                    tabs: [
-                        .init(
-                            tabContent: ContactContentList(),
-                            contextMenus: Button("Contact Context Menu") {},
-                            title: "Tab.contacts",
-                            iconName: "person.crop.circle"
-                        ),
-                        .init(
-                            tabContent: ThreadContentList(container: container),
-                            contextMenus: Button("Thread Context Menu") {},
-                            title: "Tab.chats",
-                            iconName: "ellipsis.message.fill"
-                        ),
-                        .init(
-                            tabContent: SettingsView(container: container),
-                            contextMenus: Button("Setting Context Menu") {},
-                            title: "Tab.settings",
-                            iconName: "gear"
-                        )
-                    ],
-                    config: .init(alignment: .bottom)
-                ), container: container
+        ContainerSplitView(sidebarView: sidebarViews, container: container)
+            .onAppear {
+                AppState.shared.navViewModel = container.navVM
+                container.navVM.threadsViewModel = container.threadsVM
+                container.threadsVM.title = "Tab.chats"
+                self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
+            }
+    }
+
+    var sidebarViews: some View {
+        TabContainerView(
+            iPadMaxAllowedWidth: 400,
+            selectedId: "Tab.chats",
+            tabs: [
+                .init(
+                    tabContent: ContactContentList(),
+                    contextMenus: Button("Contact Context Menu") {},
+                    title: "Tab.contacts",
+                    iconName: "person.crop.circle"
+                ),
+                .init(
+                    tabContent: ThreadContentList(container: container),
+                    contextMenus: Button("Thread Context Menu") {},
+                    title: "Tab.chats",
+                    iconName: "ellipsis.message.fill"
+                ),
+                .init(
+                    tabContent: SettingsView(container: container),
+                    contextMenus: Button("Setting Context Menu") {},
+                    title: "Tab.settings",
+                    iconName: "gear"
+                )
+            ],
+            config: .init(alignment: .bottom)
         )
         .background(Color.bgMain)
-        .onAppear {
-            AppState.shared.navViewModel = container.navVM
-            container.navVM.threadViewModel = container.threadsVM
-            container.threadsVM.title = "Tab.chats"
-            self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
-        }
     }
 }
 

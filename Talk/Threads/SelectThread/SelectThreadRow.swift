@@ -14,7 +14,6 @@ import TalkViewModels
 
 struct SelectThreadRow: View {
     var thread: Conversation
-    var cancellableSet: Set<AnyCancellable> = []
 
     init(thread: Conversation) {
         self.thread = thread
@@ -36,6 +35,39 @@ struct SelectThreadRow: View {
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 8)
         .padding([.top, .bottom], 4)
+    }
+}
+
+struct SelectContactRow: View {
+    var contact: Contact
+
+    init(contact: Contact) {
+        self.contact = contact
+    }
+
+    var body: some View {
+        HStack {
+            ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
+                .id("\(contact.image ?? "")\(contact.id ?? 0)")
+                .font(.iransansBoldBody)
+                .foregroundColor(.white)
+                .frame(width: 24, height: 24)
+                .background(Color.blue.opacity(0.4))
+                .cornerRadius(12)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
+                    .padding(.leading, 4)
+                    .lineLimit(1)
+                    .font(.iransansCaption)
+                if let notSeenDuration = contact.notSeenString {
+                    Text(notSeenDuration)
+                        .padding(.leading, 4)
+                        .font(.iransansCaption3)
+                        .foregroundColor(Color.gray)
+                }
+            }
+        }
+        .contentShape(Rectangle())
     }
 }
 

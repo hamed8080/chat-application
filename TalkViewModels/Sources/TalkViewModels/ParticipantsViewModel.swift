@@ -59,6 +59,8 @@ public final class ParticipantsViewModel: ObservableObject {
             onParticipants(chatResponse)
         case .deleted(let chatResponse):
             onDelete(chatResponse)
+        case .add(let chatResponse):
+            onAdded(chatResponse)
         default:
             break
         }
@@ -81,6 +83,14 @@ public final class ParticipantsViewModel: ObservableObject {
                 participants.forEach { participant in
                     removeParticipant(participant)
                 }
+            }
+        }
+    }
+
+    private func onAdded(_ response: ChatResponse<Conversation>) {
+        if let participants = response.result?.participants {
+            withAnimation {
+                self.participants.insert(contentsOf: participants, at: 0)
             }
         }
     }

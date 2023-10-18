@@ -21,7 +21,9 @@ public struct GalleryView: View {
         ZStack {
             GalleryProgressView()
                 .environmentObject(viewModel)
+                .environment(\.layoutDirection, .leftToRight)
             GalleryImageViewData()
+                .environment(\.layoutDirection, .leftToRight)
                 .environmentObject(viewModel)
             GalleryTextView()
                 .environmentObject(viewModel)

@@ -114,34 +114,34 @@ struct ThreadsTrailingToolbarView: View {
             ToolbarButtonItem(imageName: "plus.square", hint: "ThreadList.Toolbar.startNewChat")
         }
 
-        #if DEBUG
-        Menu {
-            Button {
-                threadsVM.selectedFilterThreadType = nil
-                threadsVM.refresh()
-            } label: {
-                if threadsVM.selectedFilterThreadType == nil {
-                    Image(systemName: "checkmark")
+        if EnvironmentValues.isTalkTest {
+            Menu {
+                Button {
+                    threadsVM.selectedFilterThreadType = nil
+                    threadsVM.refresh()
+                } label: {
+                    if threadsVM.selectedFilterThreadType == nil {
+                        Image(systemName: "checkmark")
+                    }
+                    Text("General.all")
                 }
-                Text("General.all")
-            }
-            ForEach(ThreadTypes.allCases) { item in
-                if let type = item.stringValue {
-                    Button {
-                        threadsVM.selectedFilterThreadType = item
-                        threadsVM.refresh()
-                    } label: {
-                        if threadsVM.selectedFilterThreadType == item {
-                            Image(systemName: "checkmark")
+                ForEach(ThreadTypes.allCases) { item in
+                    if let type = item.stringValue {
+                        Button {
+                            threadsVM.selectedFilterThreadType = item
+                            threadsVM.refresh()
+                        } label: {
+                            if threadsVM.selectedFilterThreadType == item {
+                                Image(systemName: "checkmark")
+                            }
+                            Text(.init(localized: .init(type)))
                         }
-                        Text(.init(localized: .init(type)))
                     }
                 }
+            } label: {
+                ToolbarButtonItem(imageName: "line.3.horizontal.decrease.circle", hint: "ThreadList.Toolbar.filter")
             }
-        } label: {
-            ToolbarButtonItem(imageName: "line.3.horizontal.decrease.circle", hint: "ThreadList.Toolbar.filter")            
         }
-        #endif
     }
 }
 

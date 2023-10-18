@@ -10,6 +10,8 @@ import SwiftUI
 import TalkModels
 import TalkUI
 import TalkViewModels
+import ChatModels
+import ChatDTO
 
 struct MemberView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
@@ -17,6 +19,8 @@ struct MemberView: View {
     var body: some View {
         ParticipantSearchView()
         LazyVStack(spacing: 0) {
+            AddParticipantButton(conversation: viewModel.thread)
+                .listRowSeparatorTint(.gray.opacity(0.2))
             ForEach(viewModel.sorted) { participant in
                 ParticipantRow(participant: participant)
                     .onAppear {
@@ -65,6 +69,44 @@ struct MemberView: View {
     }
 }
 
+struct AddParticipantButton: View {
+    @State var presentSheet: Bool = false
+    let conversation: Conversation?
+
+    var body: some View {
+        Button {
+            presentSheet.toggle()
+        } label: {
+            HStack(spacing: 24) {
+                Image(systemName: "person.crop.circle.fill.badge.plus")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 16)
+                    .foregroundStyle(Color.main)
+                Text("Thread.invite")
+                    .font(.iransansBody)
+                Spacer()
+            }
+            .foregroundStyle(Color.main)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 16)
+        }
+        .sheet(isPresented: $presentSheet) {
+            AddParticipantsToThreadView(viewModel: .init()) { contacts in
+                addParticipantsToThread(contacts)
+                presentSheet.toggle()
+            }
+        }
+    }
+
+    public func addParticipantsToThread(_ contacts: [Contact]) {
+        guard let threadId = conversation?.id else { return }
+        let contactIds = contacts.compactMap(\.id)
+        let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)
+        ChatManager.activeInstance?.conversation.participant.add(req)
+    }
+}
+
 struct ParticipantSearchView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
 
@@ -95,10 +137,12 @@ struct ParticipantSearchView: View {
 struct MemberView_Previews: PreviewProvider {
     static var previews: some View {
         let viewModel = ParticipantsViewModel(thread: MockData.thread)
-        MemberView()
-            .environmentObject(viewModel)
-            .onAppear {
-                viewModel.appendParticipants(participants: MockData.generateParticipants())
-            }
+        List {
+            MemberView()
+        }
+        .environmentObject(viewModel)
+        .onAppear {
+            viewModel.appendParticipants(participants: MockData.generateParticipants())
+        }
     }
 }

@@ -43,44 +43,8 @@ struct iPadStackContentView<Content: View>: View {
 
             NavigationStack(path: $navVM.paths) {
                 NothingHasBeenSelectedView(threadsVM: container.threadsVM)
-                    .navigationDestination(for: Contact.self) { value in
-                        Text(value.firstName ?? "")
-                            .environmentObject(container.appOverlayVM)
-                    }
-                    .navigationDestination(for: PreferenceNavigationValue.self) { value in
-                        PreferenceView()
-                            .environmentObject(container.appOverlayVM)
-                    }
-                    .navigationDestination(for: Conversation.self) { thread in
-                        if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
-                            ThreadView(threadsVM: container.threadsVM)
-                                .environmentObject(container.appOverlayVM)
-                                .environmentObject(viewModel)
-                        }
-                    }
-                    .navigationDestination(for: DetailViewModel.self) { viewModel in
-                        DetailView()
-                            .environmentObject(container.appOverlayVM)
-                            .environmentObject(viewModel)
-                            .environmentObject(container.threadsVM)
-                    }
-                    .navigationDestination(for: AssistantNavigationValue.self) { _ in
-                        AssistantView()
-                            .environmentObject(container.appOverlayVM)
-                    }
-                    .navigationDestination(for: LogNavigationValue.self) { _ in
-                        LogView()
-                            .environmentObject(container.appOverlayVM)
-                    }
-                    .navigationDestination(for: BlockedContactsNavigationValue.self) { _ in
-                        BlockedContacts()
-                            .environmentObject(container.appOverlayVM)
-                    }
-                    .navigationDestination(for: NotificationSettingsNavigationValue.self) { _ in
-                        NotificationSettings()
-                    }
-                    .navigationDestination(for: SupportNavigationValue.self) { _ in
-                        SupportView()
+                    .navigationDestination(for: NavigationType.self) { value in
+                        NavigationTypeView(type: value, container: container)
                     }
             }
             .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: showSideBar)
@@ -104,44 +68,49 @@ struct iPhoneStackContentView<Content: View>: View {
     var body: some View {
         NavigationStack(path: $navVM.paths) {
             sidebarView
-                .navigationDestination(for: Contact.self) { value in
-                    Text(value.firstName ?? "")
+                .navigationDestination(for: NavigationType.self) { value in
+                    NavigationTypeView(type: value, container: container)
                 }
-                .navigationDestination(for: Conversation.self) { thread in
-                    if let viewModel = navVM.threadViewModel(threadId: thread.id ?? 0) {
-                        ThreadView(threadsVM: container.threadsVM)
-                            .environmentObject(container.appOverlayVM)
-                            .environmentObject(viewModel)
-                    }
-                }
-                .navigationDestination(for: DetailViewModel.self) { viewModel in
-                    DetailView()
-                        .environmentObject(container.appOverlayVM)
-                        .environmentObject(viewModel)
-                        .environmentObject(container.threadsVM)
-                }
-                .navigationDestination(for: PreferenceNavigationValue.self) { value in
-                    PreferenceView()
-                        .environmentObject(container.appOverlayVM)
-                }
-                .navigationDestination(for: AssistantNavigationValue.self) { _ in
-                    AssistantView()
-                        .environmentObject(container.appOverlayVM)
-                }
-                .navigationDestination(for: LogNavigationValue.self) { _ in
-                    LogView()
-                        .environmentObject(container.appOverlayVM)
-                }
-                .navigationDestination(for: BlockedContactsNavigationValue.self) { _ in
-                    BlockedContacts()
-                        .environmentObject(container.appOverlayVM)
-                }
-                .navigationDestination(for: NotificationSettingsNavigationValue.self) { _ in
-                    NotificationSettings()
-                }
-                .navigationDestination(for: SupportNavigationValue.self) { _ in
-                    SupportView()
-                }
+        }
+    }
+}
+
+struct NavigationTypeView: View {
+    let type: NavigationType
+    let container: ObjectsContainer
+
+    var body: some View {
+        switch type {
+        case .conversation(let conversation):
+            if let viewModel = container.navVM.threadViewModel(threadId: conversation.id ?? 0) {
+                ThreadView(threadsVM: container.threadsVM)
+                    .environmentObject(container.appOverlayVM)
+                    .environmentObject(viewModel)
+            }
+        case .contact(let contact):
+            Text(contact.firstName ?? "")
+                .environmentObject(container.appOverlayVM)
+        case .detail(let detailViewModel):
+            DetailView()
+                .environmentObject(container.appOverlayVM)
+                .environmentObject(detailViewModel)
+                .environmentObject(container.threadsVM)
+        case .preference(_):
+            PreferenceView()
+                .environmentObject(container.appOverlayVM)
+        case .assistant(_):
+            AssistantView()
+                .environmentObject(container.appOverlayVM)
+        case .log(_):
+            LogView()
+                .environmentObject(container.appOverlayVM)
+        case .blockedContacts(_):
+            BlockedContacts()
+                .environmentObject(container.appOverlayVM)
+        case .notificationSettings(_):
+            NotificationSettings()
+        case .support(_):
+            SupportView()
         }
     }
 }

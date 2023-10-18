@@ -194,7 +194,13 @@ public final class ThreadsViewModel: ObservableObject {
         } else {
             let local = threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == archived }
             let server = searchedConversations
-            return local + server
+            var endArray: [Conversation] = local
+            server.forEach { conversation in
+                if !local.contains(where: {$0.id == conversation.id}) {
+                    endArray.append(conversation)
+                }
+            }
+            return endArray
         }
     }
 

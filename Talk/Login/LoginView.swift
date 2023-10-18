@@ -216,14 +216,14 @@ struct LoginContentView: View {
                 .font(.iransansFootnote)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(.gray.opacity(1))
-            #if DEBUG
-            Picker("Server", selection: $viewModel.selectedServerType) {
-                ForEach(ServerTypes.allCases) { server in
-                    Text(server.rawValue)
+            if EnvironmentValues.isTalkTest {
+                Picker("Server", selection: $viewModel.selectedServerType) {
+                    ForEach(ServerTypes.allCases) { server in
+                        Text(server.rawValue)
+                    }
                 }
+                .pickerStyle(.menu)
             }
-            .pickerStyle(.menu)
-            #endif
         }
         .frame(maxWidth: 420)
         .onChange(of: viewModel.state) { newState in

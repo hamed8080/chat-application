@@ -20,40 +20,30 @@ struct StartThreadContactRow: View {
     var body: some View {
         VStack {
             VStack {
-                HStack(spacing: 0, content: {
-                    if isInMultiSelectMode {
-                        Image(systemName: isSelected ? "checkmark.circle" : "circle")
-                            .font(.title3)
-                            .frame(width: 16, height: 16, alignment: .center)
-                            .foregroundColor(Color.blue)
-                            .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
-                            .onTapGesture {
-                                isSelected.toggle()
-                                viewModel.toggleSelectedContact(contact: contact)
-                            }
-                    }
-
+                HStack(spacing: 0) {
                     ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
                         .id("\(contact.image ?? "")\(contact.id ?? 0)")
                         .font(.iransansBody)
                         .foregroundColor(.white)
-                        .frame(width: 32, height: 32)
+                        .frame(width: 48, height: 48)
                         .background(Color.blue.opacity(0.4))
-                        .cornerRadius(16)
+                        .cornerRadius(22)
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                             .padding(.leading, 16)
                             .lineLimit(1)
-                            .font(.iransansBody)
+                            .font(.iransansSubheadline)
                         if let notSeenDuration = contact.notSeenString {
                             Text(notSeenDuration)
                                 .padding(.leading, 16)
-                                .font(.iransansCaption2)
-                                .foregroundColor(Color.gray)
+                                .font(.iransansBody)
+                                .foregroundColor(Color.hint)
                         }
                     }
+
                     Spacer()
+
                     if contact.blocked == true {
                         Text("General.blocked")
                             .font(.iransansCaption2.weight(.medium))
@@ -64,7 +54,19 @@ struct StartThreadContactRow: View {
                                     .stroke(Color.redSoft)
                             )
                     }
-                })
+
+                    if isInMultiSelectMode {
+                        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                            .font(.title3)
+                            .frame(width: 16, height: 16, alignment: .center)
+                            .foregroundStyle(isSelected ? Color.main : Color.bgChatBox)
+                            .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                            .onTapGesture {
+                                isSelected.toggle()
+                                viewModel.toggleSelectedContact(contact: contact)
+                            }
+                    }
+                }
             }
         }
         .animation(.spring(), value: isInMultiSelectMode)

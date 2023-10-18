@@ -52,13 +52,12 @@ extension ThreadViewModel {
         }
     }
 
-    public func sendForwardMessage(_ destinationThread: Conversation) {
-        guard let destinationThreadId = destinationThread.id else { return }
-        canScrollToBottomOfTheList = true
-        let messageIds = selectedMessages.compactMap{$0.message.id}
-        let req = ForwardMessageRequest(fromThreadId: threadId, threadId: destinationThreadId, messageIds: messageIds)
-        ChatManager.activeInstance?.message.send(req)
+    public func sendForwardMessage(_ destinationConversation: Conversation?, _ contact: Contact?) {
         isInEditMode = false /// Close edit mode in ui
+        sheetType = nil
+        animateObjectWillChange()
+        let messageIds = selectedMessages.compactMap{$0.message.id}
+        AppState.shared.openThread(from: threadId, conversation: destinationConversation, contact: contact, messageIds: messageIds)
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image

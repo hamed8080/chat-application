@@ -31,6 +31,7 @@ public extension Color {
     static let secondaryLabel = Color(UIColor.secondaryLabel)
     static let messageText = Color("message_text")
     static let hint = Color("hint")
+    static let bgSpaceItem = Color("bg_space_item")
     static let hintText = Color("hint_text")
     static let main = Color("main")
     static let bgChatBox = Color("bg_chatbox")

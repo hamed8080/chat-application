@@ -21,6 +21,20 @@ public enum AppLifeCycleState {
     case active
 }
 
+struct ForwardCreateConversationRequest: ChatDTO.UniqueIdProtocol {
+    let uniqueId: String
+    let from: Int
+    let messageIds: [Int]
+    let request: CreateThreadRequest
+
+    init(uniqueId: String, from: Int, messageIds: [Int], request: CreateThreadRequest) {
+        self.uniqueId = uniqueId
+        self.from = from
+        self.messageIds = messageIds
+        self.request = request
+    }
+}
+
 public final class AppState: ObservableObject {
     public static let shared = AppState()
     public var cachedUser = UserConfigManagerVM.instance.currentUserConfig?.user
@@ -65,6 +79,8 @@ public final class AppState: ObservableObject {
         switch event {
         case .threads(let response):
             onGetThreads(response)
+        case .created(let response):
+            onForwardCreateConversation(response)
         default:
             break
         }
@@ -110,6 +126,44 @@ public final class AppState: ObservableObject {
         searchForP2PThread(coreUserId: user.coreUserId ?? -1)
     }
 
+    /// Forward messages form a thread to a destination thread.
+    /// If the conversation is nil it try to use contact. Firstly it opens a conversation using the given contact core user id then send messages to the conversation.
+    public func openThread(from: Int, conversation: Conversation?, contact: Contact?, messageIds: [Int]) {
+        if let conversation = conversation , let destinationConversationId = conversation.id {
+            navViewModel?.append(thread: conversation)
+            let req = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
+            ChatManager.activeInstance?.message.send(req)
+        } else if let coreUserId = contact?.user?.coreUserId, let conversation = checkForP2POffline(coreUserId: coreUserId), let destinationConversationId = conversation.id {
+            navViewModel?.append(thread: conversation)
+            let req = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
+            ChatManager.activeInstance?.message.send(req)
+        } else if let coreUserId = contact?.user?.coreUserId {
+            openForwardConversation(coreUserId: coreUserId, fromThread: from, messageIds: messageIds)
+        }
+    }
+
+    public func openForwardConversation(coreUserId: Int, fromThread: Int, messageIds: [Int]) {
+        let invitees = [Invitee(id: "\(coreUserId)", idType: .coreUserId)]
+        let req = CreateThreadRequest(invitees: invitees, title: "")
+        let request = ForwardCreateConversationRequest(uniqueId: req.uniqueId, from: fromThread, messageIds: messageIds, request: req)
+        RequestsManager.shared.append(prepend: "FORWARD-CREATE-CONVERSATION", value: request)
+        ChatManager.activeInstance?.conversation.create(req)
+    }
+
+    private func onForwardCreateConversation(_ response: ChatResponse<Conversation>) {
+        guard let request = (response.value(prepend: "FORWARD-CREATE-CONVERSATION") as? ForwardCreateConversationRequest),
+              !response.cache,
+              let conversation = response.result,
+              let destinationConversationId = conversation.id
+        else { return }
+        navViewModel?.append(thread: conversation)
+        /// We call send forward messages with a little bit of delay because it will get history in the above code and there should not be anything in the queue to forward messages.
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { timer in
+            let req = ForwardMessageRequest(fromThreadId: request.from, threadId: destinationConversationId, messageIds: request.messageIds)
+            ChatManager.activeInstance?.message.send(req)
+        }
+    }
+
     public func searchForP2PThread(coreUserId: Int) {
         if let thread = checkForP2POffline(coreUserId: coreUserId) {
             onSearchP2PThreads(thread: thread)
@@ -129,7 +183,7 @@ public final class AppState: ObservableObject {
     }
 
     public func checkForP2POffline(coreUserId: Int) -> Conversation? {
-        navViewModel?.threadViewModel?.threads
+        navViewModel?.threadsViewModel?.threads
             .first(where: {
                 ($0.partner == coreUserId || ($0.participants?.contains(where: {$0.coreUserId == coreUserId}) ?? false))
                 && $0.group == false && $0.type == .normal}

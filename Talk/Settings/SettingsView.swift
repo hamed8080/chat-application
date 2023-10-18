@@ -29,9 +29,9 @@ struct SettingsView: View {
                     // SettingSavedMessagesSection()
                     // SettingCallSection()
                     SettingLogSection()
-                    #if DEBUG
-                    SettingAssistantSection()
-                    #endif
+                    if EnvironmentValues.isTalkTest {
+                        SettingAssistantSection()
+                    }
                 }
 
                 CustomListSection {
@@ -70,9 +70,9 @@ struct SettingsView: View {
     }
 
    @ViewBuilder var leadingViews: some View {
-       #if DEBUG
-       ToolbarButtonItem(imageName: "qrcode", hint: "General.edit")
-       #endif
+       if EnvironmentValues.isTalkTest {
+           ToolbarButtonItem(imageName: "qrcode", hint: "General.edit")
+       }
     }
 
     var centerViews: some View {
@@ -81,14 +81,14 @@ struct SettingsView: View {
 
     @ViewBuilder
     var trailingViews: some View {
-#if DEBUG
-        ToolbarButtonItem(imageName: "plus.app", hint: "General.add") {
-            withAnimation {
-                container.loginVM.resetState()
-                showLoginSheet.toggle()
+        if EnvironmentValues.isTalkTest {
+            ToolbarButtonItem(imageName: "plus.app", hint: "General.add") {
+                withAnimation {
+                    container.loginVM.resetState()
+                    showLoginSheet.toggle()
+                }
             }
         }
-#endif
     }
 }
 
@@ -118,8 +118,16 @@ struct PreferenceView: View {
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Settings.title")
+        .navigationBarBackButtonHidden(true)
         .onChange(of: model) { _ in
             model.save()
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                NavigationBackButton {
+                    AppState.shared.navViewModel?.remove(type: PreferenceNavigationValue.self)
+                }
+            }
         }
     }
 }
@@ -166,8 +174,16 @@ struct NotificationSettings: View {
         .font(.iransansSubheadline)
         .listStyle(.insetGrouped)
         .navigationTitle("Settings.notifictionSettings")
+        .navigationBarBackButtonHidden(true)
         .onChange(of: model) { _ in
             model.save()
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                NavigationBackButton {
+                    AppState.shared.navViewModel?.remove(type: PreferenceNavigationValue.self)
+                }
+            }
         }
     }
 }
@@ -244,11 +260,11 @@ struct SettingLogSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        #if DEBUG
-        ListSectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown) {
-            navModel.appendLog()
+        if EnvironmentValues.isTalkTest {
+            ListSectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown) {
+                navModel.appendLog()
+            }
         }
-        #endif
     }
 }
 
@@ -331,13 +347,13 @@ struct TokenExpireSection: View {
     @EnvironmentObject var navModel: NavigationModel
     
     var body: some View {
-#if DEBUG
-        let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0)))
-        ListSectionButton(imageName: "key.fill", title: "Token expire in: \(secondToExpire)", color: .yellow, showDivider: false, shownavigationButton: false)
-            .onAppear {
-                viewModel.startTokenTimer()
-            }
-#endif
+        if EnvironmentValues.isTalkTest {
+            let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0)))
+            ListSectionButton(imageName: "key.fill", title: "Token expire in: \(secondToExpire)", color: .yellow, showDivider: false, shownavigationButton: false)
+                .onAppear {
+                    viewModel.startTokenTimer()
+                }
+        }
     }
 }
 

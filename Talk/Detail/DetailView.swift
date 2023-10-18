@@ -96,7 +96,7 @@ struct InfoView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            if let image = viewModel.url, let avatarVM = AppState.shared.navViewModel?.threadViewModel?.avatars(for: image) {
+            if let image = viewModel.url, let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image) {
                 ImageLaoderView(imageLoader: avatarVM, url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
                     .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
                     .font(.system(size: 16).weight(.heavy))
@@ -274,7 +274,7 @@ struct DetailView_Previews: PreviewProvider {
         contact.user = User(cellphoneNumber: "+1 234 53 12",
                             profile: .init(bio: "I wish the best for you.", metadata: nil))
         AppState.shared.navViewModel = NavigationModel()
-        AppState.shared.navViewModel?.threadViewModel = .init()
+        AppState.shared.navViewModel?.threadsViewModel = .init()
         return contact
     }
 

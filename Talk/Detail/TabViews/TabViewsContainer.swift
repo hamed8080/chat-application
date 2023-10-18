@@ -55,6 +55,7 @@ struct Tabs: View {
     @Binding var selectedTabIndex: Int
     let tabs: [Tab]
     let thread: Conversation
+    @Namespace var id
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -84,6 +85,7 @@ struct Tabs: View {
                                     Rectangle()
                                         .fill(Color.blue)
                                         .frame(height: 3)
+                                        .matchedGeometryEffect(id: "DetailTabSeparator", in: id)
                                 }
                             }
                         }
