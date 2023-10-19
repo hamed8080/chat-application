@@ -44,7 +44,7 @@
 "General.create" = "Skapa";
 "General.nothingSelected" = "Inget har valts.";
 "General.selected" = "Vald";
-"General.photoOrVideo" = "Foto eller video";
+"General.gallery" = "Galleri";
 "General.file" = "Fil";
 "General.location" = "Plats";
 "Genreal.confirm" = "Bekräfta";
@@ -54,6 +54,7 @@
 "General.description" = "Beskrivning";
 "General.addToContact" = "Lägg till i kontakt";
 "General.edit" = "redigera";
+"General.optional" = "(Frivillig)";
 
 /* Tabs */
 "Tab.chats" = "Chattar";
@@ -81,8 +82,7 @@
 "Contacts.deleteSelectedTitle" = "Radera valda kontakter";
 "Contacts.deleteSelectedSubTitle" = "Vill du radera de valda kontakterna?";
 "Contacts.blockedList" = "Blockerade kontakter";
-"Contacts.Add.headerTitle" = "Allmän information";
-"Contacts.Add.footerTitle" = "I fältet Kontakter kan du ange antingen användarnamn eller telefonnummer.";
+"Contacts.Add.phoneOrUserName" = "Telefonnummer eller användarnamn";
 "Contacts.Edit.title" = "Redigera kontakter";
 "Contacts.Add.title" = "Lägg till kontakter";
 "Contacts.Sync.sync" = "Synkronisera";

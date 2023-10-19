@@ -44,7 +44,7 @@ struct MessageRow_Previews: PreviewProvider {
     static var previews: some View {
         let threadVM = ThreadViewModel(thread: Conversation())
         List {
-            ForEach(MockData.generateMessages(count: 5)) { message in
+            ForEach(MockData.mockDataModel.messages) { message in
                 MessageRowFactory(viewModel: MessageRowViewModel(message: message, viewModel: threadVM))
             }
         }

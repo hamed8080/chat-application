@@ -91,47 +91,135 @@ struct MutableDownloadViews: View {
                     .scaledToFit()
                     .frame(width: config.iconWidth, height: config.iconHeight)
             }
-        case .downloading, .started:
-            if config.showSkeleton {
-                Rectangle()
-                    .fill(.secondary)
-                    .padding(8)
-                    .frame(maxWidth: config.circleProgressMaxWidth)
-                    .redacted(reason: .placeholder)
-            } else {
-                CircularProgressView(percent: $viewModel.downloadPercent, config: config.circleConfig)
-                    .padding(8)
-                    .frame(maxWidth: config.circleProgressMaxWidth)
-                    .onTapGesture {
-                        viewModel.pauseDownload()
-                    }
+        case .downloading, .started, .undefined, .thumbnail, .paused:
+            if message?.isImage == true {
+                OverlayDownloadImageButton(message: message)
+            } else if message?.isFileType == true {
+                DownloadFileButton(message: message)
             }
-        case .paused:
-            Image(systemName: "pause.circle")
-                .resizable()
-                .padding(8)
-                .font(.headline.weight(.thin))
-                .foregroundColor(config.iconColor)
-                .scaledToFit()
-                .frame(width: config.iconWidth, height: config.iconHeight)
-                .frame(maxWidth: config.circleProgressMaxWidth)
-                .onTapGesture {
+        default:
+           EmptyView()
+        }
+    }
+}
+
+struct DownloadFileButton: View {
+    @EnvironmentObject var viewModel: DownloadFileViewModel
+    let message: Message?
+    var percent: Int64 { viewModel.downloadPercent }
+    var stateIcon: String {
+        if viewModel.state == .downloading {
+            return "pause.fill"
+        } else if viewModel.state == .paused {
+            return "play.fill"
+        } else {
+            return "arrow.down"
+        }
+    }
+
+    var body: some View {
+        HStack {
+            ZStack {
+                Image(systemName: "play.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .foregroundStyle(Color.purple)
+
+                Circle()
+                    .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+                    .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                    .foregroundColor(.purple)
+                    .rotationEffect(Angle(degrees: 270))
+                    .frame(width: 28, height: 28)
+            }
+            .frame(width: 36, height: 36)
+            .background(Color.white)
+            .cornerRadius(18)
+            .onTapGesture {
+                if viewModel.state == .paused {
                     viewModel.resumeDownload()
-                }
-        case .undefined, .thumbnail:
-            Image(systemName: "arrow.down.circle")
-                .resizable()
-                .font(.headline.weight(.thin))
-                .padding(8)
-                .frame(width: config.iconWidth, height: config.iconHeight)
-                .scaledToFit()
-                .foregroundColor(config.iconColor)
-                .zIndex(1)
-                .onTapGesture {
+                } else if viewModel.state == .downloading{
+                    viewModel.pauseDownload()
+                } else {
                     viewModel.startDownload()
                 }
-        default:
-            EmptyView()
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                if let fileName = message?.fileName {
+                    Text(fileName)
+                        .multilineTextAlignment(.leading)
+                        .font(.iransansBoldSubheadline)
+                        .foregroundColor(.white)
+                }
+
+                if let fileZize = message?.fileMetaData?.file?.size {
+                    Text(String(fileZize))
+                        .multilineTextAlignment(.leading)
+                        .font(.iransansBoldCaption2)
+                        .foregroundColor(.white)
+                }
+            }
+        }
+    }
+}
+
+struct OverlayDownloadImageButton: View {
+    @EnvironmentObject var viewModel: DownloadFileViewModel
+    let message: Message?
+    var percent: Int64 { viewModel.downloadPercent }
+    var stateIcon: String {
+        if viewModel.state == .downloading {
+            return "pause.fill"
+        } else if viewModel.state == .paused {
+            return "play.fill"
+        } else {
+            return "arrow.down"
+        }
+    }
+
+    var body: some View {
+        HStack {
+            ZStack {
+                Image(systemName: stateIcon)
+                    .resizable()
+                    .scaledToFit()
+                    .font(.system(size: 8, design: .rounded).bold())
+                    .frame(width: 8, height: 8)
+                    .foregroundStyle(Color.white)
+
+                Circle()
+                    .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+                    .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                    .foregroundColor(.white)
+                    .rotationEffect(Angle(degrees: 270))
+                    .frame(width: 18, height: 18)
+            }
+            .frame(width: 26, height: 26)
+            .background(Color.white.opacity(0.3))
+            .cornerRadius(13)
+
+            if let fileSize = message?.fileMetaData?.file?.size?.toSizeString {
+                Text(fileSize)
+                    .multilineTextAlignment(.leading)
+                    .font(.iransansBoldCaption2)
+                    .foregroundColor(.hintText)
+            }
+        }
+        .frame(height: 30)
+        .frame(minWidth: 76)
+        .padding(4)
+        .background(.thinMaterial)
+        .cornerRadius(18)
+        .onTapGesture {
+            if viewModel.state == .paused {
+                viewModel.resumeDownload()
+            } else if viewModel.state == .downloading{
+                viewModel.pauseDownload()
+            } else {
+                viewModel.startDownload()
+            }
         }
     }
 }
@@ -144,7 +232,7 @@ struct DownloadImagethumbnail: View {
     var body: some View {
         Image(uiImage: UIImage(data: thumbnailData ?? Data()) ?? UIImage())
             .resizable()
-            .blur(radius: 5, opaque: true)
+            .blur(radius: 16, opaque: false)
             .scaledToFill()
             .zIndex(0)
             .onReceive(viewModel.objectWillChange) { _ in
@@ -162,7 +250,31 @@ struct DownloadImagethumbnail: View {
 }
 
 struct DownloadFileView_Previews: PreviewProvider {
+    struct Preview: View {
+        @StateObject var viewModel: DownloadFileViewModel
+
+        init() {
+            let metadata = "{\"name\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11\",\"file\": {\"hashCode\": \"UJMUIT4M194C5WLJ\",\"mimeType\": \"image/png\",\"fileHash\": \"UJMUIT4M194C5WLJ\",\"actualWidth\": 1290,\"actualHeight\": 2796,\"parentHash\": \"6MIPH7UM1P7OIZ2L\",\"size\": 1569454,\"link\": \"https://podspace.pod.ir/api/images/UJMUIT4M194C5WLJ?checkUserGroupAccess=true\",\"name\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11\",\"originalName\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11.png\"},\"fileHash\": \"UJMUIT4M194C5WLJ\"}"
+            let message = Message(message: "Please download this file.",
+                                  messageType: .file,
+                                  metadata: metadata.string)
+            let viewModel = DownloadFileViewModel(message: message)
+            _viewModel = StateObject(wrappedValue: viewModel)
+        }
+
+        var body: some View {
+            ZStack {
+                DownloadFileView(viewModel: viewModel)
+                    .environmentObject(AppOverlayViewModel())
+            }
+            .background(Color.purple.gradient)
+            .onAppear {
+                viewModel.state = .paused
+            }
+        }
+    }
+
     static var previews: some View {
-        DownloadFileView(viewModel: DownloadFileViewModel(message: Message(message: "Hello")))
+        Preview()
     }
 }

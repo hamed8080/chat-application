@@ -44,7 +44,7 @@
 "General.create" = "Crear";
 "General.nothingSelected" = "No se ha seleccionado nada.";
 "General.selected" = "Seleccionado";
-"General.photoOrVideo" = "Foto o Video";
+"General.gallery" = "Galería";
 "General.file" = "Archivo";
 "General.location" = "Ubicación";
 "Genreal.confirm" = "Confirmar";
@@ -54,6 +54,7 @@
 "General.description" = "Descripción";
 "General.addToContact" = "Agregar a Contactos";
 "General.edit" = "editar";
+"General.optional" = "(Opcional)";
 
 /* Pestañas */
 "Tab.chats" = "Chats";
@@ -81,8 +82,7 @@
 "Contacts.deleteSelectedTitle" = "Eliminar contactos seleccionados";
 "Contacts.deleteSelectedSubTitle" = "¿Deseas eliminar los contactos seleccionados?";
 "Contacts.blockedList" = "Contactos bloqueados";
-"Contacts.Add.headerTitle" = "Información general";
-"Contacts.Add.footerTitle" = "En el campo de contacto, puedes ingresar tanto el nombre de usuario como el número de teléfono.";
+"Contacts.Add.phoneOrUserName" = "Número de teléfono o nombre de usuario";
 "Contacts.Edit.title" = "Editar contactos";
 "Contacts.Add.title" = "Agregar contactos";
 "Contacts.Sync.sync" = "Sincronizar";

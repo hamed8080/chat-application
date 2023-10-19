@@ -79,6 +79,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
             .disabled(isInSearchMode)
+            .foregroundStyle(Color.main)
         if !isInSearchMode {
             Spacer()
         }
@@ -93,6 +94,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
             .disabled(isInSearchMode)
+            .foregroundStyle(Color.main)
     }
 
     @ViewBuilder var searchView: some View {
@@ -121,6 +123,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 Text("General.cancel")
                     .padding(.leading)
                     .font(.iransansBody)
+                    .foregroundStyle(Color.main)
             }
             .buttonStyle(.borderless)
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? toolbarHeight : 0)
@@ -134,6 +137,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             }
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
+            .foregroundStyle(Color.main)
         }
     }
 }

@@ -116,9 +116,12 @@ public final class ActionSheetViewModel: ObservableObject {
         if isAuthorized {
             await fetchImages()
             offset += fetchCount
+        } else {
+            await checkAuthorization()
         }
     }
 
+    @discardableResult
     public func checkAuthorization() async -> PHAuthorizationStatus {
         typealias AthurizationResponse = CheckedContinuation<PHAuthorizationStatus, Never>
         return await withCheckedContinuation { (continuation: AthurizationResponse) in
@@ -159,6 +162,8 @@ public final class ActionSheetViewModel: ObservableObject {
 
     public func sendSelectedPhotos() {
         threadViewModel?.sendPhotos(selectedImageItems)
+        threadViewModel?.sheetType = nil
+        threadViewModel?.animateObjectWillChange()
         refresh()
     }
 

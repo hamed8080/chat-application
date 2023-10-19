@@ -44,7 +44,7 @@
 "General.create" = "ساخت";
 "General.nothingSelected" = "چیزی انتخاب نشده است.";
 "General.selected" = "انتخاب شده";
-"General.photoOrVideo" = "عکس یا ویدیو";
+"General.gallery" = "گالری";
 "General.file" = "فایل";
 "General.location" = "موقعیت مکانی";
 "Genreal.confirm" = "تایید";
@@ -54,6 +54,7 @@
 "General.description" = "توضیحات";
 "General.addToContact" = "اضافه کردن به مخاطبان";
 "General.edit" = "ویرایش";
+"General.optional" = "(اختیاری)";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";
@@ -81,8 +82,7 @@
 "Contacts.deleteSelectedTitle" = "حذف مخاطبان انتخاب شده";
 "Contacts.deleteSelectedSubTitle" = "آیا مطمئن هستید که می خواهید مخاطبان انتخاب شده را حذف کنید؟";
 "Contacts.blockedList" = "لیست مسدودی ها";
-"Contacts.Add.headerTitle" = "اطلاعات عمومی";
-"Contacts.Add.footerTitle" = "در ورودی می توانید نام کاربری یا شماره تماس مخاطب مورد نظر را وارد کنید.";
+"Contacts.Add.phoneOrUserName" = "شماره موبایل یا نام کاربری";
 "Contacts.Edit.title" = "ویرایش مخاطب";
 "Contacts.Add.title" = "اضافه کردن مخاطب";
 "Contacts.Sync.sync" = "همسان سازی";

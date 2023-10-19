@@ -22,167 +22,195 @@ struct SendContainer: View {
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
     private var threadId: Int? { viewModel.thread.id }
     @Namespace var id
+    @State var showActionButtons: Bool = false
 
     var body: some View {
-        VStack {
-            Spacer()
-            VStack(spacing: 0) {
-                if isInEditMode {
-                    SelectionView(viewModel: viewModel, deleteMessagesDialog: $deleteMessagesDialog)
-                } else if viewModel.canShowMute {
-                    MuteChannelViewPlaceholder()
-                } else {
-                    ReplyMessageViewPlaceholder()
-                        .environmentObject(viewModel)
-                    MentionList(text: $text)
-                        .frame(maxHeight: 320)
-                        .environmentObject(viewModel)
-                    EditMessagePlaceholderView()
-                        .environmentObject(viewModel)
-                    if let recordingVM = viewModel.audioRecoderVM {
-                        AudioRecordingView(isRecording: $isRecording, nameSpace: id)
-                            .environmentObject(recordingVM)
-                            .padding([.trailing], 12)
+        ZStack {
+            if showActionButtons {
+                Rectangle()
+                    .fill(Color.black.opacity(0.5))
+                    .onTapGesture {
+                        withAnimation(.easeOut(duration: 0.13)) {
+                            showActionButtons.toggle()
+                        }
                     }
-                    HStack(spacing: 0) {
-                        if isRecording == false {
-                            Button {
-                                viewModel.sheetType = .attachment
-                                viewModel.animateObjectWillChange()
-                            } label: {
-                                Image(systemName: "plus.circle.fill")
-                                    .resizable()
-                                    .symbolRenderingMode(.palette)
-                                    .foregroundStyle(Color.white, Color.main)
-                                    .frame(width: 26, height: 26)
-                            }
-                            .frame(width: 48, height: 48)
-                            .cornerRadius(24)
-                            .buttonStyle(.borderless)
-                            .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
-                            .fontWeight(.light)
+            }
+            VStack(spacing: 0) {
+                Spacer()
+                VStack(spacing: 0) {
+                    if isInEditMode {
+                        SelectionView(viewModel: viewModel, deleteMessagesDialog: $deleteMessagesDialog)
+                    } else if viewModel.canShowMute {
+                        MuteChannelViewPlaceholder()
+                    } else {
+                        ReplyMessageViewPlaceholder()
+                            .environmentObject(viewModel)
+                        MentionList(text: $text)
+                            .frame(maxHeight: 320)
+                            .environmentObject(viewModel)
+                        EditMessagePlaceholderView()
+                            .environmentObject(viewModel)
+
+                        if showActionButtons {
+                            AttachmentButtons(viewModel: viewModel.sheetViewModel, showActionButtons: $showActionButtons)
                         }
 
-                        MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
-                                           text: $text,
-                                           textColor: UIColor(named: "message_text"),
-                                           backgroundColor: Color.bgChatBox,
-                                           mention: true)
-                        .cornerRadius(24)
-                        .onChange(of: viewModel.textMessage ?? "") { newValue in
-                            viewModel.sendStartTyping(newValue)
+                        if let recordingVM = viewModel.audioRecoderVM {
+                            AudioRecordingView(isRecording: $isRecording, nameSpace: id)
+                                .environmentObject(recordingVM)
+                                .padding([.trailing], 12)
                         }
-
-                        if isRecording == false {
-                            Button {
-                                viewModel.setupRecording()
-                                isRecording = true
-                            } label: {
-                                Image(systemName: "mic.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 26, height: 24)
-                                    .symbolRenderingMode(.palette)
-                                    .foregroundStyle(Color.hint)
-                            }
-                            .frame(width: 48, height: 48)
-                            .buttonStyle(.borderless)
-                            .fontWeight(.light)
-                            .keyboardShortcut(.init("r"), modifiers: [.command])
-                        }
-
-                        Button {
-                            viewModel.setupRecording()
-                            isRecording = true
-                        } label: {
-                            Image(systemName: "camera")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 26, height: 26)
-                                .symbolRenderingMode(.palette)
-                                .foregroundStyle(Color.hint)
-                        }
-                        .frame(width: 48, height: 48)
-                        .buttonStyle(.borderless)
-                        .fontWeight(.light)
-                        .keyboardShortcut(.init("r"), modifiers: [.command])
-                        .disabled(true)
-                        .opacity(0.2)
-
-                        Button {
-                            if isRecording {
-                                viewModel.audioRecoderVM?.stopAndSend()
-                                isRecording = false
-                            } else if !text.isEmpty {
-                                viewModel.sendTextMessage(text)
-                            }
-                            text = ""
-                            viewModel.sheetType = nil
-                            viewModel.animateObjectWillChange()
-                            UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
-                        } label: {
-                            Image(systemName: "arrow.up.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 26, height: 26)
-                                .symbolRenderingMode(.palette)
-                                .foregroundStyle(Color.white, Color.main)
-                        }
-                        .frame(width: 48, height: 48)
-                        .buttonStyle(.borderless)
-                        .fontWeight(.light)
-                        .keyboardShortcut(.return, modifiers: [.command])
+                        MainSendButtons(showActionButtons: $showActionButtons, isRecording: $isRecording, text: $text, id: id)
                     }
                 }
-            }
-            .opacity(disableSend ? 0.3 : 1.0)
-            .disabled(disableSend)
-            .padding(.bottom, 4)
-            .padding([.leading, .trailing], 8)
-            .padding(.top, 12)
-            .animation(isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: isRecording)
-            .background(
-                VStack {
-                    Spacer()
+                .opacity(disableSend ? 0.3 : 1.0)
+                .disabled(disableSend)
+                .padding(.bottom, 4)
+                .padding([.leading, .trailing], 8)
+                .padding(.top, 12)
+                .animation(isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: isRecording)
+                .background(
                     Rectangle()
                         .fill(Color.bgMessage.opacity(0.5))
-                        .background(.ultraThickMaterial)
+                        .background(.regularMaterial)
+                        .cornerRadius(showActionButtons ? 24 : 0, corners: [.topLeft, .topRight])
+                        .ignoresSafeArea()
+                )
+                .onReceive(viewModel.$editMessage) { editMessage in
+                    text = editMessage?.message ?? ""
                 }
-                    .ignoresSafeArea()
-            )
-            .onReceive(viewModel.$editMessage) { editMessage in
-                text = editMessage?.message ?? ""
-            }
-            .onReceive(viewModel.$isInEditMode) { newValue in
-                if newValue != isInEditMode {
-                    isInEditMode = newValue
+                .onReceive(viewModel.$isInEditMode) { newValue in
+                    if newValue != isInEditMode {
+                        isInEditMode = newValue
+                    }
+                }
+                .onReceive(Just(viewModel.audioRecoderVM?.isRecording)) { newValue in
+                    isRecording = newValue ?? false
+                }
+                .onChange(of: text) { newValue in
+                    viewModel.searchForParticipantInMentioning(newValue)
+                    viewModel.textMessage = newValue
+                    if !newValue.isEmpty {
+                        UserDefaults.standard.setValue(newValue, forKey: "draft-\(viewModel.threadId)")
+                    } else {
+                        UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
+                    }
+                }
+                .onAppear {
+                    if let threadId = threadId, let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
+                        text = draft
+                    }
                 }
             }
-            .onReceive(Just(viewModel.audioRecoderVM?.isRecording)) { newValue in
-                isRecording = newValue ?? false
-            }
-            .onChange(of: text) { newValue in
-                viewModel.searchForParticipantInMentioning(newValue)
-                viewModel.textMessage = newValue
-                if !newValue.isEmpty {
-                    UserDefaults.standard.setValue(newValue, forKey: "draft-\(viewModel.threadId)")
-                } else {
-                    UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
+        }
+    }
+
+    private var disableSend: Bool { viewModel.thread.disableSend && isInEditMode == false && !viewModel.canShowMute }
+}
+
+struct MainSendButtons: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+    @Binding var showActionButtons: Bool
+    @Binding var isRecording: Bool
+    @Binding var text: String
+    let id: Namespace.ID
+
+    var body: some View {
+        HStack(spacing: 0) {
+            if isRecording == false {
+                Button {
+                    withAnimation(animation(appear: !showActionButtons)) {
+                        showActionButtons.toggle()
+                    }
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .resizable()
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.white, showActionButtons ? Color.hint.opacity(0.5) : Color.main )
+                        .frame(width: 26, height: 26)
                 }
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
+                .buttonStyle(.borderless)
+                .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
+                .fontWeight(.light)
             }
-            .onAppear {
-                if let threadId = threadId, let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
-                    text = draft
+
+            MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
+                               text: $text,
+                               textColor: UIColor(named: "message_text"),
+                               backgroundColor: Color.bgChatBox,
+                               mention: true)
+            .cornerRadius(24)
+            .onChange(of: viewModel.textMessage ?? "") { newValue in
+                viewModel.sendStartTyping(newValue)
+            }
+
+            if isRecording == false {
+                Button {
+                    viewModel.setupRecording()
+                    isRecording = true
+                } label: {
+                    Image(systemName: "mic.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 26, height: 24)
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.hint)
                 }
+                .frame(width: 48, height: 48)
+                .buttonStyle(.borderless)
+                .fontWeight(.light)
+                .keyboardShortcut(.init("r"), modifiers: [.command])
             }
+
+            Button {
+                viewModel.setupRecording()
+                isRecording = true
+            } label: {
+                Image(systemName: "camera")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 26, height: 26)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.hint)
+            }
+            .frame(width: 48, height: 48)
+            .buttonStyle(.borderless)
+            .fontWeight(.light)
+            .keyboardShortcut(.init("r"), modifiers: [.command])
+            .disabled(true)
+            .opacity(0.2)
+
+            Button {
+                if isRecording {
+                    viewModel.audioRecoderVM?.stopAndSend()
+                    isRecording = false
+                } else if !text.isEmpty {
+                    viewModel.sendTextMessage(text)
+                }
+                text = ""
+                viewModel.sheetType = nil
+                viewModel.animateObjectWillChange()
+                UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
+            } label: {
+                Image(systemName: "arrow.up.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 26, height: 26)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.white, Color.main)
+            }
+            .frame(width: 48, height: 48)
+            .buttonStyle(.borderless)
+            .fontWeight(.light)
+            .keyboardShortcut(.return, modifiers: [.command])
         }
     }
 
     private func animation(appear: Bool) -> Animation {
         appear ? .spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2) : .easeOut(duration: 0.13)
     }
-
-    private var disableSend: Bool { viewModel.thread.disableSend && isInEditMode == false && !viewModel.canShowMute }
 }
 
 struct SelectionView: View {

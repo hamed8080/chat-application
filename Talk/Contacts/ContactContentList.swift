@@ -122,9 +122,10 @@ struct ContactContentList: View {
     }
 
     @ViewBuilder var trailingViews: some View {
-        ToolbarButtonItem(imageName: "plus.square", hint: "Contacts.createNew") {
+        ToolbarButtonItem(imageName: "plus.circle.fill", hint: "Contacts.createNew") {
             modifyContactSheet.toggle()
         }
+        .foregroundStyle(Color.white, Color.main)
     }
 }
 

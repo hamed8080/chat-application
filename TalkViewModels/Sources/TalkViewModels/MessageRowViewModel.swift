@@ -24,7 +24,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var addressDetail: String?
     public var timeString: String = ""
     public var fileSizeString: String?
-    public static var avatarSize: CGFloat = 24
+    public static var avatarSize: CGFloat = 36
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     private var cancelableSet = Set<AnyCancellable>()

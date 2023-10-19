@@ -43,7 +43,7 @@
 "General.create" = "إنشاء";
 "General.nothingSelected" = "لم يتم تحديد أي شيء.";
 "General.selected" = "محدد";
-"General.photoOrVideo" = "صورة أو فيديو";
+"General.gallery" = "صالة عرض";
 "General.file" = "ملف";
 "General.location" = "الموقع";
 "Genreal.confirm" = "تأكيد";
@@ -53,6 +53,7 @@
 "General.description" = "الوصف";
 "General.addToContact" = "إضافة إلى جهات الاتصال";
 "General.edit" = "جهة تحرير";
+"General.optional" = "(خياري)";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";
@@ -80,8 +81,7 @@
 "Contacts.deleteSelectedTitle" = "حذف جهات الاتصال المحددة";
 "Contacts.deleteSelectedSubTitle" = "هل ترغب في حذف جهات الاتصال المحددة؟";
 "Contacts.blockedList" = "جهات الاتصال المحظورة";
-"Contacts.Add.headerTitle" = "معلومات عامة";
-"Contacts.Add.footerTitle" = "في حقل جهة الاتصال يمكنك إدخال اسم المستخدم أو رقم الهاتف.";
+"Contacts.Add.phoneOrUserName" = "رقم الهاتف أو اسم المستخدم";
 "Contacts.Edit.title" = "تعديل جهات الاتصال";
 "Contacts.Add.title" = "إضافة جهات اتصال";
 "Contacts.Sync.sync" = "مزامنة";

@@ -19,7 +19,7 @@ public extension Color {
 
     static let darkGreen = Color("dark_green")
     static let textBlueColor = Color("text_color_blue")
-    static let bgColor = Color("background")
+    static let bgColor = Color("bg_color")
     static let iconColor = Color("icon_color")
     static let redSoft = Color("red_soft")
     static let bgMessage = Color("bg_message")
@@ -31,6 +31,7 @@ public extension Color {
     static let secondaryLabel = Color(UIColor.secondaryLabel)
     static let messageText = Color("message_text")
     static let hint = Color("hint")
+    static let bgInput = Color("bg_input")
     static let bgSpaceItem = Color("bg_space_item")
     static let hintText = Color("hint_text")
     static let main = Color("main")

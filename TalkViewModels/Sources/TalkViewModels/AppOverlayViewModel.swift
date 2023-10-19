@@ -22,7 +22,7 @@ public class AppOverlayViewModel: ObservableObject {
     public var type: AppOverlayTypes = .none
     private var cancelableSet: Set<AnyCancellable> = .init()
 
-    init() {
+    public init() {
         AppState.shared.$error.sink { [weak self] newValue in
             if let error = newValue {
                 self?.type = .error(error: error)

@@ -42,7 +42,7 @@ struct DetailView: View {
                 let editContact = Contact(firstName: user.firstName ?? "",
                                           lastName: user.lastName ?? "",
                                           user: .init(username: user.username ?? ""))
-                AddOrEditContactView(editContact: editContact, contactType: .userName)
+                AddOrEditContactView(editContact: editContact)
             }
         }
         .sheet(isPresented: $viewModel.showImagePicker) {

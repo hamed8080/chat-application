@@ -31,6 +31,10 @@ struct TextMessageType: View {
                     .offset(x: 16)
             }
 
+            VStack(spacing: 0) {
+                Spacer()
+                AvatarView(message: message, viewModel: threadVM)
+            }
             MutableMessageView()
 
             if !viewModel.isMe {
@@ -79,6 +83,7 @@ struct SelectMessageRadio: View {
 }
 
 struct MutableMessageView: View {
+    let padding: CGFloat = 4
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
@@ -97,22 +102,20 @@ struct MutableMessageView: View {
 
             if message.isUploadMessage {
                 UploadMessageType(message: message)
-                    .frame(maxHeight: 320)
+                    .frame(maxHeight: viewModel.widthOfRow - padding)
             }
 
-            ZStack(alignment: .topLeading) {
-                if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
-                    DownloadFileView(viewModel: downloadVM)
-                        .frame(maxHeight: 320)
-                        .clipped()
-                        .contentShape(Rectangle())
-                }
-                AvatarView(message: message, viewModel: threadVM)
+            if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
+                DownloadFileView(viewModel: downloadVM)
+                    .frame(maxHeight: viewModel.widthOfRow - padding)
+                    .clipped()
+                    .contentShape(Rectangle())
+                    .cornerRadius(8)
             }
 
-            if let fileName = message.fileName {
+            if !message.isImage, let fileName = message.fileName ?? message.fileMetaData?.file?.originalName {
                 Text("\(fileName)\(message.fileExtension ?? "")")
-                    .foregroundColor(.darkGreen.opacity(0.8))
+                    .foregroundStyle(Color.hintText)
                     .font(.iransansCaption)
                     .clipped()
             }
@@ -127,7 +130,7 @@ struct MutableMessageView: View {
 
             if let addressDetail = viewModel.addressDetail {
                 Text(addressDetail)
-                    .foregroundColor(.darkGreen.opacity(0.8))
+                    .foregroundStyle(Color.hintText)
                     .font(.iransansCaption)
                     .padding([.leading, .trailing])
             }
@@ -154,7 +157,7 @@ struct MutableMessageView: View {
                 .padding([.leading, .trailing])
         }
         .frame(maxWidth: viewModel.widthOfRow)
-        .padding([.leading, .trailing], 0)
+        .padding(4)
         .contentShape(Rectangle())
         .background(viewModel.isMe ? Color.bgMessageMe : Color.bgMessage)
         .overlay {
@@ -202,17 +205,17 @@ struct TextMessageType_Previews: PreviewProvider {
             message: .init(
                 id: 1,
                 message: "TEST",
+                messageType: .text,
                 seen: true,
-                time: UInt(Date().millisecondsSince1970), participant: Participant(id: 0, name: "John Doe")
+                time: UInt(Date().millisecondsSince1970),
+                participant: Participant(id: 0, name: "John Doe")
             ),
             viewModel: .init(thread: Conversation(id: 1))
         )
 
         var body: some View {
-            NavigationSplitView {} content: {} detail: {
-                ScrollView {
-                    TextMessageType(viewModel: viewModel)
-                }
+            ScrollView {
+                TextMessageType(viewModel: viewModel)
             }
             .environmentObject(viewModel)
             .environmentObject(NavigationModel())

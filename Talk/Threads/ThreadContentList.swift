@@ -44,7 +44,7 @@ struct ThreadContentList: View {
         .listStyle(.plain)
         .safeAreaInset(edge: .top) {
             EmptyView()
-                .frame(height: 45)
+                .frame(height: 44)
         }
         .overlay(alignment: .top) {
             ToolbarView(
@@ -111,7 +111,8 @@ struct ThreadsTrailingToolbarView: View {
 //                Label("ThreadList.Toolbar.createABot", systemImage: "face.dashed.fill")
 //            }
         } label: {
-            ToolbarButtonItem(imageName: "plus.square", hint: "ThreadList.Toolbar.startNewChat")
+            ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat")
+                .foregroundStyle(Color.white, Color.main)
         }
 
         if EnvironmentValues.isTalkTest {

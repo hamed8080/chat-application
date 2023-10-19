@@ -18,15 +18,7 @@ struct ThreadSheetView: View {
         if let viewModel {
             switch viewModel.sheetType {
             case .attachment:
-                AttachmentDialog(viewModel: actionSheetViewModel)
-                    .onAppear {
-                        actionSheetViewModel.oneTimeSetup()
-                    }
-                    .onDisappear {
-                        if viewModel.sheetType == .attachment {
-                            closeSheet()
-                        }
-                    }
+                EmptyView()
             case .dropItems:
                 DropItemsView()
                     .environmentObject(viewModel)
@@ -78,6 +70,15 @@ struct ThreadSheetView: View {
             case .locationPicker:
                 MapPickerView()
                     .environmentObject(viewModel)
+                    .onDisappear {
+                        closeSheet()
+                    }
+            case .galleryPicker:
+                GalleryImagePicker(viewModel: actionSheetViewModel)
+                    .environmentObject(viewModel)
+                    .onAppear {
+                        actionSheetViewModel.oneTimeSetup()
+                    }
                     .onDisappear {
                         closeSheet()
                     }

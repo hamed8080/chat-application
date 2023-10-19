@@ -32,56 +32,73 @@ struct AddOrEditContactView: View {
     @EnvironmentObject var contactsViewModel: ContactsViewModel
     var editContact: Contact?
     @FocusState var focusState: ContactFocusFileds?
-    @State var contactType: ContactType = .phoneNumber
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    Picker("ContactType", selection: $contactType) {
-                        ForEach(ContactType.allCases) { type in
-                            Text(type.rawValue)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    TextField("General.contact", text: $contactValue)
-                        .focused($focusState, equals: .contactValue)
-                        .keyboardType(contactType == .phoneNumber ? .phonePad : .default)
-                    TextField("General.firstName", text: $firstName)
-                        .focused($focusState, equals: .firstName)
-                        .textContentType(.name)
-                    TextField("General.lastName", text: $lastName)
-                        .focused($focusState, equals: .lastName)
-                        .textContentType(.familyName)
-                } header: {
-                    Text("Contacts.Add.headerTitle")
-                        .font(.iransansTitle)
-                } footer: {
-                    Text("Contacts.Add.footerTitle")
-                        .font(.iransansCaption)
+        VStack(alignment: .leading, spacing: 20) {
+            Spacer()
+            Text(editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title")
+                .font(.iransansBoldSubtitle)
+                .padding()
+                .offset(y: 24)
+            TextField("General.firstName", text: $firstName)
+                .focused($focusState, equals: .firstName)
+                .textContentType(.name)
+                .padding()
+                .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
+                    focusState = .firstName
                 }
-            }
-            .headerProminence(.increased)
-            .navigationTitle(editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("General.done") {
+            TextField(optioanlAPpend(text: "General.lastName"), text: $lastName)
+                .focused($focusState, equals: .lastName)
+                .textContentType(.familyName)
+                .padding()
+                .applyAppTextfieldStyle(topPlaceholder: "General.lastName", isFocused: focusState == .lastName) {
+                    focusState = .lastName
+                }
+            TextField("Contacts.Add.phoneOrUserName", text: $contactValue)
+                .focused($focusState, equals: .contactValue)
+                .keyboardType(.default)
+                .padding()
+                .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", isFocused: focusState == .contactValue) {
+                    focusState = .contactValue
+                }
+            HStack {
+                Button {
+                    withAnimation {
                         submit()
                     }
+                } label: {
+                    let title = editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title"
+                    Text(String(localized: .init(title)))
+                        .font(.iransansBody)
+                        .frame(minWidth: 0, maxWidth: .infinity)
+                        .contentShape(Rectangle())
                 }
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("General.cancel", role: .cancel) {
-                        dismiss()
-                    }
-                }
+                .buttonStyle(.plain)
+                .frame(height: 48)
+                .background(Color.main)
+                .cornerRadius(8)
+                .contentShape(Rectangle())
+                .disabled(!enableButton)
+                .opacity(enableButton ? 1.0 : 0.3)
             }
-            .onAppear {
-                firstName = editContact?.firstName ?? ""
-                lastName = editContact?.lastName ?? ""
-                contactValue = editContact?.computedUserIdentifire ?? ""
-            }
+            .padding()
+            .background(.ultraThinMaterial)
+        }
+        .background(Color.bgColor)
+        .animation(.easeInOut, value: enableButton)
+        .animation(.easeInOut, value: focusState)
+        .onAppear {
+            firstName = editContact?.firstName ?? ""
+            lastName = editContact?.lastName ?? ""
+            contactValue = editContact?.computedUserIdentifire ?? ""
+            focusState = .firstName
         }
         .font(.iransansBody)
+        .presentationDetents([.fraction(60 / 100)])
+    }
+
+    private var enableButton: Bool {
+        !firstName.isEmpty && !contactValue.isEmpty
     }
 
     func submit() {
@@ -91,6 +108,10 @@ struct AddOrEditContactView: View {
             contactsViewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
         }
         dismiss()
+    }
+
+    func optioanlAPpend(text: String) -> String {
+        "\(String(localized: .init(text))) \(String(localized: "General.optional"))"
     }
 }
 
