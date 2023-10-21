@@ -285,3 +285,6 @@
 /* Map */
 "Map.mayLocation" = "موقعي";
 "Map.hereIAm" = "أنا هنا!";
+
+/* Members */
+"Memebers.searchedMembers" = "الأعضاء الذين تم البحث عنهم";

@@ -286,3 +286,6 @@
 /* Map */
 "Map.mayLocation" = "موقعیت من";
 "Map.hereIAm" = "من اینجا هستم!";
+
+/* Members */
+"Memebers.searchedMembers" = "اعضای جستجو شده";

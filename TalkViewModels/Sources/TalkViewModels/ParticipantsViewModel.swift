@@ -23,6 +23,7 @@ public final class ParticipantsViewModel: ObservableObject {
     @Published public var isLoading = false
     @Published public private(set) var totalCount = 0
     @Published public private(set) var participants: [Participant] = []
+    @Published public private(set) var searchedParticipants: [Participant] = []
     @Published public var searchText: String = ""
     @Published public var searchType: SearchParticipantType = .name
     private var cancelable: Set<AnyCancellable> = []
@@ -44,10 +45,13 @@ public final class ParticipantsViewModel: ObservableObject {
             .store(in: &cancelable)
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
-            .filter { $0.count >= 2 }
             .removeDuplicates()
             .sink { [weak self] searchText in
-                self?.searchParticipants(searchText)
+                if searchText.count > 2 {
+                    self?.searchParticipants(searchText.lowercased())
+                } else {
+                    self?.searchedParticipants.removeAll()
+                }
             }
             .store(in: &cancelable)
     }
@@ -57,6 +61,7 @@ public final class ParticipantsViewModel: ObservableObject {
         switch event {
         case .participants(let chatResponse):
             onParticipants(chatResponse)
+            onSearchedParticipants(chatResponse)
         case .deleted(let chatResponse):
             onDelete(chatResponse)
         case .add(let chatResponse):
@@ -113,28 +118,12 @@ public final class ParticipantsViewModel: ObservableObject {
         case .admin:
             req.admin = true
         }
+        RequestsManager.shared.append(prepend: "SearchParticipants", value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
-    public var filtered: [Participant] {
-        if !searchText.isEmpty {
-            switch searchType {
-            case .name:
-                return participants.filter { $0.name?.contains(searchText) ?? false }
-            case .username:
-                return participants.filter { $0.username?.contains(searchText) ?? false }
-            case .cellphoneNumber:
-                return participants.filter { $0.cellphoneNumber?.contains(searchText) ?? false }
-            case .admin:
-                return participants.filter { $0.admin == true }
-            }
-        } else {
-            return participants
-        }
-    }
-
     public var sorted: [Participant] {
-        filtered.sorted(by: { ($0.auditor ?? false && !($1.auditor ?? false)) || (($0.admin ?? false) && !($1.admin ?? false)) })
+        participants.sorted(by: { ($0.auditor ?? false && !($1.auditor ?? false)) || (($0.admin ?? false) && !($1.admin ?? false)) })
     }
 
     public func loadMore() {
@@ -148,6 +137,14 @@ public final class ParticipantsViewModel: ObservableObject {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
             hasNext = response.hasNext
+        }
+        isLoading = false
+    }
+
+    public func onSearchedParticipants(_ response: ChatResponse<[Participant]>) {
+        if response.value(prepend: "SearchParticipants") != nil, let participants = response.result {
+            searchedParticipants.removeAll()
+            searchedParticipants.append(contentsOf: participants)
         }
         isLoading = false
     }

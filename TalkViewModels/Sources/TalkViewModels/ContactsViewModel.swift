@@ -198,6 +198,10 @@ public final class ContactsViewModel: ObservableObject {
         maxContactsCountInServer = 0
     }
 
+    public func deselectContacts() {
+        selectedContacts = [] 
+    }
+
     public func delete(indexSet: IndexSet) {
         let contacts = contacts.enumerated().filter { indexSet.contains($0.offset) }.map(\.element)
         contacts.forEach { contact in

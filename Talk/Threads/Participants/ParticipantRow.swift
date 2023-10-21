@@ -57,7 +57,7 @@ struct ParticipantRow: View {
 struct ParticipantRowLables: View {
     /// It is essential to use the ViewModel version of the participant rather than pass it to the view as a `let participant`. It is needed when an add/remove admin or assistant access is updated.
     @EnvironmentObject var viewModel: ParticipantsViewModel
-    var paritcipant: Participant? { viewModel.participants.first(where: { $0.id == participantId })  }
+    var paritcipant: Participant? { viewModel.participants.first(where: { $0.id == participantId }) ?? viewModel.searchedParticipants.first(where: { $0.id == participantId })  }
     @State var participantId: Int?
 
     var body: some View {

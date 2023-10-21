@@ -286,3 +286,6 @@
 /* Mapa */
 "Map.mayLocation" = "Mi ubicación";
 "Map.hereIAm" = "¡Aquí estoy!";
+
+/* Members */
+"Memebers.searchedMembers" = "Miembros buscadas";

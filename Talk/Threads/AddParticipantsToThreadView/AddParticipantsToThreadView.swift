@@ -51,6 +51,7 @@ struct AddParticipantsToThreadView: View {
         .overlay(alignment: .bottom) {
             SubmitBottomButton(text: "General.add", enableButton: .constant(contactsVM.selectedContacts.count > 0), isLoading: .constant(false)) {
                 onCompleted(contactsVM.selectedContacts)
+                contactsVM.deselectContacts() // to clear for the next time
             }
         }
         .overlay(alignment: .top) {

@@ -286,3 +286,6 @@
 /* Map */
 "Map.mayLocation" = "Min plats";
 "Map.hereIAm" = "Jag är här!";
+
+/* Members */
+"Memebers.searchedMembers" = "Sökte efter medlemmar";

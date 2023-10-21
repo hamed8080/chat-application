@@ -38,42 +38,39 @@ struct ContactContentList: View {
             SyncView()
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)
-            Button {
-                viewModel.showCreateGroup.toggle()
-            } label: {
-                Label("Contacts.createGroup", systemImage: "person.2")
-                    .foregroundStyle(Color.main)
+            if viewModel.searchedContacts.count == 0 {
+                Button {
+                    viewModel.showCreateGroup.toggle()
+                } label: {
+                    Label("Contacts.createGroup", systemImage: "person.2")
+                        .foregroundStyle(Color.main)
+                }
+                .listRowBackground(Color.bgColor)
+                .listRowSeparatorTint(Color.dividerDarkerColor)
+
+                Button {
+
+                } label: {
+                    Label("Contacts.createChannel", systemImage: "megaphone")
+                        .foregroundStyle(Color.main)
+                }
+                .listRowBackground(Color.bgColor)
+                .listRowSeparatorTint(Color.dividerDarkerColor)
+
+                Button {
+                    viewModel.addContactSheet.toggle()
+                } label: {
+                    Label("Contacts.addContact", systemImage: "person.badge.plus")
+                        .foregroundStyle(Color.main)
+                }
+                .listRowBackground(Color.bgColor)
+                .listRowSeparator(.hidden)
             }
-            .listRowBackground(Color.bgColor)
-            .listRowSeparatorTint(Color.dividerDarkerColor)
-            
-            Button {
-                
-            } label: {
-                Label("Contacts.createChannel", systemImage: "megaphone")
-                    .foregroundStyle(Color.main)
-            }
-            .listRowBackground(Color.bgColor)
-            .listRowSeparatorTint(Color.dividerDarkerColor)
-            
-            Button {
-                viewModel.addContactSheet.toggle()
-            } label: {
-                Label("Contacts.addContact", systemImage: "person.badge.plus")
-                    .foregroundStyle(Color.main)
-            }
-            .listRowBackground(Color.bgColor)
-            .listRowSeparator(.hidden)
             
             if viewModel.searchedContacts.count > 0 {
                 Section {
                     ForEach(viewModel.searchedContacts) { contact in
-                        SearchContactRow(contact: contact)
-                            .listRowSeparatorTint(Color.dividerDarkerColor)
-                            .listRowBackground(Color.bgColor)
-                            .onTapGesture {
-                                AppState.shared.openThread(contact: contact)
-                            }
+                        ContactRowContainer(contact: contact, isSearchRow: true)
                     }
                     .padding()
                 } header: {
@@ -84,42 +81,7 @@ struct ContactContentList: View {
             
             Section {
                 ForEach(viewModel.contacts) { contact in
-                    ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
-                        .animation(.spring(), value: viewModel.isInSelectionMode)
-                        .listRowBackground(Color.bgColor)
-                        .listRowSeparatorTint(Color.dividerDarkerColor)
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button {
-                                viewModel.editContact = contact
-                            } label: {
-                                Label("General.edit", systemImage: "pencil")
-                            }
-                            .tint(.hint)
-
-                            Button {
-                                viewModel.block(contact)
-                            } label: {
-                                Label("General.block", systemImage: "hand.raised.slash")
-                            }
-                            .tint(Color.redSoft)
-
-                            Button {
-                                if let index = viewModel.contacts.firstIndex(of: contact) {
-                                    viewModel.delete(indexSet: IndexSet(integer: index))
-                                }
-                            } label: {
-                                Label("General.delete", systemImage: "trash")
-                            }
-                            .tint(.red)
-                        }
-                        .onAppear {
-                            if viewModel.contacts.last == contact {
-                                viewModel.loadMore()
-                            }
-                        }
-                        .onTapGesture {
-                            AppState.shared.openThread(contact: contact)
-                        }
+                    ContactRowContainer(contact: contact, isSearchRow: false)
                 }
                 .padding()
             } header: {
@@ -190,6 +152,59 @@ struct ContactContentList: View {
     
     @ViewBuilder var trailingViews: some View {
         EmptyView()
+    }
+}
+
+struct ContactRowContainer: View {
+    @EnvironmentObject var viewModel: ContactsViewModel
+    let contact: Contact
+    let isSearchRow: Bool
+    var separatorColor: Color {
+        if !isSearchRow {
+           return viewModel.contacts.last == contact ? Color.clear : Color.dividerDarkerColor
+        } else {
+            return viewModel.searchedContacts.last == contact ? Color.clear : Color.dividerDarkerColor
+        }
+    }
+
+    var body: some View {
+        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
+            .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)")
+            .animation(.spring(), value: viewModel.isInSelectionMode)
+            .listRowBackground(Color.bgColor)
+            .listRowSeparatorTint(separatorColor)
+            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                Button {
+                    viewModel.editContact = contact
+                } label: {
+                    Label("General.edit", systemImage: "pencil")
+                }
+                .tint(.hint)
+
+                Button {
+                    viewModel.block(contact)
+                } label: {
+                    Label("General.block", systemImage: "hand.raised.slash")
+                }
+                .tint(Color.redSoft)
+
+                Button {
+                    if let index = viewModel.contacts.firstIndex(of: contact) {
+                        viewModel.delete(indexSet: IndexSet(integer: index))
+                    }
+                } label: {
+                    Label("General.delete", systemImage: "trash")
+                }
+                .tint(.red)
+            }
+            .onAppear {
+                if viewModel.contacts.last == contact {
+                    viewModel.loadMore()
+                }
+            }
+            .onTapGesture {
+                AppState.shared.openThread(contact: contact)
+            }
     }
 }
 

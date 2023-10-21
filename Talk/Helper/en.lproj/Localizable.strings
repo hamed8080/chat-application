@@ -285,3 +285,6 @@
 /* Map */
 "Map.mayLocation" = "My location";
 "Map.hereIAm" = "I'm here!";
+
+/* Members */
+"Memebers.searchedMembers" = "Searched Members";
