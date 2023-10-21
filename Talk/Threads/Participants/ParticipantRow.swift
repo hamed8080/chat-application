@@ -44,7 +44,7 @@ struct ParticipantRow: View {
                 }
 
                 Spacer()
-                ParticipantRowLables(participant: participant)
+                ParticipantRowLables(participantId: participant.id)
             }
         }
         .lineLimit(1)
@@ -55,29 +55,34 @@ struct ParticipantRow: View {
 }
 
 struct ParticipantRowLables: View {
-    let participant: Participant
+    /// It is essential to use the ViewModel version of the participant rather than pass it to the view as a `let participant`. It is needed when an add/remove admin or assistant access is updated.
+    @EnvironmentObject var viewModel: ParticipantsViewModel
+    var paritcipant: Participant? { viewModel.participants.first(where: { $0.id == participantId })  }
+    @State var participantId: Int?
 
     var body: some View {
         HStack {
-            if AppState.shared.user?.id != participant.id, participant.conversation?.inviter?.id == participant.id {
-                Text("Participant.inviter")
-                    .padding([.leading, .trailing], 4)
-                    .padding([.top, .bottom], 2)
-                    .foregroundColor(Color.main)
-            }
+            if let participant = paritcipant {
+                if AppState.shared.user?.id != participant.id, participant.conversation?.inviter?.id == participantId {
+                    Text("Participant.inviter")
+                        .padding([.leading, .trailing], 4)
+                        .padding([.top, .bottom], 2)
+                        .foregroundColor(Color.main)
+                }
 
-            if participant.auditor == true {
-                Text("Participant.assistant")
-                    .padding([.leading, .trailing], 4)
-                    .padding([.top, .bottom], 2)
-                    .foregroundColor(Color.main)
-            }
+                if participant.auditor == true {
+                    Text("Participant.assistant")
+                        .padding([.leading, .trailing], 4)
+                        .padding([.top, .bottom], 2)
+                        .foregroundColor(Color.main)
+                }
 
-            if participant.admin == true {
-                Text("Participant.admin")
-                    .padding([.leading, .trailing], 4)
-                    .padding([.top, .bottom], 2)
-                    .foregroundColor(Color.main)
+                if participant.admin == true {
+                    Text("Participant.admin")
+                        .padding([.leading, .trailing], 4)
+                        .padding([.top, .bottom], 2)
+                        .foregroundColor(Color.main)
+                }
             }
         }
         .font(.iransansCaption)
