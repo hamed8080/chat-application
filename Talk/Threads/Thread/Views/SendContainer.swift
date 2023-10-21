@@ -12,6 +12,7 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import Chat
+import TalkExtensions
 
 struct SendContainer: View {
     @State private var isInEditMode: Bool = false
@@ -61,6 +62,7 @@ struct SendContainer: View {
                                 .padding([.trailing], 12)
                         }
                         MainSendButtons(showActionButtons: $showActionButtons, isRecording: $isRecording, text: $text, id: id)
+                            .environment(\.layoutDirection, .leftToRight)
                     }
                 }
                 .opacity(disableSend ? 0.3 : 1.0)
@@ -142,6 +144,7 @@ struct MainSendButtons: View {
                                backgroundColor: Color.bgChatBox,
                                mention: true)
             .cornerRadius(24)
+            .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
             .onChange(of: viewModel.textMessage ?? "") { newValue in
                 viewModel.sendStartTyping(newValue)
             }

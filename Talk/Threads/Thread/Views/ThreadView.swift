@@ -58,7 +58,8 @@ struct ThreadView: View, DropDelegate {
                         Button {
                             NotificationCenter.default.post(name: Notification.Name.closeSideBar, object: nil)
                         } label : {
-                            Image(systemName: "sidebar.left")
+                            Image(systemName: "sidebar.leading")
+                                .foregroundStyle(Color.main)
                         }
                     }
                 }
@@ -67,7 +68,7 @@ struct ThreadView: View, DropDelegate {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         Image(systemName: "megaphone.fill")
                             .resizable()
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color.main)
                             .frame(width: 16, height: 16)
                     }
                 }

@@ -24,6 +24,13 @@ struct SecondaryMessageView: View {
             } else {
                 DraftView(draft: draft)
             }
+            if let lastMessageSentStatus = thread.messageStatusIcon(currentUserId: AppState.shared.user?.id) {
+                Image(uiImage: lastMessageSentStatus.icon)
+                    .resizable()
+                    .frame(width: 14, height: 14)
+                    .foregroundColor(lastMessageSentStatus.fgColor)
+                    .font(.subheadline)
+            }
         }
         .onReceive(userDfault) { _ in
             let threadId = thread.id ?? 0

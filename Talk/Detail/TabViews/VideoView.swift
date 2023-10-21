@@ -22,6 +22,7 @@ struct VideoView: View {
     }
 
     var body: some View {
+        StickyHeaderSection(header: "", height:  4)
         MessageListVideoView()
             .environmentObject(viewModel)
     }
@@ -36,8 +37,8 @@ struct MessageListVideoView: View {
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
-                            .fill(.gray.opacity(0.3))
-                            .frame(height: 1)
+                            .fill(Color.dividerDarkerColor.opacity(0.3))
+                            .frame(height: 0.5)
                             .padding(.leading)
                     }
                 }
@@ -58,25 +59,41 @@ struct VideoRowView: View {
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
+    @State var width: CGFloat? = 48
+    @State var height: CGFloat? = 48
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading) {
-                Text(message.fileMetaData?.name ?? message.messageTitle)
-                    .font(.iransansBody)
-                Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
-                    .foregroundColor(.secondaryLabel)
-                    .font(.iransansCaption2)
-            }
-            Spacer()
-
             let view = DownloadVideoButtonView()
+                .frame(width: width, height: height)
                 .padding(4)
             if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
                 view.environmentObject(downloadVM)
+                    .onReceive(downloadVM.objectWillChange) { newValue in
+                        if downloadVM.state == .completed {
+                            height = nil
+                            width = nil
+                        }
+                    }
             } else {
                 view
             }
+
+            VStack(alignment: .leading) {
+                Text(message.fileMetaData?.name ?? message.messageTitle)
+                    .font(.iransansBody)
+                    .foregroundStyle(Color.messageText)
+                HStack {
+                    Text(message.time?.date.timeAgoSinceDateCondense ?? "" )
+                        .foregroundColor(Color.hint)
+                        .font(.iransansCaption2)
+                    Spacer()
+                    Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
+                        .foregroundColor(Color.hint)
+                        .font(.iransansCaption3)
+                }
+            }
+            Spacer()
         }
         .padding([.leading, .trailing])
         .onTapGesture {
@@ -89,12 +106,6 @@ struct VideoRowView: View {
 struct DownloadVideoButtonView: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     private var message: Message? { viewModel.message }
-    static var config: DownloadFileViewConfig = {
-        var config: DownloadFileViewConfig = .small
-        config.circleConfig.forgroundColor = .green
-        config.iconColor = Color.main
-        return config
-    }()
 
     var body: some View {
         switch viewModel.state {
@@ -108,45 +119,9 @@ struct DownloadVideoButtonView: View {
                                                             subtitle: message?.fileMetaData?.file?.originalName ?? ""))
                     .id(fileURL)
             }
-        case .downloading, .started:
-            CircularProgressView(percent: $viewModel.downloadPercent, config: DownloadVideoButtonView.config.circleConfig)
-                .padding(8)
-                .frame(maxWidth: DownloadVideoButtonView.config.circleProgressMaxWidth)
-                .onTapGesture {
-                    viewModel.pauseDownload()
-                }
-        case .paused:
-            Image(systemName: "pause.circle")
-                .resizable()
-                .padding(8)
-                .font(.headline.weight(.thin))
-                .foregroundColor(DownloadVideoButtonView.config.iconColor)
-                .scaledToFit()
-                .frame(width: DownloadVideoButtonView.config.iconWidth, height: DownloadVideoButtonView.config.iconHeight)
-                .frame(maxWidth: DownloadVideoButtonView.config.circleProgressMaxWidth)
-                .onTapGesture {
-                    viewModel.resumeDownload()
-                }
-        case .undefined, .thumbnail:
-            if message?.isImage == true, let data = viewModel.thumbnailData, let image = UIImage(data: data) {
-                Image(uiImage: image)
-                    .resizable()
-                    .blur(radius: 5, opaque: true)
-                    .scaledToFit()
-                    .zIndex(0)
-            }
-
-            Image(systemName: "arrow.down.circle")
-                .resizable()
-                .font(DownloadVideoButtonView.config.circleConfig.progressFont)
-                .padding(8)
-                .frame(width: DownloadVideoButtonView.config.iconWidth, height: DownloadVideoButtonView.config.iconHeight)
-                .scaledToFit()
-                .foregroundColor(DownloadVideoButtonView.config.iconColor)
-                .zIndex(1)
-                .onTapGesture {
-                    viewModel.startDownload()
-                }
+        case .downloading, .started, .paused, .undefined, .thumbnail:
+            DownloadFileView(viewModel: viewModel, config: .detail)
+                .frame(width: 72, height: 72)
         default:
             EmptyView()
         }

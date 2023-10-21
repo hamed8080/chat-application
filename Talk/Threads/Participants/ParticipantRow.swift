@@ -14,45 +14,40 @@ import TalkViewModels
 
 struct ParticipantRow: View {
     let participant: Participant
-    @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
-        VStack {
-            HStack {
-                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: participant.image, userName: participant.name ?? participant.username)
-                    .id("\(participant.image ?? "")\(participant.id ?? 0)")
-                    .font(.iransansBoldBody)
-                    .foregroundColor(.white)
-                    .frame(width: 48, height: 48)
-                    .background(Color.blue.opacity(0.4))
-                    .cornerRadius(22)
+        HStack {
+            ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: participant.image, userName: participant.name ?? participant.username)
+                .id("\(participant.image ?? "")\(participant.id ?? 0)")
+                .font(.iransansBoldBody)
+                .foregroundColor(.white)
+                .frame(width: 48, height: 48)
+                .background(Color.blue.opacity(0.4))
+                .cornerRadius(22)
 
-                HStack(alignment: .center, spacing: 8) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(participant.contactName ?? participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")
-                            .font(.iransansBody)
-                        if let cellphoneNumber = participant.cellphoneNumber, !cellphoneNumber.isEmpty {
-                            Text(cellphoneNumber)
-                                .font(.iransansCaption3)
-                                .foregroundColor(.primary.opacity(0.5))
-                        }
-                        if participant.online == true {
-                            Text("Participant.online")
-                                .font(.caption2)
-                                .foregroundColor(.blue)
-                        }
+            HStack(alignment: .center, spacing: 8) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(participant.contactName ?? participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")
+                        .font(.iransansBody)
+                    if let cellphoneNumber = participant.cellphoneNumber, !cellphoneNumber.isEmpty {
+                        Text(cellphoneNumber)
+                            .font(.iransansCaption3)
+                            .foregroundColor(.primary.opacity(0.5))
                     }
-
-                    ParticipantRowLables(participant: participant)
+                    if  let notSeenDuration = participant.notSeenString {
+                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
+                        let time = String(format: lastVisitedLabel, notSeenDuration)
+                        Text(time)
+                            .font(.iransansBody)
+                            .foregroundColor(Color.hint)
+                    }
                 }
+
                 Spacer()
-            }
-            if participant != viewModel.sorted.last {
-                Rectangle()
-                    .fill(.gray.opacity(0.2))
-                    .frame(height: 0.5)
+                ParticipantRowLables(participant: participant)
             }
         }
+        .lineLimit(1)
         .contentShape(Rectangle())
         .padding([.leading, .trailing], 12)
         .padding([.top, .bottom], 6)
@@ -61,43 +56,28 @@ struct ParticipantRow: View {
 
 struct ParticipantRowLables: View {
     let participant: Participant
-    @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
         HStack {
-            Spacer()
-
-            if viewModel.thread?.inviter?.id == participant.id, AppState.shared.user?.id != participant.id {
+            if AppState.shared.user?.id != participant.id, participant.conversation?.inviter?.id == participant.id {
                 Text("Participant.inviter")
                     .padding([.leading, .trailing], 4)
                     .padding([.top, .bottom], 2)
                     .foregroundColor(Color.main)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.main, lineWidth: 1)
-                    )
             }
 
             if participant.auditor == true {
                 Text("Participant.assistant")
                     .padding([.leading, .trailing], 4)
                     .padding([.top, .bottom], 2)
-                    .foregroundColor(.green)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.green, lineWidth: 1)
-                    )
+                    .foregroundColor(Color.main)
             }
 
             if participant.admin == true {
                 Text("Participant.admin")
                     .padding([.leading, .trailing], 4)
                     .padding([.top, .bottom], 2)
-                    .foregroundColor(.blue)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.blue, lineWidth: 1)
-                    )
+                    .foregroundColor(Color.main)
             }
         }
         .font(.iransansCaption)

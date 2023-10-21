@@ -60,19 +60,7 @@ struct SelectMessageRadio: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        ZStack {
-            Image(systemName: viewModel.isSelected ? "checkmark.circle.fill" : "circle")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-                .font(.title)
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(viewModel.isSelected ? Color.bgChatContainer : Color.hint, Color.main)
-        }
-        .frame(width: viewModel.isInSelectMode ? 22 : 0.001, height: viewModel.isInSelectMode ? 22 : 0.001, alignment: .center)
-        .padding(viewModel.isInSelectMode ? 24 : 0.001)
-        .scaleEffect(x: viewModel.isInSelectMode ? 1.0 : 0.001, y: viewModel.isInSelectMode ? 1.0 : 0.001, anchor: .center)
-        .onTapGesture {
+        RadioButton(visible: $viewModel.isInSelectMode, isSelected: $viewModel.isSelected) { isSelected in
             withAnimation(!viewModel.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
                 viewModel.isSelected.toggle()
                 viewModel.animateObjectWillChange()

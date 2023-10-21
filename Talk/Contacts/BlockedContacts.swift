@@ -8,19 +8,52 @@
 import Chat
 import SwiftUI
 import TalkViewModels
+import TalkUI
 
 struct BlockedContacts: View {
     @EnvironmentObject var viewModel: ContactsViewModel
 
     var body: some View {
         List(viewModel.blockedContacts, id: \.blockId) { blocked in
-            VStack(alignment: .leading) {
-                Text((blocked.nickName ?? blocked.contact?.firstName) ?? "")
-                ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: .red) {
-                    ChatManager.activeInstance?.contact.unBlock(.init(blockId: blocked.blockId))
+            HStack {
+                let contactName = blocked.contact?.user?.name ?? blocked.contact?.firstName
+                let name = blocked.nickName ?? contactName
+                let userId = blocked.contact?.cellphoneNumber ?? blocked.contact?.email ?? "\(blocked.coreUserId ?? 0)"
+
+                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: blocked.profileImage ?? blocked.contact?.image, userName: name)
+                    .id(userId)
+                    .font(.iransansBody)
+                    .foregroundColor(.white)
+                    .frame(width: 52, height: 52)
+                    .background(Color.blue.opacity(0.4))
+                    .cornerRadius(22)
+
+                VStack(alignment: .leading) {
+                    Text(name ?? "")
+                        .foregroundStyle(Color.messageText)
+                        .font(.iransansBoldBody)
+
+                    Text(userId)
+                        .font(.caption2)
+                        .foregroundStyle(Color.hint)
+                }
+
+                Spacer()
+                Button {
+                    if let blockedId = blocked.blockId {
+                        viewModel.unblock(blockedId)
+                    }
+                } label: {
+                    Image(systemName: "xmark.circle")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
                 }
             }
+            .listRowBackground(Color.bgColor)
+            .listRowSeparatorTint(Color.dividerDarkerColor)
         }
+        .background(Color.bgColor)
         .navigationTitle("Contacts.blockedList")
         .navigationBarBackButtonHidden(true)
         .listStyle(.plain)

@@ -127,9 +127,9 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         animateObjectWillChange()
     }
 
-    public func downloadBlurImage() {
+    public func downloadBlurImage(quality: Float = 0.4, size: ImageSize = .SMALL) {
         state = .thumbnailDownloaing
-        let req = ImageRequest(hashCode: fileHashCode, quality: 0.1, size: .SMALL, thumbnail: true)
+        let req = ImageRequest(hashCode: fileHashCode, quality: quality, size: size, thumbnail: true)
         uniqueId = req.uniqueId
         RequestsManager.shared.append(prepend: "THUMBNAIL", value: req, autoCancel: false)
         ChatManager.activeInstance?.file.get(req)

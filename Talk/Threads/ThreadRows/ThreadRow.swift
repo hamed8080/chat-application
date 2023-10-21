@@ -16,7 +16,7 @@ struct ThreadRow: View {
     var thread: Conversation
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 16) {
             ThreadImageView(thread: thread, threadsVM: viewModel)
                 .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
             VStack(alignment: .leading, spacing: 6) {
@@ -25,6 +25,13 @@ struct ThreadRow: View {
                         .lineLimit(1)
                         .font(.iransansSubheadline)
                         .fontWeight(.light)
+                    Spacer()
+                    if let timeString = thread.time?.date.timeAgoSinceDateCondense {
+                        Text(timeString)
+                            .lineLimit(1)
+                            .font(.iransansCaption2)
+                            .foregroundColor(.secondary)
+                    }
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()
@@ -39,20 +46,19 @@ struct ThreadRow: View {
                             .scaledToFit()
                             .foregroundColor(Color.gray)
                     }
-                    Spacer()
-                    if let timeString = thread.time?.date.timeAgoSinceDateCondense {
-                        Text(timeString)
-                            .lineLimit(1)
-                            .font(.iransansCaption2)
-                            .foregroundColor(.secondary)
+                    if thread.mentioned == true {
+                        Image(systemName: "at.circle.fill")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(Color.main)
                     }
 
-                    if let lastMessageSentStatus = thread.messageStatusIcon(currentUserId: AppState.shared.user?.id) {
-                        Image(uiImage: lastMessageSentStatus.icon)
+                    if thread.pin == true {
+                        Image(systemName: "pin.fill")
                             .resizable()
-                            .frame(width: 14, height: 14)
-                            .foregroundColor(lastMessageSentStatus.fgColor)
-                            .font(.subheadline)
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                            .foregroundStyle(Color.gray)
                     }
                 }
                 HStack {
@@ -67,21 +73,6 @@ struct ThreadRow: View {
                             .foregroundColor(Color.white)
                             .background(Color.main)
                             .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
-                    }
-
-                    if thread.mentioned == true {
-                        Image(systemName: "at.circle.fill")
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.main)
-                    }
-
-                    if thread.pin == true {
-                        Image(systemName: "pin.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 16, height: 16)
-                            .foregroundStyle(Color.main)
                     }
                 }
                 ThreadEventView()

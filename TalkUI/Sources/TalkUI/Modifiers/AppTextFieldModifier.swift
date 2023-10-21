@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct AppTextFieldModifier: ViewModifier {
     let topPlaceholder: String
+    let minHeigh: CGFloat
     let isFocused: Bool
     /// We use onClick for the border around where they are not clickable.
     let onClick: (() -> Void)?
@@ -20,12 +21,12 @@ public struct AppTextFieldModifier: ViewModifier {
                 .padding(.horizontal, 20)
                 .offset(y: 8)
             content
-                .frame(minHeight: 52)
+                .frame(minHeight: minHeigh)
                 .background(isFocused ? Color.clear : Color.bgInput)
                 .overlay(alignment: .center) {
                     RoundedRectangle(cornerRadius: 12)
                         .strokeBorder(isFocused ? Color.main : .clear, lineWidth: 2)
-                        .frame(minHeight: 52)
+                        .frame(minHeight: minHeigh)
                 }
                 .cornerRadius(12)
                 .padding()
@@ -37,8 +38,8 @@ public struct AppTextFieldModifier: ViewModifier {
 }
 
 public extension View {
-    func applyAppTextfieldStyle(topPlaceholder: String = "", isFocused: Bool = false, onClick: (() -> Void)? = nil) -> some View {
-        modifier(AppTextFieldModifier(topPlaceholder: topPlaceholder, isFocused: isFocused, onClick: onClick))
+    func applyAppTextfieldStyle(topPlaceholder: String = "", minHeigh: CGFloat = 52, isFocused: Bool = false, onClick: (() -> Void)? = nil) -> some View {
+        modifier(AppTextFieldModifier(topPlaceholder: topPlaceholder, minHeigh: minHeigh, isFocused: isFocused, onClick: onClick))
     }
 }
 

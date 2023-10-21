@@ -9,19 +9,21 @@ import Chat
 import ChatModels
 import SwiftUI
 import TalkUI
+import TalkViewModels
 
 struct TabViewsContainer: View {
     var thread: Conversation
     @State var selectedTabIndex: Int
+
     let tabs: [Tab] = [
-        .init(title: "Thread.Tabs.members", icon: "person"),
-        .init(title: "Thread.Tabs.mutualgroup", icon: "person.3"),
-        .init(title: "Thread.Tabs.photos", icon: "photo.stack"),
-        .init(title: "Thread.Tabs.videos", icon: "play.tv"),
-        .init(title: "Thread.Tabs.file", icon: "doc"),
-        .init(title: "Thread.Tabs.music", icon: "music.note"),
-        .init(title: "Thread.Tabs.voice", icon: "mic"),
-        .init(title: "Thread.Tabs.link", icon: "link"),
+        .init(title: "Thread.Tabs.members", icon: nil),
+        .init(title: "Thread.Tabs.mutualgroup", icon: nil),
+        .init(title: "Thread.Tabs.photos", icon: nil),
+        .init(title: "Thread.Tabs.videos", icon: nil),
+        .init(title: "Thread.Tabs.file", icon: nil),
+        .init(title: "Thread.Tabs.music", icon: nil),
+        .init(title: "Thread.Tabs.voice", icon: nil),
+        .init(title: "Thread.Tabs.link", icon: nil),
     ]
 
     var body: some View {
@@ -71,21 +73,26 @@ struct Tabs: View {
                         } label: {
                             VStack {
                                 HStack(spacing: 8) {
-                                    Image(systemName: tab.icon)
-                                        .frame(width: 24, height: 24)
-                                        .foregroundColor(Color.gray)
-                                        .fixedSize()
+                                    if let icon = tab.icon {
+                                        Image(systemName: icon)
+                                            .frame(width: 24, height: 24)
+                                            .foregroundColor(Color.gray)
+                                            .fixedSize()
+                                    }
                                     Text(String(localized: .init(tab.title)))
-                                        .font(.iransansBoldBody)
+                                        .font(index == selectedTabIndex ? . iransansBoldCaption : .iransansCaption)
                                         .fixedSize()
+                                        .foregroundStyle(index == selectedTabIndex ? Color.messageText : Color.hint)
                                 }
                                 .padding([.trailing, .leading], 8)
 
                                 if index == selectedTabIndex {
                                     Rectangle()
-                                        .fill(Color.blue)
+                                        .fill(Color.main)
                                         .frame(height: 3)
+                                        .cornerRadius(2, corners: [.topLeft, .topRight])
                                         .matchedGeometryEffect(id: "DetailTabSeparator", in: id)
+
                                 }
                             }
                         }
@@ -102,11 +109,18 @@ struct Tabs: View {
 struct Tab: Identifiable {
     var id: String { title }
     let title: String
-    let icon: String
+    let icon: String?
 }
 
 struct TabViewsContainer_Previews: PreviewProvider {
     static var previews: some View {
-        TabViewsContainer(thread: MockData.thread, selectedTabIndex: 0)
+        let conversation = MockData.thread
+        let viewModel = ParticipantsViewModel(thread: conversation)
+        TabViewsContainer(thread: conversation, selectedTabIndex: 0)
+            .environmentObject(viewModel)
+            .environmentObject(DetailViewModel(thread: conversation))
+            .onAppear {
+                viewModel.appendParticipants(participants: MockData.generateParticipants())
+            }
     }
 }

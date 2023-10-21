@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0505D5AC2AE2CEC900A5B081 /* EditGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505D5AB2AE2CEC900A5B081 /* EditGroup.swift */; };
+		0505D5AD2AE2CEC900A5B081 /* EditGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505D5AB2AE2CEC900A5B081 /* EditGroup.swift */; };
 		0506DE1F2AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
 		0506DE202AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
 		050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
@@ -223,6 +225,8 @@
 		05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
+		05DCC0652AE183EA0025B3B7 /* CreateGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DCC0642AE183EA0025B3B7 /* CreateGroup.swift */; };
+		05DCC0662AE187D80025B3B7 /* CreateGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DCC0642AE183EA0025B3B7 /* CreateGroup.swift */; };
 		05EC8A302ACBED930016361F /* ReactionCountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2D2ACBED930016361F /* ReactionCountView.swift */; };
 		05EC8A312ACBED930016361F /* ReactionCountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2D2ACBED930016361F /* ReactionCountView.swift */; };
 		05EC8A322ACBED930016361F /* ReactionMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */; };
@@ -238,6 +242,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0505D5AB2AE2CEC900A5B081 /* EditGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditGroup.swift; sourceTree = "<group>"; };
 		0506DE1E2AD42AF00009701E /* Talk.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Talk.docc; sourceTree = "<group>"; };
 		050B290D2AB40DC20072706C /* ContainerSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerSplitView.swift; sourceTree = "<group>"; };
 		050B290E2AB40DC20072706C /* ToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
@@ -359,6 +364,7 @@
 		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		05C099C22AD1135D007AAC6C /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		05DCC0642AE183EA0025B3B7 /* CreateGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroup.swift; sourceTree = "<group>"; };
 		05EC8A2D2ACBED930016361F /* ReactionCountView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionCountView.swift; sourceTree = "<group>"; };
 		05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionMenuView.swift; sourceTree = "<group>"; };
 		05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayEmojiViews.swift; sourceTree = "<group>"; };
@@ -482,6 +488,7 @@
 		0570CB672AAEE98C001832E9 /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				05DCC0632AE183D00025B3B7 /* CreateGroup */,
 				0570CB692AAEE98C001832E9 /* Participants */,
 				0570CB6B2AAEE98C001832E9 /* ThreadRows */,
 				0570CB732AAEE98C001832E9 /* SelectThread */,
@@ -644,6 +651,7 @@
 			children = (
 				0570CBAA2AAEE98D001832E9 /* TabViews */,
 				0570CBB42AAEE98D001832E9 /* DetailView.swift */,
+				0505D5AB2AE2CEC900A5B081 /* EditGroup.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -739,6 +747,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		05DCC0632AE183D00025B3B7 /* CreateGroup */ = {
+			isa = PBXGroup;
+			children = (
+				05DCC0642AE183EA0025B3B7 /* CreateGroup.swift */,
+			);
+			path = CreateGroup;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -900,6 +916,7 @@
 				05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */,
 				0570CC3B2AAEE98F001832E9 /* TagParticipantRow.swift in Sources */,
 				0506DE1F2AD42AF00009701E /* Talk.docc in Sources */,
+				05DCC0652AE183EA0025B3B7 /* CreateGroup.swift in Sources */,
 				0570CC4F2AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC292AAEE98F001832E9 /* ThreadView.swift in Sources */,
 				0570CC932AAEE98F001832E9 /* AppDelegate.swift in Sources */,
@@ -963,6 +980,7 @@
 				0570CBED2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				0570CC5F2AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
 				0570CBF92AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
+				0505D5AC2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
 				0570CC1D2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
 				0570CC412AAEE98F001832E9 /* StartThreadContactRow.swift in Sources */,
 				0570CBE92AAEE98F001832E9 /* ThreadRowActionMenu.swift in Sources */,
@@ -1002,6 +1020,7 @@
 				05F9ECC22ABAD540000C6725 /* AppOverlayFactory.swift in Sources */,
 				0570CC3C2AAEE98F001832E9 /* TagParticipantRow.swift in Sources */,
 				0506DE202AD42AF00009701E /* Talk.docc in Sources */,
+				05DCC0662AE187D80025B3B7 /* CreateGroup.swift in Sources */,
 				0570CC502AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC2A2AAEE98F001832E9 /* ThreadView.swift in Sources */,
 				0570CC942AAEE98F001832E9 /* AppDelegate.swift in Sources */,
@@ -1065,6 +1084,7 @@
 				0570CBEE2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				0570CC602AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
 				0570CBFA2AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
+				0505D5AD2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
 				0570CC1E2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
 				0570CC422AAEE98F001832E9 /* StartThreadContactRow.swift in Sources */,
 				0570CBEA2AAEE98F001832E9 /* ThreadRowActionMenu.swift in Sources */,

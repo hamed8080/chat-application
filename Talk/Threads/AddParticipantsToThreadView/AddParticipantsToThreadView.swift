@@ -9,6 +9,7 @@ import Chat
 import ChatModels
 import SwiftUI
 import TalkViewModels
+import TalkUI
 
 struct AddParticipantsToThreadView: View {
     @StateObject var viewModel: AddParticipantsToViewModel
@@ -20,12 +21,14 @@ struct AddParticipantsToThreadView: View {
             if contactsVM.searchedContacts.count > 0 {
                 ForEach(contactsVM.searchedContacts) { contact in
                     StartThreadContactRow(isInMultiSelectMode: .constant(true), contact: contact)
-                        .listRowBackground(Color.bgChatContainer)
+                        .listRowBackground(Color.bgColor)
+                        .listRowSeparatorTint(Color.dividerDarkerColor)
                 }
             } else {
                 ForEach(contactsVM.contacts) { contact in
                     StartThreadContactRow(isInMultiSelectMode: .constant(true), contact: contact)
-                        .listRowBackground(Color.bgChatContainer)
+                        .listRowBackground(Color.bgColor)
+                        .listRowSeparatorTint(Color.dividerDarkerColor)
                         .onAppear {
                             if contactsVM.contacts.last == contact {
                                 contactsVM.loadMore()
@@ -46,27 +49,9 @@ struct AddParticipantsToThreadView: View {
                 .frame(height: 74)
         }
         .overlay(alignment: .bottom) {
-            HStack {
-                Button {
-                    withAnimation {
-                        onCompleted(contactsVM.selectedContacts)
-                    }
-                } label: {
-                    Text("General.add")
-                        .font(.iransansBody)
-                        .frame(minWidth: 0, maxWidth: .infinity)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .frame(height: 48)
-                .background(Color.main)
-                .cornerRadius(8)
-                .contentShape(Rectangle())
-                .disabled(contactsVM.selectedContacts.count == 0)
-                .opacity(contactsVM.selectedContacts.count == 0 ? 0.3 : 1.0)
+            SubmitBottomButton(text: "General.add", enableButton: .constant(contactsVM.selectedContacts.count > 0), isLoading: .constant(false)) {
+                onCompleted(contactsVM.selectedContacts)
             }
-            .padding()
-            .background(.ultraThinMaterial)
         }
         .overlay(alignment: .top) {
             VStack(alignment: .leading, spacing: 0) {

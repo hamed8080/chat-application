@@ -43,15 +43,16 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var mutualThreads: [Conversation] = []
     public weak var threadVM: ThreadViewModel?
 
-    public var editTitle: String = ""
+    @Published public var editTitle: String = ""
     public var searchText: String = ""
     public var image: UIImage?
     @Published public var showAddToContactSheet: Bool = false
-    public var threadDescription: String = ""
+    @Published public var threadDescription: String = ""
     @Published public var isInEditMode = false
-    @Published public var showImagePicker: Bool = false
     public var assetResources: [PHAssetResource] = []
     @Published public var dismiss = false
+    @Published public var isLoading = false
+    @Published public var showEditGroup = false
 
     public init(thread: Conversation? = nil, contact: Contact? = nil, user: Participant? = nil) {
         self.user = user
@@ -84,6 +85,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
             onMuteChanged(response)
         case .unmute(let response):
             onUnMuteChanged(response)
+        case .updatedInfo(let response):
+            onEditGroup(response)
         default:
             break
         }
@@ -141,27 +144,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
             user?.blocked = false
             animateObjectWillChange()
         }
-    }
-
-    public func updateThreadInfo() {
-        guard let threadId = thread?.id else { return }
-        var imageRequest: UploadImageRequest?
-        if let image = image {
-            let width = Int(image.size.width)
-            let height = Int(image.size.height)
-            imageRequest = UploadImageRequest(data: image.pngData() ?? Data(),
-                                              fileExtension: "png",
-                                              fileName: assetResources.first?.originalFilename ?? "",
-                                              isPublic: true,
-                                              mimeType: "image/png",
-                                              originalName: assetResources.first?.originalFilename ?? "",
-                                              userGroupHash: thread?.userGroupHash,
-                                              hC: height,
-                                              wC: width
-            )
-        }
-        let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)
-        ChatManager.activeInstance?.conversation.updateInfo(req)
     }
 
     public func toggleMute() {
@@ -234,5 +216,36 @@ public final class DetailViewModel: ObservableObject, Hashable {
             }
         }
         animateObjectWillChange()
+    }
+
+    public func submitEditGroup() {
+        isLoading = true
+        guard let threadId = thread?.id else { return }
+        var imageRequest: UploadImageRequest?
+        if let image = image {
+            let width = Int(image.size.width)
+            let height = Int(image.size.height)
+            imageRequest = UploadImageRequest(data: image.pngData() ?? Data(),
+                                              fileExtension: "png",
+                                              fileName: assetResources.first?.originalFilename ?? "",
+                                              isPublic: true,
+                                              mimeType: "image/png",
+                                              originalName: assetResources.first?.originalFilename ?? "",
+                                              userGroupHash: thread?.userGroupHash,
+                                              hC: height,
+                                              wC: width
+            )
+        }
+        let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)
+        RequestsManager.shared.append(prepend: "EditGroup", value: req)
+        ChatManager.activeInstance?.conversation.updateInfo(req)
+    }
+
+    public func onEditGroup(_ response: ChatResponse<Conversation>) {
+        if response.value(prepend: "EditGroup") != nil {
+            image = nil
+            isLoading = false
+            showEditGroup = false
+        }
     }
 }

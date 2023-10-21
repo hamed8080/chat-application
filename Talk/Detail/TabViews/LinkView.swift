@@ -21,6 +21,7 @@ struct LinkView: View {
     }
 
     var body: some View {
+        StickyHeaderSection(header: "", height:  4)
         MessageListLinkView()
             .environmentObject(viewModel)
     }
@@ -35,8 +36,8 @@ struct MessageListLinkView: View {
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
-                            .fill(.gray.opacity(0.3))
-                            .frame(height: 1)
+                            .fill(Color.dividerDarkerColor.opacity(0.3))
+                            .frame(height: 0.5)
                             .padding(.leading)
                     }
                 }
@@ -60,6 +61,17 @@ struct LinkRowView: View {
 
     var body: some View {
         HStack {
+            Rectangle()
+                .fill(Color.hintText)
+                .frame(width: 36, height: 36)
+                .cornerRadius(8)
+                .overlay(alignment: .center) {
+                    Image(systemName: "link")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(Color.hint)
+                }
             VStack(alignment: .leading) {
                 Text(message.markdownTitle)
                     .font(.iransansBody)

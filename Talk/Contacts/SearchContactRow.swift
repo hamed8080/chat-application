@@ -21,25 +21,24 @@ struct SearchContactRow: View {
                 .id("\(contact.image ?? "")\(contact.id ?? 0)")
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
-                .frame(width: 24, height: 24)
+                .frame(width: 46, height: 46)
                 .background(Color.blue.opacity(0.4))
-                .cornerRadius(12)
+                .cornerRadius(20)
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                     .padding(.leading, 4)
                     .lineLimit(1)
                     .font(.iransansCaption)
                 if let notSeenDuration = contact.notSeenString {
-                    Text(notSeenDuration)
+                    let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
+                    let time = String(format: lastVisitedLabel, notSeenDuration)
+                    Text(time)
                         .padding(.leading, 4)
                         .font(.iransansCaption3)
                         .foregroundColor(Color.gray)
                 }
-
-                Rectangle()
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(height: 1)
             }
+            Spacer()
         }
         .contentShape(Rectangle())
         .onTapGesture {

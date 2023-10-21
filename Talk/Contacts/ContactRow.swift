@@ -15,7 +15,6 @@ import TalkViewModels
 struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
     @EnvironmentObject var viewModel: ContactsViewModel
-    @State public var showActionViews: Bool = false
     @EnvironmentObject var appState: AppState
     var contact: Contact
     var contactImageURL: String? { contact.image ?? contact.user?.image }
@@ -23,134 +22,52 @@ struct ContactRow: View {
 
     var body: some View {
         VStack {
-            VStack {
-                HStack(spacing: 0) {
-                    selectRadio
-                    ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
-                        .id("\(contact.image ?? "")\(contact.id ?? 0)")
-                        .font(.iransansBody)
-                        .foregroundColor(.white)
-                        .frame(width: 64, height: 64)
-                        .background(Color.blue.opacity(0.4))
-                        .cornerRadius(32)
+            HStack(spacing: 0) {
+                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
+                    .id("\(contact.image ?? "")\(contact.id ?? 0)")
+                    .font(.iransansBody)
+                    .foregroundColor(.white)
+                    .frame(width: 52, height: 52)
+                    .background(Color.blue.opacity(0.4))
+                    .cornerRadius(22)
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
+                        .padding(.leading, 16)
+                        .lineLimit(1)
+                        .font(.iransansBoldBody)
+                        .foregroundColor(Color.messageText)
+                    if let notSeenDuration = contact.notSeenString {
+                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
+                        let time = String(format: lastVisitedLabel, notSeenDuration)
+                        Text(time)
                             .padding(.leading, 16)
-                            .lineLimit(1)
-                            .font(.iransansBoldSubtitle)
-                        if let notSeenDuration = contact.notSeenString {
-                            Text(notSeenDuration)
-                                .padding(.leading, 16)
-                                .font(.iransansCaption)
-                                .foregroundColor(Color.gray)
-                        }
-                    }
-                    Spacer()
-                    if contact.blocked == true {
-                        Text("General.blocked")
-                            .font(.iransansCaption2)
-                            .padding(4)
-                            .foregroundColor(Color.red)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.red)
-                            )
+                            .font(.iransansBody)
+                            .foregroundColor(Color.hint)
                     }
                 }
-                if showActionViews {
-                    actionsViews
-                } else {
-                    EmptyView()
+                Spacer()
+                if contact.blocked == true {
+                    Text("General.blocked")
+                        .font(.iransansCaption2)
+                        .foregroundColor(Color.red)
                 }
+                selectRadio
             }
-            .modifier(AnimatingCellHeight(height: self.showActionViews ? 148 : 64))
-            .padding(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
-            .background(Color.hint.opacity(0.08))
-            .cornerRadius(16)
         }
-        .animation(.easeInOut, value: showActionViews)
         .animation(.easeInOut, value: contact.blocked)
         .animation(.easeInOut, value: navigateToAddOrEditContact)
         .animation(.easeInOut, value: contact)
-        .onTapGesture {
-            withAnimation {
-                showActionViews.toggle()
-            }
-        }
         .sheet(isPresented: $navigateToAddOrEditContact) {
             AddOrEditContactView(editContact: contact).environmentObject(viewModel)
         }
     }
 
-    @ViewBuilder var actionsViews: some View {
-        Divider()
-        HStack {
-            Group {
-                Spacer()
-                if appState.isLoading {
-                    ProgressView()
-                } else {
-                    ActionButton(iconSfSymbolName: "message") {
-                        appState.openThread(contact: contact)
-                    }
-                }
-                Spacer()
-                ActionButton(iconSfSymbolName: "hand.raised.slash", iconColor: contact.blocked == true ? .red : .blue) {
-                    viewModel.blockOrUnBlock(contact)
-                }
-            }
-            Group {
-                Spacer()
-                ActionButton(iconSfSymbolName: "pencil") {
-                    navigateToAddOrEditContact.toggle()
-                }
-                Spacer()
-            }
-        }
-    }
-
     @ViewBuilder var selectRadio: some View {
         let isSelected = viewModel.isSelected(contact: contact)
-        ZStack {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.title)
-                .scaleEffect(x: isSelected ? 1 : 0.001, y: isSelected ? 1 : 0.001, anchor: .center)
-                .foregroundColor(Color.main)
-
-            Image(systemName: "circle")
-                .font(.title)
-                .foregroundColor(Color.main)
+        RadioButton(visible: $isInSelectionMode, isSelected: .constant(isSelected)) { isSelected in
+            viewModel.toggleSelectedContact(contact: contact)
         }
-        .frame(width: isInSelectionMode ? 22 : 0.001, height: isInSelectionMode ? 22 : 0.001, alignment: .center)
-        .padding(isInSelectionMode ? 24 : 0.001)
-        .scaleEffect(x: isInSelectionMode ? 1.0 : 0.001, y: isInSelectionMode ? 1.0 : 0.001, anchor: .center)
-        .onTapGesture {
-            withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
-                viewModel.toggleSelectedContact(contact: contact)
-            }
-        }
-    }
-}
-
-struct ActionButton: View {
-    var iconSfSymbolName: String
-    var height: CGFloat = 22
-    var iconColor: Color = .blue
-    var taped: (() -> Void)?
-
-    var body: some View {
-        Button(action: {
-            taped?()
-        }, label: {
-            Image(systemName: iconSfSymbolName)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: height)
-                .foregroundColor(iconColor)
-        })
-        .buttonStyle(BorderlessButtonStyle()) // don't remove this line click happen in all veiws
-        .padding(16)
     }
 }
 

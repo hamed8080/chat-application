@@ -9,6 +9,7 @@ import Chat
 import ChatModels
 import SwiftUI
 import TalkViewModels
+import TalkUI
 
 enum ContactType: String, Identifiable, CaseIterable {
     var id: Self { self }
@@ -61,28 +62,11 @@ struct AddOrEditContactView: View {
                 .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", isFocused: focusState == .contactValue) {
                     focusState = .contactValue
                 }
-            HStack {
-                Button {
-                    withAnimation {
-                        submit()
-                    }
-                } label: {
-                    let title = editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title"
-                    Text(String(localized: .init(title)))
-                        .font(.iransansBody)
-                        .frame(minWidth: 0, maxWidth: .infinity)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .frame(height: 48)
-                .background(Color.main)
-                .cornerRadius(8)
-                .contentShape(Rectangle())
-                .disabled(!enableButton)
-                .opacity(enableButton ? 1.0 : 0.3)
+
+            let title = editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title"
+            SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: .constant(false)) {
+                submit()
             }
-            .padding()
-            .background(.ultraThinMaterial)
         }
         .background(Color.bgColor)
         .animation(.easeInOut, value: enableButton)

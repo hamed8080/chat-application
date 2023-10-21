@@ -12,7 +12,7 @@ public extension Conversation {
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
     func updateValues(_ newThread: Conversation) {
         admin = newThread.admin ?? admin
-        canEditInfo = newThread.canEditInfo ?? newThread.canEditInfo
+        canEditInfo = newThread.canEditInfo ?? canEditInfo
         canSpam = newThread.canSpam
         closedThread = newThread.closedThread
         description = newThread.description ?? description

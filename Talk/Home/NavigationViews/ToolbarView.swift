@@ -64,7 +64,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 if let title {
                     Text(String(localized: String.LocalizationValue(title)))
                         .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 48)
-                        .font(.iransansBoldTitle)
+                        .font(.iransansBoldSubheadline)
                         .clipped()
                 }
                 centerNavigationViews

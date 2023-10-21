@@ -12,6 +12,8 @@ import ChatModels
 import TalkModels
 import ChatCore
 import ChatDTO
+import SwiftUI
+import Photos
 
 public final class ContactsViewModel: ObservableObject {
     private var count = 15
@@ -28,6 +30,19 @@ public final class ContactsViewModel: ObservableObject {
     @Published public var searchContactString: String = ""
     private var searchUniqueId: String?
     public var blockedContacts: [BlockedContactResponse] = []
+    @Published public var showCreateGroup = false
+    @Published public var showEditCreatedGroupDetail = false
+    @Published public var editContact: Contact?
+    @Published public var addContactSheet = false
+    @Published public var isInSelectionMode = false
+    @Published public var deleteDialog = false
+
+    @Published public var editTitle: String = ""
+    @Published public var threadDescription: String = ""
+    @Published public var createdGroupParticpnats: [Participant] = []
+    public var createdGroupConversation: Conversation?
+    public var assetResources: [PHAssetResource] = []
+    public var image: UIImage?
 
     public init() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
@@ -65,6 +80,20 @@ public final class ContactsViewModel: ObservableObject {
                 self?.onContactEvent(event)
             }
             .store(in: &canceableSet)
+
+        NotificationCenter.default.publisher(for: .thread)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink{ [weak self] event in
+                self?.onConversationEvent(event)
+            }
+            .store(in: &canceableSet)
+
+        NotificationCenter.default.publisher(for: .participant)
+            .compactMap { $0.object as? ParticipantEventTypes }
+            .sink{ [weak self] event in
+                self?.onParticipantsEvent(event)
+            }
+            .store(in: &canceableSet)
     }
 
     public func onContactEvent(_ event: ContactEventTypes?) {
@@ -80,11 +109,31 @@ public final class ContactsViewModel: ObservableObject {
         case let .delete(response, deleted):
             onDeleteContacts(response, deleted)
         case let .blocked(response):
-            onBlockUNBlockResponse(response, true)
+            onBlockResponse(response)
         case let .unblocked(response):
-            onBlockUNBlockResponse(response, false)
+            onUNBlockResponse(response)
         case let .blockedList(response):
             onBlockedList(response)
+        default:
+            break
+        }
+    }
+
+    public func onConversationEvent(_ event: ThreadEventTypes?) {
+        switch event {
+        case .created(let response):
+            onCreateGroup(response)
+        case .updatedInfo(let response):
+            onEditCreatedGroup(response)
+        default:
+            break
+        }
+    }
+
+    public func onParticipantsEvent(_ event: ParticipantEventTypes?) {
+        switch event {
+        case .participants(let response):
+            onCreateGroupParticipants(response)
         default:
             break
         }
@@ -229,20 +278,28 @@ public final class ContactsViewModel: ObservableObject {
         return result
     }
 
-    public func blockOrUnBlock(_ contact: Contact) {
-        let findedContact = firstContact(contact)
-        if findedContact?.blocked == false {
-            let req = BlockRequest(contactId: contact.id)
-            ChatManager.activeInstance?.contact.block(req)
-        } else {
-            let req = UnBlockRequest(contactId: contact.id)
-            ChatManager.activeInstance?.contact.unBlock(req)
+    public func block(_ contact: Contact) {
+        let req = BlockRequest(contactId: contact.id)
+        ChatManager.activeInstance?.contact.block(req)
+    }
+
+    public func unblock(_ blockedId: Int) {
+        let req = UnBlockRequest(blockId: blockedId)
+        ChatManager.activeInstance?.contact.unBlock(req)
+    }
+
+    public func onBlockResponse(_ response: ChatResponse<BlockedContactResponse>) {
+        if let result = response.result {
+            contacts.first(where: { $0.id == result.contact?.id })?.blocked = true
+            blockedContacts.append(result)
+            animateObjectWillChange()
         }
     }
 
-    public func onBlockUNBlockResponse(_ response: ChatResponse<BlockedContactResponse>, _ block: Bool) {
+    public func onUNBlockResponse(_ response: ChatResponse<BlockedContactResponse>) {
         if let result = response.result {
-            contacts.first(where: { $0.id == result.contact?.id })?.blocked = block
+            contacts.first(where: { $0.id == result.contact?.id })?.blocked = false
+            blockedContacts.removeAll(where: {$0.coreUserId == response.result?.coreUserId})
             animateObjectWillChange()
         }
     }
@@ -283,5 +340,78 @@ public final class ContactsViewModel: ObservableObject {
 //                }
 //            }
 //        }
+    }
+
+    public func createGroupWithSelectedContacts() {
+        isLoading = true
+        let invitees = selectedContacts.map { Invitee(id: "\($0.id ?? 0)", idType: .contactId) }
+        let req = CreateThreadRequest(invitees: invitees, title: "Group", type: .normal)
+        RequestsManager.shared.append(prepend: "CreateGroup", value: req)
+        ChatManager.activeInstance?.conversation.create(req)
+    }
+
+    public func onCreateGroup(_ response: ChatResponse<Conversation>) {
+        if response.value(prepend: "CreateGroup") != nil {
+            isLoading = false
+            if let conversation = response.result {
+                self.createdGroupConversation = conversation
+                showEditCreatedGroupDetail = true
+                getCreatedGroupParticipants()
+            }
+        }
+    }
+
+    public func getCreatedGroupParticipants() {
+        if let id = createdGroupConversation?.id {
+            let req = ThreadParticipantRequest(request: .init(threadId: id), admin: false)
+            RequestsManager.shared.append(prepend: "CreatedGroupParticipants", value: req)
+            ChatManager.activeInstance?.conversation.participant.get(req)
+        }
+    }
+
+    public func onCreateGroupParticipants(_ response: ChatResponse<[Participant]>) {
+        if response.value(prepend: "CreatedGroupParticipants") != nil, let participnts = response.result {
+            participnts.forEach { participant in
+                participant.conversation = createdGroupConversation /// we do this because in memeber participants row we need to know the inviter of the conversation.
+                createdGroupParticpnats.append(participant)
+            }
+            createdGroupParticpnats.sort(by: {$0.admin ?? false && !($1.admin ?? false)})
+        }
+    }
+
+    public func submitEditCreatedGroup() {
+        isLoading = true
+        guard let threadId = createdGroupConversation?.id else { return }
+        var imageRequest: UploadImageRequest?
+        if let image = image {
+            let width = Int(image.size.width)
+            let height = Int(image.size.height)
+            imageRequest = UploadImageRequest(data: image.pngData() ?? Data(),
+                                              fileExtension: "png",
+                                              fileName: assetResources.first?.originalFilename ?? "",
+                                              isPublic: true,
+                                              mimeType: "image/png",
+                                              originalName: assetResources.first?.originalFilename ?? "",
+                                              userGroupHash: createdGroupConversation?.userGroupHash,
+                                              hC: height,
+                                              wC: width
+            )
+        }
+        let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)
+        RequestsManager.shared.append(prepend: "EditGroup", value: req)
+        ChatManager.activeInstance?.conversation.updateInfo(req)
+    }
+
+    public func onEditCreatedGroup(_ response: ChatResponse<Conversation>) {
+        if response.value(prepend: "EditGroup") != nil {
+            isLoading = false
+            createdGroupConversation = nil
+            showCreateGroup = false
+            showEditCreatedGroupDetail = false
+            image = nil
+            selectedContacts = []
+            assetResources = []
+            createdGroupParticpnats = []
+        }
     }
 }

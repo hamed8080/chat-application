@@ -88,6 +88,13 @@
 "Contacts.Sync.sync" = "Synkronisera";
 "Contacts.Sync.contacts" = "Synkronisera kontakter.";
 "Contacts.Sync.subtitle" = "Med synkronisering av kontakter kan du vara i kontakt med dina vänner och familj utan ansträngning.";
+"Contacts.createGroup" = "Skapa en grupp";
+"Contacts.createChannel" = "Skapa en kanal";
+"Contacts.addContact" = "Lägg till en kontakt";
+"Contacts.sortLabel" = "Sorterat efter senast besökt tid";
+"Contacts.lastVisited" = "Senast besökt %@";
+"Contacts.selectContacts" = "Välj kontakter";
+"CreateGroup.enterGroupName" = "Ange gruppnamnet";
 
 /* Call */
 "Call.requested" = "Begärd";
@@ -188,6 +195,7 @@
 "Thread.Tabs.link" = "Länk";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.Row.lastMessageSender" = "%@:";
+"Thread.createdAConversation" = "%@ skapade en konversation.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";
@@ -197,6 +205,7 @@
 "ConnectionStatus.unauthorized" = "oauktoriserad";
 
 /* Participant */
+"Participant" = "Deltagare";
 "Participant.Search.Type.name" = "Namn";
 "Participant.Search.Type.username" = "Användarnamn";
 "Participant.Search.Type.cellphoneNumber" = "Mobil";
@@ -207,6 +216,10 @@
 "Participant.assistant" = "Assistent";
 "Participant.addAdminAccess" = "Lägg till administratörsbehörighet";
 "Participant.removeAdminAccess" = "Ta bort administratörsbehörighet";
+
+/* Edit group */
+"EditGroup.groupName" = "Gruppnamn";
+"EditGroup.groupDescription" = "Gruppbeskrivning (valfritt)";
 
 /* Export Chat */
 "ExportChat.startTitle" = "Startdatum";

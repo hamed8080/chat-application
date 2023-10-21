@@ -52,7 +52,7 @@ public struct DownloadFileView: View {
         }
         .onAppear {
             if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
-                viewModel.downloadBlurImage()
+                viewModel.downloadBlurImage(quality: config.blurQuality, size: config.blurSize)
             }
         }
     }
@@ -86,16 +86,15 @@ struct MutableDownloadViews: View {
             } else if let iconName = message?.iconName {
                 Image(systemName: iconName)
                     .resizable()
-                    .padding(8)
-                    .foregroundColor(config.iconColor)
+                    .foregroundStyle(config.iconColor, config.iconCircleColor)
                     .scaledToFit()
                     .frame(width: config.iconWidth, height: config.iconHeight)
             }
         case .downloading, .started, .undefined, .thumbnail, .paused:
             if message?.isImage == true {
-                OverlayDownloadImageButton(message: message)
+                OverlayDownloadImageButton(message: message, config: config)
             } else if message?.isFileType == true {
-                DownloadFileButton(message: message)
+                DownloadFileButton(message: message, config: config)
             }
         default:
            EmptyView()
@@ -107,6 +106,7 @@ struct DownloadFileButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     let message: Message?
     var percent: Int64 { viewModel.downloadPercent }
+    let config: DownloadFileViewConfig
     var stateIcon: String {
         if viewModel.state == .downloading {
             return "pause.fill"
@@ -120,26 +120,27 @@ struct DownloadFileButton: View {
     var body: some View {
         HStack {
             ZStack {
-                Image(systemName: "play.fill")
+                Image(systemName: stateIcon)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
-                    .foregroundStyle(Color.purple)
+                    .foregroundStyle(config.iconColor)
 
                 Circle()
                     .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
                     .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                    .foregroundColor(.purple)
+                    .foregroundColor(config.progressColor)
                     .rotationEffect(Angle(degrees: 270))
                     .frame(width: 28, height: 28)
+                    .environment(\.layoutDirection, .leftToRight)
             }
-            .frame(width: 36, height: 36)
-            .background(Color.white)
-            .cornerRadius(18)
+            .frame(width: config.iconWidth, height: config.iconHeight)
+            .background(config.iconCircleColor)
+            .cornerRadius(config.iconHeight / 2)
             .onTapGesture {
                 if viewModel.state == .paused {
                     viewModel.resumeDownload()
-                } else if viewModel.state == .downloading{
+                } else if viewModel.state == .downloading {
                     viewModel.pauseDownload()
                 } else {
                     viewModel.startDownload()
@@ -147,14 +148,14 @@ struct DownloadFileButton: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                if let fileName = message?.fileName {
+                if let fileName = message?.fileName, config.showTrailingFileName {
                     Text(fileName)
                         .multilineTextAlignment(.leading)
                         .font(.iransansBoldSubheadline)
                         .foregroundColor(.white)
                 }
 
-                if let fileZize = message?.fileMetaData?.file?.size {
+                if let fileZize = message?.fileMetaData?.file?.size, config.showFileSize {
                     Text(String(fileZize))
                         .multilineTextAlignment(.leading)
                         .font(.iransansBoldCaption2)
@@ -168,6 +169,7 @@ struct DownloadFileButton: View {
 struct OverlayDownloadImageButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     let message: Message?
+    let config: DownloadFileViewConfig
     var percent: Int64 { viewModel.downloadPercent }
     var stateIcon: String {
         if viewModel.state == .downloading {

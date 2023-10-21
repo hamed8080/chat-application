@@ -88,6 +88,13 @@
 "Contacts.Sync.sync" = "Synchronisieren";
 "Contacts.Sync.contacts" = "Kontakte synchronisieren.";
 "Contacts.Sync.subtitle" = "Durch die Synchronisierung von Kontakten können Sie mühelos mit Ihren Freunden und Ihrer Familie in Kontakt bleiben.";
+"Contacts.createGroup" = "Eine Gruppe erstellen";
+"Contacts.createChannel" = "Einen Kanal erstellen";
+"Contacts.addContact" = "Einen Kontakt hinzufügen";
+"Contacts.sortLabel" = "Nach zuletzt besuchter Zeit sortiert";
+"Contacts.lastVisited" = "Zuletzt besucht %@";
+"Contacts.selectContacts" = "Kontakte auswählen";
+"CreateGroup.enterGroupName" = "Gib den Gruppennamen ein";
 
 /* Call */
 "Call.requested" = "Angefordert";
@@ -188,6 +195,7 @@
 "Thread.Tabs.link" = "Link";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.Row.lastMessageSender" = "%@:";
+"Thread.createdAConversation" = "%@ hat eine Unterhaltung erstellt.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "verbinden";
@@ -197,6 +205,7 @@
 "ConnectionStatus.unauthorized" = "nicht autorisiert";
 
 /* Participant */
+"Participant" = "Teilnehmer";
 "Participant.Search.Type.name" = "Name";
 "Participant.Search.Type.username" = "Benutzername";
 "Participant.Search.Type.cellphoneNumber" = "Handynummer";
@@ -207,6 +216,10 @@
 "Participant.assistant" = "Assistent";
 "Participant.addAdminAccess" = "Administratorzugriff hinzufügen";
 "Participant.removeAdminAccess" = "Administratorzugriff entfernen";
+
+/* Edit group */
+"EditGroup.groupName" = "Gruppenname";
+"EditGroup.groupDescription" = "Gruppenbeschreibung (optional)";
 
 /* Export Chat */
 "ExportChat.startTitle" = "Startdatum";

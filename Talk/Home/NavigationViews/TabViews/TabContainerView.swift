@@ -72,6 +72,7 @@ struct TabContainerView: View {
             .frame(minWidth: 0, maxWidth: maxWidth)
             .overlay(alignment: config.alignment) {
                 TabButtonsContainer(selectedId: $selectedId, tabs: tabs)
+                    .environment(\.layoutDirection, .leftToRight)
             }
         }
         .frame(minWidth: 0, maxWidth: maxWidth)

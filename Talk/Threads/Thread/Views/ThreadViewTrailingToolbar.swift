@@ -50,6 +50,7 @@ struct ThreadViewTrailingToolbar: View {
             }
         } label: {
             Image(systemName: "ellipsis")
+                .foregroundStyle(Color.main)
         }
     }
 }

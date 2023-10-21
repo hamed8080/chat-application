@@ -22,6 +22,7 @@ struct FileView: View {
     }
 
     var body: some View {
+        StickyHeaderSection(header: "", height:  4)
         MessageListFileView()
             .environmentObject(viewModel)
     }
@@ -36,8 +37,8 @@ struct MessageListFileView: View {
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
-                            .fill(.gray.opacity(0.3))
-                            .frame(height: 1)
+                            .fill(Color.dividerDarkerColor.opacity(0.3))
+                            .frame(height: 0.5)
                             .padding(.leading)
                     }
                 }
@@ -61,20 +62,27 @@ struct FileRowView: View {
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading) {
-                Text(message.fileMetaData?.name ?? message.messageTitle)
-                    .font(.iransansBody)
-                Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
-                    .foregroundColor(.secondaryLabel)
-                    .font(.iransansCaption2)
-            }
-            Spacer()
             let view = DownloadFileButtonView()
             if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
                 view.environmentObject(downloadVM)
             } else {
                 view
             }
+            VStack(alignment: .leading) {
+                Text(message.fileMetaData?.name ?? message.messageTitle)
+                    .font(.iransansBody)
+                    .foregroundStyle(Color.messageText)
+                HStack {
+                    Text(message.time?.date.timeAgoSinceDateCondense ?? "" )
+                        .foregroundColor(Color.hint)
+                        .font(.iransansCaption2)
+                    Spacer()
+                    Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
+                        .foregroundColor(Color.hint)
+                        .font(.iransansCaption3)
+                }
+            }
+            Spacer()
         }
         .padding([.leading, .trailing])
         .onTapGesture {
@@ -86,16 +94,8 @@ struct FileRowView: View {
 
 struct DownloadFileButtonView: View {
     @EnvironmentObject var veiwModel: DownloadFileViewModel
-    static var config: DownloadFileViewConfig = {
-        var config: DownloadFileViewConfig = .small
-        config.circleConfig.forgroundColor = .green
-        config.iconColor = Color.main
-        config.showSkeleton = false
-        return config
-    }()
-
     var body: some View {
-        DownloadFileView(viewModel: veiwModel, config: DownloadFileButtonView.config)
+        DownloadFileView(viewModel: veiwModel, config: .detail)
             .frame(width: 48, height: 48)
             .padding(4)
     }

@@ -10,17 +10,17 @@ import Chat
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import ChatModels
 
 struct ContactContentList: View {
     @EnvironmentObject var viewModel: ContactsViewModel
     @EnvironmentObject var navVM: NavigationModel
-    @State var modifyContactSheet = false
-    @State var isInSelectionMode = false
-    @State var deleteDialog = false
-
+    
     var body: some View {
         List {
             ListLoadingView(isLoading: $viewModel.isLoading)
+                .listRowBackground(Color.bgColor)
+                .listRowSeparator(.hidden)
             if viewModel.maxContactsCountInServer > 0 {
                 HStack(spacing: 4) {
                     Spacer()
@@ -34,40 +34,109 @@ struct ContactContentList: View {
                 .listRowBackground(Color.clear)
                 .noSeparators()
             }
-
+            
             SyncView()
                 .listRowBackground(Color.clear)
-
+                .listRowSeparator(.hidden)
+            Button {
+                viewModel.showCreateGroup.toggle()
+            } label: {
+                Label("Contacts.createGroup", systemImage: "person.2")
+                    .foregroundStyle(Color.main)
+            }
+            .listRowBackground(Color.bgColor)
+            .listRowSeparatorTint(Color.dividerDarkerColor)
+            
+            Button {
+                
+            } label: {
+                Label("Contacts.createChannel", systemImage: "megaphone")
+                    .foregroundStyle(Color.main)
+            }
+            .listRowBackground(Color.bgColor)
+            .listRowSeparatorTint(Color.dividerDarkerColor)
+            
+            Button {
+                viewModel.addContactSheet.toggle()
+            } label: {
+                Label("Contacts.addContact", systemImage: "person.badge.plus")
+                    .foregroundStyle(Color.main)
+            }
+            .listRowBackground(Color.bgColor)
+            .listRowSeparator(.hidden)
+            
             if viewModel.searchedContacts.count > 0 {
-                Text("Contacts.searched")
-                    .font(.iransansSubheadline)
-                    .foregroundColor(.gray)
-                    .noSeparators()
-                    .listRowBackground(Color.clear)
-                ForEach(viewModel.searchedContacts) { contact in
-                    SearchContactRow(contact: contact)
-                        .noSeparators()
-                        .listRowBackground(Color.clear)
-                }
-            }
-
-            ForEach(viewModel.contacts) { contact in
-                ContactRow(isInSelectionMode: $isInSelectionMode, contact: contact)
-                    .noSeparators()
-                    .onAppear {
-                        if viewModel.contacts.last == contact {
-                            viewModel.loadMore()
-                        }
+                Section {
+                    ForEach(viewModel.searchedContacts) { contact in
+                        SearchContactRow(contact: contact)
+                            .listRowSeparatorTint(Color.dividerDarkerColor)
+                            .listRowBackground(Color.bgColor)
+                            .onTapGesture {
+                                AppState.shared.openThread(contact: contact)
+                            }
                     }
-                    .animation(.spring(), value: isInSelectionMode)
-                    .listRowBackground(Color.clear)
+                    .padding()
+                } header: {
+                    StickyHeaderSection(header: "Contacts.searched")
+                }
+                .listRowInsets(.zero)
             }
-            .onDelete(perform: viewModel.delete)
-            .padding(0)
+            
+            Section {
+                ForEach(viewModel.contacts) { contact in
+                    ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
+                        .animation(.spring(), value: viewModel.isInSelectionMode)
+                        .listRowBackground(Color.bgColor)
+                        .listRowSeparatorTint(Color.dividerDarkerColor)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button {
+                                viewModel.editContact = contact
+                            } label: {
+                                Label("General.edit", systemImage: "pencil")
+                            }
+                            .tint(.hint)
+
+                            Button {
+                                viewModel.block(contact)
+                            } label: {
+                                Label("General.block", systemImage: "hand.raised.slash")
+                            }
+                            .tint(Color.redSoft)
+
+                            Button {
+                                if let index = viewModel.contacts.firstIndex(of: contact) {
+                                    viewModel.delete(indexSet: IndexSet(integer: index))
+                                }
+                            } label: {
+                                Label("General.delete", systemImage: "trash")
+                            }
+                            .tint(.red)
+                        }
+                        .onAppear {
+                            if viewModel.contacts.last == contact {
+                                viewModel.loadMore()
+                            }
+                        }
+                        .onTapGesture {
+                            AppState.shared.openThread(contact: contact)
+                        }
+                }
+                .padding()
+            } header: {
+                StickyHeaderSection(header: "Contacts.sortLabel")
+            }
+            .listRowInsets(.zero)
+            
             ListLoadingView(isLoading: $viewModel.isLoading)
+                .listRowBackground(Color.bgColor)
+                .listRowSeparator(.hidden)
         }
-        .sheet(isPresented: $modifyContactSheet) {
+        .sheet(isPresented: $viewModel.addContactSheet) {
             AddOrEditContactView()
+                .environmentObject(viewModel)
+        }
+        .sheet(isPresented: Binding(get: { viewModel.editContact != nil }, set: { _ in })) {
+            AddOrEditContactView(editContact: viewModel.editContact)
                 .environmentObject(viewModel)
         }
         .animation(.easeInOut, value: viewModel.contacts)
@@ -76,7 +145,7 @@ struct ContactContentList: View {
         .listStyle(.plain)
         .safeAreaInset(edge: .top) {
             EmptyView()
-                .frame(height: 48)
+                .frame(height: 44)
         }
         .overlay(alignment: .top) {
             ToolbarView(
@@ -89,43 +158,38 @@ struct ContactContentList: View {
                 viewModel.searchContactString = searchValue
             }
         }
-        .dialog(.init(localized: .init("Contacts.deleteSelectedTitle")), .init(localized: .init("Contacts.deleteSelectedSubTitle")), "trash", $deleteDialog) { _ in
+        .dialog(.init(localized: .init("Contacts.deleteSelectedTitle")), .init(localized: .init("Contacts.deleteSelectedSubTitle")), "trash", $viewModel.deleteDialog) { _ in
             viewModel.deleteSelectedItems()
         }
+        .sheet(isPresented: $viewModel.showCreateGroup) {
+            CreateGroup()
+        }
     }
-
-  @ViewBuilder var leadingViews: some View {
-      ToolbarButtonItem(imageName: "list.bullet", hint: "General.select") {
-          withAnimation {
-              isInSelectionMode.toggle()
-          }
-      }
-
-      ToolbarButtonItem(imageName: "hand.raised.slash", hint: "General.blocked") {
-          withAnimation {
-              navVM.appendBlockedContacts()
-          }
-      }
-
-      ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
-          withAnimation {
-              deleteDialog.toggle()
-          }
-      }
-      .foregroundStyle(.red)
-      .opacity(isInSelectionMode ? 1 : 0.2)
-      .disabled(!isInSelectionMode)
+    
+    @ViewBuilder var leadingViews: some View {
+        ToolbarButtonItem(imageName: "list.bullet", hint: "General.select") {
+            withAnimation {
+                viewModel.isInSelectionMode.toggle()
+            }
+        }
+        
+        ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
+            withAnimation {
+                viewModel.deleteDialog.toggle()
+            }
+        }
+        .foregroundStyle(.red)
+        .opacity(viewModel.isInSelectionMode ? 1 : 0.2)
+        .disabled(!viewModel.isInSelectionMode)
+        .scaleEffect(x: viewModel.isInSelectionMode ? 1.0 : 0.002, y: viewModel.isInSelectionMode ? 1.0 : 0.002)
     }
-
+    
     @ViewBuilder var centerViews: some View {
         ConnectionStatusToolbar()
     }
-
+    
     @ViewBuilder var trailingViews: some View {
-        ToolbarButtonItem(imageName: "plus.circle.fill", hint: "Contacts.createNew") {
-            modifyContactSheet.toggle()
-        }
-        .foregroundStyle(Color.white, Color.main)
+        EmptyView()
     }
 }
 

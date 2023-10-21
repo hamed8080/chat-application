@@ -30,6 +30,7 @@ struct ThreadContentList: View {
                         }
                     }
             }
+            .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
             .listRowSeparatorTint(Color.separator)
             .listRowBackground(container.navVM.selectedThreadId == thread.id ? Color.main.opacity(0.5) : thread.pin == true ? Color.bgPin : Color.bgMain)
         }
@@ -39,7 +40,7 @@ struct ThreadContentList: View {
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
-        .animation(.easeInOut, value: threadsVM.filtered)
+        .animation(.easeInOut, value: threadsVM.filtered.count)
         .animation(.easeInOut, value: threadsVM.isLoading)
         .listStyle(.plain)
         .safeAreaInset(edge: .top) {

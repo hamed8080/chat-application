@@ -19,17 +19,13 @@ struct ThreadMessagesList: View {
             ScrollView {
                 MessagesLazyStack()
             }
-            .overlay(alignment: .bottomTrailing) {
-                MoveToBottomButton()
-                    .offset(y: 48)
-            }
             .safeAreaInset(edge: .top) {
                 Spacer()
                     .frame(height: viewModel.thread.pinMessage != nil ? 48 : 0)
             }
-            .safeAreaInset(edge: .bottom) {
-                Spacer()
-                    .frame(height: 96)
+            .overlay(alignment: .bottomLeading) {
+                MoveToBottomButton()
+                    .offset(y: -52)
             }
             .background(ThreadbackgroundView(threadId: viewModel.threadId))
             .coordinateSpace(name: "scroll")
@@ -113,6 +109,10 @@ struct MessagesLazyStack: View {
             }
         )
         .padding(.bottom)
+        .safeAreaInset(edge: .bottom) {
+            Spacer()
+                .frame(height: 72)
+        }
     }
 }
 

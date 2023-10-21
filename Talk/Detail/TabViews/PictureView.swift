@@ -21,12 +21,18 @@ struct PictureView: View {
     }
 
     var body: some View {
-        let itemWidth = viewModel.itemWidth(readerWidth: viewWidth)
-        LazyVGrid(columns: Array(repeating: .init(.flexible(minimum: itemWidth, maximum: itemWidth), spacing: 0), count: viewModel.itemCount), spacing: 0) {
+        StickyHeaderSection(header: "", height:  4)
+        let spacing: CGFloat = 8
+        let padding: CGFloat = 16
+        let viewWidth = viewWidth - padding
+        let itemWidthWithouthSpacing = viewModel.itemWidth(readerWidth: viewWidth)
+        let itemWidth = itemWidthWithouthSpacing - spacing
+        LazyVGrid(columns: Array(repeating: .init(.flexible(minimum: itemWidth, maximum: itemWidth), spacing: spacing), count: viewModel.itemCount), spacing: spacing) {
             if viewWidth != 0 {
                 MessageListPictureView(itemWidth: itemWidth)
             }
         }
+        .padding(padding)
         .task {
             viewModel.loadMore()
         }
@@ -34,7 +40,7 @@ struct PictureView: View {
         .background {
             GeometryReader { reader in
                 Color.clear.onAppear {
-                    viewWidth = reader.size.width
+                    self.viewWidth = reader.size.width
                 }
             }
         }
@@ -103,14 +109,6 @@ struct DownloadPictureButtonView: View {
     let itemWidth: CGFloat
     @EnvironmentObject var viewModel: DownloadFileViewModel
     private var message: Message? { viewModel.message }
-    private let config = DownloadPictureButtonView.config
-    static var config: DownloadFileViewConfig = {
-        var config: DownloadFileViewConfig = .small
-        config.circleConfig.forgroundColor = .green
-        config.iconColor = Color.main
-        config.showSkeleton = true
-        return config
-    }()
 
     var body: some View {
         switch viewModel.state {
@@ -123,60 +121,22 @@ struct DownloadPictureButtonView: View {
                     .clipped()
                     .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
             }
-        case .downloading, .started:
-            if config.showSkeleton {
-                Image(systemName: "photo.artframe")
-                    .resizable()
-                    .scaledToFit()
-                    .opacity(0.3)
-                    .padding(8)
-                    .frame(width: itemWidth, height: itemWidth)
-                    .redacted(reason: .placeholder)
-            } else {
-                CircularProgressView(percent: $viewModel.downloadPercent, config: config.circleConfig)
-                    .padding(8)
-                    .frame(maxWidth: itemWidth)
-                    .onTapGesture {
-                        viewModel.pauseDownload()
-                    }
-            }
-        case .paused:
-            Image(systemName: "pause.circle")
-                .resizable()
-                .padding(8)
-                .font(.headline.weight(.thin))
-                .foregroundColor(config.iconColor)
-                .scaledToFit()
-                .frame(width: itemWidth, height: itemWidth)
-                .onTapGesture {
-                    viewModel.resumeDownload()
-                }
         case .undefined, .thumbnail:
             ZStack {
-                if message?.isImage == true, let data = viewModel.thumbnailData, let image = UIImage(data: data) {
-                    Image(uiImage: image)
-                        .resizable(resizingMode: .stretch)
-                        .frame(width: itemWidth, height: itemWidth)
-                        .scaledToFill()
-                        .clipped()
-                        .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
-                        .zIndex(0)
-                }
-
-                Image(systemName: "arrow.down.circle")
-                    .resizable()
-                    .font(config.circleConfig.progressFont)
-                    .padding(8)
-                    .frame(width: config.iconWidth, height: config.iconHeight, alignment: .center)
+                let data = viewModel.thumbnailData
+                let image = UIImage(data: data ?? Data()) ?? UIImage()
+                Image(uiImage: image)
+                    .resizable(resizingMode: .stretch)
+                    .frame(width: itemWidth, height: itemWidth)
                     .scaledToFill()
-                    .foregroundColor(config.iconColor)
-                    .zIndex(1)
-                    .onTapGesture {
-                        viewModel.startDownload()
-                    }
+                    .clipped()
+                    .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
+                    .zIndex(0)
+                    .background(Color.bgSpaceItem.opacity(0.6))
+                    .cornerRadius(8)
                     .onAppear {
                         if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
-                            viewModel.downloadBlurImage()
+                            viewModel.downloadBlurImage(quality: 1.0, size: .MEDIUM)
                         }
                     }
             }

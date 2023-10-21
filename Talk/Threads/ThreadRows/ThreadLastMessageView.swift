@@ -24,7 +24,7 @@ struct ThreadLastMessageView: View {
                 if let participantName = lastMsgVO?.participant?.name,  thread.group == true {
                     Text(String(format: String(localized: .init("Thread.Row.lastMessageSender")), participantName))
                         .font(.iransansBoldBody)
-                        .lineLimit(thread.group == false ? 2 : 1)
+                        .lineLimit(1)
                         .foregroundStyle(Color.main)
                 }
 
@@ -38,7 +38,7 @@ struct ThreadLastMessageView: View {
                 if let message = thread.lastMessageVO?.message {
                     Text(message)
                         .font(.iransansBody)
-                        .lineLimit(thread.group == false ? 2 : 1)
+                        .lineLimit(1)
                         .foregroundStyle(Color.secondaryLabel)
                 }
 
@@ -47,6 +47,14 @@ struct ThreadLastMessageView: View {
                         .font(.iransansCaption2)
                         .lineLimit(thread.group == false ? 2 : 1)
                         .foregroundStyle(Color.secondaryLabel)
+                }
+
+                if thread.lastMessageVO == nil, let creator = thread.inviter?.name {
+                    let localizedLabel = String(localized: .init("Thread.createdAConversation"))
+                    let text = String(format: localizedLabel, creator)
+                    Text(text)
+                        .foregroundStyle(Color.main)
+                        .font(.iransansBoldCaption2)
                 }
                 Spacer()
             }

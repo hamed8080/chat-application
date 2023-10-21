@@ -46,15 +46,15 @@ public extension String {
     var systemImageNameForFileExtension: String {
         switch self {
         case ".mp4", ".avi", ".mkv":
-            return "play.rectangle"
+            return "play.rectangle.fill"
         case ".mp3", ".m4a":
-            return "play.circle"
+            return "play.circle.fill"
         case ".docx", ".pdf", ".xlsx", ".txt", ".ppt":
-            return "doc"
+            return "doc.circle.fill"
         case ".zip", ".rar", ".7z":
             return "doc.zipper"
         default:
-            return "paperclip.circle"
+            return "doc.circle.fill"
         }
     }
 

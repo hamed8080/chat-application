@@ -19,20 +19,16 @@ struct DetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack {
-                VStack(spacing: 12) {
-                    InfoView()
-                        .padding([.top], 16)
-                    DetailTopButtons()
-                        .padding([.bottom], 16)
-                }
-                .frame(minWidth: 0, maxWidth: .infinity)
-                .background(.ultraThickMaterial)
-                .cornerRadius(12)
+            VStack(spacing: 0) {
+                InfoView()
+                BioDescription()
+                StickyHeaderSection(header: "", height: 2)
+                DetailTopButtons()
+                    .padding([.top, .bottom])
+                TabDetail(viewModel: viewModel)
             }
-            .padding([.leading, .trailing])
-            TabDetail(viewModel: viewModel)
         }
+        .background(Color.bgColor)
         .environmentObject(viewModel)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarTitle("General.info")
@@ -44,28 +40,23 @@ struct DetailView: View {
                                           user: .init(username: user.username ?? ""))
                 AddOrEditContactView(editContact: editContact)
             }
-        }
-        .sheet(isPresented: $viewModel.showImagePicker) {
-            ImagePicker(sourceType: .photoLibrary) { image, assestResources in
-                self.viewModel.image = image
-                self.viewModel.assetResources = assestResources ?? []
-            }
-        }
+        }        
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                VStack(alignment: .center) {
-                    if viewModel.thread?.canEditInfo == true {
-                        Button {
-                            if viewModel.isInEditMode {
-                                // submited
-                                viewModel.updateThreadInfo()
-                            }
-                            viewModel.isInEditMode.toggle()
-                        } label: {
-                            Text(viewModel.isInEditMode ? "General.done" : "General.edit")
-                                .font(.iransansBody)
-                        }
+                if viewModel.thread?.canEditInfo == true {
+                    Button {
+                        viewModel.showEditGroup.toggle()
+                    } label: {
+                        Image(systemName: "pencil")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                            .padding(8)
+                            .foregroundStyle(Color.main)
+                            .fontWeight(.heavy)
                     }
+                } else {
+                    EmptyView()
                 }
             }
 
@@ -80,6 +71,9 @@ struct DetailView: View {
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: Binding(get: { viewModel.participantViewModel?.isLoading ?? false },
                                                set: { newValue in viewModel.participantViewModel?.isLoading = newValue }))
+        }
+        .sheet(isPresented: $viewModel.showEditGroup) {
+            EditGroup()
         }
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue {
@@ -96,48 +90,35 @@ struct InfoView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            if let image = viewModel.url, let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image) {
-                ImageLaoderView(imageLoader: avatarVM, url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
-                    .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
-                    .font(.system(size: 16).weight(.heavy))
-                    .foregroundColor(.white)
-                    .frame(width: 128, height: 128)
-                    .background(Color.blue.opacity(0.4))
-                    .cornerRadius(64)
-                    .onTapGesture {
-                        if viewModel.isInEditMode, viewModel.thread?.canEditInfo == true {
-                            viewModel.showImagePicker = true
-                        } else {
-                            fullScreenImageLoader.fetch(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title, size: .ACTUAL, forceToDownloadFromServer: true)
-                        }
+            let image = viewModel.url
+            let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image ?? "") ?? .init()
+            ImageLaoderView(imageLoader: avatarVM, url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
+                .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
+                .font(.system(size: 16).weight(.heavy))
+                .foregroundColor(.white)
+                .frame(width: 64, height: 64)
+                .background(Color.blue.opacity(0.4))
+                .cornerRadius(28)
+                .onTapGesture {
+                    fullScreenImageLoader.fetch(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title, size: .ACTUAL, forceToDownloadFromServer: true)
+                }
+                .onReceive(fullScreenImageLoader.$image) { newValue in
+                    if newValue.size.width > 0 {
+                        appOverlayVM.galleryImageView = newValue
                     }
-                    .onReceive(fullScreenImageLoader.$image) { newValue in
-                        if newValue.size.width > 0 {
-                            appOverlayVM.galleryImageView = newValue
-                        }
-                    }
-            }
-
-            VStack(spacing: 8) {
-                if viewModel.thread?.canEditInfo == true {
-                    TextField("General.title", text: $viewModel.editTitle)
-                        .frame(minHeight: 36)
-                        .textFieldStyle((!viewModel.isInEditMode) ? .clear : .customBorderedWith(minHeight: 36, cornerRadius: 12))
-                        .font(.iransansBody)
-                        .multilineTextAlignment(.center)
-                        .disabled(!viewModel.isInEditMode)
-                } else {
-                    Text(viewModel.title)
-                        .font(.iransansBoldTitle)
                 }
 
-                if viewModel.thread?.canEditInfo == true {
-                    TextField("General.description", text: $viewModel.threadDescription)
-                        .frame(minHeight: 36)
-                        .textFieldStyle((!viewModel.isInEditMode) ? .clear : .customBorderedWith(minHeight: 36, cornerRadius: 12))
-                        .font(.iransansCaption)
-                        .multilineTextAlignment(.center)
-                        .disabled(!viewModel.isInEditMode)
+            VStack(spacing: 8) {
+                Text(viewModel.title)
+                    .font(.iransansBody)
+                    .foregroundStyle(Color.messageText)
+
+                let count = viewModel.thread?.participantCount
+                if viewModel.thread?.group == true, let count {
+                    let label = String(localized: .init("Participant"))
+                    Text("\(label) \(count)")
+                        .font(.iransansCaption3)
+                        .foregroundStyle(Color.hint)
                 }
 
                 if let bio = viewModel.bio {
@@ -152,7 +133,30 @@ struct InfoView: View {
                 }
             }
         }
-        .padding([.leading, .trailing])
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, idealHeight: 128, maxHeight: .infinity)
+        .padding([.leading, .trailing, .top])
+        .background(Color.bgSpaceItem)
+    }
+}
+
+struct BioDescription: View {
+    @EnvironmentObject var viewModel: DetailViewModel
+
+    var body: some View {
+        if let description = viewModel.thread?.description {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(description)
+                        .font(.iransansSubtitle)
+                        .foregroundStyle(Color.messageText)
+                    Text("General.description")
+                        .font(.iransansCaption)
+                        .foregroundStyle(Color.hint)
+                }
+                Spacer()
+            }
+            .padding()
+        }
     }
 }
 
@@ -162,36 +166,45 @@ struct DetailTopButtons: View {
     var body: some View {
         HStack(spacing: 16) {
             if viewModel.thread == nil {
-                Button {
+                DetailViewButton(accessibilityText: "", icon: "message.fill") {
                     viewModel.createThread()
-                } label: {
-                    ActionImage(systemName: "message.fill")
                 }
             }
 
-            Button {
+            DetailViewButton(accessibilityText: "", icon: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill") {
                 viewModel.toggleMute()
-            } label: {
-                ActionImage(systemName: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill")
-                    .foregroundColor(viewModel.thread?.mute ?? false ? .red : .blue)
+            }
+//
+//            if viewModel.thread?.admin == true {
+//                DetailViewButton(accessibilityText: "", icon: viewModel.thread?.isPrivate == true ? "lock.fill" : "globe") {
+//                    viewModel.toggleThreadVisibility()
+//                }
+//            }
+
+            DetailViewButton(accessibilityText: "", icon: "magnifyingglass") {
+
             }
 
-            if viewModel.thread?.admin == true {
-                Button {
-                    viewModel.toggleThreadVisibility()
-                } label: {
-                    ActionImage(systemName: viewModel.thread?.isPrivate == true ? "lock.fill" : "lock.open.fill")
-                        .foregroundColor(viewModel.thread?.isPrivate ?? false ? .green : .blue)
-                }
-            }
+            DetailViewButton(accessibilityText: "", icon: "phone.and.waveform.fill") {
 
-            Button {} label: {
-                ActionImage(systemName: "magnifyingglass")
+            }
+            .disabled(true)
+            .opacity(0.4)
+            .allowsHitTesting(false)
+
+            DetailViewButton(accessibilityText: "", icon: "video.fill") {
+
+            }
+            .disabled(true)
+            .opacity(0.4)
+            .allowsHitTesting(false)
+
+            DetailViewButton(accessibilityText: "", icon: "ellipsis") {
+
             }
         }
         .padding([.leading, .trailing])
-        .buttonStyle(.bordered)
-        .foregroundColor(.blue)
+        .buttonStyle(.plain)
 
         if viewModel.showInfoGroupBox {
             VStack {
@@ -226,25 +239,32 @@ struct TabDetail: View {
         if let thread = viewModel.thread, let participantViewModel = viewModel.participantViewModel {
             VStack(spacing: 0) {
                 TabViewsContainer(thread: thread, selectedTabIndex: 0)
-                    .background(.ultraThickMaterial)
                     .environmentObject(participantViewModel)
             }
-            .cornerRadius(12)
-            .padding()
         }
     }
 }
 
-struct ActionImage: View {
-    let systemName: String
+struct DetailViewButton: View {
+    let accessibilityText: String
+    let icon: String
+    let action: (() -> Void)?
 
     var body: some View {
-        Image(systemName: systemName)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 22, height: 22)
-            .padding()
-            .transition(.asymmetric(insertion: .scale.animation(.easeInOut(duration: 2)), removal: .scale.animation(.easeInOut(duration: 2))))
+        Button {
+            action?()
+        } label: {
+            Image(systemName: icon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .transition(.asymmetric(insertion: .scale.animation(.easeInOut(duration: 2)), removal: .scale.animation(.easeInOut(duration: 2))))
+                .accessibilityHint(accessibilityText)
+                .foregroundColor(Color.main)
+        }
+        .frame(width: 48, height: 48)
+        .background(.ultraThickMaterial)
+        .cornerRadius(8)
     }
 }
 

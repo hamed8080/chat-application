@@ -38,6 +38,7 @@ public extension Color {
     static let bgChatBox = Color("bg_chatbox")
     static let placeholder = Color("placeholder")
     static let bgChatContainer = Color("bg_chat_container")
+    static let dividerDarkerColor = Color("divider_darker_color")
     static let bgMain = Color("bg_main")
     static let bgPin = Color("bg_pin")
     static let separator = Color("separator")

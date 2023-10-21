@@ -12,29 +12,15 @@ public extension ChatModels.MessageType {
     var iconName: String? {
         switch self {
         case .text:
-            return "doc.text"
-        case .voice:
-            return "play.circle"
-        case .picture:
-            return "photo.on.rectangle.angled"
-        case .video:
-            return "play.rectangle"
-        case .sound:
-            return "play.circle"
-        case .file:
-            return nil
-        case .podSpacePicture:
-            return "photo.on.rectangle.angled"
-        case .podSpaceVideo:
-            return "play.rectangle"
-        case .podSpaceSound:
-            return "play.circle"
-        case .podSpaceVoice:
-            return "play.circle"
-        case .podSpaceFile:
+            return "doc.circle.fill"
+        case .voice, .sound, .video, .podSpaceVoice, .podSpaceSound, .podSpaceVideo:
+            return "play.circle.fill"
+        case .picture, .podSpacePicture:
+            return "photo.circle.fill"
+        case .file, .podSpaceFile:
             return nil
         case .link:
-            return "link.circle"
+            return "link.circle.fill"
         case .endCall:
             return "phone.arrow.down.left"
         case .startCall:
@@ -42,7 +28,7 @@ public extension ChatModels.MessageType {
         case .sticker:
             return "face.smiling"
         case .location:
-            return "mmap.circle"
+            return "map.circle.fill"
         case .participantJoin:
             return "person.crop.rectangle.badge.plus"
         case .participantLeft:
@@ -64,8 +50,8 @@ public extension ChatModels.MessageType {
             return "video"
         case .sound:
             return "sound"
-        case .file:
-            return "file"
+        case .file, .podSpaceFile:
+            return "doc.circle.fill"
         case .podSpacePicture:
             return "picture"
         case .podSpaceVideo:
@@ -74,8 +60,6 @@ public extension ChatModels.MessageType {
             return "sound"
         case .podSpaceVoice:
             return "voice"
-        case .podSpaceFile:
-            return "file"
         case .link:
             return "link"
         case .endCall:

@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkViewModels
 import TalkModels
+import TalkUI
 
 struct GalleryImagePicker: View {
     let viewModel: ActionSheetViewModel
@@ -34,27 +35,9 @@ struct GalleryImagePicker: View {
                 .frame(height: 72)
         }
         .overlay(alignment: .bottom) {
-            HStack {
-                Button {
-                    withAnimation {
-                        viewModel.sendSelectedPhotos()                        
-                    }
-                } label: {
-                    Text("General.add")
-                        .font(.iransansBody)
-                        .frame(minWidth: 0, maxWidth: .infinity)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .frame(height: 48)
-                .background(Color.main)
-                .cornerRadius(8)
-                .contentShape(Rectangle())
-                .disabled(selectedImageItemsCount == 0)
-                .opacity(selectedImageItemsCount == 0 ? 0.3 : 1.0)
+            SubmitBottomButton(text: "General.add", enableButton: .constant(selectedImageItemsCount > 0), isLoading: .constant(false)) {
+                viewModel.sendSelectedPhotos()
             }
-            .padding()
-            .background(.ultraThinMaterial)
         }
         .task {
             await viewModel.loadImages()
@@ -90,39 +73,20 @@ struct AttachmentImageView: View {
             .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
             .cornerRadius(4)
             .overlay {
-                selectRadio
+                RadioButton(visible: .constant(true), isSelected: $isSelected) { _ in
+                    Task {
+                        await viewModel.toggleSelectedImage(item)
+                        withAnimation(!isSelected ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.2) : .linear) {
+                            isSelected = viewModel.selectedImageItems.contains(where: { $0.phAsset === item.phAsset })
+                        }
+                    }
+                }
             }
             .onAppear {
                 if viewModel.allImageItems.last?.id == item.id {
                     viewModel.loadMore()
                 }
             }
-            .onTapGesture {
-                Task {
-                    await viewModel.toggleSelectedImage(item)
-                    withAnimation(!isSelected ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.2) : .linear) {
-                        isSelected = viewModel.selectedImageItems.contains(where: { $0.phAsset === item.phAsset })
-                    }
-                }
-            }
-    }
-
-    @ViewBuilder var selectRadio: some View {
-        ZStack {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.title)
-                .scaleEffect(x: isSelected ? 1 : 0.001, y: isSelected ? 1 : 0.001, anchor: .center)
-                .foregroundColor(Color.blue)
-
-            Image(systemName: "circle")
-                .font(.title)
-                .foregroundColor(Color.blue)
-        }
-        .frame(width: isSelected ? 22 : 0.001, height: isSelected ? 22 : 0.001, alignment: .center)
-        .padding(isSelected ? 24 : 0.001)
-        .scaleEffect(x: isSelected ? 1.0 : 0.001, y: isSelected ? 1.0 : 0.001, anchor: .center)
-        .disabled(true)
-        .allowsHitTesting(false)
     }
 }
 

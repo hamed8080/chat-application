@@ -25,6 +25,7 @@ struct SettingsView: View {
                 CustomListSection {
                     SettingSettingSection()
                     SavedMessageSection()
+                    BlockedMessageSection()
                     // SettingCallHistorySection()
                     // SettingSavedMessagesSection()
                     // SettingCallSection()
@@ -274,6 +275,17 @@ struct SavedMessageSection: View {
     var body: some View {
         ListSectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: .purple) {
             ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
+        }
+    }
+}
+struct BlockedMessageSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
+    var body: some View {
+        ListSectionButton(imageName: "hand.raised.slash", title: "General.blocked", color: .redSoft) {
+            withAnimation {
+                navModel.appendBlockedContacts()
+            }
         }
     }
 }

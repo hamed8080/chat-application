@@ -17,12 +17,24 @@ struct MemberView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
+        StickyHeaderSection(header: "Tab.contacts")
         ParticipantSearchView()
+            .padding(.top)
         LazyVStack(spacing: 0) {
             AddParticipantButton(conversation: viewModel.thread)
                 .listRowSeparatorTint(.gray.opacity(0.2))
+                .listRowBackground(Color.bgColor)
+
             ForEach(viewModel.sorted) { participant in
                 ParticipantRow(participant: participant)
+                    .listRowBackground(Color.bgColor)
+                    .padding(.vertical)
+                    .overlay(alignment: .bottom) {
+                        Rectangle()
+                            .fill(Color.dividerDarkerColor.opacity(0.3))
+                            .frame(height: 0.5)
+                            .padding(.leading, 64)
+                    }
                     .onAppear {
                         if viewModel.participants.last == participant {
                             viewModel.loadMore()
@@ -55,6 +67,7 @@ struct MemberView: View {
                     }
             }
         }
+        .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.filtered.count)
         .animation(.easeInOut, value: viewModel.participants.count)
         .animation(.easeInOut, value: viewModel.searchText)
@@ -112,14 +125,18 @@ struct ParticipantSearchView: View {
 
     var body: some View {
         HStack {
-            Picker("", selection: $viewModel.searchType) {
+            Menu {
                 ForEach(SearchParticipantType.allCases) { item in
                     Text(String(localized: .init(item.rawValue)))
                         .font(.iransansBoldCaption3)
+                        .onTapGesture {
+                            viewModel.searchType = item
+                        }
                 }
+            } label: {
+                Text(String(localized: .init(viewModel.searchType.rawValue)))
+                    .font(.iransansBoldCaption3)
             }
-            .labelsHidden()
-            .pickerStyle(.menu)
             .layoutPriority(0)
             .frame(width: 128)
 

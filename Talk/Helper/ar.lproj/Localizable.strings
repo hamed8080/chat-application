@@ -87,6 +87,13 @@
 "Contacts.Sync.sync" = "مزامنة";
 "Contacts.Sync.contacts" = "مزامنة جهات الاتصال.";
 "Contacts.Sync.subtitle" = "مع مزامنة جهات الاتصال، يمكنك التواصل مع أصدقائك وعائلتك بسهولة.";
+"Contacts.createGroup" = "إنشاء مجموعة";
+"Contacts.createChannel" = "إنشاء قناة";
+"Contacts.addContact" = "إضافة جهة اتصال";
+"Contacts.sortLabel" = "مرتب حسب آخر وقت زيارة";
+"Contacts.lastVisited" = "آخر زيارة %@";
+"Contacts.selectContacts" = "حدد جهات الاتصال";
+"CreateGroup.enterGroupName" = "أدخل اسم المجموعة";
 
 /* Call */
 "Call.requested" = "طلب";
@@ -187,6 +194,7 @@
 "Thread.Tabs.link" = "الرابط";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.Row.lastMessageSender" = "%@:";
+"Thread.createdAConversation" = "%@ قام بإنشاء محادثة.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";
@@ -196,6 +204,7 @@
 "ConnectionStatus.unauthorized" = "غير مصرح به";
 
 /* Participant */
+"Participant" = "مشارك";
 "Participant.Search.Type.name" = "الاسم";
 "Participant.Search.Type.username" = "اسم المستخدم";
 "Participant.Search.Type.cellphoneNumber" = "الجوال";
@@ -206,6 +215,10 @@
 "Participant.assistant" = "مساعد";
 "Participant.addAdminAccess" = "إضافة صلاحيات المشرف";
 "Participant.removeAdminAccess" = "إزالة صلاحيات المشرف";
+
+/* Edit group */
+"EditGroup.groupName" = "اسم المجموعة";
+"EditGroup.groupDescription" = "وصف المجموعة (اختياري)";
 
 /* Export Chat */
 "ExportChat.startTitle" = "تاريخ البدء";

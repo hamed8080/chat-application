@@ -27,9 +27,9 @@ public struct InlineAudioPlayerView: View {
         VStack {
             Image(systemName: !viewModel.isPlaying ? "play.circle.fill" : "pause.circle.fill")
                 .resizable()
-                .foregroundColor(.blue)
-                .frame(width: 48, height: 48, alignment: .leading)
-                .cornerRadius(24)
+                .foregroundStyle(Color.white, Color.main)
+                .frame(width: 36, height: 36, alignment: .leading)
+                .cornerRadius(18)
                 .animation(.easeInOut, value: viewModel.isPlaying)
                 .onTapGesture {
                     viewModel.setup(fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)

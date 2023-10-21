@@ -20,6 +20,7 @@ struct MusicView: View {
     }
 
     var body: some View {
+        StickyHeaderSection(header: "", height:  4)
         MessageListMusicView()
             .environmentObject(viewModel)
     }
@@ -34,8 +35,8 @@ struct MessageListMusicView: View {
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
-                            .fill(.gray.opacity(0.3))
-                            .frame(height: 1)
+                            .fill(Color.dividerDarkerColor.opacity(0.3))
+                            .frame(height: 0.5)
                             .padding(.leading)
                     }
                 }
@@ -59,14 +60,6 @@ struct MusicRowView: View {
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading) {
-                Text(message.fileMetaData?.name ?? message.messageTitle)
-                    .font(.iransansBody)
-                Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
-                    .foregroundColor(.secondaryLabel)
-                    .font(.iransansCaption2)
-            }
-            Spacer()
             let view = DownloadMusicButtonView()
                 .frame(width: 48, height: 48)
                 .padding(4)
@@ -75,6 +68,22 @@ struct MusicRowView: View {
             } else {
                 view
             }
+
+            VStack(alignment: .leading) {
+                Text(message.fileMetaData?.name ?? message.messageTitle)
+                    .font(.iransansBody)
+                    .foregroundStyle(Color.messageText)
+                HStack {
+                    Text(message.time?.date.timeAgoSinceDateCondense ?? "" )
+                        .foregroundColor(Color.hint)
+                        .font(.iransansCaption2)
+                    Spacer()
+                    Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
+                        .foregroundColor(Color.hint)
+                        .font(.iransansCaption3)
+                }
+            }
+            Spacer()
         }
         .padding([.leading, .trailing])
         .onTapGesture {
@@ -86,15 +95,8 @@ struct MusicRowView: View {
 
 struct DownloadMusicButtonView: View {
     @EnvironmentObject var veiwModel: DownloadFileViewModel
-    static var config: DownloadFileViewConfig = {
-        var config: DownloadFileViewConfig = .small
-        config.circleConfig.forgroundColor = .green
-        config.iconColor = Color.main
-        return config
-    }()
-
     var body: some View {
-        DownloadFileView(viewModel: veiwModel, config: DownloadFileButtonView.config)
+        DownloadFileView(viewModel: veiwModel, config: .detail)
             .frame(width: 72, height: 72)
     }
 }

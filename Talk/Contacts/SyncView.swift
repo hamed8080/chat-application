@@ -17,7 +17,9 @@ struct SyncView: View {
             VStack {
                 HStack {
                     Button {
-                        closed = true
+                        withAnimation {
+                            closed = true
+                        }
                     } label: {
                         Label("", systemImage: "xmark")
                             .foregroundColor(.gray)
@@ -36,8 +38,10 @@ struct SyncView: View {
                 }
 
                 Button {
-                    isSynced = true
-                    ChatManager.activeInstance?.contact.sync()
+                    withAnimation {
+                        isSynced = true
+                        ChatManager.activeInstance?.contact.sync()
+                    }
                 } label: {
                     Text("Contacts.Sync.sync")
                         .foregroundColor(Color.main)

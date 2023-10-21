@@ -16,6 +16,10 @@ public struct ImagePicker: UIViewControllerRepresentable {
     public init(sourceType: UIImagePickerController.SourceType, onImagePicked: @escaping (UIImage, [PHAssetResource]?) -> Void) {
         self.sourceType = sourceType
         self.onImagePicked = onImagePicked
+        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        if status != .authorized {
+            PHPhotoLibrary.requestAuthorization {_ in }
+        }
     }
 
     final public class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
