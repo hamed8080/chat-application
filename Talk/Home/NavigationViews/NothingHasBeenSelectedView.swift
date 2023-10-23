@@ -9,7 +9,7 @@ import SwiftUI
 import TalkViewModels
 
 struct NothingHasBeenSelectedView: View {
-    let threadsVM: ThreadsViewModel
+    let contactsVM: ContactsViewModel
 
     var body: some View {
         ZStack {
@@ -24,7 +24,7 @@ struct NothingHasBeenSelectedView: View {
                         .foregroundColor(.secondaryLabel)
                         .multilineTextAlignment(.center)
                     Button {
-                        threadsVM.sheetType = .startThread
+                        contactsVM.showConversaitonBuilder.toggle()
                     } label: {
                         Text("General.start")
                             .font(.iransansBoldBody)
@@ -41,6 +41,6 @@ struct NothingHasBeenSelectedView: View {
 
 struct NothingHasBeenSelectedView_Previews: PreviewProvider {
     static var previews: some View {
-        NothingHasBeenSelectedView(threadsVM: .init())
+        NothingHasBeenSelectedView(contactsVM: .init())
     }
 }

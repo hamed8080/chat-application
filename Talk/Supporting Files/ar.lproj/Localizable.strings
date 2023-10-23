@@ -93,7 +93,8 @@
 "Contacts.sortLabel" = "مرتب حسب آخر وقت زيارة";
 "Contacts.lastVisited" = "آخر زيارة %@";
 "Contacts.selectContacts" = "حدد جهات الاتصال";
-"CreateGroup.enterGroupName" = "أدخل اسم المجموعة";
+"ConversationBuilder.enterGroupName" = "أدخل اسم المجموعة";
+"ConversationBuilder.enterChannelName" = "أدخل اسم القناة";
 
 /* Call */
 "Call.requested" = "طلب";

@@ -42,7 +42,7 @@ struct iPadStackContentView<Content: View>: View {
                 .frame(width: showSideBar ? maxComputed : 0)
 
             NavigationStack(path: $navVM.paths) {
-                NothingHasBeenSelectedView(threadsVM: container.threadsVM)
+                NothingHasBeenSelectedView(contactsVM: container.contactsVM)
                     .navigationDestination(for: NavigationType.self) { value in
                         NavigationTypeView(type: value, container: container)
                     }

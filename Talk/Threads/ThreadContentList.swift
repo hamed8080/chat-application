@@ -63,6 +63,11 @@ struct ThreadContentList: View {
         } content: {
             ThreadsSheetFactoryView()
         }
+        .sheet(isPresented: $threadsVM.showStartConversationBuilder) {
+            container.contactsVM.closeBuilder()
+        } content: {
+            StartThreadContactPickerView()
+        }
     }
 
     var leadingViews: some View {
@@ -90,7 +95,7 @@ struct ThreadsTrailingToolbarView: View {
     @ViewBuilder var trailingToolbarViews: some View {
         Menu {
             Button {
-                threadsVM.sheetType = .startThread
+                threadsVM.showStartConversationBuilder.toggle()
             } label: {
                 Label("ThreadList.Toolbar.startNewChat", systemImage: "bubble.left.and.bubble.right.fill")
             }

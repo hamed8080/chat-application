@@ -16,11 +16,6 @@ struct ThreadsSheetFactoryView: View {
 
     var body: some View {
         switch viewModel.sheetType {
-        case .startThread:
-            StartThreadContactPickerView { model in
-                viewModel.createThread(model)
-                viewModel.sheetType = nil
-            }
         case .tagManagement:
             AddThreadToTagsView(viewModel: container.tagsVM) { tag in
                 container.tagsVM.addThreadToTag(tag: tag, threadId: viewModel.selectedThraed?.id)
@@ -31,7 +26,7 @@ struct ThreadsSheetFactoryView: View {
         case .secondConfirmation:
             DeleteThreadConfirmationView()
         case .addParticipant:
-            AddParticipantsToThreadView(viewModel: .init()) { contacts in
+            AddParticipantsToThreadView() { contacts in
                 viewModel.addParticipantsToThread(contacts)
                 viewModel.sheetType = nil
             }

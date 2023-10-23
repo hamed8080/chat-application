@@ -18,7 +18,6 @@ struct ContactRow: View {
     @EnvironmentObject var appState: AppState
     var contact: Contact
     var contactImageURL: String? { contact.image ?? contact.user?.image }
-    @State var navigateToAddOrEditContact = false
 
     var body: some View {
         VStack {
@@ -56,11 +55,7 @@ struct ContactRow: View {
             }
         }
         .animation(.easeInOut, value: contact.blocked)
-        .animation(.easeInOut, value: navigateToAddOrEditContact)
         .animation(.easeInOut, value: contact)
-        .sheet(isPresented: $navigateToAddOrEditContact) {
-            AddOrEditContactView(editContact: contact).environmentObject(viewModel)
-        }
     }
 
     @ViewBuilder var selectRadio: some View {

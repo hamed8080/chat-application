@@ -40,7 +40,8 @@ struct ContactContentList: View {
                 .listRowSeparator(.hidden)
             if viewModel.searchedContacts.count == 0 {
                 Button {
-                    viewModel.showCreateGroup.toggle()
+                    viewModel.createConversationType = .normal
+                    viewModel.showConversaitonBuilder.toggle()
                 } label: {
                     Label("Contacts.createGroup", systemImage: "person.2")
                         .foregroundStyle(Color.main)
@@ -49,7 +50,8 @@ struct ContactContentList: View {
                 .listRowSeparatorTint(Color.dividerDarkerColor)
 
                 Button {
-
+                    viewModel.createConversationType = .channel
+                    viewModel.showConversaitonBuilder.toggle()
                 } label: {
                     Label("Contacts.createChannel", systemImage: "megaphone")
                         .foregroundStyle(Color.main)
@@ -58,7 +60,7 @@ struct ContactContentList: View {
                 .listRowSeparatorTint(Color.dividerDarkerColor)
 
                 Button {
-                    viewModel.addContactSheet.toggle()
+                    viewModel.showAddOrEditContactSheet.toggle()
                 } label: {
                     Label("Contacts.addContact", systemImage: "person.badge.plus")
                         .foregroundStyle(Color.main)
@@ -68,39 +70,27 @@ struct ContactContentList: View {
             }
             
             if viewModel.searchedContacts.count > 0 {
-                Section {
-                    ForEach(viewModel.searchedContacts) { contact in
-                        ContactRowContainer(contact: contact, isSearchRow: true)
-                    }
-                    .padding()
-                } header: {
-                    StickyHeaderSection(header: "Contacts.searched")
-                }
-                .listRowInsets(.zero)
-            }
-            
-            Section {
-                ForEach(viewModel.contacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: false)
+                StickyHeaderSection(header: "Contacts.searched")
+                    .listRowInsets(.zero)
+                ForEach(viewModel.searchedContacts) { contact in
+                    ContactRowContainer(contact: contact, isSearchRow: true)
                 }
                 .padding()
-            } header: {
-                StickyHeaderSection(header: "Contacts.sortLabel")
             }
+
+            StickyHeaderSection(header: "Contacts.sortLabel")
+                .listRowInsets(.zero)
+            ForEach(viewModel.contacts) { contact in
+                ContactRowContainer(contact: contact, isSearchRow: false)
+            }
+            .padding()
             .listRowInsets(.zero)
             
             ListLoadingView(isLoading: $viewModel.isLoading)
                 .listRowBackground(Color.bgColor)
                 .listRowSeparator(.hidden)
         }
-        .sheet(isPresented: $viewModel.addContactSheet) {
-            AddOrEditContactView()
-                .environmentObject(viewModel)
-        }
-        .sheet(isPresented: Binding(get: { viewModel.editContact != nil }, set: { _ in })) {
-            AddOrEditContactView(editContact: viewModel.editContact)
-                .environmentObject(viewModel)
-        }
+        .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
@@ -123,8 +113,14 @@ struct ContactContentList: View {
         .dialog(.init(localized: .init("Contacts.deleteSelectedTitle")), .init(localized: .init("Contacts.deleteSelectedSubTitle")), "trash", $viewModel.deleteDialog) { _ in
             viewModel.deleteSelectedItems()
         }
-        .sheet(isPresented: $viewModel.showCreateGroup) {
-            CreateGroup()
+        .sheet(isPresented: $viewModel.showAddOrEditContactSheet) {
+            AddOrEditContactView()
+                .environmentObject(viewModel)
+        }
+        .sheet(isPresented: $viewModel.showConversaitonBuilder) {
+            viewModel.showConversaitonBuilder = false
+        } content: {
+            ConversationBuilder()
         }
     }
     
@@ -157,6 +153,7 @@ struct ContactContentList: View {
 
 struct ContactRowContainer: View {
     @EnvironmentObject var viewModel: ContactsViewModel
+    @EnvironmentObject var threadsViewModel: ThreadsViewModel
     let contact: Contact
     let isSearchRow: Bool
     var separatorColor: Color {
@@ -176,6 +173,7 @@ struct ContactRowContainer: View {
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 Button {
                     viewModel.editContact = contact
+                    viewModel.showAddOrEditContactSheet.toggle()
                 } label: {
                     Label("General.edit", systemImage: "pencil")
                 }
@@ -203,6 +201,7 @@ struct ContactRowContainer: View {
                 }
             }
             .onTapGesture {
+                viewModel.closeBuilder()
                 AppState.shared.openThread(contact: contact)
             }
     }

@@ -129,7 +129,7 @@ struct AddParticipantButton: View {
             .padding(.vertical, 16)
         }
         .sheet(isPresented: $presentSheet) {
-            AddParticipantsToThreadView(viewModel: .init()) { contacts in
+            AddParticipantsToThreadView() { contacts in
                 addParticipantsToThread(contacts)
                 presentSheet.toggle()
             }

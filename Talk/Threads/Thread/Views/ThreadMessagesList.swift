@@ -23,9 +23,8 @@ struct ThreadMessagesList: View {
                 Spacer()
                     .frame(height: viewModel.thread.pinMessage != nil ? 48 : 0)
             }
-            .overlay(alignment: .bottomLeading) {
+            .overlay(alignment: .bottom) {
                 MoveToBottomButton()
-                    .offset(y: -52)
             }
             .background(ThreadbackgroundView(threadId: viewModel.threadId))
             .coordinateSpace(name: "scroll")
@@ -92,7 +91,7 @@ struct MessagesLazyStack: View {
     @EnvironmentObject var viewModel: ThreadViewModel
 
     var body: some View {
-        LazyVStack(spacing: 8) {
+        LazyVStack(spacing: 0) {
             ListLoadingView(isLoading: $viewModel.topLoading)
                 .id(-1)
             ForEach(viewModel.sections) { section in

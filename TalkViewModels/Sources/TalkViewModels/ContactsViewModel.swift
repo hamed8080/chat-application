@@ -14,6 +14,7 @@ import ChatCore
 import ChatDTO
 import SwiftUI
 import Photos
+import TalkExtensions
 
 public final class ContactsViewModel: ObservableObject {
     private var count = 15
@@ -30,21 +31,32 @@ public final class ContactsViewModel: ObservableObject {
     @Published public var searchContactString: String = ""
     private var searchUniqueId: String?
     public var blockedContacts: [BlockedContactResponse] = []
-    @Published public var showCreateGroup = false
-    @Published public var showEditCreatedGroupDetail = false
+    @Published public var createConversationType: ThreadTypes?
+    @Published public var showConversaitonBuilder = false
+    @Published public var showEditCreatedConversationDetail = false
     @Published public var editContact: Contact?
-    @Published public var addContactSheet = false
+    @Published public var showAddOrEditContactSheet = false
     @Published public var isInSelectionMode = false
     @Published public var deleteDialog = false
 
-    @Published public var editTitle: String = ""
+    @Published public var conversationTitle: String = ""
     @Published public var threadDescription: String = ""
-    @Published public var createdGroupParticpnats: [Participant] = []
-    public var createdGroupConversation: Conversation?
+    @Published public var createdConversationParticpnats: [Participant] = []
+    public var createdConversation: Conversation?
     public var assetResources: [PHAssetResource] = []
     public var image: UIImage?
 
+    /// Check public thread name.
+    @Published public var isPublic: Bool = false
+    @Published public var isPublicNameAvailable: Bool = false
+    @Published public var isCehckingName: Bool = false
+
     public init() {
+        getContacts()
+        setupPublishers()
+    }
+
+    public func setupPublishers() {
         AppState.shared.$connectionStatus.sink { [weak self] status in
             if self?.firstSuccessResponse == false, status == .connected {
                 self?.getContacts()
@@ -53,11 +65,6 @@ public final class ContactsViewModel: ObservableObject {
             }
         }
         .store(in: &canceableSet)
-        getContacts()
-        setupPublishers()
-    }
-
-    public func setupPublishers() {
         $searchContactString
             .filter { $0.count == 0 }
             .sink { [weak self] newValue in
@@ -125,6 +132,8 @@ public final class ContactsViewModel: ObservableObject {
             onCreateGroup(response)
         case .updatedInfo(let response):
             onEditCreatedGroup(response)
+        case .isNameAvailable(let response):
+            onIsNameAvailable(response)
         default:
             break
         }
@@ -347,45 +356,46 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func createGroupWithSelectedContacts() {
+        guard let type = createConversationType else { return }
         isLoading = true
         let invitees = selectedContacts.map { Invitee(id: "\($0.id ?? 0)", idType: .contactId) }
-        let req = CreateThreadRequest(invitees: invitees, title: "Group", type: .normal)
-        RequestsManager.shared.append(prepend: "CreateGroup", value: req)
+        let req = CreateThreadRequest(invitees: invitees, title: String(localized: .init(type.stringValue ?? "")), type: type)
+        RequestsManager.shared.append(prepend: "ConversationBuilder", value: req)
         ChatManager.activeInstance?.conversation.create(req)
     }
 
     public func onCreateGroup(_ response: ChatResponse<Conversation>) {
-        if response.value(prepend: "CreateGroup") != nil {
+        if response.value(prepend: "ConversationBuilder") != nil {
             isLoading = false
             if let conversation = response.result {
-                self.createdGroupConversation = conversation
-                showEditCreatedGroupDetail = true
+                self.createdConversation = conversation
+                showEditCreatedConversationDetail = true
                 getCreatedGroupParticipants()
             }
         }
     }
 
     public func getCreatedGroupParticipants() {
-        if let id = createdGroupConversation?.id {
+        if let id = createdConversation?.id {
             let req = ThreadParticipantRequest(request: .init(threadId: id), admin: false)
-            RequestsManager.shared.append(prepend: "CreatedGroupParticipants", value: req)
+            RequestsManager.shared.append(prepend: "CreatedConversationParticipants", value: req)
             ChatManager.activeInstance?.conversation.participant.get(req)
         }
     }
 
     public func onCreateGroupParticipants(_ response: ChatResponse<[Participant]>) {
-        if response.value(prepend: "CreatedGroupParticipants") != nil, let participnts = response.result {
+        if response.value(prepend: "CreatedConversationParticipants") != nil, let participnts = response.result {
             participnts.forEach { participant in
-                participant.conversation = createdGroupConversation /// we do this because in memeber participants row we need to know the inviter of the conversation.
-                createdGroupParticpnats.append(participant)
+                participant.conversation = createdConversation /// we do this because in memeber participants row we need to know the inviter of the conversation.
+                createdConversationParticpnats.append(participant)
             }
-            createdGroupParticpnats.sort(by: {$0.admin ?? false && !($1.admin ?? false)})
+            createdConversationParticpnats.sort(by: {$0.admin ?? false && !($1.admin ?? false)})
         }
     }
 
     public func submitEditCreatedGroup() {
         isLoading = true
-        guard let threadId = createdGroupConversation?.id else { return }
+        guard let threadId = createdConversation?.id else { return }
         var imageRequest: UploadImageRequest?
         if let image = image {
             let width = Int(image.size.width)
@@ -396,26 +406,55 @@ public final class ContactsViewModel: ObservableObject {
                                               isPublic: true,
                                               mimeType: "image/png",
                                               originalName: assetResources.first?.originalFilename ?? "",
-                                              userGroupHash: createdGroupConversation?.userGroupHash,
+                                              userGroupHash: createdConversation?.userGroupHash,
                                               hC: height,
                                               wC: width
             )
         }
-        let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)
-        RequestsManager.shared.append(prepend: "EditGroup", value: req)
+        let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: conversationTitle)
+        RequestsManager.shared.append(prepend: "EditConversation", value: req)
         ChatManager.activeInstance?.conversation.updateInfo(req)
     }
 
     public func onEditCreatedGroup(_ response: ChatResponse<Conversation>) {
-        if response.value(prepend: "EditGroup") != nil {
+        if response.value(prepend: "EditConversation") != nil {
+            closeBuilder()
             isLoading = false
-            createdGroupConversation = nil
-            showCreateGroup = false
-            showEditCreatedGroupDetail = false
+            createdConversation = nil
+            showEditCreatedConversationDetail = false
             image = nil
-            selectedContacts = []
             assetResources = []
-            createdGroupParticpnats = []
+            createdConversationParticpnats = []
+            createConversationType = nil
+            conversationTitle = ""
         }
+    }
+
+    public func closeBuilder() {
+        selectedContacts = []
+        showConversaitonBuilder = false
+        searchContactString = ""
+        AppState.shared.navViewModel?.threadsViewModel?.showStartConversationBuilder = false
+    }
+
+    public func checkPublicName(_ title: String) {
+        if titleIsValid {
+            isCehckingName = true
+            ChatManager.activeInstance?.conversation.isNameAvailable(.init(name: title))
+        }
+    }
+
+    private func onIsNameAvailable(_ response: ChatResponse<PublicThreadNameAvailableResponse>) {
+        if conversationTitle == response.result?.name {
+            self.isPublicNameAvailable = true
+        }
+        isCehckingName = false
+    }
+
+    public var titleIsValid: Bool {
+        if conversationTitle.isEmpty { return false }
+        if !isPublic { return true }
+        let regex = try! Regex("^[a-zA-Z0-9]\\S*$")
+        return conversationTitle.contains(regex)
     }
 }

@@ -25,6 +25,7 @@ public final class ThreadsViewModel: ObservableObject {
     @Published public var searchedConversations: OrderedSet<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
+    @Published public var showStartConversationBuilder = false
     @Published public var sheetType: ThreadsSheetType?
     public private(set) var cancelable: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
@@ -238,21 +239,6 @@ public final class ThreadsViewModel: ObservableObject {
     public func refresh() {
         clear()
         getThreads()
-    }
-
-    public func createThread(_ model: StartThreadResultModel) {
-        isLoading = true
-        let invitees = model.selectedContacts.map { contact in
-            Invitee(id: "\(contact.id ?? 0)", idType: .contactId)
-        }
-        if model.isGroup {
-            let req = CreateThreadRequest(invitees: invitees, title: model.title, type: model.type, uniqueName: model.isPublic ? model.title : nil)
-            ChatManager.activeInstance?.conversation.create(req)
-        } else if let contact = model.selectedContacts.first {
-            AppState.shared.openThread(contact: contact)
-        } else if model.type == .selfThread {
-            ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
-        }
     }
 
     /// Create a thread and send a message without adding a contact.

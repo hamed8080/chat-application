@@ -11,12 +11,10 @@ import TalkViewModels
 
 public struct DeleteMessageDialog: View {
     let viewModel: ThreadViewModel
-    @Binding var showDialog: Bool
     private var messages: [Message] { viewModel.selectedMessages.compactMap({$0.message}) }
 
-    public init(viewModel: ThreadViewModel, showDialog: Binding<Bool>) {
+    public init(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
-        self._showDialog = showDialog
     }
 
     public var body: some View {
@@ -45,7 +43,7 @@ public struct DeleteMessageDialog: View {
                 Button(role: .destructive) {
                     viewModel.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
                     viewModel.isInEditMode = false
-                    showDialog = false
+                    viewModel.deleteDialaog = false
                     viewModel.animateObjectWillChange()
                 } label: {
                     Label("General.delete", systemImage: "trash.circle.fill")
@@ -59,7 +57,7 @@ public struct DeleteMessageDialog: View {
                 Button {
                     viewModel.clearSelection()
                     viewModel.isInEditMode = false
-                    showDialog = false
+                    viewModel.deleteDialaog = false
                     viewModel.animateObjectWillChange()
                 } label: {
                     Label("General.cancel", systemImage: "xmark.circle.fill")
@@ -80,6 +78,6 @@ public struct DeleteMessageDialog: View {
 
 struct DeleteMessageDialog_Previews: PreviewProvider {
     static var previews: some View {
-        DeleteMessageDialog(viewModel: .init(thread: Conversation(id: 1)), showDialog: .constant(false))
+        DeleteMessageDialog(viewModel: .init(thread: Conversation(id: 1)))
     }
 }

@@ -35,20 +35,29 @@ struct ThreadRow: View {
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()
-                            .frame(width: 12, height: 12)
                             .scaledToFit()
+                            .frame(width: 12, height: 12)
                             .foregroundColor(Color.gray)
                     }
                     if thread.type == .channel {
                         Image(systemName: "megaphone.fill")
                             .resizable()
-                            .frame(width: 12, height: 12)
                             .scaledToFit()
+                            .frame(width: 12, height: 12)
+                            .foregroundColor(Color.gray)
+                    }
+
+                    if thread.group == true, thread.type != .channel {
+                        Image(systemName: "person.2.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
                             .foregroundColor(Color.gray)
                     }
                     if thread.mentioned == true {
                         Image(systemName: "at.circle.fill")
                             .resizable()
+                            .scaledToFit()
                             .frame(width: 24, height: 24)
                             .foregroundStyle(Color.main)
                     }

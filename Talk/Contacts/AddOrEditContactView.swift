@@ -30,13 +30,14 @@ struct AddOrEditContactView: View {
     @State var lastName: String = ""
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var viewModel: ContactsViewModel
-    @EnvironmentObject var contactsViewModel: ContactsViewModel
-    var editContact: Contact?
+    var editContact: Contact? { viewModel.editContact }
     @FocusState var focusState: ContactFocusFileds?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Spacer()
+            if !isLargeSize{
+                Spacer()
+            }
             Text(editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title")
                 .font(.iransansBoldSubtitle)
                 .padding()
@@ -62,23 +63,44 @@ struct AddOrEditContactView: View {
                 .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", isFocused: focusState == .contactValue) {
                     focusState = .contactValue
                 }
-
+            if isLargeSize {
+                Spacer()
+            }
             let title = editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title"
             SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: .constant(false)) {
                 submit()
             }
         }
-        .background(Color.bgColor)
+        .presentationDetents([.fraction((isLargeSize ? 100 : 60) / 100)])
+        .presentationBackground(.ultraThinMaterial)
+        .presentationDragIndicator(.visible)
+//        .background(Color.bgColor)
         .animation(.easeInOut, value: enableButton)
         .animation(.easeInOut, value: focusState)
+        .font(.iransansBody)
+        .onTapGesture {
+            hideKeyboard()
+        }
         .onAppear {
             firstName = editContact?.firstName ?? ""
             lastName = editContact?.lastName ?? ""
             contactValue = editContact?.computedUserIdentifire ?? ""
             focusState = .firstName
         }
-        .font(.iransansBody)
-        .presentationDetents([.fraction(60 / 100)])
+        .onDisappear {
+            /// Clearing the view for when the user cancels the sheet by dropping it down.
+            viewModel.showAddOrEditContactSheet = false
+            viewModel.editContact = nil
+        }
+    }
+
+    private var isLargeSize: Bool {
+        let mode = UIApplication.shared.windowMode()
+        if mode == .ipadFullScreen || mode == .ipadHalfSplitView || mode == .ipadTwoThirdSplitView {
+            return true
+        } else {
+            return false
+        }
     }
 
     private var enableButton: Bool {
@@ -89,8 +111,10 @@ struct AddOrEditContactView: View {
         if let editContact = editContact {
             viewModel.updateContact(contact: editContact, contactValue: contactValue, firstName: firstName, lastName: lastName)
         } else {
-            contactsViewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
+            viewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
         }
+        viewModel.editContact = nil
+        viewModel.showAddOrEditContactSheet = false
         dismiss()
     }
 
@@ -103,6 +127,7 @@ struct AddOrEditContactView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             AddOrEditContactView()
+                .environmentObject(ContactsViewModel())
         }
     }
 }

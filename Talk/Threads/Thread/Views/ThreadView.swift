@@ -17,11 +17,8 @@ struct ThreadView: View, DropDelegate {
     private var thread: Conversation { viewModel.thread }
     @EnvironmentObject var viewModel: ThreadViewModel
     let threadsVM: ThreadsViewModel
-    @State var isInEditMode: Bool = false
-    @State var deleteDialaog: Bool = false
     @State var searchMessageText: String = ""
     var sheetBinding: Binding<Bool> { Binding(get: { viewModel.sheetType != nil }, set: { _ in }) }
-    @Environment(\.horizontalSizeClass) var sizeClass
 
     var body: some View {
         ThreadMessagesList(viewModel: viewModel)
@@ -33,11 +30,11 @@ struct ThreadView: View, DropDelegate {
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
             .searchable(text: $searchMessageText, placement: .toolbar, prompt: "General.searchHere")
-            .customDialog(isShowing: $deleteDialaog) {
-                DeleteMessageDialog(viewModel: viewModel, showDialog: $deleteDialaog)
+            .customDialog(isShowing: $viewModel.deleteDialaog) {
+                DeleteMessageDialog(viewModel: viewModel)
             }
             .overlay {
-                SendContainer(viewModel: viewModel, deleteMessagesDialog: $deleteDialaog)
+                SendContainer(viewModel: viewModel)
             }
             .overlay {
                 ThreadSearchList(searchText: $searchMessageText)
@@ -53,24 +50,8 @@ struct ThreadView: View, DropDelegate {
                     }
                 }
 
-                if UIDevice.current.userInterfaceIdiom == .pad && sizeClass != .compact {
-                    ToolbarItemGroup(placement: .navigationBarLeading) {
-                        Button {
-                            NotificationCenter.default.post(name: Notification.Name.closeSideBar, object: nil)
-                        } label : {
-                            Image(systemName: "sidebar.leading")
-                                .foregroundStyle(Color.main)
-                        }
-                    }
-                }
-
-                if thread.type == .channel {
-                    ToolbarItemGroup(placement: .navigationBarLeading) {
-                        Image(systemName: "megaphone.fill")
-                            .resizable()
-                            .foregroundColor(Color.main)
-                            .frame(width: 16, height: 16)
-                    }
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    ThreadLeadingToolbar(viewModel: viewModel)
                 }
 
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -83,9 +64,6 @@ struct ThreadView: View, DropDelegate {
             }
             .onChange(of: searchMessageText) { value in
                 viewModel.searchInsideThread(text: value)
-            }
-            .onChange(of: viewModel.isInEditMode) { _ in
-                isInEditMode = viewModel.isInEditMode
             }
             .onChange(of: viewModel.editMessage) { _ in
                 viewModel.textMessage = viewModel.editMessage?.message ?? ""

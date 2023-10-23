@@ -12,7 +12,6 @@ import TalkViewModels
 import TalkUI
 
 struct AddParticipantsToThreadView: View {
-    @StateObject var viewModel: AddParticipantsToViewModel
     @EnvironmentObject var contactsVM: ContactsViewModel
     var onCompleted: ([Contact]) -> Void
 
@@ -20,15 +19,11 @@ struct AddParticipantsToThreadView: View {
         List {
             if contactsVM.searchedContacts.count > 0 {
                 ForEach(contactsVM.searchedContacts) { contact in
-                    StartThreadContactRow(isInMultiSelectMode: .constant(true), contact: contact)
-                        .listRowBackground(Color.bgColor)
-                        .listRowSeparatorTint(Color.dividerDarkerColor)
+                    ContactRowContainer(contact: contact, isSearchRow: true)
                 }
             } else {
                 ForEach(contactsVM.contacts) { contact in
-                    StartThreadContactRow(isInMultiSelectMode: .constant(true), contact: contact)
-                        .listRowBackground(Color.bgColor)
-                        .listRowSeparatorTint(Color.dividerDarkerColor)
+                    ContactRowContainer(contact: contact, isSearchRow: false)
                         .onAppear {
                             if contactsVM.contacts.last == contact {
                                 contactsVM.loadMore()
@@ -71,12 +66,19 @@ struct AddParticipantsToThreadView: View {
             .frame(height: 78)
             .background(.ultraThinMaterial)
         }
+        .onAppear {
+            /// We use ContactRowContainer view because it is essential to force the ineer contactRow View to show radio buttons.
+            contactsVM.isInSelectionMode = true
+        }
+        .onDisappear {
+            contactsVM.isInSelectionMode = false
+        }
     }
 }
 
 struct StartThreadResultModel_Previews: PreviewProvider {
     static var previews: some View {
-        AddParticipantsToThreadView(viewModel: .init()) { _ in
+        AddParticipantsToThreadView() { _ in
         }
         .environmentObject(ContactsViewModel())
         .preferredColorScheme(.dark)

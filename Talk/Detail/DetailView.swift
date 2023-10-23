@@ -38,9 +38,14 @@ struct DetailView: View {
                 let editContact = Contact(firstName: user.firstName ?? "",
                                           lastName: user.lastName ?? "",
                                           user: .init(username: user.username ?? ""))
-                AddOrEditContactView(editContact: editContact)
+                let contactsVM = ContactsViewModel()
+                AddOrEditContactView()
+                    .environmentObject(contactsVM)
+                    .onAppear {
+                        contactsVM.editContact = editContact
+                    }
             }
-        }        
+        }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if viewModel.thread?.canEditInfo == true {

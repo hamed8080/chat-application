@@ -94,7 +94,8 @@
 "Contacts.sortLabel" = "مرتب شده بر اساس آخرین زمان بازدید";
 "Contacts.lastVisited" = "آخرین بازدید %@";
 "Contacts.selectContacts" = "انتخاب مخا‍طبان";
-"CreateGroup.enterGroupName" = "نام گروه را وارد کنید";
+"ConversationBuilder.enterGroupName" = "نام گروه را وارد کنید";
+"ConversationBuilder.enterChannelName" = "نام کانال را وارد کنید.";
 
 /* Call */
 "Call.requested" = "درخواست";

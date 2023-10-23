@@ -20,7 +20,7 @@ struct TextMessageType: View {
     @State private var showReactionsOverlay = false
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 0) {
             if !viewModel.isMe {
                 SelectMessageRadio()
             }
@@ -33,8 +33,9 @@ struct TextMessageType: View {
 
             VStack(spacing: 0) {
                 Spacer()
-                AvatarView(message: message, viewModel: threadVM)
+                AvatarView(message: message, viewModel: viewModel)
             }
+
             MutableMessageView()
 
             if !viewModel.isMe {
@@ -78,9 +79,17 @@ struct MutableMessageView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            if !viewModel.isMe {
+                HStack {
+                    Text(verbatim: message.participant?.name ?? "")
+                        .foregroundStyle(Color.purple)
+                        .font(.iransansBody)
+                    Spacer()
+                }
+            }
+
             if message.replyInfo != nil {
                 ReplyInfoMessageRow()
-                    .background(Color.replyBg)
                     .environmentObject(viewModel)
             }
 
@@ -138,14 +147,16 @@ struct MutableMessageView: View {
                 .font(.iransansCaption.bold())
             }
 
-            ReactionCountView(message: message)
+            Group {
+                ReactionCountView(message: message)
 
-            MessageFooterView(message: message)
-                .padding(.bottom, 8)
-                .padding([.leading, .trailing])
+                MessageFooterView(message: message)
+                    .padding(.bottom, 8)
+                    .padding([.leading, .trailing])
+            }
         }
         .frame(maxWidth: viewModel.widthOfRow)
-        .padding(4)
+        .padding(10)
         .contentShape(Rectangle())
         .background(viewModel.isMe ? Color.bgMessageMe : Color.bgMessage)
         .overlay {
@@ -153,18 +164,22 @@ struct MutableMessageView: View {
                 Color.blue.opacity(0.3)
             }
         }
-        .cornerRadius(12, corners: [.topLeft, .topRight, viewModel.isMe ? .bottomLeft : .bottomRight])
+        .cornerRadius(12, corners: [.topLeft, .topRight])
+        .cornerRadius(bottomLeftCorner, corners: [.bottomLeft])
+        .cornerRadius(bottomRightCorner, corners: [.bottomRight])
         .overlay(alignment: .bottom) {
             HStack {
                 if viewModel.isMe {
                     Spacer()
                 }
-                Image(uiImage: viewModel.isMe ? Message.trailingTail : Message.leadingTail)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 9, height: 18)
-                    .offset(x: viewModel.isMe ? 9 : -9)
-                    .foregroundStyle(viewModel.isMe ? Color.bgMessageMe : Color.bgMessage)
+                if !viewModel.isNextMessageTheSameUser {
+                    Image(uiImage: viewModel.isMe ? Message.trailingTail : Message.leadingTail)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 9, height: 18)
+                        .offset(x: viewModel.isMe ? 9 : -9)
+                        .foregroundStyle(viewModel.isMe ? Color.bgMessageMe : Color.bgMessage)
+                }
                 if !viewModel.isMe {
                     Spacer()
                 }
@@ -184,6 +199,26 @@ struct MutableMessageView: View {
             viewModel.calculate()
         }
     }
+
+    private var bottomLeftCorner: CGFloat {
+        if viewModel.isMe {
+            return 12
+        } else if viewModel.isNextMessageTheSameUser {
+            return 12
+        } else {
+            return 0
+        }
+    }
+
+    private var bottomRightCorner: CGFloat {
+        if viewModel.isMe {
+            return 0
+        } else if viewModel.isNextMessageTheSameUser {
+            return 12
+        } else {
+            return 12
+        }
+    }
 }
 
 
@@ -194,6 +229,7 @@ struct TextMessageType_Previews: PreviewProvider {
                 id: 1,
                 message: "TEST",
                 messageType: .text,
+                ownerId: 1,
                 seen: true,
                 time: UInt(Date().millisecondsSince1970),
                 participant: Participant(id: 0, name: "John Doe")
@@ -207,6 +243,9 @@ struct TextMessageType_Previews: PreviewProvider {
             }
             .environmentObject(viewModel)
             .environmentObject(NavigationModel())
+            .onAppear {
+                AppState.shared.cachedUser = .init(id: 1)
+            }
         }
     }
 

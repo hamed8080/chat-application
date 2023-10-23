@@ -1,5 +1,5 @@
 //
-//  CreateGroup.swift
+//  ConversationBuilder.swift
 //  Talk
 //
 //  Created by hamed on 10/19/23.
@@ -10,41 +10,35 @@ import TalkViewModels
 import TalkUI
 import PhotosUI
 
-struct CreateGroup: View {
+struct ConversationBuilder: View {
     @EnvironmentObject var viewModel: ContactsViewModel
 
     var body: some View {
         List {
             if viewModel.searchedContacts.count > 0 {
-                Section {
-                    ForEach(viewModel.searchedContacts) { contact in
-                        SearchContactRow(contact: contact)
-                            .listRowSeparatorTint(Color.dividerDarkerColor)
-                            .listRowBackground(Color.bgColor)
-                    }
-                    .padding()
-                } header: {
-                    StickyHeaderSection(header: "Contacts.searched")
+                StickyHeaderSection(header: "Contacts.searched")
+                    .listRowInsets(.zero)
+                    .listRowSeparator(.hidden)
+                ForEach(viewModel.searchedContacts) { contact in
+                    ContactRowContainer(contact: contact, isSearchRow: true)
                 }
+                .padding()
                 .listRowInsets(.zero)
             }
 
-            Section {
-                ForEach(viewModel.contacts) { contact in
-                    ContactRow(isInSelectionMode: .constant(true), contact: contact)
-                        .listRowBackground(Color.bgColor)
-                        .listRowSeparatorTint(Color.dividerDarkerColor)
-                        .onAppear {
-                            if viewModel.contacts.last == contact {
-                                viewModel.loadMore()
-                            }
+            StickyHeaderSection(header: "Contacts.selectContacts")
+                .listRowInsets(.zero)
+                .listRowSeparator(.hidden)
+            ForEach(viewModel.contacts) { contact in
+                ContactRowContainer(contact: contact, isSearchRow: false)
+                    .onAppear {
+                        if viewModel.contacts.last == contact {
+                            viewModel.loadMore()
                         }
-                }
-                .onDelete(perform: viewModel.delete)
-                .padding()
-            } header: {
-                StickyHeaderSection(header: "Contacts.selectContacts")
+                    }
             }
+            .onDelete(perform: viewModel.delete)
+            .padding()
             .listRowInsets(.zero)
 
             ListLoadingView(isLoading: $viewModel.isLoading)
@@ -55,16 +49,39 @@ struct CreateGroup: View {
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
+        .safeAreaInset(edge: .top) {
+            EmptyView()
+                .frame(height: 32)
+        }
+        .overlay(alignment: .top) {
+            VStack(alignment: .leading, spacing: 0) {
+                TextField("General.searchHere", text: $viewModel.searchContactString)
+                    .frame(height: 48)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
+            }
+            .frame(height: 48)
+            .background(.ultraThinMaterial)
+        }
         .overlay(alignment: .bottom) {
-            SubmitBottomButton(text: "Contacts.createGroup",
+            SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",
                                enableButton: .constant(enabeleButton),
                                isLoading: $viewModel.isLoading)
             {
                 viewModel.createGroupWithSelectedContacts()
             }
         }
-        .sheet(isPresented: $viewModel.showEditCreatedGroupDetail) {
-            EditCreatedGroupDetail()
+        .sheet(isPresented: $viewModel.showEditCreatedConversationDetail) {
+            EditCreatedConversationDetail()
+        }
+        .onAppear {
+            /// We use ContactRowContainer view because it is essential to force the ineer contactRow View to show radio buttons.
+            viewModel.isInSelectionMode = true
+        }
+        .onDisappear {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                viewModel.isInSelectionMode = false
+            }
         }
     }
 
@@ -73,9 +90,8 @@ struct CreateGroup: View {
     }
 }
 
-
-/// Step two to edit title and picture of the group.
-struct EditCreatedGroupDetail: View {
+/// Step two to edit title and picture of the group/channel....
+struct EditCreatedConversationDetail: View {
     @EnvironmentObject var viewModel: ContactsViewModel
     @State var showImagePicker = false
 
@@ -110,7 +126,7 @@ struct EditCreatedGroupDetail: View {
                 }
                 .buttonStyle(.plain)
 
-                TextField("CreateGroup.enterGroupName", text: $viewModel.editTitle)
+                TextField(viewModel.createConversationType == .normal ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName" , text: $viewModel.conversationTitle)
                     .textContentType(.name)
                     .padding()
                     .font(.iransansBody)
@@ -119,7 +135,7 @@ struct EditCreatedGroupDetail: View {
             .listRowBackground(Color.bgColor)
             .listRowSeparator(.hidden)
             Section {
-                ForEach(viewModel.createdGroupParticpnats) { participant in
+                ForEach(viewModel.createdConversationParticpnats) { participant in
                     ParticipantRow(participant: participant)
                         .listRowBackground(Color.bgColor)
                         .listRowSeparatorTint(Color.dividerDarkerColor)
@@ -139,8 +155,9 @@ struct EditCreatedGroupDetail: View {
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
+        .environmentObject(ParticipantsViewModel(thread: viewModel.createdConversation ?? .init()))
         .overlay(alignment: .bottom) {
-            SubmitBottomButton(text: "Contacts.createGroup",
+            SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",
                                enableButton: .constant(!viewModel.isLoading),
                                isLoading: $viewModel.isLoading)
             {
@@ -160,12 +177,11 @@ struct EditCreatedGroupDetail: View {
 
 struct CreateGroup_Previews: PreviewProvider {
     static var previews: some View {
-        EditCreatedGroupDetail()
+        ConversationBuilder()
             .environmentObject(ContactsViewModel())
-            .previewDisplayName("EditCreatedGroupDetail")
-
-        CreateGroup()
+            .previewDisplayName("CreateConversation")
+        EditCreatedConversationDetail()
             .environmentObject(ContactsViewModel())
-            .previewDisplayName("CreateGroup")
+            .previewDisplayName("EditCreatedConversationDetail")
     }
 }

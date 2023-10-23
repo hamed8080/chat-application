@@ -26,8 +26,8 @@ public struct StickyHeaderSection: View {
         .frame(height: height)
         .frame(minWidth: 0, maxWidth: .infinity)
         .padding(.horizontal, 16)
-        .padding(.vertical, 5)
         .background(Color.bgSpaceItem)
+        .listRowBackground(Color.bgSpaceItem)
     }
 }
 

@@ -16,6 +16,25 @@ struct ReplyInfoMessageRow: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
+    var replySeparatorColor: Color {
+        if message.replyInfo?.deleted != nil {
+            return Color.redSoft
+        } else if viewModel.isMe {
+            return Color.white
+        } else {
+           return Color.redSoft
+        }
+    }
+
+    var replyMessageColor: Color {
+        if message.replyInfo?.deleted != nil {
+            return Color.redSoft
+        } else if viewModel.isMe {
+            return Color.hint
+        } else {
+            return Color.redSoft
+        }
+    }
 
     var body: some View {
         Button {
@@ -23,19 +42,17 @@ struct ReplyInfoMessageRow: View {
                 threadVM?.moveToTime(time, repliedToMessageId)
             }
         } label: {
-            HStack {
-                Image(systemName: "poweron")
-                    .resizable()
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(replySeparatorColor)
                     .frame(width: 3)
-                    .frame(minHeight: 0, maxHeight: .infinity)
-                    .foregroundColor(message.replyInfo?.deleted == true ? .redSoft : .main)
-                VStack(spacing: 4) {
+                    .frame(minHeight: 0, maxHeight: 36)
+                VStack(spacing: 0) {
                     if let name = message.replyInfo?.participant?.name {
                         Text("\(name)")
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .foregroundColor(.main)
-                            .padding([.leading, .trailing, .top], 8)
+                            .foregroundStyle(viewModel.isMe ? Color.messageText : Color.redSoft)
                     }
 
                     if message.replyInfo?.deleted == true {
@@ -43,16 +60,14 @@ struct ReplyInfoMessageRow: View {
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             .foregroundColor(.redSoft)
-                            .padding([.top, .leading, .trailing], 8)
                     }
 
                     if let message = message.replyInfo?.message?.replacingOccurrences(of: "\n", with: " ") {
                         Text(message)
                             .font(.iransansCaption3)
-                            .padding([.leading, .trailing], 8)
                             .cornerRadius(8, corners: .allCorners)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: message.naturalTextAlignment == .leading ? .leading : .trailing)
-                            .foregroundStyle(Color.primary)
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                            .foregroundStyle(Color.hintText.opacity(0.7))
                             .lineLimit(1)
                     }
 
@@ -74,11 +89,11 @@ struct ReplyInfoMessageRow: View {
                             }
                         }
                     }
-                    Spacer()
                 }
             }
             .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 52, maxHeight: 52)
         }
+        .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
         .buttonStyle(.borderless)
         .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 52, maxHeight: 52)
         .truncationMode(.tail)

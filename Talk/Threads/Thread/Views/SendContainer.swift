@@ -17,7 +17,6 @@ import TalkExtensions
 struct SendContainer: View {
     @State private var isInEditMode: Bool = false
     let viewModel: ThreadViewModel
-    @Binding var deleteMessagesDialog: Bool
     @State private var text: String = ""
     @State private var isRecording = false
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
@@ -40,7 +39,7 @@ struct SendContainer: View {
                 Spacer()
                 VStack(spacing: 0) {
                     if isInEditMode {
-                        SelectionView(viewModel: viewModel, deleteMessagesDialog: $deleteMessagesDialog)
+                        SelectionView(viewModel: viewModel)
                     } else if viewModel.canShowMute {
                         MuteChannelViewPlaceholder()
                     } else {
@@ -219,7 +218,6 @@ struct MainSendButtons: View {
 struct SelectionView: View {
     let viewModel: ThreadViewModel
     @State private var selectedCount: Int = 0
-    @Binding var deleteMessagesDialog: Bool
 
     var body: some View {
         HStack {
@@ -259,7 +257,7 @@ struct SelectionView: View {
                     .foregroundColor(.redSoft)
                     .padding()
                     .onTapGesture {
-                        deleteMessagesDialog.toggle()
+                        viewModel.deleteDialaog.toggle()
                     }
             }
 
@@ -396,7 +394,7 @@ struct EditMessagePlaceholderView: View {
 
 struct SendContainer_Previews: PreviewProvider {
     static var previews: some View {
-        SendContainer(viewModel: ThreadViewModel(thread: Conversation(id: 0)), deleteMessagesDialog: .constant(true))
+        SendContainer(viewModel: ThreadViewModel(thread: Conversation(id: 0)))
     }
 }
 

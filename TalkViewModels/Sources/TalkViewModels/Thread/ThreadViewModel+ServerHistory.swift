@@ -293,6 +293,8 @@ extension ThreadViewModel {
         /// 4- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
         diableScrollingForHalfASecond()
         centerLoading = false
+        /// We set this property to true because in the seven scenario there is no way to set this property to true.
+        isFetchedServerFirstResponse = true
         /// 5- Update all the views to draw for the top part.
         animateObjectWillChange()
         /// 6- Scroll to the message with its uniqueId.

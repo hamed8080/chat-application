@@ -94,7 +94,8 @@
 "Contacts.sortLabel" = "Sorted by last visited time";
 "Contacts.lastVisited" = "Last visited %@";
 "Contacts.selectContacts" = "Select contacts";
-"CreateGroup.enterGroupName" = "Enter the group name";
+"ConversationBuilder.enterGroupName" = "Enter the group name";
+"ConversationBuilder.enterChannelName" = "Enter the channel name";
 
 /* Call */
 "Call.requested" = "Requested";

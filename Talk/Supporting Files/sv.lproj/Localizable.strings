@@ -94,7 +94,8 @@
 "Contacts.sortLabel" = "Sorterat efter senast besökt tid";
 "Contacts.lastVisited" = "Senast besökt %@";
 "Contacts.selectContacts" = "Välj kontakter";
-"CreateGroup.enterGroupName" = "Ange gruppnamnet";
+"ConversationBuilder.enterGroupName" = "Ange gruppnamnet";
+"ConversationBuilder.enterChannelName" = "Ange kanalnamnet";
 
 /* Call */
 "Call.requested" = "Begärd";

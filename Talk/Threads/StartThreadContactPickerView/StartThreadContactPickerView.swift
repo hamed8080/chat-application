@@ -13,140 +13,83 @@ import TalkUI
 import TalkViewModels
 
 struct StartThreadContactPickerView: View {
-    @EnvironmentObject var contactsVM: ContactsViewModel
-    var onCompletedConfigCreateThread: (StartThreadResultModel) -> Void
-    @StateObject var model: StartThreadResultModel = .init()
+    @EnvironmentObject var viewModel: ContactsViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if model.showGroupTitleView {
-                HStack {
-                    Spacer()
-                    Button {
-                        if model.hasError { return }
-                        model.selectedContacts.append(contentsOf: contactsVM.selectedContacts)
-                        onCompletedConfigCreateThread(model.build)
-                    } label: {
-                        Label("General.create", systemImage: "plus.square")
-                    }
-                    .foregroundColor(.green)
-                }
-                .padding()
-            }
-
-            Group {
-//                StartThreadButton(name: "bookmark.circle", title: "Thread.selfThread", color: .blue) {
-//                    model.setSelfThread()
-//                    onCompletedConfigCreateThread(model.build)
-//                }
-
-                StartThreadButton(name: "person.2", title: "Thread.newGroup", color: .blue) {
-                    model.toggleGroup()
-                }
-
-                StartThreadButton(name: "megaphone", title: "Thread.newChannel", color: .blue) {
-                    model.toggleChannel()
-                }
-
-                if model.showGroupTitleView {
-                    HStack {
-                        MultilineTextField("Thread.enterGroupNameHere", text: $model.title, backgroundColor: Color.gray.opacity(0.2))
-                            .cornerRadius(8)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(model.hasError ? Color.red : model.isPublicNameAvailable ? .green : .clear, lineWidth: 1)
-                            )
-                            .padding([.leading, .trailing])
-                        if model.isCehckingName {
-                            LoadingView(isAnimating: model.isCehckingName, width: 2)
-                                .frame(width: 18, height: 18)
-                        }
-                    }
-                }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    if model.isPublic {
-                        Text("Thread.publicThreadFooter")
-                            .transition(.push(from: .bottom))
-                        Text("Thread.publicThreadStructrue")
-                            .transition(.push(from: .bottom))
+        List {
+            ListLoadingView(isLoading: $viewModel.isLoading)
+                .listRowBackground(Color.bgColor)
+                .listRowSeparator(.hidden)
+            if viewModel.searchedContacts.count == 0 {
+                Button {
+                    withAnimation {
+                        viewModel.createConversationType = .normal
+                        viewModel.showConversaitonBuilder.toggle()
                     }
 
-                    if model.hasError {
-                        Text("Thread.enterValidName")
-                            .transition(.push(from: .bottom))
-                            .foregroundColor(.red)
-                    }
+                } label: {
+                    Label("Contacts.createGroup", systemImage: "person.2")
+                        .foregroundStyle(Color.main)
                 }
-                .padding([.leading, .trailing])
-                .padding(.top, 8)
-                .foregroundColor(.gray)
-                .font(.caption)
+                .listRowBackground(Color.bgColor)
+                .listRowSeparatorTint(Color.dividerDarkerColor)
 
-                if model.type == .channel || model.isGroup {
-                    Toggle("Thread.public", isOn: $model.isPublic)
-                        .padding()
+                Button {
+                    viewModel.createConversationType = .channel
+                    viewModel.showConversaitonBuilder.toggle()
+                } label: {
+                    Label("Contacts.createChannel", systemImage: "megaphone")
+                        .foregroundStyle(Color.main)
                 }
+                .listRowBackground(Color.bgColor)
+                .listRowSeparator(.hidden)
             }
-            .padding([.leading, .trailing])
-            .noSeparators()
 
-            List {
-                ForEach(contactsVM.contacts) { contact in
-                    StartThreadContactRow(isInMultiSelectMode: $model.isInMultiSelectMode, contact: contact)
-                        .onTapGesture {
-                            if model.isInMultiSelectMode == false {
-                                model.selectedContacts.append(contact)
-                                onCompletedConfigCreateThread(model.build)
-                            }
-                        }
-                        .onAppear {
-                            if contactsVM.contacts.last == contact {
-                                contactsVM.loadMore()
-                            }
-                        }
+            if viewModel.searchedContacts.count > 0 {
+                StickyHeaderSection(header: "Contacts.searched")
+                    .listRowInsets(.zero)
+                ForEach(viewModel.searchedContacts) { contact in
+                    ContactRowContainer(contact: contact, isSearchRow: true)
                 }
             }
-            .listStyle(.insetGrouped)
-            .overlay(alignment: .bottom) {
-                ListLoadingView(isLoading: $contactsVM.isLoading)
-                    .padding(.bottom)
+
+            StickyHeaderSection(header: "Contacts.sortLabel")
+                .listRowInsets(.zero)
+            ForEach(viewModel.contacts) { contact in
+                ContactRowContainer(contact: contact, isSearchRow: false)
             }
+
+            ListLoadingView(isLoading: $viewModel.isLoading)
+                .listRowBackground(Color.bgColor)
+                .listRowSeparator(.hidden)
         }
-        .animation(.easeInOut, value: model.isCehckingName)
-        .animation(.easeInOut, value: model.isPublic)
-        .animation(.easeInOut, value: model.isInMultiSelectMode)
-        .padding(0)
+        .environment(\.defaultMinListRowHeight, 24)
+        .animation(.easeInOut, value: viewModel.contacts)
+        .animation(.easeInOut, value: viewModel.searchedContacts)
+        .animation(.easeInOut, value: viewModel.isLoading)
+        .listStyle(.plain)
+        .safeAreaInset(edge: .top) {
+            EmptyView()
+                .frame(height: 40)
+        }
+        .overlay(alignment: .top) {
+            VStack(alignment: .leading, spacing: 0) {
+                TextField("General.searchHere", text: $viewModel.searchContactString)
+                    .frame(height: 48)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
+            }
+            .frame(height: 48)
+            .background(.ultraThinMaterial)
+        }
     }
 }
 
-struct StartThreadButton: View {
-    var name: String
-    var title: String
-    var color: Color
-    var action: (() -> Void)?
-
-    @State var isActive = false
-
-    var body: some View {
-        Button {
-            action?()
-        } label: {
-            HStack {
-                Image(systemName: name)
-                Text(String(localized: .init(title)))
-                Spacer()
-            }
-        }
-        .padding()
-        .foregroundColor(.blue)
-    }
-}
 
 struct StartThreadContactPickerView_Previews: PreviewProvider {
     static var previews: some View {
         let contactVM = ContactsViewModel()
-        StartThreadContactPickerView { _ in }
+        StartThreadContactPickerView()
             .environmentObject(contactVM)
             .preferredColorScheme(.dark)
     }

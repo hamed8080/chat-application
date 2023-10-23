@@ -24,7 +24,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var addressDetail: String?
     public var timeString: String = ""
     public var fileSizeString: String?
-    public static var avatarSize: CGFloat = 36
+    public static var avatarSize: CGFloat = 34
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     private var cancelableSet = Set<AnyCancellable>()
@@ -36,6 +36,14 @@ public final class MessageRowViewModel: ObservableObject {
     public var isSelected = false
     public var requests: [String: Any] = [:]
     public var showReactionsOverlay = false
+    public var isNextMessageTheSameUser: Bool = false
+    public var avatarImageLoader: ImageLoaderViewModel? {
+        if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {
+            return imageLoaderVM
+        } else {
+            return nil
+        }
+    }
 
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
@@ -163,6 +171,7 @@ public final class MessageRowViewModel: ObservableObject {
     }
 
     private func performaCalculation(animation: Animation? = nil) async {
+        isNextMessageTheSameUser = threadVM?.thread.group == true && (threadVM?.isNextSameUser(message: message) == true) && message.participant != nil
         let message = message
         let isEnglish = message.message?.naturalTextAlignment == .leading
         let widthOfRow = self.calculateWidthOfMessage()

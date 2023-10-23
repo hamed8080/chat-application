@@ -14,54 +14,60 @@ struct MoveToBottomButton: View {
     @State private var timerToUpdate: Timer?
 
     var body: some View {
-        Button {
-            withAnimation {
-                viewModel.scrollToBottom()
-                isAtBottomOfTheList = true
+        HStack {
+            Spacer()
+            Button {
+                withAnimation {
+                    viewModel.scrollToBottom()
+                    isAtBottomOfTheList = true
+                }
+            } label: {
+                Image(systemName: "chevron.down")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: isAtBottomOfTheList ? 0 : 16, height: isAtBottomOfTheList ? 0 : 16)
+                    .padding()
+                    .foregroundColor(.primary)
+                    .aspectRatio(contentMode: .fit)
+                    .contentShape(Rectangle())
             }
-        } label: {
-            Image(systemName: "chevron.down")
-                .resizable()
-                .scaledToFit()
-                .frame(width: isAtBottomOfTheList ? 0 : 16, height: isAtBottomOfTheList ? 0 : 16)
-                .padding()
-                .foregroundColor(.primary)
-                .aspectRatio(contentMode: .fit)
-                .contentShape(Rectangle())
-        }
-        .frame(width: isAtBottomOfTheList ? 0 : 36, height: isAtBottomOfTheList ? 0 : 36)
-        .background(.ultraThinMaterial)
-        .cornerRadius(36)
-        .shadow(color: .gray.opacity(0.4), radius: 10)
-        .padding(.bottom, 16)
-        .padding([.trailing], 8)
-        .scaleEffect(x: isAtBottomOfTheList ? 0.0001 : 1.0, y: isAtBottomOfTheList ? 0.0001 : 1.0, anchor: .center)
-        .overlay(alignment: .top) {
-            let unreadCount = viewModel.thread.unreadCount ?? 0
-            let hide = unreadCount == 0 || isAtBottomOfTheList
-            Text(verbatim: unreadCount == 0 ? "" : "\(viewModel.thread.unreadCountString ?? "")")
-                .font(.iransansCaption)
-                .fontDesign(.rounded)
-                .frame(height: hide ? 0 : 24)
-                .frame(minWidth: hide ? 0 : 24)
-                .scaleEffect(x: hide ? 0.0001 : 1.0, y: hide ? 0.0001 : 1.0, anchor: .center)
-                .background(Color.main)
-                .foregroundColor(.white)
-                .cornerRadius(hide ? 0 : 24)
-                .offset(x: -3, y: -16)
-                .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCount)
-        }
-        .onReceive(viewModel.objectWillChange) { _ in
-            if viewModel.isAtBottomOfTheList != isAtBottomOfTheList {
-                timerToUpdate?.invalidate()
-                timerToUpdate = nil
-                timerToUpdate = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-                    withAnimation {
-                        isAtBottomOfTheList = viewModel.isAtBottomOfTheList
+            .frame(width: isAtBottomOfTheList ? 0 : 40, height: isAtBottomOfTheList ? 0 : 40)
+            .background(.ultraThinMaterial)
+            .cornerRadius(20)
+            .shadow(color: .gray.opacity(0.4), radius: 2)
+            .padding(.bottom, 16)
+            .padding([.trailing], 8)
+            .scaleEffect(x: isAtBottomOfTheList ? 0.0001 : 1.0, y: isAtBottomOfTheList ? 0.0001 : 1.0, anchor: .center)
+            .overlay(alignment: .top) {
+                let unreadCount = viewModel.thread.unreadCount ?? 0
+                let hide = unreadCount == 0 || isAtBottomOfTheList
+                Text(verbatim: unreadCount == 0 ? "" : "\(viewModel.thread.unreadCountString ?? "")")
+                    .font(.iransansCaption)
+                    .fontDesign(.rounded)
+                    .frame(height: hide ? 0 : 24)
+                    .frame(minWidth: hide ? 0 : 24)
+                    .scaleEffect(x: hide ? 0.0001 : 1.0, y: hide ? 0.0001 : 1.0, anchor: .center)
+                    .background(Color.main)
+                    .foregroundColor(.white)
+                    .cornerRadius(hide ? 0 : 24)
+                    .offset(x: -3, y: -16)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCount)
+            }
+            .onReceive(viewModel.objectWillChange) { _ in
+                if viewModel.isAtBottomOfTheList != isAtBottomOfTheList {
+                    timerToUpdate?.invalidate()
+                    timerToUpdate = nil
+                    timerToUpdate = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                        withAnimation {
+                            isAtBottomOfTheList = viewModel.isAtBottomOfTheList
+                        }
                     }
                 }
             }
+                .offset(y: -52)
+                .padding(.bottom, 8)
         }
+        .environment(\.layoutDirection, .leftToRight)
     }
 }
 
