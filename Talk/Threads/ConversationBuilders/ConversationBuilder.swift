@@ -45,13 +45,14 @@ struct ConversationBuilder: View {
                 .listRowBackground(Color.bgColor)
                 .listRowSeparator(.hidden)
         }
+        .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
         .safeAreaInset(edge: .top) {
             EmptyView()
-                .frame(height: 32)
+                .frame(height: 41)
         }
         .overlay(alignment: .top) {
             VStack(alignment: .leading, spacing: 0) {

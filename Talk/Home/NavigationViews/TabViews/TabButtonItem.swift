@@ -21,7 +21,7 @@ struct TabButtonItem: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24)
-                    .foregroundColor(isSelected ? Color.main : .primary)
+                    .foregroundColor(isSelected ? Color.main : .gray)
             }
 
             Text(String(localized: .init(title)))

@@ -12,14 +12,18 @@ public struct SubmitBottomButton: View {
     @Binding var enableButton: Bool
     let text: String
     let color: Color = .main
+    let maxInnerWidth: CGFloat
     let action: (()-> Void)?
+
 
     public init(text: String,
                 enableButton: Binding<Bool> = .constant(true),
                 isLoading: Binding<Bool> = .constant(false),
+                maxInnerWidth: CGFloat = .infinity,
                 action: (()-> Void)? = nil)
     {
         self.action = action
+        self.maxInnerWidth = maxInnerWidth
         self._enableButton = enableButton
         self._isLoading = isLoading
         self.text = text
@@ -43,7 +47,7 @@ public struct SubmitBottomButton: View {
                     }
                     Spacer()
                 }
-                .frame(minWidth: 0, maxWidth: .infinity)
+                .frame(minWidth: 0, maxWidth: maxInnerWidth)
                 .contentShape(RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(.plain)
@@ -54,6 +58,7 @@ public struct SubmitBottomButton: View {
             .disabled(!enableButton)
             .opacity(enableButton ? 1.0 : 0.3)
         }
+        .frame(minWidth: 0, maxWidth: .infinity)
         .padding()
         .background(.ultraThinMaterial)
     }

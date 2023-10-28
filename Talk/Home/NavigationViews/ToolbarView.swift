@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AdditiveUI
+import TalkUI
 
 struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingContentView: View>: View {
     @ViewBuilder let leadingNavigationViews: LeadingContentView?
@@ -55,7 +56,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
         .frame(minWidth: 0, maxWidth: sizeClass == .compact ? nil : maxWidth)
         .padding([.bottom, .top], 8)
         .padding([.leading, .trailing], 8)
-        .background(.ultraThinMaterial)
+        .background(MixMaterialBackground().ignoresSafeArea())
         .onChange(of: searchText) { newValue in
             searchCompletion?(newValue)
         }

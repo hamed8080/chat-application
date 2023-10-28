@@ -232,13 +232,17 @@
 
 /* Login */
 "Login.title" = "تسجيل الدخول";
-"Login.welcome" = "مرحبًا بك في تطبيق الدردشة";
+"Login.loginOrSignup" = "تسجيل الدخول أو الاشتراك";
+"Login.subtitle" = "لإنشاء حساب مستخدم في Talk، يرجى إدخال رقم هاتفك.";
 "Login.staticToken" = "أدخل الرمز الثابت الخاص بك هنا.";
 "Login.phoneNumber" = "أدخل رقم هاتفك هنا.";
 "Login.footer" = "اتصل بفريق الدعم إذا واجهتك مشكلة في تسجيل الدخول.";
-"Login.Verify.enterCode" = "أدخل رمز التحقق";
-"Login.Verfiy.verificationCodeSentTo" = "تم إرسال رمز التحقق إلى: ";
+"Login.Verify.verifyPhoneNumber" = "التحقق من رقم الهاتف";
+"Login.Verfiy.verificationCodeSentTo" = "لقد أرسلنا رسالة نصية تحتوي على رمز التفعيل إلى هاتفك %@";
 "Login.Verify.title" = "التحقق";
+"Login.verifyCode" = "التحقق من كود";
+"Login.Verify.timer" = "بقي الساعة %@ لتلقي الرمز الجديد";
+"Login.Verify.resendCode" = "أعد إرسال الرمز";
 
 /* Settings */
 "Settings.title" = "الإعدادات";
@@ -250,6 +254,9 @@
 "Settings.logout" = "تسجيل الخروج";
 "Settings.notifictionSettings" = "إعدادات الإشعار";
 "Settings.support" = "دعم";
+"Settings.userName" = "اسم المستخدم";
+"Settings.phoneNumber" = "رقم التليفون";
+"Settings.bio" = "سيرة شخصية";
 
 /* Support */
 "Support.version" = "إصدار: %@";

@@ -13,6 +13,7 @@ import Swipy
 import TalkModels
 import TalkUI
 import TalkViewModels
+import ActionableContextMenu
 
 struct HomeContentView: View {
     let container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
@@ -36,6 +37,7 @@ struct HomeContentView: View {
             .environmentObject(container.logVM)
             .environmentObject(container.audioPlayerVM)
             .environmentObject(container.reactions)
+            .contextMenuContainer()
     }
 }
 
@@ -45,7 +47,7 @@ struct LoginHomeView: View {
 
     var body: some View {
         if tokenManager.isLoggedIn == false {
-            LoginView()
+            LoginNavigationContainerView()
         }
     }
 }

@@ -233,13 +233,17 @@
 
 /* Login */
 "Login.title" = "ورود";
-"Login.welcome" = "به برنامه **تاک** خوش آمدید.";
+"Login.loginOrSignup" = "ورود و ثبت نام";
+"Login.subtitle" = "برای ایجاد حساب کاربری در پیام رسان تاک لطفا شماره تلفن خود را وارد کنید.";
 "Login.staticToken" = "توکن ثابت خود را اینجا وارد کنید.";
-"Login.phoneNumber" = "شماره تماس خود را اینجا وارد کنی.";
+"Login.phoneNumber" = "شماره تماس خود را اینجا وارد کنید.";
 "Login.footer" = "در صورت بروز مشکل در ورود با پشتیبانی تماس بگیرید.";
-"Login.Verify.enterCode" = "کد ارسال شده را وارد کنید.";
-"Login.Verfiy.verificationCodeSentTo" = "کد ارسال شده به شماره:‌";
+"Login.Verify.verifyPhoneNumber" = "تایید شماره تلفن";
+"Login.Verfiy.verificationCodeSentTo" = "ما یک پیامک حاوی کد فعال سازی به تلفن شما %@ ارسال کرده ایم";
 "Login.Verify.title" = "تایید";
+"Login.verifyCode" = "کد تایید";
+"Login.Verify.timer" = "%@ مانده تا دریافت مجدد کد";
+"Login.Verify.resendCode" = "ارسال مجدد";
 
 /* Settings */
 "Settings.title" = "تنظیمات";
@@ -251,6 +255,9 @@
 "Settings.logout" = "خروج";
 "Settings.notifictionSettings" = "تنظیمات اعلانات";
 "Settings.support" = "پشتیبانی";
+"Settings.userName" = "نام کاربری";
+"Settings.phoneNumber" = "شماره تلفن";
+"Settings.bio" = "بیوگرافی";
 
 /* Support */
 "Support.version" = "نسخه: %@";

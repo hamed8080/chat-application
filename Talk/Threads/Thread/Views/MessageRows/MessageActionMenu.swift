@@ -9,6 +9,8 @@ import ChatModels
 import Foundation
 import SwiftUI
 import TalkViewModels
+import ActionableContextMenu
+import TalkUI
 
 struct MessageActionMenu: View {
     private var message: Message { viewModel.message }
@@ -17,86 +19,84 @@ struct MessageActionMenu: View {
     @EnvironmentObject var navVM: NavigationModel
 
     var body: some View {
-        Button {
-            withAnimation(animation(appear: threadVM?.replyMessage != nil)) {
-                threadVM?.replyMessage = message
-                threadVM?.objectWillChange.send()
+        VStack(alignment: .leading, spacing: 0) {
+            ContextMenuButton(title: "Messages.ActionMenu.reply", image: "arrowshape.turn.up.left") {
+                withAnimation(animation(appear: threadVM?.replyMessage != nil)) {
+                    threadVM?.replyMessage = message
+                    threadVM?.objectWillChange.send()
+                }
             }
-        } label: {
-            Label("Messages.ActionMenu.reply", systemImage: "arrowshape.turn.up.left")
-        }
 
-        Button {
-            guard let participant = message.participant else { return }
-            AppState.shared.replyPrivately = message
-            AppState.shared.openThread(participant: participant)
-        } label: {
-            Label("Messages.ActionMenu.replyPrivately", systemImage: "arrowshape.turn.up.left")
-        }
-
-        Button {
-            withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
-                threadVM?.forwardMessage = message
-                viewModel.isSelected = true
-                threadVM?.isInEditMode = true
-                viewModel.animateObjectWillChange()
-                threadVM?.animateObjectWillChange()
+            ContextMenuButton(title: "Messages.ActionMenu.replyPrivately", image: "arrowshape.turn.up.left") {
+                withAnimation(animation(appear: true)) {
+                    guard let participant = message.participant else { return }
+                    AppState.shared.replyPrivately = message
+                    AppState.shared.openThread(participant: participant)
+                }
             }
-        } label: {
-            Label("Messages.ActionMenu.forward", systemImage: "arrowshape.turn.up.forward")
-        }
 
-        Button {
-            withAnimation(animation(appear: threadVM?.editMessage != nil)) {
-                threadVM?.editMessage = message
-                threadVM?.objectWillChange.send()
+            ContextMenuButton(title: "Messages.ActionMenu.forward", image: "arrowshape.turn.up.forward") {
+                withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
+                    threadVM?.forwardMessage = message
+                    viewModel.isSelected = true
+                    threadVM?.isInEditMode = true
+                    viewModel.animateObjectWillChange()
+                    threadVM?.animateObjectWillChange()
+                }
             }
-        } label: {
-            Label("General.edit", systemImage: "pencil.circle")
-        }
-        .disabled(message.editable == false)
 
-        Button {
-            UIPasteboard.general.string = message.message
-        } label: {
-            Label("Messages.ActionMenu.copy", systemImage: "doc.on.doc")
-        }
-
-        if message.isFileType == true {
-            Button {
-                threadVM?.clearCacheFile(message: message)
-                threadVM?.animateObjectWillChange()
-            } label: {
-                Label("Messages.ActionMenu.deleteCache", systemImage: "cylinder.split.1x2")
+            ContextMenuButton(title: "General.edit", image: "pencil.circle") {
+                withAnimation(animation(appear: threadVM?.editMessage != nil)) {
+                    threadVM?.editMessage = message
+                    threadVM?.objectWillChange.send()
+                }
             }
-        }
+            .disabled(message.editable == false)
+            .opacity(message.editable == false ? 0.3 : 1.0)
+            .allowsHitTesting(message.editable == true)
 
-        Button {
-            threadVM?.togglePinMessage(message)
-            threadVM?.animateObjectWillChange()
-        } label: {
+            ContextMenuButton(title: "Messages.ActionMenu.copy", image: "doc.on.doc") {
+                UIPasteboard.general.string = message.message
+            }
+
+            if message.isFileType == true {
+                ContextMenuButton(title: "Messages.ActionMenu.deleteCache", image: "cylinder.split.1x2") {
+                    threadVM?.clearCacheFile(message: message)
+                    threadVM?.animateObjectWillChange()
+                }
+            }
+
             let isPinned = message.id == viewModel.threadVM?.thread.pinMessage?.id && viewModel.threadVM?.thread.pinMessage != nil
-            Label(isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", systemImage: "pin")
-        }
-
-        Button {
-            withAnimation(animation(appear: threadVM?.isInEditMode == true)) {
-                threadVM?.isInEditMode = true
-                viewModel.isSelected = true
-                viewModel.animateObjectWillChange()
+            ContextMenuButton(title: isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", image: "pin") {
+                threadVM?.togglePinMessage(message)
                 threadVM?.animateObjectWillChange()
             }
-        } label: {
-            Label("General.select", systemImage: "checkmark.circle")
-        }
 
-        Button(role: .destructive) {
-            threadVM?.deleteMessages([message])
-            threadVM?.animateObjectWillChange()
-        } label: {
-            Label("General.delete", systemImage: "trash")
+            ContextMenuButton(title: "General.select", image: "checkmark.circle") {
+                withAnimation(animation(appear: threadVM?.isInEditMode == true)) {
+                    threadVM?.isInEditMode = true
+                    viewModel.isSelected = true
+                    viewModel.animateObjectWillChange()
+                    threadVM?.animateObjectWillChange()
+                }
+            }
+
+            ContextMenuButton(title: "General.delete", image: "trash", showSeparator: false) {
+                withAnimation(animation(appear: true)) {
+                    threadVM?.deleteMessages([message])
+                    threadVM?.animateObjectWillChange()
+                }
+            }
+            .foregroundStyle(Color.red)
+            .disabled(message.deletable == false)
+            .opacity(message.deletable == false ? 0.3 : 1.0)
+            .allowsHitTesting(message.deletable == true)
+
         }
-        .disabled(message.deletable == false)
+        .foregroundColor(.primary)
+        .frame(minWidth: 196)
+        .background(MixMaterialBackground())
+        .cornerRadius(12)
     }
 
     private func animation(appear: Bool) -> Animation {

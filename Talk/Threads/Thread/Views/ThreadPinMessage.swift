@@ -45,7 +45,7 @@ struct ThreadPinMessage: View {
                 }
                 .padding()
                 .frame(height: 48)
-                .background(.regularMaterial)
+                .background(MixMaterialBackground())
                 .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top)))
                 .onTapGesture {
                     if let time = message?.time, let messageId = message?.messageId {

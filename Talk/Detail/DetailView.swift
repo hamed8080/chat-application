@@ -22,7 +22,7 @@ struct DetailView: View {
             VStack(spacing: 0) {
                 InfoView()
                 BioDescription()
-                StickyHeaderSection(header: "", height: 2)
+                StickyHeaderSection(header: "", height: 10)
                 DetailTopButtons()
                     .padding([.top, .bottom])
                 TabDetail(viewModel: viewModel)
@@ -138,7 +138,7 @@ struct InfoView: View {
                 }
             }
         }
-        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, idealHeight: 128, maxHeight: .infinity)
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, idealHeight: 178, maxHeight: .infinity)
         .padding([.leading, .trailing, .top])
         .background(Color.bgSpaceItem)
     }
@@ -204,8 +204,12 @@ struct DetailTopButtons: View {
             .opacity(0.4)
             .allowsHitTesting(false)
 
-            DetailViewButton(accessibilityText: "", icon: "ellipsis") {
-
+            if let conversation = viewModel.thread {
+                Menu {
+                    ThreadRowActionMenu(thread: conversation)
+                } label: {
+                    DetailViewButton(accessibilityText: "", icon: "ellipsis"){}
+                }
             }
         }
         .padding([.leading, .trailing])

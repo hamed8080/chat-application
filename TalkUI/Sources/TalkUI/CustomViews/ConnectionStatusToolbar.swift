@@ -23,14 +23,21 @@ public struct ConnectionStatusToolbar: View {
             HStack {
                 let localized = String(localized: .init(connectionStatus.stringValue))
                 Text(localized)
-                    .font(.iransansBoldBody)
-                    .foregroundColor(.textBlueColor)
+                    .font(.iransansBoldCaption3)
+                    .foregroundColor(.hint)
                     .onReceive(appstate.$connectionStatus) { newSate in
-                        self.connectionStatus = newSate
+                        if EnvironmentValues.isTalkTest {
+                            connectionStatus = newSate
+                        } else {
+                            if connectionStatus == .unauthorized {
+                                connectionStatus = .connecting
+                            } else {
+                                connectionStatus = newSate
+                            }
+                        }
                     }
                 ThreeDotAnimation()
                     .frame(width: 26, height: 8)
-
             }
         } else {
             EmptyView()

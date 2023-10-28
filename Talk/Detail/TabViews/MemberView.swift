@@ -27,7 +27,7 @@ struct MemberView: View {
                 }
             }
 
-            StickyHeaderSection(header: "Tab.contacts")
+            StickyHeaderSection(header: "Tab.contacts", height: 30)
             AddParticipantButton(conversation: viewModel.thread)
                 .listRowSeparatorTint(.gray.opacity(0.2))
                 .listRowBackground(Color.bgColor)
@@ -76,6 +76,11 @@ struct ParticipantRowContainer: View {
             .onAppear {
                 if viewModel.participants.last == participant {
                     viewModel.loadMore()
+                }
+            }
+            .onTapGesture {
+                if participant.id != AppState.shared.user?.id {
+                    AppState.shared.openThread(participant: participant)
                 }
             }
             .contextMenu {

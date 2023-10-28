@@ -29,7 +29,7 @@ public struct ListSectionButton: View {
             action?()
         } label: {
             VStack(alignment: .leading) {
-                HStack {
+                HStack(spacing: 16) {
                     HStack {
                         Image(systemName: imageName)
                             .resizable()
@@ -37,7 +37,6 @@ public struct ListSectionButton: View {
                             .frame(width: 16, height: 16)
                             .foregroundColor(.white)
                     }
-                    .padding(4)
                     .frame(width: 28, height: 28)
                     .background(color)
                     .cornerRadius(8, corners: .allCorners)
@@ -61,8 +60,9 @@ public struct ListSectionButton: View {
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36, alignment: .leading)
             .contentShape(Rectangle())
-            .padding([.leading, .trailing, .top], 12)
-            .padding(.bottom, showDivider ? 0 : 8)
+            .padding(.top, 12)
+            .padding([.leading, .trailing], 16)
+            .padding(.bottom, showDivider ? 0 : 12)
         }
         .buttonStyle(ListSectionButtonStyle())
         .contentShape(Rectangle())

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TalkUI
 
 struct TabButtonsContainer: View {
     @Binding var selectedId: String
@@ -28,7 +29,7 @@ struct TabButtonsContainer: View {
         .frame(height: 36)
         .padding(.top, 16)
         .padding(.bottom, 4)
-        .background(.ultraThinMaterial)
+        .background(MixMaterialBackground().ignoresSafeArea())
     }
 }
 

@@ -233,13 +233,17 @@
 
 /* Login */
 "Login.title" = "Logga in";
-"Login.welcome" = "Välkommen till Talk";
+"Login.loginOrSignup" = "Logga in eller registrera dig";
+"Login.subtitle" = "För att skapa ett användarkonto i Talk vänligen ange ditt telefonnummer.";
 "Login.staticToken" = "Ange din statiska token här.";
 "Login.phoneNumber" = "Ange ditt telefonnummer här.";
 "Login.footer" = "Kontakta supportteamet om du har problem med inloggningen.";
-"Login.Verify.enterCode" = "Ange verifikationskod";
-"Login.Verfiy.verificationCodeSentTo" = "Verifikationskod skickad till: ";
+"Login.Verify.verifyPhoneNumber" = "Verifiera telefonnumret";
+"Login.Verfiy.verificationCodeSentTo" = "Vi har skickat ett SMS med aktiveringskoden till din telefon %@";
 "Login.Verify.title" = "Verifiera";
+"Login.verifyCode" = "Verifiera kod";
+"Login.Verify.timer" = "%@ återstod för att ta emot den nya koden";
+"Login.Verify.resendCode" = "Återsänd koden";
 
 /* Settings */
 "Settings.title" = "Inställningar";
@@ -251,6 +255,9 @@
 "Settings.logout" = "Logga ut";
 "Settings.notifictionSettings" = "Aviseringsinställningar";
 "Settings.support" = "Stöd";
+"Settings.userName" = "Användarnamn";
+"Settings.phoneNumber" = "Telefonnummer";
+"Settings.bio" = "Biografi";
 
 /* Support */
 "Support.version" = "Version: %@";

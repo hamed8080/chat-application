@@ -51,7 +51,7 @@ struct BlockedContacts: View {
                 }
             }
             .listRowBackground(Color.bgColor)
-            .listRowSeparatorTint(Color.dividerDarkerColor)
+            .listRowSeparatorTint(blocked.blockId == viewModel.blockedContacts.last?.blockId ? Color.clear : Color.dividerDarkerColor)
         }
         .background(Color.bgColor)
         .navigationTitle("Contacts.blockedList")

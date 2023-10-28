@@ -50,7 +50,7 @@ public struct DownloadFileView: View {
                 shareDownloadedFile.toggle()
             }
         }
-        .onAppear {
+        .task {
             if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
                 viewModel.downloadBlurImage(quality: config.blurQuality, size: config.blurSize)
             }
@@ -245,7 +245,7 @@ struct DownloadImagethumbnail: View {
                     self.thumbnailData = viewModel.thumbnailData
                 }
             }
-            .onAppear {
+            .task {
                 thumbnailData = viewModel.thumbnailData
             }
     }

@@ -85,7 +85,7 @@ struct ParticipantRowLables: View {
                 }
             }
         }
-        .font(.iransansCaption)
+        .font(.iransansBoldCaption)
     }
 }
 

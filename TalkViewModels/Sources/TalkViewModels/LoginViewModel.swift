@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import TalkModels
 import TalkExtensions
+import SwiftUI
 
 public final class LoginViewModel: ObservableObject {
     @Published public var isLoading = false
@@ -23,6 +24,13 @@ public final class LoginViewModel: ObservableObject {
     @Published public var selectedServerType: ServerTypes = .main
     public let session: URLSession
     public weak var delegate: ChatDelegate?
+
+    public var timerValue: Int = 0
+    public var timer: Timer?
+    @Published public var expireIn: Int = 60
+    @Published public var timerString = "00:00"
+    @Published public var timerHasFinished = false
+    @Published public var path: NavigationPath = .init()
 
     public init(delegate: ChatDelegate, session: URLSession = .shared) {
         self.delegate = delegate
@@ -57,18 +65,22 @@ public final class LoginViewModel: ObservableObject {
         urlReq.method = .post
         do {
             let resp = try await session.data(for: urlReq)
-            let response = try JSONDecoder().decode(HandshakeResponse.self, from: resp.0)
-            await requestOTP(identity: text, handskahe: response)
+            let decodecd = try JSONDecoder().decode(HandshakeResponse.self, from: resp.0)
+            if let keyId = decodecd.keyId {
+                await requestOTP(identity: text, keyId: keyId)
+            }
+            await MainActor.run {
+                expireIn = decodecd.client?.accessTokenExpiryTime ?? 60
+            }
+            await startTimer()
         } catch {
             showError(.failed)
         }
         showLoading(false)
     }
 
-    public func requestOTP(identity: String, handskahe: HandshakeResponse) async {
-        guard let keyId = handskahe.keyId else { return }
+    public func requestOTP(identity: String, keyId: String, resend: Bool = false) async {
         showLoading(true)
-
         var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).authorize)!)
         urlReq.url?.append(queryItems: [.init(name: "identity", value: identity)])
         urlReq.allHTTPHeaderFields = ["keyId": keyId]
@@ -77,7 +89,9 @@ public final class LoginViewModel: ObservableObject {
             let resp = try await session.data(for: urlReq)
             _ = try JSONDecoder().decode(AuthorizeResponse.self, from: resp.0)
             await MainActor.run {
-                state = .verify
+                if !resend {
+                    state = .verify
+                }
                 self.keyId = keyId
             }
         } catch {
@@ -135,5 +149,39 @@ public final class LoginViewModel: ObservableObject {
                 isLoading = show
             }
         }
+    }
+
+    public func resend() {
+        if let keyId = keyId {
+            Task {
+                await requestOTP(identity: text, keyId: keyId, resend: true)
+                await startTimer()
+            }
+        }
+    }
+
+    @MainActor
+    public func startTimer() async {
+        timerHasFinished = false
+        timer?.invalidate()
+        timer = nil
+        timerValue = expireIn
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+            guard let self else { return }
+            if timerValue != 0 {
+                timerValue -= 1
+                timerString = timerValue.timerString ?? ""
+            } else {
+                timerHasFinished = true
+                timer.invalidate()
+                self.timer = nil
+            }
+        }
+    }
+
+    public func cancelTimer() {
+        timerHasFinished = false
+        timer?.invalidate()
+        timer = nil
     }
 }

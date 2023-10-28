@@ -21,7 +21,6 @@ struct SendContainer: View {
     @State private var isRecording = false
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
     private var threadId: Int? { viewModel.thread.id }
-    @Namespace var id
     @State var showActionButtons: Bool = false
 
     var body: some View {
@@ -42,6 +41,7 @@ struct SendContainer: View {
                         SelectionView(viewModel: viewModel)
                     } else if viewModel.canShowMute {
                         MuteChannelViewPlaceholder()
+                            .padding(10)
                     } else {
                         ReplyMessageViewPlaceholder()
                             .environmentObject(viewModel)
@@ -56,11 +56,11 @@ struct SendContainer: View {
                         }
 
                         if let recordingVM = viewModel.audioRecoderVM {
-                            AudioRecordingView(isRecording: $isRecording, nameSpace: id)
+                            AudioRecordingView(isRecording: $isRecording)
                                 .environmentObject(recordingVM)
                                 .padding([.trailing], 12)
                         }
-                        MainSendButtons(showActionButtons: $showActionButtons, isRecording: $isRecording, text: $text, id: id)
+                        MainSendButtons(showActionButtons: $showActionButtons, isRecording: $isRecording, text: $text)
                             .environment(\.layoutDirection, .leftToRight)
                     }
                 }
@@ -68,12 +68,10 @@ struct SendContainer: View {
                 .disabled(disableSend)
                 .padding(.bottom, 4)
                 .padding([.leading, .trailing], 8)
-                .padding(.top, 12)
+                .padding(.top, 4)
                 .animation(isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: isRecording)
                 .background(
-                    Rectangle()
-                        .fill(Color.bgMessage.opacity(0.5))
-                        .background(.regularMaterial)
+                    MixMaterialBackground()
                         .cornerRadius(showActionButtons ? 24 : 0, corners: [.topLeft, .topRight])
                         .ignoresSafeArea()
                 )
@@ -114,7 +112,6 @@ struct MainSendButtons: View {
     @Binding var showActionButtons: Bool
     @Binding var isRecording: Bool
     @Binding var text: String
-    let id: Namespace.ID
 
     var body: some View {
         HStack(spacing: 0) {
@@ -133,7 +130,6 @@ struct MainSendButtons: View {
                 .frame(width: 48, height: 48)
                 .cornerRadius(24)
                 .buttonStyle(.borderless)
-                .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
                 .fontWeight(.light)
             }
 

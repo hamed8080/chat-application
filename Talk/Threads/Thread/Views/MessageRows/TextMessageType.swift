@@ -27,8 +27,6 @@ struct TextMessageType: View {
 
             if viewModel.isMe {
                 Spacer()
-                EmojiIcon()
-                    .offset(x: 16)
             }
 
             VStack(spacing: 0) {
@@ -37,10 +35,6 @@ struct TextMessageType: View {
             }
 
             MutableMessageView()
-
-            if !viewModel.isMe {
-                EmojiIcon()
-            }
 
             if !viewModel.isMe {
                 Spacer()
@@ -156,7 +150,7 @@ struct MutableMessageView: View {
             }
         }
         .frame(maxWidth: viewModel.widthOfRow)
-        .padding(10)
+        .padding(message.isImage ? 4 : 10)
         .contentShape(Rectangle())
         .background(viewModel.isMe ? Color.bgMessageMe : Color.bgMessage)
         .overlay {
@@ -191,8 +185,12 @@ struct MutableMessageView: View {
             }
         }, including: message.isVideo ? .subviews : .all)
         .contentShape(RoundedRectangle(cornerRadius: 12))
-        .contextMenu {
+        /// We should pass the width of the row when it gets updated to the context menu to get proper width of the view in modifier.
+        .customContextMenu(self: self.environmentObject(viewModel), width: viewModel.widthOfRow) {
             MessageActionMenu()
+                .environmentObject(viewModel)
+        } topView: {
+            ReactionMenuView()
                 .environmentObject(viewModel)
         }
         .onAppear {

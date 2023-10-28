@@ -233,13 +233,17 @@
 
 /* Inicio de sesión */
 "Login.title" = "Iniciar sesión";
-"Login.welcome" = "Bienvenido a la Talk";
+"Login.loginOrSignup" = "Iniciar sesión o registrarse";
+"Login.subtitle" = "Para crear una cuenta de usuario en Talk, ingrese su número de teléfono.";
 "Login.staticToken" = "Ingresa tu token estático aquí.";
 "Login.phoneNumber" = "Ingresa tu número de teléfono aquí.";
 "Login.footer" = "Contacta al equipo de soporte si tienes problemas con el inicio de sesión.";
-"Login.Verify.enterCode" = "Ingresa el código de verificación";
-"Login.Verfiy.verificationCodeSentTo" = "Código de verificación enviado a: ";
+"Login.Verify.verifyPhoneNumber" = "Verificar el número de teléfono";
+"Login.Verfiy.verificationCodeSentTo" = "Hemos enviado un SMS con el código de activación a tu teléfono %@";
 "Login.Verify.title" = "Verificar";
+"Login.verifyCode" = "Código de verificación";
+"Login.Verify.timer" = "Quedaban %@ para recibir el nuevo código";
+"Login.Verify.resendCode" = "Reenviar codigo";
 
 /* Configuración */
 "Settings.title" = "Configuración";
@@ -251,6 +255,9 @@
 "Settings.logout" = "Cerrar sesión";
 "Settings.notifictionSettings" = "Configuración de las notificaciones";
 "Settings.support" = "Soporte";
+"Settings.userName" = "Nombre de usuario";
+"Settings.phoneNumber" = "Número de teléfono";
+"Settings.bio" = "Biografía";
 
 /* Support */
 "Support.version" = "Versión: %@";

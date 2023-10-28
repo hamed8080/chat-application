@@ -13,46 +13,59 @@ import TalkUI
 import TalkViewModels
 import TalkModels
 import Additive
+import ChatCore
 
 struct SettingsView: View {
     let container: ObjectsContainer
     @State private var showLoginSheet = false
     
     var body: some View {
-        ScrollView(.vertical) {
-            VStack(spacing: 16) {
+        List {
+            Group {
                 UserProfileView()
-                CustomListSection {
-                    SettingSettingSection()
-                    SavedMessageSection()
-                    BlockedMessageSection()
-                    // SettingCallHistorySection()
-                    // SettingSavedMessagesSection()
-                    // SettingCallSection()
-                    SettingLogSection()
-                    if EnvironmentValues.isTalkTest {
-                        SettingAssistantSection()
-                    }
-                }
-
-                CustomListSection {
-                    SettingNotificationSection()
-                }
-
-                CustomListSection {
-                    SupportSection()
-                }
-
-                CustomListSection {
-                    TokenExpireSection()
-                }
+                    .listRowBackground(Color.bgColor)
             }
-            .padding(16)
+            .listRowSeparator(.hidden)
+
+            UserInformationSection()
+                .listRowSeparator(.hidden)
+
+            Group {
+                StickyHeaderSection(header: "", height: 10)
+                    .listRowInsets(.zero)
+                    .listRowSeparator(.hidden)
+                SettingSettingSection()
+                SavedMessageSection()
+                BlockedMessageSection()
+                // SettingCallHistorySection()
+                // SettingSavedMessagesSection()
+                // SettingCallSection()
+                SettingLogSection()
+                if EnvironmentValues.isTalkTest {
+                    SettingAssistantSection()
+                }
+
+                SettingNotificationSection()
+                    .listRowSeparator(.hidden)
+            }
+
+            Group {
+                StickyHeaderSection(header: "", height: 10)
+                    .listRowInsets(.zero)
+                    .listRowSeparator(.hidden)
+
+                SupportSection()
+                TokenExpireSection()
+            }
+            .listRowSeparator(.hidden)
         }
+        .listStyle(.plain)
+        .background(Color.bgColor.ignoresSafeArea())
+        .environment(\.defaultMinListRowHeight, 8)
         .font(.iransansSubheadline)
         .safeAreaInset(edge: .top) {
             EmptyView()
-                .frame(height: 48)
+                .frame(height: 44)
         }
         .overlay(alignment: .top) {
             ToolbarView(
@@ -63,17 +76,17 @@ struct SettingsView: View {
             )
         }
         .sheet(isPresented: $showLoginSheet) {
-            LoginView {
+            LoginNavigationContainerView {
                 container.reset()
                 showLoginSheet.toggle()
             }
         }
     }
 
-   @ViewBuilder var leadingViews: some View {
-       if EnvironmentValues.isTalkTest {
-           ToolbarButtonItem(imageName: "qrcode", hint: "General.edit")
-       }
+    @ViewBuilder var leadingViews: some View {
+        if EnvironmentValues.isTalkTest {
+            ToolbarButtonItem(imageName: "qrcode", hint: "General.edit")
+        }
     }
 
     var centerViews: some View {
@@ -90,6 +103,8 @@ struct SettingsView: View {
                 }
             }
         }
+
+        ToolbarButtonItem(imageName: "magnifyingglass", hint: "General.search") {}
     }
 }
 
@@ -97,11 +112,89 @@ struct SettingSettingSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "gearshape.fill", title: "Settings.title", color: .gray) {
+        ListSectionButton(imageName: "gearshape.fill", title: "Settings.title", color: .gray, showDivider: false) {
             navModel.appendPreference()
         }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.bgColor)
+        .listRowSeparatorTint(Color.dividerDarkerColor)
     }
 }
+
+struct UserInformationSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+    @State var phone = ""
+    @State var userName = ""
+    @State var bio = ""
+
+    var body: some View {
+        if !userName.isEmpty || !phone.isEmpty || !bio.isEmpty {
+            StickyHeaderSection(header: "", height: 10)
+                .listRowInsets(.zero)
+        }
+
+        if !phone.isEmpty {
+            VStack(alignment: .leading) {
+                TextField("", text: $phone)
+                    .foregroundColor(Color.messageText)
+                    .font(.iransansSubheadline)
+                    .disabled(true)
+                Text("Settings.phoneNumber")
+                    .foregroundColor(Color.hint)
+                    .font(.iransansCaption)
+            }
+            .listRowBackground(Color.bgColor)
+            .listRowSeparatorTint(Color.dividerDarkerColor)
+        }
+
+        if !userName.isEmpty {
+            VStack(alignment: .leading) {
+                TextField("", text: $userName)
+                    .foregroundColor(Color.messageText)
+                    .font(.iransansSubheadline)
+                    .disabled(true)
+                Text("Settings.userName")
+                    .foregroundColor(Color.hint)
+                    .font(.iransansCaption)
+            }
+            .listRowBackground(Color.bgColor)
+            .listRowSeparatorTint(Color.dividerDarkerColor)
+        }
+
+        if !bio.isEmpty {
+            VStack(alignment: .leading) {
+                TextField("", text: $bio)
+                    .foregroundColor(Color.messageText)
+                    .font(.iransansSubheadline)
+                    .disabled(true)
+                Text("Settings.bio")
+                    .foregroundColor(Color.hint)
+                    .font(.iransansCaption)
+            }
+            .listRowBackground(Color.bgColor)
+            .listRowSeparatorTint(Color.clear)
+        }
+        EmptyView()
+            .frame(width: 0, height: 0)
+            .listRowSeparator(.hidden)
+            .onAppear {
+                let user = AppState.shared.user
+                phone = user?.cellphoneNumber ?? ""
+                userName = user?.username ?? ""
+                bio = user?.chatProfileVO?.bio ?? ""
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .connect)) { notification in
+                /// We use this to fetch the user profile image once the active instance is initialized.
+                if let status = notification.object as? ChatState, status == .connected {
+                    let user = AppState.shared.user
+                    phone = user?.cellphoneNumber ?? ""
+                    userName = user?.username ?? ""
+                    bio = user?.chatProfileVO?.bio ?? ""
+                }
+            }
+    }
+}
+
 
 struct PreferenceView: View {
     @State var model = AppSettingsModel.restore()
@@ -116,8 +209,11 @@ struct PreferenceView: View {
                         .font(.iransansCaption3)
                 }
             }
+            .listRowBackground(Color.bgColor)
+            .listRowSeparator(.hidden)
         }
-        .listStyle(.insetGrouped)
+        .background(Color.bgColor)
+        .listStyle(.plain)
         .navigationTitle("Settings.title")
         .navigationBarBackButtonHidden(true)
         .onChange(of: model) { _ in
@@ -138,15 +234,26 @@ struct NotificationSettings: View {
 
     var body: some View {
         List {
-            Section {
+            Group {
                 Toggle("Notification.Sound", isOn: $model.notificationSettings.soundEnable)
+                    .listRowBackground(Color.bgColor)
+                    .listRowSeparatorTint(Color.dividerDarkerColor)
                 Toggle("Notification.ShowDetails", isOn: $model.notificationSettings.showDetails)
+                    .listRowBackground(Color.bgColor)
+                    .listRowSeparatorTint(Color.dividerDarkerColor)
                 Toggle("Notification.Vibration", isOn: $model.notificationSettings.vibration)
+                    .listRowBackground(Color.bgColor)
+                    .listSectionSeparator(.hidden)
             }
             .toggleStyle(.switch)
             .toggleStyle(MyToggleStyle())
+            .listSectionSeparator(.hidden)
 
-            Section {
+            Group {
+                StickyHeaderSection(header: "", height: 10)
+                    .listRowInsets(.zero)
+                    .listRowSeparator(.hidden)
+
                 NavigationLink {
                     PrivateNotificationSetting()
                 } label: {
@@ -154,6 +261,8 @@ struct NotificationSettings: View {
                                            title: "Notification.PrivateSettings",
                                            color: .purple)
                 }
+                .listRowBackground(Color.bgColor)
+                .listRowSeparatorTint(Color.dividerDarkerColor)
 
                 NavigationLink {
                     GroupNotificationSetting()
@@ -162,6 +271,8 @@ struct NotificationSettings: View {
                                            title: "Notification.GroupSettings",
                                            color: .green)
                 }
+                .listRowBackground(Color.bgColor)
+                .listRowSeparatorTint(Color.dividerDarkerColor)
 
                 NavigationLink {
                     ChannelNotificationSetting()
@@ -170,10 +281,15 @@ struct NotificationSettings: View {
                                            title: "Notification.ChannelSettings",
                                            color: .yellow)
                 }
+                .listRowBackground(Color.bgColor)
+                .listSectionSeparator(.hidden)
             }
+            .listRowSeparatorTint(Color.clear)
         }
+        .environment(\.defaultMinListRowHeight, 8)
         .font(.iransansSubheadline)
-        .listStyle(.insetGrouped)
+        .background(Color.bgColor)
+        .listStyle(.plain)
         .navigationTitle("Settings.notifictionSettings")
         .navigationBarBackButtonHidden(true)
         .onChange(of: model) { _ in
@@ -195,8 +311,12 @@ struct PrivateNotificationSetting: View {
     var body: some View {
         List {
             Toggle("Notification.Sound", isOn: $model.notificationSettings.privateChat.sound)
+                .listRowBackground(Color.bgColor)
+                .listSectionSeparator(.hidden)
         }
-        .listStyle(.insetGrouped)
+        .environment(\.defaultMinListRowHeight, 8)
+        .listStyle(.plain)
+        .background(Color.bgColor)
         .onChange(of: model) { _ in
             model.save()
         }
@@ -209,8 +329,12 @@ struct GroupNotificationSetting: View {
     var body: some View {
         List {
             Toggle("Notification.Sound", isOn: $model.notificationSettings.group.sound)
+                .listRowBackground(Color.bgColor)
+                .listSectionSeparator(.hidden)
         }
-        .listStyle(.insetGrouped)
+        .environment(\.defaultMinListRowHeight, 8)
+        .listStyle(.plain)
+        .background(Color.bgColor)
         .onChange(of: model) { _ in
             model.save()
         }
@@ -223,8 +347,12 @@ struct ChannelNotificationSetting: View {
     var body: some View {
         List {
             Toggle("Notification.Sound", isOn: $model.notificationSettings.channel.sound)
+                .listRowBackground(Color.bgColor)
+                .listSectionSeparator(.hidden)
         }
-        .listStyle(.insetGrouped)
+        .environment(\.defaultMinListRowHeight, 8)
+        .listStyle(.plain)
+        .background(Color.bgColor)
         .onChange(of: model) { _ in
             model.save()
         }
@@ -262,9 +390,12 @@ struct SettingLogSection: View {
 
     var body: some View {
         if EnvironmentValues.isTalkTest {
-            ListSectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown) {
+            ListSectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown, showDivider: false) {
                 navModel.appendLog()
             }
+            .listRowInsets(.zero)
+            .listRowBackground(Color.bgColor)
+            .listRowSeparatorTint(Color.dividerDarkerColor)
         }
     }
 }
@@ -273,20 +404,26 @@ struct SavedMessageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: .purple) {
+        ListSectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: .purple, showDivider: false) {
             ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
         }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.bgColor)
+        .listRowSeparatorTint(Color.dividerDarkerColor)
     }
 }
 struct BlockedMessageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "hand.raised.slash", title: "General.blocked", color: .redSoft) {
+        ListSectionButton(imageName: "hand.raised.slash", title: "General.blocked", color: .redSoft, showDivider: false) {
             withAnimation {
                 navModel.appendBlockedContacts()
             }
         }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.bgColor)
+        .listRowSeparatorTint(Color.dividerDarkerColor)
     }
 }
 
@@ -297,6 +434,9 @@ struct SettingNotificationSection: View {
         ListSectionButton(imageName: "bell.fill", title: "Settings.notifictionSettings", color: .red, showDivider: false) {
             navModel.appendNotificationSetting()
         }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.bgColor)
+        .listRowSeparatorTint(Color.dividerDarkerColor)
     }
 }
 
@@ -307,6 +447,9 @@ struct SupportSection: View {
         ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.support", color: .green, showDivider: false) {
             navModel.appendSupport()
         }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.bgColor)
+        .listRowSeparatorTint(Color.dividerDarkerColor)
     }
 }
 
@@ -317,15 +460,58 @@ struct SettingAssistantSection: View {
         ListSectionButton(imageName: "person.fill", title: "Settings.assistants", color: .blue, showDivider: false) {
             navModel.appendAssistant()
         }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.bgColor)
+        .listRowSeparatorTint(Color.dividerDarkerColor)
     }
 }
 
 struct UserProfileView: View {
     @EnvironmentObject var container: ObjectsContainer
-    var user: User? { container.userConfigsVM.currentUserConfig?.user }
+    var userConfig: UserConfig? { container.userConfigsVM.currentUserConfig }
+    var user: User? { userConfig?.user }
+    @EnvironmentObject var viewModel: SettingViewModel
+    @StateObject var imageLoader = ImageLoaderViewModel()
 
     var body: some View {
-        SwipyView(container: container)
+        HStack(spacing: 0) {
+            ImageLaoderView(imageLoader: imageLoader, url: userConfig?.user.image, userName: userConfig?.user.name)
+                .id("\(userConfig?.user.image ?? "")\(userConfig?.user.id ?? 0)")
+                .frame(width: 64, height: 64)
+                .cornerRadius(28)
+                .padding(.trailing, 16)
+
+            Text(verbatim: user?.name ?? "")
+                .foregroundStyle(Color.messageText)
+                .font(.iransansSubheadline)
+            Spacer()
+
+            Button {
+
+            } label: {
+                Rectangle()
+                    .fill(.clear)
+                    .frame(width: 48, height: 48)
+                    .background(.ultraThickMaterial)
+                    .cornerRadius(24)
+                    .overlay(alignment: .center) {
+                        Image("ic_edit")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(Color.hint)
+                    }
+            }
+            .buttonStyle(.plain)
+        }
+        .listRowInsets(.init(top: 16, leading: 16, bottom: 16, trailing: 16))
+        .frame(height: 70)
+        .onReceive(NotificationCenter.default.publisher(for: .user)) { notification in
+            let event = notification.object as? UserEventTypes
+            if !imageLoader.isImageReady, case let .user(response) = event, let user = response.result {
+                imageLoader.fetch(url: user.image, userName: user.name, size: .LARG)
+            }
+        }
     }
 }
 
@@ -365,6 +551,9 @@ struct TokenExpireSection: View {
                 .onAppear {
                     viewModel.startTokenTimer()
                 }
+                .listRowInsets(.zero)
+                .listRowBackground(Color.bgColor)
+                .listRowSeparatorTint(Color.clear)
         }
     }
 }

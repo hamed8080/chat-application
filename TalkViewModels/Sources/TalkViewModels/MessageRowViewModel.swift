@@ -186,7 +186,7 @@ public final class MessageRowViewModel: ObservableObject {
             self.markdownTitle = markdownTitle
             self.timeString = timeString
             self.fileSizeString = fileSizeString
-            withAnimation(animation?.speed(0.8)) {
+            withAnimation(.none) {
                 self.objectWillChange.send()
             }
         }

@@ -10,6 +10,7 @@ import ChatModels
 import SwiftUI
 import TalkExtensions
 import Chat
+import TalkUI
 
 struct ReactionMenuView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
@@ -28,8 +29,8 @@ struct ReactionMenuView: View {
                         }
                     } label: {
                         Text(verbatim: sticker.emoji)
-                            .frame(width: 36, height: 36)
-                            .font(.system(size: 36))
+                            .frame(width: 26, height: 26)
+                            .font(.system(size: 26))
                             .padding(4)
                             .background(currentSelectedReaction?.reaction == sticker ? Color.blue : Color.clear)
                             .cornerRadius(currentSelectedReaction?.reaction == sticker ? 4 : 0)
@@ -47,12 +48,11 @@ struct ReactionMenuView: View {
                 }
             }
         }
-        .fixedSize()
-        .padding([.top, .bottom])
-        .background(.ultraThickMaterial)
-        .cornerRadius(36)
+        .frame(height: 52)
+        .background(MixMaterialBackground())
+        .cornerRadius(21)
         .overlay {
-            RoundedRectangle(cornerRadius: 36)
+            RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.gray.opacity(0.1), lineWidth: 1)
                 .shadow(color: .gray.opacity(0.5), radius: 4, x: 0, y: 0)
         }

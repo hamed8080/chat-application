@@ -232,13 +232,17 @@
 
 /* Login */
 "Login.title" = "Login";
-"Login.welcome" = "**Welcome** to Talk";
+"Login.loginOrSignup" = "Login or Sign Up";
+"Login.subtitle" = "For creating a user account in Talk please enter your phone number.";
 "Login.staticToken" = "Enter your static token here.";
 "Login.phoneNumber" = "Enter your Phone number here.";
 "Login.footer" = "Contact the support team if you have gotten into trouble with the login.";
-"Login.Verify.enterCode" = "Enter Verication Code";
-"Login.Verfiy.verificationCodeSentTo" = "Verification code sent to: ";
+"Login.Verify.verifyPhoneNumber" = "Verify the phone number";
+"Login.Verfiy.verificationCodeSentTo" = "We have sent an SMS containing the activation code to your phone %@";
 "Login.Verify.title" = "Verify";
+"Login.verifyCode" = "Verify Code";
+"Login.Verify.timer" = "%@ remained to receive the new code";
+"Login.Verify.resendCode" = "Resend code";
 
 /* Settings */
 "Settings.title" = "Settings";
@@ -249,6 +253,9 @@
 "Settings.manageCalls" = "Manage Calls";
 "Settings.logout" = "Logout";
 "Settings.notifictionSettings" = "Notification Settings";
+"Settings.userName" = "Username";
+"Settings.phoneNumber" = "Phone Number";
+"Settings.bio" = "Biography";
 
 /* Support */
 "Support.version" = "Version: %@";

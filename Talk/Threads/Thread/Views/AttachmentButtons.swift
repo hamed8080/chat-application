@@ -66,6 +66,7 @@ struct MutableAttachmentDialog: View {
         }
         .font(.iransansBody)
         .padding()
+        .animation(.easeInOut, value: showActionButtons)
     }
 }
 

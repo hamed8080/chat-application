@@ -13,11 +13,9 @@ public struct AudioRecordingView: View {
     @EnvironmentObject var viewModel: AudioRecordingViewModel
     @State var opacity: Double = 0
     @Binding var isRecording: Bool
-    let id: Namespace.ID
 
-    public init(isRecording: Binding<Bool>, nameSpace: Namespace.ID) {
+    public init(isRecording: Binding<Bool>) {
         _isRecording = isRecording
-        id = nameSpace
     }
 
     public var body: some View {
@@ -39,7 +37,6 @@ public struct AudioRecordingView: View {
                 .cornerRadius(24)
                 .buttonStyle(.borderless)
                 .fontWeight(.light)
-                .matchedGeometryEffect(id: "PAPERCLIPS", in: id)
 
                 Text(viewModel.timerString)
                     .font(.iransansBody)
@@ -73,7 +70,7 @@ struct AudioRecordingView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        AudioRecordingView(isRecording: .constant(false), nameSpace: AudioRecordingView_Previews.id)
+        AudioRecordingView(isRecording: .constant(false))
             .environmentObject(viewModel)
     }
 }
