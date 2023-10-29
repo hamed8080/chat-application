@@ -14,9 +14,9 @@ struct DraftView: View {
     var body: some View {
         Text("Thread.draft")
             .font(.iransansBody)
-            .foregroundColor(.red)
+            .foregroundColor(Color.App.red)
         Text(draft)
             .font(.iransansBody)
-            .foregroundColor(.secondaryLabel)
+            .foregroundColor(Color.App.hint)
     }
 }

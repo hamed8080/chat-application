@@ -42,7 +42,7 @@ struct ConversationBuilder: View {
             .listRowInsets(.zero)
 
             ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
         }
         .environment(\.defaultMinListRowHeight, 24)
@@ -112,7 +112,7 @@ struct EditCreatedConversationDetail: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 16, height: 16)
-                                    .foregroundStyle(Color.hint)
+                                    .foregroundStyle(Color.App.hint)
                             }
 
                         /// Showing the image taht user has selected.
@@ -133,13 +133,13 @@ struct EditCreatedConversationDetail: View {
                     .font(.iransansBody)
             }
             .frame(height: 88)
-            .listRowBackground(Color.bgColor)
+            .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
             Section {
                 ForEach(viewModel.createdConversationParticpnats) { participant in
                     ParticipantRow(participant: participant)
-                        .listRowBackground(Color.bgColor)
-                        .listRowSeparatorTint(Color.dividerDarkerColor)
+                        .listRowBackground(Color.App.bgPrimary)
+                        .listRowSeparatorTint(Color.App.divider)
                 }
                 .onDelete(perform: viewModel.delete)
                 .padding()
@@ -149,10 +149,10 @@ struct EditCreatedConversationDetail: View {
             .listRowInsets(.zero)
 
             ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
         }
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)

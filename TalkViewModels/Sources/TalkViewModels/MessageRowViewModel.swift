@@ -180,7 +180,7 @@ public final class MessageRowViewModel: ObservableObject {
         let timeString = message.time?.date.timeAgoSinceDateCondense ?? ""
         let fileSizeString = message.fileMetaData?.file?.size?.toSizeString
         await MainActor.run {
-            self.addressDetail = addressDetail ?? ""
+            self.addressDetail = addressDetail
             self.isEnglish = isEnglish
             self.widthOfRow = widthOfRow
             self.markdownTitle = markdownTitle

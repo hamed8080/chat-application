@@ -25,17 +25,17 @@ struct BlockedContacts: View {
                     .font(.iransansBody)
                     .foregroundColor(.white)
                     .frame(width: 52, height: 52)
-                    .background(Color.blue.opacity(0.4))
+                    .background(Color.App.blue.opacity(0.4))
                     .cornerRadius(22)
 
                 VStack(alignment: .leading) {
                     Text(name ?? "")
-                        .foregroundStyle(Color.messageText)
+                        .foregroundStyle(Color.App.text)
                         .font(.iransansBoldBody)
 
                     Text(userId)
                         .font(.caption2)
-                        .foregroundStyle(Color.hint)
+                        .foregroundStyle(Color.App.hint)
                 }
 
                 Spacer()
@@ -50,10 +50,10 @@ struct BlockedContacts: View {
                         .frame(width: 16, height: 16)
                 }
             }
-            .listRowBackground(Color.bgColor)
-            .listRowSeparatorTint(blocked.blockId == viewModel.blockedContacts.last?.blockId ? Color.clear : Color.dividerDarkerColor)
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparatorTint(blocked.blockId == viewModel.blockedContacts.last?.blockId ? Color.clear : Color.App.divider)
         }
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .navigationTitle("Contacts.blockedList")
         .navigationBarBackButtonHidden(true)
         .listStyle(.plain)

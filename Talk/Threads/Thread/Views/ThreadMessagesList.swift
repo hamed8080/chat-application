@@ -83,7 +83,7 @@ struct ThreadbackgroundView: View {
             .id("chat_bg_\(threadId)")
             .opacity(colorScheme == .dark ? 0.9 : 0.25)
             .colorInvert()
-            .colorMultiply(colorScheme == .dark ? Color.white : Color.cyan)
+            .colorMultiply(colorScheme == .dark ? Color.App.white : Color.App.cyan)
     }
 }
 
@@ -121,13 +121,11 @@ struct SectionView: View {
     var body: some View {
         Text(verbatim: section.date.yearCondence ?? "")
             .font(.iransansCaption)
-            .padding([.leading, .trailing], 8)
-            .padding([.top, .bottom], 4)
-            .background(Color.main.opacity(0.1))
-            .background(.ultraThinMaterial)
-            .cornerRadius(8)
-            .foregroundColor(.secondaryLabel)
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(Color.App.black.opacity(0.2))
+            .cornerRadius(24)
+            .foregroundStyle(Color.App.text)
     }
 }
 

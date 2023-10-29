@@ -109,7 +109,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             }
             .store(in: &cancelable)
         seenPublisher
-            .filter{ [weak self] in $0.id ?? -1 > self?.thread.lastSeenMessageId ?? 0 }
+            .filter{ [weak self] in $0.id ?? -1 >= self?.thread.lastSeenMessageId ?? 0 && self?.thread.unreadCount ?? 0 > 0 }
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] newVlaue in
@@ -237,7 +237,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func sendSeen(for message: Message) {
         let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, !isMe {
+        if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId >= lastMsgId, !isMe {
             thread.lastSeenMessageId = messageId
             Logger.viewModels.info("send seen for message:\(message.messageTitle, privacy: .sensitive) with id:\(messageId)")
             ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))

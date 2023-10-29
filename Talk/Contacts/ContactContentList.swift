@@ -19,7 +19,7 @@ struct ContactContentList: View {
     var body: some View {
         List {
             ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
             if viewModel.maxContactsCountInServer > 0 {
                 HStack(spacing: 4) {
@@ -44,28 +44,28 @@ struct ContactContentList: View {
                     viewModel.showConversaitonBuilder.toggle()
                 } label: {
                     Label("Contacts.createGroup", systemImage: "person.2")
-                        .foregroundStyle(Color.main)
+                        .foregroundStyle(Color.App.primary)
                 }
-                .listRowBackground(Color.bgColor)
-                .listRowSeparatorTint(Color.dividerDarkerColor)
+                .listRowBackground(Color.App.bgPrimary)
+                .listRowSeparatorTint(Color.App.divider)
 
                 Button {
                     viewModel.createConversationType = .channel
                     viewModel.showConversaitonBuilder.toggle()
                 } label: {
                     Label("Contacts.createChannel", systemImage: "megaphone")
-                        .foregroundStyle(Color.main)
+                        .foregroundStyle(Color.App.primary)
                 }
-                .listRowBackground(Color.bgColor)
-                .listRowSeparatorTint(Color.dividerDarkerColor)
+                .listRowBackground(Color.App.bgPrimary)
+                .listRowSeparatorTint(Color.App.divider)
 
                 Button {
                     viewModel.showAddOrEditContactSheet.toggle()
                 } label: {
                     Label("Contacts.addContact", systemImage: "person.badge.plus")
-                        .foregroundStyle(Color.main)
+                        .foregroundStyle(Color.App.primary)
                 }
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
             }
             
@@ -87,7 +87,7 @@ struct ContactContentList: View {
             .listRowInsets(.zero)
             
             ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
         }
         .environment(\.defaultMinListRowHeight, 24)
@@ -158,9 +158,9 @@ struct ContactRowContainer: View {
     let isSearchRow: Bool
     var separatorColor: Color {
         if !isSearchRow {
-           return viewModel.contacts.last == contact ? Color.clear : Color.dividerDarkerColor
+           return viewModel.contacts.last == contact ? Color.clear : Color.App.divider
         } else {
-            return viewModel.searchedContacts.last == contact ? Color.clear : Color.dividerDarkerColor
+            return viewModel.searchedContacts.last == contact ? Color.clear : Color.App.divider
         }
     }
 
@@ -168,7 +168,7 @@ struct ContactRowContainer: View {
         ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
             .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)")
             .animation(.spring(), value: viewModel.isInSelectionMode)
-            .listRowBackground(Color.bgColor)
+            .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 Button {
@@ -177,14 +177,14 @@ struct ContactRowContainer: View {
                 } label: {
                     Label("General.edit", systemImage: "pencil")
                 }
-                .tint(.hint)
+                .tint(Color.App.hint)
 
                 Button {
                     viewModel.block(contact)
                 } label: {
                     Label("General.block", systemImage: "hand.raised.slash")
                 }
-                .tint(Color.redSoft)
+                .tint(Color.App.red)
 
                 Button {
                     if let index = viewModel.contacts.firstIndex(of: contact) {

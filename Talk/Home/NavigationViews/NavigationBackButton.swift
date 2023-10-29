@@ -33,7 +33,7 @@ public struct NavigationBackButton: View {
                 Text(string)
                     .font(.iransansBody)
             }
-            .foregroundColor(Color.main)
+            .foregroundColor(Color.App.primary)
         }
     }
 }

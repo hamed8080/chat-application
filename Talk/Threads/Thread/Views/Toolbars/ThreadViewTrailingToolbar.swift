@@ -30,7 +30,7 @@ struct ThreadViewTrailingToolbar: View {
             .font(.iransansBody)
             .foregroundColor(.white)
             .frame(width: 32, height: 32)
-            .background(Color.blue.opacity(0.4))
+            .background(Color.App.blue.opacity(0.4))
             .cornerRadius(16)
             .cornerRadius(18)
         }
@@ -50,7 +50,7 @@ struct ThreadViewTrailingToolbar: View {
             }
         } label: {
             Image(systemName: "ellipsis")
-                .foregroundStyle(Color.main)
+                .foregroundStyle(Color.App.primary)
         }
     }
 }

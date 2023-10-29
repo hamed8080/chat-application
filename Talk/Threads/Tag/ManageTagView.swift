@@ -23,7 +23,7 @@ struct ManageTagView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.gray.opacity(0.2)
+                Color.App.gray1.opacity(0.2)
                     .edgesIgnoringSafeArea(.all)
                 VStack(alignment: .leading, spacing: 24) {
                     HStack {
@@ -32,7 +32,7 @@ struct ManageTagView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 96, height: 96)
-                            .foregroundColor(Color.blue.opacity(0.7))
+                            .foregroundColor(Color.App.blue.opacity(0.7))
                         Spacer()
                     }
 
@@ -40,7 +40,7 @@ struct ManageTagView: View {
                         Spacer()
                         Text("Tags.manageFolders")
                             .font(.iransansSubtitle)
-                            .foregroundColor(.gray)
+                            .foregroundColor(Color.App.gray1)
                         Spacer()
                     }
 
@@ -49,7 +49,7 @@ struct ManageTagView: View {
                                      isEditing: false,
                                      keyboardType: .default,
                                      corenrRadius: 12,
-                                     backgroundColor: Color.white,
+                                     backgroundColor: Color.App.white,
                                      onCommit: {})
                         .onAppear(perform: {
                             tagName = tag.name
@@ -64,7 +64,7 @@ struct ManageTagView: View {
                                             viewModel.deleteTagParticipant(tag.id, tagParticipant)
                                         } label: {
                                             Label("General.delete", systemImage: "trash")
-                                        }.background(Color.red)
+                                        }.background(Color.App.red)
                                     })
                             }
                         }

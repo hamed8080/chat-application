@@ -34,7 +34,7 @@ struct UploadMessageType: View {
                         .frame(width: 64, height: 64)
                         .scaledToFit()
                         .padding()
-                        .foregroundColor(.iconColor.opacity(0.8))
+                        .foregroundColor(Color.App.primary)
                 }
             }
         }

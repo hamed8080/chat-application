@@ -19,7 +19,7 @@ public struct ErrorView: View {
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.red.opacity(0.7), lineWidth: 1)
+                .stroke(Color.App.red.opacity(0.7), lineWidth: 1)
         )
     }
 }

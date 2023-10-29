@@ -57,7 +57,9 @@ public extension Conversation {
 
     var unreadCountString: String? {
         if let unreadCount = unreadCount, unreadCount > 0 {
-            let unreadCountString = String(unreadCount)
+            let nf = NumberFormatter()
+            nf.locale = Locale.current
+            let unreadCountString = nf.string(from: unreadCount as NSNumber)
             let computedString = unreadCount < 1000 ? unreadCountString : "\(unreadCount / 1000)K+"
             return computedString
         } else {

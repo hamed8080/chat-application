@@ -10,7 +10,7 @@ import SwiftUI
 public struct MixMaterialBackground: View {
     let color: Color
 
-    public init(color: Color = .bgMessage.opacity(0.5)) {
+    public init(color: Color = Color.App.bgPrimary.opacity(0.5)) {
         self.color = color
     }
 

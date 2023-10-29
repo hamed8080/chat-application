@@ -26,12 +26,12 @@ struct TagParticipantRow: View {
                             .font(.system(size: 16).weight(.heavy))
                             .foregroundColor(.white)
                             .frame(width: 28, height: 28)
-                            .background(Color.blue.opacity(0.4))
+                            .background(Color.App.blue.opacity(0.4))
                             .cornerRadius(14)
                         VStack(alignment: .leading) {
                             Text(thread.title ?? "")
                                 .font(.iransansBody)
-                                .foregroundColor(Color.gray)
+                                .foregroundColor(Color.App.gray1)
                         }
                         Spacer()
                     }

@@ -55,13 +55,18 @@ struct SelectMessageRadio: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        RadioButton(visible: $viewModel.isInSelectMode, isSelected: $viewModel.isSelected) { isSelected in
-            withAnimation(!viewModel.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
-                viewModel.isSelected.toggle()
-                viewModel.animateObjectWillChange()
+        VStack {
+            Spacer()
+            RadioButton(visible: $viewModel.isInSelectMode, isSelected: $viewModel.isSelected) { isSelected in
+                withAnimation(!viewModel.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
+                    viewModel.isSelected.toggle()
+                    viewModel.animateObjectWillChange()
+                }
+                viewModel.threadVM?.animateObjectWillChange()
             }
-            viewModel.threadVM?.animateObjectWillChange()
         }
+        .padding(.bottom, 8)
+        .padding(viewModel.isMe ? .leading : .trailing, 9)
     }
 }
 
@@ -76,7 +81,7 @@ struct MutableMessageView: View {
             if !viewModel.isMe {
                 HStack {
                     Text(verbatim: message.participant?.name ?? "")
-                        .foregroundStyle(Color.purple)
+                        .foregroundStyle(Color.App.purple)
                         .font(.iransansBody)
                     Spacer()
                 }
@@ -98,30 +103,25 @@ struct MutableMessageView: View {
 
             if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
                 DownloadFileView(viewModel: downloadVM)
-                    .frame(maxHeight: viewModel.widthOfRow - padding)
+                    .frame(maxHeight: message.isImage ? viewModel.widthOfRow - padding : nil)
                     .clipped()
                     .contentShape(Rectangle())
                     .cornerRadius(8)
             }
 
-            if !message.isImage, let fileName = message.fileName ?? message.fileMetaData?.file?.originalName {
-                Text("\(fileName)\(message.fileExtension ?? "")")
-                    .foregroundStyle(Color.hintText)
-                    .font(.iransansCaption)
+            // TODO: TEXT must be alignment and image must be fit
+            if !message.messageTitle.isEmpty {
+                Text(viewModel.markdownTitle)
+                    .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
+                    .padding(8)
+                    .font(.iransansBody)
+                    .foregroundColor(Color.App.text)
                     .clipped()
             }
 
-            // TODO: TEXT must be alignment and image must be fit
-            Text(viewModel.markdownTitle)
-                .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
-                .padding(8)
-                .font(.iransansBody)
-                .foregroundColor(.messageText)
-                .clipped()
-
             if let addressDetail = viewModel.addressDetail {
                 Text(addressDetail)
-                    .foregroundStyle(Color.hintText)
+                    .foregroundStyle(Color.App.hint)
                     .font(.iransansCaption)
                     .padding([.leading, .trailing])
             }
@@ -143,19 +143,16 @@ struct MutableMessageView: View {
 
             Group {
                 ReactionCountView(message: message)
-
                 MessageFooterView(message: message)
-                    .padding(.bottom, 8)
-                    .padding([.leading, .trailing])
             }
         }
         .frame(maxWidth: viewModel.widthOfRow)
         .padding(message.isImage ? 4 : 10)
         .contentShape(Rectangle())
-        .background(viewModel.isMe ? Color.bgMessageMe : Color.bgMessage)
+        .background(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
         .overlay {
             if viewModel.isHighlited {
-                Color.blue.opacity(0.3)
+                Color.App.primary.opacity(0.1)
             }
         }
         .cornerRadius(12, corners: [.topLeft, .topRight])
@@ -172,7 +169,7 @@ struct MutableMessageView: View {
                         .scaledToFit()
                         .frame(width: 9, height: 18)
                         .offset(x: viewModel.isMe ? 9 : -9)
-                        .foregroundStyle(viewModel.isMe ? Color.bgMessageMe : Color.bgMessage)
+                        .foregroundStyle(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
                 }
                 if !viewModel.isMe {
                     Spacer()

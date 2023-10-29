@@ -20,10 +20,10 @@ struct LoginContentView: View {
             Group {
                 Text("Login.loginOrSignup")
                     .font(.iransansBoldLargeTitle)
-                    .foregroundColor(.textBlueColor)
+                    .foregroundColor(Color.App.text)
                 Text("Login.subtitle")
                     .font(.iransansSubheadline)
-                    .foregroundColor(.textBlueColor.opacity(0.7))
+                    .foregroundColor(Color.App.hint)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 48)
                     .padding(.bottom, 40)
@@ -81,7 +81,7 @@ struct LoginContentView: View {
             }
             .disabled(viewModel.isLoading)
         }
-        .background(Color.bgColor.ignoresSafeArea())
+        .background(Color.App.bgPrimary.ignoresSafeArea())
         .animation(.easeInOut, value: isFocused)
         .animation(.easeInOut, value: viewModel.selectedServerType)
         .transition(.move(edge: .trailing))

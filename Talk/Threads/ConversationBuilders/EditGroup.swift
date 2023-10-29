@@ -35,7 +35,7 @@ struct EditGroup: View {
                             .font(.iransansBoldCaption2)
                             .foregroundColor(.white)
                             .frame(width: 128, height: 128)
-                            .background(Color.blue.opacity(0.4))
+                            .background(Color.App.blue.opacity(0.4))
                             .cornerRadius(54)
                             .overlay(alignment: .center) {
                                 /// Showing the image taht user has selected.
@@ -56,7 +56,7 @@ struct EditGroup: View {
                                 Image(systemName: "camera")
                                     .font(.system(size: 11))
                                     .frame(width: 27, height: 27)
-                                    .background(Color.hint)
+                                    .background(Color.App.hint)
                                     .cornerRadius(18)
                                     .foregroundColor(.white)
                                     .fontWeight(.heavy)
@@ -70,11 +70,11 @@ struct EditGroup: View {
                 Spacer()
             }
             .padding()
-            .listRowBackground(Color.bgColor)
+            .listRowBackground(Color.App.bgPrimary)
             .noSeparators()
 
             StickyHeaderSection(header: "", height: 2)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowInsets(.zero)
                 .noSeparators()
 
@@ -86,7 +86,7 @@ struct EditGroup: View {
                     focusState = .name
                 }
                 .noSeparators()
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
 
             TextField("EditGroup.groupDescription", text: $viewModel.threadDescription)
                 .focused($focusState, equals: .description)
@@ -96,12 +96,12 @@ struct EditGroup: View {
                     focusState = .description
                 }
                 .noSeparators()
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.primary)
         }
         .animation(.easeInOut, value: focusState)
         .padding(0)
         .listStyle(.plain)
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .safeAreaInset(edge: .bottom) {
             EmptyView()
                 .frame(height: 72)

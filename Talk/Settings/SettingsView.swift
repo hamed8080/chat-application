@@ -23,7 +23,7 @@ struct SettingsView: View {
         List {
             Group {
                 UserProfileView()
-                    .listRowBackground(Color.bgColor)
+                    .listRowBackground(Color.App.bgPrimary)
             }
             .listRowSeparator(.hidden)
 
@@ -60,7 +60,7 @@ struct SettingsView: View {
             .listRowSeparator(.hidden)
         }
         .listStyle(.plain)
-        .background(Color.bgColor.ignoresSafeArea())
+        .background(Color.App.bgPrimary.ignoresSafeArea())
         .environment(\.defaultMinListRowHeight, 8)
         .font(.iransansSubheadline)
         .safeAreaInset(edge: .top) {
@@ -116,8 +116,8 @@ struct SettingSettingSection: View {
             navModel.appendPreference()
         }
         .listRowInsets(.zero)
-        .listRowBackground(Color.bgColor)
-        .listRowSeparatorTint(Color.dividerDarkerColor)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.divider)
     }
 }
 
@@ -136,42 +136,42 @@ struct UserInformationSection: View {
         if !phone.isEmpty {
             VStack(alignment: .leading) {
                 TextField("", text: $phone)
-                    .foregroundColor(Color.messageText)
+                    .foregroundColor(Color.App.text)
                     .font(.iransansSubheadline)
                     .disabled(true)
                 Text("Settings.phoneNumber")
-                    .foregroundColor(Color.hint)
+                    .foregroundColor(Color.App.hint)
                     .font(.iransansCaption)
             }
-            .listRowBackground(Color.bgColor)
-            .listRowSeparatorTint(Color.dividerDarkerColor)
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparatorTint(Color.App.divider)
         }
 
         if !userName.isEmpty {
             VStack(alignment: .leading) {
                 TextField("", text: $userName)
-                    .foregroundColor(Color.messageText)
+                    .foregroundColor(Color.App.text)
                     .font(.iransansSubheadline)
                     .disabled(true)
                 Text("Settings.userName")
-                    .foregroundColor(Color.hint)
+                    .foregroundColor(Color.App.hint)
                     .font(.iransansCaption)
             }
-            .listRowBackground(Color.bgColor)
-            .listRowSeparatorTint(Color.dividerDarkerColor)
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparatorTint(Color.App.divider)
         }
 
         if !bio.isEmpty {
             VStack(alignment: .leading) {
                 TextField("", text: $bio)
-                    .foregroundColor(Color.messageText)
+                    .foregroundColor(Color.App.text)
                     .font(.iransansSubheadline)
                     .disabled(true)
                 Text("Settings.bio")
-                    .foregroundColor(Color.hint)
+                    .foregroundColor(Color.App.hint)
                     .font(.iransansCaption)
             }
-            .listRowBackground(Color.bgColor)
+            .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.clear)
         }
         EmptyView()
@@ -209,10 +209,10 @@ struct PreferenceView: View {
                         .font(.iransansCaption3)
                 }
             }
-            .listRowBackground(Color.bgColor)
+            .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
         }
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .listStyle(.plain)
         .navigationTitle("Settings.title")
         .navigationBarBackButtonHidden(true)
@@ -236,13 +236,13 @@ struct NotificationSettings: View {
         List {
             Group {
                 Toggle("Notification.Sound", isOn: $model.notificationSettings.soundEnable)
-                    .listRowBackground(Color.bgColor)
-                    .listRowSeparatorTint(Color.dividerDarkerColor)
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowSeparatorTint(Color.App.divider)
                 Toggle("Notification.ShowDetails", isOn: $model.notificationSettings.showDetails)
-                    .listRowBackground(Color.bgColor)
-                    .listRowSeparatorTint(Color.dividerDarkerColor)
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowSeparatorTint(Color.App.divider)
                 Toggle("Notification.Vibration", isOn: $model.notificationSettings.vibration)
-                    .listRowBackground(Color.bgColor)
+                    .listRowBackground(Color.App.bgPrimary)
                     .listSectionSeparator(.hidden)
             }
             .toggleStyle(.switch)
@@ -259,36 +259,36 @@ struct NotificationSettings: View {
                 } label: {
                     SectionNavigationLabel(imageName: "person.fill",
                                            title: "Notification.PrivateSettings",
-                                           color: .purple)
+                                           color: Color.App.purple)
                 }
-                .listRowBackground(Color.bgColor)
-                .listRowSeparatorTint(Color.dividerDarkerColor)
+                .listRowBackground(Color.App.bgPrimary)
+                .listRowSeparatorTint(Color.App.divider)
 
                 NavigationLink {
                     GroupNotificationSetting()
                 } label: {
                     SectionNavigationLabel(imageName: "person.3.fill",
                                            title: "Notification.GroupSettings",
-                                           color: .green)
+                                           color: Color.App.green)
                 }
-                .listRowBackground(Color.bgColor)
-                .listRowSeparatorTint(Color.dividerDarkerColor)
+                .listRowBackground(Color.App.bgPrimary)
+                .listRowSeparatorTint(Color.App.divider)
 
                 NavigationLink {
                     ChannelNotificationSetting()
                 } label: {
                     SectionNavigationLabel(imageName: "megaphone.fill",
                                            title: "Notification.ChannelSettings",
-                                           color: .yellow)
+                                           color: Color.App.yellow)
                 }
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
             }
             .listRowSeparatorTint(Color.clear)
         }
         .environment(\.defaultMinListRowHeight, 8)
         .font(.iransansSubheadline)
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .listStyle(.plain)
         .navigationTitle("Settings.notifictionSettings")
         .navigationBarBackButtonHidden(true)
@@ -311,12 +311,12 @@ struct PrivateNotificationSetting: View {
     var body: some View {
         List {
             Toggle("Notification.Sound", isOn: $model.notificationSettings.privateChat.sound)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .onChange(of: model) { _ in
             model.save()
         }
@@ -329,12 +329,12 @@ struct GroupNotificationSetting: View {
     var body: some View {
         List {
             Toggle("Notification.Sound", isOn: $model.notificationSettings.group.sound)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .onChange(of: model) { _ in
             model.save()
         }
@@ -347,12 +347,12 @@ struct ChannelNotificationSetting: View {
     var body: some View {
         List {
             Toggle("Notification.Sound", isOn: $model.notificationSettings.channel.sound)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .onChange(of: model) { _ in
             model.save()
         }
@@ -394,8 +394,8 @@ struct SettingLogSection: View {
                 navModel.appendLog()
             }
             .listRowInsets(.zero)
-            .listRowBackground(Color.bgColor)
-            .listRowSeparatorTint(Color.dividerDarkerColor)
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparatorTint(Color.App.divider)
         }
     }
 }
@@ -404,26 +404,26 @@ struct SavedMessageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: .purple, showDivider: false) {
+        ListSectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: Color.App.purple, showDivider: false) {
             ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
         }
         .listRowInsets(.zero)
-        .listRowBackground(Color.bgColor)
-        .listRowSeparatorTint(Color.dividerDarkerColor)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.divider)
     }
 }
 struct BlockedMessageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "hand.raised.slash", title: "General.blocked", color: .redSoft, showDivider: false) {
+        ListSectionButton(imageName: "hand.raised.slash", title: "General.blocked", color: Color.App.red, showDivider: false) {
             withAnimation {
                 navModel.appendBlockedContacts()
             }
         }
         .listRowInsets(.zero)
-        .listRowBackground(Color.bgColor)
-        .listRowSeparatorTint(Color.dividerDarkerColor)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.divider)
     }
 }
 
@@ -435,8 +435,8 @@ struct SettingNotificationSection: View {
             navModel.appendNotificationSetting()
         }
         .listRowInsets(.zero)
-        .listRowBackground(Color.bgColor)
-        .listRowSeparatorTint(Color.dividerDarkerColor)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.divider)
     }
 }
 
@@ -448,8 +448,8 @@ struct SupportSection: View {
             navModel.appendSupport()
         }
         .listRowInsets(.zero)
-        .listRowBackground(Color.bgColor)
-        .listRowSeparatorTint(Color.dividerDarkerColor)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.divider)
     }
 }
 
@@ -461,8 +461,8 @@ struct SettingAssistantSection: View {
             navModel.appendAssistant()
         }
         .listRowInsets(.zero)
-        .listRowBackground(Color.bgColor)
-        .listRowSeparatorTint(Color.dividerDarkerColor)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.divider)
     }
 }
 
@@ -482,7 +482,7 @@ struct UserProfileView: View {
                 .padding(.trailing, 16)
 
             Text(verbatim: user?.name ?? "")
-                .foregroundStyle(Color.messageText)
+                .foregroundStyle(Color.App.text)
                 .font(.iransansSubheadline)
             Spacer()
 
@@ -499,7 +499,7 @@ struct UserProfileView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.hint)
+                            .foregroundStyle(Color.App.hint)
                     }
             }
             .buttonStyle(.plain)
@@ -528,11 +528,11 @@ struct SettingCallSection: View {
             } label: {
                 HStack {
                     Image(systemName: "arrow.backward.circle")
-                        .foregroundColor(.red)
+                        .foregroundColor(Color.App.red)
                         .font(.body.weight(.bold))
                     Text("Settings.logout")
                         .fontWeight(.bold)
-                        .foregroundColor(Color.red)
+                        .foregroundColor(Color.App.red)
                     Spacer()
                 }
             }
@@ -552,7 +552,7 @@ struct TokenExpireSection: View {
                     viewModel.startTokenTimer()
                 }
                 .listRowInsets(.zero)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparatorTint(Color.clear)
         }
     }

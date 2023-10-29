@@ -38,7 +38,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
             let attributes = NSMutableAttributedString(string: text)
             if mention {
                 text.matches(char: "@")?.forEach { match in
-                    attributes.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.systemBlue, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)], range: match.range)
+                    attributes.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "blue") ?? .blue, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)], range: match.range)
                 }
                 uiView.attributedText = attributes
             } else {
@@ -94,7 +94,7 @@ public struct MultilineTextField: View {
     private var placeholder: String
     private var onDone: ((String?) -> Void)?
     var backgroundColor: Color = .white
-    var placeholderColor: Color = .placeholder
+    var placeholderColor: Color = Color.App.placeholder
     var textColor: UIColor?
     @Environment(\.colorScheme) var colorScheme
     var keyboardReturnType: UIReturnKeyType = .done
@@ -116,8 +116,8 @@ public struct MultilineTextField: View {
     public init(_ placeholder: String = "",
          text: Binding<String>,
          textColor: UIColor? = nil,
-         backgroundColor: Color = .white,
-         placeholderColor: Color = Color.placeholder,
+         backgroundColor: Color = Color.App.white,
+         placeholderColor: Color = Color.App.placeholder,
          keyboardReturnType: UIReturnKeyType = .done,
          mention: Bool = false,
          onDone: ((String?) -> Void)? = nil)
@@ -135,7 +135,7 @@ public struct MultilineTextField: View {
 
     public var body: some View {
         UITextViewWrapper(text: self.internalText,
-                          textColor: textColor ?? (colorScheme == .dark ? UIColor.white : UIColor.black),
+                          textColor: textColor ?? (colorScheme == .dark ? UIColor(named: "white") ?? .white : UIColor(named: "black") ?? .black),
                           calculatedHeight: $dynamicHeight,
                           keyboardReturnType: keyboardReturnType,
                           mention: mention,
@@ -172,7 +172,7 @@ public struct MultilineTextField: View {
                 MultilineTextField("Enter some text here", text: testBinding, keyboardReturnType: .search, onDone: { _ in
                     print("Final text: \(test)")
                 })
-                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.black))
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.App.black))
                 Text("Something static here...")
                 Spacer()
             }

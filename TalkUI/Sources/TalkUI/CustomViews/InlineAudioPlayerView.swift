@@ -27,7 +27,7 @@ public struct InlineAudioPlayerView: View {
         VStack {
             Image(systemName: !viewModel.isPlaying ? "play.circle.fill" : "pause.circle.fill")
                 .resizable()
-                .foregroundStyle(Color.white, Color.main)
+                .foregroundStyle(Color.App.white, Color.App.primary)
                 .frame(width: 36, height: 36, alignment: .leading)
                 .cornerRadius(18)
                 .animation(.easeInOut, value: viewModel.isPlaying)

@@ -19,6 +19,14 @@ public struct DownloadFileView: View {
     var message: Message? { viewModel.message }
     @State var shareDownloadedFile: Bool = false
     let config: DownloadFileViewConfig
+    var fileName: String? {
+        guard
+            config.showFileName == true,
+            !(message?.isImage ?? false),
+            let fileName = message?.fileName ?? message?.fileMetaData?.file?.originalName
+        else { return nil }
+        return fileName
+    }
 
     public init(viewModel: DownloadFileViewModel, config: DownloadFileViewConfig = .normal) {
         self.viewModel = viewModel
@@ -28,12 +36,30 @@ public struct DownloadFileView: View {
     public var body: some View {
         HStack {
             ZStack(alignment: .center) {
-                DownloadImagethumbnail(viewModel: viewModel)
+                if message?.isImage == true {
+                    DownloadImagethumbnail(viewModel: viewModel)
+                }
                 MutableDownloadViews(config: config)
                     .environmentObject(viewModel)
             }
+
+            if let fileName {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("\(fileName)\(message?.fileExtension ?? "")")
+                        .foregroundStyle(Color.App.text)
+                        .font(.iransansBoldCaption)
+
+                    if let fileSize = message?.fileMetaData?.file?.size?.toSizeString {
+                        Text(fileSize)
+                            .multilineTextAlignment(.leading)
+                            .font(.iransansCaption3)
+                            .foregroundColor(Color.App.text)
+                    }
+                }
+                .padding([.leading], config.fileNameTrailingSpace)
+            }
         }
-        .frame(maxWidth: config.maxHeight, maxHeight: config.maxHeight)
+        .frame(maxWidth: config.maxHeight)
         .sheet(isPresented: $shareDownloadedFile) {
             if let fileURL = viewModel.fileURL, let message {
                 ActivityViewControllerWrapper(activityItems: [fileURL], title: message.fileMetaData?.file?.originalName)
@@ -70,6 +96,7 @@ struct MutableDownloadViews: View {
                 Image(cgImage: scaledImage)
                     .resizable()
                     .scaledToFill()
+                    .frame(width: 204, height: 204)
             } else if message?.isVideo == true, let fileURL = viewModel.fileURL {
                 VideoPlayerView()
                     .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
@@ -123,7 +150,7 @@ struct DownloadFileButton: View {
                 Image(systemName: stateIcon)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 12, height: 12)
+                    .frame(width: 16, height: 16)
                     .foregroundStyle(config.iconColor)
 
                 Circle()
@@ -131,7 +158,7 @@ struct DownloadFileButton: View {
                     .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                     .foregroundColor(config.progressColor)
                     .rotationEffect(Angle(degrees: 270))
-                    .frame(width: 28, height: 28)
+                    .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
                     .environment(\.layoutDirection, .leftToRight)
             }
             .frame(width: config.iconWidth, height: config.iconHeight)
@@ -189,24 +216,24 @@ struct OverlayDownloadImageButton: View {
                     .scaledToFit()
                     .font(.system(size: 8, design: .rounded).bold())
                     .frame(width: 8, height: 8)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color.App.text)
 
                 Circle()
                     .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
                     .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.App.white)
                     .rotationEffect(Angle(degrees: 270))
                     .frame(width: 18, height: 18)
             }
             .frame(width: 26, height: 26)
-            .background(Color.white.opacity(0.3))
+            .background(Color.App.white.opacity(0.3))
             .cornerRadius(13)
 
             if let fileSize = message?.fileMetaData?.file?.size?.toSizeString {
                 Text(fileSize)
                     .multilineTextAlignment(.leading)
                     .font(.iransansBoldCaption2)
-                    .foregroundColor(.hintText)
+                    .foregroundColor(Color.App.text)
             }
         }
         .frame(height: 30)
@@ -237,6 +264,7 @@ struct DownloadImagethumbnail: View {
             .blur(radius: 16, opaque: false)
             .scaledToFill()
             .zIndex(0)
+            .frame(width: 204, height: 204)
             .onReceive(viewModel.objectWillChange) { _ in
                 if viewModel.thumbnailData != self.thumbnailData,
                    message?.isImage == true,
@@ -269,7 +297,7 @@ struct DownloadFileView_Previews: PreviewProvider {
                 DownloadFileView(viewModel: viewModel)
                     .environmentObject(AppOverlayViewModel())
             }
-            .background(Color.purple.gradient)
+            .background(Color.App.purple)
             .onAppear {
                 viewModel.state = .paused
             }

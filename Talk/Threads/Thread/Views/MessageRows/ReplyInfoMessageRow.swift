@@ -18,21 +18,21 @@ struct ReplyInfoMessageRow: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     var replySeparatorColor: Color {
         if message.replyInfo?.deleted != nil {
-            return Color.redSoft
+            return Color.App.red
         } else if viewModel.isMe {
-            return Color.white
+            return Color.App.white
         } else {
-           return Color.redSoft
+           return Color.App.red
         }
     }
 
     var replyMessageColor: Color {
         if message.replyInfo?.deleted != nil {
-            return Color.redSoft
+            return Color.App.red
         } else if viewModel.isMe {
-            return Color.hint
+            return Color.App.hint
         } else {
-            return Color.redSoft
+            return Color.App.red
         }
     }
 
@@ -52,14 +52,14 @@ struct ReplyInfoMessageRow: View {
                         Text("\(name)")
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .foregroundStyle(viewModel.isMe ? Color.messageText : Color.redSoft)
+                            .foregroundStyle(viewModel.isMe ? Color.App.text : Color.App.red)
                     }
 
                     if message.replyInfo?.deleted == true {
                         Text("Messages.deletedMessageReply")
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .foregroundColor(.redSoft)
+                            .foregroundColor(Color.App.red)
                     }
 
                     if let message = message.replyInfo?.message?.replacingOccurrences(of: "\n", with: " ") {
@@ -67,7 +67,7 @@ struct ReplyInfoMessageRow: View {
                             .font(.iransansCaption3)
                             .cornerRadius(8, corners: .allCorners)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .foregroundStyle(Color.hintText.opacity(0.7))
+                            .foregroundStyle(Color.App.hint)
                             .lineLimit(1)
                     }
 
@@ -78,13 +78,13 @@ struct ReplyInfoMessageRow: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 16, height: 16)
-                                    .foregroundColor(Color.textBlueColor)
+                                    .foregroundColor(Color.App.blue)
                             }
 
                             if let fileStringName = message.fileStringName {
                                 Text(fileStringName)
                                     .font(.iransansCaption2)
-                                    .foregroundStyle(Color.textBlueColor)
+                                    .foregroundStyle(Color.App.blue)
                                 Spacer()
                             }
                         }

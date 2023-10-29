@@ -18,21 +18,15 @@ struct MessageFooterView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        HStack {
-            if let fileSize = viewModel.fileSizeString {
-                Text(fileSize)
-                    .multilineTextAlignment(.leading)
-                    .font(.iransansCaption2)
-                    .foregroundColor(.hintText)
-            }
+        HStack {           
             Spacer()
             Text(viewModel.timeString)
-                .foregroundColor(.hintText)
+                .foregroundColor(Color.App.hint)
                 .font(.iransansCaption2)
 
             if message.edited == true {
                 Text("Messages.Footer.edited")
-                    .foregroundColor(.hintText)
+                    .foregroundColor(Color.App.hint)
                     .font(.iransansCaption2)
             }
 
@@ -40,18 +34,19 @@ struct MessageFooterView: View {
                 Image(uiImage: message.footerStatus.image)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 14, height: 14)
+                    .frame(width: 12, height: 12)
                     .foregroundColor(message.footerStatus.fgColor)
                     .font(.subheadline)
             }
 
-            let isPinned = message.id == viewModel.threadVM?.thread.pinMessage?.id
-            Image(systemName: "pin")
-                .resizable()
-                .scaledToFit()
-                .frame(width: isPinned ? 14 : 0, height: isPinned ? 14 : 0)
-                .foregroundColor(.main)
-                .font(.subheadline)
+            if message.id == viewModel.threadVM?.thread.pinMessage?.id {
+                Image(systemName: "pin.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .foregroundColor(Color.App.primary)
+                    .font(.subheadline)
+            }
         }
         .padding(.top, 4)
     }

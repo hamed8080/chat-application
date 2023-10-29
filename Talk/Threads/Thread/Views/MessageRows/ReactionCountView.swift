@@ -27,6 +27,7 @@ struct ReactionCountView: View {
                 Spacer()
             }
         }
+        .frame(height: reactionCountList.count == 0 ? 0 : nil)
         .animation(.easeInOut, value: reactionCountList.count)
         .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { notification in
             if notification.object as? Int == messageId {
@@ -62,7 +63,7 @@ struct ReactionCountRow: View {
                 }
                 Text("\(count)")
                     .font(.iransansBody)
-                    .foregroundStyle(isMyReaction ? Color.white : .hintText)
+                    .foregroundStyle(isMyReaction ? Color.App.white : Color.App.hint)
             }
         }
         .animation(.easeInOut, value: count)
@@ -91,10 +92,10 @@ struct ReactionCountRow: View {
     @ViewBuilder
     var background: some View {
         if isMyReaction {
-            Color.blue.opacity(0.7).cornerRadius(18)
+            Color.App.blue.opacity(0.7).cornerRadius(18)
         } else {
             Rectangle()
-                .fill(Color.main.opacity(0.1))
+                .fill(Color.App.primary.opacity(0.1))
         }
     }
 

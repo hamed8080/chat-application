@@ -17,7 +17,7 @@ struct SupportView: View {
                     .scaledToFit()
                     .padding(32)
                     .frame(width: 120, height: 120)
-                    .background(scheme == .dark ? Color.white.opacity(0.2) : .main)
+                    .background(scheme == .dark ? Color.App.white.opacity(0.2) : Color.App.primary)
                     .cornerRadius(64)
                     .foregroundStyle(.white)
                 Text("Support.aboutUsText")
@@ -39,7 +39,7 @@ struct SupportView: View {
                 }
                 let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
                 Text(String(format: String(localized: "Support.version"), version))
-                    .foregroundStyle(Color.hint)
+                    .foregroundStyle(Color.App.hint)
             }
         }
         .font(.iransansBody)

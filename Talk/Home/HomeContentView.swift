@@ -125,7 +125,7 @@ struct SplitViewContent: View {
             ],
             config: .init(alignment: .bottom)
         )
-        .background(Color.bgMain)
+        .background(Color.App.bgPrimary)
     }
 }
 

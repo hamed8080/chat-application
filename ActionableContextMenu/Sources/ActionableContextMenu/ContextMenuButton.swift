@@ -31,8 +31,12 @@ public struct ContextMenuButton: View {
         } label: {
             HStack {
                 Image(systemName: image)
-                    .foregroundStyle(scheme == .dark ? Color(red: 0.6, green: 0.62, blue: 0.68) : Color(red: 93, green: 102, blue: 121))
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
+                    .foregroundStyle(scheme == .dark ? Color(red: 0.6, green: 0.62, blue: 0.68) : Color(red: 0.36, green: 0.4, blue: 0.47))
                 Text(String(localized: .init(title)))
+                    .padding(.leading, 12)
                 Spacer()
             }
             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
@@ -40,7 +44,7 @@ public struct ContextMenuButton: View {
         }
         .environment(\.layoutDirection, isRTLLanguage ? .rightToLeft : .leftToRight)
         .padding(.horizontal)
-        .padding(.vertical, 8)
+        .padding(.vertical, 12)
         .onAppear {
             withAnimation(.interpolatingSpring(mass: 1.0, stiffness: 0.3, damping: 0.5, initialVelocity: 0).speed(30)) {
                 scale = 1.0

@@ -10,13 +10,13 @@ public extension Message {
 
     var footerStatus: (image: UIImage, fgColor: Color) {
         if seen == true {
-            return (Message.seenImage!, Color.main)
+            return (Message.seenImage!, Color.App.primary)
         } else if delivered == true {
-            return (Message.seenImage!, Color.hint)
+            return (Message.seenImage!, Color.App.hint)
         } else if id != nil {
-            return (Message.sentImage!, Color.main)
+            return (Message.sentImage!, Color.App.hint)
         } else {
-            return (Message.clockImage!, Color.main)
+            return (Message.clockImage!, Color.App.hint)
         }
     }
 }

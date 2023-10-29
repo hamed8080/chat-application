@@ -29,12 +29,12 @@ struct ThreadViewCenterToolbar: View {
                 ConnectionStatusToolbar()
             } else if let signalMessageText = viewModel.signalMessageText {
                 Text(signalMessageText)
-                    .foregroundColor(.textBlueColor)
+                    .foregroundColor(Color.App.blue)
                     .font(.iransansCaption2)
             } else if let participantsCount = participantCount {
                 Text("Members \(participantsCount)")
                     .fixedSize()
-                    .foregroundColor(Color.gray)
+                    .foregroundColor(Color.App.gray1)
                     .font(.iransansFootnote)
             }
         }

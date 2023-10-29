@@ -21,7 +21,7 @@ struct NothingHasBeenSelectedView: View {
                 VStack(spacing: 16) {
                     Text("General.nothingSelectedConversation")
                         .font(.iransansSubheadline)
-                        .foregroundColor(.secondaryLabel)
+                        .foregroundColor(Color.App.hint)
                         .multilineTextAlignment(.center)
                     Button {
                         contactsVM.showConversaitonBuilder.toggle()

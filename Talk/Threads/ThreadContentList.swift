@@ -31,8 +31,8 @@ struct ThreadContentList: View {
                     }
             }
             .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
-            .listRowSeparatorTint(Color.separator)
-            .listRowBackground(container.navVM.selectedThreadId == thread.id ? Color.main.opacity(0.5) : thread.pin == true ? Color.bgPin : Color.bgMain)
+            .listRowSeparatorTint(Color.App.separator)
+            .listRowBackground(container.navVM.selectedThreadId == thread.id ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
         }
         .safeAreaInset(edge: .top) {
             AudioPlayerView()
@@ -118,7 +118,7 @@ struct ThreadsTrailingToolbarView: View {
 //            }
         } label: {
             ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat")
-                .foregroundStyle(Color.white, Color.main)
+                .foregroundStyle(Color.App.white, Color.App.primary)
         }
 
         if EnvironmentValues.isTalkTest {

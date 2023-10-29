@@ -30,21 +30,21 @@ struct ThreadRow: View {
                         Text(timeString)
                             .lineLimit(1)
                             .font(.iransansCaption2)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.App.hint)
                     }
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 12, height: 12)
-                            .foregroundColor(Color.gray)
+                            .foregroundColor(Color.App.gray6)
                     }
                     if thread.type == .channel {
                         Image(systemName: "megaphone.fill")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 12, height: 12)
-                            .foregroundColor(Color.gray)
+                            .foregroundColor(Color.App.gray6)
                     }
 
                     if thread.group == true, thread.type != .channel {
@@ -52,14 +52,14 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundColor(Color.gray)
+                            .foregroundColor(Color.App.gray6)
                     }
                     if thread.mentioned == true {
                         Image(systemName: "at.circle.fill")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.main)
+                            .foregroundStyle(Color.App.primary)
                     }
 
                     if thread.pin == true {
@@ -67,7 +67,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundStyle(Color.gray)
+                            .foregroundStyle(Color.App.gray6)
                     }
                 }
                 HStack {
@@ -75,12 +75,12 @@ struct ThreadRow: View {
                     Spacer()
                     if let unreadCountString = thread.unreadCountString {
                         Text(unreadCountString)
-                            .font(.iransansCaption2)
+                            .font(.iransansCaption)
                             .padding(8)
                             .frame(height: 24)
                             .frame(minWidth: 24)
-                            .foregroundColor(Color.white)
-                            .background(Color.main)
+                            .foregroundStyle(Color.App.textOverlay)
+                            .background(Color.App.primary)
                             .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
                     }
                 }

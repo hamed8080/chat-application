@@ -21,7 +21,7 @@ struct ParticipantMessageType: View {
             let date = Date(milliseconds: Int64(message.time ?? 0)).timeAgoSinceDateCondense ?? ""
             let markdownText = try! AttributedString(markdown: "\(message.addOrRemoveParticipantString) - \(date)")
             Text(markdownText)
-                .foregroundColor(Color.primary.opacity(0.8))
+                .foregroundColor(Color.App.primary.opacity(0.8))
                 .font(.iransansBoldCaption2)
                 .padding(2)
 
@@ -29,13 +29,13 @@ struct ParticipantMessageType: View {
                 Image(systemName: iconName)
                     .resizable()
                     .frame(width: 12, height: 12)
-                    .foregroundColor(message.type == .participantJoin ? Color.green : Color.red)
+                    .foregroundColor(message.type == .participantJoin ? Color.App.green : Color.App.red)
                     .padding([.leading, .trailing], 6)
                     .scaledToFit()
             }
         }
         .padding([.leading, .trailing])
-        .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))
+        .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.App.gray1)
         .cornerRadius(6)
         .frame(maxWidth: .infinity)
     }

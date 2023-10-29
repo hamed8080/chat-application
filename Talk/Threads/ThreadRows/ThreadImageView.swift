@@ -21,14 +21,14 @@ struct ThreadImageView: View {
                 .foregroundColor(.clear)
                 .scaledToFit()
                 .frame(width: 54, height: 54)
-                .background(Color("bg_self_thread"))
+                .background(Color.App.gray5)
                 .cornerRadius(24)
                 .overlay {
                     Image("bookmark")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 27, height: 27)
-                        .foregroundColor(Color("icon_self_thread"))
+                        .foregroundStyle(Color.App.text)
                 }
         } else if let image = thread.computedImageURL {
             ImageLaoderView(imageLoader: threadsVM.avatars(for: image), url: thread.computedImageURL, metaData: image, userName: thread.title)
@@ -36,7 +36,7 @@ struct ThreadImageView: View {
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 54, height: 54)
-                .background(Color.blue.opacity(0.4))
+                .background(Color.App.blue.opacity(0.4))
                 .cornerRadius(24)
         } else {
             Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
@@ -44,7 +44,7 @@ struct ThreadImageView: View {
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 54, height: 54)
-                .background(Color.blue.opacity(0.4))
+                .background(Color.App.blue.opacity(0.4))
                 .cornerRadius(24)
         }
     }

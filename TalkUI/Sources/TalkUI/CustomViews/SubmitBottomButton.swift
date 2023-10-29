@@ -11,7 +11,7 @@ public struct SubmitBottomButton: View {
     @Binding var isLoading: Bool
     @Binding var enableButton: Bool
     let text: String
-    let color: Color = .main
+    let color: Color = Color.App.primary
     let maxInnerWidth: CGFloat
     let action: (()-> Void)?
 
@@ -53,7 +53,7 @@ public struct SubmitBottomButton: View {
             .buttonStyle(.plain)
             .frame(height: 48)
             .contentShape(RoundedRectangle(cornerRadius: 8))
-            .background(Color.main)
+            .background(color)
             .cornerRadius(8)
             .disabled(!enableButton)
             .opacity(enableButton ? 1.0 : 0.3)

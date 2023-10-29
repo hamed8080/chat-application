@@ -22,10 +22,10 @@ public struct AppTextFieldModifier: ViewModifier {
                 .offset(y: 8)
             content
                 .frame(minHeight: minHeigh)
-                .background(isFocused ? Color.clear : Color.bgInput)
+                .background(isFocused ? Color.clear : Color.App.bgInput)
                 .overlay(alignment: .center) {
                     RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(isFocused ? Color.main : .clear, lineWidth: 2)
+                        .strokeBorder(isFocused ? Color.App.primary : Color.clear, lineWidth: 2)
                         .frame(minHeight: minHeigh)
                 }
                 .cornerRadius(12)
@@ -66,6 +66,6 @@ struct AppTextFieldModifier_Previews: PreviewProvider {
         VStack {
             Preview()
         }
-        .background(.purple)
+        .background(Color.App.purple)
     }
 }

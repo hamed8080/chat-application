@@ -14,17 +14,17 @@ struct LogRow: View {
     var color: Color {
         let type = log.type
         if type == .internalLog {
-            return Color.main
+            return Color.App.primary
         } else if type == .received {
-            return .red
+            return Color.App.red
         } else {
-            return .green
+            return Color.App.green
         }
     }
 
     var body: some View {
         ZStack(alignment: .leading) {
-            color.opacity(0.2)
+            opacity(0.2)
             Text("\(log.message ?? "")")
                 .font(.iransansCaption)
                 .padding()

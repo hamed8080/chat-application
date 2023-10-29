@@ -22,7 +22,7 @@ struct ParticipantRow: View {
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
-                .background(Color.blue.opacity(0.4))
+                .background(Color.App.blue.opacity(0.4))
                 .cornerRadius(22)
 
             HStack(alignment: .center, spacing: 8) {
@@ -39,7 +39,7 @@ struct ParticipantRow: View {
                         let time = String(format: lastVisitedLabel, notSeenDuration)
                         Text(time)
                             .font(.iransansBody)
-                            .foregroundColor(Color.hint)
+                            .foregroundColor(Color.App.hint)
                     }
                 }
 
@@ -67,21 +67,21 @@ struct ParticipantRowLables: View {
                     Text("Participant.inviter")
                         .padding([.leading, .trailing], 4)
                         .padding([.top, .bottom], 2)
-                        .foregroundColor(Color.main)
+                        .foregroundColor(Color.App.primary)
                 }
 
                 if participant.auditor == true {
                     Text("Participant.assistant")
                         .padding([.leading, .trailing], 4)
                         .padding([.top, .bottom], 2)
-                        .foregroundColor(Color.main)
+                        .foregroundColor(Color.App.primary)
                 }
 
                 if participant.admin == true {
                     Text("Participant.admin")
                         .padding([.leading, .trailing], 4)
                         .padding([.top, .bottom], 2)
-                        .foregroundColor(Color.main)
+                        .foregroundColor(Color.App.primary)
                 }
             }
         }

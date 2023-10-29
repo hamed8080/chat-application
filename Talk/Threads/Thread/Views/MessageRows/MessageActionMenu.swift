@@ -87,7 +87,7 @@ struct MessageActionMenu: View {
                     threadVM?.animateObjectWillChange()
                 }
             }
-            .foregroundStyle(Color.red)
+            .foregroundStyle(Color.App.red)
             .disabled(message.deletable == false)
             .opacity(message.deletable == false ? 0.3 : 1.0)
             .allowsHitTesting(message.deletable == true)

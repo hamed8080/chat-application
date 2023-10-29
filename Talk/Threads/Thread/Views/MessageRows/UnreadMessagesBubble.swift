@@ -13,9 +13,9 @@ struct UnreadMessagesBubble: View {
             .font(.iransansCaption)
             .padding([.leading, .trailing], 16)
             .padding([.bottom, .top], 6)
-            .background(Color.hint)
+            .background(Color.App.hint)
             .cornerRadius(16)
-            .foregroundColor(Color.white.opacity(1))
+            .foregroundColor(Color.App.white)
     }
 }
 

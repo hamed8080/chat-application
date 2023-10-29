@@ -25,7 +25,7 @@ struct CallMessageType: View {
                     Text("\(date.timeAgoSinceDateCondense ?? "")")
                         .fontWeight(.bold)
                 }
-                .foregroundColor(Color.primary.opacity(0.8))
+                .foregroundColor(Color.App.primary.opacity(0.8))
                 .font(.iransansSubheadline)
                 .padding(2)
             }
@@ -34,10 +34,10 @@ struct CallMessageType: View {
                 .resizable()
                 .frame(width: 10, height: 10)
                 .scaledToFit()
-                .foregroundColor(message.type == .startCall ? Color.green : Color.red)
+                .foregroundColor(message.type == .startCall ? Color.App.green : Color.App.red)
         }
         .padding([.leading, .trailing])
-        .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.gray.opacity(0.1))
+        .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.App.gray1.opacity(0.1))
         .cornerRadius(6)
     }
 }

@@ -37,7 +37,7 @@ struct MessageListVideoView: View {
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
-                            .fill(Color.dividerDarkerColor.opacity(0.3))
+                            .fill(Color.App.divider)
                             .frame(height: 0.5)
                             .padding(.leading)
                     }
@@ -82,14 +82,14 @@ struct VideoRowView: View {
             VStack(alignment: .leading) {
                 Text(message.fileMetaData?.name ?? message.messageTitle)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.messageText)
+                    .foregroundStyle(Color.App.text)
                 HStack {
                     Text(message.time?.date.timeAgoSinceDateCondense ?? "" )
-                        .foregroundColor(Color.hint)
+                        .foregroundColor(Color.App.hint)
                         .font(.iransansCaption2)
                     Spacer()
                     Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
-                        .foregroundColor(Color.hint)
+                        .foregroundColor(Color.App.hint)
                         .font(.iransansCaption3)
                 }
             }

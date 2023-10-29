@@ -26,7 +26,7 @@ struct ThreadView: View, DropDelegate {
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
             .navigationTitle(thread.computedTitle)
-            .background(Color.gray.opacity(0.15).edgesIgnoringSafeArea(.bottom))
+            .background(Color.App.black.opacity(0.2).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
             .searchable(text: $searchMessageText, placement: .toolbar, prompt: "General.searchHere")

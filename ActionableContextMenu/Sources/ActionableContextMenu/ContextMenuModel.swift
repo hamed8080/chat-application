@@ -44,7 +44,7 @@ public final class ContextMenuModel: ObservableObject {
     }
 
     var stackY: CGFloat {
-        let stackPadding: CGFloat = topView != nil ? 8 : 0
+        let stackPadding: CGFloat = topView != nil ? 12 : 0
         var stackY: CGFloat = 0.0
         let stackHeight = stackSize.height
         let itemHalf = itemSize.height / 2

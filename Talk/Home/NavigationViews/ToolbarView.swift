@@ -80,7 +80,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
             .disabled(isInSearchMode)
-            .foregroundStyle(Color.main)
+            .foregroundStyle(Color.App.primary)
         if !isInSearchMode {
             Spacer()
         }
@@ -95,7 +95,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
             .disabled(isInSearchMode)
-            .foregroundStyle(Color.main)
+            .foregroundStyle(Color.App.primary)
     }
 
     @ViewBuilder var searchView: some View {
@@ -109,7 +109,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 .clipped()
                 .overlay {
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.primary.opacity(0.2), style: .init(lineWidth: 0.3, lineCap: .round))
+                        .stroke(Color.App.primary.opacity(0.2), style: .init(lineWidth: 0.3, lineCap: .round))
                 }
 
             Button {
@@ -124,7 +124,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 Text("General.cancel")
                     .padding(.leading)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.main)
+                    .foregroundStyle(Color.App.primary)
             }
             .buttonStyle(.borderless)
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? toolbarHeight : 0)
@@ -138,7 +138,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             }
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
-            .foregroundStyle(Color.main)
+            .foregroundStyle(Color.App.primary)
         }
     }
 }

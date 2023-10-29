@@ -13,10 +13,12 @@ public struct DownloadFileViewConfig {
     public static let normal = DownloadFileViewConfig(circleConfig: .normal,
                                                       maxWidth: .infinity,
                                                       maxHeight: .infinity,
-                                                      iconWidth: 52,
-                                                      iconHeight: 52,
-                                                      iconColor: .iconColor.opacity(0.8),
-                                                      circleProgressMaxWidth: 128,
+                                                      iconWidth: 42,
+                                                      iconHeight: 42,
+                                                      iconColor: Color.App.primary,
+                                                      circleProgressMaxWidth: 32,
+                                                      fileNameTrailingSpace: 8,
+                                                      showFileName: true,
                                                       showSkeleton: false
     )
 
@@ -25,17 +27,18 @@ public struct DownloadFileViewConfig {
                                                      maxHeight: .infinity,
                                                      iconWidth: 36,
                                                      iconHeight: 36,
-                                                     iconColor: .iconColor.opacity(0.8),
-                                                     circleProgressMaxWidth: 64,
+                                                     iconColor: Color.App.bgPrimary,
+                                                     circleProgressMaxWidth: 28,
+                                                     fileNameTrailingSpace: 8,
                                                      showSkeleton: false
     )
 
     public static var detail: DownloadFileViewConfig = {
         var config: DownloadFileViewConfig = .small
-        config.circleConfig.forgroundColor = .green
-        config.iconColor = .white
-        config.iconCircleColor = Color.main
-        config.progressColor = .white
+        config.circleConfig.forgroundColor = Color.App.green
+        config.iconColor = Color.App.white
+        config.iconCircleColor = Color.App.primary
+        config.progressColor = Color.App.white
         config.showSkeleton = false
         return config
     }()
@@ -53,6 +56,8 @@ public struct DownloadFileViewConfig {
     public var showFileSize: Bool
     public var blurQuality: Float = 0.4
     public var blurSize: ImageSize = .SMALL
+    public var fileNameTrailingSpace: CGFloat = 8
+    public var showFileName: Bool = false
     /// If this property set to true it will not show the progress bar and only shows skeleton view.
     public var showSkeleton: Bool
 
@@ -62,13 +67,15 @@ public struct DownloadFileViewConfig {
                 iconWidth: CGFloat,
                 iconHeight: CGFloat,
                 iconColor: Color,
-                iconCircleColor: Color = .white,
-                progressColor: Color = .purple,
+                iconCircleColor: Color = Color.App.white,
+                progressColor: Color = Color.App.primary,
                 circleProgressMaxWidth: CGFloat,
                 showTrailingFileName: Bool = true,
                 showFileSize: Bool = false,
                 blurQuality: Float = 0.4,
                 blurSize: ImageSize = .SMALL,
+                fileNameTrailingSpace: CGFloat = 8,
+                showFileName: Bool = false,
                 showSkeleton: Bool
     ) {
         self.circleConfig = circleConfig
@@ -84,6 +91,8 @@ public struct DownloadFileViewConfig {
         self.showFileSize = showFileSize
         self.blurQuality = blurQuality
         self.blurSize = blurSize
+        self.fileNameTrailingSpace = fileNameTrailingSpace
+        self.showFileName = showFileName
         self.showSkeleton = showSkeleton
     }
 }

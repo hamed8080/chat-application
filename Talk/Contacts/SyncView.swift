@@ -44,7 +44,7 @@ struct SyncView: View {
                     }
                 } label: {
                     Text("Contacts.Sync.sync")
-                        .foregroundColor(Color.main)
+                        .foregroundColor(Color.App.primary)
                         .font(.iransansBoldTitle)
                         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36)
                 }

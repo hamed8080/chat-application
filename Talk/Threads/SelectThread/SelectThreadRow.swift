@@ -26,7 +26,7 @@ struct SelectThreadRow: View {
                 .font(.iransansSubtitle)
                 .foregroundColor(.white)
                 .frame(width: 36, height: 36)
-                .background(Color.blue.opacity(0.4))
+                .background(Color.App.blue.opacity(0.4))
                 .cornerRadius(18)
             Text(thread.computedTitle)
                 .font(.iransansSubheadline)
@@ -52,7 +52,7 @@ struct SelectContactRow: View {
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 24, height: 24)
-                .background(Color.blue.opacity(0.4))
+                .background(Color.App.blue.opacity(0.4))
                 .cornerRadius(12)
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
@@ -63,7 +63,7 @@ struct SelectContactRow: View {
                     Text(notSeenDuration)
                         .padding(.leading, 4)
                         .font(.iransansCaption3)
-                        .foregroundColor(Color.gray)
+                        .foregroundColor(Color.App.gray1)
                 }
             }
         }

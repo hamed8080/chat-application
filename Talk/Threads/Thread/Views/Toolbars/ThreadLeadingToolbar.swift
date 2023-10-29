@@ -20,7 +20,7 @@ struct ThreadLeadingToolbar: View {
                 NotificationCenter.default.post(name: Notification.Name.closeSideBar, object: nil)
             } label : {
                 Image(systemName: "sidebar.leading")
-                    .foregroundStyle(Color.main)
+                    .foregroundStyle(Color.App.primary)
             }
         }
 
@@ -28,14 +28,14 @@ struct ThreadLeadingToolbar: View {
             Image(systemName: "person.2.fill")
                 .resizable()
                 .scaledToFit()
-                .foregroundColor(Color.main)
+                .foregroundColor(Color.App.primary)
                 .frame(width: 16, height: 16)
         }
         if thread.type == .channel {
             Image(systemName: "megaphone.fill")
                 .resizable()
                 .scaledToFit()
-                .foregroundColor(Color.main)
+                .foregroundColor(Color.App.primary)
                 .frame(width: 16, height: 16)
         }
     }

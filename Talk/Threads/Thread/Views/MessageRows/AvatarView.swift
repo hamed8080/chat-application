@@ -33,7 +33,11 @@ struct AvatarView: View {
     }
 
     @ViewBuilder var body: some View {
-        if viewModel.threadVM?.thread.group ?? false == false {
+        if viewModel.isInSelectMode {
+            EmptyView()
+                .frame(width: 0, height: 0)
+                .hidden()
+        } else if viewModel.threadVM?.thread.group ?? false == false {
             AvatarView.emptyP2PSender
         } else if !viewModel.isMe, !viewModel.isNextMessageTheSameUser, viewModel.isCalculated {
             HStack(spacing: 0) {
@@ -43,7 +47,7 @@ struct AvatarView: View {
                         .font(.iransansCaption)
                         .foregroundColor(.white)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-                        .background(Color.blue.opacity(0.4))
+                        .background(Color.App.blue.opacity(0.4))
                         .cornerRadius(MessageRowViewModel.avatarSize / 2)
                 } else {
                     Text(verbatim: String(message.participant?.name?.first ?? message.participant?.username?.first ?? " "))
@@ -51,7 +55,7 @@ struct AvatarView: View {
                         .font(.iransansCaption)
                         .foregroundColor(.white)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-                        .background(Color.blue.opacity(0.4))
+                        .background(Color.App.blue.opacity(0.4))
                         .cornerRadius(MessageRowViewModel.avatarSize / 2)
                 }
             }

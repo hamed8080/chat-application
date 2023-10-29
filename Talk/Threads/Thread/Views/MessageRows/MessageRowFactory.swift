@@ -47,7 +47,7 @@ struct TextMessageSelectedBackground: View {
     @State var isSelected = false
 
     var body: some View {
-        let color = viewModel.isSelected ? Color.main.opacity(0.1) : Color.clear
+        let color = viewModel.isSelected ? Color.App.primary.opacity(0.1) : Color.clear
         color
             .onReceive(viewModel.objectWillChange) { newValue in
                 if viewModel.isSelected != isSelected {

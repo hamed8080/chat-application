@@ -25,9 +25,9 @@ struct ContactRow: View {
                 ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
                     .font(.iransansBody)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.App.text)
                     .frame(width: 52, height: 52)
-                    .background(Color.blue.opacity(0.4))
+                    .background(Color.App.blue.opacity(0.4))
                     .cornerRadius(22)
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -35,21 +35,22 @@ struct ContactRow: View {
                         .padding(.leading, 16)
                         .lineLimit(1)
                         .font(.iransansBoldBody)
-                        .foregroundColor(Color.messageText)
+                        .foregroundColor(Color.App.text)
                     if let notSeenDuration = contact.notSeenString {
                         let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
                         let time = String(format: lastVisitedLabel, notSeenDuration)
                         Text(time)
                             .padding(.leading, 16)
                             .font(.iransansBody)
-                            .foregroundColor(Color.hint)
+                            .foregroundColor(Color.App.hint)
                     }
                 }
                 Spacer()
                 if contact.blocked == true {
                     Text("General.blocked")
                         .font(.iransansCaption2)
-                        .foregroundColor(Color.red)
+                        .foregroundColor(Color.App.red)
+                        .padding(.trailing, 4)
                 }
                 selectRadio
             }

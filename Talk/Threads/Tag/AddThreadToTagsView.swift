@@ -29,7 +29,7 @@ struct AddThreadToTagsView: View {
                             } label: {
                                 Label("General.delete", systemImage: "trash")
                             }
-                            .background(Color.red)
+                            .background(Color.App.red)
                         }
                 }
             }

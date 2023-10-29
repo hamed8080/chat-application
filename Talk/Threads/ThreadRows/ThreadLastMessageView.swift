@@ -25,7 +25,7 @@ struct ThreadLastMessageView: View {
                     Text(String(format: String(localized: .init("Thread.Row.lastMessageSender")), participantName))
                         .font(.iransansBoldBody)
                         .lineLimit(1)
-                        .foregroundStyle(Color.main)
+                        .foregroundStyle(Color.App.primary)
                 }
 
                 if lastMsgVO?.isFileType == true, let iconName = lastMsgVO?.iconName {
@@ -39,21 +39,21 @@ struct ThreadLastMessageView: View {
                     Text(message)
                         .font(.iransansBody)
                         .lineLimit(1)
-                        .foregroundStyle(Color.secondaryLabel)
+                        .foregroundStyle(Color.App.hint)
                 }
 
                 if lastMsgVO?.isFileType == true, lastMsgVO?.message.isEmptyOrNil == true, let fileStringName = lastMsgVO?.fileStringName {
                     Text(fileStringName)
                         .font(.iransansCaption2)
                         .lineLimit(thread.group == false ? 2 : 1)
-                        .foregroundStyle(Color.secondaryLabel)
+                        .foregroundStyle(Color.App.hint)
                 }
 
                 if thread.lastMessageVO == nil, let creator = thread.inviter?.name {
                     let localizedLabel = String(localized: .init("Thread.createdAConversation"))
                     let text = String(format: localizedLabel, creator)
                     Text(text)
-                        .foregroundStyle(Color.main)
+                        .foregroundStyle(Color.App.primary)
                         .font(.iransansBoldCaption2)
                 }
                 Spacer()

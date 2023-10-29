@@ -33,10 +33,10 @@ struct AssistantRow: View {
                     .font(.iransansCaption2)
                     .padding([.leading, .trailing], 6)
                     .padding([.top, .bottom], 2)
-                    .foregroundColor(Color.red)
+                    .foregroundColor(Color.App.red)
                     .overlay(
                         RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.red)
+                            .stroke(Color.App.red)
                     )
             }
         }
@@ -73,11 +73,11 @@ struct SelectAssistantRadio: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.title)
                 .scaleEffect(x: isSelected ? 1 : 0.001, y: isSelected ? 1 : 0.001, anchor: .center)
-                .foregroundColor(Color.blue)
+                .foregroundColor(Color.App.blue)
 
             Image(systemName: "circle")
                 .font(.title)
-                .foregroundColor(Color.blue)
+                .foregroundColor(Color.App.blue)
         }
         .frame(width: isInSelectionMode ? 22 : 0.001, height: isInSelectionMode ? 22 : 0.001, alignment: .center)
         .padding([.trailing], isInSelectionMode ? 8 : 0.001)

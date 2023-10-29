@@ -76,19 +76,19 @@ struct Tabs: View {
                                     if let icon = tab.icon {
                                         Image(systemName: icon)
                                             .frame(width: 24, height: 24)
-                                            .foregroundColor(Color.gray)
+                                            .foregroundColor(Color.App.gray1)
                                             .fixedSize()
                                     }
                                     Text(String(localized: .init(tab.title)))
                                         .font(index == selectedTabIndex ? . iransansBoldCaption : .iransansCaption)
                                         .fixedSize()
-                                        .foregroundStyle(index == selectedTabIndex ? Color.messageText : Color.hint)
+                                        .foregroundStyle(index == selectedTabIndex ? Color.App.text : Color.App.hint)
                                 }
                                 .padding([.trailing, .leading], 8)
 
                                 if index == selectedTabIndex {
                                     Rectangle()
-                                        .fill(Color.main)
+                                        .fill(Color.App.primary)
                                         .frame(height: 3)
                                         .cornerRadius(2, corners: [.topLeft, .topRight])
                                         .matchedGeometryEffect(id: "DetailTabSeparator", in: id)

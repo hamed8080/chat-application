@@ -39,7 +39,7 @@ struct ThreeDotAnimation: View {
                 }
         }
         .font(.iransansBoldCaption3)
-        .foregroundColor(.hint)
+        .foregroundColor(Color.App.hint)
     }
 }
 struct ThreeDotAnimation_Previews: PreviewProvider {

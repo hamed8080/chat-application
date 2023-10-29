@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
+import AdditiveUI
 
 struct VerifyContentView: View {
     @EnvironmentObject var viewModel: LoginViewModel
@@ -25,7 +26,7 @@ struct VerifyContentView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(Color.messageText)
+                        .foregroundStyle(Color.App.text)
                         .padding()
                         .fontWeight(.heavy)
                 }
@@ -35,27 +36,27 @@ struct VerifyContentView: View {
             VStack(spacing: 0) {
                 Text("Login.Verify.verifyPhoneNumber")
                     .font(.iransansBoldLargeTitle)
-                    .foregroundColor(.textBlueColor)
+                    .foregroundColor(Color.App.text)
                     .padding(.bottom, 2)
 
                 HStack(spacing: 2) {
                     let localized = String(localized: "Login.Verfiy.verificationCodeSentTo")
                     let formatted = String(format: localized, viewModel.text)
                     Text(formatted)
-                        .foregroundStyle(Color.hint)
+                        .foregroundStyle(Color.App.hint)
                         .font(.iransansBody)
                         .padding(.vertical, 4)
                         .padding(.horizontal, 64)
                         .multilineTextAlignment(.center)
                 }
                 .font(.iransansSubheadline)
-                .foregroundColor(.textBlueColor)
+                .foregroundColor(Color.App.text)
             }
             .padding(.bottom, 40)
 
             HStack {
                 Text("Login.verifyCode")
-                    .foregroundColor(Color.messageText)
+                    .foregroundColor(Color.App.text)
                     .font(.iransansBoldCaption)
                 Spacer()
             }
@@ -65,8 +66,12 @@ struct VerifyContentView: View {
             HStack(spacing: 16) {
                 ForEach(0 ..< VerifyFocusFileds.allCases.endIndex, id: \.self) { i in
                     TextField("", text: $viewModel.verifyCodes[i])
-                        .frame(minHeight: 64)
-                        .textFieldStyle(.customBordered)
+                        .frame(minHeight: 56)
+                        .textFieldStyle(BorderedTextFieldStyle(minHeight: 56,
+                                                               cornerRadius: 12,
+                                                               bgColor: Color.App.bgSecond,
+                                                               borderColor: Color.clear,
+                                                               padding: 0))
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.center)
                         .font(.iransansBoldLargeTitle)
@@ -118,7 +123,7 @@ struct VerifyContentView: View {
                     let localized = String(localized: .init("Login.Verify.timer"))
                     let formatted = String(format: localized, viewModel.timerString)
                     Text(formatted)
-                        .foregroundStyle(Color.hint)
+                        .foregroundStyle(Color.App.hint)
                         .font(.iransansCaption)
                         .padding(.top, 20)
                 } else {
@@ -134,7 +139,7 @@ struct VerifyContentView: View {
                             Text("Login.Verify.resendCode")
                         }
                     }
-                    .foregroundStyle(Color.blue)
+                    .foregroundStyle(Color.App.blue)
                     .padding(.top, 20)
                     .font(.iransansCaption)
 
@@ -161,7 +166,7 @@ struct VerifyContentView: View {
                 ErrorView(error: error)
             }
         }
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: viewModel.state)
         .animation(.easeInOut, value: viewModel.timerHasFinished)
         .transition(.move(edge: .trailing))

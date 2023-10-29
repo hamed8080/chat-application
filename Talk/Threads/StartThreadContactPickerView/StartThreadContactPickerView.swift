@@ -18,7 +18,7 @@ struct StartThreadContactPickerView: View {
     var body: some View {
         List {
             ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
             if viewModel.searchedContacts.count == 0 {
                 Button {
@@ -29,19 +29,19 @@ struct StartThreadContactPickerView: View {
 
                 } label: {
                     Label("Contacts.createGroup", systemImage: "person.2")
-                        .foregroundStyle(Color.main)
+                        .foregroundStyle(Color.App.primary)
                 }
-                .listRowBackground(Color.bgColor)
-                .listRowSeparatorTint(Color.dividerDarkerColor)
+                .listRowBackground(Color.App.bgPrimary)
+                .listRowSeparatorTint(Color.App.divider)
 
                 Button {
                     viewModel.createConversationType = .channel
                     viewModel.showConversaitonBuilder.toggle()
                 } label: {
                     Label("Contacts.createChannel", systemImage: "megaphone")
-                        .foregroundStyle(Color.main)
+                        .foregroundStyle(Color.App.primary)
                 }
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
             }
 
@@ -60,7 +60,7 @@ struct StartThreadContactPickerView: View {
             }
 
             ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
         }
         .environment(\.defaultMinListRowHeight, 24)

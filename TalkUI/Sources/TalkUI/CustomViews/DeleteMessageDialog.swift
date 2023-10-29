@@ -23,7 +23,7 @@ public struct DeleteMessageDialog: View {
                 .font(.iransansTitle.bold())
                 .foregroundColor(.red)
             Text("DeleteMessageDialog.subtitle")
-                .foregroundColor(.secondaryLabel)
+                .foregroundColor(Color.App.hint)
                 .font(.iransansSubheadline)
             VStack {
                 ForEach(messages.prefix(3)) { message in

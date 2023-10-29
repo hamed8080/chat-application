@@ -30,7 +30,7 @@ public struct AudioRecordingView: View {
                     Image(systemName: "xmark.circle.fill")
                         .resizable()
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.white, Color.main)
+                        .foregroundStyle(Color.App.white, Color.primary)
                         .frame(width: 26, height: 26)
                 }
                 .frame(width: 48, height: 48)
@@ -47,7 +47,7 @@ public struct AudioRecordingView: View {
                 Image(systemName: "record.circle")
                     .font(.system(size: 24))
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(.pink.opacity(opacity), Color.main, Color.main)
+                    .foregroundStyle(Color.App.pink.opacity(opacity), Color.primary, Color.primary)
                     .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: opacity)
                     .onAppear {
                         opacity = opacity == 1  ? 0 : 1

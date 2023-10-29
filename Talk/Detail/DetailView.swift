@@ -28,7 +28,7 @@ struct DetailView: View {
                 TabDetail(viewModel: viewModel)
             }
         }
-        .background(Color.bgColor)
+        .background(Color.App.bgPrimary)
         .environmentObject(viewModel)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarTitle("General.info")
@@ -57,7 +57,7 @@ struct DetailView: View {
                             .scaledToFit()
                             .frame(width: 16, height: 16)
                             .padding(8)
-                            .foregroundStyle(Color.main)
+                            .foregroundStyle(Color.App.primary)
                             .fontWeight(.heavy)
                     }
                 } else {
@@ -102,7 +102,7 @@ struct InfoView: View {
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 64, height: 64)
-                .background(Color.blue.opacity(0.4))
+                .background(Color.App.blue.opacity(0.4))
                 .cornerRadius(28)
                 .onTapGesture {
                     fullScreenImageLoader.fetch(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title, size: .ACTUAL, forceToDownloadFromServer: true)
@@ -116,14 +116,14 @@ struct InfoView: View {
             VStack(spacing: 8) {
                 Text(viewModel.title)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.messageText)
+                    .foregroundStyle(Color.App.text)
 
                 let count = viewModel.thread?.participantCount
                 if viewModel.thread?.group == true, let count {
                     let label = String(localized: .init("Participant"))
                     Text("\(label) \(count)")
                         .font(.iransansCaption3)
-                        .foregroundStyle(Color.hint)
+                        .foregroundStyle(Color.App.hint)
                 }
 
                 if let bio = viewModel.bio {
@@ -140,7 +140,7 @@ struct InfoView: View {
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, idealHeight: 178, maxHeight: .infinity)
         .padding([.leading, .trailing, .top])
-        .background(Color.bgSpaceItem)
+        .background(Color.App.divider)
     }
 }
 
@@ -153,10 +153,10 @@ struct BioDescription: View {
                 VStack(alignment: .leading) {
                     Text(description)
                         .font(.iransansSubtitle)
-                        .foregroundStyle(Color.messageText)
+                        .foregroundStyle(Color.App.text)
                     Text("General.description")
                         .font(.iransansCaption)
-                        .foregroundStyle(Color.hint)
+                        .foregroundStyle(Color.App.hint)
                 }
                 Spacer()
             }
@@ -269,7 +269,7 @@ struct DetailViewButton: View {
                 .frame(width: 16, height: 16)
                 .transition(.asymmetric(insertion: .scale.animation(.easeInOut(duration: 2)), removal: .scale.animation(.easeInOut(duration: 2))))
                 .accessibilityHint(accessibilityText)
-                .foregroundColor(Color.main)
+                .foregroundColor(Color.App.primary)
         }
         .frame(width: 48, height: 48)
         .background(.ultraThickMaterial)

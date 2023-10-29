@@ -24,9 +24,13 @@ public struct RadioButton: View {
                 .resizable()
                 .scaledToFit()
                 .font(.title)
-                .foregroundColor(isSelected ? Color.main : Color.bgChatBox)
+                .foregroundStyle(isSelected ? Color.App.white : Color.App.gray3, isSelected ? Color.App.primary : Color.App.gray3)
+                .overlay(alignment: .center) {
+                    Circle()
+                        .stroke(isSelected ? Color.App.white : Color.clear, lineWidth: 1)
+                }
         }
-        .frame(width: visible ? 22 : 0.001, height: visible ? 22 : 0.001, alignment: .center)
+        .frame(width: visible ? 22 : 0.001, height: visible ? 22 : 0.001, alignment: .center)        
         .scaleEffect(x: visible ? 1.0 : 0.001, y: visible ? 1.0 : 0.001, anchor: .center)
         .onTapGesture {
             withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
@@ -38,7 +42,7 @@ public struct RadioButton: View {
 
 struct RadioButton_Previews: PreviewProvider {
     static var previews: some View {
-        HStack {
+        VStack {
             RadioButton(visible: .constant(true), isSelected: .constant(true)) { _ in }
             RadioButton(visible: .constant(true), isSelected: .constant(false)) { _ in }
         }

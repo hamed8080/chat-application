@@ -30,7 +30,7 @@ struct MemberView: View {
             StickyHeaderSection(header: "Tab.contacts", height: 30)
             AddParticipantButton(conversation: viewModel.thread)
                 .listRowSeparatorTint(.gray.opacity(0.2))
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color.App.bgPrimary)
             ForEach(viewModel.sorted) { participant in
                 ParticipantRowContainer(participant: participant, isSearchRow: false)
             }
@@ -56,9 +56,9 @@ struct ParticipantRowContainer: View {
     let isSearchRow: Bool
     var separatorColor: Color {
         if !isSearchRow {
-            return viewModel.participants.last == participant ? Color.clear : Color.dividerDarkerColor.opacity(0.3)
+            return viewModel.participants.last == participant ? Color.clear : Color.App.divider
         } else {
-            return viewModel.searchedParticipants.last == participant ? Color.clear : Color.dividerDarkerColor.opacity(0.3)
+            return viewModel.searchedParticipants.last == participant ? Color.clear : Color.App.divider
         }
     }
 
@@ -66,7 +66,7 @@ struct ParticipantRowContainer: View {
         ParticipantRow(participant: participant)
             .id("\(isSearchRow ? "SearchRow" : "Normal")\(participant.id ?? 0)")
             .padding(.vertical)
-            .background(Color.bgColor)
+            .background(Color.App.bgPrimary)
             .overlay(alignment: .bottom) {
                 Rectangle()
                     .fill(separatorColor)
@@ -124,12 +124,12 @@ struct AddParticipantButton: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 16)
-                    .foregroundStyle(Color.main)
+                    .foregroundStyle(Color.App.primary)
                 Text("Thread.invite")
                     .font(.iransansBody)
                 Spacer()
             }
-            .foregroundStyle(Color.main)
+            .foregroundStyle(Color.App.primary)
             .padding(.horizontal, 24)
             .padding(.vertical, 16)
         }

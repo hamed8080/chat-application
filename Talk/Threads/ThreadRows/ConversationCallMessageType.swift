@@ -32,11 +32,11 @@ struct ConversationCallMessageType: View {
                 .resizable()
                 .frame(width: 10, height: 10)
                 .scaledToFit()
-                .foregroundColor(message.type == .startCall ? Color.green : Color.red)
+                .foregroundColor(message.type == .startCall ? Color.App.green : Color.App.red)
         }
         .padding([.leading], 2)
         .padding([.trailing], 8)
-        .background(Color.tableItem.opacity(color == .dark ? 1 : 0.3))
+        .background(Color.App.bgSecond)
         .cornerRadius(6)
     }
 }

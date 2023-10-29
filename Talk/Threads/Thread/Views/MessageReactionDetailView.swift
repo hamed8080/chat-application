@@ -27,7 +27,7 @@ struct MessageReactionDetailView: View {
             tabs: tabs,
             config: .init(alignment: .top)
         )
-        .background(Color.bgMain)
+        .background(Color.App.bgPrimary)
         .navigationTitle("Reactions to: \(message.messageTitle.trimmingCharacters(in: .whitespacesAndNewlines))")
     }
 
@@ -85,7 +85,7 @@ struct ParticiapntsPageSticker: View {
         List {
             ForEach(reactions) { reaction in
                 ReactionParticipantRow(reaction: reaction)
-                    .listRowBackground(Color.bgMain)
+                    .listRowBackground(Color.App.bgPrimary)
                     .onAppear {
                         if reactions.last == reaction {
                             ReactionViewModel.shared.getDetail(for: messageId,
@@ -148,7 +148,7 @@ struct ReactionParticipantRow: View {
                     .font(.iransansBoldCaption2)
                     .foregroundColor(.white)
                     .frame(width: 64, height: 64)
-                    .background(Color.blue.opacity(0.4))
+                    .background(Color.App.blue.opacity(0.4))
                     .cornerRadius(24)
                 Circle()
                     .fill(.red)
@@ -159,7 +159,7 @@ struct ReactionParticipantRow: View {
                         Text(verbatim: reaction.reaction?.emoji ?? "")
                             .font(.system(size: 13))
                             .frame(width: 22, height: 22)
-                            .background(Color.main.opacity(0.3))
+                            .background(Color.App.primary.opacity(0.3))
                             .cornerRadius(18)
                             .offset(x: 0, y: 26)
 
@@ -177,7 +177,7 @@ struct ReactionParticipantRow: View {
                     Text(time.date.timeAgoSinceDateCondense ?? "")
                         .padding(.leading, 4)
                         .font(.iransansCaption3)
-                        .foregroundColor(Color.gray)
+                        .foregroundColor(Color.App.gray1)
                 }
             }
         }

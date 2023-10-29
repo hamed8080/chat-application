@@ -27,7 +27,7 @@ struct SendContainer: View {
         ZStack {
             if showActionButtons {
                 Rectangle()
-                    .fill(Color.black.opacity(0.5))
+                    .fill(Color.App.black.opacity(0.5))
                     .onTapGesture {
                         withAnimation(.easeOut(duration: 0.13)) {
                             showActionButtons.toggle()
@@ -124,7 +124,7 @@ struct MainSendButtons: View {
                     Image(systemName: "plus.circle.fill")
                         .resizable()
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.white, showActionButtons ? Color.hint.opacity(0.5) : Color.main )
+                        .foregroundStyle(Color.App.white, showActionButtons ? Color.App.hint.opacity(0.5) : Color.App.primary)
                         .frame(width: 26, height: 26)
                 }
                 .frame(width: 48, height: 48)
@@ -136,7 +136,7 @@ struct MainSendButtons: View {
             MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
                                text: $text,
                                textColor: UIColor(named: "message_text"),
-                               backgroundColor: Color.bgChatBox,
+                               backgroundColor: Color.App.bgSecond,
                                mention: true)
             .cornerRadius(24)
             .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
@@ -154,7 +154,7 @@ struct MainSendButtons: View {
                         .scaledToFit()
                         .frame(width: 26, height: 24)
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.hint)
+                        .foregroundStyle(Color.App.hint)
                 }
                 .frame(width: 48, height: 48)
                 .buttonStyle(.borderless)
@@ -171,7 +171,7 @@ struct MainSendButtons: View {
                     .scaledToFit()
                     .frame(width: 26, height: 26)
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.hint)
+                    .foregroundStyle(Color.App.hint)
             }
             .frame(width: 48, height: 48)
             .buttonStyle(.borderless)
@@ -197,7 +197,7 @@ struct MainSendButtons: View {
                     .scaledToFit()
                     .frame(width: 26, height: 26)
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.white, Color.main)
+                    .foregroundStyle(Color.App.white, Color.App.primary)
             }
             .frame(width: 48, height: 48)
             .buttonStyle(.borderless)
@@ -226,7 +226,7 @@ struct SelectionView: View {
                 Image(systemName: "xmark.circle.fill")
                     .resizable()
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.white, Color.main)
+                    .foregroundStyle(Color.App.white, Color.App.primary)
                     .frame(width: 26, height: 26)
             }
             .frame(width: 48, height: 48)
@@ -250,7 +250,7 @@ struct SelectionView: View {
             if !viewModel.thread.disableSend {
                 Image(systemName: "trash.fill")
                     .font(.system(size: 20))
-                    .foregroundColor(.redSoft)
+                    .foregroundColor(Color.App.red)
                     .padding()
                     .onTapGesture {
                         viewModel.deleteDialaog.toggle()
@@ -259,7 +259,7 @@ struct SelectionView: View {
 
             Image(systemName: "arrowshape.turn.up.right.fill")
                 .font(.system(size: 20))
-                .foregroundColor(Color.blue)
+                .foregroundColor(Color.App.blue)
                 .padding()
                 .onTapGesture {
                     viewModel.sheetType = .threadPicker
@@ -288,7 +288,7 @@ struct ReplyMessageViewPlaceholder: View {
                     Image(systemName: "xmark.circle.fill")
                         .resizable()
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.white, Color.main)
+                        .foregroundStyle(Color.App.white, Color.App.primary)
                         .frame(width: 26, height: 26)
                 }
                 .frame(width: 48, height: 48)
@@ -306,7 +306,7 @@ struct ReplyMessageViewPlaceholder: View {
                 Image(systemName: "arrowshape.turn.up.left.fill")
                     .font(.system(size: 16))
                     .scaledToFit()
-                    .foregroundColor(Color.gray)
+                    .foregroundColor(Color.App.gray1)
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
         }
@@ -325,7 +325,7 @@ struct MuteChannelViewPlaceholder: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
-                    .foregroundColor(Color.blue)
+                    .foregroundColor(Color.App.blue)
                 Text(mute ? "Thread.unmute" : "Thread.mute")
                     .font(.iransansBody)
                     .offset(x: 8)
@@ -369,7 +369,7 @@ struct EditMessagePlaceholderView: View {
                     Image(systemName: "xmark.circle.fill")
                         .resizable()
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.white, Color.main)
+                        .foregroundStyle(Color.App.white, Color.App.primary)
                         .frame(width: 26, height: 26)
                 }
                 .frame(width: 48, height: 48)

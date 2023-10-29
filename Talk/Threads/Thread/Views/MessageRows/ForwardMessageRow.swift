@@ -21,25 +21,22 @@ struct ForwardMessageRow: View {
             Button {
                 navVM.append(thread: forwardThread)
             } label: {
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        if let name = forwardInfo.participant?.name {
-                            Text(name)
-                                .italic()
-                                .font(.iransansBoldCaption2)
-                                .foregroundColor(Color.gray)
-                        }
-                        Spacer()
-                        Image(systemName: "arrowshape.turn.up.right")
-                            .foregroundColor(Color.blue)
+                HStack(spacing: 8) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.App.red)
+                        .frame(width: 3)
+                        .frame(minHeight: 0, maxHeight: 36)
+                    if let name = forwardInfo.participant?.name {
+                        Text(name)
+                            .italic()
+                            .font(.iransansBoldCaption2)
+                            .foregroundColor(Color.App.red)
                     }
-                    .padding([.leading, .trailing, .top], 8)
-                    .frame(minHeight: 36)
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 1)
-                        .padding([.top], 4)
+                    Image(systemName: "arrowshape.turn.up.right.fill")
+                        .foregroundColor(Color.App.primary)
+                    Spacer()
                 }
+                .frame(minHeight: 52, maxHeight: 52)
             }
         }
     }

@@ -21,7 +21,7 @@ struct SelectConversationOrContactList: View {
         List {
             SectionTitleView(title: "Thread.selectToStartConversation")
             Section {
-                MultilineTextField("General.searchHere", text: $viewModel.searchText, backgroundColor: Color.gray.opacity(0.2))
+                MultilineTextField("General.searchHere", text: $viewModel.searchText, backgroundColor: Color.App.gray1.opacity(0.2))
                     .cornerRadius(16)
                     .noSeparators()
             }
