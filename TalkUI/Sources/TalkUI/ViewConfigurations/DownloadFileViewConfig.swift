@@ -39,6 +39,9 @@ public struct DownloadFileViewConfig {
         config.iconColor = Color.App.white
         config.iconCircleColor = Color.App.primary
         config.progressColor = Color.App.white
+        config.iconWidth = 36
+        config.iconHeight = 36
+        config.circleProgressMaxWidth = 28
         config.showSkeleton = false
         return config
     }()

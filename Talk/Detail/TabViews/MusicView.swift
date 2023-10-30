@@ -46,9 +46,7 @@ struct MessageListMusicView: View {
                     }
                 }
         }
-        if viewModel.isLoading {
-            LoadingView()
-        }
+        DetailLoading()
     }
 }
 
@@ -86,6 +84,7 @@ struct MusicRowView: View {
             Spacer()
         }
         .padding([.leading, .trailing])
+        .contentShape(Rectangle())
         .onTapGesture {
             threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
             viewModel.dismiss = true

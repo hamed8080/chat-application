@@ -47,9 +47,7 @@ struct MessageListLinkView: View {
                     }
                 }
         }
-        if viewModel.isLoading {
-            LoadingView()
-        }
+        DetailLoading()
     }
 }
 
@@ -79,6 +77,7 @@ struct LinkRowView: View {
             Spacer()
         }
         .padding()
+        .contentShape(Rectangle())
         .onTapGesture {
             threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
             viewModel.dismiss = true

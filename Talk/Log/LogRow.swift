@@ -8,6 +8,7 @@
 import Chat
 import Logger
 import SwiftUI
+import TalkUI
 
 struct LogRow: View {
     var log: Log
@@ -24,7 +25,7 @@ struct LogRow: View {
 
     var body: some View {
         ZStack(alignment: .leading) {
-            opacity(0.2)
+            color.opacity(0.2)
             Text("\(log.message ?? "")")
                 .font(.iransansCaption)
                 .padding()
@@ -32,7 +33,8 @@ struct LogRow: View {
         .environment(\.layoutDirection, .leftToRight)
         .overlay(alignment: .bottom) {
             Color
-                .gray
+                .App
+                .gray1
                 .opacity(0.5)
                 .frame(height: 1)
         }

@@ -9,6 +9,7 @@ import Chat
 import Logger
 import SwiftUI
 import TalkViewModels
+import TalkUI
 
 struct LogView: View {
     @EnvironmentObject var viewModel: LogViewModel
@@ -24,9 +25,9 @@ struct LogView: View {
             if viewModel.searchText.isEmpty == false, viewModel.filtered.count < 1 {
                 HStack {
                     Image(systemName: "doc.text.magnifyingglass")
-                        .foregroundColor(.gray.opacity(0.8))
+                        .foregroundColor(Color.App.gray1.opacity(0.8))
                     Text("General.nothingFound")
-                        .foregroundColor(.gray.opacity(0.8))
+                        .foregroundColor(Color.App.gray1.opacity(0.8))
                 }
             }
         }

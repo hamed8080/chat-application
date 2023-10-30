@@ -30,8 +30,10 @@ struct TabViewsContainer: View {
         Tabs(selectedTabIndex: $selectedTabIndex, tabs: tabs, thread: thread)
         switch selectedTabIndex {
         case 0:
-            MemberView()
-                .ignoresSafeArea(.all)
+            if thread.group == true || thread.participantCount ?? 0 > 2 {
+                MemberView()
+                    .ignoresSafeArea(.all)
+            }
         case 1:
             MutualThreadsView()
                 .ignoresSafeArea(.all)
@@ -66,6 +68,8 @@ struct Tabs: View {
                     let index = tabs.firstIndex(where: { $0.title == tab.title })
 
                     if index == 1, thread.group == true {
+                        EmptyView()
+                    } else if (thread.group ?? false) == false, thread.participantCount ?? 0 == 2, index == 0 {
                         EmptyView()
                     } else {
                         Button {

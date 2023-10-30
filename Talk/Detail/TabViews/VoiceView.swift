@@ -46,9 +46,7 @@ struct MessageListVoiceView: View {
                     }
                 }
         }
-        if viewModel.isLoading {
-            LoadingView()
-        }
+        DetailLoading()
     }
 }
 
@@ -83,6 +81,7 @@ struct VoiceRowView: View {
             Spacer()
         }
         .padding([.leading, .trailing])
+        .contentShape(Rectangle())
         .onTapGesture {
             threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
             viewModel.dismiss = true

@@ -22,6 +22,11 @@ public struct MessageSection: Identifiable, Hashable, Equatable {
     public var id: Date { date }
     public let date: Date
     public var messages: [Message]
+
+    public init(date: Date, messages: [Message]) {
+        self.date = date
+        self.messages = messages
+    }
 }
 
 public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {

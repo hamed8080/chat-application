@@ -48,9 +48,7 @@ struct MessageListFileView: View {
                     }
                 }
         }
-        if viewModel.isLoading {
-            LoadingView()
-        }
+        DetailLoading()
     }
 }
 
@@ -84,7 +82,8 @@ struct FileRowView: View {
             }
             Spacer()
         }
-        .padding([.leading, .trailing])
+        .padding(.all)
+        .contentShape(Rectangle())
         .onTapGesture {
             threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
             viewModel.dismiss = true
@@ -96,8 +95,10 @@ struct DownloadFileButtonView: View {
     @EnvironmentObject var veiwModel: DownloadFileViewModel
     var body: some View {
         DownloadFileView(viewModel: veiwModel, config: .detail)
-            .frame(width: 48, height: 48)
+            .frame(width: DownloadFileViewConfig.detail.circleProgressMaxWidth, height: DownloadFileViewConfig.detail.circleProgressMaxWidth)
             .padding(4)
+            .clipped()
+            .cornerRadius(4) /// We round the corner of the file is an image we show a thumbnail of the file not the icon.
     }
 }
 

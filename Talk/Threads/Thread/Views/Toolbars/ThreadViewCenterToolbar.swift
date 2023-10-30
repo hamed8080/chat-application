@@ -31,7 +31,7 @@ struct ThreadViewCenterToolbar: View {
                 Text(signalMessageText)
                     .foregroundColor(Color.App.blue)
                     .font(.iransansCaption2)
-            } else if let participantsCount = participantCount {
+            } else if viewModel.thread.group == true, let participantsCount = participantCount {
                 Text("Members \(participantsCount)")
                     .fixedSize()
                     .foregroundColor(Color.App.gray1)

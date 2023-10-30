@@ -40,6 +40,7 @@ extension ThreadsViewModel {
         switch event {
         case .threads(let response):
             onThreads(response)
+            onArchives(response)
             onPublicThreadSearch(response)
             onSearch(response)
         case .created(let response):

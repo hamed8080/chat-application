@@ -111,6 +111,9 @@ struct NavigationTypeView: View {
             NotificationSettings()
         case .support(_):
             SupportView()
+        case .archives(_):
+            ArchivesView(container: container)
+                .environmentObject(container.threadsVM)
         }
     }
 }

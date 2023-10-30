@@ -18,11 +18,6 @@ struct ThreadEventView: View {
     var body: some View {
         if let event = smt.titleAndIcon {
             HStack {
-                Image(systemName: event.image)
-                    .resizable()
-                    .foregroundColor(Color.App.primary)
-                    .frame(width: 16, height: 16)
-
                 Text(.init(localized: .init(event.title)))
                     .lineLimit(1)
                     .font(.iransansBoldCaption2)

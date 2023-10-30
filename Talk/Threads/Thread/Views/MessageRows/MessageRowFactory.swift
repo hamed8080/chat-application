@@ -26,7 +26,6 @@ struct MessageRowFactory: View {
                 if let type = message.type {
                     if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
                         TextMessageType(viewModel: viewModel)
-                            .padding(viewModel.isMe ? 16 : 8) // We use 16 instead of 8 because of the tail offset when the sender is me.
                     } else if type == .participantJoin || type == .participantLeft {
                         ParticipantMessageType(message: message)
                     } else if type == .endCall || type == .startCall {

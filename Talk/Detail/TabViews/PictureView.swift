@@ -27,7 +27,20 @@ struct PictureView: View {
         let viewWidth = viewWidth - padding
         let itemWidthWithouthSpacing = viewModel.itemWidth(readerWidth: viewWidth)
         let itemWidth = itemWidthWithouthSpacing - spacing
-        LazyVGrid(columns: Array(repeating: .init(.flexible(minimum: itemWidth, maximum: itemWidth), spacing: spacing), count: viewModel.itemCount), spacing: spacing) {
+        LazyVGrid(
+            columns: Array(
+                repeating: .init(
+                    .flexible(
+                        minimum: itemWidth,
+                        maximum: itemWidth
+                    ),
+                    spacing: spacing
+                ),
+                count: viewModel.itemCount
+            ),
+            alignment: .leading,
+            spacing: spacing
+        ) {
             if viewWidth != 0 {
                 MessageListPictureView(itemWidth: itemWidth)
             }
@@ -62,11 +75,7 @@ struct MessageListPictureView: View {
                     }
                 }
         }
-        if viewModel.isLoading {
-            LoadingView()
-                .id("MessageListPictureViewLoading")
-                .frame(width: 24, height: 24)
-        }
+        DetailLoading()
     }
 }
 
@@ -93,7 +102,8 @@ struct PictureRowView: View {
                 } label: {
                     Label("Show Message", systemImage: "bubble.middle.top")
                 }
-            }.onTapGesture {
+            }
+            .onTapGesture {
                 appOverlayViewModel.galleryMessage = message
             }
         if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {

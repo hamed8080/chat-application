@@ -243,11 +243,13 @@ struct DetailTopButtons: View {
 
 struct TabDetail: View {
     let viewModel: DetailViewModel
+    /// Select the participants tab if the conversation is a group. If not select index 1 which is mutual groups as the primary tab.
+    var selectedIndex: Int { viewModel.thread?.group == true ? 0 : 1 }
 
     var body: some View {
         if let thread = viewModel.thread, let participantViewModel = viewModel.participantViewModel {
             VStack(spacing: 0) {
-                TabViewsContainer(thread: thread, selectedTabIndex: 0)
+                TabViewsContainer(thread: thread, selectedTabIndex: selectedIndex)
                     .environmentObject(participantViewModel)
             }
         }

@@ -33,12 +33,10 @@ struct AvatarView: View {
     }
 
     @ViewBuilder var body: some View {
-        if viewModel.isInSelectMode {
+        if viewModel.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false {
             EmptyView()
                 .frame(width: 0, height: 0)
                 .hidden()
-        } else if viewModel.threadVM?.thread.group ?? false == false {
-            AvatarView.emptyP2PSender
         } else if !viewModel.isMe, !viewModel.isNextMessageTheSameUser, viewModel.isCalculated {
             HStack(spacing: 0) {
                 if let avatarImageLoader = viewModel.avatarImageLoader {

@@ -22,6 +22,7 @@ public final class ThreadsViewModel: ObservableObject {
     @Published public var toggle = false
     @AppStorage("Threads", store: UserDefaults.group) public var threadsData: Data?
     @Published public var threads: OrderedSet<Conversation> = []
+    @Published public var archives: OrderedSet<Conversation> = []
     @Published public var searchedConversations: OrderedSet<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
@@ -129,6 +130,7 @@ public final class ThreadsViewModel: ObservableObject {
         archived = true
         isLoading = true
         let req = ThreadsRequest(count: count, offset: archivedOffset, archived: true)
+        RequestsManager.shared.append(prepend: "GET-ARCHIVES", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
@@ -191,9 +193,9 @@ public final class ThreadsViewModel: ObservableObject {
                 .compactMap { id in threads.first { $0.id == id } }
             ?? []
         } else if searchText.isEmpty {
-            return threads.filter { ($0.isArchive ?? false) == archived }
+            return threads.filter { ($0.isArchive ?? false) == false }
         } else {
-            let local = threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == archived }
+            let local = threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == false }
             let server = searchedConversations
             var endArray: [Conversation] = local
             server.forEach { conversation in
@@ -220,6 +222,13 @@ public final class ThreadsViewModel: ObservableObject {
         if !response.cache, response.result?.count ?? 0 > 0 {
             hasNext = response.hasNext
             firstSuccessResponse = true
+        }
+        isLoading = false
+    }
+
+    public func onArchives(_ response: ChatResponse<[Conversation]>) {
+        if let archives = response.result, response.value(prepend: "GET-ARCHIVES") != nil {
+            self.archives.append(contentsOf: archives.filter({$0.isArchive == true}))
         }
         isLoading = false
     }

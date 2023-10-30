@@ -48,6 +48,8 @@ struct TextMessageType: View {
             OverlayEmojiViews()
         }
         .environmentObject(viewModel)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
     }
 }
 
@@ -55,18 +57,20 @@ struct SelectMessageRadio: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        VStack {
-            Spacer()
-            RadioButton(visible: $viewModel.isInSelectMode, isSelected: $viewModel.isSelected) { isSelected in
-                withAnimation(!viewModel.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
-                    viewModel.isSelected.toggle()
-                    viewModel.animateObjectWillChange()
+        if viewModel.isInSelectMode {
+            VStack {
+                Spacer()
+                RadioButton(visible: $viewModel.isInSelectMode, isSelected: $viewModel.isSelected) { isSelected in
+                    withAnimation(!viewModel.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
+                        viewModel.isSelected.toggle()
+                        viewModel.animateObjectWillChange()
+                    }
+                    viewModel.threadVM?.animateObjectWillChange()
                 }
-                viewModel.threadVM?.animateObjectWillChange()
             }
+            .padding(viewModel.isMe ? .leading : .trailing, 8)
+            .padding(.bottom, 8)
         }
-        .padding(.bottom, 8)
-        .padding(viewModel.isMe ? .leading : .trailing, 9)
     }
 }
 

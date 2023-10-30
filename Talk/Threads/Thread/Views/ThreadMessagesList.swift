@@ -94,12 +94,14 @@ struct MessagesLazyStack: View {
         LazyVStack(spacing: 0) {
             ListLoadingView(isLoading: $viewModel.topLoading)
                 .id(-1)
+                .padding([.top, .bottom])
             ForEach(viewModel.sections) { section in
                 SectionView(section: section)
                 MessageList(messages: section.messages, viewModel: viewModel)
             }
             ListLoadingView(isLoading: $viewModel.bottomLoading)
                 .id(-2)
+                .padding([.top, .bottom])
         }
         .environment(\.layoutDirection, .leftToRight)
         .background(
@@ -146,17 +148,27 @@ struct MessageList: View {
 
 struct ThreadMessagesList_Previews: PreviewProvider {
     struct Preview: View {
-        @StateObject var viewModel = ThreadViewModel(thread: Conversation(id: 1))
+        @StateObject var viewModel: ThreadViewModel
+
+        init() {
+            let metadata = "{\"name\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11\",\"file\": {\"hashCode\": \"UJMUIT4M194C5WLJ\",\"mimeType\": \"image/png\",\"fileHash\": \"UJMUIT4M194C5WLJ\",\"actualWidth\": 1290,\"actualHeight\": 2796,\"parentHash\": \"6MIPH7UM1P7OIZ2L\",\"size\": 1569454,\"link\": \"https://podspace.pod.ir/api/images/UJMUIT4M194C5WLJ?checkUserGroupAccess=true\",\"name\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11\",\"originalName\": \"Simulator Screenshot - iPhone 14 Pro Max - 2023-09-10 at 12.14.11.png\"},\"fileHash\": \"UJMUIT4M194C5WLJ\"}"
+            let message = Message(message: "Please download this file.",
+                                  messageType: .file,
+                                  metadata: metadata.string,
+                                  conversation: .init(id: 1))
+
+            let viewModel = ThreadViewModel(thread: Conversation(id: 1), threadsViewModel: .init())
+            viewModel.sections.append(MessageSection(date: .init(), messages: [message]))
+            print(viewModel.sections.count)
+            viewModel.animateObjectWillChange()
+            self._viewModel = StateObject(wrappedValue: viewModel)
+        }
 
         var body: some View {
             ThreadMessagesList(viewModel: viewModel)
                 .environmentObject(viewModel)
                 .onAppear {
-                    viewModel.appendMessagesAndSort([.init(threadId: 1, id: 1,
-                                                    message: "Test Message",
-                                                    messageType: .text,
-                                                    conversation: viewModel.thread)])
-                    viewModel.animateObjectWillChange()
+                    print(viewModel.sections.count)
                 }
         }
     }

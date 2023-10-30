@@ -40,6 +40,7 @@ struct SettingsView: View {
                 // SettingCallHistorySection()
                 // SettingSavedMessagesSection()
                 // SettingCallSection()
+                SettingArchivesSection()
                 SettingLogSection()
                 if EnvironmentValues.isTalkTest {
                     SettingAssistantSection()
@@ -400,6 +401,19 @@ struct SettingLogSection: View {
     }
 }
 
+struct SettingArchivesSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
+    var body: some View {
+        ListSectionButton(imageName: "archivebox.fill", title: "Tab.archives", color: Color.App.mint, showDivider: false) {
+            navModel.appendArhives()
+        }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.divider)
+    }
+}
+
 struct SavedMessageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
@@ -412,6 +426,7 @@ struct SavedMessageSection: View {
         .listRowSeparatorTint(Color.App.divider)
     }
 }
+
 struct BlockedMessageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 

@@ -150,7 +150,7 @@ struct DownloadFileButton: View {
                 Image(systemName: stateIcon)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 12, height: 12)
                     .foregroundStyle(config.iconColor)
 
                 Circle()
