@@ -36,7 +36,6 @@ public final class ThreadsViewModel: ObservableObject {
     private(set) var hasNext: Bool = true
     public var archivedOffset: Int = 0
     public var selectedThraed: Conversation?
-    public var archived: Bool = false
     public var folder: Tag?
     public var title: String = ""
     @Published public var selectedFilterThreadType: ThreadTypes?
@@ -127,7 +126,6 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func getArchivedThreads() {
-        archived = true
         isLoading = true
         let req = ThreadsRequest(count: count, offset: archivedOffset, archived: true)
         RequestsManager.shared.append(prepend: "GET-ARCHIVES", value: req)
@@ -135,7 +133,6 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func resetArchiveSettings() {
-        archived = false
         archivedOffset = 0
         hasNext = true
         animateObjectWillChange()

@@ -52,13 +52,10 @@ struct ArchivesView: View {
             }
         }
         .task {
-            container.threadsVM.archived = true
             container.threadsVM.getArchivedThreads()
-            container.animateObjectWillChange()
         }
         .onDisappear {
-            container.threadsVM.archived = false
-            container.animateObjectWillChange()
+            container.threadsVM.resetArchiveSettings()
         }
     }
 }
