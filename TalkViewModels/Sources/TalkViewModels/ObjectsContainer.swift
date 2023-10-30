@@ -19,7 +19,7 @@ public final class ObjectsContainer: ObservableObject {
     @Published public var messagePlayer = AVAudioPlayerViewModel()
     @Published public var appOverlayVM = AppOverlayViewModel()
     @Published public var reactions = ReactionViewModel.shared
-    
+
     public init(delegate: ChatDelegate) {
         loginVM = LoginViewModel(delegate: delegate)
         NotificationCenter.default.publisher(for: .message)

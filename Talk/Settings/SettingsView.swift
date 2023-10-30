@@ -41,6 +41,7 @@ struct SettingsView: View {
                 // SettingSavedMessagesSection()
                 // SettingCallSection()
                 SettingArchivesSection()
+                SettingLanguageSection()
                 SettingLogSection()
                 if EnvironmentValues.isTalkTest {
                     SettingAssistantSection()
@@ -407,6 +408,19 @@ struct SettingArchivesSection: View {
     var body: some View {
         ListSectionButton(imageName: "archivebox.fill", title: "Tab.archives", color: Color.App.mint, showDivider: false) {
             navModel.appendArhives()
+        }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.divider)
+    }
+}
+
+struct SettingLanguageSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
+    var body: some View {
+        ListSectionButton(imageName: "globe", title: "Settings.language", color: Color.App.indigo, showDivider: false) {
+            navModel.appendLanguage()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)

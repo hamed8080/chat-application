@@ -114,6 +114,8 @@ struct NavigationTypeView: View {
         case .archives(_):
             ArchivesView(container: container)
                 .environmentObject(container.threadsVM)
+        case .language(_):
+            LanguageView(container: container)
         }
     }
 }

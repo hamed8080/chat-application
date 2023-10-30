@@ -175,7 +175,22 @@ private struct Preview: View {
 }
 
 struct ThreadContentList_Previews: PreviewProvider {
+    struct AudioPlayerPreview: View {
+        @ObservedObject var audioPlayerVm = AVAudioPlayerViewModel()
+
+        var body: some View {
+            AudioPlayerView()
+                .environmentObject(audioPlayerVm)
+                .onAppear {
+                    audioPlayerVm.setup(fileURL: URL(string: "https://www.google.com")!, ext: "mp3", title: "Note", subtitle: "Test")
+                    audioPlayerVm.isClosed = false
+                }
+        }
+    }
+
     static var previews: some View {
+        AudioPlayerPreview()
+            .previewDisplayName("AudioPlayerPreview")
         Preview()
     }
 }

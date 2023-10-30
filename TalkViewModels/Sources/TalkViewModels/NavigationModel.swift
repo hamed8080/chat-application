@@ -12,6 +12,7 @@ public enum NavigationType: Hashable {
     case assistant(AssistantNavigationValue)
     case log(LogNavigationValue)
     case archives(ArchivesNavigationValue)
+    case language(LanguageNavigationValue)
     case blockedContacts(BlockedContactsNavigationValue)
     case notificationSettings(NotificationSettingsNavigationValue)
     case support(SupportNavigationValue)
@@ -22,6 +23,7 @@ public struct PreferenceNavigationValue: NavigaitonValueProtocol {}
 public struct AssistantNavigationValue: NavigaitonValueProtocol {}
 public struct LogNavigationValue: NavigaitonValueProtocol {}
 public struct ArchivesNavigationValue: NavigaitonValueProtocol {}
+public struct LanguageNavigationValue: NavigaitonValueProtocol {}
 public struct BlockedContactsNavigationValue: NavigaitonValueProtocol {}
 public struct NotificationSettingsNavigationValue: NavigaitonValueProtocol {}
 public struct SupportNavigationValue: NavigaitonValueProtocol {}
@@ -78,6 +80,12 @@ public final class NavigationModel: ObservableObject {
         let archives = ArchivesNavigationValue()
         paths.append(NavigationType.archives(archives))
         pathsTracking.append(archives)
+    }
+
+    public func appendLanguage() {
+        let language = LanguageNavigationValue()
+        paths.append(NavigationType.language(language))
+        pathsTracking.append(language)
     }
 
     public func append(participantDetail: Participant) {

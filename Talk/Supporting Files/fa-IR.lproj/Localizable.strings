@@ -194,7 +194,7 @@
 "Thread.Tabs.music" = "موزیک";
 "Thread.Tabs.voice" = "صدا";
 "Thread.Tabs.link" = "لینک";
-"Thread.accessMicrophonePermission" = "لطفا به قسمت تنظیمات و سپس اپلیکیشن تاک مراجعه کنید و سپس میکروفن را روشن کنید.";
+"Thread.accessMicrophonePermission" = "لطفاً به قسمت تنظیمات و سپس اپلیکیشن تاک مراجعه کنید و سپس میکروفن را روشن کنید.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ گفتگویی ساخت.";
 
@@ -234,7 +234,7 @@
 /* Login */
 "Login.title" = "ورود";
 "Login.loginOrSignup" = "ورود و ثبت نام";
-"Login.subtitle" = "برای ایجاد حساب کاربری در پیام رسان تاک لطفا شماره تلفن خود را وارد کنید.";
+"Login.subtitle" = "برای ایجاد حساب کاربری در پیام رسان تاک لطفاً شماره تلفن خود را وارد کنید.";
 "Login.staticToken" = "توکن ثابت خود را اینجا وارد کنید.";
 "Login.phoneNumber" = "شماره تماس خود را اینجا وارد کنید.";
 "Login.footer" = "در صورت بروز مشکل در ورود با پشتیبانی تماس بگیرید.";
@@ -258,6 +258,9 @@
 "Settings.userName" = "نام کاربری";
 "Settings.phoneNumber" = "شماره تلفن";
 "Settings.bio" = "بیوگرافی";
+"Settings.language" = "زبان";
+"Settings.restartToChangeLanguage" = "لطفاً برای تغییر زبان اپلیکیشن رو ریستارت کنید.";
+
 
 /* Support */
 "Support.version" = "نسخه: %@";

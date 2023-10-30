@@ -257,6 +257,8 @@
 "Settings.userName" = "اسم المستخدم";
 "Settings.phoneNumber" = "رقم التليفون";
 "Settings.bio" = "سيرة شخصية";
+"Settings.language" = "لغة";
+"Settings.restartToChangeLanguage" = "يرجى إعادة تشغيل التطبيق لتغيير اللغة.";
 
 /* Support */
 "Support.version" = "إصدار: %@";

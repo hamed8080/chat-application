@@ -258,6 +258,8 @@
 "Settings.userName" = "Nombre de usuario";
 "Settings.phoneNumber" = "Número de teléfono";
 "Settings.bio" = "Biografía";
+"Settings.language" = "Idioma";
+"Settings.restartToChangeLanguage" = "Reinicie la aplicación para cambiar el idioma.";
 
 /* Support */
 "Support.version" = "Versión: %@";

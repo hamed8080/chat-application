@@ -256,6 +256,8 @@
 "Settings.userName" = "Username";
 "Settings.phoneNumber" = "Phone Number";
 "Settings.bio" = "Biography";
+"Settings.language" = "Language";
+"Settings.restartToChangeLanguage" = "Please restart the app to change the language.";
 
 /* Support */
 "Support.version" = "Version: %@";

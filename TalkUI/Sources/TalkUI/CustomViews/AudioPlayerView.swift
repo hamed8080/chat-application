@@ -15,21 +15,28 @@ public struct AudioPlayerView: View {
     public var body: some View {
         VStack(spacing: 0) {
             if !audioPlayerVM.isClosed {
-                VStack {
+                VStack(spacing: 0) {
                     Spacer()
                     HStack {
                         Button {
                             audioPlayerVM.toggle()
                         } label: {
-                            Label("", systemImage: audioPlayerVM.isPlaying ? "pause.circle" : "play.circle")
-                                .font(.title2.weight(.thin))
+                            Image(systemName: audioPlayerVM.isPlaying ? "pause.fill" : "play.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .padding(13)
+                                .foregroundStyle(Color.App.primary)
                         }
-                        VStack(alignment: .leading) {
+                        .buttonStyle(.plain)
+                        .frame(width: 36, height: 48)
+
+                        HStack {
                             Text(verbatim: audioPlayerVM.title)
-                                .font(.iransansSubtitle)
+                                .font(.iransansSubheadline)
                             Text(verbatim: audioPlayerVM.subtitle)
                                 .font(.iransansCaption)
                                 .foregroundColor(.gray)
+                            Spacer()
                         }
                         Spacer()
                         Text(verbatim: audioPlayerVM.currentTime.timerString ?? "")
@@ -39,24 +46,26 @@ public struct AudioPlayerView: View {
                         Button {
                             audioPlayerVM.close()
                         } label: {
-                            Label("", systemImage: "xmark.circle")
+                            Image(systemName: "xmark")
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundStyle(Color.App.hint)
+                                .padding(12)
+                                .fontWeight(.bold)
                         }
+                        .buttonStyle(.plain)
+                        .frame(width: 36, height: 36)
                     }
-                    .padding([.leading, .trailing], 12)
-                    Spacer()
-                    ProgressView(value: min(audioPlayerVM.currentTime / audioPlayerVM.duration, 1.0) , total: 1.0)
+                    .frame(height: 48)
+                    ProgressView(value: min(audioPlayerVM.currentTime / audioPlayerVM.duration, 1.0),
+                                 total: 1.0)
                         .progressViewStyle(.linear)
                         .scaleEffect(x: 1, y: 0.5, anchor: .center)
+                        .tint(Color.App.primary)
                 }
                 .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
-                .frame(minWidth: 0, maxWidth: .infinity, maxHeight: 48)
-                .background(
-                    VStack {
-                        Rectangle()
-                            .fill(Color.clear)
-                            .background(.ultraThinMaterial)
-                    }
-                )
+                .frame(minWidth: 0, maxWidth: .infinity, maxHeight: 54)
+                .background(MixMaterialBackground())
             }
         }
         .animation(.easeInOut(duration: 0.15), value: audioPlayerVM.isPlaying)
