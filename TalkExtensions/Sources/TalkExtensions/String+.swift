@@ -58,6 +58,21 @@ public extension String {
         }
     }
 
+    var nonCircleIconWithFileExtension: String {
+        switch self {
+        case "mp4", "avi", "mkv":
+            return "film.fill"
+        case "mp3", "m4a":
+            return "music.note"
+        case "docx", "pdf", "xlsx", "txt", "ppt":
+            return "doc.text.fill"
+        case "zip", "rar", "7z":
+            return "doc.zipper"
+        default:
+            return "doc.fill"
+        }
+    }
+
     /// Convert mimeType to extension such as `audio/mpeg` to `mp3`.
     var ext: String? { UTType(mimeType: self)?.preferredFilenameExtension }
 

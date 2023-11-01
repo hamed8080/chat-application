@@ -118,6 +118,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                         hideKeyboard()
                     }
                     isInSearchMode.toggle()
+                    searchCompletion?("")
                     searchText = ""
                 }
             } label: {

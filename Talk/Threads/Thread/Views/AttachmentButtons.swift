@@ -12,7 +12,7 @@ import TalkUI
 import TalkViewModels
 
 struct AttachmentButtons: View {
-    let viewModel: ActionSheetViewModel
+    let viewModel: AttachmentsViewModel
     @Binding var showActionButtons: Bool
 
     var body: some View {
@@ -24,7 +24,7 @@ struct AttachmentButtons: View {
 
 struct MutableAttachmentDialog: View {
     @Binding var showActionButtons: Bool
-    @EnvironmentObject var viewModel: ActionSheetViewModel
+    @EnvironmentObject var viewModel: AttachmentsViewModel
     var threadVM: ThreadViewModel? { viewModel.threadViewModel }
 
     var body: some View {
@@ -122,9 +122,9 @@ struct AttchmentButtonItem: View {
 }
 
 struct AttachmentDialog_Previews: PreviewProvider {
-    static var viewModel: ActionSheetViewModel {
+    static var viewModel: AttachmentsViewModel {
         let vm = ThreadViewModel(thread: MockData.thread)
-        let viewModel = ActionSheetViewModel()
+        let viewModel = AttachmentsViewModel()
         viewModel.threadViewModel = vm
         return viewModel
     }

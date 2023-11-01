@@ -50,10 +50,10 @@ struct LanguageView: View {
                     }
                     .frame(height: 48)
                     .frame(minWidth: 0, maxWidth: .infinity)
+                    .contentShape(Rectangle())
                 }
                 .frame(height: 48)
                 .frame(minWidth: 0, maxWidth: .infinity)
-                .contentShape(Rectangle())
                 .buttonStyle(.plain)
                 .listRowBackground(Color.App.bgPrimary)
             }

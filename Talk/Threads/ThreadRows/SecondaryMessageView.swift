@@ -12,6 +12,7 @@ import TalkUI
 import TalkViewModels
 
 struct SecondaryMessageView: View {
+    let isSelected: Bool
     var thread: Conversation
     @State private var draft: String = ""
     @State private var cancelable: AnyCancellable?
@@ -20,7 +21,7 @@ struct SecondaryMessageView: View {
     var body: some View {
         HStack {
             if draft.isEmpty {
-                ThreadLastMessageView(thread: thread)
+                ThreadLastMessageView(isSelected: isSelected, thread: thread)
             } else {
                 DraftView(draft: draft)
             }
@@ -28,7 +29,7 @@ struct SecondaryMessageView: View {
                 Image(uiImage: lastMessageSentStatus.icon)
                     .resizable()
                     .frame(width: 14, height: 14)
-                    .foregroundColor(lastMessageSentStatus.fgColor)
+                    .foregroundColor(isSelected ? Color.App.white : lastMessageSentStatus.fgColor)
                     .font(.subheadline)
             }
         }

@@ -20,10 +20,11 @@ struct ThreadContentList: View {
 
     var body: some View {
         List(threadsVM.filtered) { thread in
+            let isSelected = container.navVM.selectedThreadId == thread.id
             Button {
                 navVM.append(thread: thread)
             } label: {
-                ThreadRow(thread: thread)
+                ThreadRow(isSelected: isSelected, thread: thread)
                     .onAppear {
                         if self.threadsVM.filtered.last == thread {
                             threadsVM.loadMore()
@@ -32,10 +33,12 @@ struct ThreadContentList: View {
             }
             .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
             .listRowSeparatorTint(Color.App.separator)
-            .listRowBackground(container.navVM.selectedThreadId == thread.id ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
+            .listRowBackground(isSelected ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
         }
         .safeAreaInset(edge: .top) {
-            AudioPlayerView()
+            if UIApplication.shared.isInSlimMode {
+                AudioPlayerView()
+            }
         }
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $threadsVM.isLoading)

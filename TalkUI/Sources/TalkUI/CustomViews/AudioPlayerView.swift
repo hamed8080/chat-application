@@ -16,7 +16,6 @@ public struct AudioPlayerView: View {
         VStack(spacing: 0) {
             if !audioPlayerVM.isClosed {
                 VStack(spacing: 0) {
-                    Spacer()
                     HStack {
                         Button {
                             audioPlayerVM.toggle()
@@ -64,7 +63,7 @@ public struct AudioPlayerView: View {
                         .tint(Color.App.primary)
                 }
                 .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
-                .frame(minWidth: 0, maxWidth: .infinity, maxHeight: 54)
+                .frame(minWidth: 0, maxWidth: .infinity)
                 .background(MixMaterialBackground())
             }
         }

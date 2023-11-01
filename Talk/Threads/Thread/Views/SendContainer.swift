@@ -36,6 +36,8 @@ struct SendContainer: View {
             }
             VStack(spacing: 0) {
                 Spacer()
+                AttachmentFiles()
+                    .environmentObject(viewModel.attachmentsViewModel)
                 VStack(spacing: 0) {
                     if isInEditMode {
                         SelectionView(viewModel: viewModel)
@@ -52,7 +54,7 @@ struct SendContainer: View {
                             .environmentObject(viewModel)
 
                         if showActionButtons {
-                            AttachmentButtons(viewModel: viewModel.sheetViewModel, showActionButtons: $showActionButtons)
+                            AttachmentButtons(viewModel: viewModel.attachmentsViewModel, showActionButtons: $showActionButtons)
                         }
 
                         if let recordingVM = viewModel.audioRecoderVM {
@@ -66,13 +68,12 @@ struct SendContainer: View {
                 }
                 .opacity(disableSend ? 0.3 : 1.0)
                 .disabled(disableSend)
-                .padding(.bottom, 4)
+                .padding([.bottom, .top], 4)
                 .padding([.leading, .trailing], 8)
-                .padding(.top, 4)
                 .animation(isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: isRecording)
                 .background(
                     MixMaterialBackground()
-                        .cornerRadius(showActionButtons ? 24 : 0, corners: [.topLeft, .topRight])
+                        .cornerRadius(showActionButtons && viewModel.attachmentsViewModel.attachments.count == 0 ? 24 : 0, corners: [.topLeft, .topRight])
                         .ignoresSafeArea()
                 )
                 .onReceive(viewModel.$editMessage) { editMessage in
@@ -182,7 +183,8 @@ struct MainSendButtons: View {
 
             Button {
                 if isRecording {
-                    viewModel.audioRecoderVM?.stopAndSend()
+                    viewModel.audioRecoderVM?.stopAndAddToAttachments()
+                    viewModel.sendAttachmentsMessage("")
                     isRecording = false
                 } else if !text.isEmpty {
                     viewModel.sendTextMessage(text)
@@ -324,11 +326,12 @@ struct MuteChannelViewPlaceholder: View {
                 Image(systemName: mute ? "speaker.fill" : "speaker.slash.fill")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(Color.App.blue)
+                    .frame(width: 18, height: 18)
+                    .foregroundColor(Color.App.primary)
                 Text(mute ? "Thread.unmute" : "Thread.mute")
-                    .font(.iransansBody)
+                    .font(.iransansSubheadline)
                     .offset(x: 8)
+                    .foregroundStyle(Color.App.primary)
                 Spacer()
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))

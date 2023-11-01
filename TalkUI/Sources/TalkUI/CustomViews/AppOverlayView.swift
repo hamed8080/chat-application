@@ -58,37 +58,51 @@ struct DismissAppOverlayButton: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
 
     var body: some View {
-        VStack {
-            HStack {
+        GeometryReader { reader in
+            VStack {
                 Button {
                     withAnimation {
                         appOverlayVM.isPresented = false
                         appOverlayVM.clear()
                     }
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
+                    Image(systemName: "xmark")
                         .resizable()
                         .scaledToFit()
-                        .foregroundStyle(.orange, .ultraThinMaterial)
-                        .background(.ultraThinMaterial)
-                        .frame(width: 36, height: 36)
-                        .cornerRadius(22)
-                        .padding([.top])
+                        .frame(width: 16, height: 16)
+                        .padding()
+                        .foregroundColor(Color.App.primary)
+                        .aspectRatio(contentMode: .fit)
+                        .contentShape(Rectangle())
                 }
-                Spacer()
+                .frame(width: 40, height: 40)
+                .background(.ultraThinMaterial)
+                .cornerRadius(20)
             }
-            Spacer()
+            .padding(.top, 48 + reader.safeAreaInsets.top)
+            .padding(.leading, 8)
         }
-        .padding()
     }
 }
 
 struct AppOverlayView_Previews: PreviewProvider {
-    static var previews: some View {
-        AppOverlayView {
-            //
-        } content: {
-            Text("TEST")
+    struct Preview: View {
+       @StateObject var viewModel = AppOverlayViewModel()
+
+        var body: some View {
+            AppOverlayView(showCloseButton: true) {
+                //
+            } content: {
+                Text("TEST")
+            }
+            .environmentObject(viewModel)
+            .onAppear {
+                viewModel.isPresented = true
+            }
         }
+    }
+
+    static var previews: some View {
+        Preview()
     }
 }

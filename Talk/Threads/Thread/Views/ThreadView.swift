@@ -43,6 +43,9 @@ struct ThreadView: View, DropDelegate {
             .overlay {
                 ThreadPinMessage(threadVM: viewModel)
             }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                AudioPlayerView()
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .navigation) {
                     NavigationBackButton {
@@ -75,7 +78,7 @@ struct ThreadView: View, DropDelegate {
             }
             .sheet(isPresented: sheetBinding) {
                 ThreadSheetView(sheetBinding: sheetBinding)
-                    .environmentObject(viewModel.sheetViewModel)
+                    .environmentObject(viewModel.attachmentsViewModel)
             }
             .onDrop(of: [.image], delegate: self)
     }
@@ -84,8 +87,6 @@ struct ThreadView: View, DropDelegate {
 
     func performDrop(info: DropInfo) -> Bool {
         viewModel.storeDropItems(info.itemProviders(for: [.item]))
-        viewModel.sheetType = .dropItems
-        viewModel.animateObjectWillChange()
         return true
     }
 }

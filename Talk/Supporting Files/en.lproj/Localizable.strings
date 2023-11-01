@@ -55,6 +55,8 @@
 "General.addToContact" = "Add To Contact";
 "General.edit" = "edit";
 "General.optional" = "(Optional)";
+"General.share" = "share";
+"General.share" = "share";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -197,6 +199,8 @@
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ created a conversation.";
+"Thread.Toolbar.participants" = "Participants";\
+"Thread.sendAttachments" = "Send %@ files";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";

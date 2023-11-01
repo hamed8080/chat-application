@@ -126,6 +126,7 @@ struct VerifyContentView: View {
                         .foregroundStyle(Color.App.hint)
                         .font(.iransansCaption)
                         .padding(.top, 20)
+                        .padding(.leading, UIApplication.shared.isInSlimMode ? 12 : 6)
                 } else {
                     Button {
                         viewModel.resend()

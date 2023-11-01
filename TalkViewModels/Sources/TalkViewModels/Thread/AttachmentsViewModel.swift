@@ -1,5 +1,5 @@
 //
-//  ActionSheetViewModel.swift
+//  AttachmentsViewModel.swift
 //  TalkViewModels
 //
 //  Created by Hamed Hosseini on 11/23/21.
@@ -10,8 +10,92 @@ import Photos
 import UIKit
 import TalkModels
 import SwiftUI
+import TalkExtensions
+import Additive
 
-public final class ActionSheetViewModel: ObservableObject {
+public enum AttachmentType {
+    case gallery
+    case file
+    case drop
+    case map
+    case contact
+    case voice
+}
+
+public struct AttachmentFile: Identifiable {
+    public var id: UUID = UUID()
+    public let type: AttachmentType
+
+    public var url: URL?
+    public var request: Any?
+
+    public var icon: String? {
+        if type == .map {
+            return "map.fill"
+        } else if type == .file {
+            return (request as? URL)?.fileExtension.nonCircleIconWithFileExtension ?? "doc.fill"
+        } else if type == .drop {
+            return (request as? DropItem)?.ext?.nonCircleIconWithFileExtension ?? "doc.fill"
+        } else if type == .contact {
+            return "person.fill"
+        } else if type == .voice {
+            return "waveform"
+        } else {
+            return nil
+        }
+    }
+
+    public var title: String? {
+        if type == .map {
+            return (request as? LocationItem)?.description
+        } else if type == .gallery {
+            return (request as? ImageItem)?.fileName
+        } else if type == .file {
+            return (request as? URL)?.fileName
+        } else if type == .drop {
+            return (request as? DropItem)?.name
+        } else if type == .contact {
+            return "contact"
+        } else if type == .voice {
+            return "recording"
+        } else {
+            return nil
+        }
+    }
+
+    public var subtitle: String? {
+        if type == .map {
+            return (request as? LocationItem)?.name
+        } else if type == .gallery {
+            return ((request as? ImageItem)?.imageData.count ?? 0)?.toSizeString
+        } else if type == .file {
+            let item = request as? URL
+            var size = 0
+            if let url = item, let data = try? Data(contentsOf: url) {
+                size = data.count
+            }
+            return "\(size.toSizeString ?? "") - \((request as? URL)?.fileExtension.uppercased() ?? "")"
+        } else if type == .drop {
+            let item = request as? DropItem
+            return "\((item?.data?.count ?? 0)?.toSizeString ?? "") - \(item?.ext?.uppercased() ?? "")"
+        } else if type == .contact {
+            return "contact"
+        } else if type == .voice {
+            return "recording"
+        } else {
+            return nil
+        }
+    }
+
+    public init(type: AttachmentType = .file, url: URL? = nil, request: Any? = nil) {
+        self.type = type
+        self.url = url
+        self.request = request
+    }
+}
+
+public final class AttachmentsViewModel: ObservableObject {
+    public private(set)var attachments: [AttachmentFile] = []
     public weak var threadViewModel: ThreadViewModel?
     public var allImageItems: [ImageItem] = []
     public var selectedImageItems: [ImageItem] = []
@@ -22,10 +106,11 @@ public final class ActionSheetViewModel: ObservableObject {
     public var hasNext: Bool { totalCount > offset }
     private var isAuthorized: Bool = false
     private var isSetupBefore: Bool = false
+    @Published public var isExpanded: Bool = false
     @Published public var selectedFileUrls: [URL] = [] {
         didSet {
             if selectedFileUrls.count != 0 {
-                sendSelectedFile()
+                addSelectedFile()
             }
         }
     }
@@ -160,15 +245,23 @@ public final class ActionSheetViewModel: ObservableObject {
         }
     }
 
-    public func sendSelectedPhotos() {
-        threadViewModel?.sendPhotos(selectedImageItems)
+    public func addSelectedPhotos() {
+        attachments.removeAll(where: {$0.type != .gallery})
+        selectedImageItems.forEach { imageItem in
+            attachments.append(.init(type: .gallery, request: imageItem))
+        }
+        animateObjectWillChange()
         threadViewModel?.sheetType = nil
         threadViewModel?.animateObjectWillChange()
         refresh()
     }
 
-    public func sendSelectedFile() {
-        threadViewModel?.sendFiles(selectedFileUrls)
+    public func addSelectedFile() {
+        attachments.removeAll(where: {$0.type != .file})
+        selectedFileUrls.forEach { fileItem in
+            attachments.append(.init(type: .file, request: fileItem))
+        }
+        animateObjectWillChange()
         refresh()
     }
 
@@ -180,8 +273,25 @@ public final class ActionSheetViewModel: ObservableObject {
     }
 
     public func refresh() {
+        selectedFileUrls = []
         selectedImageItems = []
         offset = 0
         allImageItems = []
+    }
+
+    public func clear() {
+        refresh()
+        attachments.removeAll()
+    }
+
+    public func append(attachments: [AttachmentFile]) {
+        self.attachments.removeAll(where: {$0.type != attachments.first?.type})
+        self.attachments.append(contentsOf: attachments)
+        animateObjectWillChange()
+    }
+
+    public func remove(_ attachment: AttachmentFile) {
+        attachments.removeAll(where: {$0.id == attachment.id})
+        animateObjectWillChange()
     }
 }

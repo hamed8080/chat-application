@@ -51,7 +51,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     @Published public var isInEditMode: Bool = false
     public var exportMessagesVM: ExportMessagesViewModelProtocol?
     public var mentionList: [Participant] = []
-    public var dropItems: [DropItem] = []
     public var sheetType: ThreadSheetType?
     public var selectedLocation: MKCoordinateRegion = .init()
     public var isFetchedServerFirstResponse: Bool = false
@@ -85,10 +84,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var disableScrolling: Bool = false
     var createThreadCompletion: (()-> Void)?
     @Published public var deleteDialaog: Bool = false
-    public lazy var sheetViewModel: ActionSheetViewModel = {
-        let sheetViewModel = ActionSheetViewModel()
-        sheetViewModel.threadViewModel  = self
-        return sheetViewModel
+    public lazy var attachmentsViewModel: AttachmentsViewModel = {
+        let viewModel = AttachmentsViewModel()
+        viewModel.threadViewModel  = self
+        return viewModel
     }()
 
     public var messageViewModels: [MessageRowViewModel] = []
@@ -437,12 +436,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             let iconName = ext.systemImageNameForFileExtension
             _ = item.loadDataRepresentation(for: .item) { data, _ in
                 DispatchQueue.main.async {  [weak self] in
-                    self?.dropItems.append(
-                        .init(data: data,
-                              name: name,
-                              iconName: iconName,
-                              ext: ext)
-                    )
+                    let item = DropItem(data: data, name: name, iconName: iconName, ext: ext)
+                    self?.attachmentsViewModel.append(attachments: [.init(type: .drop, request: item)])
                     self?.animateObjectWillChange()
                 }
             }

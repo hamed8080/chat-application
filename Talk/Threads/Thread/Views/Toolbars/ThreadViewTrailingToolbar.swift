@@ -35,23 +35,23 @@ struct ThreadViewTrailingToolbar: View {
             .cornerRadius(18)
         }
 
-        Menu {
-            Button {
-                viewModel.sheetType = .datePicker
-                viewModel.animateObjectWillChange()
-            } label: {
-                Label {
-                    Text("Thread.export")
-                } icon: {
-                    Image(systemName: "square.and.arrow.up")
-                        .resizable()
-                        .scaledToFit()
-                }
-            }
-        } label: {
-            Image(systemName: "ellipsis")
-                .foregroundStyle(Color.App.primary)
-        }
+//        Menu {
+//            Button {
+//                viewModel.sheetType = .datePicker
+//                viewModel.animateObjectWillChange()
+//            } label: {
+//                Label {
+//                    Text("Thread.export")
+//                } icon: {
+//                    Image(systemName: "square.and.arrow.up")
+//                        .resizable()
+//                        .scaledToFit()
+//                }
+//            }
+//        } label: {
+//            Image(systemName: "ellipsis")
+//                .foregroundStyle(Color.App.primary)
+//        }
     }
 }
 

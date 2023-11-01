@@ -30,7 +30,7 @@ public struct AudioRecordingView: View {
                     Image(systemName: "xmark.circle.fill")
                         .resizable()
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.App.white, Color.primary)
+                        .foregroundStyle(Color.App.white, Color.App.primary)
                         .frame(width: 26, height: 26)
                 }
                 .frame(width: 48, height: 48)
@@ -44,14 +44,24 @@ public struct AudioRecordingView: View {
                     .animation(.easeInOut, value: viewModel.timerString)
 
                 Spacer()
-                Image(systemName: "record.circle")
-                    .font(.system(size: 24))
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.pink.opacity(opacity), Color.primary, Color.primary)
-                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: opacity)
-                    .onAppear {
-                        opacity = opacity == 1  ? 0 : 1
-                    }
+
+                Button {
+                    viewModel.stopAndAddToAttachments()                    
+                    isRecording = false
+                } label: {
+                    Image(systemName: "record.circle")
+                        .font(.system(size: 24))
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.App.pink.opacity(opacity), Color.App.primary, Color.App.primary)
+                        .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: opacity)
+                        .onAppear {
+                            opacity = opacity == 1  ? 0 : 1
+                        }
+                }
+                .frame(width: 48, height: 48)
+                .cornerRadius(24)
+                .buttonStyle(.borderless)
+                .fontWeight(.light)
             }
             .animation(.easeInOut, value: viewModel.isRecording)
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))

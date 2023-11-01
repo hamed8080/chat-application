@@ -12,6 +12,7 @@ import TalkUI
 import TalkViewModels
 
 struct ThreadLastMessageView: View {
+    let isSelected: Bool
     // It must be here because we need to redraw the view after the thread inside ViewModel has changed.
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
@@ -25,35 +26,35 @@ struct ThreadLastMessageView: View {
                     Text(String(format: String(localized: .init("Thread.Row.lastMessageSender")), participantName))
                         .font(.iransansBoldBody)
                         .lineLimit(1)
-                        .foregroundStyle(Color.App.primary)
+                        .foregroundStyle(isSelected ? Color.App.white : Color.App.primary)
                 }
 
                 if lastMsgVO?.isFileType == true, let iconName = lastMsgVO?.iconName {
                     Image(systemName: iconName)
                         .resizable()
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Color.App.blue)
                 }
 
                 if let message = thread.lastMessageVO?.message {
                     Text(message)
                         .font(.iransansBody)
                         .lineLimit(1)
-                        .foregroundStyle(Color.App.hint)
+                        .foregroundStyle(isSelected ? Color.App.white : Color.App.hint)
                 }
 
                 if lastMsgVO?.isFileType == true, lastMsgVO?.message.isEmptyOrNil == true, let fileStringName = lastMsgVO?.fileStringName {
                     Text(fileStringName)
                         .font(.iransansCaption2)
                         .lineLimit(thread.group == false ? 2 : 1)
-                        .foregroundStyle(Color.App.hint)
+                        .foregroundStyle(isSelected ? Color.App.white : Color.App.hint)
                 }
 
                 if thread.lastMessageVO == nil, let creator = thread.inviter?.name {
                     let localizedLabel = String(localized: .init("Thread.createdAConversation"))
                     let text = String(format: localizedLabel, creator)
                     Text(text)
-                        .foregroundStyle(Color.App.primary)
+                        .foregroundStyle(isSelected ? Color.App.white : Color.App.primary)
                         .font(.iransansBoldCaption2)
                 }
                 Spacer()

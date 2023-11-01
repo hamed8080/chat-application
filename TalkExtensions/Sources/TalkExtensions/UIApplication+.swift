@@ -45,6 +45,12 @@ public extension UIApplication {
         }
     }
 
+    /// A mode that detect if the deveice is one column mode such as iPhone/ipadOneThirdSplitView/ipadSlideOver.
+    public var isInSlimMode: Bool {
+        let mode = windowMode()
+        return mode == .iPhone || mode == .ipadSlideOver || mode == .ipadOneThirdSplitView
+    }
+
     private func isInThereshold(a: CGFloat, b: CGFloat) -> Bool {
         let threshold = 0.1 // 10% threshold
         if abs(a - b) / ((a + b) / 2) < threshold {

@@ -10,8 +10,8 @@ import TalkUI
 import TalkViewModels
 
 struct ThreadSheetView: View {
-    private var viewModel: ThreadViewModel? { actionSheetViewModel.threadViewModel }
-    @EnvironmentObject var actionSheetViewModel: ActionSheetViewModel
+    private var viewModel: ThreadViewModel? { attachmentsViewModel.threadViewModel }
+    @EnvironmentObject var attachmentsViewModel: AttachmentsViewModel
     @Binding var sheetBinding: Bool
 
     var body: some View {
@@ -19,17 +19,6 @@ struct ThreadSheetView: View {
             switch viewModel.sheetType {
             case .attachment:
                 EmptyView()
-            case .dropItems:
-                DropItemsView()
-                    .environmentObject(viewModel)
-                    .onAppear {
-                        actionSheetViewModel.oneTimeSetup()
-                    }
-                    .onDisappear {
-                        viewModel.exportMessagesVM?.deleteFile()
-                        viewModel.dropItems.removeAll()
-                        closeSheet()
-                    }
             case .datePicker:
                 DateSelectionView(showDialog: $sheetBinding) { startDate, endDate in
                     viewModel.sheetType = nil
@@ -57,12 +46,12 @@ struct ThreadSheetView: View {
                 }
             case .filePicker:
                 DocumentPicker { urls in
-                    actionSheetViewModel.selectedFileUrls = urls
+                    attachmentsViewModel.selectedFileUrls = urls
                     viewModel.sheetType = nil
                     viewModel.animateObjectWillChange()
                 }
                 .onAppear {
-                    actionSheetViewModel.oneTimeSetup()
+                    attachmentsViewModel.oneTimeSetup()
                 }
                 .onDisappear {
                     closeSheet()
@@ -74,10 +63,10 @@ struct ThreadSheetView: View {
                         closeSheet()
                     }
             case .galleryPicker:
-                GalleryImagePicker(viewModel: actionSheetViewModel)
+                GalleryImagePicker(viewModel: attachmentsViewModel)
                     .environmentObject(viewModel)
                     .onAppear {
-                        actionSheetViewModel.oneTimeSetup()
+                        attachmentsViewModel.oneTimeSetup()
                     }
                     .onDisappear {
                         closeSheet()

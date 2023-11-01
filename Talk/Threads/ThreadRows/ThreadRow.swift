@@ -12,6 +12,7 @@ import TalkUI
 import TalkViewModels
 
 struct ThreadRow: View {
+    let isSelected: Bool
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
 
@@ -30,21 +31,21 @@ struct ThreadRow: View {
                         Text(timeString)
                             .lineLimit(1)
                             .font(.iransansCaption2)
-                            .foregroundColor(Color.App.hint)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.hint)
                     }
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 12, height: 12)
-                            .foregroundColor(Color.App.gray6)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
                     }
                     if thread.type == .channel {
                         Image(systemName: "megaphone.fill")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 12, height: 12)
-                            .foregroundColor(Color.App.gray6)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
                     }
 
                     if thread.group == true, thread.type != .channel {
@@ -52,14 +53,14 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundColor(Color.App.gray6)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
                     }
                     if thread.mentioned == true {
                         Image(systemName: "at.circle.fill")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.App.primary)
+                            .foregroundStyle(isSelected ? Color.App.white : Color.App.primary)
                     }
 
                     if thread.pin == true {
@@ -67,11 +68,11 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundStyle(Color.App.gray6)
+                            .foregroundStyle(isSelected ? Color.App.white : Color.App.gray6)
                     }
                 }
                 HStack {
-                    SecondaryMessageView(thread: thread)
+                    SecondaryMessageView(isSelected: isSelected, thread: thread)
                     Spacer()
                     if let unreadCountString = thread.unreadCountString {
                         Text(unreadCountString)
@@ -80,7 +81,7 @@ struct ThreadRow: View {
                             .frame(height: 24)
                             .frame(minWidth: 24)
                             .foregroundStyle(Color.App.textOverlay)
-                            .background(Color.App.primary)
+                            .background(isSelected ? Color.App.white : Color.App.primary)
                             .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
                     }
                 }
@@ -123,7 +124,7 @@ struct ThreadRow_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadRow(thread: thread)
+        ThreadRow(isSelected: false, thread: thread)
             .environmentObject(ThreadsViewModel())
     }
 }

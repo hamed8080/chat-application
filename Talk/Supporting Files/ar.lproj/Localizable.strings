@@ -54,6 +54,7 @@
 "General.addToContact" = "إضافة إلى جهات الاتصال";
 "General.edit" = "جهة تحرير";
 "General.optional" = "(خياري)";
+"General.share" = "يشارك";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";
@@ -196,6 +197,8 @@
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ قام بإنشاء محادثة.";
+"Thread.Toolbar.participants" = "مشاركون";
+"Thread.sendAttachments" = "إرسال %@ ملفات";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";

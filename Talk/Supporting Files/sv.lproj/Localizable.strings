@@ -55,6 +55,7 @@
 "General.addToContact" = "Lägg till i kontakt";
 "General.edit" = "redigera";
 "General.optional" = "(Frivillig)";
+"General.share" = "Dela med sig";
 
 /* Tabs */
 "Tab.chats" = "Chattar";
@@ -197,6 +198,8 @@
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ skapade en konversation.";
+"Thread.Toolbar.participants" = "Deltagare";
+"Thread.sendAttachments" = "Skicka %@ filer";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";

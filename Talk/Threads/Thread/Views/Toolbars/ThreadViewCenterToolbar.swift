@@ -32,7 +32,8 @@ struct ThreadViewCenterToolbar: View {
                     .foregroundColor(Color.App.blue)
                     .font(.iransansCaption2)
             } else if viewModel.thread.group == true, let participantsCount = participantCount {
-                Text("Members \(participantsCount)")
+                let localizedLabel = String(localized: "Thread.Toolbar.participants")
+                Text("\(localizedLabel) \(participantsCount)")
                     .fixedSize()
                     .foregroundColor(Color.App.gray1)
                     .font(.iransansFootnote)

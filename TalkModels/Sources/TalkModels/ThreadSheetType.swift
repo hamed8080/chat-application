@@ -1,6 +1,5 @@
 public enum ThreadSheetType {
     case attachment
-    case dropItems
     case exportMessagesFile
     case datePicker
     case threadPicker

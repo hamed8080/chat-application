@@ -34,33 +34,36 @@ struct EditGroup: View {
                             .id(viewModel.thread?.id)
                             .font(.iransansBoldCaption2)
                             .foregroundColor(.white)
-                            .frame(width: 128, height: 128)
+                            .frame(width: 72, height: 72)
                             .background(Color.App.blue.opacity(0.4))
-                            .cornerRadius(54)
+                            .cornerRadius(32)
                             .overlay(alignment: .center) {
                                 /// Showing the image taht user has selected.
                                 if let image = viewModel.image {
                                     Image(uiImage: image)
                                         .resizable()
                                         .scaledToFill()
-                                        .frame(width: 128, height: 128)
-                                        .cornerRadius(54)
+                                        .frame(width: 72, height: 72)
+                                        .cornerRadius(32)
                                 }
                             }
                         Circle()
                             .fill(.red)
-                            .frame(width: 32, height: 32)
-                            .offset(x: 90, y: 42)
+                            .frame(width: 28, height: 28)
+                            .offset(x: 42, y: 22)
                             .blendMode(.destinationOut)
                             .overlay {
                                 Image(systemName: "camera")
-                                    .font(.system(size: 11))
-                                    .frame(width: 27, height: 27)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .font(.system(size: 12))
+                                    .frame(width: 12, height: 12)
+                                    .padding(6)
                                     .background(Color.App.hint)
                                     .cornerRadius(18)
                                     .foregroundColor(.white)
                                     .fontWeight(.heavy)
-                                    .offset(x: 90, y: 42)
+                                    .offset(x: 42, y: 22)
 
                             }
                     }
@@ -96,7 +99,7 @@ struct EditGroup: View {
                     focusState = .description
                 }
                 .noSeparators()
-                .listRowBackground(Color.App.primary)
+                .listRowBackground(Color.App.bgPrimary)
         }
         .animation(.easeInOut, value: focusState)
         .padding(0)

@@ -21,6 +21,8 @@
 		050B51B32AE7848100B8DD49 /* VerifyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B51B12AE7848100B8DD49 /* VerifyContentView.swift */; };
 		050B51B52AE7852B00B8DD49 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B51B42AE7852B00B8DD49 /* LoginView.swift */; };
 		050B51B62AE7852B00B8DD49 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B51B42AE7852B00B8DD49 /* LoginView.swift */; };
+		050C2C1E2AF0BE53000D380E /* AttachmentFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C2C1D2AF0BE53000D380E /* AttachmentFiles.swift */; };
+		050C2C1F2AF0BE53000D380E /* AttachmentFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050C2C1D2AF0BE53000D380E /* AttachmentFiles.swift */; };
 		050DE2092AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */; };
 		050DE20A2AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */; };
 		0516ACF82AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */; };
@@ -220,6 +222,8 @@
 		0570CCBA2AAEEE78001832E9 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB92AAEEE78001832E9 /* TalkModels */; };
 		0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBB2AAEEE78001832E9 /* TalkUI */; };
 		0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBD2AAEEE78001832E9 /* TalkViewModels */; };
+		05745AF02AF2626B00102193 /* UserActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05745AEF2AF2626B00102193 /* UserActionMenu.swift */; };
+		05745AF12AF2628000102193 /* UserActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05745AEF2AF2626B00102193 /* UserActionMenu.swift */; };
 		058022042AE05DFA002816C7 /* GalleryImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058022032AE05DFA002816C7 /* GalleryImagePicker.swift */; };
 		05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
 		05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
@@ -257,6 +261,7 @@
 		050B290F2AB40DC20072706C /* NothingHasBeenSelectedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NothingHasBeenSelectedView.swift; sourceTree = "<group>"; };
 		050B51B12AE7848100B8DD49 /* VerifyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyContentView.swift; sourceTree = "<group>"; };
 		050B51B42AE7852B00B8DD49 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		050C2C1D2AF0BE53000D380E /* AttachmentFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFiles.swift; sourceTree = "<group>"; };
 		050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageReactionDetailView.swift; sourceTree = "<group>"; };
 		0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButtonItem.swift; sourceTree = "<group>"; };
 		051F26C62ADD0F8F00BF9841 /* SwipyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipyView.swift; sourceTree = "<group>"; };
@@ -368,6 +373,7 @@
 		0570CCA62AAEED33001832E9 /* TalkModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkModels; sourceTree = "<group>"; };
 		0570CCA72AAEED33001832E9 /* TalkViewModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkViewModels; sourceTree = "<group>"; };
 		0570CCA82AAEED33001832E9 /* TalkExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkExtensions; sourceTree = "<group>"; };
+		05745AEF2AF2626B00102193 /* UserActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserActionMenu.swift; sourceTree = "<group>"; };
 		058022032AE05DFA002816C7 /* GalleryImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryImagePicker.swift; sourceTree = "<group>"; };
 		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
@@ -585,6 +591,7 @@
 				0570CB962AAEE98C001832E9 /* SendContainer.swift */,
 				0570CB972AAEE98C001832E9 /* MoveToBottomButton.swift */,
 				058022032AE05DFA002816C7 /* GalleryImagePicker.swift */,
+				050C2C1D2AF0BE53000D380E /* AttachmentFiles.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -665,6 +672,7 @@
 			children = (
 				0570CBAA2AAEE98D001832E9 /* TabViews */,
 				0570CBB42AAEE98D001832E9 /* DetailView.swift */,
+				05745AEF2AF2626B00102193 /* UserActionMenu.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -962,6 +970,7 @@
 				0570CC092AAEE98F001832E9 /* UploadMessageType.swift in Sources */,
 				05F9151D2AE637FB008C070B /* ThreadLeadingToolbar.swift in Sources */,
 				0570CC032AAEE98F001832E9 /* ThreadSearchList.swift in Sources */,
+				050C2C1E2AF0BE53000D380E /* AttachmentFiles.swift in Sources */,
 				050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC252AAEE98F001832E9 /* MentionList.swift in Sources */,
 				0570CC212AAEE98F001832E9 /* AttachmentButtons.swift in Sources */,
@@ -1001,6 +1010,7 @@
 				0570CC172AAEE98F001832E9 /* ReplyInfoMessageRow.swift in Sources */,
 				0570CC612AAEE98F001832E9 /* DetailView.swift in Sources */,
 				0570CBED2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
+				05745AF02AF2626B00102193 /* UserActionMenu.swift in Sources */,
 				0570CC5F2AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
 				0570CBF92AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				0505D5AC2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
@@ -1069,6 +1079,7 @@
 				0570CC0A2AAEE98F001832E9 /* UploadMessageType.swift in Sources */,
 				0570CC042AAEE98F001832E9 /* ThreadSearchList.swift in Sources */,
 				05FE15F32ADA82D9009AC44A /* NavigationBackButton.swift in Sources */,
+				050C2C1F2AF0BE53000D380E /* AttachmentFiles.swift in Sources */,
 				050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC262AAEE98F001832E9 /* MentionList.swift in Sources */,
 				0570CC222AAEE98F001832E9 /* AttachmentButtons.swift in Sources */,
@@ -1108,6 +1119,7 @@
 				0570CC182AAEE98F001832E9 /* ReplyInfoMessageRow.swift in Sources */,
 				0570CC622AAEE98F001832E9 /* DetailView.swift in Sources */,
 				0570CBEE2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
+				05745AF12AF2628000102193 /* UserActionMenu.swift in Sources */,
 				0570CC602AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
 				0570CBFA2AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				0505D5AD2AE2CEC900A5B081 /* EditGroup.swift in Sources */,

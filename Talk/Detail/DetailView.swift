@@ -22,6 +22,8 @@ struct DetailView: View {
             VStack(spacing: 0) {
                 InfoView()
                 BioDescription()
+                UserName()
+                CellPhoneNumber()
                 StickyHeaderSection(header: "", height: 10)
                 DetailTopButtons()
                     .padding([.top, .bottom])
@@ -149,19 +151,47 @@ struct BioDescription: View {
 
     var body: some View {
         if let description = viewModel.thread?.description {
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(description)
-                        .font(.iransansSubtitle)
-                        .foregroundStyle(Color.App.text)
-                    Text("General.description")
-                        .font(.iransansCaption)
-                        .foregroundStyle(Color.App.hint)
-                }
-                Spacer()
-            }
-            .padding()
+            InfoRowItem(key: "General.description", value: description)
         }
+    }
+}
+
+struct UserName: View {
+    @EnvironmentObject var viewModel: DetailViewModel
+
+    var body: some View {
+        if let participantName = viewModel.user?.name {
+            InfoRowItem(key: "Settings.userName", value: participantName)
+        }
+    }
+}
+
+struct CellPhoneNumber: View {
+    @EnvironmentObject var viewModel: DetailViewModel
+
+    var body: some View {
+        if let cellPhoneNumber = viewModel.cellPhoneNumber {
+            InfoRowItem(key: "Participant.Search.Type.cellphoneNumber", value: cellPhoneNumber)
+        }
+    }
+}
+
+struct InfoRowItem: View {
+    let key: String
+    let value: String
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(value)
+                    .font(.iransansSubtitle)
+                    .foregroundStyle(Color.App.text)
+                Text(key)
+                    .font(.iransansCaption)
+                    .foregroundStyle(Color.App.hint)
+            }
+            Spacer()
+        }
+        .padding()
     }
 }
 
@@ -204,40 +234,18 @@ struct DetailTopButtons: View {
             .opacity(0.4)
             .allowsHitTesting(false)
 
-            if let conversation = viewModel.thread {
-                Menu {
+            Menu {
+                if let conversation = viewModel.thread {
                     ThreadRowActionMenu(thread: conversation)
-                } label: {
-                    DetailViewButton(accessibilityText: "", icon: "ellipsis"){}
+                } else if let user = viewModel.user {
+                    UserActionMenu(participant: user)
                 }
+            } label: {
+                DetailViewButton(accessibilityText: "", icon: "ellipsis"){}
             }
         }
         .padding([.leading, .trailing])
         .buttonStyle(.plain)
-
-        if viewModel.showInfoGroupBox {
-            VStack {
-                if !viewModel.isInMyContact {
-                    SectionItem(title: "General.addToContact", systemName: "person.badge.plus") {
-                        viewModel.showAddToContactSheet.toggle()
-                    }
-                }
-
-                if let phone = viewModel.cellPhoneNumber {
-                    SectionItem(title: phone, systemName: "doc.on.doc") {
-                        viewModel.copyPhone()
-                    }
-                }
-
-                if viewModel.canBlock {
-                    SectionItem(title: "General.block", systemName: "hand.raised.slash") {
-                        viewModel.blockUnBlock()
-                    }
-                    .foregroundColor(.red)
-                }
-            }
-            .padding([.leading, .trailing])
-        }
     }
 }
 

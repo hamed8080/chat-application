@@ -57,7 +57,6 @@ struct SettingsView: View {
                     .listRowSeparator(.hidden)
 
                 SupportSection()
-                TokenExpireSection()
             }
             .listRowSeparator(.hidden)
         }
@@ -470,15 +469,38 @@ struct SettingNotificationSection: View {
 }
 
 struct SupportSection: View {
+    @EnvironmentObject var tokenManagerVM: TokenManager
     @EnvironmentObject var navModel: NavigationModel
+    @EnvironmentObject var container: ObjectsContainer
 
     var body: some View {
-        ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.support", color: .green, showDivider: false) {
+        ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.support", color: Color.App.green, showDivider: false) {
             navModel.appendSupport()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
         .listRowSeparatorTint(Color.App.divider)
+
+        ListSectionButton(imageName: "arrow.backward.circle", title: "Settings.logout", color: Color.App.red, showDivider: false) {
+            ChatManager.activeInstance?.user.logOut()
+            TokenManager.shared.clearToken()
+            UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
+            container.reset()
+        }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.divider)
+
+        if EnvironmentValues.isTalkTest {
+            let secondToExpire = tokenManagerVM.secondToExpire.formatted(.number.precision(.fractionLength(0)))
+            ListSectionButton(imageName: "key.fill", title: "Token expire in: \(secondToExpire)", color: Color.App.yellow, showDivider: false, shownavigationButton: false)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.App.bgPrimary)
+                .listRowSeparatorTint(Color.clear)
+                .onAppear {
+                    tokenManagerVM.startTokenTimer()
+                }
+        }
     }
 }
 
@@ -486,7 +508,7 @@ struct SettingAssistantSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "person.fill", title: "Settings.assistants", color: .blue, showDivider: false) {
+        ListSectionButton(imageName: "person.fill", title: "Settings.assistants", color: Color.App.blue, showDivider: false) {
             navModel.appendAssistant()
         }
         .listRowInsets(.zero)
@@ -540,49 +562,6 @@ struct UserProfileView: View {
             if !imageLoader.isImageReady, case let .user(response) = event, let user = response.result {
                 imageLoader.fetch(url: user.image, userName: user.name, size: .LARG)
             }
-        }
-    }
-}
-
-struct SettingCallSection: View {
-    @EnvironmentObject var container: ObjectsContainer
-
-    var body: some View {
-        Section(header: Text("Settings.manageCalls")) {
-            Button {
-                ChatManager.activeInstance?.user.logOut()
-                TokenManager.shared.clearToken()
-                UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
-                container.reset()
-            } label: {
-                HStack {
-                    Image(systemName: "arrow.backward.circle")
-                        .foregroundColor(Color.App.red)
-                        .font(.body.weight(.bold))
-                    Text("Settings.logout")
-                        .fontWeight(.bold)
-                        .foregroundColor(Color.App.red)
-                    Spacer()
-                }
-            }
-        }
-    }
-}
-
-struct TokenExpireSection: View {
-    @EnvironmentObject var viewModel: TokenManager
-    @EnvironmentObject var navModel: NavigationModel
-    
-    var body: some View {
-        if EnvironmentValues.isTalkTest {
-            let secondToExpire = viewModel.secondToExpire.formatted(.number.precision(.fractionLength(0)))
-            ListSectionButton(imageName: "key.fill", title: "Token expire in: \(secondToExpire)", color: .yellow, showDivider: false, shownavigationButton: false)
-                .onAppear {
-                    viewModel.startTokenTimer()
-                }
-                .listRowInsets(.zero)
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.clear)
         }
     }
 }

@@ -26,13 +26,10 @@ struct MapPickerView: View {
                 }
             VStack {
                 Spacer()
-                SendTextViewWithButtons {
+                SubmitBottomButton(text: "General.add") {
                     if let location = locationManager.currentLocation {
-                        viewModel.sendLoaction(location)
+                        viewModel.attachmentsViewModel.append(attachments: [.init(type: .map, request: location)])
                     }
-                    viewModel.sheetType = nil
-                    viewModel.animateObjectWillChange()
-                } onCancel: {
                     viewModel.sheetType = nil
                     viewModel.animateObjectWillChange()
                 }

@@ -11,7 +11,7 @@ import TalkModels
 import TalkUI
 
 struct GalleryImagePicker: View {
-    let viewModel: ActionSheetViewModel
+    let viewModel: AttachmentsViewModel
     @Environment(\.horizontalSizeClass) var size
     @State var selectedImageItemsCount = 0
 
@@ -36,7 +36,7 @@ struct GalleryImagePicker: View {
         }
         .overlay(alignment: .bottom) {
             SubmitBottomButton(text: "General.add", enableButton: .constant(selectedImageItemsCount > 0), isLoading: .constant(false)) {
-                viewModel.sendSelectedPhotos()
+                viewModel.addSelectedPhotos()
             }
         }
         .task {
@@ -49,7 +49,7 @@ struct GalleryImagePicker: View {
 }
 
 struct AttachmentMessageList: View {
-    @EnvironmentObject var viewModel: ActionSheetViewModel
+    @EnvironmentObject var viewModel: AttachmentsViewModel
 
     var body: some View {
         ForEach(viewModel.allImageItems) { item in
@@ -59,7 +59,7 @@ struct AttachmentMessageList: View {
 }
 
 struct AttachmentImageView: View {
-    var viewModel: ActionSheetViewModel
+    var viewModel: AttachmentsViewModel
     var item: ImageItem
     var image: UIImage { UIImage(data: item.imageData)! }
     @State private var isSelected: Bool = false

@@ -22,10 +22,34 @@ extension ThreadViewModel {
             sendReplyMessage(replyMessageId, textMessage)
         } else if editMessage != nil {
             sendEditMessage(textMessage)
+        } else if attachmentsViewModel.attachments.count > 0 {
+            sendAttachmentsMessage(textMessage)
         } else {
             sendNormalMessage(textMessage)
         }
         isInEditMode = false // close edit mode in ui
+    }
+
+    public func sendAttachmentsMessage(_ textMessage: String) {
+        let attchments = attachmentsViewModel.attachments
+        let type = attchments.map{$0.type}.first
+        if type == .gallery {
+            let images = attchments.compactMap({$0.request as? ImageItem})
+            sendPhotos(images)
+        } else if type == .file {
+            let urls = attchments.compactMap({$0.request as? URL})
+            sendFiles(urls)
+        } else if type == .voice {
+            let urls = attchments.compactMap({$0.request as? URL})
+            sendFiles(urls)
+        } else if type == .contact {
+            // TODO: It should be implemented whenever the server side is ready.
+        } else if type == .map {
+            // TODO: It should be implemented whenever the server side is ready.
+        } else if type == .drop {
+            let dropItems = attchments.compactMap({$0.request as? DropItem})
+            sendDropFiles(dropItems)
+        }
     }
 
     public func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String) {
@@ -79,6 +103,7 @@ extension ThreadViewModel {
                 request.id = -index
                 self.appendMessagesAndSort([request])
             }
+            attachmentsViewModel.clear()
         }
     }
 
@@ -100,6 +125,8 @@ extension ThreadViewModel {
                 request.id = -index
                 self.appendMessagesAndSort([request])
             }
+            attachmentsViewModel.clear()
+            audioRecoderVM?.deleteFile()
         }
     }
 
@@ -119,6 +146,7 @@ extension ThreadViewModel {
                 request.id = -index
                 self.appendMessagesAndSort([request])
             }
+            attachmentsViewModel.clear()
         }
     }
 
@@ -143,6 +171,7 @@ extension ThreadViewModel {
                                              mapImageName: location.name,
                                              textMessage: textMessage)
             ChatManager.activeInstance?.message.send(req)
+            attachmentsViewModel.clear()
         }
     }
 

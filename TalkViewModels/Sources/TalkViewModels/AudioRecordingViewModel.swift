@@ -22,7 +22,7 @@ protocol AudioRecordingViewModelprotocol: ObservableObject {
     func toggle()
     func start()
     func stop()
-    func stopAndSend()
+    func stopAndAddToAttachments()
     func deleteFile()
     func cancel()
     func requestPermission()
@@ -75,10 +75,10 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         }
     }
 
-    public func stopAndSend() {
+    public func stopAndAddToAttachments() {
         stop()
         if let url = recordingOutputPath {
-            threadViewModel?.sendFiles([url], messageType: .voice)
+            threadViewModel?.attachmentsViewModel.append(attachments: [.init(type: .voice, url: url, request: url)])
         }
     }
 
