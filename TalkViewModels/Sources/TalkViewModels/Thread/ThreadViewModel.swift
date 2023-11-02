@@ -120,6 +120,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                 self?.sendSeen(for: newVlaue)
             }
             .store(in: &cancelable)
+
+        RequestsManager.shared.$cancelRequest
+            .sink { [weak self] newValue in
+                if let newValue {
+                    self?.onCancelTimer(key: newValue)
+                }
+            }
+            .store(in: &cancelable)
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
@@ -495,6 +503,12 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             messageViewModels.append(newViewModel)
             return newViewModel
         }
+    }
+
+    private func onCancelTimer(key: String) {
+        topLoading = false
+        bottomLoading = false
+        animateObjectWillChange()
     }
 
     deinit {

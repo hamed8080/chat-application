@@ -101,15 +101,6 @@ public struct MultilineTextField: View {
     var mention: Bool = false
 
     @Binding private var text: String
-    private var internalText: Binding<String> {
-        Binding {
-            self.text
-        } set: { newValue in
-            self.text = newValue
-            self.showingPlaceholder = newValue.isEmpty
-        }
-    }
-
     @State private var dynamicHeight: CGFloat = 64
     @State private var showingPlaceholder = false
 
@@ -134,7 +125,7 @@ public struct MultilineTextField: View {
     }
 
     public var body: some View {
-        UITextViewWrapper(text: self.internalText,
+        UITextViewWrapper(text: $text,
                           textColor: textColor ?? (colorScheme == .dark ? UIColor(named: "white") ?? .white : UIColor(named: "black") ?? .black),
                           calculatedHeight: $dynamicHeight,
                           keyboardReturnType: keyboardReturnType,
@@ -143,6 +134,11 @@ public struct MultilineTextField: View {
             .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
             .background(placeholderView, alignment: .topLeading)
             .background(backgroundColor)
+            .onChange(of: text) { newValue in
+                withAnimation {
+                    showingPlaceholder = newValue.isEmpty
+                }
+            }
     }
 
     var placeholderView: some View {
@@ -153,6 +149,7 @@ public struct MultilineTextField: View {
                     .foregroundColor(placeholderColor)
                     .padding(.leading, 8)
                     .padding(.top, 8)
+                    .transition(.slide)
             }
         }
     }

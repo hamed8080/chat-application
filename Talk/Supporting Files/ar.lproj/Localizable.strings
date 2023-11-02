@@ -55,6 +55,7 @@
 "General.edit" = "جهة تحرير";
 "General.optional" = "(خياري)";
 "General.share" = "يشارك";
+"General.createAConversation" = "بدء محادثة";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";

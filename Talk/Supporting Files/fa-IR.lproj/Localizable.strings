@@ -56,6 +56,7 @@
 "General.edit" = "ویرایش";
 "General.optional" = "(اختیاری)";
 "General.share" = "اشتراک گذاری";
+"General.createAConversation" = "ایجاد گفتگو";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";

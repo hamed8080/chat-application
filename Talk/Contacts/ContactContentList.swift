@@ -19,6 +19,7 @@ struct ContactContentList: View {
     var body: some View {
         List {
             ListLoadingView(isLoading: $viewModel.isLoading)
+                .id(-1)
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
             if viewModel.maxContactsCountInServer > 0 {
@@ -87,6 +88,7 @@ struct ContactContentList: View {
             .listRowInsets(.zero)
             
             ListLoadingView(isLoading: $viewModel.isLoading)
+                .id(-2)
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
         }

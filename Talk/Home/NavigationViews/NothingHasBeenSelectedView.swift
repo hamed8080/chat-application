@@ -7,6 +7,7 @@
 
 import SwiftUI
 import TalkViewModels
+import TalkUI
 
 struct NothingHasBeenSelectedView: View {
     let contactsVM: ContactsViewModel
@@ -26,9 +27,25 @@ struct NothingHasBeenSelectedView: View {
                     Button {
                         contactsVM.showConversaitonBuilder.toggle()
                     } label: {
-                        Text("General.start")
-                            .font(.iransansBoldBody)
+                        HStack(spacing: 16) {
+                            Image(systemName: "plus")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 16, height: 16)
+                            Text("General.createAConversation")
+                        }
                     }
+                    .font(.iransansBoldBody)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(Color.App.bgSecond)
+                    .cornerRadius(12)
+                    .foregroundStyle(Color.App.text)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .inset(by: 0.5)
+                            .stroke(Color.App.gray8, lineWidth: 1)
+                    )
                 }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)

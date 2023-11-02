@@ -95,4 +95,20 @@ public extension String {
             return .leading
         }
     }
+
+    var isEmptyOrWhiteSpace: Bool { trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+}
+
+public extension Optional where Wrapped == String {
+    var validateString: String? {
+        if let self = self {
+            if self.isEmptyOrWhiteSpace {
+                return nil
+            } else {
+                return self
+            }
+        } else {
+            return nil
+        }
+    }
 }

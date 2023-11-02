@@ -14,16 +14,32 @@ import TalkViewModels
 
 struct ParticipantRow: View {
     let participant: Participant
+    var isOnline: Bool { participant.notSeenDuration ?? 16000 < 15000 }
 
     var body: some View {
         HStack {
-            ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: participant.image, userName: participant.name ?? participant.username)
-                .id("\(participant.image ?? "")\(participant.id ?? 0)")
-                .font(.iransansBoldBody)
-                .foregroundColor(.white)
-                .frame(width: 48, height: 48)
-                .background(Color.App.blue.opacity(0.4))
-                .cornerRadius(22)
+            ZStack {
+                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: participant.image, userName: participant.name ?? participant.username)
+                    .id("\(participant.image ?? "")\(participant.id ?? 0)")
+                    .font(.iransansBoldBody)
+                    .foregroundColor(.white)
+                    .frame(width: 48, height: 48)
+                    .background(Color.App.blue.opacity(0.4))
+                    .cornerRadius(22)
+
+                Circle()
+                    .fill(Color.App.green)
+                    .frame(width: 13, height: 13)
+                    .offset(x: -20, y: 18)
+                    .blendMode(.destinationOut)
+                    .overlay {
+                        Circle()
+                            .fill(isOnline ? Color.App.green : Color.App.gray5)
+                            .frame(width: 10, height: 10)
+                            .offset(x: -20, y: 18)
+                    }
+            }
+            .compositingGroup()
 
             HStack(alignment: .center, spacing: 8) {
                 VStack(alignment: .leading, spacing: 6) {

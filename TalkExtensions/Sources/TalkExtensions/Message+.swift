@@ -29,6 +29,7 @@ public extension Message {
             let userName = title[Range(match.range, in: title)!]
             let sanitizedUserName = String(userName).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "@", with: "")
             attributedString.addAttributes([NSAttributedString.Key.link: NSURL(string: "ShowUser:User?userName=\(sanitizedUserName)")!], range: match.range)
+            attributedString.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "primary") ?? .blue], range: match.range)
         }
         return AttributedString(attributedString)
     }

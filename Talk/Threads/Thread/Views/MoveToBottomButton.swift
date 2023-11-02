@@ -12,6 +12,7 @@ struct MoveToBottomButton: View {
     @EnvironmentObject var viewModel: ThreadViewModel
     @State private var isAtBottomOfTheList: Bool = true
     @State private var timerToUpdate: Timer?
+    @State var offsetY: CGFloat = 52
 
     var body: some View {
         HStack {
@@ -64,10 +65,17 @@ struct MoveToBottomButton: View {
                     }
                 }
             }
-                .offset(y: -52)
+                .offset(y: -offsetY)
                 .padding(.bottom, 8)
         }
         .environment(\.layoutDirection, .leftToRight)
+        .onReceive(NotificationCenter.default.publisher(for: .senderSize)) { notification in
+            if let size = notification.object as? CGSize {
+                withAnimation {
+                    offsetY = size.height + 12
+                }
+            }
+        }
     }
 }
 

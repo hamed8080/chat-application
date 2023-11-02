@@ -9,19 +9,21 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import Chat
 
 struct ThreadViewTrailingToolbar: View {
     private var thread: Conversation { viewModel.thread }
     let viewModel: ThreadViewModel
     @EnvironmentObject var navVM: NavigationModel
+    @State var imageViewModel: ImageLoaderViewModel?
 
     var body: some View {
         Button {
             navVM.append(threadDetail: thread)
         } label: {
             ZStack {
-                if let image = thread.computedImageURL, let avatarVM = viewModel.threadsViewModel?.avatars(for: image) {
-                    ImageLaoderView(imageLoader: avatarVM, url: thread.computedImageURL, userName: thread.title)
+                if let imageViewModel {
+                    ImageLaoderView(imageLoader: imageViewModel, url: thread.computedImageURL, userName: thread.title)
                 } else {
                     Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
                 }
@@ -34,24 +36,20 @@ struct ThreadViewTrailingToolbar: View {
             .cornerRadius(16)
             .cornerRadius(18)
         }
+        .onAppear {
+            updateImageLoaderViewModel()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .thread)) { notification in
+            if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(let resposne) = threadEvent, resposne.result?.id == thread.id {
+                updateImageLoaderViewModel()
+            }
+        }
+    }
 
-//        Menu {
-//            Button {
-//                viewModel.sheetType = .datePicker
-//                viewModel.animateObjectWillChange()
-//            } label: {
-//                Label {
-//                    Text("Thread.export")
-//                } icon: {
-//                    Image(systemName: "square.and.arrow.up")
-//                        .resizable()
-//                        .scaledToFit()
-//                }
-//            }
-//        } label: {
-//            Image(systemName: "ellipsis")
-//                .foregroundStyle(Color.App.primary)
-//        }
+    func updateImageLoaderViewModel() {
+        if let image = thread.computedImageURL, let avatarVM = viewModel.threadsViewModel?.avatars(for: image) {
+            imageViewModel = avatarVM
+        }
     }
 }
 

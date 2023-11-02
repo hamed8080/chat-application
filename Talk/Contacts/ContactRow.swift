@@ -22,13 +22,27 @@ struct ContactRow: View {
     var body: some View {
         VStack {
             HStack(spacing: 0) {
-                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
-                    .id("\(contact.image ?? "")\(contact.id ?? 0)")
-                    .font(.iransansBody)
-                    .foregroundColor(Color.App.text)
-                    .frame(width: 52, height: 52)
-                    .background(Color.App.blue.opacity(0.4))
-                    .cornerRadius(22)
+                ZStack {
+                    ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
+                        .id("\(contact.image ?? "")\(contact.id ?? 0)")
+                        .font(.iransansBody)
+                        .foregroundColor(Color.App.text)
+                        .frame(width: 52, height: 52)
+                        .background(Color.App.blue.opacity(0.4))
+                        .cornerRadius(22)
+                    Circle()
+                        .fill(Color.App.green)
+                        .frame(width: 13, height: 13)
+                        .offset(x: -20, y: 18)
+                        .blendMode(.destinationOut)
+                        .overlay {
+                            Circle()
+                                .fill(isOnline ? Color.App.green : Color.App.gray5)
+                                .frame(width: 10, height: 10)
+                                .offset(x: -20, y: 18)
+                        }
+                }
+                .compositingGroup()
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
@@ -64,6 +78,10 @@ struct ContactRow: View {
         RadioButton(visible: $isInSelectionMode, isSelected: .constant(isSelected)) { isSelected in
             viewModel.toggleSelectedContact(contact: contact)
         }
+    }
+
+    var isOnline: Bool {
+        contact.notSeenDuration ?? 16000 < 15000
     }
 }
 

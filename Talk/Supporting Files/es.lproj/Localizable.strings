@@ -56,6 +56,7 @@
 "General.edit" = "editar";
 "General.optional" = "(Opcional)";
 "General.share" = "Compartir";
+"General.createAConversation" = "Iniciar una conversación";
 
 /* Pestañas */
 "Tab.chats" = "Chats";

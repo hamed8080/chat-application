@@ -224,6 +224,8 @@
 		0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBD2AAEEE78001832E9 /* TalkViewModels */; };
 		05745AF02AF2626B00102193 /* UserActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05745AEF2AF2626B00102193 /* UserActionMenu.swift */; };
 		05745AF12AF2628000102193 /* UserActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05745AEF2AF2626B00102193 /* UserActionMenu.swift */; };
+		05745AF32AF2B1B100102193 /* SettingProfileButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05745AF22AF2B1B100102193 /* SettingProfileButton.swift */; };
+		05745AF42AF2B1B100102193 /* SettingProfileButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05745AF22AF2B1B100102193 /* SettingProfileButton.swift */; };
 		058022042AE05DFA002816C7 /* GalleryImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058022032AE05DFA002816C7 /* GalleryImagePicker.swift */; };
 		05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
 		05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
@@ -374,6 +376,7 @@
 		0570CCA72AAEED33001832E9 /* TalkViewModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkViewModels; sourceTree = "<group>"; };
 		0570CCA82AAEED33001832E9 /* TalkExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkExtensions; sourceTree = "<group>"; };
 		05745AEF2AF2626B00102193 /* UserActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserActionMenu.swift; sourceTree = "<group>"; };
+		05745AF22AF2B1B100102193 /* SettingProfileButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingProfileButton.swift; sourceTree = "<group>"; };
 		058022032AE05DFA002816C7 /* GalleryImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryImagePicker.swift; sourceTree = "<group>"; };
 		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
@@ -663,6 +666,7 @@
 				05FE15F02ADA5591009AC44A /* SupportView.swift */,
 				051F26C62ADD0F8F00BF9841 /* SwipyView.swift */,
 				05E869C82AEFA57300F6B200 /* LanguageView.swift */,
+				05745AF22AF2B1B100102193 /* SettingProfileButton.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1001,6 +1005,7 @@
 				058022042AE05DFA002816C7 /* GalleryImagePicker.swift in Sources */,
 				0570CC672AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC0F2AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
+				05745AF32AF2B1B100102193 /* SettingProfileButton.swift in Sources */,
 				0570CBF12AAEE98F001832E9 /* ThreadLastMessageView.swift in Sources */,
 				0570CC2D2AAEE98F001832E9 /* ThreadPinMessage.swift in Sources */,
 				050DE2092AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */,
@@ -1110,6 +1115,7 @@
 				051AA77B2AE05E8C008F93C1 /* GalleryImagePicker.swift in Sources */,
 				0570CC682AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC102AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
+				05745AF42AF2B1B100102193 /* SettingProfileButton.swift in Sources */,
 				0570CBF22AAEE98F001832E9 /* ThreadLastMessageView.swift in Sources */,
 				0570CC2E2AAEE98F001832E9 /* ThreadPinMessage.swift in Sources */,
 				050DE20A2AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */,
@@ -1317,6 +1323,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1350,6 +1357,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1382,6 +1390,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1415,6 +1424,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

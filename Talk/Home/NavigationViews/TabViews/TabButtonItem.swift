@@ -10,6 +10,7 @@ import SwiftUI
 struct TabButtonItem: View {
     var title: String
     var image: Image?
+    var imageView: (any View)?
     let contextMenu: (any View)?
     var isSelected: Bool
     var onClick: () -> Void
@@ -20,6 +21,10 @@ struct TabButtonItem: View {
                 image
                     .resizable()
                     .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(isSelected ? Color.App.primary : Color.App.gray5)
+            } else if let imageView {
+                AnyView(imageView)
                     .frame(width: 24, height: 24)
                     .foregroundColor(isSelected ? Color.App.primary : Color.App.gray5)
             }

@@ -56,6 +56,7 @@
 "General.edit" = "redigera";
 "General.optional" = "(Frivillig)";
 "General.share" = "Dela med sig";
+"General.createAConversation" = "Starta en konversation";
 
 /* Tabs */
 "Tab.chats" = "Chattar";

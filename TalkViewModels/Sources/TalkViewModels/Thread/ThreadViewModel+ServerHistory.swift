@@ -59,7 +59,7 @@ extension ThreadViewModel {
               !response.cache
         else { return }
         /// 2- Store the uniqueId before the appending to scroll to position we where.
-        let uniqueIdBeforeAppending = sections.first?.messages.first?.uniqueId
+//        let uniqueIdBeforeAppending = sections.first?.messages.first?.uniqueId
         /// 3- Append and sort the array but not call to update the view.
         appendMessagesAndSort(messages)
         /// 4- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
@@ -67,8 +67,8 @@ extension ThreadViewModel {
         /// 5- Update all the views to draw for the top part.
         animateObjectWillChange()
         /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
-        guard let uniqueId = uniqueIdBeforeAppending else { return }
-        scrollTo(uniqueId)
+//        guard let uniqueId = uniqueIdBeforeAppending else { return }
+//        scrollTo(uniqueId)
         /// 7- Set whether it has more messages at the top or not.
         setHasMoreTop(response)
         /// 8- To update isLoading fields to hide the loading at the top.
@@ -238,7 +238,12 @@ extension ThreadViewModel {
            isFetchedServerFirstResponse == true,
            isActiveThread,
            let lastMessageInListTime = sections.last?.messages.last?.time {
-            moreBottom(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", lastMessageInListTime.advanced(by: 1))
+            bottomLoading = true
+            animateObjectWillChange()
+            let fromTime = lastMessageInListTime.advanced(by: 1)
+            let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "desc", readOnly: readOnly)
+            RequestsManager.shared.append(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", value: req)
+            ChatManager.activeInstance?.message.history(req)
         }
     }
 
@@ -260,8 +265,9 @@ extension ThreadViewModel {
         /// 6- Update all the views to draw for the bottom part.
         animateObjectWillChange()
         /// 7- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
-        guard let uniqueId = beforeLastMessageInListUniqueId else { return }
-        scrollTo(uniqueId)
+        if let uniqueId = beforeLastMessageInListUniqueId, isAtBottomOfTheList {
+            scrollTo(uniqueId)
+        }
         /// 8- Set whether it has more messages at the bottom or not.
         setHasMoreBottom(response)
         /// 9- To update isLoading fields to hide the loading at the bottom.

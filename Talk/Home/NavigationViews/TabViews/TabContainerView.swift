@@ -16,13 +16,15 @@ struct TabItem: Identifiable {
     let contextMenus: (any View)?
     let title: String
     let iconName: String?
+    var tabImageView: (any View)?
     var id: String { title }
 
-    init(tabContent: any View, contextMenus: (any View)? = nil, title: String, iconName: String? = nil) {
+    init(tabContent: any View, tabImageView: (any View)? = nil, contextMenus: (any View)? = nil, title: String, iconName: String? = nil) {
         self.tabContent = tabContent
         self.contextMenus = contextMenus
         self.title = title
         self.iconName = iconName
+        self.tabImageView = tabImageView
     }
 
     var image: Image? {

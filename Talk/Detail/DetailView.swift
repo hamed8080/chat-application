@@ -12,9 +12,12 @@ import Photos
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkExtensions
 
 struct DetailView: View {
     @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var contactsVM: ContactsViewModel
+    @EnvironmentObject var navigationViewModel: NavigationModel
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -49,10 +52,10 @@ struct DetailView: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                if viewModel.thread?.canEditInfo == true {
+            ToolbarItem(placement: .navigationBarTrailing) {                
+                if viewModel.canShowEditButton {
                     Button {
-                        viewModel.showEditGroup.toggle()
+                        viewModel.showEditContactOrEditGroup(contactsVM: contactsVM)
                     } label: {
                         Image(systemName: "pencil")
                             .resizable()
@@ -62,8 +65,6 @@ struct DetailView: View {
                             .foregroundStyle(Color.App.primary)
                             .fontWeight(.heavy)
                     }
-                } else {
-                    EmptyView()
                 }
             }
 
@@ -82,8 +83,12 @@ struct DetailView: View {
         .sheet(isPresented: $viewModel.showEditGroup) {
             EditGroup()
         }
+        .sheet(isPresented: $viewModel.showContactEditSheet) {
+            AddOrEditContactView()
+        }
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue {
+                navigationViewModel.remove(type: DetailViewModel.self)
                 dismiss()
             }
         }
@@ -150,7 +155,7 @@ struct BioDescription: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if let description = viewModel.thread?.description {
+        if let description = viewModel.thread?.description.validateString {
             InfoRowItem(key: "General.description", value: description)
         }
     }
@@ -160,7 +165,7 @@ struct UserName: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if let participantName = viewModel.user?.name {
+        if let participantName = viewModel.user?.name.validateString {
             InfoRowItem(key: "Settings.userName", value: participantName)
         }
     }
@@ -170,7 +175,7 @@ struct CellPhoneNumber: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if let cellPhoneNumber = viewModel.cellPhoneNumber {
+        if let cellPhoneNumber = viewModel.cellPhoneNumber.validateString {
             InfoRowItem(key: "Participant.Search.Type.cellphoneNumber", value: cellPhoneNumber)
         }
     }
@@ -185,7 +190,7 @@ struct InfoRowItem: View {
                 Text(value)
                     .font(.iransansSubtitle)
                     .foregroundStyle(Color.App.text)
-                Text(key)
+                Text(String(localized: .init(key)))
                     .font(.iransansCaption)
                     .foregroundStyle(Color.App.hint)
             }

@@ -56,6 +56,7 @@
 "General.edit" = "bearbeiten";
 "General.optional" = "(Optional)";
 "General.share" = "Aktie";
+"General.createAConversation" = "Eine Konversation beginnen";
 
 /* Tabs */
 "Tab.chats" = "Chats";

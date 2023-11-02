@@ -9,10 +9,10 @@ import SwiftUI
 
 public struct LoadingView: View {
     @State public var isAnimating: Bool = true
-    public var width: CGFloat = 4
+    public var width: CGFloat = 2
     public var color: Color = .orange
 
-    public init(isAnimating: Bool = false, width: CGFloat = 4, color: Color = Color.App.primary) {
+    public init(isAnimating: Bool = false, width: CGFloat = 2, color: Color = Color.App.primary) {
         self.isAnimating = isAnimating
         self.width = width
         self.color = color

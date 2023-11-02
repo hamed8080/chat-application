@@ -57,6 +57,7 @@
 "General.optional" = "(Optional)";
 "General.share" = "share";
 "General.share" = "share";
+"General.createAConversation" = "Start a conversation";
 
 /* Tabs */
 "Tab.chats" = "Chats";

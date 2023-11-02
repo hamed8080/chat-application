@@ -118,9 +118,9 @@ struct SplitViewContent: View {
                 ),
                 .init(
                     tabContent: SettingsView(container: container),
+                    tabImageView: SettingProfileButton(),
                     contextMenus: Button("Setting Context Menu") {},
-                    title: "Tab.settings",
-                    iconName: "gear"
+                    title: "Tab.settings"
                 )
             ],
             config: .init(alignment: .bottom)

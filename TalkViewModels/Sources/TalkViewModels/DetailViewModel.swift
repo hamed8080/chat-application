@@ -14,6 +14,7 @@ import ChatDTO
 import TalkModels
 import ChatCore
 import ChatModels
+import TalkExtensions
 
 public final class DetailViewModel: ObservableObject, Hashable {
     public static func == (lhs: DetailViewModel, rhs: DetailViewModel) -> Bool {
@@ -53,6 +54,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
     @Published public var dismiss = false
     @Published public var isLoading = false
     @Published public var showEditGroup = false
+    @Published public var showContactEditSheet: Bool = false
+    public var canShowEditButton: Bool {thread?.canEditInfo == true || user?.contactId != nil}
 
     public init(thread: Conversation? = nil, contact: Contact? = nil, user: Participant? = nil) {
         self.user = user
@@ -246,6 +249,15 @@ public final class DetailViewModel: ObservableObject, Hashable {
             image = nil
             isLoading = false
             showEditGroup = false
+        }
+    }
+
+    public func showEditContactOrEditGroup(contactsVM: ContactsViewModel) {
+        if user?.contactId != nil {
+            contactsVM.editContact = user?.toContact
+            showContactEditSheet.toggle()
+        } else if thread?.canEditInfo == true {
+            showEditGroup.toggle()
         }
     }
 }

@@ -60,7 +60,7 @@ struct LinkRowView: View {
     var body: some View {
         HStack {
             Rectangle()
-                .fill(Color.App.hint)
+                .fill(Color.App.gray3)
                 .frame(width: 36, height: 36)
                 .cornerRadius(8)
                 .overlay(alignment: .center) {
@@ -68,7 +68,7 @@ struct LinkRowView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(Color.App.hint)
+                        .foregroundStyle(Color.App.grayHalf)
                 }
             VStack(alignment: .leading) {
                 Text(message.markdownTitle)

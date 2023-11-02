@@ -18,9 +18,11 @@ struct TabButtonsContainer: View {
                 Spacer()
                 TabButtonItem(title: tab.title,
                               image: tab.image,
+                              imageView: tab.tabImageView,
                               contextMenu: tab.contextMenus,
                               isSelected: selectedId == tab.title) {
                     selectedId = tab.title
+                    NotificationCenter.default.post(name: .selectTab, object: tab.title)
                 }
                 Spacer()
             }
