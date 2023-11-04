@@ -298,6 +298,8 @@
 "Messages.ActionMenu.pinMessage" = "Anclar";
 "Messages.ActionMenu.unpinMessage" = "Desanclar";
 "Messages.unreadMessages" = "Mensajes sin leer";
+"Messages.deleteForMe" = "eliminar por mi";
+"Messages.deleteForAll" = "Eliminar para todas";
 
 /* Mapa */
 "Map.mayLocation" = "Mi ubicación";

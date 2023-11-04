@@ -298,6 +298,8 @@
 "Messages.ActionMenu.pinMessage" = "سنجاق کردن";
 "Messages.ActionMenu.unpinMessage" = "از سنجاق در آوردن";
 "Messages.unreadMessages" = "پیام های خوانده نشده";
+"Messages.deleteForMe" = "حذف برای خودم";
+"Messages.deleteForAll" = "حذف برای همه";
 
 /* Map */
 "Map.mayLocation" = "موقعیت من";

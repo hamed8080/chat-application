@@ -10,6 +10,7 @@ import ChatModels
 import TalkViewModels
 
 public struct DeleteMessageDialog: View {
+    @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     let viewModel: ThreadViewModel
     private var messages: [Message] { viewModel.selectedMessages.compactMap({$0.message}) }
 
@@ -18,61 +19,62 @@ public struct DeleteMessageDialog: View {
     }
 
     public var body: some View {
-        VStack(spacing: 24) {
+        VStack(alignment: .trailing, spacing: 16) {
             Text("DeleteMessageDialog.title")
-                .font(.iransansTitle.bold())
-                .foregroundColor(.red)
+                .foregroundStyle(Color.App.text)
+                .font(.iransansBoldSubheadline)
+                .multilineTextAlignment(.leading)
+                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+
             Text("DeleteMessageDialog.subtitle")
-                .foregroundColor(Color.App.hint)
-                .font(.iransansSubheadline)
-            VStack {
-                ForEach(messages.prefix(3)) { message in
-                    Text(message.message ?? "")
-                        .font(.iransansCaption)
-                        .foregroundColor(.primary)
-                        .padding(8)
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(8)
-                }
-            }
-            if messages.count > 3 {
-                Text("...")
-            }
+                .foregroundStyle(Color.App.text)
+                .font(.iransansBody)
+                .multilineTextAlignment(.leading)
+                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
 
-            VStack {
-                Button(role: .destructive) {
-                    viewModel.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
-                    viewModel.isInEditMode = false
-                    viewModel.deleteDialaog = false
-                    viewModel.animateObjectWillChange()
-                } label: {
-                    Label("General.delete", systemImage: "trash.circle.fill")
-                        .frame(minWidth: 256)
-                        .font(.iransansBody)
-                }
-                .padding(8)
-                .background(.ultraThinMaterial)
-                .cornerRadius(8)
-
+            HStack(spacing: 16) {
                 Button {
                     viewModel.clearSelection()
                     viewModel.isInEditMode = false
-                    viewModel.deleteDialaog = false
+                    appOverlayVM.dialogView = nil
                     viewModel.animateObjectWillChange()
                 } label: {
-                    Label("General.cancel", systemImage: "xmark.circle.fill")
-                        .frame(minWidth: 256)
-                        .font(.iransansBody)
+                    Text("General.cancel")
+                        .foregroundStyle(Color.App.placeholder)
+                        .font(.iransansBoldBody)
+                        .frame(minWidth: 48, minHeight: 48)
                 }
-                .padding(8)
-                .background(.ultraThinMaterial)
-                .cornerRadius(8)
+
+                Button {
+                    viewModel.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
+                    viewModel.isInEditMode = false
+                    appOverlayVM.dialogView = nil
+                    viewModel.animateObjectWillChange()
+                } label: {
+                    Text("Messages.deleteForMe")
+                        .foregroundStyle(Color.App.orange)
+                        .font(.iransansBoldBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                }
+
+                Button {
+                    viewModel.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
+                    viewModel.isInEditMode = false
+                    appOverlayVM.dialogView = nil
+                    viewModel.animateObjectWillChange()
+                } label: {
+                    Text("Messages.deleteForAll")
+                        .foregroundStyle(Color.App.red)
+                        .font(.iransansBoldBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                }
             }
-            .padding()
         }
-        .padding(24)
-        .background(.ultraThickMaterial)
-        .cornerRadius(16)
+        .frame(maxWidth: 320)
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+        .padding(.bottom, 6)
+        .background(MixMaterialBackground())
     }
 }
 

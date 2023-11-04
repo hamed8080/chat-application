@@ -298,6 +298,8 @@
 "Messages.ActionMenu.pinMessage" = "Pin";
 "Messages.ActionMenu.unpinMessage" = "UNPin";
 "Messages.unreadMessages" = "Unread Messages";
+"Messages.deleteForMe" = "Delete for me";
+"Messages.deleteForAll" = "Delete for all";
 
 /* Map */
 "Map.mayLocation" = "My location";

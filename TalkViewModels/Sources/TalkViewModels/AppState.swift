@@ -49,6 +49,7 @@ public final class AppState: ObservableObject {
     public var userToCreateThread: User?
     public var replyPrivately: Message?
     public var lifeCycleState: AppLifeCycleState?
+    public var objectsContainer: ObjectsContainer!
 
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {

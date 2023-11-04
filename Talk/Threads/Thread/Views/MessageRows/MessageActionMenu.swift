@@ -83,8 +83,10 @@ struct MessageActionMenu: View {
 
             ContextMenuButton(title: "General.delete", image: "trash", showSeparator: false) {
                 withAnimation(animation(appear: true)) {
-                    threadVM?.deleteMessages([message])
-                    threadVM?.animateObjectWillChange()
+                    if let threadVM {
+                        threadVM.messageViewModels.first(where: {$0.message.id == message.id})?.isSelected = true
+                        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: threadVM))
+                    }
                 }
             }
             .foregroundStyle(Color.App.red)

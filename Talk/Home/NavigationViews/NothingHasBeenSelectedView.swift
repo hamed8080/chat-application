@@ -47,6 +47,7 @@ struct NothingHasBeenSelectedView: View {
                             .stroke(Color.App.gray8, lineWidth: 1)
                     )
                 }
+                .frame(minWidth: 196)
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .padding([.leading, .trailing], 96)

@@ -497,7 +497,7 @@ struct SupportSection: View {
 
         if EnvironmentValues.isTalkTest {
             let secondToExpire = tokenManagerVM.secondToExpire.formatted(.number.precision(.fractionLength(0)))
-            ListSectionButton(imageName: "key.fill", title: "Token expire in: \(secondToExpire)", color: Color.App.yellow, showDivider: false, shownavigationButton: false)
+            ListSectionButton(imageName: "key.fill", title: "The token will expire in \(secondToExpire) seconds", color: Color.App.yellow, showDivider: false, shownavigationButton: false)
                 .listRowInsets(.zero)
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparatorTint(Color.clear)

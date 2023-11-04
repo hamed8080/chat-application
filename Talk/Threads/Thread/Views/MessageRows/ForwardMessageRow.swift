@@ -13,31 +13,37 @@ import TalkUI
 import TalkViewModels
 
 struct ForwardMessageRow: View {
-    let forwardInfo: ForwardInfo
+    @EnvironmentObject var viewModel: MessageRowViewModel
+    var message: Message? { viewModel.message }
     @EnvironmentObject var navVM: NavigationModel
 
-    @ViewBuilder var body: some View {
-        if let forwardThread = forwardInfo.conversation {
+    var body: some View {
+        if let forwardInfo = message?.forwardInfo, let forwardThread = forwardInfo.conversation {
             Button {
                 navVM.append(thread: forwardThread)
             } label: {
                 HStack(spacing: 8) {
                     RoundedRectangle(cornerRadius: 3)
-                        .fill(Color.App.red)
+                        .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
                         .frame(width: 3)
                         .frame(minHeight: 0, maxHeight: 36)
-                    if let name = forwardInfo.participant?.name {
-                        Text(name)
-                            .italic()
-                            .font(.iransansBoldCaption2)
-                            .foregroundColor(Color.App.red)
+                    VStack(spacing: 0) {
+                        if let name = forwardInfo.participant?.name {
+                            Text("\(name)")
+                                .font(.iransansBoldCaption2)
+                                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                                .foregroundStyle(viewModel.isMe ? Color.App.primary : Color.App.text)
+                        }
                     }
-                    Image(systemName: "arrowshape.turn.up.right.fill")
-                        .foregroundColor(Color.App.primary)
-                    Spacer()
                 }
-                .frame(minHeight: 52, maxHeight: 52)
+                .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 36, maxHeight: 36)
             }
+            .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
+            .buttonStyle(.borderless)
+            .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 36, maxHeight: 36)
+            .truncationMode(.tail)
+            .contentShape(Rectangle())
+            .lineLimit(1)
         }
     }
 }

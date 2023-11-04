@@ -20,6 +20,14 @@ struct MessageFooterView: View {
     var body: some View {
         HStack {           
             Spacer()
+            if message.forwardInfo != nil {
+                Image(systemName: "arrowshape.backward.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .foregroundColor(Color.App.gray5)
+                    .font(.subheadline)
+            }
             Text(viewModel.timeString)
                 .foregroundColor(Color.App.hint)
                 .font(.iransansCaption2)

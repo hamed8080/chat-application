@@ -28,6 +28,7 @@ public final class ObjectsContainer: ObservableObject {
                 self?.onMessageEvent(event)
             }
             .store(in: &cancellableSet)
+        AppState.shared.objectsContainer = self
     }
 
     public func reset() {

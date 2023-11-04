@@ -19,14 +19,6 @@ public struct DownloadFileView: View {
     var message: Message? { viewModel.message }
     @State var shareDownloadedFile: Bool = false
     let config: DownloadFileViewConfig
-    var fileName: String? {
-        guard
-            config.showFileName == true,
-            !(message?.isImage ?? false),
-            let fileName = message?.fileName ?? message?.fileMetaData?.file?.originalName
-        else { return nil }
-        return fileName
-    }
 
     public init(viewModel: DownloadFileViewModel, config: DownloadFileViewConfig = .normal) {
         self.viewModel = viewModel
@@ -34,31 +26,14 @@ public struct DownloadFileView: View {
     }
 
     public var body: some View {
-        HStack {
+        HStack(alignment: .top) {
             ZStack(alignment: .center) {
-                if message?.isImage == true {
-                    DownloadImagethumbnail(viewModel: viewModel)
-                }
+                DownloadImagethumbnail(viewModel: viewModel)
                 MutableDownloadViews(config: config)
-                    .environmentObject(viewModel)
             }
-
-            if let fileName {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("\(fileName)\(message?.fileExtension ?? "")")
-                        .foregroundStyle(Color.App.text)
-                        .font(.iransansBoldCaption)
-
-                    if let fileSize = message?.fileMetaData?.file?.size?.toSizeString {
-                        Text(fileSize)
-                            .multilineTextAlignment(.leading)
-                            .font(.iransansCaption3)
-                            .foregroundColor(Color.App.text)
-                    }
-                }
-                .padding([.leading], config.fileNameTrailingSpace)
-            }
+            DownloadFileStack(message: message, config: config)
         }
+        .environmentObject(viewModel)
         .frame(maxWidth: config.maxHeight)
         .sheet(isPresented: $shareDownloadedFile) {
             if let fileURL = viewModel.fileURL, let message {
@@ -259,23 +234,86 @@ struct DownloadImagethumbnail: View {
     var message: Message? { viewModel.message }
 
     var body: some View {
-        Image(uiImage: UIImage(data: thumbnailData ?? Data()) ?? UIImage())
-            .resizable()
-            .blur(radius: 16, opaque: false)
-            .scaledToFill()
-            .zIndex(0)
-            .frame(width: 204, height: 204)
-            .onReceive(viewModel.objectWillChange) { _ in
-                if viewModel.thumbnailData != self.thumbnailData,
-                   message?.isImage == true,
-                   viewModel.state != .completed
-                {
-                    self.thumbnailData = viewModel.thumbnailData
+        if message?.isImage == true {
+            Image(uiImage: UIImage(data: thumbnailData ?? Data()) ?? UIImage())
+                .resizable()
+                .blur(radius: 16, opaque: false)
+                .scaledToFill()
+                .zIndex(0)
+                .frame(width: 204, height: 204)
+                .onReceive(viewModel.objectWillChange) { _ in
+                    if viewModel.thumbnailData != self.thumbnailData,
+                       message?.isImage == true,
+                       viewModel.state != .completed
+                    {
+                        self.thumbnailData = viewModel.thumbnailData
+                    }
                 }
+                .task {
+                    thumbnailData = viewModel.thumbnailData
+                }
+        }
+    }
+}
+
+struct DownloadFileStack: View {
+    let message: Message?
+    let config: DownloadFileViewConfig
+
+    var body: some View {
+        if !(message?.isImage ?? false) {
+            VStack(alignment: .leading, spacing: 8) {
+                DownloadFileName(message: message, config: config)
+                AudioMessageProgress(message: message, config: config)
+                DownloadFileSize(message: message)
             }
-            .task {
-                thumbnailData = viewModel.thumbnailData
+        }
+    }
+}
+struct AudioMessageProgress: View {
+    let message: Message?
+    let config: DownloadFileViewConfig
+    @EnvironmentObject var viewModel: AVAudioPlayerViewModel
+
+    var body: some View {
+        if config.showFileName, message?.isAudio == true {
+            VStack(alignment: .leading, spacing: 4) {
+                ProgressView(value: min(viewModel.currentTime / viewModel.duration, 1.0), total: 1.0)
+                    .progressViewStyle(.linear)
+                    .tint(Color.App.text)
+                Text("\(viewModel.currentTime.timerString ?? "") / \(viewModel.duration.timerString ?? "")")
+                    .foregroundColor(Color.App.white)
             }
+        }
+    }
+}
+
+struct DownloadFileName: View {
+    let message: Message?
+    let config: DownloadFileViewConfig
+    var fileName: String? { message?.fileName ?? message?.fileMetaData?.file?.originalName }
+
+    var body: some View {
+        if config.showFileName, let fileName {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("\(fileName)\(message?.fileExtension ?? "")")
+                    .foregroundStyle(Color.App.text)
+                    .font(.iransansBoldCaption)
+            }
+        }
+    }
+}
+
+struct DownloadFileSize: View {
+    let message: Message?
+
+    var body: some View {
+        if let fileSize = message?.fileMetaData?.file?.size?.toSizeString, message?.isAudio == false {
+            Text(fileSize)
+                .multilineTextAlignment(.leading)
+                .font(.iransansCaption3)
+                .foregroundColor(Color.App.text)
+        }
     }
 }
 

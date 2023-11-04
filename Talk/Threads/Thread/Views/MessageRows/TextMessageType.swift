@@ -96,9 +96,7 @@ struct MutableMessageView: View {
                     .environmentObject(viewModel)
             }
 
-            if let forwardInfo = message.forwardInfo {
-                ForwardMessageRow(forwardInfo: forwardInfo)
-            }
+            ForwardMessageRow()
 
             if message.isUploadMessage {
                 UploadMessageType(message: message)
@@ -163,22 +161,7 @@ struct MutableMessageView: View {
         .cornerRadius(bottomLeftCorner, corners: [.bottomLeft])
         .cornerRadius(bottomRightCorner, corners: [.bottomRight])
         .overlay(alignment: .bottom) {
-            HStack {
-                if viewModel.isMe {
-                    Spacer()
-                }
-                if !viewModel.isNextMessageTheSameUser {
-                    Image(uiImage: viewModel.isMe ? Message.trailingTail : Message.leadingTail)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 9, height: 18)
-                        .offset(x: viewModel.isMe ? 9 : -9)
-                        .foregroundStyle(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
-                }
-                if !viewModel.isMe {
-                    Spacer()
-                }
-            }
+            MessageBubbleTail()
         }
         .simultaneousGesture(TapGesture().onEnded { _ in
             if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
@@ -187,7 +170,9 @@ struct MutableMessageView: View {
         }, including: message.isVideo ? .subviews : .all)
         .contentShape(RoundedRectangle(cornerRadius: 12))
         /// We should pass the width of the row when it gets updated to the context menu to get proper width of the view in modifier.
-        .customContextMenu(self: self.environmentObject(viewModel), width: viewModel.widthOfRow) {
+        .customContextMenu(self: self
+            .environmentObject(viewModel)
+            .environmentObject(AppState.shared.objectsContainer.audioPlayerVM), width: viewModel.widthOfRow) {
             MessageActionMenu()
                 .environmentObject(viewModel)
         } topView: {
@@ -220,6 +205,28 @@ struct MutableMessageView: View {
     }
 }
 
+struct MessageBubbleTail: View {
+    @EnvironmentObject var viewModel: MessageRowViewModel
+
+    var body: some View {
+        HStack {
+            if viewModel.isMe {
+                Spacer()
+            }
+            if !viewModel.isNextMessageTheSameUser {
+                Image(uiImage: viewModel.isMe ? Message.trailingTail : Message.leadingTail)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 9, height: 18)
+                    .offset(x: viewModel.isMe ? 9 : -9)
+                    .foregroundStyle(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
+            }
+            if !viewModel.isMe {
+                Spacer()
+            }
+        }
+    }
+}
 
 struct TextMessageType_Previews: PreviewProvider {
     struct Preview: View {

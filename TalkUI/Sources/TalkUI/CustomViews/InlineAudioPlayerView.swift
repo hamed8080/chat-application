@@ -24,18 +24,15 @@ public struct InlineAudioPlayerView: View {
     }
 
     public var body: some View {
-        VStack {
-            Image(systemName: !viewModel.isPlaying ? "play.circle.fill" : "pause.circle.fill")
-                .resizable()
-                .foregroundStyle(Color.App.white, Color.App.primary)
-                .frame(width: 36, height: 36, alignment: .leading)
-                .cornerRadius(18)
-                .animation(.easeInOut, value: viewModel.isPlaying)
-                .onTapGesture {
-                    viewModel.setup(fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
-                    viewModel.toggle()
-                }
-        }
-        .padding()
+        Image(systemName: !viewModel.isPlaying ? "play.circle.fill" : "pause.circle.fill")
+            .resizable()
+            .foregroundStyle(Color.App.white, Color.App.primary)
+            .frame(width: 36, height: 36, alignment: .leading)
+            .cornerRadius(18)
+            .animation(.easeInOut, value: viewModel.isPlaying)
+            .onTapGesture {
+                viewModel.setup(fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
+                viewModel.toggle()
+            }
     }
 }

@@ -298,6 +298,8 @@
 "Messages.ActionMenu.pinMessage" = "Nåla";
 "Messages.ActionMenu.unpinMessage" = "Avnåla";
 "Messages.unreadMessages" = "Olästa meddelanden";
+"Messages.deleteForMe" = "Ta bort åt mig";
+"Messages.deleteForAll" = "Ta bort för alla";
 
 /* Map */
 "Map.mayLocation" = "Min plats";

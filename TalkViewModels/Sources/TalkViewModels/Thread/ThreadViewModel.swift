@@ -83,7 +83,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     /// The property `DisableScrolling` works as a mechanism to prevent sending a new request to the server every time SwiftUI tries to calculate and layout our views rows, because SwiftUI starts rendering at the top when we load more top.
     public var disableScrolling: Bool = false
     var createThreadCompletion: (()-> Void)?
-    @Published public var deleteDialaog: Bool = false
     public lazy var attachmentsViewModel: AttachmentsViewModel = {
         let viewModel = AttachmentsViewModel()
         viewModel.threadViewModel  = self
@@ -358,9 +357,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         return indicesByMessageId(lastSeenMessageId)
     }
 
-    public func deleteMessages(_ messages: [Message]) {
+    public func deleteMessages(_ messages: [Message], forAll: Bool = false) {
         let messagedIds = messages.compactMap(\.id)
-        ChatManager.activeInstance?.message.delete(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: true))
+        ChatManager.activeInstance?.message.delete(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: forAll))
         clearSelection()
     }
 

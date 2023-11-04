@@ -297,6 +297,8 @@
 "Messages.ActionMenu.pinMessage" = "تثبيت";
 "Messages.ActionMenu.unpinMessage" = "إلغاء تثبيت";
 "Messages.unreadMessages" = "رسائل غير مقروءة";
+"Messages.deleteForMe" = "حذف بالنسبة لي";
+"Messages.deleteForAll" = "الحذف للجميع";
 
 /* Map */
 "Map.mayLocation" = "موقعي";

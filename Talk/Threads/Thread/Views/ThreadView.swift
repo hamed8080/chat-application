@@ -30,9 +30,6 @@ struct ThreadView: View, DropDelegate {
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
             .searchable(text: $searchMessageText, placement: .toolbar, prompt: "General.searchHere")
-            .customDialog(isShowing: $viewModel.deleteDialaog) {
-                DeleteMessageDialog(viewModel: viewModel)
-            }
             .overlay {
                 SendContainer(viewModel: viewModel)
             }

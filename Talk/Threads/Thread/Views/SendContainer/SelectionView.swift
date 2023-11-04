@@ -12,6 +12,7 @@ import TalkUI
 
 struct SelectionView: View {
     let viewModel: ThreadViewModel
+    @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     @State private var selectedCount: Int = 0
 
     var body: some View {
@@ -39,7 +40,7 @@ struct SelectionView: View {
             /// Disable showing the delete button when forwarding in a conversation where we are not the admin and we just want to forward messages, so the delete button should be hidden.
             if !viewModel.thread.disableSend {
                 SendContainerButton(image: "trash.fill", imageColor: Color.App.red.opacity(0.58)) {
-                    viewModel.deleteDialaog.toggle()
+                    appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: viewModel))
                 }
             }
 

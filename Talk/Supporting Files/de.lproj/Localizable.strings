@@ -299,6 +299,8 @@
 "Messages.ActionMenu.pinMessage" = "Anheften";
 "Messages.ActionMenu.unpinMessage" = "Lösen";
 "Messages.unreadMessages" = "Ungelesene Nachrichten";
+"Messages.deleteForMe" = "Für mich löschen";
+"Messages.deleteForAll" = "Für alle löschen";
 
 /* Map */
 "Map.mayLocation" = "Mein Standort";
