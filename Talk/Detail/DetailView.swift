@@ -30,6 +30,11 @@ struct DetailView: View {
                 StickyHeaderSection(header: "", height: 10)
                 DetailTopButtons()
                     .padding([.top, .bottom])
+                StickyHeaderSection(header: "", height: 10)
+                AddParticipantButton(conversation: viewModel.thread)
+                    .listRowSeparatorTint(.gray.opacity(0.2))
+                    .listRowBackground(Color.App.bgPrimary)
+                StickyHeaderSection(header: "", height: 10)
                 TabDetail(viewModel: viewModel)
             }
         }

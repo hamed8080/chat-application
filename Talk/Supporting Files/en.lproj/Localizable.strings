@@ -56,7 +56,6 @@
 "General.edit" = "edit";
 "General.optional" = "(Optional)";
 "General.share" = "share";
-"General.share" = "share";
 "General.createAConversation" = "Start a conversation";
 
 /* Tabs */
@@ -200,7 +199,7 @@
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ created a conversation.";
-"Thread.Toolbar.participants" = "Participants";\
+"Thread.Toolbar.participants" = "Participants";
 "Thread.sendAttachments" = "Send %@ files";
 
 /* ConnectionStatus */
@@ -225,6 +224,7 @@
 
 /* Edit group */
 "EditGroup.groupName" = "Group name";
+"EditGroup.groupDescription" = "Group description";
 
 /* Export Chat */
 "ExportChat.startTitle" = "Start Date";
@@ -258,11 +258,14 @@
 "Settings.manageCalls" = "Manage Calls";
 "Settings.logout" = "Logout";
 "Settings.notifictionSettings" = "Notification Settings";
+"Settings.support" = "Support";
 "Settings.userName" = "Username";
 "Settings.phoneNumber" = "Phone Number";
 "Settings.bio" = "Biography";
 "Settings.language" = "Language";
 "Settings.restartToChangeLanguage" = "Please restart the app to change the language.";
+"Settings.logoutFromAccount" = "Logout from your account";
+"Settings.areYouSureToLogout" = "Are you sure you want to exit from your account?";
 
 /* Support */
 "Support.version" = "Version: %@";
@@ -275,7 +278,6 @@
 "Notification.PrivateSettings" = "Private settings";
 "Notification.GroupSettings" = "Group settings";
 "Notification.ChannelSettings" = "Channel settings";
-"Settings.support" = "Support";
 
 /* Tags */
 "Tags.addToFolder" = "Add to folder";

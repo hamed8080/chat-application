@@ -24,6 +24,12 @@ struct AppOverlayFactory: View {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .fullScreenBackgroundView()
             .ignoresSafeArea(.all)
+        case .dialog:
+            if let dialog = viewModel.dialogView {
+                dialog
+                    .background(.ultraThickMaterial)
+                    .ignoresSafeArea(.all)
+            }
         case .error(let error):
             let title = String(format: String(localized: "Errors.occuredTitle"), "\(error?.code ?? 0)")
             ToastView(title: title, message: error?.message ?? "") {}

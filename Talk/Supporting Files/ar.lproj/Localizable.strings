@@ -263,6 +263,8 @@
 "Settings.bio" = "سيرة شخصية";
 "Settings.language" = "لغة";
 "Settings.restartToChangeLanguage" = "يرجى إعادة تشغيل التطبيق لتغيير اللغة.";
+"Settings.logoutFromAccount" = "الخروج من حسابك";
+"Settings.areYouSureToLogout" = "هل أنت متأكد أنك تريد الخروج من حسابك؟";
 
 /* Support */
 "Support.version" = "إصدار: %@";

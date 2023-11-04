@@ -23,9 +23,9 @@ struct LanguageView: View {
         let text: String
     }
 
-    let languages: [Language] = [
+    static let languages: [Language] = [
         .init(identifier: "en_US", language: "en-US", text: "English"),
-        .init(identifier: "fa_IR", language: "fa-IR", text: "Persian(فارسی)"),
+        .init(identifier: "fa_IR", language: "fa-IR", text: "Persian (فارسی)"),
         .init(identifier: "sv_SE", language: "sv-SE", text: "Swedish"),
         .init(identifier: "de_DE", language: "de-DE", text: "Germany"),
         .init(identifier: "es_ES", language: "es-ES", text: "Spanish"),
@@ -34,7 +34,7 @@ struct LanguageView: View {
 
     var body: some View {
         List {
-            ForEach(languages) { language in
+            ForEach(LanguageView.languages) { language in
                 Button {
                     changeLanguage(language: language)
                 } label: {

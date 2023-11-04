@@ -31,6 +31,10 @@
 		051F26C72ADD0F8F00BF9841 /* SwipyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F26C62ADD0F8F00BF9841 /* SwipyView.swift */; };
 		05466B0A2AEEA3F7005CC176 /* ArchivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05466B092AEEA3F7005CC176 /* ArchivesView.swift */; };
 		05466B0B2AEEA3F7005CC176 /* ArchivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05466B092AEEA3F7005CC176 /* ArchivesView.swift */; };
+		05551C262AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
+		05551C272AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
+		05551C292AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */; };
+		05551C2A2AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */; };
 		0560C35E2AB77B0B009F6A58 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */; };
 		0560C35F2AB77B0B009F6A58 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */; };
 		0560C3602AB77B0B009F6A58 /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */; };
@@ -230,6 +234,18 @@
 		05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
 		05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
+		05C27F982AF4AFF60008FE2E /* CreateConversationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F972AF4AFF60008FE2E /* CreateConversationPicker.swift */; };
+		05C27F992AF4AFF60008FE2E /* CreateConversationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F972AF4AFF60008FE2E /* CreateConversationPicker.swift */; };
+		05C27F9C2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9B2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift */; };
+		05C27F9D2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9B2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift */; };
+		05C27F9F2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9E2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift */; };
+		05C27FA02AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9E2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift */; };
+		05C27FA22AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA12AF4BCD30008FE2E /* EditMessagePlaceholderView.swift */; };
+		05C27FA32AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA12AF4BCD30008FE2E /* EditMessagePlaceholderView.swift */; };
+		05C27FA52AF4BD010008FE2E /* SelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA42AF4BD010008FE2E /* SelectionView.swift */; };
+		05C27FA62AF4BD010008FE2E /* SelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA42AF4BD010008FE2E /* SelectionView.swift */; };
+		05C27FA82AF4BD330008FE2E /* MainSendButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */; };
+		05C27FA92AF4BD330008FE2E /* MainSendButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */; };
 		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
 		05DCC0652AE183EA0025B3B7 /* ConversationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */; };
 		05DCC0662AE187D80025B3B7 /* ConversationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */; };
@@ -268,6 +284,8 @@
 		0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButtonItem.swift; sourceTree = "<group>"; };
 		051F26C62ADD0F8F00BF9841 /* SwipyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipyView.swift; sourceTree = "<group>"; };
 		05466B092AEEA3F7005CC176 /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
+		05551C252AF4C631000F98B6 /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
+		05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainerButton.swift; sourceTree = "<group>"; };
 		0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerView.swift; sourceTree = "<group>"; };
 		0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
@@ -381,6 +399,12 @@
 		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		05C099C22AD1135D007AAC6C /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		05C27F972AF4AFF60008FE2E /* CreateConversationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateConversationPicker.swift; sourceTree = "<group>"; };
+		05C27F9B2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyMessageViewPlaceholder.swift; sourceTree = "<group>"; };
+		05C27F9E2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuteChannelViewPlaceholder.swift; sourceTree = "<group>"; };
+		05C27FA12AF4BCD30008FE2E /* EditMessagePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessagePlaceholderView.swift; sourceTree = "<group>"; };
+		05C27FA42AF4BD010008FE2E /* SelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionView.swift; sourceTree = "<group>"; };
+		05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSendButtons.swift; sourceTree = "<group>"; };
 		05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationBuilder.swift; sourceTree = "<group>"; };
 		05DDC8462AEC23DF009F9942 /* ActionableContextMenu */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ActionableContextMenu; sourceTree = "<group>"; };
 		05E869C52AEF883000F6B200 /* DetailLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailLoading.swift; sourceTree = "<group>"; };
@@ -524,6 +548,7 @@
 				0570CB792AAEE98C001832E9 /* JoinToPublicThreadView.swift */,
 				0570CB762AAEE98C001832E9 /* ThreadContentList.swift */,
 				05466B092AEEA3F7005CC176 /* ArchivesView.swift */,
+				05C27F972AF4AFF60008FE2E /* CreateConversationPicker.swift */,
 			);
 			path = Threads;
 			sourceTree = "<group>";
@@ -578,23 +603,21 @@
 		0570CB7C2AAEE98C001832E9 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				05C27F9A2AF4BC310008FE2E /* SendContainer */,
 				05F9151F2AE63984008C070B /* Toolbars */,
 				0570CB7F2AAEE98C001832E9 /* MessageRows */,
 				050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */,
 				0570CB7D2AAEE98C001832E9 /* ThreadSearchList.swift */,
 				0570CB7E2AAEE98C001832E9 /* MapPickerView.swift */,
 				0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */,
-				0570CB8D2AAEE98C001832E9 /* AttachmentButtons.swift */,
 				0570CB8E2AAEE98C001832E9 /* ThreadSheetView.swift */,
 				0570CB8F2AAEE98C001832E9 /* MentionList.swift */,
 				0570CB912AAEE98C001832E9 /* ThreadView.swift */,
 				0570CB932AAEE98C001832E9 /* ThreadPinMessage.swift */,
 				0570CB942AAEE98C001832E9 /* ThreadMessagesList.swift */,
 				0570CB952AAEE98C001832E9 /* ThreadEventView.swift */,
-				0570CB962AAEE98C001832E9 /* SendContainer.swift */,
 				0570CB972AAEE98C001832E9 /* MoveToBottomButton.swift */,
 				058022032AE05DFA002816C7 /* GalleryImagePicker.swift */,
-				050C2C1D2AF0BE53000D380E /* AttachmentFiles.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -766,6 +789,23 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		05C27F9A2AF4BC310008FE2E /* SendContainer */ = {
+			isa = PBXGroup;
+			children = (
+				050C2C1D2AF0BE53000D380E /* AttachmentFiles.swift */,
+				0570CB8D2AAEE98C001832E9 /* AttachmentButtons.swift */,
+				0570CB962AAEE98C001832E9 /* SendContainer.swift */,
+				05C27F9B2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift */,
+				05C27F9E2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift */,
+				05C27FA12AF4BCD30008FE2E /* EditMessagePlaceholderView.swift */,
+				05C27FA42AF4BD010008FE2E /* SelectionView.swift */,
+				05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */,
+				05551C252AF4C631000F98B6 /* CloseButton.swift */,
+				05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */,
+			);
+			path = SendContainer;
 			sourceTree = "<group>";
 		};
 		05DCC0632AE183D00025B3B7 /* ConversationBuilders */ = {
@@ -958,6 +998,7 @@
 				0560C35E2AB77B0B009F6A58 /* TabContainerView.swift in Sources */,
 				0570CC1F2AAEE98F001832E9 /* SearchMessageRow.swift in Sources */,
 				0570CBF72AAEE98F001832E9 /* SelectThreadRow.swift in Sources */,
+				05C27FA52AF4BD010008FE2E /* SelectionView.swift in Sources */,
 				0570CBDF2AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */,
 				0570CC3F2AAEE98F001832E9 /* DeleteThreadConfirmationView.swift in Sources */,
 				0570CC2B2AAEE98F001832E9 /* ThreadViewTrailingToolbar.swift in Sources */,
@@ -993,20 +1034,26 @@
 				0570CC352AAEE98F001832E9 /* MoveToBottomButton.swift in Sources */,
 				0570CC6B2AAEE98F001832E9 /* ContactContentList.swift in Sources */,
 				0570CC552AAEE98F001832E9 /* VoiceView.swift in Sources */,
+				05C27FA82AF4BD330008FE2E /* MainSendButtons.swift in Sources */,
 				05FE15F12ADA5591009AC44A /* SupportView.swift in Sources */,
 				0570CC572AAEE98F001832E9 /* MusicView.swift in Sources */,
 				050B291A2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CBFF2AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
+				05C27F9C2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */,
 				0570CC012AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
+				05551C292AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */,
 				0570CC232AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC0D2AAEE98F001832E9 /* MessageRowFactory.swift in Sources */,
 				0570CC472AAEE98F001832E9 /* LogRow.swift in Sources */,
 				050B51B52AE7852B00B8DD49 /* LoginView.swift in Sources */,
+				05551C262AF4C631000F98B6 /* CloseButton.swift in Sources */,
 				058022042AE05DFA002816C7 /* GalleryImagePicker.swift in Sources */,
 				0570CC672AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC0F2AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
+				05C27F982AF4AFF60008FE2E /* CreateConversationPicker.swift in Sources */,
 				05745AF32AF2B1B100102193 /* SettingProfileButton.swift in Sources */,
 				0570CBF12AAEE98F001832E9 /* ThreadLastMessageView.swift in Sources */,
+				05C27F9F2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift in Sources */,
 				0570CC2D2AAEE98F001832E9 /* ThreadPinMessage.swift in Sources */,
 				050DE2092AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */,
 				0570CBE72AAEE98F001832E9 /* ParticipantRow.swift in Sources */,
@@ -1030,6 +1077,7 @@
 				05E869C62AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				05EC8A302ACBED930016361F /* ReactionCountView.swift in Sources */,
 				0570CC432AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
+				05C27FA22AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC5B2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC6F2AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
 				0570CC392AAEE98F001832E9 /* TagRow.swift in Sources */,
@@ -1068,6 +1116,7 @@
 				0560C35F2AB77B0B009F6A58 /* TabContainerView.swift in Sources */,
 				0570CC202AAEE98F001832E9 /* SearchMessageRow.swift in Sources */,
 				0570CBF82AAEE98F001832E9 /* SelectThreadRow.swift in Sources */,
+				05C27FA62AF4BD010008FE2E /* SelectionView.swift in Sources */,
 				0570CBE02AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */,
 				0570CC402AAEE98F001832E9 /* DeleteThreadConfirmationView.swift in Sources */,
 				0570CC2C2AAEE98F001832E9 /* ThreadViewTrailingToolbar.swift in Sources */,
@@ -1103,20 +1152,26 @@
 				0570CC362AAEE98F001832E9 /* MoveToBottomButton.swift in Sources */,
 				05F9151E2AE638AE008C070B /* ThreadLeadingToolbar.swift in Sources */,
 				0570CC6C2AAEE98F001832E9 /* ContactContentList.swift in Sources */,
+				05C27FA92AF4BD330008FE2E /* MainSendButtons.swift in Sources */,
 				0570CC562AAEE98F001832E9 /* VoiceView.swift in Sources */,
 				0570CC582AAEE98F001832E9 /* MusicView.swift in Sources */,
 				050B291B2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CC002AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
+				05C27F9D2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */,
 				0570CC022AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
+				05551C2A2AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */,
 				0570CC242AAEE98F001832E9 /* ThreadSheetView.swift in Sources */,
 				0570CC0E2AAEE98F001832E9 /* MessageRowFactory.swift in Sources */,
 				0570CC482AAEE98F001832E9 /* LogRow.swift in Sources */,
 				050B51B62AE7852B00B8DD49 /* LoginView.swift in Sources */,
+				05551C272AF4C631000F98B6 /* CloseButton.swift in Sources */,
 				051AA77B2AE05E8C008F93C1 /* GalleryImagePicker.swift in Sources */,
 				0570CC682AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC102AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
+				05C27F992AF4AFF60008FE2E /* CreateConversationPicker.swift in Sources */,
 				05745AF42AF2B1B100102193 /* SettingProfileButton.swift in Sources */,
 				0570CBF22AAEE98F001832E9 /* ThreadLastMessageView.swift in Sources */,
+				05C27FA02AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift in Sources */,
 				0570CC2E2AAEE98F001832E9 /* ThreadPinMessage.swift in Sources */,
 				050DE20A2AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */,
 				0570CBE82AAEE98F001832E9 /* ParticipantRow.swift in Sources */,
@@ -1140,6 +1195,7 @@
 				05E869C72AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				0570CC3E2AAEE98F001832E9 /* ManageTagView.swift in Sources */,
 				05EC8A312ACBED930016361F /* ReactionCountView.swift in Sources */,
+				05C27FA32AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC442AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
 				0570CC5C2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC702AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,

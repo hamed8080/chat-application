@@ -26,7 +26,6 @@ public final class ThreadsViewModel: ObservableObject {
     @Published public var searchedConversations: OrderedSet<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
-    @Published public var showStartConversationBuilder = false
     @Published public var sheetType: ThreadsSheetType?
     public private(set) var cancelable: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false

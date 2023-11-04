@@ -264,7 +264,8 @@
 "Settings.bio" = "بیوگرافی";
 "Settings.language" = "زبان";
 "Settings.restartToChangeLanguage" = "لطفاً برای تغییر زبان اپلیکیشن رو ریستارت کنید.";
-
+"Settings.logoutFromAccount" = "خروج از حساب";
+"Settings.areYouSureToLogout" = "آیا برای خارج شدن از حساب مطمئن هستید؟";
 
 /* Support */
 "Support.version" = "نسخه: %@";

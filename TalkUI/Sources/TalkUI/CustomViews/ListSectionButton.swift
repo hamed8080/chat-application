@@ -13,14 +13,22 @@ public struct ListSectionButton: View {
     let color: Color
     let showDivider: Bool
     let shownavigationButton: Bool
+    let trailingView: AnyView?
     let action: (() -> ())?
 
-    public init(imageName: String, title: String, color: Color, showDivider: Bool = true, shownavigationButton: Bool = true, action: (() -> Void)? = nil) {
+    public init(imageName: String,
+                title: String,
+                color: Color,
+                showDivider: Bool = true,
+                shownavigationButton: Bool = true,
+                trailingView: AnyView? = nil,
+                action: (() -> Void)? = nil) {
         self.imageName = imageName
         self.title = title
         self.color = color
         self.showDivider = showDivider
         self.action = action
+        self.trailingView = trailingView
         self.shownavigationButton = shownavigationButton
     }
 
@@ -42,8 +50,11 @@ public struct ListSectionButton: View {
                     .cornerRadius(8, corners: .allCorners)
 
                     Text(String(localized: .init(title)))
+                    Spacer()
+                    if let trailingView {
+                        trailingView
+                    }
                     if shownavigationButton {
-                        Spacer()
                         Image(systemName: "chevron.forward")
                             .resizable()
                             .scaledToFit()

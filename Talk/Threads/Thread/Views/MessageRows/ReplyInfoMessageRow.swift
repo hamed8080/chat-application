@@ -16,15 +16,6 @@ struct ReplyInfoMessageRow: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
-    var replySeparatorColor: Color {
-        if message.replyInfo?.deleted != nil {
-            return Color.App.red
-        } else if viewModel.isMe {
-            return Color.App.white
-        } else {
-           return Color.App.red
-        }
-    }
 
     var replyMessageColor: Color {
         if message.replyInfo?.deleted != nil {
@@ -44,15 +35,15 @@ struct ReplyInfoMessageRow: View {
         } label: {
             HStack(spacing: 8) {
                 RoundedRectangle(cornerRadius: 3)
-                    .fill(replySeparatorColor)
+                    .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
                     .frame(width: 3)
-                    .frame(minHeight: 0, maxHeight: 36)
+                    .frame(minHeight: 0, maxHeight: 52)
                 VStack(spacing: 0) {
                     if let name = message.replyInfo?.participant?.name {
                         Text("\(name)")
                             .font(.iransansBoldCaption2)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .foregroundStyle(viewModel.isMe ? Color.App.text : Color.App.red)
+                            .foregroundStyle(viewModel.isMe ? Color.App.primary : Color.App.text)
                     }
 
                     if message.replyInfo?.deleted == true {
@@ -67,8 +58,9 @@ struct ReplyInfoMessageRow: View {
                             .font(.iransansCaption3)
                             .cornerRadius(8, corners: .allCorners)
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .foregroundStyle(Color.App.hint)
-                            .lineLimit(1)
+                            .foregroundStyle(Color.App.gray3)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
                     }
 
                     if canShowIconFile {

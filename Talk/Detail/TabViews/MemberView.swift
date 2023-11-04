@@ -27,10 +27,6 @@ struct MemberView: View {
                 }
             }
 
-            StickyHeaderSection(header: "Tab.contacts", height: 30)
-            AddParticipantButton(conversation: viewModel.thread)
-                .listRowSeparatorTint(.gray.opacity(0.2))
-                .listRowBackground(Color.App.bgPrimary)
             ForEach(viewModel.sorted) { participant in
                 ParticipantRowContainer(participant: participant, isSearchRow: false)
             }
@@ -120,7 +116,7 @@ struct AddParticipantButton: View {
             presentSheet.toggle()
         } label: {
             HStack(spacing: 24) {
-                Image(systemName: "person.crop.circle.fill.badge.plus")
+                Image(systemName: "person.badge.plus")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 16)
@@ -153,7 +149,7 @@ struct ParticipantSearchView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
-        HStack {
+        HStack(spacing: 12) {
             Menu {
                 ForEach(SearchParticipantType.allCases) { item in
                     Button {
@@ -168,14 +164,24 @@ struct ParticipantSearchView: View {
             } label: {
                 Text(String(localized: .init(viewModel.searchType.rawValue)))
                     .font(.iransansBoldCaption3)
+                    .foregroundColor(Color.App.primary)
             }
-            .frame(width: 128)
 
-            TextField("General.searchHere", text: $viewModel.searchText)
-                .textFieldStyle(.customBorderedWith(minHeight: 24, cornerRadius: 12))
-                .frame(minWidth: 0, maxWidth: 420)
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(Color.App.hint)
+                    .frame(width: 16, height: 16)
+                TextField("General.searchHere", text: $viewModel.searchText)
+                    .frame(minWidth: 0, maxWidth: 420)
+                    .font(.iransansBody)
+            }
             Spacer()
         }
+        .padding(.vertical, 16)
+        .padding(.horizontal, 8)
+        .background(Color.App.separator)
         .animation(.easeInOut, value: viewModel.searchText)
         .animation(.easeInOut, value: viewModel.searchType)
     }
@@ -187,6 +193,7 @@ struct MemberView_Previews: PreviewProvider {
         List {
             MemberView()
         }
+        .listStyle(.plain)
         .environmentObject(viewModel)
         .onAppear {
             viewModel.appendParticipants(participants: MockData.generateParticipants())

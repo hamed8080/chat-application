@@ -1,4 +1,7 @@
-public enum ThreadsSheetType {
+public enum ThreadsSheetType: Identifiable {
+    public var id: Self { self }
+    case createConversation
+    case showStartConversationBuilder
     case tagManagement
     case firstConfrimation
     case secondConfirmation

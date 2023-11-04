@@ -264,6 +264,8 @@
 "Settings.bio" = "Biografi";
 "Settings.language" = "Språk";
 "Settings.restartToChangeLanguage" = "Starta om appen för att ändra språk.";
+"Settings.logoutFromAccount" = "Avsluta ditt konto";
+"Settings.areYouSureToLogout" = "Är du säker på att du vill avsluta ditt konto?";
 
 /* Support */
 "Support.version" = "Version: %@";

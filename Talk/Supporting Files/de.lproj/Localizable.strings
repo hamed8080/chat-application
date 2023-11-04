@@ -258,15 +258,17 @@
 "Settings.manageCalls" = "Anrufe verwalten";
 "Settings.logout" = "Abmelden";
 "Settings.notifictionSettings" = "Benachrichtigungseinstellungen";
-"Settings.support" = "Unterstützung: %@";
+"Settings.support" = "Unterstützung";
 "Settings.userName" = "Nutzername";
 "Settings.phoneNumber" = "Telefonnummer";
 "Settings.bio" = "Biografie";
 "Settings.language" = "Sprache";
 "Settings.restartToChangeLanguage" = "Bitte starten Sie die App neu, um die Sprache zu ändern.";
+"Settings.logoutFromAccount" = "Verlassen Sie Ihr Konto";
+"Settings.areYouSureToLogout" = "Sind Sie sicher, dass Sie Ihr Konto verlassen möchten?";
 
 /* Support */
-"Support.version" = "Version";
+"Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk wurde 2016 geboren. Dieser Messenger wurde mit dem Ziel produziert und entwickelt, eine tiefe und konstruktive Kommunikation zu schaffen und organisatorische und nicht-organisatorische Bedürfnisse zu verstehen. Es besteht die Hoffnung, dass Tak unter den aktuellen Bedingungen jeden Tag einen größeren Schritt auf dem Weg der nachhaltigen Entwicklung und der Schaffung einer sicheren und schnellen Plattform machen wird.";
 
 

@@ -434,7 +434,7 @@ public final class ContactsViewModel: ObservableObject {
         selectedContacts = []
         showConversaitonBuilder = false
         searchContactString = ""
-        AppState.shared.navViewModel?.threadsViewModel?.showStartConversationBuilder = false
+        AppState.shared.navViewModel?.threadsViewModel?.sheetType = nil
     }
 
     public func checkPublicName(_ title: String) {

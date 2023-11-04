@@ -12,11 +12,8 @@ public struct AppOverlayView<Content>: View where Content: View {
     @EnvironmentObject var viewModel: AppOverlayViewModel
     let content: () -> Content
     let onDismiss: (() -> Void)?
-    let showCloseButton: Bool
-    var isError: Bool { AppState.shared.error != nil }
 
-    public init(showCloseButton: Bool = true, onDismiss: (() -> Void)?, @ViewBuilder content: @escaping () -> Content) {
-        self.showCloseButton = showCloseButton
+    public init(onDismiss: (() -> Void)?, @ViewBuilder content: @escaping () -> Content) {
         self.content = content
         self.onDismiss = onDismiss
     }
@@ -24,15 +21,16 @@ public struct AppOverlayView<Content>: View where Content: View {
     public var body: some View {
         ZStack {
             if viewModel.isPresented {
-                if !isError {
-                    LinearGradient(colors: [.orange.opacity(0.15), .orange.opacity(0.05)],
-                                   startPoint: .topLeading, endPoint: .bottomTrailing)
+                if !viewModel.isError {
+                    Rectangle()
+                        .background(.regularMaterial)
                 }
                 content()
-                    .transition(.asymmetric(insertion: isError ? .push(from: .top) : .scale, removal: .move(edge: isError ? .top : .bottom)))
+                    .transition(viewModel.transition)
+                    .cornerRadius(viewModel.radius)
             }
 
-            if showCloseButton && viewModel.isPresented {
+            if viewModel.showCloseButton && viewModel.isPresented {
                 DismissAppOverlayButton()
             }
         }
@@ -46,7 +44,7 @@ public struct AppOverlayView<Content>: View where Content: View {
     }
 
     var animtion: Animation {
-        if viewModel.isPresented && !isError {
+        if viewModel.isPresented && !viewModel.isError {
             return Animation.interactiveSpring(response: 0.2, dampingFraction: 0.6, blendDuration: 0.2)
         } else {
             return Animation.easeInOut
@@ -90,13 +88,14 @@ struct AppOverlayView_Previews: PreviewProvider {
        @StateObject var viewModel = AppOverlayViewModel()
 
         var body: some View {
-            AppOverlayView(showCloseButton: true) {
+            AppOverlayView() {
                 //
             } content: {
                 Text("TEST")
             }
             .environmentObject(viewModel)
             .onAppear {
+                viewModel.showCloseButton = true
                 viewModel.isPresented = true
             }
         }

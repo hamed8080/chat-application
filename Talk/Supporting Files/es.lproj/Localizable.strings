@@ -264,6 +264,8 @@
 "Settings.bio" = "Biografía";
 "Settings.language" = "Idioma";
 "Settings.restartToChangeLanguage" = "Reinicie la aplicación para cambiar el idioma.";
+"Settings.logoutFromAccount" = "Salir de tu cuenta";
+"Settings.areYouSureToLogout" = "¿Estás seguro de que quieres salir de tu cuenta?";
 
 /* Support */
 "Support.version" = "Versión: %@";

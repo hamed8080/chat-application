@@ -16,6 +16,10 @@ struct ThreadsSheetFactoryView: View {
 
     var body: some View {
         switch viewModel.sheetType {
+        case .createConversation:
+            CreateConversationPicker()
+        case .showStartConversationBuilder:
+            StartThreadContactPickerView()
         case .tagManagement:
             AddThreadToTagsView(viewModel: container.tagsVM) { tag in
                 container.tagsVM.addThreadToTag(tag: tag, threadId: viewModel.selectedThraed?.id)

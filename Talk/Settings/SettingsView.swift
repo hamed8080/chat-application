@@ -103,9 +103,8 @@ struct SettingsView: View {
                     showLoginSheet.toggle()
                 }
             }
+            ToolbarButtonItem(imageName: "magnifyingglass", hint: "General.search") {}
         }
-
-        ToolbarButtonItem(imageName: "magnifyingglass", hint: "General.search") {}
     }
 }
 
@@ -418,12 +417,20 @@ struct SettingLanguageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "globe", title: "Settings.language", color: Color.App.indigo, showDivider: false) {
+        ListSectionButton(imageName: "globe", title: "Settings.language", color: Color.App.indigo, showDivider: false, trailingView: selectedLanguage) {
             navModel.appendLanguage()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
         .listRowSeparatorTint(Color.App.divider)
+    }
+
+    var selectedLanguage: AnyView {
+        let selectedLanguage = LanguageView.languages.first(where: {$0.language == Locale.preferredLanguages[0]})?.text ?? ""
+        let view = Text(selectedLanguage)
+            .foregroundStyle(Color.App.primary)
+            .font(.iransansBoldBody)
+        return AnyView(view)
     }
 }
 
@@ -482,10 +489,7 @@ struct SupportSection: View {
         .listRowSeparatorTint(Color.App.divider)
 
         ListSectionButton(imageName: "arrow.backward.circle", title: "Settings.logout", color: Color.App.red, showDivider: false) {
-            ChatManager.activeInstance?.user.logOut()
-            TokenManager.shared.clearToken()
-            UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
-            container.reset()
+            container.appOverlayVM.dialogView = AnyView(LogoutDialogView())
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -501,6 +505,54 @@ struct SupportSection: View {
                     tokenManagerVM.startTokenTimer()
                 }
         }
+    }
+}
+
+struct LogoutDialogView: View {
+    @EnvironmentObject var container: ObjectsContainer
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 16) {
+            Text("Settings.logoutFromAccount")
+                .foregroundStyle(Color.App.text)
+                .font(.iransansBoldSubtitle)
+                .multilineTextAlignment(.leading)
+                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+
+            Text("Settings.areYouSureToLogout")
+                .foregroundStyle(Color.App.text)
+                .font(.iransansSubheadline)
+                .multilineTextAlignment(.leading)
+                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+
+            HStack {
+                Button {
+                    container.appOverlayVM.dialogView = nil
+                } label: {
+                    Text("General.cancel")
+                        .foregroundStyle(Color.App.placeholder)
+                        .font(.iransansBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                }
+
+                Button {
+                    ChatManager.activeInstance?.user.logOut()
+                    TokenManager.shared.clearToken()
+                    UserConfigManagerVM.instance.logout(delegate: ChatDelegateImplementation.sharedInstance)
+                    container.reset()
+                } label: {
+                    Text("Settings.logout")
+                        .foregroundStyle(Color.App.red)
+                        .font(.iransansBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                }
+            }
+        }
+        .frame(maxWidth: 320)
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+        .padding(.bottom, 6)
+        .background(MixMaterialBackground())
     }
 }
 
@@ -574,22 +626,20 @@ struct SettingsMenu_Previews: PreviewProvider {
     static var vm = SettingViewModel()
 
     static var previews: some View {
-        NavigationStack {
-            SettingsView(container: container)
-                .environmentObject(vm)
-                .environmentObject(container)
-                .environmentObject(TokenManager.shared)
-                .environmentObject(AppState.shared)
-                .onAppear {
-                    let user = User(
-                        cellphoneNumber: "+98 936 916 1601",
-                        email: "h.hosseini.co@gmail.com",
-                        image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png",
-                        name: "Hamed Hosseini",
-                        username: "hamed8080"
-                    )
-                    container.userConfigsVM.onUser(user)
-                }
-        }
+        SettingsView(container: container)
+            .environmentObject(vm)
+            .environmentObject(container)
+            .environmentObject(TokenManager.shared)
+            .environmentObject(AppState.shared)
+            .onAppear {
+                let user = User(
+                    cellphoneNumber: "+98 936 916 1601",
+                    email: "h.hosseini.co@gmail.com",
+                    image: "http://www.careerbased.com/themes/comb/img/avatar/default-avatar-male_14.png",
+                    name: "Hamed Hosseini",
+                    username: "hamed8080"
+                )
+                container.userConfigsVM.onUser(user)
+            }
     }
 }

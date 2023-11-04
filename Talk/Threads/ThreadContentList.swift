@@ -63,13 +63,9 @@ struct ThreadContentList: View {
         }
         .sheet(isPresented: sheetBinding) {
             threadsVM.sheetType = nil
-        } content: {
-            ThreadsSheetFactoryView()
-        }
-        .sheet(isPresented: $threadsVM.showStartConversationBuilder) {
             container.contactsVM.closeBuilder()
         } content: {
-            StartThreadContactPickerView()
+            ThreadsSheetFactoryView()
         }
     }
 
@@ -96,62 +92,10 @@ struct ThreadsTrailingToolbarView: View {
     }
 
     @ViewBuilder var trailingToolbarViews: some View {
-        Menu {
-            Button {
-                threadsVM.showStartConversationBuilder.toggle()
-            } label: {
-                Label("ThreadList.Toolbar.startNewChat", systemImage: "bubble.left.and.bubble.right.fill")
-            }
-
-            Button {
-                threadsVM.sheetType = .joinToPublicThread
-            } label: {
-                Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
-            }
-
-            // Send a message to a user without creating a new contact. Directly by their userName or cellPhone number.
-            Button {
-                threadsVM.sheetType = .fastMessage
-            } label: {
-                Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
-            }
-
-//            Button {} label: {
-//                Label("ThreadList.Toolbar.createABot", systemImage: "face.dashed.fill")
-//            }
-        } label: {
-            ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat")
-                .foregroundStyle(Color.App.white, Color.App.primary)
+        ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat") {
+            threadsVM.sheetType = .createConversation
         }
-
-        if EnvironmentValues.isTalkTest {
-            Menu {
-                Button {
-                    threadsVM.selectedFilterThreadType = nil
-                    threadsVM.refresh()
-                } label: {
-                    if threadsVM.selectedFilterThreadType == nil {
-                        Image(systemName: "checkmark")
-                    }
-                    Text("General.all")
-                }
-                ForEach(ThreadTypes.allCases) { item in
-                    if let type = item.stringValue {
-                        Button {
-                            threadsVM.selectedFilterThreadType = item
-                            threadsVM.refresh()
-                        } label: {
-                            if threadsVM.selectedFilterThreadType == item {
-                                Image(systemName: "checkmark")
-                            }
-                            Text(.init(localized: .init(type)))
-                        }
-                    }
-                }
-            } label: {
-                ToolbarButtonItem(imageName: "line.3.horizontal.decrease.circle", hint: "ThreadList.Toolbar.filter")
-            }
-        }
+        .foregroundStyle(Color.App.white, Color.App.primary)
     }
 }
 
