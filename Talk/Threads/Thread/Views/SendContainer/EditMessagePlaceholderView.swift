@@ -37,13 +37,9 @@ struct EditMessagePlaceholderView: View {
                     viewModel.editMessage = nil
                     viewModel.textMessage = nil
                     viewModel.animateObjectWillChange()
-                    NotificationCenter.default.post(name: .senderSize, object: CGSize(width: 0, height: 52))
                 }
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
-            .onAppear {
-                NotificationCenter.default.post(name: .senderSize, object: CGSize(width: 0, height: 86))
-            }
         }
     }
 }

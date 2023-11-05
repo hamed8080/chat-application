@@ -15,7 +15,7 @@ public struct DownloadFileViewConfig {
                                                       maxHeight: .infinity,
                                                       iconWidth: 42,
                                                       iconHeight: 42,
-                                                      iconColor: Color.App.primary,
+                                                      iconColor: Color.App.bgPrimary,
                                                       circleProgressMaxWidth: 32,
                                                       fileNameTrailingSpace: 8,
                                                       showFileName: true,

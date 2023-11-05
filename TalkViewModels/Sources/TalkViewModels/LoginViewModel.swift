@@ -121,6 +121,9 @@ public final class LoginViewModel: ObservableObject {
             var ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
             ssoToken.keyId = keyId
             await saveTokenAndCreateChatObject(ssoToken)
+            await MainActor.run {
+                resetState()
+            }
         } catch {
             showError(.verificationCodeIncorrect)
         }
@@ -128,6 +131,7 @@ public final class LoginViewModel: ObservableObject {
     }
 
     public func resetState() {
+        path.removeLast()
         state = .login
         text = ""
         keyId = nil

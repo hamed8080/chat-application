@@ -19,8 +19,8 @@ public struct ToastView<ContentView: View>: View {
 
     public init(title: String? = nil,
                 message: String,
-                titleFont: Font = .iransansBoldSubtitle,
-                messageFont: Font = .iransansBody,
+                titleFont: Font = .iransansBoldBody,
+                messageFont: Font = .iransansCaption,
                 @ViewBuilder leadingView: @escaping () -> ContentView)
     {
         self.title = title
@@ -31,23 +31,28 @@ public struct ToastView<ContentView: View>: View {
     }
 
     public var body: some View {
-        VStack {
-            VStack(alignment: .leading, spacing: 0) {
-                if let title = title {
-                    Text(title)
-                        .font(titleFont)
+        GeometryReader { reader in
+            VStack {
+                VStack(alignment: .leading, spacing: 0) {
+                    if let title = title {
+                        Text(title)
+                            .font(titleFont)
+                    }
+                    HStack(spacing: 0) {
+                        leadingView()
+                        Text(message)
+                            .font(messageFont)
+                            .foregroundStyle(Color.App.red)
+                        Spacer()
+                    }
                 }
-                HStack(spacing: 0) {
-                    leadingView()
-                    Text(message)
-                        .font(messageFont)
-                    Spacer()
-                }
+                .padding()
+                .background(.ultraThinMaterial)
+                .cornerRadius(12)
+                Spacer()
             }
-            .padding(.top, 72)
-            .padding([.leading, .trailing, .bottom])
-            .background(.ultraThinMaterial)
-            Spacer()
+            .padding(.horizontal, 8)
+            .padding(.top, 96)
         }
     }
 }

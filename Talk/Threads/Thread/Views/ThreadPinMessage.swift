@@ -43,8 +43,9 @@ struct ThreadPinMessage: View {
                         RTLDesign
                     }
                 }
-                .padding()
-                .frame(height: 48)
+                .padding(.leading, isEnglish ? 4 : 8)
+                .padding(.trailing, isEnglish ? 8 : 4)
+                .frame(height: 40)
                 .background(MixMaterialBackground())
                 .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top)))
                 .onTapGesture {
@@ -68,17 +69,27 @@ struct ThreadPinMessage: View {
     }
 
     @ViewBuilder private var LTRDesign: some View {
+        closeButton
+        Spacer()
         imageView
         textView
-        Spacer()
         pinButton
+        separator
     }
 
     @ViewBuilder private var RTLDesign: some View {
-        Spacer()
-        textView
-        imageView
+        separator
         pinButton
+        imageView
+        textView
+        Spacer()
+        closeButton
+    }
+
+    private var separator: some View {
+        RoundedRectangle(cornerRadius: 2)
+            .fill(Color.App.primary)
+            .frame(width: 3, height: 24)
     }
 
     private var pinButton: some View {
@@ -100,14 +111,34 @@ struct ThreadPinMessage: View {
         if let thumbnailData = thumbnailData, let image = UIImage(data: thumbnailData) {
             Image(uiImage: image)
                 .resizable()
-                .frame(width: 32, height: 32)
+                .scaledToFill()
+                .frame(width: 24, height: 24)
                 .cornerRadius(4)
         } else if let icon = icon {
             Image(systemName: icon)
                 .resizable()
-                .frame(width: 32, height: 32)
-                .foregroundStyle(.blue, .clear)
+                .scaledToFill()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(Color.App.hint, .clear)
         }
+    }
+
+    var closeButton: some View {
+        Button {
+            withAnimation {
+                threadVM.unpinMessage(message?.messageId ?? -1)
+            }
+        } label: {
+            Image(systemName: "xmark")
+                .resizable()
+                .scaledToFit()
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(Color.App.gray5)
+                .frame(width: 12, height: 12)
+        }
+        .frame(width: 36, height: 36)
+        .buttonStyle(.borderless)
+        .fontWeight(.light)
     }
 
     var fileMetadata: FileMetaData? {

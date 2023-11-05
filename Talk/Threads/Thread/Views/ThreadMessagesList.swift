@@ -23,9 +23,6 @@ struct ThreadMessagesList: View {
                 Spacer()
                     .frame(height: viewModel.thread.pinMessage != nil ? 48 : 0)
             }
-            .overlay(alignment: .bottom) {
-                MoveToBottomButton()
-            }
             .background(ThreadbackgroundView(threadId: viewModel.threadId))
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ViewOffsetKey.self) { originY in

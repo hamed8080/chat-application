@@ -22,7 +22,7 @@ struct ReactionCountView: View {
             HStack {
                 Spacer()
                 ForEach(reactionCountList) { reactionCount in
-                    ReactionCountRow(messageId: messageId, reactionCount: reactionCount)
+                    ReactionCountRow(message: message, reactionCount: reactionCount)
                 }
                 Spacer()
             }
@@ -47,11 +47,11 @@ struct ReactionCountView: View {
 }
 
 struct ReactionCountRow: View {
-    let messageId: Int
+    let message: Message
+    private var messageId: Int { message.id ?? -1 }
     @State var count: Int = 0
     let reactionCount: ReactionCount
-    @State var currentUserReaction: Reaction?
-    var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
+    var currentUserReaction: Reaction? { ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(messageId) }
 
     var body: some View {
         HStack {
@@ -74,15 +74,22 @@ struct ReactionCountRow: View {
         .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { notification in
             if notification.object as? Int == messageId {
                 onNewValue(notification.object as? Int)
-                setCurrentUserReaction()
             }
         }
         .onAppear {
             count = reactionCount.count ?? 0
-            setCurrentUserReaction()
         }
         .onTapGesture {
-            print("tapped on \(reactionCount.sticker?.emoji ?? "") with messageId: \(messageId)")
+            if let conversationId = message.threadId ?? message.conversation?.id, let tappedStciker = reactionCount.sticker {
+                AppState.shared.objectsContainer.reactions.reaction(tappedStciker, messageId: messageId, conversationId: conversationId)
+            }
+        }
+        .onLongPressGesture {
+            let selectedEmojiTabId = "\(reactionCount.sticker?.emoji ?? "all") \(reactionCount.count ?? 0)"
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(
+                MessageReactionDetailView(message: message, selectedStickerTabId: selectedEmojiTabId)
+                    .frame(width: 300, height: 400)
+            )
         }
     }
     var isMyReaction: Bool {
@@ -101,16 +108,8 @@ struct ReactionCountRow: View {
 
     func onNewValue(_ messageId: Int?) {
         if messageId == self.messageId {
-            count = inMemoryReaction?.summary(for: self.messageId)
+            count = ChatManager.activeInstance?.reaction.inMemoryReaction.summary(for: self.messageId)
                 .first(where: { $0.sticker == reactionCount.sticker })?.count ?? 0
-        }
-    }
-
-    func setCurrentUserReaction() {
-        if let userReaction = inMemoryReaction?.currentReaction(messageId) {
-            currentUserReaction = userReaction
-        } else {
-            currentUserReaction = nil
         }
     }
 }

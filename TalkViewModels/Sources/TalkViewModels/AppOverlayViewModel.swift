@@ -32,9 +32,9 @@ public class AppOverlayViewModel: ObservableObject {
         case .galleryImageView(uiimage: _):
             return .asymmetric(insertion: .scale.animation(.interpolatingSpring(mass: 1.0, stiffness: 0.1, damping: 0.9, initialVelocity: 0.5).speed(30)), removal: .opacity)
         case .error(error: _):
-            return .asymmetric(insertion: .push(from: .bottom), removal: .move(edge: .bottom))
+            return .asymmetric(insertion: .push(from: .top), removal: .move(edge: .top))
         case .dialog:
-            return .scale.animation(.interpolatingSpring(mass: 1.0, stiffness: 0.1, damping: 0.9, initialVelocity: 0.5).speed(20))
+            return .asymmetric(insertion: .scale.animation(.interpolatingSpring(mass: 1.0, stiffness: 0.1, damping: 0.9, initialVelocity: 0.5).speed(20)), removal: .opacity)
         default:
             return .opacity
         }
@@ -51,15 +51,23 @@ public class AppOverlayViewModel: ObservableObject {
 
     public init() {
         AppState.shared.$error.sink { [weak self] newValue in
-            if let error = newValue {
-                self?.type = .error(error: error)
-                self?.isPresented = true
-            } else if newValue == nil {
-                self?.type = .none
-                self?.isPresented = false
-            }
+            self?.onError(newValue)
         }
         .store(in: &cancelableSet)
+    }
+
+    private func onError(_ newError: ChatError?) {
+        Task {
+            await MainActor.run {
+                if let error = newError {
+                    type = .error(error: error)
+                    isPresented = true
+                } else if newError == nil {
+                    type = .none
+                    isPresented = false
+                }
+            }
+        }
     }
 
     public var galleryMessage: Message? = nil {

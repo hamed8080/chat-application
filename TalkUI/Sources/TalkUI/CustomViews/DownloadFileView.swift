@@ -83,7 +83,8 @@ struct MutableDownloadViews: View {
                 InlineAudioPlayerView(fileURL: fileURL,
                                       ext: message?.fileMetaData?.file?.mimeType?.ext,
                                       title: message?.fileMetaData?.name,
-                                      subtitle: message?.fileMetaData?.file?.originalName ?? "")
+                                      subtitle: message?.fileMetaData?.file?.originalName ?? "",
+                                      config: config)
                 .id(fileURL)
             } else if let iconName = message?.iconName {
                 Image(systemName: iconName)
@@ -97,6 +98,7 @@ struct MutableDownloadViews: View {
                 OverlayDownloadImageButton(message: message, config: config)
             } else if message?.isFileType == true {
                 DownloadFileButton(message: message, config: config)
+                    .padding(.horizontal, config.showFileName ? 4 : 0)
             }
         default:
            EmptyView()
@@ -273,10 +275,11 @@ struct DownloadFileStack: View {
 struct AudioMessageProgress: View {
     let message: Message?
     let config: DownloadFileViewConfig
+    @EnvironmentObject var downloadVM: DownloadFileViewModel
     @EnvironmentObject var viewModel: AVAudioPlayerViewModel
 
     var body: some View {
-        if config.showFileName, message?.isAudio == true {
+        if config.showFileName, message?.isAudio == true, downloadVM.state == .completed {
             VStack(alignment: .leading, spacing: 4) {
                 ProgressView(value: min(viewModel.currentTime / viewModel.duration, 1.0), total: 1.0)
                     .progressViewStyle(.linear)

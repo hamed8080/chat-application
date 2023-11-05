@@ -36,6 +36,7 @@ struct SendContainer: View {
             }
             VStack(spacing: 0) {
                 Spacer()
+                MoveToBottomButton()
                 AttachmentFiles()
                     .environmentObject(viewModel.attachmentsViewModel)
                 VStack(spacing: 0) {

@@ -48,7 +48,6 @@ struct SelectionView: View {
                 viewModel.isInEditMode = false
                 viewModel.clearSelection()
                 viewModel.animateObjectWillChange()
-                NotificationCenter.default.post(name: .senderSize, object: CGSize(width: 0, height: 52))
             }            
         }
         .onReceive(viewModel.objectWillChange) { _ in

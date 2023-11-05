@@ -18,18 +18,12 @@ struct AttachmentFiles: View {
         if viewModel.attachments.count == 1, let attachmentFile = viewModel.attachments.first {
             SingleAttachmentFile(attachment: attachmentFile)
                 .background(MixMaterialBackground())
-                .onAppear {
-                    NotificationCenter.default.post(name: .senderSize, object: CGSize(width: 0, height: 86))
-                }
         } else if viewModel.attachments.count > 1 {
             ListAttachmentFile(attachments: viewModel.attachments)
         } else {
             Rectangle()
                 .frame(width: 0, height: 0)
                 .hidden()
-                .onAppear {
-                    NotificationCenter.default.post(name: .senderSize, object: CGSize(width: 0, height: 52))
-                }
         }
     }
 }
@@ -118,12 +112,6 @@ struct ListAttachmentFile: View {
         .animation(.easeInOut, value: attachments.count)
         .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2), value: viewModel.isExpanded)
         .background(MixMaterialBackground())
-        .onChange(of: maxHeight) { newValue in
-            NotificationCenter.default.post(name: .senderSize, object: CGSize(width: 0, height: newValue + 36))
-        }
-        .onAppear {
-            NotificationCenter.default.post(name: .senderSize, object: CGSize(width: 0, height: 82))
-        }
     }
 
     var maxHeight: CGFloat {

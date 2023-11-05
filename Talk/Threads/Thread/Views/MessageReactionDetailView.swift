@@ -14,16 +14,18 @@ import TalkExtensions
 
 struct MessageReactionDetailView: View {
     let message: Message
+    let selectedStickerTabId: String?
     private var messageId: Int { message.id ?? -1 }
     private var conversationId: Int { message.conversation?.id ?? -1 }
 
-    init(message: Message) {
+    init(message: Message, selectedStickerTabId: String? = nil) {
         self.message = message
+        self.selectedStickerTabId = selectedStickerTabId
     }
 
     var body: some View {
         TabContainerView(
-            selectedId: "General.all",
+            selectedId: selectedStickerTabId ?? "General.all",
             tabs: tabs,
             config: .init(alignment: .top)
         )

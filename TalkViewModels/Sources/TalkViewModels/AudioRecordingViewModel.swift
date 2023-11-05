@@ -106,19 +106,22 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
             try recordingSession.setCategory(.playAndRecord, mode: .default)
             try recordingSession.setActive(true)
             recordingSession.requestRecordPermission { granted in
-                if granted {
-                    Task {
-                        await MainActor.run { [weak self] in
-                            self?.start()
-                        }
-                    }
-                } else {
-                    AppState.shared.animateAndShowError(.init(message: String(localized: .init("Thread.accessMicrophonePermission")), code: 0, hasError: true))
-                    self.stop()
+                Task { [weak self] in
+                    await self?.onPermission(granted: granted)
                 }
             }
         } catch {
             Logger.viewModels.info("error to get recording permission")
+        }
+    }
+
+    @MainActor
+    private func onPermission(granted: Bool) {
+        if granted {
+            start()
+        } else {
+            AppState.shared.animateAndShowError(.init(message: String(localized: .init("Thread.accessMicrophonePermission")), code: 0, hasError: true))
+            stop()
         }
     }
 }

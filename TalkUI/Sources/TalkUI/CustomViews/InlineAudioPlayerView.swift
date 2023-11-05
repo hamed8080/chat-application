@@ -14,25 +14,31 @@ public struct InlineAudioPlayerView: View {
     public let ext: String?
     public var title: String?
     public var subtitle: String
+    public var config: DownloadFileViewConfig
     @EnvironmentObject var viewModel: AVAudioPlayerViewModel
 
-    public init(fileURL: URL, ext: String?, title: String? = nil, subtitle: String) {
+    public init(fileURL: URL, ext: String?, title: String? = nil, subtitle: String, config: DownloadFileViewConfig) {
         self.fileURL = fileURL
         self.ext = ext
         self.title = title
         self.subtitle = subtitle
+        self.config = config
     }
 
     public var body: some View {
-        Image(systemName: !viewModel.isPlaying ? "play.circle.fill" : "pause.circle.fill")
-            .resizable()
-            .foregroundStyle(Color.App.white, Color.App.primary)
-            .frame(width: 36, height: 36, alignment: .leading)
-            .cornerRadius(18)
-            .animation(.easeInOut, value: viewModel.isPlaying)
-            .onTapGesture {
-                viewModel.setup(fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
-                viewModel.toggle()
-            }
+        ZStack {
+            Image(systemName: !viewModel.isPlaying ? "play.fill" : "pause.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 12, height: 12)
+                .foregroundStyle(config.iconColor)
+        }
+        .frame(width: config.iconWidth, height: config.iconHeight)
+        .background(config.iconCircleColor)
+        .cornerRadius(config.iconHeight / 2)
+        .onTapGesture {
+            viewModel.setup(fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
+            viewModel.toggle()
+        }
     }
 }

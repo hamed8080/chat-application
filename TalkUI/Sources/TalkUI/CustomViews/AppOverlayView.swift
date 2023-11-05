@@ -24,6 +24,9 @@ public struct AppOverlayView<Content>: View where Content: View {
                 if !viewModel.isError {
                     Rectangle()
                         .background(.regularMaterial)
+                        .onTapGesture {
+                            viewModel.dialogView = nil
+                        }
                 }
                 content()
                     .transition(viewModel.transition)
