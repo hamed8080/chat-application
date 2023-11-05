@@ -37,6 +37,8 @@ public final class MessageRowViewModel: ObservableObject {
     public var requests: [String: Any] = [:]
     public var showReactionsOverlay = false
     public var isNextMessageTheSameUser: Bool = false
+    public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true) }
+    public var canDelete: Bool { (message.deletable == true && isMe) || (message.deletable == true && threadVM?.thread.admin == true) }
     public var avatarImageLoader: ImageLoaderViewModel? {
         if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {
             return imageLoaderVM

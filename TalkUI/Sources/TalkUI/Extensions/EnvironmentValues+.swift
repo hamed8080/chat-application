@@ -9,5 +9,14 @@ public extension EnvironmentValues {
 #endif
     }
 
-    static var isTalkTest: Bool { Bundle.main.bundleIdentifier?.contains("talk-test") ?? false }
+    static var isDebug: Bool {
+#if DEBUG
+        return true
+#endif
+        return false
+    }
+
+    static var isTalkTest: Bool {
+        (Bundle.main.bundleIdentifier?.contains("talk-test") ?? false) && isDebug
+    }
 }

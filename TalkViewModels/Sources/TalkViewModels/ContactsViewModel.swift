@@ -36,7 +36,12 @@ public final class ContactsViewModel: ObservableObject {
     @Published public var showEditCreatedConversationDetail = false
     @Published public var editContact: Contact?
     @Published public var showAddOrEditContactSheet = false
-    @Published public var isInSelectionMode = false
+    @Published public var isInSelectionMode = false {
+        didSet {
+            selectedContacts = []
+            animateObjectWillChange()
+        }
+    }
     @Published public var deleteDialog = false
 
     @Published public var conversationTitle: String = ""
@@ -245,7 +250,13 @@ public final class ContactsViewModel: ObservableObject {
 
     public func onAddContacts(_ response: ChatResponse<[Contact]>) {
         if let contacts = response.result {
-            self.contacts.insert(contentsOf: contacts, at: 0)
+            contacts.forEach { newContact in
+                if let index = self.contacts.firstIndex(where: {$0.id == newContact.id }) {
+                    self.contacts[index].update(newContact)
+                } else {
+                    self.contacts.insert(newContact, at: 0)
+                }
+            }
         }
     }
 

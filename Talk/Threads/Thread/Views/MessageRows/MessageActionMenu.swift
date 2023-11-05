@@ -27,11 +27,13 @@ struct MessageActionMenu: View {
                 }
             }
 
-            ContextMenuButton(title: "Messages.ActionMenu.replyPrivately", image: "arrowshape.turn.up.left") {
-                withAnimation(animation(appear: true)) {
-                    guard let participant = message.participant else { return }
-                    AppState.shared.replyPrivately = message
-                    AppState.shared.openThread(participant: participant)
+            if threadVM?.thread.group == true {
+                ContextMenuButton(title: "Messages.ActionMenu.replyPrivately", image: "arrowshape.turn.up.left") {
+                    withAnimation(animation(appear: true)) {
+                        guard let participant = message.participant else { return }
+                        AppState.shared.replyPrivately = message
+                        AppState.shared.openThread(participant: participant)
+                    }
                 }
             }
 
@@ -45,15 +47,17 @@ struct MessageActionMenu: View {
                 }
             }
 
-            ContextMenuButton(title: "General.edit", image: "pencil.circle") {
-                withAnimation(animation(appear: threadVM?.editMessage != nil)) {
-                    threadVM?.editMessage = message
-                    threadVM?.objectWillChange.send()
+            if viewModel.canEdit {
+                ContextMenuButton(title: "General.edit", image: "pencil.circle") {
+                    withAnimation(animation(appear: threadVM?.editMessage != nil)) {
+                        threadVM?.editMessage = message
+                        threadVM?.objectWillChange.send()
+                    }
                 }
+                .disabled((message.editable ?? false) == false)
+                .opacity((message.editable ?? false) == false ? 0.3 : 1.0)
+                .allowsHitTesting((message.editable ?? false) == true)
             }
-            .disabled((message.editable ?? false) == false)
-            .opacity((message.editable ?? false) == false ? 0.3 : 1.0)
-            .allowsHitTesting((message.editable ?? false) == true)
 
             ContextMenuButton(title: "Messages.ActionMenu.copy", image: "doc.on.doc") {
                 UIPasteboard.general.string = message.message
@@ -81,18 +85,20 @@ struct MessageActionMenu: View {
                 }
             }
 
-            ContextMenuButton(title: "General.delete", image: "trash", showSeparator: false) {
-                withAnimation(animation(appear: true)) {
-                    if let threadVM {
-                        threadVM.messageViewModels.first(where: {$0.message.id == message.id})?.isSelected = true
-                        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: threadVM))
+            if viewModel.canDelete {
+                ContextMenuButton(title: "General.delete", image: "trash", showSeparator: false) {
+                    withAnimation(animation(appear: true)) {
+                        if let threadVM {
+                            threadVM.messageViewModels.first(where: {$0.message.id == message.id})?.isSelected = true
+                            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: threadVM))
+                        }
                     }
                 }
+                .foregroundStyle(Color.App.red)
+                .disabled((message.deletable ?? false) == false)
+                .opacity((message.deletable ?? false) == false  ? 0.3 : 1.0)
+                .allowsHitTesting((message.deletable ?? false) == true)
             }
-            .foregroundStyle(Color.App.red)
-            .disabled((message.deletable ?? false) == false)
-            .opacity((message.deletable ?? false) == false  ? 0.3 : 1.0)
-            .allowsHitTesting((message.deletable ?? false) == true)
         }
         .foregroundColor(.primary)
         .frame(minWidth: 196)

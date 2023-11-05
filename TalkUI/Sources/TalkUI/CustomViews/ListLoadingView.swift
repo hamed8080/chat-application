@@ -23,7 +23,7 @@ public struct ListLoadingView: View {
                 .trim(from: 0, to: isAnimating ? 1 : 0.1)
                 .stroke(style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round, miterLimit: 10))
                 .fill(AngularGradient(colors: [.red, .random, .random, .teal], center: .top))
-                .frame(width: 24, height: 24)
+                .frame(width: isLoading ? 24 : 0, height: isLoading ? 24 : 0)
                 .rotationEffect(Angle(degrees: isAnimating ? 360 : 0))
                 .onAppear {
                     DispatchQueue.main.async {

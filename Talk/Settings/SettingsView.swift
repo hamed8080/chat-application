@@ -87,6 +87,10 @@ struct SettingsView: View {
     @ViewBuilder var leadingViews: some View {
         if EnvironmentValues.isTalkTest {
             ToolbarButtonItem(imageName: "qrcode", hint: "General.edit")
+        } else {
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: 48, height: 48)
         }
     }
 

@@ -205,7 +205,7 @@
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";
 "ConnectionStatus.connected" = "ansluten";
-"ConnectionStatus.disconnected" = "frånkopplad";
+"ConnectionStatus.disconnected" = "Väntar på nätverk";
 "ConnectionStatus.reconnecting" = "återansluter";
 "ConnectionStatus.unauthorized" = "oauktoriserad";
 

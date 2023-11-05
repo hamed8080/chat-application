@@ -45,7 +45,7 @@ struct ContactRow: View {
                 .compositingGroup()
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
+                    Text(verbatim: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
                         .padding(.leading, 16)
                         .lineLimit(1)
                         .font(.iransansBoldBody)

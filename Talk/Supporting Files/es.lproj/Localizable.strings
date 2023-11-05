@@ -205,7 +205,7 @@
 /* Estado de conexión */
 "ConnectionStatus.connecting" = "conectando";
 "ConnectionStatus.connected" = "conectado";
-"ConnectionStatus.disconnected" = "desconectado";
+"ConnectionStatus.disconnected" = "esperando red";
 "ConnectionStatus.reconnecting" = "reconectando";
 "ConnectionStatus.unauthorized" = "no autorizado";
 

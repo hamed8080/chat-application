@@ -205,7 +205,7 @@
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "در حال اتصال";
 "ConnectionStatus.connected" = "متصل شده";
-"ConnectionStatus.disconnected" = "قطع شده";
+"ConnectionStatus.disconnected" = "در انتظار شبکه";
 "ConnectionStatus.reconnecting" = "در حال اتصال مجدد";
 "ConnectionStatus.unauthorized" = "عدم احراز هویت";
 

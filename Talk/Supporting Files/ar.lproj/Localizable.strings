@@ -204,7 +204,7 @@
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";
 "ConnectionStatus.connected" = "متصل";
-"ConnectionStatus.disconnected" = "غير متصل";
+"ConnectionStatus.disconnected" = "في انتظار الشبكة";
 "ConnectionStatus.reconnecting" = "إعادة الاتصال";
 "ConnectionStatus.unauthorized" = "غير مصرح به";
 

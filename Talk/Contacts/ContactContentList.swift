@@ -22,7 +22,7 @@ struct ContactContentList: View {
                 .id(-1)
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
-            if viewModel.maxContactsCountInServer > 0 {
+            if viewModel.maxContactsCountInServer > 0, EnvironmentValues.isTalkTest {
                 HStack(spacing: 4) {
                     Spacer()
                     Text("Contacts.total")
@@ -35,10 +35,13 @@ struct ContactContentList: View {
                 .listRowBackground(Color.clear)
                 .noSeparators()
             }
-            
-            SyncView()
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
+
+            if EnvironmentValues.isTalkTest {
+                SyncView()
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+            }
+
             if viewModel.searchedContacts.count == 0 {
                 Button {
                     viewModel.createConversationType = .normal
@@ -79,8 +82,6 @@ struct ContactContentList: View {
                 .padding()
             }
 
-            StickyHeaderSection(header: "Contacts.sortLabel")
-                .listRowInsets(.zero)
             ForEach(viewModel.contacts) { contact in
                 ContactRowContainer(contact: contact, isSearchRow: false)
             }
@@ -173,29 +174,31 @@ struct ContactRowContainer: View {
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                Button {
-                    viewModel.editContact = contact
-                    viewModel.showAddOrEditContactSheet.toggle()
-                } label: {
-                    Label("General.edit", systemImage: "pencil")
-                }
-                .tint(Color.App.hint)
-
-                Button {
-                    viewModel.block(contact)
-                } label: {
-                    Label("General.block", systemImage: "hand.raised.slash")
-                }
-                .tint(Color.App.red)
-
-                Button {
-                    if let index = viewModel.contacts.firstIndex(of: contact) {
-                        viewModel.delete(indexSet: IndexSet(integer: index))
+                if !viewModel.isInSelectionMode {
+                    Button {
+                        viewModel.editContact = contact
+                        viewModel.showAddOrEditContactSheet.toggle()
+                    } label: {
+                        Label("General.edit", systemImage: "pencil")
                     }
-                } label: {
-                    Label("General.delete", systemImage: "trash")
+                    .tint(Color.App.hint)
+
+                    Button {
+                        viewModel.block(contact)
+                    } label: {
+                        Label("General.block", systemImage: "hand.raised.slash")
+                    }
+                    .tint(Color.App.red)
+
+                    Button {
+                        if let index = viewModel.contacts.firstIndex(of: contact) {
+                            viewModel.delete(indexSet: IndexSet(integer: index))
+                        }
+                    } label: {
+                        Label("General.delete", systemImage: "trash")
+                    }
+                    .tint(.red)
                 }
-                .tint(.red)
             }
             .onAppear {
                 if viewModel.contacts.last == contact {
@@ -203,8 +206,12 @@ struct ContactRowContainer: View {
                 }
             }
             .onTapGesture {
-                viewModel.closeBuilder()
-                AppState.shared.openThread(contact: contact)
+                if viewModel.isInSelectionMode {
+                    viewModel.toggleSelectedContact(contact: contact)
+                } else {
+                    viewModel.closeBuilder()
+                    AppState.shared.openThread(contact: contact)
+                }
             }
     }
 }

@@ -205,7 +205,7 @@
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "verbinden";
 "ConnectionStatus.connected" = "verbunden";
-"ConnectionStatus.disconnected" = "getrennt";
+"ConnectionStatus.disconnected" = "Warte auf Netzwerk";
 "ConnectionStatus.reconnecting" = "erneut verbinden";
 "ConnectionStatus.unauthorized" = "nicht autorisiert";
 
