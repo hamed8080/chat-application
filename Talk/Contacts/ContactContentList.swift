@@ -98,11 +98,7 @@ struct ContactContentList: View {
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
-        .safeAreaInset(edge: .top) {
-            EmptyView()
-                .frame(height: 44)
-        }
-        .overlay(alignment: .top) {
+        .safeAreaInset(edge: .top, spacing: 0) {
             ToolbarView(
                 title: "Tab.contacts",
                 searchPlaceholder: "General.searchHere",

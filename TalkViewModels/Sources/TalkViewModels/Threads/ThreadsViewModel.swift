@@ -395,14 +395,13 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onUnreadCounts(_ response: ChatResponse<[String : Int]>) {
-        response.result?.forEach { key, value in
-            if let index = firstIndex(Int(key)) {
-                threads[index].unreadCount = value
+        withAnimation {
+            response.result?.forEach { key, value in
+                if let index = firstIndex(Int(key)) {
+                    threads[index].unreadCount = value
+                }
             }
-        }
-        isLoading = false
-        if response.result?.count ?? 0 > 0 {
-            animateObjectWillChange()
+            isLoading = false
         }
     }
 
@@ -441,7 +440,7 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].lastSeenMessageTime = response.result?.lastSeenMessageTime
             threads[index].lastSeenMessageId = response.result?.lastSeenMessageId
             threads[index].lastSeenMessageNanos = response.result?.lastSeenMessageNanos
-            threads[index].unreadCount = response.contentCount
+            setUnreadCount(response.result?.unreadCount ?? response.contentCount, threadId: response.subjectId)
             animateObjectWillChange()
         }
     }
@@ -481,6 +480,14 @@ public final class ThreadsViewModel: ObservableObject {
             AppState.shared.showThread(thread: conversation)
             selectedThraed = conversation
             sheetType = nil
+        }
+    }
+
+    /// This method prevents to update unread count if the local unread count is smaller than server unread count.
+    public func setUnreadCount(_ newCount: Int?, threadId: Int?) {
+        if newCount ?? 0 < threads.first(where: {$0.id == threadId})?.unreadCount ?? 0 {
+            threads.first(where: {$0.id == threadId})?.unreadCount = newCount
+            animateObjectWillChange()
         }
     }
 }

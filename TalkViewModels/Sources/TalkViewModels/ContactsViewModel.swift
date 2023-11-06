@@ -333,12 +333,14 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func toggleSelectedContact(contact: Contact) {
-        if isSelected(contact: contact) {
-            removeToSelctedContacts(contact)
-        } else {
-            addToSelctedContacts(contact)
+        withAnimation(.easeInOut) {
+            if isSelected(contact: contact) {
+                removeToSelctedContacts(contact)
+            } else {
+                addToSelctedContacts(contact)
+            }
+            animateObjectWillChange()
         }
-        animateObjectWillChange()
     }
 
     public func sync() {

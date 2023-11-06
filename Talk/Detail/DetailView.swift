@@ -81,7 +81,7 @@ struct DetailView: View {
         }
         .animation(.easeInOut, value: viewModel.thread?.isPrivate == true)
         .animation(.interactiveSpring(), value: viewModel.isInEditMode)
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             ListLoadingView(isLoading: Binding(get: { viewModel.participantViewModel?.isLoading ?? false },
                                                set: { newValue in viewModel.participantViewModel?.isLoading = newValue }))
         }

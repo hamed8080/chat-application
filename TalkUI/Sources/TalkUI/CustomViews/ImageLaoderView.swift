@@ -18,8 +18,16 @@ public struct ImageLaoderView: View {
     let metaData: String?
     let userName: String?
     let size: ImageSize
+    let textFont: Font
 
-    public init(imageLoader: ImageLoaderViewModel, url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL) {
+    public init(imageLoader: ImageLoaderViewModel,
+                url: String? = nil,
+                metaData: String? = nil,
+                userName: String? = nil,
+                size: ImageSize = .SMALL,
+                textFont: Font = .iransansBody
+    ) {
+        self.textFont = textFont
         self.metaData = metaData
         self.url = url
         self.userName = userName?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -31,7 +39,7 @@ public struct ImageLaoderView: View {
         ZStack {
             if !imageLoader.isImageReady {
                 Text(String(userName?.first ?? " "))
-                    .font(.iransansBody)
+                    .font(textFont)
             } else if imageLoader.isImageReady {
                 Image(uiImage: imageLoader.image)
                     .resizable()

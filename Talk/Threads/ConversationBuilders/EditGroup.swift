@@ -105,11 +105,7 @@ struct EditGroup: View {
         .padding(0)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
-        .safeAreaInset(edge: .bottom) {
-            EmptyView()
-                .frame(height: 72)
-        }
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: "General.edit", enableButton: Binding(get: {!viewModel.isLoading}, set: {_ in}), isLoading: $viewModel.isLoading) {
                 viewModel.submitEditGroup()
             }

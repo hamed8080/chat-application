@@ -68,11 +68,7 @@ struct StartThreadContactPickerView: View {
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
-        .safeAreaInset(edge: .top) {
-            EmptyView()
-                .frame(height: 40)
-        }
-        .overlay(alignment: .top) {
+        .safeAreaInset(edge: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 TextField("General.searchHere", text: $viewModel.searchContactString)
                     .frame(height: 48)

@@ -35,21 +35,13 @@ struct AddParticipantsToThreadView: View {
         .listStyle(.plain)
         .animation(.easeInOut, value: contactsVM.contacts.count)
         .animation(.easeInOut, value: contactsVM.searchedContacts.count)
-        .safeAreaInset(edge: .bottom) {
-            EmptyView()
-                .frame(height: 72)
-        }
-        .safeAreaInset(edge: .top) {
-            EmptyView()
-                .frame(height: 74)
-        }
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: "General.add", enableButton: .constant(contactsVM.selectedContacts.count > 0), isLoading: .constant(false)) {
                 onCompleted(contactsVM.selectedContacts)
                 contactsVM.deselectContacts() // to clear for the next time
             }
         }
-        .overlay(alignment: .top) {
+        .safeAreaInset(edge: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 TextField("General.searchHere", text: $contactsVM.searchContactString)
                     .frame(height: 48)

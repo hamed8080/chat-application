@@ -30,11 +30,7 @@ struct GalleryImagePicker: View {
         .onDisappear {
             viewModel.refresh()
         }
-        .safeAreaInset(edge: .bottom) {
-            EmptyView()
-                .frame(height: 72)
-        }
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: "General.add", enableButton: .constant(selectedImageItemsCount > 0), isLoading: .constant(false)) {
                 viewModel.addSelectedPhotos()
             }

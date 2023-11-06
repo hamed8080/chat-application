@@ -40,17 +40,13 @@ struct ThreadContentList: View {
                 AudioPlayerView()
             }
         }
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
         .animation(.easeInOut, value: threadsVM.filtered.count)
         .animation(.easeInOut, value: threadsVM.isLoading)
         .listStyle(.plain)
-        .safeAreaInset(edge: .top) {
-            EmptyView()
-                .frame(height: 44)
-        }
-        .overlay(alignment: .top) {
+        .safeAreaInset(edge: .top, spacing: 0) {
             ToolbarView(
                 title: "Tab.chats",
                 searchPlaceholder: "General.searchHere",

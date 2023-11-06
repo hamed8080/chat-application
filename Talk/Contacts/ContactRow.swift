@@ -69,6 +69,7 @@ struct ContactRow: View {
                 selectRadio
             }
         }
+        .contentShape(Rectangle())
         .animation(.easeInOut, value: contact.blocked)
         .animation(.easeInOut, value: contact)
     }

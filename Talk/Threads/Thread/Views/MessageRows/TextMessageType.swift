@@ -44,9 +44,6 @@ struct TextMessageType: View {
                 SelectMessageRadio()
             }
         }
-        .overlay(alignment: .topLeading) {
-            OverlayEmojiViews()
-        }
         .environmentObject(viewModel)
         .padding(.vertical, 8)
         .padding(.horizontal, 16)

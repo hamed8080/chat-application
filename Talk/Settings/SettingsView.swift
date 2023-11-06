@@ -64,11 +64,7 @@ struct SettingsView: View {
         .background(Color.App.bgPrimary.ignoresSafeArea())
         .environment(\.defaultMinListRowHeight, 8)
         .font(.iransansSubheadline)
-        .safeAreaInset(edge: .top) {
-            EmptyView()
-                .frame(height: 44)
-        }
-        .overlay(alignment: .top) {
+        .safeAreaInset(edge: .top, spacing: 0) {
             ToolbarView(
                 title: "Tab.settings",
                 leadingViews: leadingViews,

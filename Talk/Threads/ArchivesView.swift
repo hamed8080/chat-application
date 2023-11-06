@@ -32,7 +32,7 @@ struct ArchivesView: View {
             .listRowBackground(isSelected ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
         }
         .background(Color.App.bgPrimary)
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
         .animation(.easeInOut, value: threadsVM.filtered.count)

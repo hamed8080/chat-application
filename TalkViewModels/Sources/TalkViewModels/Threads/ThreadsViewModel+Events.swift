@@ -56,10 +56,7 @@ extension ThreadsViewModel {
                 updateThreadInfo(thread)
             }
         case .updatedUnreadCount(let response):
-            if let index = firstIndex(response.result?.threadId) {
-                threads[index].unreadCount = response.result?.unreadCount
-                animateObjectWillChange()
-            }
+            setUnreadCount(response.result?.unreadCount, threadId: response.result?.threadId)
         case .mute(let response):
             onMuteThreadChanged(mute: true, threadId: response.result)
         case .unmute(let response):

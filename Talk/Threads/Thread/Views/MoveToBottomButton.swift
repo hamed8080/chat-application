@@ -7,6 +7,7 @@
 
 import SwiftUI
 import TalkViewModels
+import TalkUI
 
 struct MoveToBottomButton: View {
     @EnvironmentObject var viewModel: ThreadViewModel
@@ -27,7 +28,7 @@ struct MoveToBottomButton: View {
                     .scaledToFit()
                     .frame(width: isAtBottomOfTheList ? 0 : 16, height: isAtBottomOfTheList ? 0 : 16)
                     .padding()
-                    .foregroundColor(.primary)
+                    .foregroundStyle(Color.App.text)
                     .aspectRatio(contentMode: .fit)
                     .contentShape(Rectangle())
             }
@@ -42,13 +43,12 @@ struct MoveToBottomButton: View {
                 let unreadCount = viewModel.thread.unreadCount ?? 0
                 let hide = unreadCount == 0 || isAtBottomOfTheList
                 Text(verbatim: unreadCount == 0 ? "" : "\(viewModel.thread.unreadCountString ?? "")")
-                    .font(.iransansCaption)
-                    .fontDesign(.rounded)
+                    .font(.iransansBoldCaption)
                     .frame(height: hide ? 0 : 24)
                     .frame(minWidth: hide ? 0 : 24)
                     .scaleEffect(x: hide ? 0.0001 : 1.0, y: hide ? 0.0001 : 1.0, anchor: .center)
                     .background(Color.App.primary)
-                    .foregroundColor(.white)
+                    .foregroundStyle(Color.App.white)
                     .cornerRadius(hide ? 0 : 24)
                     .offset(x: -3, y: -16)
                     .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCount)

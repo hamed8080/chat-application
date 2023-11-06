@@ -50,22 +50,20 @@ struct ConversationBuilder: View {
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
-        .safeAreaInset(edge: .top) {
-            EmptyView()
-                .frame(height: 41)
-        }
-        .overlay(alignment: .top) {
+        .safeAreaInset(edge: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 TextField("General.searchHere", text: $viewModel.searchContactString)
                     .frame(height: 48)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
+                SelectedContactsView()
+                    .padding(.horizontal, 8)
+                    .frame(height: 48)
             }
-            .frame(height: 48)
             .background(.ultraThinMaterial)
         }
-        .overlay(alignment: .bottom) {
-            SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            SubmitBottomButton(text: "General.next",
                                enableButton: .constant(enabeleButton),
                                isLoading: $viewModel.isLoading)
             {
@@ -88,6 +86,22 @@ struct ConversationBuilder: View {
 
     private var enabeleButton: Bool {
         viewModel.selectedContacts.count > 1 && !viewModel.isLoading
+    }
+}
+
+struct SelectedContactsView: View {
+    @EnvironmentObject var viewModel: ContactsViewModel
+
+    var body: some View {
+        if viewModel.selectedContacts.count > 0 {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(viewModel.selectedContacts) { contact in
+                        SelectedContact(viewModel: viewModel, contact: contact)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -157,7 +171,7 @@ struct EditCreatedConversationDetail: View {
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
         .environmentObject(ParticipantsViewModel(thread: viewModel.createdConversation ?? .init()))
-        .overlay(alignment: .bottom) {
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",
                                enableButton: .constant(!viewModel.isLoading),
                                isLoading: $viewModel.isLoading)
