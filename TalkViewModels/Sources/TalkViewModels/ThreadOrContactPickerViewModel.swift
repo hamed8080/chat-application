@@ -21,7 +21,8 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
     @Published public var isLoading = false
 
     public init() {
-        conversations = AppState.shared.navViewModel?.threadsViewModel?.threads ?? []
+        conversations = AppState.shared.objectsContainer.threadsVM.threads
+        contacts = OrderedSet(AppState.shared.objectsContainer.contactsVM.contacts)
         setupObservers()
     }
 
@@ -33,6 +34,14 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
             .removeDuplicates()
             .sink { [weak self] newValue in
                 self?.search(newValue)
+            }
+            .store(in: &cancellableSet)
+
+        $searchText
+            .filter{$0.count == 0}
+            .sink { [weak self] newValue in
+                self?.conversations = AppState.shared.objectsContainer.threadsVM.threads
+                self?.contacts = OrderedSet(AppState.shared.objectsContainer.contactsVM.contacts)
             }
             .store(in: &cancellableSet)
 

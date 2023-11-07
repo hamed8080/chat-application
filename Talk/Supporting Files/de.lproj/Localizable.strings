@@ -98,6 +98,7 @@
 "Contacts.selectContacts" = "Kontakte auswählen";
 "ConversationBuilder.enterGroupName" = "Gib den Gruppennamen ein";
 "ConversationBuilder.enterChannelName" = "Geben Sie den Kanalnamen ein";
+"ConversationBuilder.atLeatsEnterTwoCharacter" = "Bitte geben Sie den Namen der Konversation ein. (mindestens zwei Zeichen)";
 
 /* Call */
 "Call.requested" = "Angefordert";

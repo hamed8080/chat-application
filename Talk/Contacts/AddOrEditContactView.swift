@@ -74,7 +74,6 @@ struct AddOrEditContactView: View {
         .presentationDetents([.fraction((isLargeSize ? 100 : 60) / 100)])
         .presentationBackground(.ultraThinMaterial)
         .presentationDragIndicator(.visible)
-//        .background(bgColor)
         .animation(.easeInOut, value: enableButton)
         .animation(.easeInOut, value: focusState)
         .font(.iransansBody)

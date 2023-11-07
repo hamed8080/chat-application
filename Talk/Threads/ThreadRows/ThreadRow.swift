@@ -27,7 +27,7 @@ struct ThreadRow: View {
                         .font(.iransansSubheadline)
                         .fontWeight(.light)
                     Spacer()
-                    if let timeString = thread.time?.date.timeAgoSinceDateCondense {
+                    if let timeString = thread.time?.date.localFormattedTime {
                         Text(timeString)
                             .lineLimit(1)
                             .font(.iransansCaption2)

@@ -176,7 +176,7 @@ struct ReactionParticipantRow: View {
                     .lineLimit(1)
                     .font(.iransansSubtitle)
                 if let time = reaction.time {
-                    Text(time.date.timeAgoSinceDateCondense ?? "")
+                    Text(time.date.localFormattedTime ?? "")
                         .padding(.leading, 4)
                         .font(.iransansCaption3)
                         .foregroundColor(Color.App.gray1)

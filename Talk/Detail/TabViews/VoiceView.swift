@@ -16,11 +16,15 @@ struct VoiceView: View {
 
     init(conversation: Conversation, messageType: MessageType) {
         viewModel = .init(conversation: conversation, messageType: messageType)
-        viewModel.loadMore()
     }
 
     var body: some View {
         StickyHeaderSection(header: "", height:  4)
+            .onAppear {
+                if viewModel.messages.count == 0 {
+                    viewModel.loadMore()
+                }
+            }
         MessageListVoiceView()
             .environmentObject(viewModel)
     }
@@ -69,7 +73,7 @@ struct VoiceRowView: View {
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.text)
                 HStack {
-                    Text(message.time?.date.timeAgoSinceDateCondense ?? "" )
+                    Text(message.time?.date.localFormattedTime ?? "" )
                         .foregroundColor(Color.App.hint)
                         .font(.iransansCaption2)
                     Spacer()

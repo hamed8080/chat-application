@@ -98,6 +98,7 @@
 "Contacts.selectContacts" = "Välj kontakter";
 "ConversationBuilder.enterGroupName" = "Ange gruppnamnet";
 "ConversationBuilder.enterChannelName" = "Ange kanalnamnet";
+"ConversationBuilder.atLeatsEnterTwoCharacter" = "Vänligen ange namnet på konversationen. (minst två tecken)";
 
 /* Call */
 "Call.requested" = "Begärd";

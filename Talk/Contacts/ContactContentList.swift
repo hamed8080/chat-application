@@ -77,13 +77,13 @@ struct ContactContentList: View {
                 StickyHeaderSection(header: "Contacts.searched")
                     .listRowInsets(.zero)
                 ForEach(viewModel.searchedContacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: true)
+                    ContactRowContainer(isMainContactTab: true, contact: contact, isSearchRow: true)
                 }
                 .padding()
             }
 
             ForEach(viewModel.contacts) { contact in
-                ContactRowContainer(contact: contact, isSearchRow: false)
+                ContactRowContainer(isMainContactTab: true, contact: contact, isSearchRow: false)
             }
             .padding()
             .listRowInsets(.zero)
@@ -129,16 +129,18 @@ struct ContactContentList: View {
                 viewModel.isInSelectionMode.toggle()
             }
         }
-        
-        ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
-            withAnimation {
-                viewModel.deleteDialog.toggle()
+
+        if !viewModel.showConversaitonBuilder {
+            ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
+                withAnimation {
+                    viewModel.deleteDialog.toggle()
+                }
             }
+            .foregroundStyle(.red)
+            .opacity(viewModel.isInSelectionMode ? 1 : 0.2)
+            .disabled(!viewModel.isInSelectionMode)
+            .scaleEffect(x: viewModel.isInSelectionMode ? 1.0 : 0.002, y: viewModel.isInSelectionMode ? 1.0 : 0.002)
         }
-        .foregroundStyle(.red)
-        .opacity(viewModel.isInSelectionMode ? 1 : 0.2)
-        .disabled(!viewModel.isInSelectionMode)
-        .scaleEffect(x: viewModel.isInSelectionMode ? 1.0 : 0.002, y: viewModel.isInSelectionMode ? 1.0 : 0.002)
     }
     
     @ViewBuilder var centerViews: some View {
@@ -153,6 +155,7 @@ struct ContactContentList: View {
 struct ContactRowContainer: View {
     @EnvironmentObject var viewModel: ContactsViewModel
     @EnvironmentObject var threadsViewModel: ThreadsViewModel
+    let isMainContactTab: Bool
     let contact: Contact
     let isSearchRow: Bool
     var separatorColor: Color {
@@ -164,7 +167,7 @@ struct ContactRowContainer: View {
     }
 
     var body: some View {
-        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
+        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact, isMainContactTab: isMainContactTab)
             .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)")
             .animation(.spring(), value: viewModel.isInSelectionMode)
             .listRowBackground(Color.App.bgPrimary)

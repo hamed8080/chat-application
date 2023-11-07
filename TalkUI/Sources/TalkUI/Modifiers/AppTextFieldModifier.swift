@@ -9,6 +9,8 @@ import SwiftUI
 
 public struct AppTextFieldModifier: ViewModifier {
     let topPlaceholder: String
+    let innerBGColor: Color
+    let error: String?
     let minHeigh: CGFloat
     let isFocused: Bool
     /// We use onClick for the border around where they are not clickable.
@@ -22,10 +24,10 @@ public struct AppTextFieldModifier: ViewModifier {
                 .offset(y: 8)
             content
                 .frame(minHeight: minHeigh)
-                .background(isFocused ? Color.clear : Color.App.bgInput)
+                .background(isFocused ? Color.clear : innerBGColor)
                 .overlay(alignment: .center) {
                     RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(isFocused ? Color.App.primary : Color.clear, lineWidth: 2)
+                        .strokeBorder(error != nil ? Color.App.red : isFocused ? Color.App.primary : Color.clear, lineWidth: 2)
                         .frame(minHeight: minHeigh)
                 }
                 .cornerRadius(12)
@@ -33,13 +35,21 @@ public struct AppTextFieldModifier: ViewModifier {
                 .onTapGesture {
                     onClick?()
                 }
+
+            if let error {
+                Text(String(localized: .init(error)))
+                    .font(.iransansCaption)
+                    .padding(.horizontal, 20)
+                    .offset(y: -8)
+                    .foregroundColor(Color.App.red)
+            }
         }
     }
 }
 
 public extension View {
-    func applyAppTextfieldStyle(topPlaceholder: String = "", minHeigh: CGFloat = 52, isFocused: Bool = false, onClick: (() -> Void)? = nil) -> some View {
-        modifier(AppTextFieldModifier(topPlaceholder: topPlaceholder, minHeigh: minHeigh, isFocused: isFocused, onClick: onClick))
+    func applyAppTextfieldStyle(topPlaceholder: String = "", innerBGColor: Color = Color.App.bgInput, error: String? = nil, minHeigh: CGFloat = 52, isFocused: Bool = false, onClick: (() -> Void)? = nil) -> some View {
+        modifier(AppTextFieldModifier(topPlaceholder: topPlaceholder, innerBGColor: innerBGColor, error: error, minHeigh: minHeigh, isFocused: isFocused, onClick: onClick))
     }
 }
 

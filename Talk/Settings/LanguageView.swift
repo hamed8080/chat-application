@@ -10,31 +10,16 @@ import TalkViewModels
 import Chat
 import TalkUI
 import Foundation
+import TalkModels
 
 struct LanguageView: View {
     let container: ObjectsContainer
     @State private var restart: Bool = false
     @State private var selectedLanguage = Locale.preferredLanguages[0]
 
-    struct Language: Identifiable {
-        var id: String { identifier }
-        let identifier: String
-        let language: String
-        let text: String
-    }
-
-    static let languages: [Language] = [
-        .init(identifier: "en_US", language: "en-US", text: "English"),
-        .init(identifier: "fa_IR", language: "fa-IR", text: "Persian (فارسی)"),
-        .init(identifier: "sv_SE", language: "sv-SE", text: "Swedish"),
-        .init(identifier: "de_DE", language: "de-DE", text: "Germany"),
-        .init(identifier: "es_ES", language: "es-ES", text: "Spanish"),
-        .init(identifier: "ar_SA", language: "ar-SA", text: "Arabic")
-    ]
-
     var body: some View {
         List {
-            ForEach(LanguageView.languages) { language in
+            ForEach(TalkModels.Language.languages) { language in
                 Button {
                     changeLanguage(language: language)
                 } label: {
@@ -84,7 +69,7 @@ struct LanguageView: View {
         }
     }
 
-    func changeLanguage(language: Language) {
+    func changeLanguage(language: TalkModels.Language) {
         selectedLanguage = language.language
         UserDefaults.standard.set([language.identifier], forKey: "AppleLanguages")
         UserDefaults.standard.synchronize()

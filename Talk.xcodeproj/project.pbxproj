@@ -166,8 +166,8 @@
 		0570CC5C2AAEE98F001832E9 /* LinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB12AAEE98D001832E9 /* LinkView.swift */; };
 		0570CC5D2AAEE98F001832E9 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB22AAEE98D001832E9 /* MemberView.swift */; };
 		0570CC5E2AAEE98F001832E9 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB22AAEE98D001832E9 /* MemberView.swift */; };
-		0570CC5F2AAEE98F001832E9 /* TabViewsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB32AAEE98D001832E9 /* TabViewsContainer.swift */; };
-		0570CC602AAEE98F001832E9 /* TabViewsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB32AAEE98D001832E9 /* TabViewsContainer.swift */; };
+		0570CC5F2AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB32AAEE98D001832E9 /* ConversationDetailTabViews.swift */; };
+		0570CC602AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB32AAEE98D001832E9 /* ConversationDetailTabViews.swift */; };
 		0570CC612AAEE98F001832E9 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB42AAEE98D001832E9 /* DetailView.swift */; };
 		0570CC622AAEE98F001832E9 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB42AAEE98D001832E9 /* DetailView.swift */; };
 		0570CC652AAEE98F001832E9 /* ContactRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB72AAEE98E001832E9 /* ContactRow.swift */; };
@@ -358,7 +358,7 @@
 		0570CBB02AAEE98D001832E9 /* MutualThreadsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutualThreadsView.swift; sourceTree = "<group>"; };
 		0570CBB12AAEE98D001832E9 /* LinkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
 		0570CBB22AAEE98D001832E9 /* MemberView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberView.swift; sourceTree = "<group>"; };
-		0570CBB32AAEE98D001832E9 /* TabViewsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabViewsContainer.swift; sourceTree = "<group>"; };
+		0570CBB32AAEE98D001832E9 /* ConversationDetailTabViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationDetailTabViews.swift; sourceTree = "<group>"; };
 		0570CBB42AAEE98D001832E9 /* DetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		0570CBB72AAEE98E001832E9 /* ContactRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactRow.swift; sourceTree = "<group>"; };
 		0570CBB82AAEE98E001832E9 /* SyncView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncView.swift; sourceTree = "<group>"; };
@@ -722,7 +722,7 @@
 				0570CBB02AAEE98D001832E9 /* MutualThreadsView.swift */,
 				0570CBB12AAEE98D001832E9 /* LinkView.swift */,
 				0570CBB22AAEE98D001832E9 /* MemberView.swift */,
-				0570CBB32AAEE98D001832E9 /* TabViewsContainer.swift */,
+				0570CBB32AAEE98D001832E9 /* ConversationDetailTabViews.swift */,
 				05E869C52AEF883000F6B200 /* DetailLoading.swift */,
 			);
 			path = TabViews;
@@ -1073,7 +1073,7 @@
 				0570CC612AAEE98F001832E9 /* DetailView.swift in Sources */,
 				0570CBED2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				05745AF02AF2626B00102193 /* UserActionMenu.swift in Sources */,
-				0570CC5F2AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
+				0570CC5F2AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */,
 				0570CBF92AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				0505D5AC2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
 				0570CC1D2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
@@ -1193,7 +1193,7 @@
 				0570CC622AAEE98F001832E9 /* DetailView.swift in Sources */,
 				0570CBEE2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				05745AF12AF2628000102193 /* UserActionMenu.swift in Sources */,
-				0570CC602AAEE98F001832E9 /* TabViewsContainer.swift in Sources */,
+				0570CC602AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */,
 				0570CBFA2AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				0505D5AD2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
 				0570CC1E2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
@@ -1448,7 +1448,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Talk/Preview Content\"";
-				DEVELOPMENT_TEAM = Q7RS54NYR2;
+				DEVELOPMENT_TEAM = 7QN43D38LP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Talk/Info-Test.plist";
@@ -1482,7 +1482,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Talk/Preview Content\"";
-				DEVELOPMENT_TEAM = Q7RS54NYR2;
+				DEVELOPMENT_TEAM = 7QN43D38LP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Talk/Info-Test.plist";

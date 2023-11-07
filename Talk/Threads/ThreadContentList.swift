@@ -89,7 +89,7 @@ struct ThreadsTrailingToolbarView: View {
 
     @ViewBuilder var trailingToolbarViews: some View {
         ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat") {
-            threadsVM.sheetType = .createConversation
+            threadsVM.sheetType = .showStartConversationBuilder
         }
         .foregroundStyle(Color.App.white, Color.App.primary)
     }

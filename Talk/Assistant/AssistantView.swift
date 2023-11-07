@@ -133,7 +133,7 @@ struct AddAssistantRow: View {
                     .padding(.leading, 4)
                     .lineLimit(1)
                     .font(.iransansSubheadline)
-                Text(String(localized: .init(contact.notSeenString ?? "General.notSpecified")))
+                Text(String(localized: .init(contact.notSeenDuration?.localFormattedTime ?? "General.notSpecified")))
                     .padding(.leading, 4)
                     .font(.iransansCaption3)
                     .foregroundColor(Color.App.gray1)

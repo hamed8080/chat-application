@@ -13,6 +13,7 @@ import TalkUI
 import TalkViewModels
 
 struct PictureView: View {
+    @EnvironmentObject var detailViewModel: DetailViewModel
     let viewModel: DetailTabDownloaderViewModel
     @State var viewWidth: CGFloat = 0
 
@@ -42,12 +43,14 @@ struct PictureView: View {
             spacing: spacing
         ) {
             if viewWidth != 0 {
-                MessageListPictureView(itemWidth: itemWidth)
+                MessageListPictureView(itemWidth: abs(itemWidth))
             }
         }
         .padding(padding)
-        .task {
-            viewModel.loadMore()
+        .onAppear {
+            if viewModel.messages.count == 0 {
+                viewModel.loadMore()
+            }
         }
         .environmentObject(viewModel)
         .background {

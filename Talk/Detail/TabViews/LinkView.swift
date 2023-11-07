@@ -17,11 +17,15 @@ struct LinkView: View {
 
     init(conversation: Conversation, messageType: MessageType) {
         viewModel = .init(conversation: conversation, messageType: messageType)
-        viewModel.loadMore()
     }
 
     var body: some View {
         StickyHeaderSection(header: "", height:  4)
+            .onAppear {
+                if viewModel.messages.count == 0 {
+                    viewModel.loadMore()
+                }
+            }
         MessageListLinkView()
             .environmentObject(viewModel)
     }

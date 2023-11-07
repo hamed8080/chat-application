@@ -32,8 +32,9 @@ public final class ContactsViewModel: ObservableObject {
     private var searchUniqueId: String?
     public var blockedContacts: [BlockedContactResponse] = []
     @Published public var createConversationType: ThreadTypes?
+    @Published public var showTitleError: Bool = false
     @Published public var showConversaitonBuilder = false
-    @Published public var showEditCreatedConversationDetail = false
+    @Published public var showCreateConversationDetail = false
     @Published public var editContact: Contact?
     @Published public var showAddOrEditContactSheet = false
     @Published public var isInSelectionMode = false {
@@ -46,8 +47,6 @@ public final class ContactsViewModel: ObservableObject {
 
     @Published public var conversationTitle: String = ""
     @Published public var threadDescription: String = ""
-    @Published public var createdConversationParticpnats: [Participant] = []
-    public var createdConversation: Conversation?
     public var assetResources: [PHAssetResource] = []
     public var image: UIImage?
 
@@ -99,13 +98,12 @@ public final class ContactsViewModel: ObservableObject {
                 self?.onConversationEvent(event)
             }
             .store(in: &canceableSet)
-
-        NotificationCenter.default.publisher(for: .participant)
-            .compactMap { $0.object as? ParticipantEventTypes }
-            .sink{ [weak self] event in
-                self?.onParticipantsEvent(event)
+        $conversationTitle.sink { [weak self] newValue in
+            if newValue.count >= 2 {
+                self?.showTitleError = false
             }
-            .store(in: &canceableSet)
+        }
+        .store(in: &canceableSet)
     }
 
     public func onContactEvent(_ event: ContactEventTypes?) {
@@ -136,18 +134,9 @@ public final class ContactsViewModel: ObservableObject {
         case .created(let response):
             onCreateGroup(response)
         case .updatedInfo(let response):
-            onEditCreatedGroup(response)
+            onEditGroup(response)
         case .isNameAvailable(let response):
             onIsNameAvailable(response)
-        default:
-            break
-        }
-    }
-
-    public func onParticipantsEvent(_ event: ParticipantEventTypes?) {
-        switch event {
-        case .participants(let response):
-            onCreateGroupParticipants(response)
         default:
             break
         }
@@ -355,24 +344,24 @@ public final class ContactsViewModel: ObservableObject {
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
         ChatManager.activeInstance?.contact.add(req)
+    }
 
-//        ChatManager.activeInstance?.updateContact(req) { [weak self] response in
-//            response.result?.forEach { updatedContact in
-//                if updatedContact.id == contactId {
-//                    if let index = self?.contacts.firstIndex(where: { $0.id == updatedContact.id }) {
-//                        self?.contacts[index].update(updatedContact)
-//                        self?.objectWillChange.send()
-//                    }
-//                }
-//            }
-//        }
+    public func moveToNextPage() {
+        showCreateConversationDetail = true
     }
 
     public func createGroupWithSelectedContacts() {
+        if conversationTitle.count < 2 {
+            showTitleError = true
+            return
+        }
         guard let type = createConversationType else { return }
         isLoading = true
         let invitees = selectedContacts.map { Invitee(id: "\($0.id ?? 0)", idType: .contactId) }
-        let req = CreateThreadRequest(invitees: invitees, title: String(localized: .init(type.stringValue ?? "")), type: type)
+        let req = CreateThreadRequest(description: threadDescription,
+                                      invitees: invitees,
+                                      title: conversationTitle,
+                                      type: type)
         RequestsManager.shared.append(prepend: "ConversationBuilder", value: req)
         ChatManager.activeInstance?.conversation.create(req)
     }
@@ -381,34 +370,14 @@ public final class ContactsViewModel: ObservableObject {
         if response.value(prepend: "ConversationBuilder") != nil {
             isLoading = false
             if let conversation = response.result {
-                self.createdConversation = conversation
-                showEditCreatedConversationDetail = true
-                getCreatedGroupParticipants()
+                editGroup(createdConversation: conversation)
             }
         }
     }
 
-    public func getCreatedGroupParticipants() {
-        if let id = createdConversation?.id {
-            let req = ThreadParticipantRequest(request: .init(threadId: id), admin: false)
-            RequestsManager.shared.append(prepend: "CreatedConversationParticipants", value: req)
-            ChatManager.activeInstance?.conversation.participant.get(req)
-        }
-    }
-
-    public func onCreateGroupParticipants(_ response: ChatResponse<[Participant]>) {
-        if response.value(prepend: "CreatedConversationParticipants") != nil, let participnts = response.result {
-            participnts.forEach { participant in
-                participant.conversation = createdConversation /// we do this because in memeber participants row we need to know the inviter of the conversation.
-                createdConversationParticpnats.append(participant)
-            }
-            createdConversationParticpnats.sort(by: {$0.admin ?? false && !($1.admin ?? false)})
-        }
-    }
-
-    public func submitEditCreatedGroup() {
+    public func editGroup(createdConversation: Conversation) {
         isLoading = true
-        guard let threadId = createdConversation?.id else { return }
+        guard let threadId = createdConversation.id else { return }
         var imageRequest: UploadImageRequest?
         if let image = image {
             let width = Int(image.size.width)
@@ -419,7 +388,7 @@ public final class ContactsViewModel: ObservableObject {
                                               isPublic: true,
                                               mimeType: "image/png",
                                               originalName: assetResources.first?.originalFilename ?? "",
-                                              userGroupHash: createdConversation?.userGroupHash,
+                                              userGroupHash: createdConversation.userGroupHash,
                                               hC: height,
                                               wC: width
             )
@@ -429,15 +398,13 @@ public final class ContactsViewModel: ObservableObject {
         ChatManager.activeInstance?.conversation.updateInfo(req)
     }
 
-    public func onEditCreatedGroup(_ response: ChatResponse<Conversation>) {
+    public func onEditGroup(_ response: ChatResponse<Conversation>) {
         if response.value(prepend: "EditConversation") != nil {
             closeBuilder()
             isLoading = false
-            createdConversation = nil
-            showEditCreatedConversationDetail = false
+            showCreateConversationDetail = false
             image = nil
             assetResources = []
-            createdConversationParticpnats = []
             createConversationType = nil
             conversationTitle = ""
         }
@@ -447,6 +414,7 @@ public final class ContactsViewModel: ObservableObject {
         selectedContacts = []
         showConversaitonBuilder = false
         searchContactString = ""
+        showTitleError = false
         AppState.shared.navViewModel?.threadsViewModel?.sheetType = nil
     }
 

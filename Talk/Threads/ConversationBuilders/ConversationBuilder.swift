@@ -20,7 +20,7 @@ struct ConversationBuilder: View {
                     .listRowInsets(.zero)
                     .listRowSeparator(.hidden)
                 ForEach(viewModel.searchedContacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: true)
+                    ContactRowContainer(isMainContactTab: false, contact: contact, isSearchRow: true)
                 }
                 .padding()
                 .listRowInsets(.zero)
@@ -30,7 +30,7 @@ struct ConversationBuilder: View {
                 .listRowInsets(.zero)
                 .listRowSeparator(.hidden)
             ForEach(viewModel.contacts) { contact in
-                ContactRowContainer(contact: contact, isSearchRow: false)
+                ContactRowContainer(isMainContactTab: false, contact: contact, isSearchRow: false)
                     .onAppear {
                         if viewModel.contacts.last == contact {
                             viewModel.loadMore()
@@ -67,10 +67,12 @@ struct ConversationBuilder: View {
                                enableButton: .constant(enabeleButton),
                                isLoading: $viewModel.isLoading)
             {
-                viewModel.createGroupWithSelectedContacts()
+                viewModel.moveToNextPage()
             }
         }
-        .sheet(isPresented: $viewModel.showEditCreatedConversationDetail) {
+        .sheet(isPresented: $viewModel.showCreateConversationDetail) {
+            viewModel.showTitleError = false
+        } content: {
             EditCreatedConversationDetail()
         }
         .onAppear {
@@ -78,9 +80,7 @@ struct ConversationBuilder: View {
             viewModel.isInSelectionMode = true
         }
         .onDisappear {
-            withAnimation(.easeInOut(duration: 0.1)) {
-                viewModel.isInSelectionMode = false
-            }
+            viewModel.isInSelectionMode = false
         }
     }
 
@@ -138,20 +138,23 @@ struct EditCreatedConversationDetail: View {
                                 .cornerRadius(28)
                         }
                     }
+                    .background(Color.App.bgSecond)
+                    .cornerRadius(24)
                 }
-                .buttonStyle(.plain)
+
 
                 TextField(viewModel.createConversationType == .normal ? "ConversationBuilder.enterGroupName" : "ConversationBuilder.enterChannelName" , text: $viewModel.conversationTitle)
                     .textContentType(.name)
                     .padding()
                     .font(.iransansBody)
+                    .applyAppTextfieldStyle(innerBGColor: Color.clear, error: viewModel.showTitleError ? "ConversationBuilder.atLeatsEnterTwoCharacter" : nil)
             }
             .frame(height: 88)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
             Section {
-                ForEach(viewModel.createdConversationParticpnats) { participant in
-                    ParticipantRow(participant: participant)
+                ForEach(viewModel.selectedContacts) { contact in
+                    ContactRow(isInSelectionMode: .constant(false), contact: contact, isMainContactTab: false)
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.divider)
                 }
@@ -169,14 +172,14 @@ struct EditCreatedConversationDetail: View {
         .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut, value: viewModel.conversationTitle)
         .listStyle(.plain)
-        .environmentObject(ParticipantsViewModel(thread: viewModel.createdConversation ?? .init()))
         .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",
                                enableButton: .constant(!viewModel.isLoading),
                                isLoading: $viewModel.isLoading)
             {
-                viewModel.submitEditCreatedGroup()
+                viewModel.createGroupWithSelectedContacts()
             }
         }
         .sheet(isPresented: $showImagePicker) {

@@ -179,7 +179,7 @@ public final class MessageRowViewModel: ObservableObject {
         let widthOfRow = self.calculateWidthOfMessage()
         let markdownTitle = message.markdownTitle
         let addressDetail = await message.addressDetail
-        let timeString = message.time?.date.timeAgoSinceDateCondense ?? ""
+        let timeString = message.time?.date.localFormattedTime ?? ""
         let fileSizeString = message.fileMetaData?.file?.size?.toSizeString
         await MainActor.run {
             self.addressDetail = addressDetail
@@ -195,7 +195,7 @@ public final class MessageRowViewModel: ObservableObject {
     }
 
     public func footerWidth() -> CGFloat {
-        let timeWidth = message.time?.date.timeAgoSinceDateCondense?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
+        let timeWidth = message.time?.date.localFormattedTime?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
         let fileSizeWidth = fileSizeString?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
         let statusWidth: CGFloat = isMe ? 14 : 0
         let isEditedWidth: CGFloat = message.edited ?? false ? 24 : 0

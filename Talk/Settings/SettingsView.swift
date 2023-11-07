@@ -426,7 +426,7 @@ struct SettingLanguageSection: View {
     }
 
     var selectedLanguage: AnyView {
-        let selectedLanguage = LanguageView.languages.first(where: {$0.language == Locale.preferredLanguages[0]})?.text ?? ""
+        let selectedLanguage = Language.languages.first(where: {$0.language == Locale.preferredLanguages[0]})?.text ?? ""
         let view = Text(selectedLanguage)
             .foregroundStyle(Color.App.primary)
             .font(.iransansBoldBody)

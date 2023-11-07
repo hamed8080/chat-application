@@ -59,7 +59,7 @@ struct SelectContactRow: View {
                     .padding(.leading, 4)
                     .lineLimit(1)
                     .font(.iransansCaption)
-                if let notSeenDuration = contact.notSeenString {
+                if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
                     Text(notSeenDuration)
                         .padding(.leading, 4)
                         .font(.iransansCaption3)

@@ -22,7 +22,7 @@ struct CallMessageType: View {
                 let date = Date(milliseconds: Int64(time))
                 HStack(spacing: 2) {
                     Text(message.type == .endCall ? "Thread.callEnded" : "Thread.callStarted")
-                    Text("\(date.timeAgoSinceDateCondense ?? "")")
+                    Text("\(date.localFormattedTime ?? "")")
                         .fontWeight(.bold)
                 }
                 .foregroundColor(Color.App.primary.opacity(0.8))

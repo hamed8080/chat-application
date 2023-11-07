@@ -12,24 +12,27 @@ import TalkUI
 
 struct CreateConversationPicker: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
+    @State var showCreateConversationSheet = false
+    @State var showFastMessageSheet = false
+    @State var showJoinSheet = false
 
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 32) {
                 Button {
-                    threadsVM.sheetType = .showStartConversationBuilder
+                    showCreateConversationSheet.toggle()
                 } label: {
                     Label("ThreadList.Toolbar.startNewChat", systemImage: "bubble.left.and.bubble.right.fill")
                 }
 
                 Button {
-                    threadsVM.sheetType = .joinToPublicThread
+                    showFastMessageSheet.toggle()
                 } label: {
                     Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
                 }
 
                 Button {
-                    threadsVM.sheetType = .fastMessage
+                    showJoinSheet.toggle()
                 } label: {
                     Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
                 }
@@ -41,6 +44,19 @@ struct CreateConversationPicker: View {
         .presentationBackground(Color.App.bgPrimary)
         .presentationDragIndicator(.visible)
         .foregroundStyle(Color.App.text)
+        .sheet(isPresented: $showCreateConversationSheet) {
+            StartThreadContactPickerView()
+        }
+        .sheet(isPresented: $showFastMessageSheet) {
+            CreateDirectThreadView { invitee, message in
+                threadsVM.fastMessage(invitee, message)
+            }
+        }
+        .sheet(isPresented: $showJoinSheet) {
+            JoinToPublicThreadView { publicThreadName in
+                threadsVM.joinToPublicThread(publicThreadName)
+            }
+        }
     }
 
     private var isLargeSize: Bool {
@@ -51,9 +67,10 @@ struct CreateConversationPicker: View {
             return false
         }
     }
-}
-struct CreateConversationPicker_Previews: PreviewProvider {
-    static var previews: some View {
-        CreateConversationPicker()
+
+    struct CreateConversationPicker_Previews: PreviewProvider {
+        static var previews: some View {
+            CreateConversationPicker()
+        }
     }
 }

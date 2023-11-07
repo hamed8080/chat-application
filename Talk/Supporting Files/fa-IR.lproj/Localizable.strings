@@ -90,14 +90,15 @@
 "Contacts.Sync.sync" = "همسان سازی";
 "Contacts.Sync.contacts" = "همسان سازی مخاطبان";
 "Contacts.Sync.subtitle" = "با همسان سازی مخاطبان شما می توانید با دوستان و نزدیکان خود راحت تر صحبت کنید.";
-"Contacts.createGroup" = "ایجاد گروه جدید";
-"Contacts.createChannel" = "ایجاد کانال جدید";
-"Contacts.addContact" = "افزودن مخاطب جدید";
+"Contacts.createGroup" = "ایجاد گروه";
+"Contacts.createChannel" = "ایجاد کانال";
+"Contacts.addContact" = "افزودن مخاطب";
 "Contacts.sortLabel" = "مرتب شده بر اساس آخرین زمان بازدید";
 "Contacts.lastVisited" = "آخرین بازدید %@";
 "Contacts.selectContacts" = "انتخاب مخا‍طبان";
 "ConversationBuilder.enterGroupName" = "نام گروه را وارد کنید";
 "ConversationBuilder.enterChannelName" = "نام کانال را وارد کنید.";
+"ConversationBuilder.atLeatsEnterTwoCharacter" = "لطفا نام گفتگو را وارد نمایید. (حداقل ۲ حرف)";
 
 /* Call */
 "Call.requested" = "درخواست";

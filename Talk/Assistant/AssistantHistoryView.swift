@@ -50,7 +50,7 @@ struct AssistantActionRow: View {
             VStack(alignment: .leading) {
                 Text(action.participant?.name ?? "")
                     .font(.iransansCaption)
-                Text(action.actionTime?.date.timeAgoSinceDateCondense ?? "")
+                Text(action.actionTime?.date.localFormattedTime ?? "")
                     .font(.iransansBoldCaption3)
                     .foregroundStyle(.secondary)
             }

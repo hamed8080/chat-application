@@ -34,7 +34,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var isInMyContact: Bool { (user?.contactId != nil || contact != nil) && thread == nil }
     public var canBlock: Bool { thread == nil }
     public var title: String { thread?.title ?? user?.name ?? contact?.user?.name ?? "\(contact?.firstName ?? "") \(contact?.lastName ?? "")" }
-    public var notSeenString: String? { user?.notSeenString ?? contact?.notSeenString }
+    public var notSeenString: String? { user?.notSeenDuration?.localFormattedTime ?? contact?.notSeenDuration?.localFormattedTime }
     public var cellPhoneNumber: String? { contact?.cellphoneNumber ?? user?.cellphoneNumber }
     public var isBlock: Bool { contact?.blocked == true || user?.blocked == true }
     public var bio: String? { contact?.user?.chatProfileVO?.bio ?? user?.chatProfileVO?.bio }

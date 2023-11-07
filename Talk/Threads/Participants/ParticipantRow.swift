@@ -50,7 +50,7 @@ struct ParticipantRow: View {
                             .font(.iransansCaption3)
                             .foregroundColor(.primary.opacity(0.5))
                     }
-                    if  let notSeenDuration = participant.notSeenString {
+                    if  let notSeenDuration = participant.notSeenDuration?.localFormattedTime {
                         let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
                         let time = String(format: lastVisitedLabel, notSeenDuration)
                         Text(time)

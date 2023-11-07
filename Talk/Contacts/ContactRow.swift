@@ -17,6 +17,7 @@ struct ContactRow: View {
     @EnvironmentObject var viewModel: ContactsViewModel
     @EnvironmentObject var appState: AppState
     var contact: Contact
+    let isMainContactTab: Bool
     var contactImageURL: String? { contact.image ?? contact.user?.image }
 
     var body: some View {
@@ -50,7 +51,7 @@ struct ContactRow: View {
                         .lineLimit(1)
                         .font(.iransansBoldBody)
                         .foregroundColor(Color.App.text)
-                    if let notSeenDuration = contact.notSeenString {
+                    if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
                         let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
                         let time = String(format: lastVisitedLabel, notSeenDuration)
                         Text(time)
@@ -66,7 +67,11 @@ struct ContactRow: View {
                         .foregroundColor(Color.App.red)
                         .padding(.trailing, 4)
                 }
-                selectRadio
+
+                /// To Prevent blinking in the contacts tab.
+                if isMainContactTab && !viewModel.showConversaitonBuilder || !isMainContactTab && viewModel.showConversaitonBuilder {
+                    selectRadio
+                }
             }
         }
         .contentShape(Rectangle())
@@ -91,7 +96,7 @@ struct ContactRow_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            ContactRow(isInSelectionMode: $isInSelectionMode, contact: MockData.contact)
+            ContactRow(isInSelectionMode: $isInSelectionMode, contact: MockData.contact, isMainContactTab: true)
                 .environmentObject(ContactsViewModel())
                 .preferredColorScheme(.dark)
         }
