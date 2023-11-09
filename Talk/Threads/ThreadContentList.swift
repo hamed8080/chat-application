@@ -50,9 +50,9 @@ struct ThreadContentList: View {
             ToolbarView(
                 title: "Tab.chats",
                 searchPlaceholder: "General.searchHere",
-                leadingViews: leadingViews,
-                centerViews: centerViews,
-                trailingViews: trailingViews
+                leadingViews: EmptyView().frame(width: 0, height: 0).hidden(),
+                centerViews: ConnectionStatusToolbar(),
+                trailingViews: CreateConversationPicker()
             ) { searchValue in
                 threadsVM.searchText = searchValue
             }
@@ -63,35 +63,6 @@ struct ThreadContentList: View {
         } content: {
             ThreadsSheetFactoryView()
         }
-    }
-
-    var leadingViews: some View {
-        EmptyView()
-            .frame(width: 0, height: 0)
-            .hidden()
-    }
-
-    var centerViews: some View {
-        ConnectionStatusToolbar()
-    }
-
-    var trailingViews: some View {
-        ThreadsTrailingToolbarView(threadsVM: threadsVM)
-    }
-}
-
-struct ThreadsTrailingToolbarView: View {
-    let threadsVM: ThreadsViewModel
-
-    var body: some View {
-        trailingToolbarViews
-    }
-
-    @ViewBuilder var trailingToolbarViews: some View {
-        ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat") {
-            threadsVM.sheetType = .showStartConversationBuilder
-        }
-        .foregroundStyle(Color.App.white, Color.App.primary)
     }
 }
 

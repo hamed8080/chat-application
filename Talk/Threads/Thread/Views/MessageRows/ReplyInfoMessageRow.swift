@@ -16,17 +16,6 @@ struct ReplyInfoMessageRow: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
-    @State private var contentSize: CGSize = .zero
-
-    var replyMessageColor: Color {
-        if message.replyInfo?.deleted != nil {
-            return Color.App.red
-        } else if viewModel.isMe {
-            return Color.App.hint
-        } else {
-            return Color.App.red
-        }
-    }
 
     var body: some View {
         Button {
@@ -35,12 +24,7 @@ struct ReplyInfoMessageRow: View {
             }
         } label: {
             HStack(spacing: 8) {
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
-                    .frame(width: 3)
-                    .frame(height: contentSize.height)
-
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 4) {
                     if let name = message.replyInfo?.participant?.name {
                         Text("\(name)")
                             .font(.iransansBoldCaption2)
@@ -53,52 +37,51 @@ struct ReplyInfoMessageRow: View {
                             .foregroundColor(Color.App.red)
                     }
 
-                    if let message = message.replyInfo?.message?.replacingOccurrences(of: "\n", with: " ") {
+                    if let message = message.replyInfo?.message, !message.isEmpty {
                         Text(message)
                             .font(.iransansCaption3)
                             .cornerRadius(8, corners: .allCorners)
                             .foregroundStyle(Color.App.gray3)
+                            .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
                             .lineLimit(2)
-                            .multilineTextAlignment(viewModel.isMe ? .trailing : .leading)
+                            .truncationMode(.tail)
                     }
-
-                    if canShowIconFile {
+                    if viewModel.canShowIconFile {
                         HStack {
-                            if let iconName = message.iconName {
+                            if let iconName = self.message.iconName {
                                 Image(systemName: iconName)
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 16, height: 16)
                                     .foregroundColor(Color.App.blue)
+                                    .clipped()
                             }
 
-                            if let fileStringName = message.fileStringName {
+                            if let fileStringName = self.message.fileStringName {
                                 Text(fileStringName)
                                     .font(.iransansCaption2)
                                     .foregroundStyle(Color.App.blue)
+                                    .lineLimit(1)
                             }
                         }
                     }
                 }
-                .background(
-                    GeometryReader { reader -> Color in
-                        DispatchQueue.main.async {
-                            contentSize = reader.size
-                        }
-                        return Color.clear
-                    }
-                )
+                .padding(.leading, 4)
+                .overlay(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .stroke(lineWidth: 1.5)
+                        .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
+                        .frame(maxWidth: 1.5)
+                        .offset(x: -4)
+                }
             }
         }
-        .frame(maxHeight: 64)
         .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
         .buttonStyle(.borderless)
         .truncationMode(.tail)
         .contentShape(Rectangle())
-        .lineLimit(1)
+        .frame(height: 60)
     }
-
-    var canShowIconFile: Bool { message.replyInfo?.messageType != .text && message.replyInfo?.message.isEmptyOrNil == true && message.replyInfo?.deleted == false }
 }
 
 struct ReplyInfo_Previews: PreviewProvider {

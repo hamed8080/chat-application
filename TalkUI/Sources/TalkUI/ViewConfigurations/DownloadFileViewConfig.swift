@@ -70,7 +70,7 @@ public struct DownloadFileViewConfig {
                 iconWidth: CGFloat,
                 iconHeight: CGFloat,
                 iconColor: Color,
-                iconCircleColor: Color = Color.App.white,
+                iconCircleColor: Color = Color.App.btnDownload,
                 progressColor: Color = Color.App.primary,
                 circleProgressMaxWidth: CGFloat,
                 showTrailingFileName: Bool = true,

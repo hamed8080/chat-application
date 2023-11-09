@@ -12,40 +12,47 @@ import TalkUI
 
 struct CreateConversationPicker: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
+    @EnvironmentObject var contactsVM: ContactsViewModel
     @State var showCreateConversationSheet = false
     @State var showFastMessageSheet = false
     @State var showJoinSheet = false
 
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 32) {
-                Button {
-                    showCreateConversationSheet.toggle()
-                } label: {
-                    Label("ThreadList.Toolbar.startNewChat", systemImage: "bubble.left.and.bubble.right.fill")
-                }
+        Menu {
+            Button {
+                showCreateConversationSheet.toggle()
+            } label: {
+                Label("ThreadList.Toolbar.startNewChat", systemImage: "bubble.left.and.bubble.right.fill")
+            }
 
-                Button {
-                    showFastMessageSheet.toggle()
-                } label: {
-                    Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
-                }
+            Button {
+                showFastMessageSheet.toggle()
+            } label: {
+                Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
+            }
 
-                Button {
-                    showJoinSheet.toggle()
-                } label: {
-                    Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
+            Button {
+                showJoinSheet.toggle()
+            } label: {
+                Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
+            }
+        } label: {
+            ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat")
+                .foregroundStyle(Color.App.white, Color.App.primary)
+        }
+        .sheet(isPresented: $showCreateConversationSheet) {
+            contactsVM.showConversaitonBuilder = false
+            contactsVM.closeBuilder()
+        } content: {
+            StartThreadContactPickerView()
+        }
+        .onReceive(contactsVM.objectWillChange) {
+            /// To remove view if successfully create a conversation group/channel.
+            if contactsVM.showConversaitonBuilder == false && showCreateConversationSheet == true {
+                withAnimation {
+                    showCreateConversationSheet = false
                 }
             }
-            .padding(.leading)
-            Spacer()
-        }
-        .presentationDetents([.fraction((isLargeSize ? 100 : 25) / 100)])
-        .presentationBackground(Color.App.bgPrimary)
-        .presentationDragIndicator(.visible)
-        .foregroundStyle(Color.App.text)
-        .sheet(isPresented: $showCreateConversationSheet) {
-            StartThreadContactPickerView()
         }
         .sheet(isPresented: $showFastMessageSheet) {
             CreateDirectThreadView { invitee, message in

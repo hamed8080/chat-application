@@ -53,6 +53,7 @@ public extension Color {
         public static let textOverlay = Color("text_overlay")
         public static let textDisabled = Color("text_disabled")
         public static let bgPrimary = Color("bg_primary")
+        public static let btnDownload = Color("btn_download")
         public static let bgSecond = Color("bg_second")
         public static let bgTertiary = Color("bg_tertiary")
         public static let bgContextMenu = Color("bg_context_menu")

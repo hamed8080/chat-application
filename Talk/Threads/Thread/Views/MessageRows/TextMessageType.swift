@@ -81,8 +81,7 @@ struct MutableMessageView: View {
         VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 10) {
             if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
                 DownloadFileView(viewModel: downloadVM)
-                    .frame(maxWidth: message.isImage ? viewModel.maxAllowedWidth : nil)
-                    .frame(maxHeight: message.isImage ? 256 : nil)
+                    .frame(maxWidth: message.isImage ? (viewModel.maxWidth ?? 0) - 8 : nil, maxHeight: message.isImage ? 256 : nil)
                     .clipped()
                     .contentShape(Rectangle())
                     .cornerRadius(8)
@@ -99,7 +98,7 @@ struct MutableMessageView: View {
 
             if message.isUploadMessage {
                 UploadMessageType(message: message)
-                    .frame(maxHeight: viewModel.widthOfRow - padding)
+                    .frame(maxHeight: viewModel.maxWidth)
             }
 
             if !viewModel.isMe {
@@ -149,9 +148,9 @@ struct MutableMessageView: View {
             }
             .padding(.horizontal, 6)
         }
-        .frame(maxWidth: message.isImage ? viewModel.maxAllowedWidth : nil)
         .padding(.top, message.isImage ? 0 : 6)
         .padding(4)
+        .frame(maxWidth: viewModel.maxWidth, alignment: viewModel.isMe ? .trailing : .leading)
         .contentShape(Rectangle())
         .background(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
         .overlay {
@@ -174,7 +173,7 @@ struct MutableMessageView: View {
         /// We should pass the width of the row when it gets updated to the context menu to get proper width of the view in modifier.
         .customContextMenu(self: self
             .environmentObject(viewModel)
-            .environmentObject(AppState.shared.objectsContainer.audioPlayerVM), width: viewModel.widthOfRow) {
+            .environmentObject(AppState.shared.objectsContainer.audioPlayerVM), width: viewModel.maxWidth ?? 256) {
             MessageActionMenu()
                 .environmentObject(viewModel)
         } topView: {
@@ -203,6 +202,18 @@ struct MutableMessageView: View {
             return 12
         } else {
             return 12
+        }
+    }
+
+    var textAlignment: TextAlignment {
+        if !viewModel.isEnglish && !viewModel.isMe {
+            return .leading
+        } else if viewModel.isMe && !viewModel.isEnglish {
+            return .leading
+        } else if !viewModel.isMe && viewModel.isEnglish {
+            return .trailing
+        } else {
+            return .leading
         }
     }
 }

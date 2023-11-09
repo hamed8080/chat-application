@@ -70,7 +70,7 @@ struct MutableDownloadViews: View {
             if let fileURL = viewModel.fileURL, let scaledImage = fileURL.imageScale(width: 420)?.image {
                 Image(cgImage: scaledImage)
                     .resizable()
-                    .scaledToFill()
+                    .scaledToFit()
             } else if message?.isVideo == true, let fileURL = viewModel.fileURL {
                 VideoPlayerView()
                     .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
@@ -239,7 +239,7 @@ struct DownloadImagethumbnail: View {
             Image(uiImage: UIImage(data: thumbnailData ?? Data()) ?? UIImage())
                 .resizable()
                 .blur(radius: 16, opaque: false)
-                .scaledToFill()
+                .scaledToFit()
                 .zIndex(0)
                 .onReceive(viewModel.objectWillChange) { _ in
                     if viewModel.thumbnailData != self.thumbnailData,

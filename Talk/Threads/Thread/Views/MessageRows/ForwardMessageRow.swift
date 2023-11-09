@@ -15,19 +15,13 @@ import TalkViewModels
 struct ForwardMessageRow: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     var message: Message? { viewModel.message }
-    @EnvironmentObject var navVM: NavigationModel
-    @State private var contentSize: CGSize = .zero
 
     var body: some View {
         if let forwardInfo = message?.forwardInfo, let forwardThread = forwardInfo.conversation {
             Button {
-                navVM.append(thread: forwardThread)
+                AppState.shared.objectsContainer.navVM.append(thread: forwardThread)
             } label: {
                 HStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
-                        .frame(width: 3)
-                        .frame(height: contentSize.height)
                     VStack(alignment: .leading, spacing: 4) {
                         if let name = forwardInfo.participant?.name {
                             Text(name)
@@ -41,19 +35,18 @@ struct ForwardMessageRow: View {
                                 .multilineTextAlignment(.leading)
                         }
                     }
-                    .background(
-                        GeometryReader { reader -> Color in
-                            DispatchQueue.main.async {
-                                contentSize = reader.size
-                            }
-                            return Color.clear
-                        }
-                    )
+                }
+                .padding(.leading, 4)
+                .overlay(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .stroke(lineWidth: 1.5)
+                        .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
+                        .frame(maxWidth: 1.5)
+                        .offset(x: -4)
                 }
             }
             .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
             .buttonStyle(.borderless)
-            .frame(minHeight: 36)
             .truncationMode(.tail)
             .contentShape(Rectangle())
         }

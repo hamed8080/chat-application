@@ -18,12 +18,10 @@ import ChatDTO
 public final class MessageRowViewModel: ObservableObject {
     public var isCalculated = false
     public var isEnglish = true
-    public var widthOfRow: CGFloat = 128
+    public var maxWidth: CGFloat?
     public var markdownTitle = AttributedString()
-    public var calculatedMaxAndMinWidth: CGFloat = 128
     public var addressDetail: String?
     public var timeString: String = ""
-    public var fileSizeString: String?
     public static var avatarSize: CGFloat = 34
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
@@ -37,6 +35,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var requests: [String: Any] = [:]
     public var showReactionsOverlay = false
     public var isNextMessageTheSameUser: Bool = false
+    public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true) }
     public var canDelete: Bool { (message.deletable == true && isMe) || (message.deletable == true && threadVM?.thread.admin == true) }
     public var avatarImageLoader: ImageLoaderViewModel? {
@@ -55,6 +54,8 @@ public final class MessageRowViewModel: ObservableObject {
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         setupObservers()
+        maxWidth = message.isImage ? maxAllowedWidth : nil
+        canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.message.isEmptyOrNil == true && message.replyInfo?.deleted == false
     }
 
     func setupObservers() {
@@ -104,9 +105,7 @@ public final class MessageRowViewModel: ObservableObject {
     public func calculate() {
         if isCalculated { return }
         isCalculated = true
-        Task.detached(priority: .background) { [weak self] in
-            await self?.performaCalculation()
-        }
+        recalculateWithAnimation()
     }
 
     private func startHighlightTimer() {
@@ -166,42 +165,29 @@ public final class MessageRowViewModel: ObservableObject {
         }
     }
 
-    private func recalculateWithAnimation(){
-        Task.detached(priority: .background) { [weak self] in
+    private func recalculateWithAnimation() {
+        Task.detached(priority: .userInitiated) { [weak self] in
             await self?.performaCalculation(animation: .easeInOut)
         }
     }
 
     private func performaCalculation(animation: Animation? = nil) async {
         isNextMessageTheSameUser = threadVM?.thread.group == true && (threadVM?.isNextSameUser(message: message) == true) && message.participant != nil
-        let message = message
         let isEnglish = message.message?.naturalTextAlignment == .leading
-//        let widthOfRow = self.calculateWidthOfMessage()
+        let maxWidth = self.calculateMaxWidth()
         let markdownTitle = message.markdownTitle
         let addressDetail = await message.addressDetail
         let timeString = message.time?.date.localFormattedTime ?? ""
-        let fileSizeString = message.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale)
         await MainActor.run {
             self.addressDetail = addressDetail
             self.isEnglish = isEnglish
-//            self.widthOfRow = widthOfRow
+            self.maxWidth = maxWidth
             self.markdownTitle = markdownTitle
             self.timeString = timeString
-            self.fileSizeString = fileSizeString
-            withAnimation(.none) {
+            withAnimation(.easeInOut) {
                 self.objectWillChange.send()
             }
         }
-    }
-
-    public func footerWidth() -> CGFloat {
-        let timeWidth = message.time?.date.localFormattedTime?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
-        let fileSizeWidth = fileSizeString?.widthOfString(usingFont: UIFont.systemFont(ofSize: 24)) ?? 0
-        let statusWidth: CGFloat = isMe ? 14 : 0
-        let isEditedWidth: CGFloat = message.edited ?? false ? 24 : 0
-        let isPinnedWidth: CGFloat = message.id == threadVM?.thread.pinMessage?.id && threadVM?.thread.pinMessage != nil ? 24 : 0
-        let messageStatusIconWidth: CGFloat = 24
-        return timeWidth + fileSizeWidth + statusWidth + isEditedWidth + messageStatusIconWidth + isPinnedWidth
     }
 
     public var maxAllowedWidth: CGFloat {
@@ -211,42 +197,28 @@ public final class MessageRowViewModel: ObservableObject {
         return max
     }
 
-    public func minWidth() -> CGFloat {
-        let hasReplyMessage = message.replyInfo != nil
-        return message.isUnsentMessage ? 148 : message.isFileType ? 164 : hasReplyMessage ? 246 : 128
-    }
-
-    public func headerWidth() -> CGFloat {
-        let spacing: CGFloat = 8
-        let padding: CGFloat = 16
-        return (message.participant?.name?.widthOfString(usingFont: .systemFont(ofSize: 22)) ?? 0) + MessageRowViewModel.avatarSize + spacing + padding
-    }
-
-    public func unsentFileWidth() -> CGFloat {
-        if message is UnSentMessageProtocol {
-            let cancelButtonWidth: CGFloat = 64
-            let resendButtonWidth: CGFloat = 69
-            let padding: CGFloat = 16
-            let controlsSize = cancelButtonWidth + resendButtonWidth + padding
-            let fileNameWidth = "\(message.fileName ?? "").\(message.fileExtension ?? "")".widthOfString(usingFont: .systemFont(ofSize: 12)) + padding
-            let width = max(controlsSize, fileNameWidth)
-            return width
+    static let replyFont = UIFont(name: "IRANSansX", size: 11)
+    static let messageFont = UIFont(name: "IRANSansX", size: 14)
+    public func calculateMaxWidth() -> CGFloat? {
+        let replyWidth = message.replyInfo?.message?.widthOfString(usingFont: MessageRowViewModel.replyFont ?? .systemFont(ofSize: 10)) ?? 0
+        let messageWidth = message.message?.widthOfString(usingFont: MessageRowViewModel.messageFont ?? .systemFont(ofSize: 13)) ?? 0
+        let imageWidth = CGFloat(message.fileMetaData?.file?.actualWidth ?? 0)
+        if replyWidth > messageWidth && replyWidth > maxAllowedWidth {
+            return maxAllowedWidth
+        } else if replyWidth > messageWidth && replyWidth < maxAllowedWidth {
+            return imageWidth > maxAllowedWidth ? maxAllowedWidth : nil
+        } else if messageWidth > maxAllowedWidth {
+            return maxAllowedWidth
+        } else if message.isImage {
+            if imageWidth > maxAllowedWidth {
+                return maxAllowedWidth
+            } else {
+                return imageWidth
+            }
+        } else {
+            return nil
         }
-        return 0
     }
-
-//    public func calculateWidthOfMessage() -> CGFloat {
-//        let imageWidth: CGFloat = CGFloat(message.fileMetaData?.file?.actualWidth ?? 0)
-//        let messageWidth = message.messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) + 16
-//        let headerWidth = headerWidth()
-//        let footerWidth = footerWidth()
-//        let videoWidth: CGFloat = message.isVideo ? 320 : 0
-//        let uploadFileProgressWidth: CGFloat = message.isUploadMessage == true ? 128 : 0
-//        let unsentFileWidth = unsentFileWidth()
-//        let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth, uploadFileProgressWidth, unsentFileWidth, videoWidth].max() ?? 0
-//        let calculatedWidth: CGFloat = min(contentWidth, maxAllowedWidth)
-//        return calculatedWidth
-//    }
 
     deinit {
         downloadFileVM?.cancelObservers()
