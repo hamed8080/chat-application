@@ -57,6 +57,10 @@
 "General.optional" = "(Opcional)";
 "General.share" = "Compartir";
 "General.createAConversation" = "Iniciar una conversación";
+"General.Byte" = "Byte";
+"General.KB" = "KB";
+"General.MB" = "Megas";
+"General.GB" = "GB";
 
 /* Pestañas */
 "Tab.chats" = "Chats";

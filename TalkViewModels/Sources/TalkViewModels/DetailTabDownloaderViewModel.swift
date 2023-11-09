@@ -87,11 +87,11 @@ public class DetailTabDownloaderViewModel: ObservableObject {
             itemCount = 3
             return readerWidth / 3
         } else if isInSemiFullMode {
-            itemCount = 5
-            return readerWidth / 5
+            itemCount = 4
+            return readerWidth / 4
         } else {
-            itemCount = 8
-            return readerWidth / 8
+            itemCount = 7
+            return readerWidth / 7
         }
     }
 }

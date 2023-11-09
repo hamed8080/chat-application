@@ -17,7 +17,7 @@ public struct CustomTabView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             TabViewButtonsContainer(selectedTabIndex: $selectedTabIndex, tabs: tabs)
             tabs[selectedTabIndex].view
                 .transition(.asymmetric(insertion: .push(from: .leading), removal: .move(edge: .trailing)))

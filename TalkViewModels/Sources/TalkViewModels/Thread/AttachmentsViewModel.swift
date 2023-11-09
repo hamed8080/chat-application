@@ -67,17 +67,17 @@ public struct AttachmentFile: Identifiable {
         if type == .map {
             return (request as? LocationItem)?.name
         } else if type == .gallery {
-            return ((request as? ImageItem)?.imageData.count ?? 0)?.toSizeString
+            return ((request as? ImageItem)?.imageData.count ?? 0)?.toSizeString(locale: Language.preferredLocale)
         } else if type == .file {
             let item = request as? URL
             var size = 0
             if let url = item, let data = try? Data(contentsOf: url) {
                 size = data.count
             }
-            return "\(size.toSizeString ?? "") - \((request as? URL)?.fileExtension.uppercased() ?? "")"
+            return "\(size.toSizeString(locale: Language.preferredLocale) ?? "") - \((request as? URL)?.fileExtension.uppercased() ?? "")"
         } else if type == .drop {
             let item = request as? DropItem
-            return "\((item?.data?.count ?? 0)?.toSizeString ?? "") - \(item?.ext?.uppercased() ?? "")"
+            return "\((item?.data?.count ?? 0)?.toSizeString(locale: Language.preferredLocale) ?? "") - \(item?.ext?.uppercased() ?? "")"
         } else if type == .contact {
             return "contact"
         } else if type == .voice {

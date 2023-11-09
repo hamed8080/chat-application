@@ -16,7 +16,7 @@ struct ReplyMessageViewPlaceholder: View {
     var body: some View {
         if let replyMessage = viewModel.replyMessage {
             HStack {
-                SendContainerButton(image: "arrowshape.turn.up.left.fill")                
+                SendContainerButton(image: "arrow.turn.up.left")
 
                 VStack(alignment: .leading, spacing: 0) {
                     if let name = replyMessage.participant?.name {

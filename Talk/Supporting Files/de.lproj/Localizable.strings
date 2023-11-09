@@ -57,6 +57,10 @@
 "General.optional" = "(Optional)";
 "General.share" = "Aktie";
 "General.createAConversation" = "Eine Konversation beginnen";
+"General.Byte" = "Byte";
+"General.KB" = "KB";
+"General.MB" = "MB";
+"General.GB" = "GB";
 
 /* Tabs */
 "Tab.chats" = "Chats";

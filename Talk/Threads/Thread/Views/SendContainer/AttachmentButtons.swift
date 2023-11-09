@@ -61,7 +61,7 @@ struct MutableAttachmentDialog: View {
                 threadVM?.animateObjectWillChange()
             }
             .disabled(!EnvironmentValues.isTalkTest)
-            .opacity(EnvironmentValues.isTalkTest ? 0.2 : 1.0)
+            .opacity(EnvironmentValues.isTalkTest ? 1.0 : 0.2)
             Spacer()
         }
         .font(.iransansBody)

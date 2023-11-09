@@ -16,6 +16,7 @@ struct ForwardMessageRow: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     var message: Message? { viewModel.message }
     @EnvironmentObject var navVM: NavigationModel
+    @State private var contentSize: CGSize = .zero
 
     var body: some View {
         if let forwardInfo = message?.forwardInfo, let forwardThread = forwardInfo.conversation {
@@ -26,24 +27,35 @@ struct ForwardMessageRow: View {
                     RoundedRectangle(cornerRadius: 3)
                         .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
                         .frame(width: 3)
-                        .frame(minHeight: 0, maxHeight: 36)
-                    VStack(spacing: 0) {
+                        .frame(height: contentSize.height)
+                    VStack(alignment: .leading, spacing: 4) {
                         if let name = forwardInfo.participant?.name {
-                            Text("\(name)")
-                                .font(.iransansBoldCaption2)
-                                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                            Text(name)
+                                .font(.iransansCaption2)
                                 .foregroundStyle(viewModel.isMe ? Color.App.primary : Color.App.text)
                         }
+                        if !(message?.messageTitle.isEmpty ?? true) {
+                            Text(viewModel.markdownTitle)
+                                .font(.iransansCaption2)
+                                .foregroundStyle(Color.App.gray2)
+                                .multilineTextAlignment(.leading)
+                        }
                     }
+                    .background(
+                        GeometryReader { reader -> Color in
+                            DispatchQueue.main.async {
+                                contentSize = reader.size
+                            }
+                            return Color.clear
+                        }
+                    )
                 }
-                .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 36, maxHeight: 36)
             }
             .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
             .buttonStyle(.borderless)
-            .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 36, maxHeight: 36)
+            .frame(minHeight: 36)
             .truncationMode(.tail)
             .contentShape(Rectangle())
-            .lineLimit(1)
         }
     }
 }

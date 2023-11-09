@@ -50,7 +50,6 @@ public final class AppState: ObservableObject {
     public var replyPrivately: Message?
     public var lifeCycleState: AppLifeCycleState?
     public var objectsContainer: ObjectsContainer!
-    public var preferredLocale: Locale
 
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
@@ -59,8 +58,6 @@ public final class AppState: ObservableObject {
     }
 
     private init() {
-        let localIdentifier = Language.languages.first(where: {$0.language == Locale.preferredLanguages[0] })?.identifier
-        preferredLocale = Locale(identifier: localIdentifier ?? "en_US")
         NotificationCenter.default.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] value in

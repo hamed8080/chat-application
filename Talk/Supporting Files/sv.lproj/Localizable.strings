@@ -57,6 +57,10 @@
 "General.optional" = "(Frivillig)";
 "General.share" = "Dela med sig";
 "General.createAConversation" = "Starta en konversation";
+"General.Byte" = "Byte";
+"General.KB" = "KB";
+"General.MB" = "MB";
+"General.GB" = "GB";
 
 /* Tabs */
 "Tab.chats" = "Chattar";

@@ -10,6 +10,7 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct MusicView: View {
     @State var viewModel: DetailTabDownloaderViewModel
@@ -26,6 +27,7 @@ struct MusicView: View {
                 }
             }
         MessageListMusicView()
+            .padding(.top, 8)
             .environmentObject(viewModel)
     }
 }
@@ -80,7 +82,7 @@ struct MusicRowView: View {
                         .foregroundColor(Color.App.hint)
                         .font(.iransansCaption2)
                     Spacer()
-                    Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
+                    Text(message.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) ?? "")
                         .foregroundColor(Color.App.hint)
                         .font(.iransansCaption3)
                 }

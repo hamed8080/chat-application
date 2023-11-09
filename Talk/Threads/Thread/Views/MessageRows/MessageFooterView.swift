@@ -18,15 +18,15 @@ struct MessageFooterView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        HStack {           
-            Spacer()
+        HStack {
             if message.forwardInfo != nil {
-                Image(systemName: "arrowshape.backward.fill")
+                Image(systemName: "arrow.turn.up.right")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
                     .foregroundColor(Color.App.gray5)
                     .font(.subheadline)
+                    .fontWeight(.bold)
             }
             Text(viewModel.timeString)
                 .foregroundColor(Color.App.hint)

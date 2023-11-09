@@ -7,20 +7,21 @@
 
 import Additive
 import Foundation
+import TalkModels
 
 public extension Date {
     var localFormattedTime: String? {
-        timeAgoSinceDateCondense(local: AppState.shared.preferredLocale)
+        timeAgoSinceDateCondense(local: Language.preferredLocale)
     }
 
     var yearCondence: String? {
-        yearCondence(local: AppState.shared.preferredLocale)
+        yearCondence(local: Language.preferredLocale)
     }
 }
 
 public extension Int {
     var localFormattedTime : String? {
         let milisecondIntervalDate = Date().millisecondsSince1970 - Int64(self)
-        return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDateCondense(local: AppState.shared.preferredLocale)
+        return Date(milliseconds: milisecondIntervalDate).timeAgoSinceDateCondense(local: Language.preferredLocale)
     }
 }

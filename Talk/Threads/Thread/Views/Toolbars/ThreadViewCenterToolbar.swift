@@ -11,12 +11,13 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct ThreadViewCenterToolbar: View {
     @EnvironmentObject var appState: AppState
     var viewModel: ThreadViewModel
     @State private var title: String = ""
-    @State private var participantCount: Int?
+    @State private var participantsCount: Int?
     private let participantPublisher = NotificationCenter.default.publisher(for: .participant).compactMap { $0.object as? ParticipantEventTypes }
     private let threadPublisher = NotificationCenter.default.publisher(for: .thread).compactMap { $0.object as? ThreadEventTypes }
 
@@ -31,7 +32,7 @@ struct ThreadViewCenterToolbar: View {
                 Text(signalMessageText)
                     .foregroundColor(Color.App.blue)
                     .font(.iransansCaption2)
-            } else if viewModel.thread.group == true, let participantsCount = participantCount {
+            } else if viewModel.thread.group == true, let participantsCount = participantsCount?.localNumber(locale: Language.preferredLocale) {
                 let localizedLabel = String(localized: "Thread.Toolbar.participants")
                 Text("\(localizedLabel) \(participantsCount)")
                     .fixedSize()
@@ -43,18 +44,18 @@ struct ThreadViewCenterToolbar: View {
             title = newValue
         }
         .onChange(of: viewModel.thread.participantCount) { newValue in
-            participantCount = newValue
+            participantsCount = newValue
         }
         .onReceive(participantPublisher) { event in
             if case let .added(response) = event {
                 withAnimation {
-                    participantCount = (participantCount ?? 0) + (response.result?.count ?? 0)
+                    participantsCount = (participantsCount ?? 0) + (response.result?.count ?? 0)
                 }
             }
 
             if case let .deleted(response) = event {
                 withAnimation {
-                    participantCount = max(0, (participantCount ?? 0) - (response.result?.count ?? 0))
+                    participantsCount = max(0, (participantsCount ?? 0) - (response.result?.count ?? 0))
                 }
             }
         }
@@ -66,7 +67,7 @@ struct ThreadViewCenterToolbar: View {
             }
         }
         .onAppear {
-            participantCount = viewModel.thread.participantCount
+            participantsCount = viewModel.thread.participantCount
             title = viewModel.thread.computedTitle
         }
     }

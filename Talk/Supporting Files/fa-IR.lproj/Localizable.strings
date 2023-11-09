@@ -57,6 +57,10 @@
 "General.optional" = "(اختیاری)";
 "General.share" = "اشتراک گذاری";
 "General.createAConversation" = "ایجاد گفتگو";
+"General.Byte" = "بایت";
+"General.KB" = "کیلوبایت";
+"General.MB" = "مگابایت";
+"General.GB" = "گیگا بایت";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";

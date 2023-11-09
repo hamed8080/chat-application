@@ -23,7 +23,8 @@ public struct AppOverlayView<Content>: View where Content: View {
             if viewModel.isPresented {
                 if !viewModel.isError {
                     Rectangle()
-                        .background(.regularMaterial)
+                        .fill(Color.clear)
+                        .background(.ultraThinMaterial)
                         .onTapGesture {
                             viewModel.dialogView = nil
                         }

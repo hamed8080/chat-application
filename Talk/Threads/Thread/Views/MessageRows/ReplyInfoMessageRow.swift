@@ -16,6 +16,7 @@ struct ReplyInfoMessageRow: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
+    @State private var contentSize: CGSize = .zero
 
     var replyMessageColor: Color {
         if message.replyInfo?.deleted != nil {
@@ -37,19 +38,18 @@ struct ReplyInfoMessageRow: View {
                 RoundedRectangle(cornerRadius: 3)
                     .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
                     .frame(width: 3)
-                    .frame(minHeight: 0, maxHeight: 52)
-                VStack(spacing: 0) {
+                    .frame(height: contentSize.height)
+
+                VStack(alignment: .leading, spacing: 0) {
                     if let name = message.replyInfo?.participant?.name {
                         Text("\(name)")
                             .font(.iransansBoldCaption2)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             .foregroundStyle(viewModel.isMe ? Color.App.primary : Color.App.text)
                     }
 
                     if message.replyInfo?.deleted == true {
                         Text("Messages.deletedMessageReply")
                             .font(.iransansBoldCaption2)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             .foregroundColor(Color.App.red)
                     }
 
@@ -57,10 +57,9 @@ struct ReplyInfoMessageRow: View {
                         Text(message)
                             .font(.iransansCaption3)
                             .cornerRadius(8, corners: .allCorners)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                             .foregroundStyle(Color.App.gray3)
                             .lineLimit(2)
-                            .multilineTextAlignment(.leading)
+                            .multilineTextAlignment(viewModel.isMe ? .trailing : .leading)
                     }
 
                     if canShowIconFile {
@@ -77,17 +76,23 @@ struct ReplyInfoMessageRow: View {
                                 Text(fileStringName)
                                     .font(.iransansCaption2)
                                     .foregroundStyle(Color.App.blue)
-                                Spacer()
                             }
                         }
                     }
                 }
+                .background(
+                    GeometryReader { reader -> Color in
+                        DispatchQueue.main.async {
+                            contentSize = reader.size
+                        }
+                        return Color.clear
+                    }
+                )
             }
-            .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 52, maxHeight: 52)
         }
+        .frame(maxHeight: 64)
         .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
         .buttonStyle(.borderless)
-        .frame(minWidth: 0, maxWidth: viewModel.widthOfRow, minHeight: 52, maxHeight: 52)
         .truncationMode(.tail)
         .contentShape(Rectangle())
         .lineLimit(1)

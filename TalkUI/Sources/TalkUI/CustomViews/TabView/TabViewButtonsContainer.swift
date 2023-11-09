@@ -14,13 +14,13 @@ struct TabViewButtonsContainer: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 24) {
+            HStack(spacing: 28) {
                 ForEach(tabs) { tab in
                     let index = tabs.firstIndex(where: { $0.title == tab.title })
                     Button {
                         selectedTabIndex = index ?? 0
                     } label: {
-                        VStack {
+                        VStack(spacing: 12) {
                             HStack(spacing: 8) {
                                 if let icon = tab.icon {
                                     Image(systemName: icon)
@@ -44,12 +44,16 @@ struct TabViewButtonsContainer: View {
 
                             }
                         }
+                        .frame(height: 48)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .frame(height: 48)
+                    .contentShape(Rectangle())
                 }
             }
             .animation(.spring(), value: selectedTabIndex)
-            .padding([.top, .leading, .trailing])
+            .padding([.leading, .trailing])
         }
     }
 }

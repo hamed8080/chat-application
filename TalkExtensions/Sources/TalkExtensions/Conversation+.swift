@@ -7,6 +7,7 @@
 
 import ChatModels
 import Foundation
+import TalkModels
 
 public extension Conversation {
     /// Prevent reconstructing the thread in updates like from a cached version to a server version.
@@ -57,9 +58,7 @@ public extension Conversation {
 
     var unreadCountString: String? {
         if let unreadCount = unreadCount, unreadCount > 0 {
-            let nf = NumberFormatter()
-            nf.locale = Locale.current
-            let unreadCountString = nf.string(from: unreadCount as NSNumber)
+            let unreadCountString = unreadCount.localNumber(locale: Language.preferredLocale)
             let computedString = unreadCount < 1000 ? unreadCountString : "\(unreadCount / 1000)K+"
             return computedString
         } else {

@@ -27,6 +27,7 @@ struct LinkView: View {
                 }
             }
         MessageListLinkView()
+            .padding(.top, 8)
             .environmentObject(viewModel)
     }
 }

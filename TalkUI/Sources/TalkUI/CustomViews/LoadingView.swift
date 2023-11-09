@@ -28,7 +28,7 @@ public struct LoadingView: View {
                 .rotationEffect(Angle(degrees: $isAnimating.wrappedValue ? 360 : 0))
                 .onAppear {
                     DispatchQueue.main.async {
-                        withAnimation(.easeInOut(duration: 2).delay(0.05).repeatForever(autoreverses: true)) {
+                        withAnimation(.easeInOut(duration: 2).delay(0.05)) {
                             self.isAnimating.toggle()
                         }
                     }

@@ -149,7 +149,7 @@ struct DownloadPictureButtonView: View {
                     .cornerRadius(8)
                     .onAppear {
                         if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
-                            viewModel.downloadBlurImage(quality: 1.0, size: .MEDIUM)
+                            viewModel.downloadBlurImage(quality: 1.0, size: .SMALL)
                         }
                     }
             }

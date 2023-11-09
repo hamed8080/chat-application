@@ -20,4 +20,9 @@ public struct Language: Identifiable {
         .init(identifier: "es_ES", language: "es-ES", text: "Spanish"),
         .init(identifier: "ar_SA", language: "ar-SA", text: "Arabic")
     ]
+
+    public static var preferredLocale: Locale {
+        let localIdentifier = Language.languages.first(where: {$0.language == Locale.preferredLanguages[0] })?.identifier
+        return Locale(identifier: localIdentifier ?? "en_US")
+    }
 }

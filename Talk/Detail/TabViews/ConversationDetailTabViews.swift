@@ -29,8 +29,9 @@ struct ConversationDetailTabViews: View {
             .init(title: "Thread.Tabs.link", view: AnyView(LinkView(conversation: thread, messageType: .link)))
         ]
         if thread.group == false || thread.participantCount ?? 0 <= 2 {
-            tabs.removeFirst()
-        } else if thread.group == true {
+            tabs.removeAll(where: {$0.title == "Thread.Tabs.members"})
+        }
+        if thread.group == true || thread.type == .selfThread {
             tabs.removeAll(where: {$0.title == "Thread.Tabs.mutualgroup"})
         }
         self.tabs = tabs

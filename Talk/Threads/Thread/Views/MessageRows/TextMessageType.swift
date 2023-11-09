@@ -78,41 +78,44 @@ struct MutableMessageView: View {
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
 
     var body: some View {
-        VStack(spacing: 0) {
-            if !viewModel.isMe {
-                HStack {
-                    Text(verbatim: message.participant?.name ?? "")
-                        .foregroundStyle(Color.App.purple)
-                        .font(.iransansBody)
-                    Spacer()
-                }
+        VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 10) {
+            if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
+                DownloadFileView(viewModel: downloadVM)
+                    .frame(maxWidth: message.isImage ? viewModel.maxAllowedWidth : nil)
+                    .frame(maxHeight: message.isImage ? 256 : nil)
+                    .clipped()
+                    .contentShape(Rectangle())
+                    .cornerRadius(8)
             }
 
             if message.replyInfo != nil {
                 ReplyInfoMessageRow()
+                    .padding(.horizontal, 6)
                     .environmentObject(viewModel)
             }
 
             ForwardMessageRow()
+                .padding(.horizontal, 6)
 
             if message.isUploadMessage {
                 UploadMessageType(message: message)
                     .frame(maxHeight: viewModel.widthOfRow - padding)
             }
 
-            if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
-                DownloadFileView(viewModel: downloadVM)
-                    .frame(maxHeight: message.isImage ? viewModel.widthOfRow - padding : nil)
-                    .clipped()
-                    .contentShape(Rectangle())
-                    .cornerRadius(8)
+            if !viewModel.isMe {
+                HStack {
+                    Text(verbatim: message.participant?.name ?? "")
+                        .foregroundStyle(Color.App.purple)
+                        .font(.iransansBody)
+                }
+                .padding(.horizontal, 6)
             }
 
             // TODO: TEXT must be alignment and image must be fit
-            if !message.messageTitle.isEmpty {
+            if !message.messageTitle.isEmpty, message.forwardInfo == nil {
                 Text(viewModel.markdownTitle)
                     .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
-                    .padding(8)
+                    .padding(.horizontal, 6)
                     .font(.iransansBody)
                     .foregroundColor(Color.App.text)
                     .clipped()
@@ -122,7 +125,7 @@ struct MutableMessageView: View {
                 Text(addressDetail)
                     .foregroundStyle(Color.App.hint)
                     .font(.iransansCaption)
-                    .padding([.leading, .trailing])
+                    .padding(.horizontal, 6)
             }
 
             if message.isUnsentMessage {
@@ -136,7 +139,7 @@ struct MutableMessageView: View {
                         threadVM?.cancelUnsentMessage(message.uniqueId ?? "")
                     }
                 }
-                .padding()
+                .padding(.horizontal, 6)
                 .font(.iransansCaption.bold())
             }
 
@@ -144,9 +147,11 @@ struct MutableMessageView: View {
                 ReactionCountView(message: message)
                 MessageFooterView(message: message)
             }
+            .padding(.horizontal, 6)
         }
-        .frame(maxWidth: viewModel.widthOfRow)
-        .padding(message.isImage ? 4 : 10)
+        .frame(maxWidth: message.isImage ? viewModel.maxAllowedWidth : nil)
+        .padding(.top, message.isImage ? 0 : 6)
+        .padding(4)
         .contentShape(Rectangle())
         .background(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
         .overlay {

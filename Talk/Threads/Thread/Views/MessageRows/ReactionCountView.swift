@@ -10,23 +10,33 @@ import TalkViewModels
 import ChatModels
 import SwiftUI
 import Chat
+import TalkUI
+import TalkModels
 
 struct ReactionCountView: View {
     let message: Message
     private var messageId: Int { message.id ?? -1 }
     @State var reactionCountList: [ReactionCount] = []
     var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
+    @State private var contentSize: CGSize = .zero
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                Spacer()
                 ForEach(reactionCountList) { reactionCount in
                     ReactionCountRow(message: message, reactionCount: reactionCount)
                 }
-                Spacer()
             }
+            .background(
+                GeometryReader { geo -> Color in
+                    DispatchQueue.main.async {
+                        contentSize = geo.size
+                    }
+                    return Color.clear
+                }
+            )
         }
+        .frame(maxWidth: contentSize.width)
         .frame(height: reactionCountList.count == 0 ? 0 : nil)
         .animation(.easeInOut, value: reactionCountList.count)
         .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { notification in
@@ -61,7 +71,8 @@ struct ReactionCountRow: View {
                         .frame(width: 20, height: 20)
                         .font(.system(size: 14))
                 }
-                Text("\(count)")
+
+                Text(count.localNumber(locale: Language.preferredLocale) ?? "")
                     .font(.iransansBody)
                     .foregroundStyle(isMyReaction ? Color.App.white : Color.App.hint)
             }

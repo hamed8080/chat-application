@@ -53,7 +53,7 @@ public struct AudioRecordingView: View {
                         .font(.system(size: 24))
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(Color.App.pink.opacity(opacity), Color.App.primary, Color.App.primary)
-                        .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: opacity)
+                        .animation(.easeInOut(duration: 0.8), value: opacity)
                         .onAppear {
                             opacity = opacity == 1  ? 0 : 1
                         }

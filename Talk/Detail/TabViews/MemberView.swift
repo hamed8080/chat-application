@@ -18,7 +18,10 @@ struct MemberView: View {
 
     var body: some View {
         ParticipantSearchView()
-            .padding(.top)
+        AddParticipantButton(conversation: viewModel.thread)
+            .listRowSeparatorTint(.gray.opacity(0.2))
+            .listRowBackground(Color.App.bgPrimary)
+        StickyHeaderSection(header: "", height: 4)
         LazyVStack(spacing: 0) {
             if viewModel.searchedParticipants.count > 0 {
                 StickyHeaderSection(header: "Memebers.searchedMembers")
@@ -112,27 +115,29 @@ struct AddParticipantButton: View {
     let conversation: Conversation?
 
     var body: some View {
-        Button {
-            presentSheet.toggle()
-        } label: {
-            HStack(spacing: 24) {
-                Image(systemName: "person.badge.plus")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 24, height: 16)
-                    .foregroundStyle(Color.App.primary)
-                Text("Thread.invite")
-                    .font(.iransansBody)
-                Spacer()
-            }
-            .foregroundStyle(Color.App.primary)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 16)
-        }
-        .sheet(isPresented: $presentSheet) {
-            AddParticipantsToThreadView() { contacts in
-                addParticipantsToThread(contacts)
+        if conversation?.group == true, conversation?.admin == true{
+            Button {
                 presentSheet.toggle()
+            } label: {
+                HStack(spacing: 24) {
+                    Image(systemName: "person.badge.plus")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 16)
+                        .foregroundStyle(Color.App.primary)
+                    Text("Thread.invite")
+                        .font(.iransansBody)
+                    Spacer()
+                }
+                .foregroundStyle(Color.App.primary)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 16)
+            }
+            .sheet(isPresented: $presentSheet) {
+                AddParticipantsToThreadView() { contacts in
+                    addParticipantsToThread(contacts)
+                    presentSheet.toggle()
+                }
             }
         }
     }
@@ -179,7 +184,7 @@ struct ParticipantSearchView: View {
             }
             Spacer()
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, 8)
         .padding(.horizontal, 8)
         .background(Color.App.separator)
         .animation(.easeInOut, value: viewModel.searchText)

@@ -9,6 +9,7 @@ import SwiftUI
 import TalkViewModels
 import TalkExtensions
 import TalkUI
+import TalkModels
 
 struct SelectionView: View {
     let viewModel: ThreadViewModel
@@ -17,14 +18,14 @@ struct SelectionView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            SendContainerButton(image: "arrowshape.turn.up.right.fill") {
+            SendContainerButton(image: "arrow.turn.up.right") {
                 viewModel.sheetType = .threadPicker
                 viewModel.animateObjectWillChange()
             }
             HStack(spacing: 2) {
-                Text("\(selectedCount)")
+                Text(selectedCount.localNumber(locale: Language.preferredLocale) ?? "")
                     .font(.iransansBoldBody)
-                    .foregroundStyle(Color.App.hint)
+                    .foregroundStyle(Color.App.primary)
                 Text("General.selected")
                     .foregroundStyle(Color.App.hint)
                 if viewModel.forwardMessage != nil {

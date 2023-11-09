@@ -12,6 +12,7 @@ import SwiftUI
 import TalkViewModels
 import ChatModels
 import AVKit
+import TalkModels
 
 public struct DownloadFileView: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
@@ -26,7 +27,7 @@ public struct DownloadFileView: View {
     }
 
     public var body: some View {
-        HStack(alignment: .top) {
+        HStack(alignment: .center) {
             ZStack(alignment: .center) {
                 DownloadImagethumbnail(viewModel: viewModel)
                 MutableDownloadViews(config: config)
@@ -34,7 +35,6 @@ public struct DownloadFileView: View {
             DownloadFileStack(message: message, config: config)
         }
         .environmentObject(viewModel)
-        .frame(maxWidth: config.maxHeight)
         .sheet(isPresented: $shareDownloadedFile) {
             if let fileURL = viewModel.fileURL, let message {
                 ActivityViewControllerWrapper(activityItems: [fileURL], title: message.fileMetaData?.file?.originalName)
@@ -71,7 +71,6 @@ struct MutableDownloadViews: View {
                 Image(cgImage: scaledImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 204, height: 204)
             } else if message?.isVideo == true, let fileURL = viewModel.fileURL {
                 VideoPlayerView()
                     .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
@@ -206,7 +205,7 @@ struct OverlayDownloadImageButton: View {
             .background(Color.App.white.opacity(0.3))
             .cornerRadius(13)
 
-            if let fileSize = message?.fileMetaData?.file?.size?.toSizeString {
+            if let fileSize = message?.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) {
                 Text(fileSize)
                     .multilineTextAlignment(.leading)
                     .font(.iransansBoldCaption2)
@@ -242,7 +241,6 @@ struct DownloadImagethumbnail: View {
                 .blur(radius: 16, opaque: false)
                 .scaledToFill()
                 .zIndex(0)
-                .frame(width: 204, height: 204)
                 .onReceive(viewModel.objectWillChange) { _ in
                     if viewModel.thumbnailData != self.thumbnailData,
                        message?.isImage == true,
@@ -267,7 +265,7 @@ struct DownloadFileStack: View {
             VStack(alignment: .leading, spacing: 8) {
                 DownloadFileName(message: message, config: config)
                 AudioMessageProgress(message: message, config: config)
-                DownloadFileSize(message: message)
+                DownloadFileSize(message: message, config: config)
             }
         }
     }
@@ -309,9 +307,10 @@ struct DownloadFileName: View {
 
 struct DownloadFileSize: View {
     let message: Message?
+    let config: DownloadFileViewConfig
 
     var body: some View {
-        if let fileSize = message?.fileMetaData?.file?.size?.toSizeString, message?.isAudio == false {
+        if config.showFileSize, let fileSize = message?.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale), message?.isAudio == false {
             Text(fileSize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)

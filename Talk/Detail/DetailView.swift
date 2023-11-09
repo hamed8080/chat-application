@@ -13,6 +13,8 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkExtensions
+import Additive
+import TalkModels
 
 struct DetailView: View {
     @EnvironmentObject var viewModel: DetailViewModel
@@ -21,8 +23,8 @@ struct DetailView: View {
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
+        ScrollView(.vertical) {
+            VStack(alignment: .leading, spacing: 0) {
                 InfoView()
                 BioDescription()
                 UserName()
@@ -30,13 +32,11 @@ struct DetailView: View {
                 StickyHeaderSection(header: "", height: 10)
                 DetailTopButtons()
                     .padding([.top, .bottom])
-                StickyHeaderSection(header: "", height: 10)
-                AddParticipantButton(conversation: viewModel.thread)
-                    .listRowSeparatorTint(.gray.opacity(0.2))
-                    .listRowBackground(Color.App.bgPrimary)
+                StickyHeaderSection(header: "", height: 10)              
                 StickyHeaderSection(header: "", height: 10)
                 TabDetail(viewModel: viewModel)
             }
+            .frame(minWidth: 0, maxWidth: .infinity)
         }
         .background(Color.App.bgPrimary)
         .environmentObject(viewModel)
@@ -81,10 +81,6 @@ struct DetailView: View {
         }
         .animation(.easeInOut, value: viewModel.thread?.isPrivate == true)
         .animation(.interactiveSpring(), value: viewModel.isInEditMode)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            ListLoadingView(isLoading: Binding(get: { viewModel.participantViewModel?.isLoading ?? false },
-                                               set: { newValue in viewModel.participantViewModel?.isLoading = newValue }))
-        }
         .sheet(isPresented: $viewModel.showEditGroup) {
             EditGroup()
         }
@@ -106,7 +102,7 @@ struct InfoView: View {
     @StateObject private var fullScreenImageLoader: ImageLoaderViewModel = .init()
 
     var body: some View {
-        VStack(spacing: 12) {
+        HStack(spacing: 16) {
             let image = viewModel.url
             let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image ?? "") ?? .init()
             ImageLaoderView(imageLoader: avatarVM, url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
@@ -125,15 +121,15 @@ struct InfoView: View {
                     }
                 }
 
-            VStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(viewModel.title)
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.text)
 
                 let count = viewModel.thread?.participantCount
-                if viewModel.thread?.group == true, let count {
+                if viewModel.thread?.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
                     let label = String(localized: .init("Participant"))
-                    Text("\(label) \(count)")
+                    Text("\(label) \(countString)")
                         .font(.iransansCaption3)
                         .foregroundStyle(Color.App.hint)
                 }
@@ -149,9 +145,11 @@ struct InfoView: View {
                         .font(.iransansCaption3)
                 }
             }
+            Spacer()
         }
-        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, idealHeight: 178, maxHeight: .infinity)
-        .padding([.leading, .trailing, .top])
+        .frame(height: 56)
+        .frame(minWidth: 0, maxWidth: .infinity)
+        .padding(.all, 16)
         .background(Color.App.divider)
     }
 }
@@ -210,6 +208,7 @@ struct DetailTopButtons: View {
 
     var body: some View {
         HStack(spacing: 16) {
+            Spacer()
             if viewModel.thread == nil {
                 DetailViewButton(accessibilityText: "", icon: "message.fill") {
                     viewModel.createThread()
@@ -253,6 +252,7 @@ struct DetailTopButtons: View {
             } label: {
                 DetailViewButton(accessibilityText: "", icon: "ellipsis"){}
             }
+            Spacer()
         }
         .padding([.leading, .trailing])
         .buttonStyle(.plain)

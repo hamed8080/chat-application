@@ -29,13 +29,14 @@ struct SelectConversationOrContactList: View {
 
     var body: some View {
         CustomTabView(selectedTabIndex: $selectedTabId, tabs: tabs)
-        .environmentObject(viewModel)
-        .background(Color.App.bgPrimary)
-        .listStyle(.plain)
-        .safeAreaInset(edge: .top, spacing: 0) {
-            SearchInSelectConversationOrContact()
-                .environmentObject(viewModel)
-        }
+            .frame(minWidth: 0, maxWidth: .infinity)
+            .environmentObject(viewModel)
+            .background(Color.App.bgPrimary)
+            .listStyle(.plain)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                SearchInSelectConversationOrContact()
+                    .environmentObject(viewModel)
+            }
     }
 }
 

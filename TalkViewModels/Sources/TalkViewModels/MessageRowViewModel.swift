@@ -176,15 +176,15 @@ public final class MessageRowViewModel: ObservableObject {
         isNextMessageTheSameUser = threadVM?.thread.group == true && (threadVM?.isNextSameUser(message: message) == true) && message.participant != nil
         let message = message
         let isEnglish = message.message?.naturalTextAlignment == .leading
-        let widthOfRow = self.calculateWidthOfMessage()
+//        let widthOfRow = self.calculateWidthOfMessage()
         let markdownTitle = message.markdownTitle
         let addressDetail = await message.addressDetail
         let timeString = message.time?.date.localFormattedTime ?? ""
-        let fileSizeString = message.fileMetaData?.file?.size?.toSizeString
+        let fileSizeString = message.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale)
         await MainActor.run {
             self.addressDetail = addressDetail
             self.isEnglish = isEnglish
-            self.widthOfRow = widthOfRow
+//            self.widthOfRow = widthOfRow
             self.markdownTitle = markdownTitle
             self.timeString = timeString
             self.fileSizeString = fileSizeString
@@ -235,18 +235,18 @@ public final class MessageRowViewModel: ObservableObject {
         return 0
     }
 
-    public func calculateWidthOfMessage() -> CGFloat {
-        let imageWidth: CGFloat = CGFloat(message.fileMetaData?.file?.actualWidth ?? 0)
-        let messageWidth = message.messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) + 16
-        let headerWidth = headerWidth()
-        let footerWidth = footerWidth()
-        let videoWidth: CGFloat = message.isVideo ? 320 : 0
-        let uploadFileProgressWidth: CGFloat = message.isUploadMessage == true ? 128 : 0
-        let unsentFileWidth = unsentFileWidth()
-        let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth, uploadFileProgressWidth, unsentFileWidth, videoWidth].max() ?? 0
-        let calculatedWidth: CGFloat = min(contentWidth, maxAllowedWidth)
-        return calculatedWidth
-    }
+//    public func calculateWidthOfMessage() -> CGFloat {
+//        let imageWidth: CGFloat = CGFloat(message.fileMetaData?.file?.actualWidth ?? 0)
+//        let messageWidth = message.messageTitle.widthOfString(usingFont: UIFont.systemFont(ofSize: 16)) + 16
+//        let headerWidth = headerWidth()
+//        let footerWidth = footerWidth()
+//        let videoWidth: CGFloat = message.isVideo ? 320 : 0
+//        let uploadFileProgressWidth: CGFloat = message.isUploadMessage == true ? 128 : 0
+//        let unsentFileWidth = unsentFileWidth()
+//        let contentWidth = [imageWidth, messageWidth, headerWidth, footerWidth, uploadFileProgressWidth, unsentFileWidth, videoWidth].max() ?? 0
+//        let calculatedWidth: CGFloat = min(contentWidth, maxAllowedWidth)
+//        return calculatedWidth
+//    }
 
     deinit {
         downloadFileVM?.cancelObservers()

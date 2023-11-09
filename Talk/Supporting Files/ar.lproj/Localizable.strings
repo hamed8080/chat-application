@@ -56,6 +56,10 @@
 "General.optional" = "(خياري)";
 "General.share" = "يشارك";
 "General.createAConversation" = "بدء محادثة";
+"General.Byte" = "بايت";
+"General.KB" = "كيلو بايت";
+"General.MB" = "ميجابايت";
+"General.GB" = "جيجابايت";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";

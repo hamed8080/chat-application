@@ -12,6 +12,7 @@ import Combine
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
 
 struct VideoView: View {
     @State var viewModel: DetailTabDownloaderViewModel
@@ -28,6 +29,7 @@ struct VideoView: View {
                 }
             }
         MessageListVideoView()
+            .padding(.top, 8)
             .environmentObject(viewModel)
     }
 }
@@ -90,7 +92,7 @@ struct VideoRowView: View {
                         .foregroundColor(Color.App.hint)
                         .font(.iransansCaption2)
                     Spacer()
-                    Text(message.fileMetaData?.file?.size?.toSizeString ?? "")
+                    Text(message.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) ?? "")
                         .foregroundColor(Color.App.hint)
                         .font(.iransansCaption3)
                 }

@@ -49,7 +49,7 @@ struct SendContainerButton: View {
         }
         .frame(width: 36, height: 36)
         .buttonStyle(.borderless)
-        .fontWeight(.light)
+        .fontWeight(.medium)
     }
 }
 
