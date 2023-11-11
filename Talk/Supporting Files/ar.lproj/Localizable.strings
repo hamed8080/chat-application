@@ -35,7 +35,7 @@
 "General.lastName" = "اسم العائلة";
 "General.contact" = "جهة الاتصال";
 "General.done" = "تم";
-"General.nothingSelectedConversation" = "لم يتم تحديد أي شيء. يمكنك بدء محادثة الآن!";
+"General.nothingSelectedConversation" = "لبدء محادثة، انقر فوق الزر.";
 "General.start" = "بدء";
 "General.appName" = "Talk";
 "General.all" = "الكل";

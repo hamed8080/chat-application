@@ -208,6 +208,7 @@ struct ContactRowContainer: View {
                 if viewModel.isInSelectionMode {
                     viewModel.toggleSelectedContact(contact: contact)
                 } else {
+                    viewModel.closeConversationContextMenu = true
                     viewModel.closeBuilder()
                     AppState.shared.openThread(contact: contact)
                 }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import TalkViewModels
+import TalkModels
 
 public struct AudioPlayerView: View {
     @EnvironmentObject var audioPlayerVM: AVAudioPlayerViewModel
@@ -38,7 +39,7 @@ public struct AudioPlayerView: View {
                             Spacer()
                         }
                         Spacer()
-                        Text(verbatim: audioPlayerVM.currentTime.timerString ?? "")
+                        Text(verbatim: audioPlayerVM.currentTime.timerString(locale: Language.preferredLocale) ?? "")
                             .foregroundColor(.gray)
                             .animation(.none)
                             .font(.iransansCaption2)

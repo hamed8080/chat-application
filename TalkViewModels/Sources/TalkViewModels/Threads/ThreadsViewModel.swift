@@ -57,7 +57,6 @@ public final class ThreadsViewModel: ObservableObject {
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { $0.count > 1 }
             .removeDuplicates()
             .sink { [weak self] newValue in
                 if newValue.first == "@", newValue.count > 2 {
@@ -66,6 +65,8 @@ public final class ThreadsViewModel: ObservableObject {
                     self?.searchPublicThreads(String(newString))
                 } else if newValue.first != "@" {
                     self?.searchThreads(newValue)
+                } else if newValue.count == 0, self?.hasNext == false {
+                    self?.hasNext = true
                 }
             }
             .store(in: &cancelable)
@@ -182,27 +183,6 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public var filtered: [Conversation] {
-        if let folder = folder {
-            return folder.tagParticipants?
-                .compactMap(\.conversation?.id)
-                .compactMap { id in threads.first { $0.id == id } }
-            ?? []
-        } else if searchText.isEmpty {
-            return threads.filter { ($0.isArchive ?? false) == false }
-        } else {
-            let local = threads.filter { $0.title?.lowercased().contains(searchText.lowercased()) ?? false && $0.isArchive == false }
-            let server = searchedConversations
-            var endArray: [Conversation] = local
-            server.forEach { conversation in
-                if !local.contains(where: {$0.id == conversation.id}) {
-                    endArray.append(conversation)
-                }
-            }
-            return endArray
-        }
-    }
-
     public func loadMore() {
         if !canLoadMore { return }
         preparePaginiation()
@@ -210,7 +190,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
-        if let threads = response.result {
+        if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
             appendThreads(threads: threads)
             updateWidgetPreferenceThreads(threads)
         }

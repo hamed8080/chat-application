@@ -42,7 +42,7 @@ struct ReplyInfoMessageRow: View {
                             .font(.iransansCaption3)
                             .cornerRadius(8, corners: .allCorners)
                             .foregroundStyle(Color.App.gray3)
-                            .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
+                            .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
                             .lineLimit(2)
                             .truncationMode(.tail)
                     }

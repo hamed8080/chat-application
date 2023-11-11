@@ -38,6 +38,7 @@ struct ReplyMessageViewPlaceholder: View {
                     viewModel.clearSelection()
                     viewModel.animateObjectWillChange()
                 }
+                .padding(.trailing, 4)
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
         }

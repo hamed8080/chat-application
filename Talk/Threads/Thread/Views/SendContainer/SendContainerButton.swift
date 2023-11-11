@@ -40,7 +40,7 @@ struct SendContainerButton: View {
                     .scaledToFit()
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(imageColor)
-                    .frame(width: 14, height: 14)
+                    .frame(width: 12, height: 12)
             }
             if let text {
                 Text(text)

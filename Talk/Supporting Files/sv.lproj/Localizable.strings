@@ -35,7 +35,7 @@
 "General.lastName" = "Efternamn";
 "General.contact" = "Kontakt";
 "General.done" = "Klar";
-"General.nothingSelectedConversation" = "Inget har valts. Du kan starta en konversation nu!";
+"General.nothingSelectedConversation" = "För att starta en konversation, klicka på knappen.";
 "General.start" = "Starta";
 "General.appName" = "Talk";
 "General.nothingFound" = "Inget hittades";

@@ -22,7 +22,7 @@ struct ArchivesView: View {
             } label: {
                 ThreadRow(isSelected: isSelected, thread: thread)
                     .onAppear {
-                        if self.threadsVM.filtered.last == thread {
+                        if self.threadsVM.threads.last == thread {
                             threadsVM.loadMore()
                         }
                     }
@@ -35,7 +35,7 @@ struct ArchivesView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
-        .animation(.easeInOut, value: threadsVM.filtered.count)
+        .animation(.easeInOut, value: threadsVM.threads.count)
         .animation(.easeInOut, value: threadsVM.isLoading)
         .listStyle(.plain)
         .navigationBarBackButtonHidden(true)

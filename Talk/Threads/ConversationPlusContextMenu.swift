@@ -1,5 +1,5 @@
 //
-//  CreateConversationPicker.swift
+//  ConversationPlusContextMenu.swift
 //  Talk
 //
 //  Created by hamed on 11/3/23.
@@ -10,7 +10,7 @@ import TalkViewModels
 import ChatModels
 import TalkUI
 
-struct CreateConversationPicker: View {
+struct ConversationPlusContextMenu: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @EnvironmentObject var contactsVM: ContactsViewModel
     @State var showCreateConversationSheet = false
@@ -25,16 +25,18 @@ struct CreateConversationPicker: View {
                 Label("ThreadList.Toolbar.startNewChat", systemImage: "bubble.left.and.bubble.right.fill")
             }
 
-            Button {
-                showFastMessageSheet.toggle()
-            } label: {
-                Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
-            }
-
-            Button {
-                showJoinSheet.toggle()
-            } label: {
-                Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
+            if EnvironmentValues.isTalkTest {
+                Button {
+                    showFastMessageSheet.toggle()
+                } label: {
+                    Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
+                }
+                
+                Button {
+                    showJoinSheet.toggle()
+                } label: {
+                    Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
+                }
             }
         } label: {
             ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat")
@@ -48,9 +50,10 @@ struct CreateConversationPicker: View {
         }
         .onReceive(contactsVM.objectWillChange) {
             /// To remove view if successfully create a conversation group/channel.
-            if contactsVM.showConversaitonBuilder == false && showCreateConversationSheet == true {
+            if contactsVM.closeConversationContextMenu == true {
                 withAnimation {
                     showCreateConversationSheet = false
+                    contactsVM.closeConversationContextMenu = false
                 }
             }
         }
@@ -75,9 +78,9 @@ struct CreateConversationPicker: View {
         }
     }
 
-    struct CreateConversationPicker_Previews: PreviewProvider {
+    struct ConversationPlusContextMenu_Previews: PreviewProvider {
         static var previews: some View {
-            CreateConversationPicker()
+            ConversationPlusContextMenu()
         }
     }
 }

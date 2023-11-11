@@ -37,6 +37,8 @@ public final class ContactsViewModel: ObservableObject {
     @Published public var showCreateConversationDetail = false
     @Published public var editContact: Contact?
     @Published public var showAddOrEditContactSheet = false
+    /// When the user initiates a create group/channel with the plus button in the Conversation List.
+    @Published public var closeConversationContextMenu: Bool = false
     @Published public var isInSelectionMode = false {
         didSet {
             selectedContacts = []
@@ -400,6 +402,7 @@ public final class ContactsViewModel: ObservableObject {
 
     public func onEditGroup(_ response: ChatResponse<Conversation>) {
         if response.value(prepend: "EditConversation") != nil {
+            closeConversationContextMenu = true
             closeBuilder()
             isLoading = false
             showCreateConversationDetail = false

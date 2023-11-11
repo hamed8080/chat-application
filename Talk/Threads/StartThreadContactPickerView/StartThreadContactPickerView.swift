@@ -26,7 +26,6 @@ struct StartThreadContactPickerView: View {
                         viewModel.createConversationType = .normal
                         viewModel.showConversaitonBuilder.toggle()
                     }
-
                 } label: {
                     Label("Contacts.createGroup", systemImage: "person.2")
                         .foregroundStyle(Color.App.primary)

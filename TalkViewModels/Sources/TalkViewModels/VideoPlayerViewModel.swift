@@ -10,6 +10,7 @@ import Combine
 import Foundation
 import AVKit
 import OSLog
+import TalkModels
 
 public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLoaderDelegate {
     @Published public var player: AVPlayer?
@@ -79,7 +80,7 @@ public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLo
     public func startTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
             guard let elapsed = self?.player?.currentTime() else { return }
-            self?.timerString = elapsed.seconds.rounded().timerString ?? "00:00"
+            self?.timerString = elapsed.seconds.rounded().timerString(locale: Language.preferredLocale) ?? "00:00"
         }
     }
 

@@ -40,7 +40,10 @@ public final class ContextMenuModel: ObservableObject {
     }
 
     var stackX: CGFloat {
-        return min(containerSize.width - ((stackSize.width / 2) + 12), x)
+        let stackWidth = stackSize.width
+        let minX = (stackWidth / 2) + 12
+        let x = min(containerSize.width - ((stackSize.width / 2) + 12), x)
+        return max(x, minX)
     }
 
     var stackY: CGFloat {
@@ -54,13 +57,14 @@ public final class ContextMenuModel: ObservableObject {
             stackY = (y - itemHalf) - stackPadding - stackHeight + (stackHeight / 2) - stackPadding
         }
         let minY = (stackHeight / 2) + 12
-        print("stakcY: \(stackHeight)")
+        print("stackY: \(stackHeight)")
         return max(minY, stackY)
     }
 
     var x: CGFloat {
         let originalX: CGFloat = (itemWidth / 2) + ((globalPosition?.x ?? 0) - (localPosition?.x ?? 0))
-        let x = originalX
+        let minX = (itemWidth / 2) + 48
+        let x = max(minX, originalX)
         print("calculated x: \(x)")
         return x
     }

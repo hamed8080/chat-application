@@ -35,7 +35,7 @@
 "General.lastName" = "نام خانوادگی";
 "General.contact" = "مخاطب";
 "General.done" = "انجام";
-"General.nothingSelectedConversation" = "چیزی انتخاب نشده است. برای شروع یک گفتگو روی شروع کلیک کنید.";
+"General.nothingSelectedConversation" = "برای شروع یک گفتگو کلیک کنید.";
 "General.start" = "شروع";
 "General.appName" = "تاک";
 "General.nothingFound" = "چیزی پیدا نشد";

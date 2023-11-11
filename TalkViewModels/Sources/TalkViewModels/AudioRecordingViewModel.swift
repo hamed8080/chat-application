@@ -9,6 +9,7 @@ import AVFoundation
 import Chat
 import Foundation
 import OSLog
+import TalkModels
 
 protocol AudioRecordingViewModelprotocol: ObservableObject {
     var audioRecorder: AVAudioRecorder { get set }
@@ -58,7 +59,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
             guard let self = self else { return }
-            self.timerString = self.startDate.distance(to: Date()).timerString ?? ""
+            self.timerString = self.startDate.distance(to: Date()).timerString(locale: Language.preferredLocale) ?? ""
         }
         guard let url = recordingOutputPath else { return }
         do {

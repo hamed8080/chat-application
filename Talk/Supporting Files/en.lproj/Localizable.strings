@@ -35,7 +35,7 @@
 "General.lastName" = "Last Name";
 "General.contact" = "Contact";
 "General.done" = "Done";
-"General.nothingSelectedConversation" = "Nothing has been selected. You can start a conversation right now!";
+"General.nothingSelectedConversation" = "To start a conversation, click on the button.";
 "General.start" = "Start";
 "General.appName" = "Talk";
 "General.nothingFound" = "Nothing found";

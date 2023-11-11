@@ -15,10 +15,9 @@ import TalkViewModels
 
 struct ThreadView: View, DropDelegate {
     private var thread: Conversation { viewModel.thread }
-    @EnvironmentObject var viewModel: ThreadViewModel
+    let viewModel: ThreadViewModel
     let threadsVM: ThreadsViewModel
     @State var searchMessageText: String = ""
-    var sheetBinding: Binding<Bool> { Binding(get: { viewModel.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
         ThreadMessagesList(viewModel: viewModel)
@@ -65,18 +64,11 @@ struct ThreadView: View, DropDelegate {
             .onChange(of: searchMessageText) { value in
                 viewModel.searchInsideThread(text: value)
             }
-            .onChange(of: viewModel.editMessage) { _ in
-                viewModel.textMessage = viewModel.editMessage?.message ?? ""
-                viewModel.animateObjectWillChange()
-            }
             .onAppear {
                 viewModel.startFetchingHistory()
                 threadsVM.clearAvatarsOnSelectAnotherThread()
             }
-            .sheet(isPresented: sheetBinding) {
-                ThreadSheetView(sheetBinding: sheetBinding)
-                    .environmentObject(viewModel.attachmentsViewModel)
-            }
+            .background(SheetEmptyBackground())
             .onDrop(of: [.image], delegate: self)
     }
 
@@ -97,7 +89,7 @@ struct ThreadView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadView(threadsVM: ThreadsViewModel())
+        ThreadView(viewModel: .init(thread: .init(id: 1)), threadsVM: ThreadsViewModel())
             .environmentObject(ThreadViewModel(thread: MockData.thread))
             .environmentObject(AppState.shared)
             .onAppear {

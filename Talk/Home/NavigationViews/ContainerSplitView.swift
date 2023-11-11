@@ -83,7 +83,7 @@ struct NavigationTypeView: View {
         switch type {
         case .conversation(let conversation):
             if let viewModel = container.navVM.threadViewModel(threadId: conversation.id ?? 0) {
-                ThreadView(threadsVM: container.threadsVM)
+                ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
                     .environmentObject(container.appOverlayVM)
                     .environmentObject(viewModel)
             }

@@ -24,6 +24,7 @@ struct NothingHasBeenSelectedView: View {
                         .font(.iransansSubheadline)
                         .foregroundColor(Color.App.hint)
                         .multilineTextAlignment(.center)
+                        .frame(minWidth: 220)
                     Button {
                         contactsVM.showConversaitonBuilder.toggle()
                     } label: {
@@ -35,6 +36,7 @@ struct NothingHasBeenSelectedView: View {
                             Text("General.createAConversation")
                         }
                     }
+                    .fixedSize()
                     .font(.iransansBoldBody)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
@@ -47,12 +49,11 @@ struct NothingHasBeenSelectedView: View {
                             .stroke(Color.App.gray8, lineWidth: 1)
                     )
                 }
-                .frame(minWidth: 196)
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .padding([.leading, .trailing], 96)
             .padding([.bottom, .top], 96)
-            .background(.ultraThinMaterial)
+            .background(MixMaterialBackground().ignoresSafeArea())
         }
     }
 }

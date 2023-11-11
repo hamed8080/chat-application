@@ -282,7 +282,8 @@ struct AudioMessageProgress: View {
                 ProgressView(value: min(viewModel.currentTime / viewModel.duration, 1.0), total: 1.0)
                     .progressViewStyle(.linear)
                     .tint(Color.App.text)
-                Text("\(viewModel.currentTime.timerString ?? "") / \(viewModel.duration.timerString ?? "")")
+                    .frame(maxWidth: 172)
+                Text("\(viewModel.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(viewModel.duration.timerString(locale: Language.preferredLocale) ?? "")")
                     .foregroundColor(Color.App.white)
             }
         }

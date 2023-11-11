@@ -38,6 +38,7 @@ struct EditMessagePlaceholderView: View {
                     viewModel.textMessage = nil
                     viewModel.animateObjectWillChange()
                 }
+                .padding(.trailing, 4)
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
         }

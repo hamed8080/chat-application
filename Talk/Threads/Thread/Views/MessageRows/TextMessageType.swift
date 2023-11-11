@@ -17,7 +17,6 @@ struct TextMessageType: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     let viewModel: MessageRowViewModel
-    @State private var showReactionsOverlay = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -72,7 +71,6 @@ struct SelectMessageRadio: View {
 }
 
 struct MutableMessageView: View {
-    let padding: CGFloat = 4
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
@@ -170,19 +168,24 @@ struct MutableMessageView: View {
             }
         }, including: message.isVideo ? .subviews : .all)
         .contentShape(RoundedRectangle(cornerRadius: 12))
-        /// We should pass the width of the row when it gets updated to the context menu to get proper width of the view in modifier.
-        .customContextMenu(self: self
-            .environmentObject(viewModel)
-            .environmentObject(AppState.shared.objectsContainer.audioPlayerVM), width: viewModel.maxWidth ?? 256) {
-            MessageActionMenu()
-                .environmentObject(viewModel)
-        } topView: {
-            ReactionMenuView()
-                .environmentObject(viewModel)
-        }
+        .customContextMenu(self: selfMessage, menus: { contextMenuWithReactions })
         .onAppear {
             viewModel.calculate()
         }
+    }
+
+    private var selfMessage: some View {
+        self
+            .environmentObject(viewModel)
+            .environmentObject(AppState.shared.objectsContainer.audioPlayerVM)
+    }
+
+    private var contextMenuWithReactions: some View {
+        VStack {
+            ReactionMenuView()
+            MessageActionMenu()
+        }
+        .environmentObject(viewModel)
     }
 
     private var bottomLeftCorner: CGFloat {

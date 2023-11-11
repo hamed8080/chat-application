@@ -76,13 +76,13 @@ struct ThreadRow: View {
                     Spacer()
                     if let unreadCountString = thread.unreadCountString {
                         Text(unreadCountString)
-                            .font(.iransansCaption)
-                            .padding(8)
+                            .font(.iransansCaption2)
+                            .padding(thread.isCircleUnreadCount ? 4 : 6)
                             .frame(height: 24)
                             .frame(minWidth: 24)
                             .foregroundStyle(Color.App.textOverlay)
                             .background(isSelected ? Color.App.white : Color.App.primary)
-                            .cornerRadius(thread.isCircleUnreadCount ? 16 : 8, antialiased: true)
+                            .cornerRadius(thread.isCircleUnreadCount ? 16 : 10, antialiased: true)
                     }
                 }
                 ThreadEventView()

@@ -53,7 +53,7 @@ public extension Conversation {
     }
 
     var isCircleUnreadCount: Bool {
-        unreadCount ?? 0 < 10
+        unreadCount ?? 0 < 100
     }
 
     var unreadCountString: String? {

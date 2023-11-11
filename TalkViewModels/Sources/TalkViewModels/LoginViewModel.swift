@@ -174,7 +174,7 @@ public final class LoginViewModel: ObservableObject {
             guard let self else { return }
             if timerValue != 0 {
                 timerValue -= 1
-                timerString = timerValue.timerString ?? ""
+                timerString = timerValue.timerString(locale: Language.preferredLocale) ?? ""
             } else {
                 timerHasFinished = true
                 timer.invalidate()

@@ -27,7 +27,7 @@ struct CustomContextMenuContainer: ViewModifier {
                     if let mainView = viewModel.mainView {
                         mainView
                             .scaleEffect(x: viewModel.scale, y: viewModel.scale, anchor: .center)
-                            .position(x: viewModel.x, y: viewModel.y) /// cenetr of the view
+                            .position(x: viewModel.x, y: viewModel.y) /// center of the view
                             .onAppear(perform: viewModel.animateOnAppear)
                             .transition(.asymmetric(insertion: .identity, removal: .opacity))
                     }

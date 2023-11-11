@@ -14,14 +14,12 @@ struct ContextMenuModifire<V: View, T: View>: ViewModifier {
     @GestureState var isTouched: Bool = false
     @GestureState var isTouchedLocalPosition: Bool = false
     let menus: () -> V
-    let topView: () -> T
+    let topView: (() -> T)?
     let root: any View
-    let width: CGFloat
     @State var globalFrame: CGRect = .zero
 
-    init(root: any View, width: CGFloat, @ViewBuilder menus: @escaping () -> V, @ViewBuilder topView: @escaping () -> T) {
+    init(root: any View, @ViewBuilder menus: @escaping () -> V, topView: (() -> T)? = nil) {
         self.root = root
-        self.width = width
         self.menus = menus
         self.topView = topView
     }
@@ -59,9 +57,10 @@ struct ContextMenuModifire<V: View, T: View>: ViewModifier {
                     withAnimation(.easeInOut) {
                         viewModel.menus = AnyView(menus().environmentObject(viewModel))
                         scale = 1.2
-                        viewModel.itemWidth = width
                         viewModel.globalFrame = globalFrame
-                        viewModel.topView = AnyView(topView())
+                        if let topView {
+                            viewModel.topView = AnyView(topView())
+                        }
                         viewModel.mainView = AnyView(root)
                         viewModel.isPresented.toggle()
                     }
@@ -104,6 +103,7 @@ struct ContextMenuModifire<V: View, T: View>: ViewModifier {
     var frameRedaer: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
+                viewModel.itemWidth = reader.size.width
                 globalFrame = reader.frame(in: .global)
                 print("globalFrame width: \(globalFrame.width) height: \(globalFrame.height)  originX: \(globalFrame.origin.x) originY: \(globalFrame.origin.y)")
             }
@@ -113,10 +113,9 @@ struct ContextMenuModifire<V: View, T: View>: ViewModifier {
 
 public extension View {
     func customContextMenu<V: View, T: View>(self: any View,
-                                             width: CGFloat,
                                              @ViewBuilder menus: @escaping () -> V,
-                                             @ViewBuilder topView: @escaping () -> T
+                                             topView: (() -> T)? =  { EmptyView() }
     ) -> some View {
-        modifier(ContextMenuModifire(root: self, width: width, menus: menus, topView: topView))
+        modifier(ContextMenuModifire(root: self, menus: menus, topView: topView))
     }
 }

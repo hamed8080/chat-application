@@ -15,48 +15,38 @@ struct ThreadContentList: View {
     let container: ObjectsContainer
     @EnvironmentObject var threadsVM: ThreadsViewModel
     @State var selectedThreadId: Conversation.ID?
-    @EnvironmentObject var navVM: NavigationModel
     private var sheetBinding: Binding<Bool> { Binding(get: { threadsVM.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
-        List(threadsVM.filtered) { thread in
-            let isSelected = container.navVM.selectedThreadId == thread.id
-            Button {
-                navVM.append(thread: thread)
-            } label: {
-                ThreadRow(isSelected: isSelected, thread: thread)
-                    .onAppear {
-                        if self.threadsVM.filtered.last == thread {
-                            threadsVM.loadMore()
+        List {
+            ForEach(threadsVM.threads) { thread in
+                let isSelected = container.navVM.selectedThreadId == thread.id
+                Button {
+                    AppState.shared.objectsContainer.navVM.append(thread: thread)
+                } label: {
+                    ThreadRow(isSelected: isSelected, thread: thread)
+                        .onAppear {
+                            if self.threadsVM.threads.last == thread {
+                                threadsVM.loadMore()
+                            }
                         }
-                    }
+                }
+                .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
+                .listRowSeparatorTint(Color.App.separator)
+                .listRowBackground(isSelected ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
             }
-            .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
-            .listRowSeparatorTint(Color.App.separator)
-            .listRowBackground(isSelected ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
         }
-        .safeAreaInset(edge: .top) {
-            if UIApplication.shared.isInSlimMode {
-                AudioPlayerView()
-            }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            ConversationTopSafeAreaInset(container: container)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
-        .animation(.easeInOut, value: threadsVM.filtered.count)
+        .background(Color.App.bgPrimary)
+        .animation(.easeInOut, value: threadsVM.searchedConversations.count)
+        .animation(.easeInOut, value: threadsVM.threads.count)
         .animation(.easeInOut, value: threadsVM.isLoading)
         .listStyle(.plain)
-        .safeAreaInset(edge: .top, spacing: 0) {
-            ToolbarView(
-                title: "Tab.chats",
-                searchPlaceholder: "General.searchHere",
-                leadingViews: EmptyView().frame(width: 0, height: 0).hidden(),
-                centerViews: ConnectionStatusToolbar(),
-                trailingViews: CreateConversationPicker()
-            ) { searchValue in
-                threadsVM.searchText = searchValue
-            }
-        }
         .sheet(isPresented: sheetBinding) {
             threadsVM.sheetType = nil
             container.contactsVM.closeBuilder()
