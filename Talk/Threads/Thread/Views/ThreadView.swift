@@ -29,18 +29,20 @@ struct ThreadView: View, DropDelegate {
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
             .searchable(text: $searchMessageText, placement: .toolbar, prompt: "General.searchHere")
-            .overlay {
+            .background(SheetEmptyBackground())
+            .onDrop(of: [.image], delegate: self)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
                 SendContainer(viewModel: viewModel)
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                VStack(spacing: 0) {
+                    ThreadPinMessage(threadVM: viewModel)
+                    AudioPlayerView()
+                }
             }
             .overlay {
                 ThreadSearchList(searchText: $searchMessageText)
                     .environmentObject(viewModel)
-            }
-            .overlay {
-                ThreadPinMessage(threadVM: viewModel)
-            }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                AudioPlayerView()
             }
             .toolbar {
                 ToolbarItemGroup(placement: .navigation) {
@@ -68,8 +70,6 @@ struct ThreadView: View, DropDelegate {
                 viewModel.startFetchingHistory()
                 threadsVM.clearAvatarsOnSelectAnotherThread()
             }
-            .background(SheetEmptyBackground())
-            .onDrop(of: [.image], delegate: self)
     }
 
     func dropUpdated(info _: DropInfo) -> DropProposal? { DropProposal(operation: .copy) }

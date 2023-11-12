@@ -19,10 +19,6 @@ struct ThreadMessagesList: View {
             ScrollView {
                 MessagesLazyStack()
             }
-            .safeAreaInset(edge: .top) {
-                Spacer()
-                    .frame(height: viewModel.thread.pinMessage != nil ? 48 : 0)
-            }
             .background(ThreadbackgroundView(threadId: viewModel.threadId))
             .coordinateSpace(name: "scroll")
             .onPreferenceChange(ViewOffsetKey.self) { originY in
@@ -81,6 +77,7 @@ struct ThreadbackgroundView: View {
             .opacity(colorScheme == .dark ? 0.9 : 0.25)
             .colorInvert()
             .colorMultiply(colorScheme == .dark ? Color.App.white : Color.App.cyan)
+            .ignoresSafeArea()
     }
 }
 
@@ -107,10 +104,6 @@ struct MessagesLazyStack: View {
             }
         )
         .padding(.bottom)
-        .safeAreaInset(edge: .bottom) {
-            Spacer()
-                .frame(height: 72)
-        }
     }
 }
 

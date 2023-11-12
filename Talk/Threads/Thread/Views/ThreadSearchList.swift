@@ -33,10 +33,7 @@ struct ThreadSearchList: View {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .transition(.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .bottom)))
             .background(.ultraThickMaterial)
-            .safeAreaInset(edge: .top) {
-                Spacer()
-                    .frame(height: viewModel.thread.pinMessage != nil ? 48 : 0)
-            }
+            .environment(\.layoutDirection, .leftToRight)
         } else if viewModel.isInSearchMode {
             ZStack {
                 Text("General.nothingFound")
@@ -45,10 +42,6 @@ struct ThreadSearchList: View {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .background(.ultraThickMaterial)
             .transition(.opacity)
-            .safeAreaInset(edge: .top) {
-                Spacer()
-                    .frame(height: viewModel.thread.pinMessage != nil ? 48 : 0)
-            }
         }
     }
 }

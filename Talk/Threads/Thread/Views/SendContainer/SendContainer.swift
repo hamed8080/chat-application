@@ -24,7 +24,7 @@ struct SendContainer: View {
     @State var showActionButtons: Bool = false
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             if showActionButtons {
                 Rectangle()
                     .fill(Color.App.black.opacity(0.5))
@@ -35,7 +35,6 @@ struct SendContainer: View {
                     }
             }
             VStack(spacing: 0) {
-                Spacer()
                 MoveToBottomButton()
                 AttachmentFiles()
                     .environmentObject(viewModel.attachmentsViewModel)

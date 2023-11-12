@@ -35,7 +35,7 @@ struct ArchivesView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
-        .animation(.easeInOut, value: threadsVM.threads.count)
+        .animation(.easeInOut, value: threadsVM.archives.count)
         .animation(.easeInOut, value: threadsVM.isLoading)
         .listStyle(.plain)
         .navigationBarBackButtonHidden(true)

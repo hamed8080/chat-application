@@ -37,15 +37,21 @@ extension ThreadsViewModel: ArchiveThreadProtocol {
     }
 
     public func onArchive(_ response: ChatResponse<Int>) {
-        if response.result != nil, response.error == nil, let threadIndex = firstIndex(response.result) {
-            threads[threadIndex].isArchive = true
+        if response.result != nil, response.error == nil, let index = threads.firstIndex(where: {$0.id == response.result}) {
+            let conversation = threads[index]
+            conversation.isArchive = true
+            archives.append(conversation)
+            threads.remove(at: index)
             sort()
         }
     }
 
     public func onUNArchive(_ response: ChatResponse<Int>) {
-        if response.result != nil, response.error == nil, let threadIndex = firstIndex(response.result) {
-            threads[threadIndex].isArchive = false
+        if response.result != nil, response.error == nil, let index = archives.firstIndex(where: {$0.id == response.result}) {
+            let conversation = archives[index]
+            conversation.isArchive = false
+            archives.remove(at: index)
+            threads.append(conversation)
             sort()
         }
     }

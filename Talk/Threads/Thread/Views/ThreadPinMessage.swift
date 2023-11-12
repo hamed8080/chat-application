@@ -34,7 +34,7 @@ struct ThreadPinMessage: View {
     private let messagePublisher = NotificationCenter.default.publisher(for: .message).compactMap { $0.object as? MessageEventTypes }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             if message != nil {
                 HStack {
                     if isEnglish {
@@ -53,7 +53,6 @@ struct ThreadPinMessage: View {
                         threadVM.moveToTime(time, messageId)
                     }
                 }
-                Spacer()
             }
         }
         .onReceive(downloadPublisher) { event in

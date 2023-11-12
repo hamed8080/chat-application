@@ -37,7 +37,7 @@ struct MoveToBottomButton: View {
             .cornerRadius(20)
             .shadow(color: .gray.opacity(0.4), radius: 2)
             .padding([.trailing], 8)
-            .padding(.bottom, 8)
+            .padding(.bottom, isAtBottomOfTheList ? 0 : 8)
             .scaleEffect(x: isAtBottomOfTheList ? 0.0001 : 1.0, y: isAtBottomOfTheList ? 0.0001 : 1.0, anchor: .center)
             .overlay(alignment: .top) {
                 let unreadCount = viewModel.thread.unreadCount ?? 0

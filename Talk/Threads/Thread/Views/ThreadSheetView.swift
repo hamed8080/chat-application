@@ -9,6 +9,20 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 
+/// We have to use this due to in the ThreadView we used let viewModel in it will never trigger the sheet.
+struct SheetEmptyBackground: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+    var sheetBinding: Binding<Bool> { Binding(get: { viewModel.sheetType != nil }, set: { _ in }) }
+
+    var body: some View {
+        Color.clear
+            .sheet(isPresented: sheetBinding) {
+                ThreadSheetView(sheetBinding: sheetBinding)
+                    .environmentObject(viewModel.attachmentsViewModel)
+            }
+    }
+}
+
 struct ThreadSheetView: View {
     private var viewModel: ThreadViewModel? { attachmentsViewModel.threadViewModel }
     @EnvironmentObject var attachmentsViewModel: AttachmentsViewModel
