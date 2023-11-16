@@ -109,11 +109,15 @@ struct NavigationTypeView: View {
                 .environmentObject(container.appOverlayVM)
         case .notificationSettings(_):
             NotificationSettings()
+        case .automaticDownloadsSettings(_):
+            AutomaticDownloadSettings()
         case .support(_):
             SupportView()
         case .archives(_):
             ArchivesView(container: container)
                 .environmentObject(container.threadsVM)
+        case .messageParticipantsSeen(let model):
+            MessageParticipantsSeen(message: model.message)
         case .language(_):
             LanguageView(container: container)
         }

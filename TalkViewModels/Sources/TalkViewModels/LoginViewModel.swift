@@ -11,6 +11,7 @@ import UIKit
 import TalkModels
 import TalkExtensions
 import SwiftUI
+import Additive
 
 public final class LoginViewModel: ObservableObject {
     @Published public var isLoading = false
@@ -82,7 +83,7 @@ public final class LoginViewModel: ObservableObject {
     public func requestOTP(identity: String, keyId: String, resend: Bool = false) async {
         showLoading(true)
         var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).authorize)!)
-        urlReq.url?.append(queryItems: [.init(name: "identity", value: identity)])
+        urlReq.url?.append(queryItems: [.init(name: "identity", value: identity.replaceRTLNumbers())])
         urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post
         do {
@@ -113,7 +114,8 @@ public final class LoginViewModel: ObservableObject {
         guard let keyId = keyId else { return }
         showLoading(true)
         var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: selectedServerType).verify)!)
-        urlReq.url?.append(queryItems: [.init(name: "identity", value: text), .init(name: "otp", value: verifyCodes.joined(separator:"").replacingOccurrences(of: "\u{200B}", with: ""))])
+        let codes = verifyCodes.joined(separator:"").replacingOccurrences(of: "\u{200B}", with: "").replaceRTLNumbers()
+        urlReq.url?.append(queryItems: [.init(name: "identity", value: text.replaceRTLNumbers()), .init(name: "otp", value: codes)])
         urlReq.allHTTPHeaderFields = ["keyId": keyId]
         urlReq.method = .post
         do {

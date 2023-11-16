@@ -10,9 +10,11 @@ import ChatModels
 import SwiftUI
 import TalkExtensions
 import Chat
+import ActionableContextMenu
 import TalkUI
 
 struct ReactionMenuView: View {
+    @EnvironmentObject var contextMenuVM: ContextMenuModel
     @EnvironmentObject var viewModel: MessageRowViewModel
     var currentSelectedReaction: Reaction? { ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(viewModel.message.id ?? 0)}
     @State var show = false
@@ -26,14 +28,15 @@ struct ReactionMenuView: View {
                     Button {
                         if let messageId = viewModel.message.id, let conversationId = viewModel.threadVM?.threadId {
                             ReactionViewModel.shared.reaction(sticker, messageId: messageId, conversationId: conversationId)
+                            contextMenuVM.hide()
                         }
                     } label: {
                         Text(verbatim: sticker.emoji)
                             .frame(width: 26, height: 26)
-                            .font(.system(size: 26))
+                            .font(.system(size: 24))
                             .padding(4)
-                            .background(currentSelectedReaction?.reaction == sticker ? Color.App.blue : Color.clear)
-                            .cornerRadius(currentSelectedReaction?.reaction == sticker ? 4 : 0)
+                            .background(currentSelectedReaction?.reaction == sticker ? Color.App.primary.opacity(0.2) : Color.clear)
+                            .cornerRadius(currentSelectedReaction?.reaction == sticker ? 20 : 0)
                     }
                     .padding([isFirst ? .leading : isLast ? .trailing : .all], isFirst || isLast ? 16 : 0)
                     .scaleEffect(x: show ? 1.0 : 0.001, y: show ? 1.0 : 0.001, anchor: .center)

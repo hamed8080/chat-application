@@ -15,18 +15,50 @@ public struct AppSettingsModel: Codable, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(isSyncOn)
         hasher.combine(notificationSettings.data)
+        hasher.combine(automaticDownloadSettings.data)
     }
+
     static let key = "AppSettingsKey"
     public var isSyncOn: Bool = false
     public var notificationSettings: NotificationSettingModel = .init()
+    public var automaticDownloadSettings: AutomaticDownloadSettingModel = .init()
 
     public func save() {
         UserDefaults.standard.setValue(codable: self, forKey: AppSettingsModel.key)
+        NotificationCenter.default.post(name: .appSettingsModel, object: nil)
     }
 
     public static func restore() -> AppSettingsModel {
         let value: AppSettingsModel? = UserDefaults.standard.codableValue(forKey: AppSettingsModel.key)
         return value ?? .init()
+    }
+}
+
+/// Automatic download settings.
+public struct AutomaticDownloadSettingModel: Codable {
+    public var downloadImages: Bool = true
+    public var downloadFiles: Bool = true
+    public var privateChat: ChatSettings = .init()
+    public var channel: ChannelSettings = .init()
+    public var group: GroupSettings = .init()
+
+    public struct ChatSettings: Codable {
+        public var downloadImages: Bool = true
+        public var downloadFiles: Bool = true
+    }
+
+    public struct ChannelSettings: Codable {
+        public var downloadImages: Bool = false
+        public var downloadFiles: Bool = false
+    }
+
+    public struct GroupSettings: Codable {
+        public var downloadImages: Bool = false
+        public var downloadFiles: Bool = false
+    }
+
+    public func reset() {
+
     }
 }
 

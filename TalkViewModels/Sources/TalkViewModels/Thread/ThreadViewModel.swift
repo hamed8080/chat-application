@@ -89,13 +89,19 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }()
 
     public var messageViewModels: [MessageRowViewModel] = []
+    var model: AppSettingsModel
+    public var canDownloadImages: Bool = false
+    public var canDownloadFiles: Bool = false
 
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.readOnly = readOnly
         self.thread = thread
         self.threadsViewModel = threadsViewModel
         self.participantsViewModel = ParticipantsViewModel(thread: thread)
+        model = AppSettingsModel.restore()
         setupNotificationObservers()
+        self.canDownloadImages = canDownloadImagesInConversation()
+        self.canDownloadFiles = canDownloadFilesInConversation()
     }
 
     private func setupNotificationObservers() {
@@ -116,6 +122,16 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             .removeDuplicates()
             .sink { [weak self] newVlaue in
                 self?.sendSeen(for: newVlaue)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.default.publisher(for: .appSettingsModel)
+            .sink { [weak self] _ in
+                if let self {
+                    self.model = AppSettingsModel.restore()
+                    self.canDownloadImages = self.canDownloadImagesInConversation()
+                    self.canDownloadFiles = self.canDownloadFilesInConversation()
+                }
             }
             .store(in: &cancelable)
 

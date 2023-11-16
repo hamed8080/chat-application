@@ -21,22 +21,14 @@ struct ParticipantMessageType: View {
             let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
             let markdownText = try! AttributedString(markdown: "\(message.addOrRemoveParticipantString) - \(date)")
             Text(markdownText)
-                .foregroundColor(Color.App.primary.opacity(0.8))
-                .font(.iransansBoldCaption2)
+                .foregroundStyle(Color.App.text)
+                .font(.iransansSubheadline)
                 .padding(2)
-
-            if let iconName = message.iconName {
-                Image(systemName: iconName)
-                    .resizable()
-                    .frame(width: 12, height: 12)
-                    .foregroundColor(message.type == .participantJoin ? Color.App.green : Color.App.red)
-                    .padding([.leading, .trailing], 6)
-                    .scaledToFit()
-            }
         }
-        .padding([.leading, .trailing])
-        .background(colorScheme == .light ? Color(CGColor(red: 0.718, green: 0.718, blue: 0.718, alpha: 0.8)) : Color.App.gray1)
-        .cornerRadius(6)
+        .padding(.horizontal, 16)
+        .background(Color.App.black.opacity(0.2))
+        .cornerRadius(25)
         .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
     }
 }

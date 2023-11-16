@@ -129,9 +129,9 @@
 
 /* Message */
 "Message.Participant.left" = "غادر %@ المجموعة";
-"Message.Participant.removed" = "تمت إزالة %@ بواسطة %@";
+"Message.Participant.removed" = "قام %@ بإزالة %@ من المجموعة";
 "Message.Participant.joined" = "انضم %@ إلى المجموعة";
-"Message.Participant.added" = "تمت إضافة %@ بواسطة %@";
+"Message.Participant.added" = "وأضاف %@ %@ إلى المجموعة";
 
 /* System Events */
 "SMT.isTyping" = "يكتب...";
@@ -262,6 +262,7 @@
 "Settings.manageCalls" = "إدارة المكالمات";
 "Settings.logout" = "تسجيل الخروج";
 "Settings.notifictionSettings" = "إعدادات الإشعار";
+"Settings.download" = "إعدادات التنزيل";
 "Settings.support" = "دعم";
 "Settings.userName" = "اسم المستخدم";
 "Settings.phoneNumber" = "رقم التليفون";
@@ -311,3 +312,17 @@
 
 /* Members */
 "Memebers.searchedMembers" = "الأعضاء الذين تم البحث عنهم";
+
+/* Automatic downloads */
+"Tab.download" = "تحميل";
+"Download.images" = "الصور";
+"Download.files" = "الملفات";
+"Download.automaticallyDownloadPrivateImages" = "تحميل الصور تلقائيًا في المحادثة الخاصة";
+"Download.automaticallyDownloadPrivateFiles" = "تحميل الملفات تلقائيًا في المحادثة الخاصة";
+"Download.automaticallyDownloadGroupImages" = "تحميل الصور تلقائيًا في المجموعة";
+"Download.automaticallyDownloadGroupFiles" = "تحميل الملفات تلقائيًا في المجموعة";
+"Download.automaticallyDownloadChannelImages" = "تحميل الصور تلقائيًا في القناة";
+"Download.automaticallyDownloadChannelFiles" = "تحميل الملفات تلقائيًا في القناة";
+
+/* Message Seen Participants */
+"SeenParticipants.title" = "شوهد المشاركون";

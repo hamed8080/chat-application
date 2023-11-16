@@ -14,7 +14,8 @@ import TalkUI
 import TalkModels
 
 struct ReactionCountView: View {
-    let message: Message
+    let viewModel: MessageRowViewModel
+    var message: Message { viewModel.message }
     private var messageId: Int { message.id ?? -1 }
     @State var reactionCountList: [ReactionCount] = []
     var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
@@ -39,6 +40,7 @@ struct ReactionCountView: View {
         .frame(maxWidth: contentSize.width)
         .frame(height: reactionCountList.count == 0 ? 0 : nil)
         .animation(.easeInOut, value: reactionCountList.count)
+        .padding(.horizontal, 6)
         .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { notification in
             if notification.object as? Int == messageId {
                 setCountList()
@@ -82,6 +84,7 @@ struct ReactionCountRow: View {
         .padding([.top, .bottom], count > 0 ? 6 : 0)
         .background(background)
         .cornerRadius(18)
+        .contentShape(RoundedRectangle(cornerRadius: 18))
         .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { notification in
             if notification.object as? Int == messageId {
                 onNewValue(notification.object as? Int)
@@ -95,12 +98,11 @@ struct ReactionCountRow: View {
                 AppState.shared.objectsContainer.reactions.reaction(tappedStciker, messageId: messageId, conversationId: conversationId)
             }
         }
-        .onLongPressGesture {
+        .customContextMenu(self: self) {
             let selectedEmojiTabId = "\(reactionCount.sticker?.emoji ?? "all") \(reactionCount.count ?? 0)"
-            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(
-                MessageReactionDetailView(message: message, selectedStickerTabId: selectedEmojiTabId)
-                    .frame(width: 300, height: 400)
-            )
+            MessageReactionDetailView(message: message, selectedStickerTabId: selectedEmojiTabId)
+                .frame(width: 300, height: 400)
+                .cornerRadius(12)
         }
     }
     var isMyReaction: Bool {
@@ -127,12 +129,12 @@ struct ReactionCountRow: View {
 
 struct ReactionCountView_Previews: PreviewProvider {
     static var previews: some View {
-        ReactionCountView(message: .init(id: 1),
-                          reactionCountList: [
-                            .init(sticker: .cry, count: 10),
-                            .init(sticker: .happy, count: 40),
-                            .init(sticker: .hifive, count: 2),
-                            .init(sticker: .like, count: 5),
-                          ])
+        ReactionCountView(viewModel: .init(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))),
+                                           reactionCountList: [
+                                            .init(sticker: .cry, count: 10),
+                                            .init(sticker: .happy, count: 40),
+                                            .init(sticker: .hifive, count: 2),
+                                            .init(sticker: .like, count: 5),
+                                           ])
     }
 }

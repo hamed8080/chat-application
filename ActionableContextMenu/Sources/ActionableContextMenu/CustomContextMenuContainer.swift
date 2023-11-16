@@ -20,7 +20,7 @@ struct CustomContextMenuContainer: ViewModifier {
                     Rectangle()
                         .fill(Color.clear)
                         .background(.ultraThinMaterial)
-                        .onTapGesture(perform: viewModel.onTapBackground)
+                        .onTapGesture(perform: viewModel.hide)
                         .transition(.opacity)
                         .background(containerSafeAreaReader)
 

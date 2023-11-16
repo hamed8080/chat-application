@@ -146,9 +146,9 @@ public extension Message {
         case .joinThread:
             return String(format: NSLocalizedString("Message.Participant.joined", comment: ""), participantName)
         case .removedFromThread:
-            return String(format: NSLocalizedString("Message.Participant.removed", comment: ""), effectedName, participantName)
+            return String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
         case .addParticipant:
-            return String(format: NSLocalizedString("Message.Participant.added", comment: ""), effectedName, participantName)
+            return String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedName)
         default:
             return ""
         }

@@ -129,9 +129,9 @@
 
 /* Message */
 "Message.Participant.left" = "%@ has left the group";
-"Message.Participant.removed" = "%@ remvoed by %@";
+"Message.Participant.removed" = "%@ remvoed %@ from the group";
 "Message.Participant.joined" = "%@ has joind the group";
-"Message.Participant.added" = "%@ added by %@";
+"Message.Participant.added" = "%@ added %@";
 
 /* System Events */
 "SMT.isTyping" = "is typing...";
@@ -262,6 +262,7 @@
 "Settings.manageCalls" = "Manage Calls";
 "Settings.logout" = "Logout";
 "Settings.notifictionSettings" = "Notification Settings";
+"Settings.download" = "Download Settings";
 "Settings.support" = "Support";
 "Settings.userName" = "Username";
 "Settings.phoneNumber" = "Phone Number";
@@ -311,3 +312,18 @@
 
 /* Members */
 "Memebers.searchedMembers" = "Searched Members";
+
+/* Automatic downloads */
+"Tab.download" = "Download";
+"Tab.download" = "Download";
+"Download.images" = "Images";
+"Download.files" = "Files";
+"Download.automaticallyDownloadPrivateImages" = "Download images in a private conversation automatically";
+"Download.automaticallyDownloadPrivateFiles" = "Download files in a private conversation automatically";
+"Download.automaticallyDownloadGroupImages" = "Download images in a group automatically";
+"Download.automaticallyDownloadGroupFiles" = "Download files in a group automatically";
+"Download.automaticallyDownloadChannelImages" = "Download images in a channel automatically";
+"Download.automaticallyDownloadChannelFiles" = "Download files in a channel automatically";
+
+/* Message Seen Participants */
+"SeenParticipants.title" = "Seen participants";

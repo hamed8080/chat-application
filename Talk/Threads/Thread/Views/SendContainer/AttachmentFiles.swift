@@ -136,14 +136,23 @@ struct ExpandHeader: View {
                 .font(.iransansBoldBody)
                 .padding(.leading, 8)
             Spacer()
+            Button {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2)) {
+                    viewModel.clear()
+                }
+            } label: {
+                Text("General.cancel")
+                    .foregroundStyle(Color.App.red)
+                    .font(.iransansCaption)
+            }
             Image(systemName: viewModel.isExpanded ? "chevron.down" : "chevron.up")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 12, height: 12)
-                .padding()
-                .contentShape(Rectangle())
                 .foregroundStyle(Color.App.hint)
                 .frame(width: 36, height: 36)
+                .padding(.horizontal, 4)
+                .contentShape(Rectangle())
         }
         .frame(height: 36)
         .padding(8)

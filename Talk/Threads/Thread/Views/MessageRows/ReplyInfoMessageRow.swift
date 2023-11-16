@@ -18,69 +18,73 @@ struct ReplyInfoMessageRow: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        Button {
-            if let time = message.replyInfo?.repliedToMessageTime, let repliedToMessageId = message.replyInfo?.repliedToMessageId {
-                threadVM?.moveToTime(time, repliedToMessageId)
-            }
-        } label: {
-            HStack(spacing: 8) {
-                VStack(alignment: .leading, spacing: 4) {
-                    if let name = message.replyInfo?.participant?.name {
-                        Text("\(name)")
-                            .font(.iransansBoldCaption2)
-                            .foregroundStyle(viewModel.isMe ? Color.App.primary : Color.App.text)
-                    }
+        if message.replyInfo != nil {
+            Button {
+                if let time = message.replyInfo?.repliedToMessageTime, let repliedToMessageId = message.replyInfo?.repliedToMessageId {
+                    threadVM?.moveToTime(time, repliedToMessageId)
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        if let name = message.replyInfo?.participant?.name {
+                            Text("\(name)")
+                                .font(.iransansBoldCaption2)
+                                .foregroundStyle(viewModel.isMe ? Color.App.primary : Color.App.text)
+                        }
 
-                    if message.replyInfo?.deleted == true {
-                        Text("Messages.deletedMessageReply")
-                            .font(.iransansBoldCaption2)
-                            .foregroundColor(Color.App.red)
-                    }
+                        if message.replyInfo?.deleted == true {
+                            Text("Messages.deletedMessageReply")
+                                .font(.iransansBoldCaption2)
+                                .foregroundColor(Color.App.red)
+                        }
 
-                    if let message = message.replyInfo?.message, !message.isEmpty {
-                        Text(message)
-                            .font(.iransansCaption3)
-                            .cornerRadius(8, corners: .allCorners)
-                            .foregroundStyle(Color.App.gray3)
-                            .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
-                            .lineLimit(2)
-                            .truncationMode(.tail)
-                    }
-                    if viewModel.canShowIconFile {
-                        HStack {
-                            if let iconName = self.message.iconName {
-                                Image(systemName: iconName)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 16, height: 16)
-                                    .foregroundColor(Color.App.blue)
-                                    .clipped()
-                            }
+                        if let message = message.replyInfo?.message, !message.isEmpty {
+                            Text(message)
+                                .font(.iransansCaption3)
+                                .cornerRadius(8, corners: .allCorners)
+                                .foregroundStyle(Color.App.gray3)
+                                .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
+                                .lineLimit(2)
+                                .truncationMode(.tail)
+                        }
+                        if viewModel.canShowIconFile {
+                            HStack {
+                                if let iconName = self.message.iconName {
+                                    Image(systemName: iconName)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 16, height: 16)
+                                        .foregroundColor(Color.App.blue)
+                                        .clipped()
+                                }
 
-                            if let fileStringName = self.message.fileStringName {
-                                Text(fileStringName)
-                                    .font(.iransansCaption2)
-                                    .foregroundStyle(Color.App.blue)
-                                    .lineLimit(1)
+                                if let fileStringName = self.message.fileStringName {
+                                    Text(fileStringName)
+                                        .font(.iransansCaption2)
+                                        .foregroundStyle(Color.App.blue)
+                                        .lineLimit(1)
+                                }
                             }
                         }
                     }
-                }
-                .padding(.leading, 4)
-                .overlay(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .stroke(lineWidth: 1.5)
-                        .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
-                        .frame(maxWidth: 1.5)
-                        .offset(x: -4)
+                    .padding(.leading, 4)
+                    .overlay(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 3)
+                            .stroke(lineWidth: 1.5)
+                            .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
+                            .frame(maxWidth: 1.5)
+                            .offset(x: -4)
+                    }
                 }
             }
+            .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
+            .buttonStyle(.borderless)
+            .truncationMode(.tail)
+            .contentShape(Rectangle())
+            .frame(height: 60)
+                .padding(.horizontal, 6)
+                .environmentObject(viewModel)
         }
-        .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
-        .buttonStyle(.borderless)
-        .truncationMode(.tail)
-        .contentShape(Rectangle())
-        .frame(height: 60)
     }
 }
 

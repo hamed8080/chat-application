@@ -33,6 +33,7 @@ public extension Notification.Name {
     static let reactionMessageUpdated = Notification.Name("reactionMessageUpdated")
     static let galleryDownload = Notification.Name("galleryDownload")
     static let selectTab = Notification.Name("selectTab")
+    static let appSettingsModel = Notification.Name("appSettingsModel")
 }
 
 

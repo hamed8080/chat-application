@@ -41,8 +41,8 @@ public final class ContextMenuModel: ObservableObject {
 
     var stackX: CGFloat {
         let stackWidth = stackSize.width
-        let minX = (stackWidth / 2) + 12
-        let x = min(containerSize.width - ((stackSize.width / 2) + 12), x)
+        let minX = (stackWidth / 2) + 32
+        let x = min(containerSize.width - ((stackSize.width / 2) + 32), x)
         return max(x, minX)
     }
 
@@ -80,7 +80,7 @@ public final class ContextMenuModel: ObservableObject {
         return centerY
     }
 
-    func onTapBackground() {
+    public func hide() {
         withAnimation {
             scale = 1.0
             isPresented.toggle()

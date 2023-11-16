@@ -12,6 +12,7 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import Combine
+import TalkModels
 
 struct TextMessageType: View {
     private var message: Message { viewModel.message }
@@ -77,74 +78,23 @@ struct MutableMessageView: View {
 
     var body: some View {
         VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 10) {
-            if message.isFileType, message.id ?? 0 > 0, let downloadVM = viewModel.downloadFileVM {
-                DownloadFileView(viewModel: downloadVM)
-                    .frame(maxWidth: message.isImage ? (viewModel.maxWidth ?? 0) - 8 : nil, maxHeight: message.isImage ? 256 : nil)
-                    .clipped()
-                    .contentShape(Rectangle())
-                    .cornerRadius(8)
-            }
-
-            if message.replyInfo != nil {
-                ReplyInfoMessageRow()
-                    .padding(.horizontal, 6)
-                    .environmentObject(viewModel)
-            }
-
-            ForwardMessageRow()
-                .padding(.horizontal, 6)
-
-            if message.isUploadMessage {
-                UploadMessageType(message: message)
-                    .frame(maxHeight: viewModel.maxWidth)
-            }
-
-            if !viewModel.isMe {
-                HStack {
-                    Text(verbatim: message.participant?.name ?? "")
-                        .foregroundStyle(Color.App.purple)
-                        .font(.iransansBody)
-                }
-                .padding(.horizontal, 6)
-            }
-
-            // TODO: TEXT must be alignment and image must be fit
-            if !message.messageTitle.isEmpty, message.forwardInfo == nil {
-                Text(viewModel.markdownTitle)
-                    .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
-                    .padding(.horizontal, 6)
-                    .font(.iransansBody)
-                    .foregroundColor(Color.App.text)
-                    .clipped()
-            }
-
-            if let addressDetail = viewModel.addressDetail {
-                Text(addressDetail)
-                    .foregroundStyle(Color.App.hint)
-                    .font(.iransansCaption)
-                    .padding(.horizontal, 6)
-            }
-
-            if message.isUnsentMessage {
-                HStack {
-                    Spacer()
-                    Button("Messages.resend") {
-                        threadVM?.resendUnsetMessage(message)
-                    }
-
-                    Button("General.cancel", role: .destructive) {
-                        threadVM?.cancelUnsentMessage(message.uniqueId ?? "")
-                    }
-                }
-                .padding(.horizontal, 6)
-                .font(.iransansCaption.bold())
-            }
-
             Group {
-                ReactionCountView(message: message)
-                MessageFooterView(message: message)
+                MessageRowFileDownloader(viewModel: viewModel)
+                MessageRowImageDownloader(viewModel: viewModel)
+                MessageRowVideoDownloader(viewModel: viewModel)
+                MessageRowAudioDownloader(viewModel: viewModel)
             }
-            .padding(.horizontal, 6)
+            ReplyInfoMessageRow()
+            ForwardMessageRow()
+            UploadMessageType(message: message, maxWidth: viewModel.maxWidth)
+            GroupParticipantNameView()
+            MessageTextView()
+            MapAddressTextView()
+            UnsentMessageView()
+            Group {
+                ReactionCountView(viewModel: viewModel)
+                MessageFooterView()
+            }
         }
         .padding(.top, message.isImage ? 0 : 6)
         .padding(4)

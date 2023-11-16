@@ -130,9 +130,9 @@
 
 /* Mensaje */
 "Message.Participant.left" = "%@ ha abandonado el grupo";
-"Message.Participant.removed" = "%@ eliminado por %@";
+"Message.Participant.removed" = "%@ eliminó a %@ del grupo";
 "Message.Participant.joined" = "%@ se ha unido al grupo";
-"Message.Participant.added" = "%@ añadido por %@";
+"Message.Participant.added" = "%@ agregó a %@ al grupo";
 
 /* Eventos del sistema */
 "SMT.isTyping" = "está escribiendo...";
@@ -263,6 +263,7 @@
 "Settings.manageCalls" = "Administrar llamadas";
 "Settings.logout" = "Cerrar sesión";
 "Settings.notifictionSettings" = "Configuración de las notificaciones";
+"Settings.download" = "Configuración de descarga";
 "Settings.support" = "Soporte";
 "Settings.userName" = "Nombre de usuario";
 "Settings.phoneNumber" = "Número de teléfono";
@@ -312,3 +313,17 @@
 
 /* Members */
 "Memebers.searchedMembers" = "Miembros buscadas";
+
+/* Automatic downloads */
+"Tab.download" = "Descargar";
+"Download.images" = "Imágenes";
+"Download.files" = "Archivos";
+"Download.automaticallyDownloadPrivateImages" = "Descargar imágenes automáticamente en una conversación privada";
+"Download.automaticallyDownloadPrivateFiles" = "Descargar archivos automáticamente en una conversación privada";
+"Download.automaticallyDownloadGroupImages" = "Descargar imágenes automáticamente en un grupo";
+"Download.automaticallyDownloadGroupFiles" = "Descargar archivos automáticamente en un grupo";
+"Download.automaticallyDownloadChannelImages" = "Descargar imágenes automáticamente en un canal";
+"Download.automaticallyDownloadChannelFiles" = "Descargar archivos automáticamente en un canal";
+
+/* Message Seen Participants */
+"SeenParticipants.title" = "Participantes vistas";

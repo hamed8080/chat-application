@@ -13,7 +13,7 @@ import TalkUI
 import TalkViewModels
 
 struct MessageFooterView: View {
-    var message: Message
+    var message: Message { viewModel.message }
     @State var timeString: String = ""
     @EnvironmentObject var viewModel: MessageRowViewModel
 
@@ -57,5 +57,6 @@ struct MessageFooterView: View {
             }
         }
         .padding(.top, 4)
+        .padding(.horizontal, 6)
     }
 }

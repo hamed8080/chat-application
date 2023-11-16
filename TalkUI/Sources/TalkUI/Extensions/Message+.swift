@@ -7,6 +7,7 @@ public extension Message {
     static let seenImage = UIImage(named: "double_checkmark")
     static let leadingTail = UIImage(named: "leading_tail")!
     static let trailingTail = UIImage(named: "trailing_tail")!
+    static let emptyImage = UIImage(named: "empty_image")!
 
     var footerStatus: (image: UIImage, fgColor: Color) {
         if seen == true {

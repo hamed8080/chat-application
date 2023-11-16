@@ -15,7 +15,9 @@ public enum NavigationType: Hashable {
     case language(LanguageNavigationValue)
     case blockedContacts(BlockedContactsNavigationValue)
     case notificationSettings(NotificationSettingsNavigationValue)
+    case automaticDownloadsSettings(AutomaticDownloadsNavigationValue)
     case support(SupportNavigationValue)
+    case messageParticipantsSeen(MessageParticipantsSeenNavigationValue)
 }
 
 public protocol NavigaitonValueProtocol: Hashable {}
@@ -26,7 +28,9 @@ public struct ArchivesNavigationValue: NavigaitonValueProtocol {}
 public struct LanguageNavigationValue: NavigaitonValueProtocol {}
 public struct BlockedContactsNavigationValue: NavigaitonValueProtocol {}
 public struct NotificationSettingsNavigationValue: NavigaitonValueProtocol {}
+public struct AutomaticDownloadsNavigationValue: NavigaitonValueProtocol {}
 public struct SupportNavigationValue: NavigaitonValueProtocol {}
+public struct MessageParticipantsSeenNavigationValue: NavigaitonValueProtocol { public let message: Message }
 
 public final class NavigationModel: ObservableObject {
     @Published public var selectedThreadId: Conversation.ID?
@@ -62,6 +66,18 @@ public final class NavigationModel: ObservableObject {
         let notification = NotificationSettingsNavigationValue()
         paths.append(NavigationType.notificationSettings(notification))
         pathsTracking.append(notification)
+    }
+
+    public func appendAutomaticDownloads() {
+        let downloads = AutomaticDownloadsNavigationValue()
+        paths.append(NavigationType.automaticDownloadsSettings(downloads))
+        pathsTracking.append(downloads)
+    }
+
+    public func appendMessageParticipantsSeen(_ message: Message) {
+        let seen = MessageParticipantsSeenNavigationValue(message: message)
+        paths.append(NavigationType.messageParticipantsSeen(seen))
+        pathsTracking.append(seen)
     }
 
     public func appendSupport() {

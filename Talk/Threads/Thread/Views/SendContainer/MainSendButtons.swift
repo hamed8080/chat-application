@@ -86,9 +86,9 @@ struct MainSendButtons: View {
             Button {
                 if isRecording {
                     viewModel.audioRecoderVM?.stopAndAddToAttachments()
-                    viewModel.sendAttachmentsMessage("")
+                    viewModel.sendAttachmentsMessage()
                     isRecording = false
-                } else if !text.isEmpty {
+                } else if !text.isEmpty || viewModel.attachmentsViewModel.attachments.count > 0 {
                     viewModel.sendTextMessage(text)
                 }
                 text = ""

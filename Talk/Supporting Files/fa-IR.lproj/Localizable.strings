@@ -129,10 +129,10 @@
 "Log.received" = "دریافت شده";
 
 /* Message */
-"Message.Participant.left" = " کاربر %@ گروه را ترک کرد";
-"Message.Participant.removed" = "کاربر %@ توسط %@ از گروه حذف شد.";
-"Message.Participant.joined" = "کاربر %@ به گروه پیوست.";
-"Message.Participant.added" = "کاربر %@ توسط %@ به گروه اضافه شد.";
+"Message.Participant.left" = "%@ گروه را ترک کرد";
+"Message.Participant.removed" = "%@ %@ را از گروه حذف کرد";
+"Message.Participant.joined" = "%@ به گروه پیوست";
+"Message.Participant.added" = "%@ %@ را به گروه اضافه کرد";
 
 /* System Events */
 "SMT.isTyping" = "در حای تایپ...";
@@ -263,6 +263,7 @@
 "Settings.manageCalls" = "مدیریت تماس ها";
 "Settings.logout" = "خروج";
 "Settings.notifictionSettings" = "تنظیمات اعلانات";
+"Settings.download" = "تنظیمات دانلود";
 "Settings.support" = "پشتیبانی";
 "Settings.userName" = "نام کاربری";
 "Settings.phoneNumber" = "شماره تلفن";
@@ -312,3 +313,17 @@
 
 /* Members */
 "Memebers.searchedMembers" = "اعضای جستجو شده";
+
+/* Automatic downloads */
+"Tab.download" = "دانلود";
+"Download.images" = "تصاویر";
+"Download.files" = "فایل ها";
+"Download.automaticallyDownloadPrivateImages" = "دانلود تصاویر گفتگوی خصوصی به صورت اتوماتیک.";
+"Download.automaticallyDownloadPrivateFiles" = "دانلود فایل های گفتگوی خصوصی به صورت اتوماتیک.";
+"Download.automaticallyDownloadGroupImages" = "دانلود تصاویر گروه به صورت اتوماتیک.";
+"Download.automaticallyDownloadGroupFiles" = "دانلود فایل های گروه به صورت اتوماتیک.";
+"Download.automaticallyDownloadChannelImages" = "دانلود تصاویر کانال به صورت اتوماتیک.";
+"Download.automaticallyDownloadChannelFiles" = "دانلود فایل های کانال به صورت اتوماتیک.";
+
+/* Message Seen Participants */
+"SeenParticipants.title" = "لیست خواننده ها";

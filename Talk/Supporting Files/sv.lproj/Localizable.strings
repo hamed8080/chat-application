@@ -130,9 +130,9 @@
 
 /* Message */
 "Message.Participant.left" = "%@ har lämnat gruppen";
-"Message.Participant.removed" = "%@ borttagen av %@";
+"Message.Participant.removed" = "%@ tog bort %@ från gruppen";
 "Message.Participant.joined" = "%@ har gått med i gruppen";
-"Message.Participant.added" = "%@ tillagd av %@";
+"Message.Participant.added" = "%@ lade till %@ i gruppen";
 
 /* System Events */
 "SMT.isTyping" = "skriver...";
@@ -263,6 +263,7 @@
 "Settings.manageCalls" = "Hantera samtal";
 "Settings.logout" = "Logga ut";
 "Settings.notifictionSettings" = "Aviseringsinställningar";
+"Settings.download" = "Nedladdningsinställningar";
 "Settings.support" = "Stöd";
 "Settings.userName" = "Användarnamn";
 "Settings.phoneNumber" = "Telefonnummer";
@@ -312,3 +313,17 @@
 
 /* Members */
 "Memebers.searchedMembers" = "Sökte efter medlemmar";
+
+/* Automatic downloads */
+"Tab.download" = "Ladda ner";
+"Download.images" = "Bilder";
+"Download.files" = "Filer";
+"Download.automaticallyDownloadPrivateImages" = "Ladda ner bilder automatiskt i en privat konversation";
+"Download.automaticallyDownloadPrivateFiles" = "Ladda ner filer automatiskt i en privat konversation";
+"Download.automaticallyDownloadGroupImages" = "Ladda ner bilder automatiskt i en grupp";
+"Download.automaticallyDownloadGroupFiles" = "Ladda ner filer automatiskt i en grupp";
+"Download.automaticallyDownloadChannelImages" = "Ladda ner bilder automatiskt i en kanal";
+"Download.automaticallyDownloadChannelFiles" = "Ladda ner filer automatiskt i en kanal";
+
+/* Message Seen Participants */
+"SeenParticipants.title" = "Sett deltagare";

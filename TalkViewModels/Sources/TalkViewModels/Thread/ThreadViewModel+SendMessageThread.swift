@@ -23,43 +23,83 @@ extension ThreadViewModel {
         } else if editMessage != nil {
             sendEditMessage(textMessage)
         } else if attachmentsViewModel.attachments.count > 0 {
-            sendAttachmentsMessage(textMessage)
+            sendAttachmentsMessage()
         } else {
             sendNormalMessage(textMessage)
         }
         isInEditMode = false // close edit mode in ui
     }
 
-    public func sendAttachmentsMessage(_ textMessage: String) {
+    public func sendAttachmentsMessage(_ textMessage: String = "") {
         let attchments = attachmentsViewModel.attachments
         let type = attchments.map{$0.type}.first
         if type == .gallery {
             let images = attchments.compactMap({$0.request as? ImageItem})
-            sendPhotos(images)
+            sendPhotos(textMessage, images)
         } else if type == .file {
             let urls = attchments.compactMap({$0.request as? URL})
-            sendFiles(urls)
+            sendFiles(textMessage, urls)
         } else if type == .voice {
             let urls = attchments.compactMap({$0.request as? URL})
-            sendFiles(urls)
+            sendFiles(textMessage, urls)
         } else if type == .contact {
             // TODO: It should be implemented whenever the server side is ready.
         } else if type == .map {
             // TODO: It should be implemented whenever the server side is ready.
         } else if type == .drop {
             let dropItems = attchments.compactMap({$0.request as? DropItem})
-            sendDropFiles(dropItems)
+            sendDropFiles(textMessage, dropItems)
         }
     }
 
     public func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String) {
         canScrollToBottomOfTheList = true
-        let req = ReplyMessageRequest(threadId: threadId,
+        if attachmentsViewModel.attachments.count == 1 {
+            sendSingleReplyAttachment(attachmentsViewModel.attachments.first, replyMessageId, textMessage)
+        } else {
+            if attachmentsViewModel.attachments.count > 1 {
+                let lastItem = attachmentsViewModel.attachments.last
+                if let lastItem {
+                    attachmentsViewModel.remove(lastItem)
+                }
+                sendAttachmentsMessage()
+                sendSingleReplyAttachment(lastItem, replyMessageId, textMessage)
+            } else {
+                let req = ReplyMessageRequest(threadId: threadId,
+                                              repliedTo: replyMessageId,
+                                              textMessage: textMessage,
+                                              messageType: .text)
+                ChatManager.activeInstance?.message.reply(req)
+            }
+        }
+        attachmentsViewModel.clear()
+        replyMessage = nil
+    }
+
+    public func sendSingleReplyAttachment(_ attachmentFile: AttachmentFile?, _ replyMessageId: Int, _ textMessage: String) {
+        var req = ReplyMessageRequest(threadId: threadId,
                                       repliedTo: replyMessageId,
                                       textMessage: textMessage,
                                       messageType: .text)
-        ChatManager.activeInstance?.message.reply(req)
-        replyMessage = nil
+        if let imageItem = attachmentFile?.request as? ImageItem {
+            let imageReq = UploadImageRequest(data: imageItem.imageData,
+                                              fileName: imageItem.fileName ?? "",
+                                              mimeType: "image/jpeg",
+                                              userGroupHash: self.thread.userGroupHash,
+                                              hC: imageItem.height,
+                                              wC: imageItem.width
+            )
+            req.messageType = .podSpacePicture
+            ChatManager.activeInstance?.message.reply(req, imageReq)
+        } else if let url = attachmentFile?.request as? URL, let data = try? Data(contentsOf: url) {
+            let fileReq = UploadFileRequest(data: data,
+                                            fileExtension: ".\(url.fileExtension)",
+                                            fileName: url.fileName,
+                                            mimeType: url.mimeType,
+                                            userGroupHash: self.thread.userGroupHash)
+            req.messageType = .podSpaceFile
+            ChatManager.activeInstance?.message.reply(req, fileReq)
+        }
     }
 
     public func sendNormalMessage(_ textMessage: String) {
@@ -85,7 +125,7 @@ extension ThreadViewModel {
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image
-    public func sendPhotos(_ imageItems: [ImageItem]) {
+    public func sendPhotos(_ textMessage: String = "", _ imageItems: [ImageItem]) {
         send { [weak self] in
             guard let self = self else {return}
             imageItems.forEach { imageItem in
@@ -98,7 +138,7 @@ extension ThreadViewModel {
                                                       hC: imageItem.height,
                                                       wC: imageItem.width
                 )
-                let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: self.textMessage ?? "", messageType: .picture)
+                let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .picture)
                 let request = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
                 self.appendMessagesAndSort([request])
@@ -108,7 +148,7 @@ extension ThreadViewModel {
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
-    public func sendFiles(_ urls: [URL], messageType: ChatModels.MessageType = .file) {
+    public func sendFiles(_ textMessage: String = "", _ urls: [URL], messageType: ChatModels.MessageType = .file) {
         send { [weak self] in
             guard let self = self else {return}
             urls.forEach { url in
@@ -120,7 +160,7 @@ extension ThreadViewModel {
                                                       fileName: url.fileName,
                                                       mimeType: url.mimeType,
                                                       userGroupHash: self.thread.userGroupHash)
-                let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: self.textMessage ?? "", messageType: messageType)
+                let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: messageType)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
                 self.appendMessagesAndSort([request])
@@ -130,7 +170,7 @@ extension ThreadViewModel {
         }
     }
 
-    public func sendDropFiles(_ items: [DropItem]) {
+    public func sendDropFiles(_ textMessage: String = "", _ items: [DropItem]) {
         send { [weak self] in
             guard let self = self else {return}
             items.forEach { item in
@@ -141,7 +181,7 @@ extension ThreadViewModel {
                                                       fileName: item.name,
                                                       mimeType: nil,
                                                       userGroupHash: self.thread.userGroupHash)
-                let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: self.textMessage ?? "", messageType: .file)
+                let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .file)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
                 self.appendMessagesAndSort([request])
@@ -161,7 +201,7 @@ extension ThreadViewModel {
         ChatManager.activeInstance?.message.edit(req)
     }
 
-    public func sendLoaction(_ location: LocationItem) {
+    public func sendLoaction(_ textMessage: String = "", _ location: LocationItem) {
         send { [weak self] in
             guard let self = self else {return}
             let coordinate = Coordinate(lat: location.location.latitude, lng: location.location.longitude)

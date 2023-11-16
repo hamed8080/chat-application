@@ -22,24 +22,6 @@ struct ThreadRow: View {
                 .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text(thread.computedTitle)
-                        .lineLimit(1)
-                        .font(.iransansSubheadline)
-                        .fontWeight(.light)
-                    Spacer()
-                    if let timeString = thread.time?.date.localFormattedTime {
-                        Text(timeString)
-                            .lineLimit(1)
-                            .font(.iransansCaption2)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.hint)
-                    }
-                    if thread.mute == true {
-                        Image(systemName: "speaker.slash.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 12, height: 12)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
-                    }
                     if thread.type == .channel {
                         Image(systemName: "megaphone.fill")
                             .resizable()
@@ -54,6 +36,24 @@ struct ThreadRow: View {
                             .scaledToFit()
                             .frame(width: 16, height: 16)
                             .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
+                    }
+                    Text(thread.computedTitle)
+                        .lineLimit(1)
+                        .font(.iransansSubheadline)
+                        .fontWeight(.light)
+                    if thread.mute == true {
+                        Image(systemName: "speaker.slash.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 12, height: 12)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
+                    }
+                    Spacer()
+                    if let timeString = thread.time?.date.localFormattedTime {
+                        Text(timeString)
+                            .lineLimit(1)
+                            .font(.iransansCaption2)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.hint)
                     }
                     if thread.mentioned == true {
                         Image(systemName: "at.circle.fill")

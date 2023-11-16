@@ -17,11 +17,11 @@ struct MemberView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
-        ParticipantSearchView()
+        StickyHeaderSection(header: "", height: 4)
         AddParticipantButton(conversation: viewModel.thread)
             .listRowSeparatorTint(.gray.opacity(0.2))
             .listRowBackground(Color.App.bgPrimary)
-        StickyHeaderSection(header: "", height: 4)
+        ParticipantSearchView()
         LazyVStack(spacing: 0) {
             if viewModel.searchedParticipants.count > 0 {
                 StickyHeaderSection(header: "Memebers.searchedMembers")

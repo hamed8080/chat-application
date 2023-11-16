@@ -49,6 +49,7 @@ struct ForwardMessageRow: View {
             .buttonStyle(.borderless)
             .truncationMode(.tail)
             .contentShape(Rectangle())
+            .padding(.horizontal, 6)
         }
     }
 }
