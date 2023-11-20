@@ -184,19 +184,19 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         let section = sections[sectionIndex]
         if scrollingUP, section.messages.indices.contains(messageIndex + 1) == true {
             let message = section.messages[messageIndex + 1]
-            Logger.viewModels.info("Scrolling up lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
+            log("Scrolling up lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
             isAtBottomOfTheList = false
             animateObjectWillChange()
         } else if !scrollingUP, section.messages.indices.contains(messageIndex - 1), section.messages.last?.id != message.id {
             let message = section.messages[messageIndex - 1]
-            Logger.viewModels.info("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
+            log("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
             reduceUnreadCountLocaly(message.id)
             seenPublisher.send(message)
             isAtBottomOfTheList = sectionIndex == sections.indices.last && messageIndex > section.messages.indices.last! - 3
             animateObjectWillChange()
         } else {
             // Last Item
-            Logger.viewModels.info("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "", privacy: .sensitive)")
+            log("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
             reduceUnreadCountLocaly(message.id)
             seenPublisher.send(message)
             isAtBottomOfTheList = message.id == thread.lastMessageVO?.id
@@ -265,14 +265,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId >= lastMsgId, !isMe {
             thread.lastSeenMessageId = messageId
-            Logger.viewModels.info("send seen for message:\(message.messageTitle, privacy: .sensitive) with id:\(messageId)")
+            log("send seen for message:\(message.messageTitle) with id:\(messageId)")
             ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
             if let unreadCount = thread.unreadCount, unreadCount > 0 {
                 thread.unreadCount = unreadCount - 1
                 objectWillChange.send()
             }
         } else if thread.unreadCount ?? 0 > 0 {
-            Logger.viewModels.info("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(self.thread.lastSeenMessageId ?? 0)")
+            log("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(self.thread.lastSeenMessageId ?? 0)")
             thread.unreadCount = 0
             objectWillChange.send()
         }
@@ -536,7 +536,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                 threadsViewModel?.threads[index].unreadCount = newUnreadCount
             }
             threadsViewModel?.animateObjectWillChange()
-            print("locally count is: \(newUnreadCount)")
+            log("locally count is: \(newUnreadCount)")
         }
     }
 
@@ -547,10 +547,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             animateObjectWillChange()
         }
     }
+    
+    func log(_ string: String) {
+#if DEBUG
+        Logger.viewModels.info("\(string, privacy: .sensitive)")
+#endif
+    }
 
     deinit {
-#if DEBUG
-        print("deinit called in class ThreadViewModel: \(thread.title ?? "")")
-#endif
+        log("deinit called in class ThreadViewModel: \(self.thread.title ?? "")")
     }
 }

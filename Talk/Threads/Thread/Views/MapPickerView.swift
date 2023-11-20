@@ -65,7 +65,6 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
     }
 
     func locationManager(_: CLLocationManager, didFailWithError error: Error) {
-        print(error)
     }
 }
 

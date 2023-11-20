@@ -25,7 +25,6 @@ struct MessageFooterView: View {
                     .scaledToFit()
                     .frame(width: 12, height: 12)
                     .foregroundColor(Color.App.gray5)
-                    .font(.subheadline)
                     .fontWeight(.bold)
             }
             Text(viewModel.timeString)
@@ -44,7 +43,7 @@ struct MessageFooterView: View {
                     .scaledToFit()
                     .frame(width: 12, height: 12)
                     .foregroundColor(message.footerStatus.fgColor)
-                    .font(.subheadline)
+
             }
 
             if message.id == viewModel.threadVM?.thread.pinMessage?.id {
@@ -53,10 +52,9 @@ struct MessageFooterView: View {
                     .scaledToFit()
                     .frame(width: 12, height: 12)
                     .foregroundColor(Color.App.primary)
-                    .font(.subheadline)
             }
         }
-        .padding(.top, 4)
-        .padding(.horizontal, 6)
+        .font(.subheadline)
+        .padding(EdgeInsets(top: 4, leading: 6, bottom: 0, trailing: 6))
     }
 }

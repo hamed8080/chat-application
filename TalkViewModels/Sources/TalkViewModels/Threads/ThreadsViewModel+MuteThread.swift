@@ -33,4 +33,12 @@ extension ThreadsViewModel: MuteThreadProtocol {
     public func unmute(_ threadId: Int) {
         ChatManager.activeInstance?.conversation.unmute(.init(subjectId: threadId))
     }
+
+    public func onMuteThreadChanged(mute: Bool, threadId: Int?) {
+        if let index = firstIndex(threadId) {
+            threads[index].mute = mute
+            sort()
+            animateObjectWillChange()
+        }
+    }
 }

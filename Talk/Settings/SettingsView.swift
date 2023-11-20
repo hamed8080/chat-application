@@ -391,7 +391,7 @@ struct UserProfileView: View {
             ImageLaoderView(imageLoader: imageLoader, url: userConfig?.user.image, userName: userConfig?.user.name)
                 .id("\(userConfig?.user.image ?? "")\(userConfig?.user.id ?? 0)")
                 .frame(width: 64, height: 64)
-                .cornerRadius(28)
+                .clipShape(RoundedRectangle(cornerRadius:(28)))
                 .padding(.trailing, 16)
 
             Text(verbatim: user?.name ?? "")
@@ -406,7 +406,7 @@ struct UserProfileView: View {
                     .fill(.clear)
                     .frame(width: 48, height: 48)
                     .background(.ultraThickMaterial)
-                    .cornerRadius(24)
+                    .clipShape(RoundedRectangle(cornerRadius:(24)))
                     .overlay(alignment: .center) {
                         Image("ic_edit")
                             .resizable()

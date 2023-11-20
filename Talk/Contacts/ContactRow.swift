@@ -14,8 +14,6 @@ import TalkViewModels
 
 struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
-    @EnvironmentObject var viewModel: ContactsViewModel
-    @EnvironmentObject var appState: AppState
     var contact: Contact
     let isMainContactTab: Bool
     var contactImageURL: String? { contact.image ?? contact.user?.image }
@@ -30,7 +28,7 @@ struct ContactRow: View {
                         .foregroundColor(Color.App.text)
                         .frame(width: 52, height: 52)
                         .background(Color.App.blue.opacity(0.4))
-                        .cornerRadius(22)
+                        .clipShape(RoundedRectangle(cornerRadius:(22)))
                     Circle()
                         .fill(Color.App.green)
                         .frame(width: 13, height: 13)
@@ -67,11 +65,7 @@ struct ContactRow: View {
                         .foregroundColor(Color.App.red)
                         .padding(.trailing, 4)
                 }
-
-                /// To Prevent blinking in the contacts tab.
-                if isMainContactTab && !viewModel.showConversaitonBuilder || !isMainContactTab && viewModel.showConversaitonBuilder {
-                    selectRadio
-                }
+                ContactRowRadioButton(contact: contact, isMainContactTab: isMainContactTab, isInSelectionMode: $isInSelectionMode)
             }
         }
         .contentShape(Rectangle())
@@ -79,15 +73,25 @@ struct ContactRow: View {
         .animation(.easeInOut, value: contact)
     }
 
-    @ViewBuilder var selectRadio: some View {
-        let isSelected = viewModel.isSelected(contact: contact)
-        RadioButton(visible: $isInSelectionMode, isSelected: .constant(isSelected)) { isSelected in
-            viewModel.toggleSelectedContact(contact: contact)
-        }
-    }
-
     var isOnline: Bool {
         contact.notSeenDuration ?? 16000 < 15000
+    }
+}
+
+struct ContactRowRadioButton: View {
+    let contact: Contact
+    let isMainContactTab: Bool
+    @Binding var isInSelectionMode: Bool
+    @EnvironmentObject var viewModel: ContactsViewModel
+
+    var body: some View {
+        /// To Prevent blinking in the contacts tab.
+        if isMainContactTab && !viewModel.showConversaitonBuilder || !isMainContactTab && viewModel.showConversaitonBuilder {
+            let isSelected = viewModel.isSelected(contact: contact)
+            RadioButton(visible: $isInSelectionMode, isSelected: .constant(isSelected)) { isSelected in
+                viewModel.toggleSelectedContact(contact: contact)
+            }
+        }
     }
 }
 

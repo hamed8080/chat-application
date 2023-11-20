@@ -36,7 +36,7 @@ struct EditGroup: View {
                             .foregroundColor(.white)
                             .frame(width: 72, height: 72)
                             .background(Color.App.blue.opacity(0.4))
-                            .cornerRadius(32)
+                            .clipShape(RoundedRectangle(cornerRadius:(32)))
                             .overlay(alignment: .center) {
                                 /// Showing the image taht user has selected.
                                 if let image = viewModel.image {
@@ -44,7 +44,7 @@ struct EditGroup: View {
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: 72, height: 72)
-                                        .cornerRadius(32)
+                                        .clipShape(RoundedRectangle(cornerRadius:(32)))
                                 }
                             }
                         Circle()
@@ -60,7 +60,7 @@ struct EditGroup: View {
                                     .frame(width: 12, height: 12)
                                     .padding(6)
                                     .background(Color.App.hint)
-                                    .cornerRadius(18)
+                                    .clipShape(RoundedRectangle(cornerRadius:(18)))
                                     .foregroundColor(.white)
                                     .fontWeight(.heavy)
                                     .offset(x: 42, y: 22)

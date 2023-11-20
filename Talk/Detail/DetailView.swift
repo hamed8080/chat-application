@@ -111,7 +111,7 @@ struct InfoView: View {
                 .foregroundColor(.white)
                 .frame(width: 64, height: 64)
                 .background(Color.App.blue.opacity(0.4))
-                .cornerRadius(28)
+                .clipShape(RoundedRectangle(cornerRadius:(28)))
                 .onTapGesture {
                     fullScreenImageLoader.fetch(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title, size: .ACTUAL, forceToDownloadFromServer: true)
                 }
@@ -289,7 +289,7 @@ struct DetailViewButton: View {
         }
         .frame(width: 48, height: 48)
         .background(.ultraThickMaterial)
-        .cornerRadius(8)
+        .clipShape(RoundedRectangle(cornerRadius:(8)))
     }
 }
 
@@ -308,7 +308,7 @@ struct SectionItem: View {
         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         .padding([.top, .bottom], 2)
         .buttonStyle(.bordered)
-        .cornerRadius(12)
+        .clipShape(RoundedRectangle(cornerRadius:(12)))
     }
 }
 

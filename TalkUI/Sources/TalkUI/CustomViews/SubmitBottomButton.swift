@@ -54,7 +54,7 @@ public struct SubmitBottomButton: View {
             .frame(height: 48)
             .contentShape(RoundedRectangle(cornerRadius: 8))
             .background(color)
-            .cornerRadius(8)
+            .clipShape(RoundedRectangle(cornerRadius:(8)))
             .disabled(!enableButton)
             .opacity(enableButton ? 1.0 : 0.3)
         }

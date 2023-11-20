@@ -35,7 +35,7 @@ public struct InlineAudioPlayerView: View {
         }
         .frame(width: config.iconWidth, height: config.iconHeight)
         .background(config.iconCircleColor)
-        .cornerRadius(config.iconHeight / 2)
+        .clipShape(RoundedRectangle(cornerRadius: config.iconHeight / 2))
         .onTapGesture {
             viewModel.setup(fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
             viewModel.toggle()

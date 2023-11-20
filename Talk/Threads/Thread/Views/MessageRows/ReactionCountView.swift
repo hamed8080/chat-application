@@ -14,127 +14,68 @@ import TalkUI
 import TalkModels
 
 struct ReactionCountView: View {
-    let viewModel: MessageRowViewModel
-    var message: Message { viewModel.message }
-    private var messageId: Int { message.id ?? -1 }
-    @State var reactionCountList: [ReactionCount] = []
-    var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
-    @State private var contentSize: CGSize = .zero
+    @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                ForEach(reactionCountList) { reactionCount in
-                    ReactionCountRow(message: message, reactionCount: reactionCount)
+                ForEach(viewModel.reactionCountList) { reactionCount in
+                    ReactionCountRow(reactionCount: reactionCount)
                 }
             }
-            .background(
-                GeometryReader { geo -> Color in
-                    DispatchQueue.main.async {
-                        contentSize = geo.size
-                    }
-                    return Color.clear
-                }
-            )
         }
-        .frame(maxWidth: contentSize.width)
-        .frame(height: reactionCountList.count == 0 ? 0 : nil)
-        .animation(.easeInOut, value: reactionCountList.count)
+        .frame(maxWidth: viewModel.maxAllowedWidth)
+        .fixedSize(horizontal: true, vertical: false)
+        .animation(.easeInOut, value: viewModel.reactionCountList.count)
         .padding(.horizontal, 6)
-        .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { notification in
-            if notification.object as? Int == messageId {
-                setCountList()
-            }
-        }
-        .onAppear {
-            setCountList()
-        }
-    }
-
-    func setCountList() {
-        if let reactionCountList = inMemoryReaction?.summary(for: messageId), reactionCountList != self.reactionCountList {
-            self.reactionCountList = reactionCountList
-        }
     }
 }
 
 struct ReactionCountRow: View {
-    let message: Message
-    private var messageId: Int { message.id ?? -1 }
-    @State var count: Int = 0
+    @EnvironmentObject var viewModel: MessageRowViewModel
     let reactionCount: ReactionCount
-    var currentUserReaction: Reaction? { ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(messageId) }
 
     var body: some View {
         HStack {
-            if count > 0 {
+            if reactionCount.count ?? -1 > 0 {
                 if let sticker = reactionCount.sticker {
                     Text(verbatim: sticker.emoji)
                         .frame(width: 20, height: 20)
                         .font(.system(size: 14))
                 }
 
-                Text(count.localNumber(locale: Language.preferredLocale) ?? "")
+                Text(reactionCount.count?.localNumber(locale: Language.preferredLocale) ?? "")
                     .font(.iransansBody)
                     .foregroundStyle(isMyReaction ? Color.App.white : Color.App.hint)
             }
         }
-        .animation(.easeInOut, value: count)
-        .padding([.leading, .trailing], count > 0 ? 8 : 0)
-        .padding([.top, .bottom], count > 0 ? 6 : 0)
-        .background(background)
-        .cornerRadius(18)
-        .contentShape(RoundedRectangle(cornerRadius: 18))
-        .onReceive(NotificationCenter.default.publisher(for: .reactionMessageUpdated)) { notification in
-            if notification.object as? Int == messageId {
-                onNewValue(notification.object as? Int)
-            }
-        }
-        .onAppear {
-            count = reactionCount.count ?? 0
-        }
-        .onTapGesture {
-            if let conversationId = message.threadId ?? message.conversation?.id, let tappedStciker = reactionCount.sticker {
-                AppState.shared.objectsContainer.reactions.reaction(tappedStciker, messageId: messageId, conversationId: conversationId)
-            }
-        }
-        .customContextMenu(self: self) {
-            let selectedEmojiTabId = "\(reactionCount.sticker?.emoji ?? "all") \(reactionCount.count ?? 0)"
-            MessageReactionDetailView(message: message, selectedStickerTabId: selectedEmojiTabId)
-                .frame(width: 300, height: 400)
-                .cornerRadius(12)
-        }
-    }
-    var isMyReaction: Bool {
-        currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue
-    }
-
-    @ViewBuilder
-    var background: some View {
-        if isMyReaction {
-            Color.App.blue.opacity(0.7).cornerRadius(18)
-        } else {
+        .animation(.easeInOut, value: reactionCount.count ?? -1)
+        .padding(EdgeInsets(top: reactionCount.count ?? -1 > 0 ? 6 : 0, leading: reactionCount.count ?? -1 > 0 ? 8 : 0, bottom: reactionCount.count ?? -1 > 0 ? 6 : 0, trailing: reactionCount.count ?? -1 > 0 ? 8 : 0))
+        .background(
             Rectangle()
-                .fill(Color.App.primary.opacity(0.1))
+                .fill(isMyReaction ? Color.App.blue.opacity(0.7) : Color.App.primary.opacity(0.1))
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .onTapGesture {
+            if let conversationId = viewModel.message.threadId ?? viewModel.message.conversation?.id, let tappedStciker = reactionCount.sticker {
+                AppState.shared.objectsContainer.reactions.reaction(tappedStciker, messageId: viewModel.message.id ?? -1, conversationId: conversationId)
+            }
+        }
+        .customContextMenu(self: self.environmentObject(viewModel)) {
+            let selectedEmojiTabId = "\(reactionCount.sticker?.emoji ?? "all") \(reactionCount.count ?? 0)"
+            MessageReactionDetailView(message: viewModel.message, selectedStickerTabId: selectedEmojiTabId)
+                .frame(width: 300, height: 400)
+                .clipShape(RoundedRectangle(cornerRadius:(12)))
         }
     }
 
-    func onNewValue(_ messageId: Int?) {
-        if messageId == self.messageId {
-            count = ChatManager.activeInstance?.reaction.inMemoryReaction.summary(for: self.messageId)
-                .first(where: { $0.sticker == reactionCount.sticker })?.count ?? 0
-        }
+    var isMyReaction: Bool {
+        viewModel.currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue
     }
 }
 
 struct ReactionCountView_Previews: PreviewProvider {
     static var previews: some View {
-        ReactionCountView(viewModel: .init(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))),
-                                           reactionCountList: [
-                                            .init(sticker: .cry, count: 10),
-                                            .init(sticker: .happy, count: 40),
-                                            .init(sticker: .hifive, count: 2),
-                                            .init(sticker: .like, count: 5),
-                                           ])
+        ReactionCountView(viewModel: .init())
     }
 }

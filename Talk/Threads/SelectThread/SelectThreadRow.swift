@@ -27,14 +27,13 @@ struct SelectThreadRow: View {
                 .foregroundColor(.white)
                 .frame(width: 36, height: 36)
                 .background(Color.App.blue.opacity(0.4))
-                .cornerRadius(18)
+                .clipShape(RoundedRectangle(cornerRadius:(18)))
             Text(thread.computedTitle)
                 .font(.iransansSubheadline)
             Spacer()
         }
         .contentShape(Rectangle())
-        .padding([.leading, .trailing], 8)
-        .padding([.top, .bottom], 4)
+        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
     }
 }
 
@@ -53,7 +52,7 @@ struct SelectContactRow: View {
                 .foregroundColor(.white)
                 .frame(width: 24, height: 24)
                 .background(Color.App.blue.opacity(0.4))
-                .cornerRadius(12)
+                .clipShape(RoundedRectangle(cornerRadius:(12)))
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                     .padding(.leading, 4)

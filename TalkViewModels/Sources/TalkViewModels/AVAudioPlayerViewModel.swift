@@ -29,7 +29,9 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
             player?.delegate = self
             duration = player?.duration ?? 0
         } catch let error as NSError {
+#if DEBUG
             Logger.viewModels.info("\(error.description)")
+#endif
         }
     }
 

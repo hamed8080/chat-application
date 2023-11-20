@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ContextMenuModel.swift
 //  
 //
 //  Created by hamed on 10/27/23.
@@ -7,8 +7,11 @@
 
 import Foundation
 import SwiftUI
+import OSLog
 
 public final class ContextMenuModel: ObservableObject {
+    private let logger = Logger(subsystem: "ActionableContextMenu", category: "ContextMenuModel")
+
     @Published public var isPresented: Bool = false {
         didSet {
             if !isPresented {
@@ -20,7 +23,6 @@ public final class ContextMenuModel: ObservableObject {
     @Published var localPosition: CGPoint?
     @Published var globalFrame: CGRect?
     var mainView: AnyView?
-    var topView: AnyView?
     var menus: AnyView?
     var itemWidth: CGFloat = 0.0
     var containerSize: CGSize = .zero
@@ -47,7 +49,7 @@ public final class ContextMenuModel: ObservableObject {
     }
 
     var stackY: CGFloat {
-        let stackPadding: CGFloat = topView != nil ? 12 : 0
+        let stackPadding: CGFloat = 12
         var stackY: CGFloat = 0.0
         let stackHeight = stackSize.height
         let itemHalf = itemSize.height / 2
@@ -57,7 +59,9 @@ public final class ContextMenuModel: ObservableObject {
             stackY = (y - itemHalf) - stackPadding - stackHeight + (stackHeight / 2) - stackPadding
         }
         let minY = (stackHeight / 2) + 12
-        print("stackY: \(stackHeight)")
+#if DEBUG
+        logger.info("stackY: \(stackHeight)")
+#endif
         return max(minY, stackY)
     }
 
@@ -65,7 +69,9 @@ public final class ContextMenuModel: ObservableObject {
         let originalX: CGFloat = (itemWidth / 2) + ((globalPosition?.x ?? 0) - (localPosition?.x ?? 0))
         let minX = (itemWidth / 2) + 48
         let x = max(minX, originalX)
-        print("calculated x: \(x)")
+#if DEBUG
+        logger.info("calculated x: \(x)")
+#endif
         return x
     }
 
@@ -76,7 +82,9 @@ public final class ContextMenuModel: ObservableObject {
         let topfTheItem = touchedPositionY - locaTouchedY
         let m: CGFloat = topfTheItem + (itemSize.height / 2)
         let centerY = abs(m - topSafeArea)
-        print("calculated y: \(centerY)")
+#if DEBUG
+        logger.info("calculated y: \(centerY)")
+#endif
         return centerY
     }
 
@@ -98,7 +106,6 @@ public final class ContextMenuModel: ObservableObject {
         localPosition = nil
         globalFrame = nil
         mainView = nil
-        topView = nil
         menus = nil
     }
 }

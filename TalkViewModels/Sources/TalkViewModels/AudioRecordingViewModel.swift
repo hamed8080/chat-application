@@ -112,7 +112,9 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
                 }
             }
         } catch {
+#if DEBUG
             Logger.viewModels.info("error to get recording permission")
+#endif
         }
     }
 

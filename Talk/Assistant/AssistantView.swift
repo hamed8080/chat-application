@@ -127,7 +127,7 @@ struct AddAssistantRow: View {
                 .foregroundColor(.white)
                 .frame(width: 24, height: 24)
                 .background(Color.App.blue.opacity(0.4))
-                .cornerRadius(12)
+                .clipShape(RoundedRectangle(cornerRadius:(12)))
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(contact.firstName ?? "") \(contact.lastName ?? "")")
                     .padding(.leading, 4)

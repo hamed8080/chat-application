@@ -34,10 +34,9 @@ struct MoveToBottomButton: View {
             }
             .frame(width: isAtBottomOfTheList ? 0 : 40, height: isAtBottomOfTheList ? 0 : 40)
             .background(.ultraThinMaterial)
-            .cornerRadius(20)
+            .clipShape(RoundedRectangle(cornerRadius:(20)))
             .shadow(color: .gray.opacity(0.4), radius: 2)
-            .padding([.trailing], 8)
-            .padding(.bottom, isAtBottomOfTheList ? 0 : 8)
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: isAtBottomOfTheList ? 0 : 8, trailing: 8))
             .scaleEffect(x: isAtBottomOfTheList ? 0.0001 : 1.0, y: isAtBottomOfTheList ? 0.0001 : 1.0, anchor: .center)
             .overlay(alignment: .top) {
                 let unreadCount = viewModel.thread.unreadCount ?? 0
@@ -49,7 +48,7 @@ struct MoveToBottomButton: View {
                     .scaleEffect(x: hide ? 0.0001 : 1.0, y: hide ? 0.0001 : 1.0, anchor: .center)
                     .background(Color.App.primary)
                     .foregroundStyle(Color.App.white)
-                    .cornerRadius(hide ? 0 : 24)
+                    .clipShape(RoundedRectangle(cornerRadius:(hide ? 0 : 24)))
                     .offset(x: -3, y: -16)
                     .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCount)
             }

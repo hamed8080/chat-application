@@ -35,9 +35,8 @@ struct ConversationCallMessageType: View {
                 .scaledToFit()
                 .foregroundColor(message.type == .startCall ? Color.App.green : Color.App.red)
         }
-        .padding([.leading], 2)
-        .padding([.trailing], 8)
+        .padding(EdgeInsets(top: 0, leading: 2, bottom: 0, trailing: 8))
         .background(Color.App.bgSecond)
-        .cornerRadius(6)
+        .clipShape(RoundedRectangle(cornerRadius:(6)))
     }
 }

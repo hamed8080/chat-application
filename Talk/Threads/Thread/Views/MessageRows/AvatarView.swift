@@ -46,7 +46,7 @@ struct AvatarView: View {
                         .foregroundColor(.white)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
                         .background(Color.App.blue.opacity(0.4))
-                        .cornerRadius(MessageRowViewModel.avatarSize / 2)
+                        .clipShape(RoundedRectangle(cornerRadius:(MessageRowViewModel.avatarSize / 2)))
                 } else {
                     Text(verbatim: String(message.participant?.name?.first ?? message.participant?.username?.first ?? " "))
                         .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
@@ -54,7 +54,7 @@ struct AvatarView: View {
                         .foregroundColor(.white)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
                         .background(Color.App.blue.opacity(0.4))
-                        .cornerRadius(MessageRowViewModel.avatarSize / 2)
+                        .clipShape(RoundedRectangle(cornerRadius:(MessageRowViewModel.avatarSize / 2)))
                 }
             }
             .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)

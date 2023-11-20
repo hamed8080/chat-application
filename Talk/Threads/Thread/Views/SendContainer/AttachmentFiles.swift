@@ -44,13 +44,13 @@ struct SingleAttachmentFile: View {
                 .frame(width: 32, height: 32)
                 .padding(attachment.request is ImageItem ? 0 : 6)
                 .background(Color.App.bgInput)
-                .cornerRadius(6)
+                .clipShape(RoundedRectangle(cornerRadius:(6)))
             } else if let cgImage = (attachment.request as? ImageItem)?.imageData.imageScale(width: 48)?.image {
                 Image(cgImage: cgImage)
                     .resizable()
                     .scaledToFill()
                     .frame(width: 42, height: 42)
-                    .cornerRadius(6)
+                    .clipShape(RoundedRectangle(cornerRadius:(6)))
             }
 
             VStack(alignment: .leading, spacing: 4) {
@@ -66,8 +66,7 @@ struct SingleAttachmentFile: View {
                         .foregroundStyle(Color.App.hint)
                 }
             }
-            .padding(6)
-            .padding(.leading, 12)
+            .padding(EdgeInsets(top: 6, leading: 6 + 12, bottom: 6, trailing: 6))
 
             Spacer()
             Button {
@@ -84,8 +83,7 @@ struct SingleAttachmentFile: View {
             .frame(width: 36, height: 36)
         }
         .frame(height: 46)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
     }
 }
 

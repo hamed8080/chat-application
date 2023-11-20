@@ -16,7 +16,7 @@ public struct ErrorView: View {
         .padding()
         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         .background(.red.opacity(0.2))
-        .cornerRadius(8)
+        .clipShape(RoundedRectangle(cornerRadius:(8)))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color.App.red.opacity(0.7), lineWidth: 1)

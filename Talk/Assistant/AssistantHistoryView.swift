@@ -45,7 +45,7 @@ struct AssistantActionRow: View {
             ImageLaoderView(imageLoader: imageViewModel, url: action.participant?.image, userName: action.participant?.name)
                 .frame(width: 28, height: 28)
                 .background(.blue.opacity(0.8))
-                .cornerRadius(18)
+                .clipShape(RoundedRectangle(cornerRadius:(18)))
 
             VStack(alignment: .leading) {
                 Text(action.participant?.name ?? "")
@@ -59,8 +59,7 @@ struct AssistantActionRow: View {
             Text(.init(localized: .init(action.actionType?.stringValue ?? "General.unknown")))
                 .frame(width: 72)
                 .font(.iransansCaption2)
-                .padding([.leading, .trailing], 6)
-                .padding([.top, .bottom], 2)
+                .padding(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
                 .foregroundColor(action.actionType?.actionColor ?? .gray)
                 .overlay(
                     RoundedRectangle(cornerRadius: 4)

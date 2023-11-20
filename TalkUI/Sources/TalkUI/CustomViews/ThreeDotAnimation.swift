@@ -17,7 +17,7 @@ struct ThreeDotAnimation: View {
             Circle()
                 .opacity(dot1Opacity)
                 .onAppear {
-                    withAnimation(Animation.easeInOut(duration: 0.8).repeatForever()) {
+                    withAnimation(Animation.easeInOut(duration: 0.8)) {
                         dot1Opacity = 1
                     }
                 }
@@ -25,7 +25,7 @@ struct ThreeDotAnimation: View {
             Circle()
                 .opacity(dot2Opacity)
                 .onAppear {
-                    withAnimation(Animation.easeInOut(duration: 0.8).repeatForever().delay(0.3)) {
+                    withAnimation(Animation.easeInOut(duration: 0.8).delay(0.3)) {
                         dot2Opacity = 1
                     }
                 }
@@ -33,7 +33,7 @@ struct ThreeDotAnimation: View {
             Circle()
                 .opacity(dot3Opacity)
                 .onAppear {
-                    withAnimation(Animation.easeInOut(duration: 0.8).repeatForever().delay(0.6)) {
+                    withAnimation(Animation.easeInOut(duration: 0.8).delay(0.6)) {
                         dot3Opacity = 1
                     }
                 }

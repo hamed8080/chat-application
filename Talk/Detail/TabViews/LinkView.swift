@@ -67,7 +67,7 @@ struct LinkRowView: View {
             Rectangle()
                 .fill(Color.App.gray3)
                 .frame(width: 36, height: 36)
-                .cornerRadius(8)
+                .clipShape(RoundedRectangle(cornerRadius:(8)))
                 .overlay(alignment: .center) {
                     Image(systemName: "link")
                         .resizable()

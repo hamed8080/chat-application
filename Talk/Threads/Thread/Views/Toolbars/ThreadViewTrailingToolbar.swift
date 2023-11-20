@@ -33,8 +33,7 @@ struct ThreadViewTrailingToolbar: View {
             .foregroundColor(.white)
             .frame(width: 32, height: 32)
             .background(Color.App.blue.opacity(0.4))
-            .cornerRadius(16)
-            .cornerRadius(18)
+            .clipShape(RoundedRectangle(cornerRadius:(16)))
         }
         .onAppear {
             updateImageLoaderViewModel()

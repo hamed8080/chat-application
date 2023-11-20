@@ -87,14 +87,20 @@ public struct GalleryImageView: View {
     var dragGesture: some Gesture {
         DragGesture(minimumDistance: 10, coordinateSpace: .local)
             .onChanged { value in
+#if DEBUG
                 logger.info("OnChanged dragGesture before: previousDragoffset: \(previousDragOffset.debugDescription) endScale: \(endScale) isDragging: \(isDragging) valueTranslation: \(value.translation.debugDescription)")
+#endif
                 isDragging = true
                 dragOffset.width = value.translation.width + previousDragOffset.width
                 dragOffset.height = value.translation.height + previousDragOffset.height
+#if DEBUG
                 logger.info("OnChanged dragGesture after: previousDragoffset: \(previousDragOffset.debugDescription) endScale: \(endScale) isDragging: \(isDragging) valueTranslation: \(value.translation.debugDescription)")
+#endif
             }
             .onEnded { value in
+#if DEBUG
                 logger.info("OnEnded dragGesture before: endScale: \(endScale) isDragging: \(isDragging) valueTRanslation: \(value.translation.debugDescription)")
+#endif
                 isDragging = false
                 previousDragOffset = dragOffset
                 if value.translation.width > 100 {
@@ -112,7 +118,9 @@ public struct GalleryImageView: View {
                     appOverlayVM.isPresented = false
                     appOverlayVM.clear()
                 }
+#if DEBUG
                 logger.info("OnEnded dragGesture after: endScale: \(endScale) isDragging: \(isDragging) valueTRanslation: \(value.translation.debugDescription)")
+#endif
             }
     }
 

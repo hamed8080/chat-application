@@ -26,7 +26,7 @@ struct BlockedContacts: View {
                     .foregroundColor(.white)
                     .frame(width: 52, height: 52)
                     .background(Color.App.blue.opacity(0.4))
-                    .cornerRadius(22)
+                    .clipShape(RoundedRectangle(cornerRadius:(22)))
 
                 VStack(alignment: .leading) {
                     Text(name ?? "")

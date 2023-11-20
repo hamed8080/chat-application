@@ -40,6 +40,7 @@ extension ThreadsViewModel: PinThreadProtocol {
         if response.result != nil, let threadIndex = firstIndex(response.result?.id) {
             threads[threadIndex].pin?.toggle()
             sort()
+            animateObjectWillChange()
         }
     }
 
@@ -47,6 +48,7 @@ extension ThreadsViewModel: PinThreadProtocol {
         if response.result != nil, let threadIndex = firstIndex(response.result?.id) {
             threads[threadIndex].pin?.toggle()
             sort()
+            animateObjectWillChange()
         }
     }
 }

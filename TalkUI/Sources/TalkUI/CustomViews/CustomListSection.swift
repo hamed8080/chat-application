@@ -33,7 +33,7 @@ public struct CustomListSection<Content>: View where Content: View {
             }
         }
         .background(.ultraThickMaterial)
-        .cornerRadius(12, corners: .allCorners)
+        .clipShape(RoundedRectangle(cornerRadius:(12)))
     }
 }
 

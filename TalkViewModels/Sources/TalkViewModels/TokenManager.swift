@@ -19,40 +19,36 @@ public final class TokenManager: ObservableObject {
     public static let ssoTokenKey = "ssoTokenKey"
     public static let ssoTokenCreateDate = "ssoTokenCreateDate"
     public let session: URLSession
-    public var refreshTokenTask: Task<Void, Never>?
 
     private init(session: URLSession = .shared) {
         self.session = session
         getSSOTokenFromUserDefaults() // need first time app luanch to set hasToken
     }
 
-    public func getNewTokenWithRefreshToken() {
-        if refreshTokenTask != nil { return }
+    public func getNewTokenWithRefreshToken() async {
         guard let ssoTokenModel = getSSOTokenFromUserDefaults(),
               let refreshToken = ssoTokenModel.refreshToken,
               let keyId = ssoTokenModel.keyId
         else { return }
-        refreshTokenTask = Task {
-            do {
-                let config = ChatManager.activeInstance?.config
-                let serverType = Config.serverType(config: config) ?? .main
-                var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: serverType).refreshToken)!)
-                urlReq.url?.append(queryItems: [.init(name: "refreshToken", value: refreshToken)])
-                urlReq.allHTTPHeaderFields = ["keyId": keyId]
-                let resp = try await session.data(for: urlReq)
-                let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
-                await MainActor.run {
-                    var ssoToken = ssoToken
-                    ssoToken.keyId = keyId
-                    saveSSOToken(ssoToken: ssoToken)
-                    ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
-                    AppState.shared.connectionStatus = .connected
-                }
-            } catch {
-                Logger.viewModels.info("error on getNewTokenWithRefreshToken:\(error.localizedDescription, privacy: .sensitive)")
+        do {
+            let config = ChatManager.activeInstance?.config
+            let serverType = Config.serverType(config: config) ?? .main
+            var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: serverType).refreshToken)!)
+            urlReq.url?.append(queryItems: [.init(name: "refreshToken", value: refreshToken)])
+            urlReq.allHTTPHeaderFields = ["keyId": keyId]
+            let resp = try await session.data(for: urlReq)
+            let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
+            await MainActor.run {
+                var ssoToken = ssoToken
+                ssoToken.keyId = keyId
+                saveSSOToken(ssoToken: ssoToken)
+                ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
+                AppState.shared.connectionStatus = .connected
             }
-            refreshTokenTask?.cancel()
-            refreshTokenTask = nil
+        } catch {
+#if DEBUG
+            Logger.viewModels.info("error on getNewTokenWithRefreshToken:\(error.localizedDescription, privacy: .sensitive)")
+#endif
         }
     }
 
@@ -73,11 +69,14 @@ public final class TokenManager: ObservableObject {
     public func saveSSOToken(ssoToken: SSOTokenResponse) {
         let data = (try? JSONEncoder().encode(ssoToken)) ?? Data()
         let str = String(data: data, encoding: .utf8)
+#if DEBUG
         Logger.viewModels.info("save token:\n\(str ?? "", privacy: .sensitive)")
+#endif
+        UserConfigManagerVM.instance.updateToken(ssoToken)
         refreshCreateTokenDate()
         startTimerToGetNewToken()
         if let encodedData = try? JSONEncoder().encode(ssoToken) {
-            Task.detached(priority: .background) {
+            Task {
                 await MainActor.run {
                     UserDefaults.standard.set(encodedData, forKey: TokenManager.ssoTokenKey)
                     UserDefaults.standard.synchronize()
@@ -104,7 +103,7 @@ public final class TokenManager: ObservableObject {
             let timeToStart = createDate.advanced(by: Double(ssoToken.expiresIn)).timeIntervalSince1970 - Date().timeIntervalSince1970
             Task {
                 try? await Task.sleep(for: .seconds(timeToStart))
-                getNewTokenWithRefreshToken()
+                await getNewTokenWithRefreshToken()
             }
         }
     }

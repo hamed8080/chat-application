@@ -41,7 +41,7 @@ struct ReplyInfoMessageRow: View {
                         if let message = message.replyInfo?.message, !message.isEmpty {
                             Text(message)
                                 .font(.iransansCaption3)
-                                .cornerRadius(8, corners: .allCorners)
+                                .clipShape(RoundedRectangle(cornerRadius:(8)))
                                 .foregroundStyle(Color.App.gray3)
                                 .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
                                 .lineLimit(2)

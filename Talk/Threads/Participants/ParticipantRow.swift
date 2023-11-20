@@ -25,7 +25,7 @@ struct ParticipantRow: View {
                     .foregroundColor(.white)
                     .frame(width: 48, height: 48)
                     .background(Color.App.blue.opacity(0.4))
-                    .cornerRadius(22)
+                    .clipShape(RoundedRectangle(cornerRadius:(22)))
 
                 Circle()
                     .fill(Color.App.green)
@@ -65,8 +65,7 @@ struct ParticipantRow: View {
         }
         .lineLimit(1)
         .contentShape(Rectangle())
-        .padding([.leading, .trailing], 12)
-        .padding([.top, .bottom], 6)
+        .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
     }
 }
 
@@ -81,22 +80,19 @@ struct ParticipantRowLables: View {
             if let participant = paritcipant {
                 if AppState.shared.user?.id != participant.id, participant.conversation?.inviter?.id == participantId {
                     Text("Participant.inviter")
-                        .padding([.leading, .trailing], 4)
-                        .padding([.top, .bottom], 2)
+                        .padding(EdgeInsets(top: 2, leading: 4, bottom: 2, trailing: 4))
                         .foregroundColor(Color.App.primary)
                 }
 
                 if participant.auditor == true {
                     Text("Participant.assistant")
-                        .padding([.leading, .trailing], 4)
-                        .padding([.top, .bottom], 2)
+                        .padding(EdgeInsets(top: 2, leading: 3, bottom: 2, trailing: 4))
                         .foregroundColor(Color.App.primary)
                 }
 
                 if participant.admin == true {
                     Text("Participant.admin")
-                        .padding([.leading, .trailing], 4)
-                        .padding([.top, .bottom], 2)
+                        .padding(EdgeInsets(top: 2, leading: 3, bottom: 2, trailing: 4))
                         .foregroundColor(Color.App.primary)
                 }
             }

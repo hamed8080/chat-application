@@ -120,7 +120,7 @@ struct EditCreatedConversationDetail: View {
                         Rectangle()
                             .fill(Color("bg_camera"))
                             .frame(width: 64, height: 64)
-                            .cornerRadius(28)
+                            .clipShape(RoundedRectangle(cornerRadius:(28)))
                             .overlay(alignment: .center) {
                                 Image(systemName: "camera.fill")
                                     .resizable()
@@ -135,11 +135,11 @@ struct EditCreatedConversationDetail: View {
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 64, height: 64)
-                                .cornerRadius(28)
+                                .clipShape(RoundedRectangle(cornerRadius:(28)))
                         }
                     }
                     .background(Color.App.bgSecond)
-                    .cornerRadius(24)
+                    .clipShape(RoundedRectangle(cornerRadius:(24)))
                 }
 
 

@@ -130,8 +130,7 @@ struct AddParticipantButton: View {
                     Spacer()
                 }
                 .foregroundStyle(Color.App.primary)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
+                .padding(EdgeInsets(top: 16, leading: 24, bottom: 16, trailing: 24))
             }
             .sheet(isPresented: $presentSheet) {
                 AddParticipantsToThreadView() { contacts in
@@ -184,8 +183,7 @@ struct ParticipantSearchView: View {
             }
             Spacer()
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 8)
+        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
         .background(Color.App.separator)
         .animation(.easeInOut, value: viewModel.searchText)
         .animation(.easeInOut, value: viewModel.searchType)

@@ -43,8 +43,7 @@ public struct ContextMenuButton: View {
             .scaleEffect(x: scale, y: scale, anchor: .center)
         }
         .environment(\.layoutDirection, isRTLLanguage ? .rightToLeft : .leftToRight)
-        .padding(.horizontal)
-        .padding(.vertical, 12)
+        .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
         .onAppear {
             withAnimation(.interpolatingSpring(mass: 1.0, stiffness: 0.3, damping: 0.5, initialVelocity: 0).speed(30)) {
                 scale = 1.0

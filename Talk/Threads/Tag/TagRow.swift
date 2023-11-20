@@ -59,8 +59,7 @@ struct TagRow: View {
                 Spacer()
             }
             .contentShape(Rectangle())
-            .padding([.leading, .trailing], 8)
-            .padding([.top, .bottom], 4)
+            .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 48))
         })
         .animation(.easeInOut, value: showManageTag)
         .animation(.easeInOut, value: isSelected)

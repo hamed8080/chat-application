@@ -27,7 +27,7 @@ struct TagParticipantRow: View {
                             .foregroundColor(.white)
                             .frame(width: 28, height: 28)
                             .background(Color.App.blue.opacity(0.4))
-                            .cornerRadius(14)
+                            .clipShape(RoundedRectangle(cornerRadius:(14)))
                         VStack(alignment: .leading) {
                             Text(thread.title ?? "")
                                 .font(.iransansBody)
@@ -40,8 +40,7 @@ struct TagParticipantRow: View {
             Spacer()
         }
         .contentShape(Rectangle())
-        .padding([.leading, .trailing], 8)
-        .padding([.top, .bottom], 4)
+        .padding(EdgeInsets(top: 8, leading: 4, bottom: 8, trailing: 4))
     }
 }
 

@@ -20,8 +20,7 @@ struct GalleryImagePicker: View {
             LazyVGrid(columns: Array(repeating: .init(.flexible(minimum: 96, maximum: 128), spacing: 0), count: size == .compact ? 4 : 7), spacing: 8) {
                 AttachmentMessageList()
             }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 8)
+            .padding(EdgeInsets(top: 8, leading: 4, bottom: 8, trailing: 4))
         }
         .environmentObject(viewModel)
         .onAppear {
@@ -67,7 +66,7 @@ struct AttachmentImageView: View {
             .frame(width: 96, height: 96)
             .clipped()
             .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
-            .cornerRadius(4)
+            .clipShape(RoundedRectangle(cornerRadius:(4)))
             .overlay {
                 RadioButton(visible: .constant(true), isSelected: $isSelected) { _ in
                     Task {

@@ -71,9 +71,7 @@ public struct DeleteMessageDialog: View {
             }
         }
         .frame(maxWidth: 320)
-        .padding(.horizontal, 16)
-        .padding(.top, 16)
-        .padding(.bottom, 6)
+        .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
         .background(MixMaterialBackground())
     }
 }

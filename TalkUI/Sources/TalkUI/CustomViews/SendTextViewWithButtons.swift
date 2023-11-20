@@ -23,7 +23,7 @@ public struct SendTextViewWithButtons: View {
             }
 
             MultilineTextField(text.isEmpty == true ? String(localized: .init("General.typeMessageHere")) : "", text: $text, textColor: UIColor(named: "message_text"), mention: true)
-                .cornerRadius(16)
+                .clipShape(RoundedRectangle(cornerRadius:(16)))
                 .onChange(of: viewModel.textMessage ?? "") { newValue in
                     viewModel.sendStartTyping(newValue)
                 }
@@ -35,9 +35,7 @@ public struct SendTextViewWithButtons: View {
                     .labelStyle(.iconOnly)
             }
         }
-        .padding(.bottom, 4)
-        .padding([.leading, .trailing], 8)
-        .padding(.top, 18)
+        .padding(EdgeInsets(top: 18, leading: 8, bottom: 4, trailing: 8))
         .background(
             VStack {
                 Spacer()

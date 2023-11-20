@@ -65,7 +65,7 @@ struct MessageSeenParticipantRow: View {
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
                 .background(Color.App.blue.opacity(0.4))
-                .cornerRadius(22)
+                .clipShape(RoundedRectangle(cornerRadius:(22)))
 
             HStack(alignment: .center, spacing: 8) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -89,8 +89,7 @@ struct MessageSeenParticipantRow: View {
         }
         .lineLimit(1)
         .contentShape(Rectangle())
-        .padding([.leading, .trailing], 12)
-        .padding([.top, .bottom], 6)
+        .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
     }
 }
 

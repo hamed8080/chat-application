@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CustomContextMenuContainer.swift
 //  
 //
 //  Created by hamed on 10/27/23.
@@ -7,8 +7,10 @@
 
 import Foundation
 import SwiftUI
+import OSLog
 
 struct CustomContextMenuContainer: ViewModifier {
+    private let logger = Logger(subsystem: "ActionableContextMenu", category: "CustomContextMenuContainer")
     @StateObject var viewModel: ContextMenuModel = .init()
 
     func body(content: Content) -> some View {
@@ -32,8 +34,9 @@ struct CustomContextMenuContainer: ViewModifier {
                             .transition(.asymmetric(insertion: .identity, removal: .opacity))
                     }
 
-                    menusAndTopViewStack
-                        .position(x: viewModel.stackX, y: viewModel.stackY)
+                    viewModel.menus
+                    .background(stackSizeReader)
+                    .position(x: viewModel.stackX, y: viewModel.stackY)
                 }
                 .environment(\.layoutDirection, .leftToRight)
             }
@@ -46,20 +49,13 @@ struct CustomContextMenuContainer: ViewModifier {
             Color.clear.onAppear {
                 viewModel.containerSize = reader.size
                 viewModel.safeAreaInsets = reader.safeAreaInsets
-                print("container size width: \(viewModel.containerSize.width) height: \(viewModel.containerSize.height)")
-                print("container safeAreaInsets:\(viewModel.safeAreaInsets)")
+                #if DEBUG
+                logger.info("container size width: \(viewModel.containerSize.width) height: \(viewModel.containerSize.height)")
+                logger.info("container safeAreaInsets Top:\(viewModel.safeAreaInsets.top)")
+                logger.info("container safeAreaInsets Bottom:\(viewModel.safeAreaInsets.bottom)")
+                #endif
             }
         }
-    }    
-
-    @ViewBuilder
-    var menusAndTopViewStack: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            viewModel.topView
-            viewModel.menus
-        }
-        .frame(maxWidth: 256)
-        .background(stackSizeReader)
     }
 
     var stackSizeReader: some View {

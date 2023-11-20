@@ -67,6 +67,7 @@ struct MutableAttachmentDialog: View {
         .font(.iransansBody)
         .padding()
         .animation(.easeInOut, value: showActionButtons)
+        .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
     }
 }
 
@@ -97,7 +98,7 @@ struct AttchmentButtonItem: View {
                     RoundedRectangle(cornerRadius: 26)
                         .stroke(Color.clear)
                         .background(Color.App.white.opacity(0.3))
-                        .cornerRadius(26)
+                        .clipShape(RoundedRectangle(cornerRadius:(26)))
                 }
             }
             Text(String(localized: .init(title)))

@@ -51,12 +51,10 @@ public final class UserConfigManagerVM: ObservableObject, Equatable {
     }
 
     public func createChatObjectAndConnect(userId: Int?, config: ChatConfig, delegate: ChatDelegate?) {
-        Task.detached(priority: .background) {
-            ChatManager.activeInstance?.dispose()
-            ChatManager.instance.createOrReplaceUserInstance(userId: userId, config: config)
-            ChatManager.activeInstance?.delegate = delegate
-            ChatManager.activeInstance?.connect()
-        }
+        ChatManager.activeInstance?.dispose()
+        ChatManager.instance.createOrReplaceUserInstance(userId: userId, config: config)
+        ChatManager.activeInstance?.delegate = delegate
+        ChatManager.activeInstance?.connect()
     }
 
     public func switchToUser(_ userConfig: UserConfig, delegate: ChatDelegate) {
@@ -83,6 +81,20 @@ public final class UserConfigManagerVM: ObservableObject, Equatable {
                 // Remove last user config from userDefaults
                 UserDefaults.standard.removeObject(forKey: "userConfigData")
             }
+        }
+    }
+
+    public func updateToken(_ ssoToken: SSOTokenResponse) {
+        if var currentUserConfig {
+
+            if let index = userConfigs.firstIndex(where: {$0.id == currentUserConfig.id}) {
+                userConfigs[index].updateSSOToken(ssoToken)
+                UserDefaults.standard.set(userConfigs.data,forKey: "userConfigsData")
+            }
+
+            currentUserConfig.updateSSOToken(ssoToken)
+            self.currentUserConfig = currentUserConfig
+            UserDefaults.standard.set(currentUserConfig.data, forKey: "userConfigData")
         }
     }
 }

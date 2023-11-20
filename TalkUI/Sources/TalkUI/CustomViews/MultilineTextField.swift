@@ -147,8 +147,7 @@ public struct MultilineTextField: View {
                 Text(String(localized: .init(placeholder)))
                     .font(.iransansBody)
                     .foregroundColor(placeholderColor)
-                    .padding(.leading, 8)
-                    .padding(.top, 8)
+                    .padding(EdgeInsets(top: 8, leading: 8, bottom: 0, trailing: 0))
                     .transition(.slide)
             }
         }
@@ -159,7 +158,6 @@ public struct MultilineTextField: View {
     struct MultilineTextField_Previews: PreviewProvider {
         static var test: String = "" // some very very very long description string to be initially wider than screen"
         static var testBinding = Binding<String>(get: { test }, set: {
-//        print("New value: \($0)")
             test = $0
         })
 
@@ -167,7 +165,6 @@ public struct MultilineTextField: View {
             VStack(alignment: .leading) {
                 Text("Description:")
                 MultilineTextField("Enter some text here", text: testBinding, keyboardReturnType: .search, onDone: { _ in
-                    print("Final text: \(test)")
                 })
                 .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.App.black))
                 Text("Something static here...")

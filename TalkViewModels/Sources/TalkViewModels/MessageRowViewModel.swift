@@ -14,6 +14,7 @@ import Combine
 import TalkModels
 import NaturalLanguage
 import ChatDTO
+import OSLog
 
 public final class MessageRowViewModel: ObservableObject {
     public var isCalculated = false
@@ -38,6 +39,9 @@ public final class MessageRowViewModel: ObservableObject {
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true) }
     public var canDelete: Bool { (message.deletable == true && isMe) || (message.deletable == true && threadVM?.thread.admin == true) }
+    public var reactionCountList: [ReactionCount] = []
+    private var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
+    public var currentUserReaction: Reaction?
     public var avatarImageLoader: ImageLoaderViewModel? {
         if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {
             return imageLoaderVM
@@ -99,12 +103,21 @@ public final class MessageRowViewModel: ObservableObject {
             }
         }
         .store(in: &cancelableSet)
+
+        NotificationCenter.default.publisher(for: .reactionMessageUpdated)
+        .sink { [weak self] notification in
+            if notification.object as? Int == self?.message.id {
+                self?.setReactionList()
+                self?.animateObjectWillChange()
+            }
+        }
+        .store(in: &cancelableSet)
+
     }
 
     @MainActor
     public func calculate() {
         if isCalculated { return }
-        isCalculated = true
         recalculateWithAnimation()
     }
 
@@ -166,28 +179,21 @@ public final class MessageRowViewModel: ObservableObject {
     }
 
     private func recalculateWithAnimation() {
-        Task.detached(priority: .userInitiated) { [weak self] in
-            await self?.performaCalculation(animation: .easeInOut)
+        Task { [weak self] in
+            await self?.performaCalculation()
+            self?.animateObjectWillChange()
         }
     }
 
-    private func performaCalculation(animation: Animation? = nil) async {
+    private func performaCalculation() async {
+        isCalculated = true
         isNextMessageTheSameUser = threadVM?.thread.group == true && (threadVM?.isNextSameUser(message: message) == true) && message.participant != nil
-        let isEnglish = message.message?.naturalTextAlignment == .leading
-        let maxWidth = self.calculateMaxWidth()
-        let markdownTitle = message.markdownTitle
-        let addressDetail = await message.addressDetail
-        let timeString = message.time?.date.localFormattedTime ?? ""
-        await MainActor.run {
-            self.addressDetail = addressDetail
-            self.isEnglish = isEnglish
-            self.maxWidth = maxWidth
-            self.markdownTitle = markdownTitle
-            self.timeString = timeString
-            withAnimation(.easeInOut) {
-                self.objectWillChange.send()
-            }
-        }
+        addressDetail = await message.addressDetail
+        isEnglish = message.message?.naturalTextAlignment == .leading
+        maxWidth = self.calculateMaxWidth()
+        markdownTitle = message.markdownTitle
+        timeString = message.time?.date.localFormattedTime ?? ""
+        setReactionList()
     }
 
     public var maxAllowedWidth: CGFloat {
@@ -220,11 +226,18 @@ public final class MessageRowViewModel: ObservableObject {
         }
     }
 
+    func setReactionList() {
+        if let reactionCountList = inMemoryReaction?.summary(for: message.id ?? -1) {
+            self.reactionCountList = reactionCountList
+            currentUserReaction = ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(message.id ?? -1)
+        }
+    }
+
     deinit {
         downloadFileVM?.cancelObservers()
         downloadFileVM = nil
-#if Debug
-        print("Deinit get called for message: \(message.message ?? "") and message isFileTye:\(message.isFileType) and id is: \(message.id ?? 0)")
+#if DEBUG
+        Logger.viewModels.info("Deinit get called for message: \(self.message.message ?? "") and message isFileTye:\(self.message.isFileType) and id is: \(self.message.id ?? 0)")
 #endif
     }
 }

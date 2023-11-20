@@ -105,7 +105,7 @@ fileprivate struct FileDownloadButton: View {
             }
             .frame(width: config.iconWidth, height: config.iconHeight)
             .background(config.iconCircleColor)
-            .cornerRadius(config.iconHeight / 2)
+            .clipShape(RoundedRectangle(cornerRadius:(config.iconHeight / 2)))
             .onTapGesture {
                 if viewModel.state == .paused {
                     viewModel.resumeDownload()

@@ -47,7 +47,7 @@ public struct ListSectionButton: View {
                     }
                     .frame(width: 28, height: 28)
                     .background(color)
-                    .cornerRadius(8, corners: .allCorners)
+                    .clipShape(RoundedRectangle(cornerRadius:(8)))
 
                     Text(String(localized: .init(title)))
                     Spacer()
@@ -71,9 +71,7 @@ public struct ListSectionButton: View {
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 36, alignment: .leading)
             .contentShape(Rectangle())
-            .padding(.top, 12)
-            .padding([.leading, .trailing], 16)
-            .padding(.bottom, showDivider ? 0 : 12)
+            .padding(EdgeInsets(top: 12, leading: 16, bottom: showDivider ? 0 : 12, trailing: 16))
         }
         .buttonStyle(ListSectionButtonStyle())
         .contentShape(Rectangle())

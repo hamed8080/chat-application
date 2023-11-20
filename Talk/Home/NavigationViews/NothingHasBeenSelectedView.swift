@@ -38,10 +38,9 @@ struct NothingHasBeenSelectedView: View {
                     }
                     .fixedSize()
                     .font(.iransansBoldBody)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
+                    .padding(EdgeInsets(top: 12, leading: 24, bottom: 12, trailing: 24))
                     .background(Color.App.bgSecond)
-                    .cornerRadius(12)
+                    .clipShape(RoundedRectangle(cornerRadius:(12)))
                     .foregroundStyle(Color.App.text)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
@@ -51,8 +50,7 @@ struct NothingHasBeenSelectedView: View {
                 }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-            .padding([.leading, .trailing], 96)
-            .padding([.bottom, .top], 96)
+            .padding(EdgeInsets(top: 96, leading: 96, bottom: 96, trailing: 96))
             .background(MixMaterialBackground().ignoresSafeArea())
         }
     }

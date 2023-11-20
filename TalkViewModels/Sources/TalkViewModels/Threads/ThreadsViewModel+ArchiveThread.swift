@@ -43,6 +43,7 @@ extension ThreadsViewModel: ArchiveThreadProtocol {
             archives.append(conversation)
             threads.remove(at: index)
             sort()
+            animateObjectWillChange()
         }
     }
 
@@ -53,6 +54,7 @@ extension ThreadsViewModel: ArchiveThreadProtocol {
             archives.remove(at: index)
             threads.append(conversation)
             sort()
+            animateObjectWillChange()
         }
     }
 }

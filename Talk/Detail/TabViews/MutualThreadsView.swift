@@ -17,7 +17,7 @@ struct MutualThreadsView: View {
         if !viewModel.mutualThreads.isEmpty {
             ForEach(viewModel.mutualThreads) { thread in
                 SelectThreadRow(thread: thread)
-                    .padding([.leading, .top, .bottom], 8)
+                    .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 0))
             }
         }
     }

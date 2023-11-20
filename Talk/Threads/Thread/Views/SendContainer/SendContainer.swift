@@ -56,21 +56,15 @@ struct SendContainer: View {
                         if showActionButtons {
                             AttachmentButtons(viewModel: viewModel.attachmentsViewModel, showActionButtons: $showActionButtons)
                         }
-
-                        if let recordingVM = viewModel.audioRecoderVM {
-                            AudioRecordingView(isRecording: $isRecording)
-                                .environmentObject(recordingVM)
-                                .padding([.trailing], 12)
-                        }
                         MainSendButtons(showActionButtons: $showActionButtons, isRecording: $isRecording, text: $text)
                             .environment(\.layoutDirection, .leftToRight)
                     }
                 }
                 .opacity(disableSend ? 0.3 : 1.0)
                 .disabled(disableSend)
-                .padding([.bottom, .top], 4)
-                .padding([.leading, .trailing], 8)
+                .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))             
                 .animation(isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: isRecording)
+                .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: text.isEmpty)
                 .background(
                     MixMaterialBackground()
                         .cornerRadius(showActionButtons && viewModel.attachmentsViewModel.attachments.count == 0 ? 24 : 0, corners: [.topLeft, .topRight])
@@ -89,7 +83,9 @@ struct SendContainer: View {
                 }
                 .onChange(of: text) { newValue in
                     viewModel.searchForParticipantInMentioning(newValue)
-                    viewModel.textMessage = newValue
+                    if newValue != viewModel.textMessage {
+                        viewModel.textMessage = newValue
+                    }
                     if !newValue.isEmpty {
                         UserDefaults.standard.setValue(newValue, forKey: "draft-\(viewModel.threadId)")
                     } else {

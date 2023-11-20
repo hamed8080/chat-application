@@ -22,7 +22,7 @@ struct ThreadImageView: View {
                 .scaledToFit()
                 .frame(width: 54, height: 54)
                 .background(Color.App.gray5)
-                .cornerRadius(24)
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
                 .overlay {
                     Image("bookmark")
                         .resizable()
@@ -37,7 +37,7 @@ struct ThreadImageView: View {
                 .foregroundColor(.white)
                 .frame(width: 54, height: 54)
                 .background(Color.App.blue.opacity(0.4))
-                .cornerRadius(24)
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
         } else {
             Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
                 .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
@@ -45,7 +45,7 @@ struct ThreadImageView: View {
                 .foregroundColor(.white)
                 .frame(width: 54, height: 54)
                 .background(Color.App.blue.opacity(0.4))
-                .cornerRadius(24)
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
         }
     }
 }

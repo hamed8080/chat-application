@@ -20,7 +20,7 @@ struct ReactionMenuView: View {
     @State var show = false
 
     var body: some View {
-        ScrollView(.horizontal) {
+        ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 ForEach(Sticker.allCases, id: \.self) { sticker in
                     let isFirst = sticker == Sticker.allCases.first
@@ -36,7 +36,7 @@ struct ReactionMenuView: View {
                             .font(.system(size: 24))
                             .padding(4)
                             .background(currentSelectedReaction?.reaction == sticker ? Color.App.primary.opacity(0.2) : Color.clear)
-                            .cornerRadius(currentSelectedReaction?.reaction == sticker ? 20 : 0)
+                            .clipShape(RoundedRectangle(cornerRadius:(currentSelectedReaction?.reaction == sticker ? 20 : 0)))
                     }
                     .padding([isFirst ? .leading : isLast ? .trailing : .all], isFirst || isLast ? 16 : 0)
                     .scaleEffect(x: show ? 1.0 : 0.001, y: show ? 1.0 : 0.001, anchor: .center)
@@ -54,7 +54,7 @@ struct ReactionMenuView: View {
         }
         .frame(height: 52)
         .background(MixMaterialBackground())
-        .cornerRadius(21)
+        .clipShape(RoundedRectangle(cornerRadius:(21)))
     }
 }
 

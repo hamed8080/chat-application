@@ -25,7 +25,7 @@ public final class ContactsViewModel: ObservableObject {
     public private(set) var firstSuccessResponse = false
     private var canLoadNextPage: Bool { !isLoading && hasNext }
     @Published public private(set) var maxContactsCountInServer = 0
-    @Published public private(set) var contacts: [Contact] = []
+    public private(set) var contacts: [Contact] = []
     @Published public private(set) var searchedContacts: [Contact] = []
     @Published public var isLoading = false
     @Published public var searchContactString: String = ""
@@ -63,7 +63,8 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func setupPublishers() {
-        AppState.shared.$connectionStatus.sink { [weak self] status in
+        AppState.shared.$connectionStatus
+            .sink { [weak self] status in
             if self?.firstSuccessResponse == false, status == .connected {
                 self?.getContacts()
                 ChatManager.activeInstance?.contact.getBlockedList()
@@ -100,7 +101,8 @@ public final class ContactsViewModel: ObservableObject {
                 self?.onConversationEvent(event)
             }
             .store(in: &canceableSet)
-        $conversationTitle.sink { [weak self] newValue in
+        $conversationTitle
+            .sink { [weak self] newValue in
             if newValue.count >= 2 {
                 self?.showTitleError = false
             }
@@ -175,6 +177,7 @@ public final class ContactsViewModel: ObservableObject {
             response.result?.forEach{ contact in
                 contacts.removeAll(where: {$0.id == contact.id})
             }
+            animateObjectWillChange()
         }
     }
 
@@ -201,6 +204,7 @@ public final class ContactsViewModel: ObservableObject {
         selectedContacts = []
         searchedContacts = []
         maxContactsCountInServer = 0
+        animateObjectWillChange()
     }
 
     public func deselectContacts() {
@@ -213,6 +217,7 @@ public final class ContactsViewModel: ObservableObject {
             delete(contact)
             reomve(contact)
         }
+        animateObjectWillChange()
     }
 
     public func delete(_ contact: Contact) {
@@ -237,6 +242,7 @@ public final class ContactsViewModel: ObservableObject {
                 self.contacts.append(contact)
             }
         }
+        animateObjectWillChange()
     }
 
     public func onAddContacts(_ response: ChatResponse<[Contact]>) {
@@ -249,6 +255,7 @@ public final class ContactsViewModel: ObservableObject {
                 }
             }
         }
+        animateObjectWillChange()
     }
 
     public func setMaxContactsCountInServer(count: Int) {
@@ -258,6 +265,7 @@ public final class ContactsViewModel: ObservableObject {
     public func reomve(_ contact: Contact) {
         guard let index = contacts.firstIndex(where: { $0 == contact }) else { return }
         contacts.remove(at: index)
+        animateObjectWillChange()
     }
 
     public func addToSelctedContacts(_ contact: Contact) {

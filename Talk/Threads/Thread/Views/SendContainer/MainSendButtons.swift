@@ -15,6 +15,7 @@ struct MainSendButtons: View {
     @Binding var showActionButtons: Bool
     @Binding var isRecording: Bool
     @Binding var text: String
+    @State var isVideoRecordingSelected = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -31,28 +32,58 @@ struct MainSendButtons: View {
                         .frame(width: 26, height: 26)
                 }
                 .frame(width: 48, height: 48)
-                .cornerRadius(24)
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
                 .buttonStyle(.borderless)
                 .fontWeight(.light)
             }
 
-            MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
-                               text: $text,
-                               textColor: UIColor(named: "message_text"),
-                               backgroundColor: Color.App.bgSecond,
-                               mention: true)
-            .cornerRadius(24)
-            .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
-            .onChange(of: viewModel.textMessage ?? "") { newValue in
-                viewModel.sendStartTyping(newValue)
+            if let recordingVM = viewModel.audioRecoderVM {
+                AudioRecordingView(isRecording: $isRecording)
+                    .environmentObject(recordingVM)
+                    .padding([.trailing], 12)
             }
 
-            if isRecording == false {
+            if !isRecording {
+                MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
+                                   text: $text,
+                                   textColor: UIColor(named: "message_text"),
+                                   backgroundColor: Color.App.bgSecond,
+                                   mention: true)
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
+                .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
+                .onChange(of: viewModel.textMessage ?? "") { newValue in
+                    viewModel.sendStartTyping(newValue)
+                }
+            }
+
+            let showAudio = isRecording == false && text.isEmpty && !isVideoRecordingSelected
+            if showAudio {
                 Button {
                     viewModel.setupRecording()
                     isRecording = true
                 } label: {
                     Image(systemName: "mic.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 26, height: 26)
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.App.hint)
+                }
+                .frame(width: 48, height: 48)
+                .buttonStyle(.borderless)
+                .fontWeight(.light)
+                .keyboardShortcut(.init("r"), modifiers: [.command])
+                .highPriorityGesture(switchRecordingGesture)
+                .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
+            }
+
+            let showCamera = isRecording == false && text.isEmpty && isVideoRecordingSelected
+            if showCamera {
+                Button {
+                    viewModel.setupRecording()
+                    isRecording = true
+                } label: {
+                    Image(systemName: "camera")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 26, height: 24)
@@ -63,25 +94,11 @@ struct MainSendButtons: View {
                 .buttonStyle(.borderless)
                 .fontWeight(.light)
                 .keyboardShortcut(.init("r"), modifiers: [.command])
+                .disabled(true)
+                .opacity(0.2)
+                .highPriorityGesture(switchRecordingGesture)
+                .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
             }
-
-            Button {
-                viewModel.setupRecording()
-                isRecording = true
-            } label: {
-                Image(systemName: "camera")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 26, height: 26)
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.hint)
-            }
-            .frame(width: 48, height: 48)
-            .buttonStyle(.borderless)
-            .fontWeight(.light)
-            .keyboardShortcut(.init("r"), modifiers: [.command])
-            .disabled(true)
-            .opacity(0.2)
 
             Button {
                 if isRecording {
@@ -99,19 +116,29 @@ struct MainSendButtons: View {
                 Image(systemName: "arrow.up.circle.fill")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 26, height: 26)
+                    .frame(width: text.isEmpty ? 0 : 26, height: text.isEmpty ? 0 : 26)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(Color.App.white, Color.App.primary)
             }
-            .frame(width: 48, height: 48)
+            .frame(width: text.isEmpty ? 0 : 48, height: text.isEmpty ? 0 : 48)
             .buttonStyle(.borderless)
             .fontWeight(.light)
             .keyboardShortcut(.return, modifiers: [.command])
         }
+        .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.3), value: isVideoRecordingSelected)
     }
 
     private func animation(appear: Bool) -> Animation {
         appear ? .spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2) : .easeOut(duration: 0.13)
+    }
+
+    private var switchRecordingGesture: some Gesture {
+        DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            .onEnded { newValue in
+                if abs(newValue.translation.height) > 32 {
+                    isVideoRecordingSelected.toggle()
+                }
+            }
     }
 }
 

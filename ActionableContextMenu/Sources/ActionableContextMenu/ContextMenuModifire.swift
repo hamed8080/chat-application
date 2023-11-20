@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ContextMenuModifire.swift
 //  
 //
 //  Created by hamed on 10/27/23.
@@ -7,26 +7,27 @@
 
 import Foundation
 import SwiftUI
+import OSLog
 
-struct ContextMenuModifire<V: View, T: View>: ViewModifier {
+struct ContextMenuModifire<V: View>: ViewModifier {
+    private let logger = Logger(subsystem: "ActionableContextMenu", category: "ContextMenuModifire")
     @EnvironmentObject var viewModel: ContextMenuModel
     @State var scale: CGFloat = 1.0
     @GestureState var isTouched: Bool = false
     @GestureState var isTouchedLocalPosition: Bool = false
     let menus: () -> V
-    let topView: (() -> T)?
     let root: any View
+    @State var itemWidth: CGFloat = 0
     @State var globalFrame: CGRect = .zero
 
-    init(root: any View, @ViewBuilder menus: @escaping () -> V, topView: (() -> T)? = nil) {
+    init(root: any View, @ViewBuilder menus: @escaping () -> V) {
         self.root = root
         self.menus = menus
-        self.topView = topView
     }
 
     func body(content: Content) -> some View {
         content
-            .background(frameRedaer)
+            .background(frameReader)
             .scaleEffect(x: scale, y: scale, anchor: .center)
             .gesture(tapgesture)
             .gesture(longGesture.simultaneously(with: postionGesture).simultaneously(with: localPostionGesture))
@@ -42,10 +43,11 @@ struct ContextMenuModifire<V: View, T: View>: ViewModifier {
     var tapgesture: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
-                print("on tapped")
+#if DEBUG
+                logger.info("on tapped")
+#endif
             }
     }
-
 
     var longGesture: some Gesture {
         LongPressGesture(minimumDuration: 0.2, maximumDistance: 0)
@@ -57,10 +59,8 @@ struct ContextMenuModifire<V: View, T: View>: ViewModifier {
                     withAnimation(.easeInOut) {
                         viewModel.menus = AnyView(menus().environmentObject(viewModel))
                         scale = 1.2
+                        viewModel.itemWidth = itemWidth
                         viewModel.globalFrame = globalFrame
-                        if let topView {
-                            viewModel.topView = AnyView(topView())
-                        }
                         viewModel.mainView = AnyView(root)
                         viewModel.isPresented.toggle()
                     }
@@ -75,7 +75,9 @@ struct ContextMenuModifire<V: View, T: View>: ViewModifier {
             }
             .onChanged { value in
                 viewModel.globalPosition = value.location
-                print("global touched value location x: \(value.location.x) y: \(value.location.y)")
+#if DEBUG
+                logger.info("global touched value location x: \(value.location.x) y: \(value.location.y)")
+#endif
             }
     }
 
@@ -90,7 +92,9 @@ struct ContextMenuModifire<V: View, T: View>: ViewModifier {
                 let beofreY = viewModel.localPosition?.y ?? 0
                 if isPastTheMargin(first: beofreX, newValue: value.location.x) || isPastTheMargin(first: beofreY, newValue: value.location.y) {
                     viewModel.localPosition = value.location
-                    print("local touched value location x: \(value.location.x) y:\(value.location.y)")
+#if DEBUG
+                    logger.info("local touched value location x: \(value.location.x) y:\(value.location.y)")
+#endif
                 }
             }
     }
@@ -100,22 +104,21 @@ struct ContextMenuModifire<V: View, T: View>: ViewModifier {
         return newValue > first + padding || newValue < first - padding
     }
 
-    var frameRedaer: some View {
+    var frameReader: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
-                viewModel.itemWidth = reader.size.width
+                itemWidth = reader.size.width
                 globalFrame = reader.frame(in: .global)
-                print("globalFrame width: \(globalFrame.width) height: \(globalFrame.height)  originX: \(globalFrame.origin.x) originY: \(globalFrame.origin.y)")
+#if DEBUG
+                logger.info("globalFrame width: \(globalFrame.width) height: \(globalFrame.height)  originX: \(globalFrame.origin.x) originY: \(globalFrame.origin.y)")
+#endif
             }
         }
     }
 }
 
 public extension View {
-    func customContextMenu<V: View, T: View>(self: any View,
-                                             @ViewBuilder menus: @escaping () -> V,
-                                             topView: (() -> T)? =  { EmptyView() }
-    ) -> some View {
-        modifier(ContextMenuModifire(root: self, menus: menus, topView: topView))
+    func customContextMenu<V: View>(self: any View, @ViewBuilder menus: @escaping () -> V) -> some View {
+        modifier(ContextMenuModifire(root: self, menus: menus))
     }
 }

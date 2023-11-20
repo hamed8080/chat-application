@@ -45,8 +45,7 @@ struct VerifyContentView: View {
                     Text(formatted)
                         .foregroundStyle(Color.App.hint)
                         .font(.iransansBody)
-                        .padding(.vertical, 4)
-                        .padding(.horizontal, 64)
+                        .padding(EdgeInsets(top: 4, leading: 64, bottom: 4, trailing: 64))
                         .multilineTextAlignment(.center)
                 }
                 .font(.iransansSubheadline)
@@ -61,8 +60,7 @@ struct VerifyContentView: View {
                 Spacer()
             }
             .frame(maxWidth: 420)
-            .padding(.horizontal)
-            .padding(.bottom, 8)
+            .padding(EdgeInsets(top: 0, leading: 16, bottom: 8, trailing: 16))
             HStack(spacing: 16) {
                 ForEach(0 ..< VerifyFocusFileds.allCases.endIndex, id: \.self) { i in
                     TextField("", text: $viewModel.verifyCodes[i])
@@ -125,8 +123,7 @@ struct VerifyContentView: View {
                     Text(formatted)
                         .foregroundStyle(Color.App.hint)
                         .font(.iransansCaption)
-                        .padding(.top, 20)
-                        .padding(.leading, UIApplication.shared.isInSlimMode ? 12 : 6)
+                        .padding(EdgeInsets(top: 20, leading: UIApplication.shared.isInSlimMode ? 12 : 6, bottom: 0, trailing: 0))
                 } else {
                     Button {
                         viewModel.resend()

@@ -43,8 +43,7 @@ struct ThreadPinMessage: View {
                         RTLDesign
                     }
                 }
-                .padding(.leading, isEnglish ? 4 : 8)
-                .padding(.trailing, isEnglish ? 8 : 4)
+                .padding(EdgeInsets(top: 0, leading: isEnglish ? 4 : 8, bottom: 0, trailing: isEnglish ? 8 : 4))
                 .frame(height: 40)
                 .background(MixMaterialBackground())
                 .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top)))
@@ -112,7 +111,7 @@ struct ThreadPinMessage: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: 24, height: 24)
-                .cornerRadius(4)
+                .clipShape(RoundedRectangle(cornerRadius:(4)))
         } else if let icon = icon {
             Image(systemName: icon)
                 .resizable()

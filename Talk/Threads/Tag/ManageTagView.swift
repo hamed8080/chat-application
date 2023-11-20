@@ -69,7 +69,7 @@ struct ManageTagView: View {
                             }
                         }
                         .listStyle(.plain)
-                        .cornerRadius(12)
+                        .clipShape(RoundedRectangle(cornerRadius:(12)))
                         .clipped()
                     }
                 }

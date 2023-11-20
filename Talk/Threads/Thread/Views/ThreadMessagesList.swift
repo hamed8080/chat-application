@@ -113,10 +113,9 @@ struct SectionView: View {
     var body: some View {
         Text(verbatim: section.date.yearCondence ?? "")
             .font(.iransansCaption)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
             .background(Color.App.black.opacity(0.2))
-            .cornerRadius(24)
+            .clipShape(RoundedRectangle(cornerRadius:(24)))
             .foregroundStyle(Color.App.text)
     }
 }
@@ -149,7 +148,6 @@ struct ThreadMessagesList_Previews: PreviewProvider {
 
             let viewModel = ThreadViewModel(thread: Conversation(id: 1), threadsViewModel: .init())
             viewModel.sections.append(MessageSection(date: .init(), messages: [message]))
-            print(viewModel.sections.count)
             viewModel.animateObjectWillChange()
             self._viewModel = StateObject(wrappedValue: viewModel)
         }
@@ -157,9 +155,6 @@ struct ThreadMessagesList_Previews: PreviewProvider {
         var body: some View {
             ThreadMessagesList(viewModel: viewModel)
                 .environmentObject(viewModel)
-                .onAppear {
-                    print(viewModel.sections.count)
-                }
         }
     }
 

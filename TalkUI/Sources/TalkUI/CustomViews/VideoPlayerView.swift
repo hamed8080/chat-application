@@ -9,8 +9,11 @@ import Foundation
 import AVKit
 import SwiftUI
 import TalkViewModels
+import OSLog
 
+fileprivate let logger = Logger(subsystem: "TalkUI", category: "VideoPlayerView")
 public struct VideoPlayerView: View {
+
     @EnvironmentObject var videoPlayerVM: VideoPlayerViewModel
     @State private var showFullScreen = false
     public init() {}
@@ -20,7 +23,7 @@ public struct VideoPlayerView: View {
             if let player = videoPlayerVM.player {
                 PlayerViewRepresentable(player: player, showFullScreen: $showFullScreen)
                     .frame(minHeight: 196)
-                    .cornerRadius(12)
+                    .clipShape(RoundedRectangle(cornerRadius:(12)))
                     .disabled(true)
             }
         }
@@ -35,7 +38,7 @@ public struct VideoPlayerView: View {
             Text(String(localized:.init(videoPlayerVM.timerString)))
                 .padding(6)
                 .background(.ultraThinMaterial)
-                .cornerRadius(8)
+                .clipShape(RoundedRectangle(cornerRadius:(8)))
                 .offset(x: 24, y: 24)
                 .font(.iransansCaption)
         }
@@ -74,12 +77,16 @@ public struct PlayerViewRepresentable: UIViewControllerRepresentable {
     }
 
     public func updateUIViewController(_ playerController: AVPlayerViewController, context: Context) {
-        print("updateUIViewController->", showFullScreen)
+#if DEBUG
+        logger.info("updateUIViewController-> \(showFullScreen)")
+#endif
         chooseScreenType(playerController)
     }
 
     private func chooseScreenType(_ controller: AVPlayerViewController) {
-        print("chooseScreenType", self.showFullScreen)
+#if DEBUG
+        logger.info("chooseScreenType \(self.showFullScreen)")
+#endif
         self.showFullScreen ? controller.enterFullScreen(animated: true) : controller.exitFullScreen(animated: true)
     }
 
@@ -102,12 +109,14 @@ public struct PlayerViewRepresentable: UIViewControllerRepresentable {
 
 public extension AVPlayerViewController {
     func enterFullScreen(animated: Bool) {
-        print("Enter full screen")
+#if DEBUG
+        logger.info("Enter full screen")
+#endif
         perform(NSSelectorFromString("enterFullScreenAnimated:completionHandler:"), with: animated, with: nil)
     }
 
     func exitFullScreen(animated: Bool) {
-        print("Exit full screen")
+        logger.info("Exit full screen")
         perform(NSSelectorFromString("exitFullScreenAnimated:completionHandler:"), with: animated, with: nil)
     }
 }

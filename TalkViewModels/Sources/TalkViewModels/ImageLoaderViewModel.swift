@@ -38,7 +38,9 @@ public final class ImageLoaderViewModel: ObservableObject {
         NotificationCenter.default.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
             .sink{ [weak self] event in
-                self?.onDownloadEvent(event)
+                DispatchQueue.global().async {
+                    self?.onDownloadEvent(event)
+                }
             }
             .store(in: &cancelable)
     }
@@ -75,11 +77,16 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     private func setImage(fileURL: URL) {
         autoreleasepool {
+            var image: UIImage? = nil
             if size == nil || size == .ACTUAL, let data = fileURL.data {
                 image = UIImage(data: data) ?? UIImage()
             } else {
                 guard let cgImage = fileURL.imageScale(width: size == .SMALL ? 128 : 256)?.image else { return }
                 image = UIImage(cgImage: cgImage)
+            }
+            DispatchQueue.main.async { [weak self] in
+                guard let image = image else { return }
+                self?.image = image
             }
         }
     }
@@ -161,9 +168,7 @@ public final class ImageLoaderViewModel: ObservableObject {
     private func update(data: Data?) {
         guard let data = data else { return }
         if !isRealImage(data: data) { return }
-        DispatchQueue.global(qos: .background).async { [weak self] in
-            self?.setImage(data: data)
-        }
+        setImage(data: data)
     }
 
     private func storeInCache(data: Data?) {

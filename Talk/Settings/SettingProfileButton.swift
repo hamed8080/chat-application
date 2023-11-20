@@ -29,7 +29,7 @@ struct SettingProfileButton: View {
                     .scaleEffect(x: imageLoader.isImageReady ? 1 : 0.001, y: imageLoader.isImageReady ? 1 : 0.001, anchor: .center)
                     .animation(.interpolatingSpring(mass: 1.0, stiffness: 0.3, damping: 0.5, initialVelocity: 0).speed(15), value: imageLoader.isImageReady)
                     .frame(width: 24, height: 24)
-                    .cornerRadius(12)
+                    .clipShape(RoundedRectangle(cornerRadius:(12)))
                     .overlay {
                         Circle()
                             .strokeBorder(isSelected ? Color.App.primary : Color.App.bgPrimary, lineWidth: imageLoader.isImageReady ? 1 : 0)

@@ -29,8 +29,7 @@ struct TabButtonsContainer: View {
         }
         .frame(minWidth: 0, maxWidth: .infinity)
         .frame(height: 36)
-        .padding(.top, 16)
-        .padding(.bottom, 4)
+        .padding(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0))
         .background(MixMaterialBackground().ignoresSafeArea())
     }
 }

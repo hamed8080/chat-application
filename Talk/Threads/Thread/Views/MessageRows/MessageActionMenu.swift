@@ -111,7 +111,7 @@ struct MessageActionMenu: View {
         .foregroundColor(.primary)
         .frame(minWidth: 196)
         .background(MixMaterialBackground())
-        .cornerRadius(12)
+        .clipShape(RoundedRectangle(cornerRadius:((12))))
     }
 
     private func animation(appear: Bool) -> Animation {

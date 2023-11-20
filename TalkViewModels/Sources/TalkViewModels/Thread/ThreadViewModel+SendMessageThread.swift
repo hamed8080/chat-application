@@ -292,7 +292,7 @@ extension ThreadViewModel {
                 appendMessagesAndSort([fileMessage])
             }
         default:
-            Logger.viewModels.info("Type not detected!")
+            log("Type not detected!")
         }
     }
 

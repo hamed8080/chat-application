@@ -28,11 +28,11 @@ struct SwipyView: View {
                     UserConfigView(userConfig: item)
                         .frame(height: containerSize)
                         .background(Color.App.bgSecond)
-                        .cornerRadius(12)
+                        .clipShape(RoundedRectangle(cornerRadius:(12)))
                 }
                 .frame(height: containerSize)
                 .background(Color.App.primary.opacity(0.3))
-                .cornerRadius(12)
+                .clipShape(RoundedRectangle(cornerRadius:(12)))
             }
         }
         .onAppear {
@@ -83,7 +83,7 @@ struct UserConfigView: View {
             ImageLaoderView(imageLoader: imageLoader, url: userConfig.user.image, userName: userConfig.user.name)
                 .id("\(userConfig.user.image ?? "")\(userConfig.user.id ?? 0)")
                 .frame(width: 48, height: 48)
-                .cornerRadius(24)
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
                 .padding()
                 .overlay {
                     UploadImageProfileView()
@@ -144,7 +144,7 @@ struct UploadImageProfileView: View  {
         }
         .frame(width: 48, height: 48)
         .background(.blue)
-        .cornerRadius(24, corners: .allCorners)
+        .clipShape(RoundedRectangle(cornerRadius:(24)))
         .scaleEffect(x: viewModel.isEditing ? 1 : 0.001,
                      y: viewModel.isEditing ? 1 : 0.001,
                      anchor: .center)

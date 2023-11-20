@@ -48,11 +48,10 @@ public struct ToastView<ContentView: View>: View {
                 }
                 .padding()
                 .background(.ultraThinMaterial)
-                .cornerRadius(12)
+                .clipShape(RoundedRectangle(cornerRadius:(12)))
                 Spacer()
             }
-            .padding(.horizontal, 8)
-            .padding(.top, 96)
+            .padding(EdgeInsets(top: 96, leading: 8, bottom: 0, trailing: 8))
         }
     }
 }

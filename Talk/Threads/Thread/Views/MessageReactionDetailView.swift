@@ -34,8 +34,8 @@ struct MessageReactionDetailView: View {
     }
 
     var tabs: [TabItem] {
-        if summarTabs.count > 0 {
-            var tabs = summarTabs
+        if summaryTabs.count > 0 {
+            var tabs = summaryTabs
             tabs.insert(allTab, at: 0)
             return tabs
         } else {
@@ -54,7 +54,7 @@ struct MessageReactionDetailView: View {
         )
     }
 
-    var summarTabs: [TabItem] {
+    var summaryTabs: [TabItem] {
         ChatManager.activeInstance?.reaction.inMemoryReaction.summary(for: messageId)
             .compactMap { reaction in
                 TabItem(
@@ -151,7 +151,7 @@ struct ReactionParticipantRow: View {
                     .foregroundColor(.white)
                     .frame(width: 64, height: 64)
                     .background(Color.App.blue.opacity(0.4))
-                    .cornerRadius(24)
+                    .clipShape(RoundedRectangle(cornerRadius:(24)))
                 Circle()
                     .fill(.red)
                     .frame(width: 28, height: 28)
@@ -162,7 +162,7 @@ struct ReactionParticipantRow: View {
                             .font(.system(size: 13))
                             .frame(width: 22, height: 22)
                             .background(Color.App.primary.opacity(0.3))
-                            .cornerRadius(18)
+                            .clipShape(RoundedRectangle(cornerRadius:(18)))
                             .offset(x: 0, y: 26)
 
                     }

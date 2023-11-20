@@ -31,7 +31,7 @@ public struct AppOverlayView<Content>: View where Content: View {
                 }
                 content()
                     .transition(viewModel.transition)
-                    .cornerRadius(viewModel.radius)
+                    .clipShape(RoundedRectangle(cornerRadius:(viewModel.radius)))
             }
 
             if viewModel.showCloseButton && viewModel.isPresented {
@@ -79,10 +79,9 @@ struct DismissAppOverlayButton: View {
                 }
                 .frame(width: 40, height: 40)
                 .background(.ultraThinMaterial)
-                .cornerRadius(20)
+                .clipShape(RoundedRectangle(cornerRadius:(20)))
             }
-            .padding(.top, 48 + reader.safeAreaInsets.top)
-            .padding(.leading, 8)
+            .padding(EdgeInsets(top: 48 + reader.safeAreaInsets.top, leading: 8, bottom: 0, trailing: 0))
         }
     }
 }

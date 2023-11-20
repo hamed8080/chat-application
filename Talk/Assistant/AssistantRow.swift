@@ -23,7 +23,7 @@ struct AssistantRow: View {
             ImageLaoderView(imageLoader: imageViewModel, url: assistant.participant?.image, userName: assistant.participant?.name)
                 .frame(width: 28, height: 28)
                 .background(.blue.opacity(0.8))
-                .cornerRadius(18)
+                .clipShape(RoundedRectangle(cornerRadius:(18)))
 
             Text(assistant.participant?.name ?? "")
                 .font(.iransansCaption)
@@ -31,8 +31,7 @@ struct AssistantRow: View {
                 Spacer()
                 Text("General.blocked")
                     .font(.iransansCaption2)
-                    .padding([.leading, .trailing], 6)
-                    .padding([.top, .bottom], 2)
+                    .padding(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
                     .foregroundColor(Color.App.red)
                     .overlay(
                         RoundedRectangle(cornerRadius: 4)
@@ -80,7 +79,7 @@ struct SelectAssistantRadio: View {
                 .foregroundColor(Color.App.blue)
         }
         .frame(width: isInSelectionMode ? 22 : 0.001, height: isInSelectionMode ? 22 : 0.001, alignment: .center)
-        .padding([.trailing], isInSelectionMode ? 8 : 0.001)
+        .padding(.trailing, isInSelectionMode ? 8 : 0.001)
         .scaleEffect(x: isInSelectionMode ? 1.0 : 0.001, y: isInSelectionMode ? 1.0 : 0.001, anchor: .center)
         .onTapGesture {
             withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {

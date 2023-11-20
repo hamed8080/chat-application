@@ -44,7 +44,7 @@ public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLo
             player = AVPlayer(playerItem: item)
             item.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: [.old, .new], context: nil)
         } catch {
-            Logger.viewModels.info("error in hardlinking: \(error.localizedDescription)")
+            log("error in hardlinking: \(error.localizedDescription)")
         }
     }
 
@@ -56,14 +56,14 @@ public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLo
         switch item.status {
 
         case .unknown:
-            Logger.viewModels.info("unkown state video player")
+            log("unkown state video player")
         case .readyToPlay:
-            Logger.viewModels.info("reday video player")
+            log("reday video player")
         case .failed:
             guard let error = item.error else { return }
-            Logger.viewModels.info("failed state video player\(error.localizedDescription)")
+            log("failed state video player\(error.localizedDescription)")
         @unknown default:
-            Logger.viewModels.info("default status video player")
+            log("default status video player")
         }
     }
 
@@ -87,6 +87,12 @@ public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLo
     public func stopTimer() {
         timer?.invalidate()
         timer = nil
+    }
+
+    private func log(_ string: String) {
+#if DEBUG
+        Logger.viewModels.info("\(string, privacy: .sensitive)")
+#endif
     }
 
     deinit {

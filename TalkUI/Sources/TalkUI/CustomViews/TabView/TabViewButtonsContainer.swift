@@ -33,7 +33,7 @@ struct TabViewButtonsContainer: View {
                                     .fixedSize()
                                     .foregroundStyle(index == selectedTabIndex ? Color.App.text : Color.App.hint)
                             }
-                            .padding([.trailing, .leading], 8)
+                            .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
 
                             if index == selectedTabIndex {
                                 Rectangle()

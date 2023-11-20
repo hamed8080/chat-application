@@ -18,11 +18,9 @@ import TalkExtensions
 import OSLog
 
 public final class ThreadsViewModel: ObservableObject {
-    @Published public var isLoading = false
-    @Published public var toggle = false
-    @AppStorage("Threads", store: UserDefaults.group) public var threadsData: Data?
-    @Published public var threads: OrderedSet<Conversation> = []
-    @Published public var archives: OrderedSet<Conversation> = []
+    public var isLoading = false
+    public var threads: OrderedSet<Conversation> = []
+    public var archives: OrderedSet<Conversation> = []
     @Published public var searchedConversations: OrderedSet<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
@@ -63,7 +61,7 @@ public final class ThreadsViewModel: ObservableObject {
                     let startIndex = newValue.index(newValue.startIndex, offsetBy: 1)
                     let newString = newValue[startIndex..<newValue.endIndex]
                     self?.searchPublicThreads(String(newString))
-                } else if newValue.first != "@" {
+                } else if newValue.first != "@" && !newValue.isEmpty {
                     self?.searchThreads(newValue)
                 } else if newValue.count == 0, self?.hasNext == false {
                     self?.hasNext = true
@@ -97,6 +95,7 @@ public final class ThreadsViewModel: ObservableObject {
             if threads[index].pin == false {
                 sort()
             }
+            animateObjectWillChange()
         } else if let threadId = response.result?.conversation?.id {
             getThreadsWith([threadId])
         }
@@ -105,6 +104,7 @@ public final class ThreadsViewModel: ObservableObject {
     func onChangedType(_ response: ChatResponse<Conversation>) {
         if let index = firstIndex(response.result?.id)  {
             threads[index].type = .publicGroup
+            animateObjectWillChange()
         }
     }
 
@@ -130,6 +130,7 @@ public final class ThreadsViewModel: ObservableObject {
         let req = ThreadsRequest(count: count, offset: archivedOffset, archived: true)
         RequestsManager.shared.append(prepend: "GET-ARCHIVES", value: req)
         ChatManager.activeInstance?.conversation.get(req)
+        animateObjectWillChange()
     }
 
     public func resetArchiveSettings() {
@@ -155,6 +156,7 @@ public final class ThreadsViewModel: ObservableObject {
         isLoading = true
         let req = ThreadsRequest(threadIds: threadIds)
         ChatManager.activeInstance?.conversation.get(req)
+        animateObjectWillChange()
     }
 
     public func searchThreads(_ text: String) {
@@ -192,7 +194,6 @@ public final class ThreadsViewModel: ObservableObject {
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
             appendThreads(threads: threads)
-            updateWidgetPreferenceThreads(threads)
         }
 
         if !response.cache, response.result?.count ?? 0 > 0 {
@@ -205,20 +206,10 @@ public final class ThreadsViewModel: ObservableObject {
     public func onArchives(_ response: ChatResponse<[Conversation]>) {
         if let archives = response.result, response.value(prepend: "GET-ARCHIVES") != nil {
             self.archives.append(contentsOf: archives.filter({$0.isArchive == true}))
+
         }
         isLoading = false
-    }
-
-    public func updateWidgetPreferenceThreads(_ threads: [Conversation]) {
-        Task.detached(priority: .background) { [weak self] in
-            guard let self else { return }
-            var storageThreads = (try? JSONDecoder().decode([Conversation].self, from: threadsData ?? Data())) ?? []
-            storageThreads.append(contentsOf: threads)
-            let data = try? JSONEncoder().encode(Array(Set(storageThreads)))
-            await MainActor.run { [weak self] in
-                self?.threadsData = data
-            }
-        }
+        animateObjectWillChange()
     }
 
     public func refresh() {
@@ -232,6 +223,7 @@ public final class ThreadsViewModel: ObservableObject {
         let messageREQ = CreateThreadMessage(text: message, messageType: .text)
         let req = CreateThreadWithMessage(invitees: [invitee], title: "", type: .normal, message: messageREQ)
         ChatManager.activeInstance?.conversation.create(req)
+        animateObjectWillChange()
     }
 
     /// Join to a public thread by it's unqiue name.
@@ -239,6 +231,7 @@ public final class ThreadsViewModel: ObservableObject {
         isLoading = true
         let req = JoinPublicThreadRequest(threadName: publicThreadName)
         ChatManager.activeInstance?.conversation.join(req)
+        animateObjectWillChange()
     }
 
     public func searchInsideAllThreads(text _: String) {
@@ -262,6 +255,7 @@ public final class ThreadsViewModel: ObservableObject {
         let contactIds = contacts.compactMap(\.id)
         let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)        
         ChatManager.activeInstance?.conversation.participant.add(req)
+        animateObjectWillChange()
     }
 
     func onAddPrticipant(_ response: ChatResponse<Conversation>) {
@@ -270,13 +264,16 @@ public final class ThreadsViewModel: ObservableObject {
             AppState.shared.showThread(thread: thread)
         }
         isLoading = false
+        animateObjectWillChange()
     }
 
     func onDeletePrticipant(_ response: ChatResponse<[Participant]>) {
         if let index = firstIndex(response.subjectId) {
             threads[index].participantCount = min(0, threads[index].participantCount ?? 0 - 1)
+            animateObjectWillChange()
         }
         isLoading = false
+        animateObjectWillChange()
     }
 
     public func showAddThreadToTag(_ thread: Conversation) {
@@ -297,6 +294,7 @@ public final class ThreadsViewModel: ObservableObject {
             }
         }
         sort()
+        animateObjectWillChange()
     }
 
     public func sort() {
@@ -316,6 +314,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func muteUnMuteThread(_ threadId: Int?, isMute: Bool) {
         if let threadId = threadId, let index = firstIndex(threadId) {
             threads[index].mute = isMute
+            animateObjectWillChange()
         }
     }
 
@@ -323,6 +322,7 @@ public final class ThreadsViewModel: ObservableObject {
         guard let index = firstIndex(thread.id) else { return }
         withAnimation {
             _ = threads.remove(at: index)
+            animateObjectWillChange()
         }
     }
 
@@ -375,14 +375,13 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onUnreadCounts(_ response: ChatResponse<[String : Int]>) {
-        withAnimation {
-            response.result?.forEach { key, value in
-                if let index = firstIndex(Int(key)) {
-                    threads[index].unreadCount = value
-                }
+        response.result?.forEach { key, value in
+            if let index = firstIndex(Int(key)) {
+                threads[index].unreadCount = value
             }
-            isLoading = false
         }
+        isLoading = false
+        animateObjectWillChange()
     }
 
     public func updateThreadInfo(_ thread: Conversation) {
@@ -396,14 +395,6 @@ public final class ThreadsViewModel: ObservableObject {
         if let index = firstIndex(thread.id) {
             threads[index].lastMessage = thread.lastMessage
             threads[index].lastMessageVO = thread.lastMessageVO
-            animateObjectWillChange()
-        }
-    }
-
-    public func onMuteThreadChanged(mute: Bool, threadId: Int?) {
-        if let index = firstIndex(threadId) {
-            threads[index].mute = mute
-            sort()
             animateObjectWillChange()
         }
     }
@@ -426,9 +417,8 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onCancelTimer(key: String) {
-        withAnimation {
-            isLoading = false
-        }
+        isLoading = false
+        animateObjectWillChange()
     }
 
     public func avatars(for imageURL: String) -> ImageLoaderViewModel {
@@ -460,6 +450,7 @@ public final class ThreadsViewModel: ObservableObject {
             AppState.shared.showThread(thread: conversation)
             selectedThraed = conversation
             sheetType = nil
+            animateObjectWillChange()
         }
     }
 

@@ -45,8 +45,7 @@ struct TextMessageType: View {
             }
         }
         .environmentObject(viewModel)
-        .padding(.vertical, 8)
-        .padding(.horizontal, 16)
+        .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
     }
 }
 
@@ -65,8 +64,7 @@ struct SelectMessageRadio: View {
                     viewModel.threadVM?.animateObjectWillChange()
                 }
             }
-            .padding(viewModel.isMe ? .leading : .trailing, 8)
-            .padding(.bottom, 8)
+            .padding(EdgeInsets(top: 0, leading: viewModel.isMe ? 8 : 0, bottom: 8, trailing: viewModel.isMe ? 8 : 0))
         }
     }
 }
@@ -92,32 +90,34 @@ struct MutableMessageView: View {
             MapAddressTextView()
             UnsentMessageView()
             Group {
-                ReactionCountView(viewModel: viewModel)
+                ReactionCountView()
+                    .environmentObject(viewModel)
                 MessageFooterView()
             }
         }
-        .padding(.top, message.isImage ? 0 : 6)
-        .padding(4)
+        .padding(
+            EdgeInsets(top: message.isImage ? 4 : 6 + 4,
+                       leading: viewModel.isMe ? 4 : 4 + MessageRowBackground.tailSize.width,
+                       bottom: 4,
+                       trailing: viewModel.isMe ? 4 + MessageRowBackground.tailSize.width : 4)
+        )
         .frame(maxWidth: viewModel.maxWidth, alignment: viewModel.isMe ? .trailing : .leading)
-        .contentShape(Rectangle())
-        .background(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
+        .background(
+            MessageRowBackground.instance
+                .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
+                .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
+        )
         .overlay {
             if viewModel.isHighlited {
                 Color.App.primary.opacity(0.1)
             }
-        }
-        .cornerRadius(12, corners: [.topLeft, .topRight])
-        .cornerRadius(bottomLeftCorner, corners: [.bottomLeft])
-        .cornerRadius(bottomRightCorner, corners: [.bottomRight])
-        .overlay(alignment: .bottom) {
-            MessageBubbleTail()
         }
         .simultaneousGesture(TapGesture().onEnded { _ in
             if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
             }
         }, including: message.isVideo ? .subviews : .all)
-        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .contentShape(MessageRowBackground.instance)
         .customContextMenu(self: selfMessage, menus: { contextMenuWithReactions })
         .onAppear {
             viewModel.calculate()
@@ -135,62 +135,8 @@ struct MutableMessageView: View {
             ReactionMenuView()
             MessageActionMenu()
         }
+        .frame(maxWidth: 196)
         .environmentObject(viewModel)
-    }
-
-    private var bottomLeftCorner: CGFloat {
-        if viewModel.isMe {
-            return 12
-        } else if viewModel.isNextMessageTheSameUser {
-            return 12
-        } else {
-            return 0
-        }
-    }
-
-    private var bottomRightCorner: CGFloat {
-        if viewModel.isMe {
-            return 0
-        } else if viewModel.isNextMessageTheSameUser {
-            return 12
-        } else {
-            return 12
-        }
-    }
-
-    var textAlignment: TextAlignment {
-        if !viewModel.isEnglish && !viewModel.isMe {
-            return .leading
-        } else if viewModel.isMe && !viewModel.isEnglish {
-            return .leading
-        } else if !viewModel.isMe && viewModel.isEnglish {
-            return .trailing
-        } else {
-            return .leading
-        }
-    }
-}
-
-struct MessageBubbleTail: View {
-    @EnvironmentObject var viewModel: MessageRowViewModel
-
-    var body: some View {
-        HStack {
-            if viewModel.isMe {
-                Spacer()
-            }
-            if !viewModel.isNextMessageTheSameUser {
-                Image(uiImage: viewModel.isMe ? Message.trailingTail : Message.leadingTail)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 9, height: 18)
-                    .offset(x: viewModel.isMe ? 9 : -9)
-                    .foregroundStyle(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
-            }
-            if !viewModel.isMe {
-                Spacer()
-            }
-        }
     }
 }
 

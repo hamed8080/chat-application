@@ -11,10 +11,9 @@ struct UnreadMessagesBubble: View {
     var body: some View {
         Text("Messages.unreadMessages")
             .font(.iransansCaption)
-            .padding([.leading, .trailing], 16)
-            .padding([.bottom, .top], 6)
+            .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
             .background(Color.App.hint)
-            .cornerRadius(16)
+            .clipShape(RoundedRectangle(cornerRadius:(16)))
             .foregroundColor(Color.App.white)
     }
 }

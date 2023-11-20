@@ -37,7 +37,7 @@ struct CallMessageType: View {
         }
         .padding(.horizontal, 16)
         .background(Color.App.black.opacity(0.2))
-        .cornerRadius(25)
+        .clipShape(RoundedRectangle(cornerRadius:(25)))
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
     }

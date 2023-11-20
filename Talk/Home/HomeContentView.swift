@@ -55,7 +55,7 @@ struct LoginHomeView: View {
 struct SplitView: View {
     @Environment(\.colorScheme) var colorScheme
     let container: ObjectsContainer
-    @State private var isLoggedIn: Bool = false
+    @State private var isLoggedIn: Bool = TokenManager.shared.isLoggedIn
 
     @ViewBuilder var body: some View {
         Group {

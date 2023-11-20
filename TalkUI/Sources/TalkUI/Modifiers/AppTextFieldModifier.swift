@@ -30,7 +30,7 @@ public struct AppTextFieldModifier: ViewModifier {
                         .strokeBorder(error != nil ? Color.App.red : isFocused ? Color.App.primary : Color.clear, lineWidth: 2)
                         .frame(minHeight: minHeigh)
                 }
-                .cornerRadius(12)
+                .clipShape(RoundedRectangle(cornerRadius:(12)))
                 .padding()
                 .onTapGesture {
                     onClick?()

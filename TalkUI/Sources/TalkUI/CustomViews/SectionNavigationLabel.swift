@@ -31,7 +31,7 @@ public struct SectionNavigationLabel: View {
             .padding(4)
             .frame(width: 28, height: 28)
             .background(color)
-            .cornerRadius(8, corners: .allCorners)
+            .clipShape(RoundedRectangle(cornerRadius:(8)))
 
             Text(String(localized: .init(title)))
                 .foregroundColor(scheme == .dark ? .white : .black)

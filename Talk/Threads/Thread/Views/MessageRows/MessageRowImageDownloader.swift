@@ -24,14 +24,15 @@ struct MessageRowImageDownloader: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: max(128, (viewModel.maxWidth ?? 0)) - 8, height: min(320, max(128, (viewModel.maxWidth ?? 0))))
+                    .frame(width: max(128, (viewModel.maxWidth ?? 0)) - (8 + MessageRowBackground.tailSize.width),
+                           height: min(320, max(128, (viewModel.maxWidth ?? 0))))
                     .clipped()
                     .blur(radius: downloadVM.state == .thumbnail ? 16 : 0, opaque: false)
                     .zIndex(0)
                     .background(
                         downloadVM.fileURL != nil || downloadVM.state == .thumbnail ? MessageRowImageDownloader.clearGradient : MessageRowImageDownloader.emptyImageGradient
                     )
-                    .cornerRadius(8)
+                    .clipShape(RoundedRectangle(cornerRadius:(8)))
                     .task {
                         if let emptyImage = UIImage(named: "empty_image"), downloadVM.thumbnailData == nil && downloadVM.state != .completed {
                             image = emptyImage
@@ -104,7 +105,7 @@ struct OverlayDownloadImageButton: View {
             }
             .frame(width: 26, height: 26)
             .background(Color.App.white.opacity(0.3))
-            .cornerRadius(13)
+            .clipShape(RoundedRectangle(cornerRadius:(13)))
 
             if let fileSize = message?.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) {
                 Text(fileSize)
@@ -117,7 +118,7 @@ struct OverlayDownloadImageButton: View {
         .frame(minWidth: 76)
         .padding(4)
         .background(.thinMaterial)
-        .cornerRadius(18)
+        .clipShape(RoundedRectangle(cornerRadius:(18)))
         .onTapGesture {
             if viewModel.state == .paused {
                 viewModel.resumeDownload()

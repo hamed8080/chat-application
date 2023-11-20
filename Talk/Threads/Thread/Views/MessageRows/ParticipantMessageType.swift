@@ -22,13 +22,13 @@ struct ParticipantMessageType: View {
             let markdownText = try! AttributedString(markdown: "\(message.addOrRemoveParticipantString) - \(date)")
             Text(markdownText)
                 .foregroundStyle(Color.App.text)
-                .font(.iransansSubheadline)
+                .font(.iransansBody)
                 .padding(2)
         }
+        .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
         .padding(.horizontal, 16)
         .background(Color.App.black.opacity(0.2))
-        .cornerRadius(25)
+        .clipShape(RoundedRectangle(cornerRadius:(25)))
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
     }
 }

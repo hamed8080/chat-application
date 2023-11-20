@@ -21,10 +21,9 @@ struct SelectedContact: View {
             userImage
             userName
         }
-        .padding(.vertical, 4)
-        .padding(.horizontal, 8)
+        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
         .background(isSelectedToDelete ?  Color.App.primary : Color.App.gray8)
-        .cornerRadius(12)
+        .clipShape(RoundedRectangle(cornerRadius:(12)))
         .animation(.easeInOut, value: isSelectedToDelete)
         .onTapGesture {
             isSelectedToDelete.toggle()
@@ -53,7 +52,7 @@ struct SelectedContact: View {
                 .foregroundColor(Color.App.text)
                 .frame(width: 18, height: 18)
                 .background(Color.App.blue.opacity(0.4))
-                .cornerRadius(12)
+                .clipShape(RoundedRectangle(cornerRadius:(12)))
         }
     }
 

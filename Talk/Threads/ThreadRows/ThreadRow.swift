@@ -82,15 +82,14 @@ struct ThreadRow: View {
                             .frame(minWidth: 24)
                             .foregroundStyle(Color.App.textOverlay)
                             .background(isSelected ? Color.App.white : Color.App.primary)
-                            .cornerRadius(thread.isCircleUnreadCount ? 16 : 10, antialiased: true)
+                            .clipShape(RoundedRectangle(cornerRadius:(thread.isCircleUnreadCount ? 16 : 10)))
                     }
                 }
                 ThreadEventView()
                     .environmentObject(ThreadEventViewModel(threadId: thread.id ?? -1))
             }
         }
-        .padding([.leading, .trailing], 8)
-        .padding([.top, .bottom], 4)
+        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
         .animation(.easeInOut, value: thread.lastMessageVO?.message)
         .animation(.easeInOut, value: thread)
         .animation(.easeInOut, value: thread.pin)

@@ -53,7 +53,7 @@ struct SyncView: View {
             }
             .padding(16)
             .background(.ultraThinMaterial)
-            .cornerRadius(24)
+            .clipShape(RoundedRectangle(cornerRadius:(24)))
         }
     }
 }

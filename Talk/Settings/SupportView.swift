@@ -16,7 +16,7 @@ struct SupportView: View {
                 .scaledToFit()
                 .frame(width: 128, height: 128)
                 .background(scheme == .dark ? Color.App.white.opacity(0.2) : Color.App.primary)
-                .cornerRadius(64)
+                .clipShape(RoundedRectangle(cornerRadius:(64)))
                 .foregroundStyle(.white)
             Text("Support.aboutUsText")
                 .frame(maxWidth: 320)
@@ -39,9 +39,7 @@ struct SupportView: View {
                 .foregroundStyle(Color.App.hint)
         }
         .font(.iransansBody)
-        .padding(.horizontal, 24)
-        .padding(.top, 100)
-        .padding(.bottom, 30)
+        .padding(EdgeInsets(top: 100, leading: 24, bottom: 30, trailing: 24))
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
         .background(Color.App.bgPrimary)
     }

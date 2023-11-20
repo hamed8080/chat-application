@@ -22,7 +22,7 @@ public struct CircleButtonStyle: ButtonStyle {
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(backgroundColor)
-            .cornerRadius(cornerRadius)
+            .clipShape(RoundedRectangle(cornerRadius:(cornerRadius)))
             .buttonStyle(.borderedProminent)
             .shadow(radius: configuration.isPressed ? 0 : shadow)
             .scaleEffect(x: configuration.isPressed ? 0.98 : 1, y: configuration.isPressed ? 0.98 : 1)

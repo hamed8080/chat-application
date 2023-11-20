@@ -146,7 +146,7 @@ struct DownloadPictureButtonView: View {
                     .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
                     .zIndex(0)
                     .background(Color.App.separator)
-                    .cornerRadius(8)
+                    .clipShape(RoundedRectangle(cornerRadius:(8)))
                     .onAppear {
                         if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
                             viewModel.downloadBlurImage(quality: 1.0, size: .SMALL)
