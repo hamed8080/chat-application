@@ -77,13 +77,13 @@ struct ContactContentList: View {
                 StickyHeaderSection(header: "Contacts.searched")
                     .listRowInsets(.zero)
                 ForEach(viewModel.searchedContacts) { contact in
-                    ContactRowContainer(isMainContactTab: true, contact: contact, isSearchRow: true)
+                    ContactRowContainer(contact: contact, isSearchRow: true)
                 }
                 .padding()
             }
 
             ForEach(viewModel.contacts) { contact in
-                ContactRowContainer(isMainContactTab: true, contact: contact, isSearchRow: false)
+                ContactRowContainer(contact: contact, isSearchRow: false)
             }
             .padding()
             .listRowInsets(.zero)
@@ -155,7 +155,6 @@ struct ContactContentList: View {
 struct ContactRowContainer: View {
     @EnvironmentObject var viewModel: ContactsViewModel
     @EnvironmentObject var threadsViewModel: ThreadsViewModel
-    let isMainContactTab: Bool
     let contact: Contact
     let isSearchRow: Bool
     var separatorColor: Color {
@@ -167,7 +166,7 @@ struct ContactRowContainer: View {
     }
 
     var body: some View {
-        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact, isMainContactTab: isMainContactTab)
+        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
             .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)")
             .animation(.spring(), value: viewModel.isInSelectionMode)
             .listRowBackground(Color.App.bgPrimary)

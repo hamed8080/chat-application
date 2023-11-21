@@ -55,7 +55,9 @@ struct MoveToBottomButton: View {
         }
         .environment(\.layoutDirection, .leftToRight)
         .onReceive(viewModel.objectWillChange) { _ in
-            if viewModel.isAtBottomOfTheList != isAtBottomOfTheList {
+            if viewModel.isInEditMode {
+                isAtBottomOfTheList  = true
+            } else if viewModel.isAtBottomOfTheList != isAtBottomOfTheList {
                 timerToUpdate?.invalidate()
                 timerToUpdate = nil
                 timerToUpdate = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in

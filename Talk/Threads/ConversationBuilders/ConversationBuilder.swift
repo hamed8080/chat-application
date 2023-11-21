@@ -20,7 +20,7 @@ struct ConversationBuilder: View {
                     .listRowInsets(.zero)
                     .listRowSeparator(.hidden)
                 ForEach(viewModel.searchedContacts) { contact in
-                    ContactRowContainer(isMainContactTab: false, contact: contact, isSearchRow: true)
+                    ContactRowContainer(contact: contact, isSearchRow: true)
                 }
                 .padding()
                 .listRowInsets(.zero)
@@ -30,7 +30,7 @@ struct ConversationBuilder: View {
                 .listRowInsets(.zero)
                 .listRowSeparator(.hidden)
             ForEach(viewModel.contacts) { contact in
-                ContactRowContainer(isMainContactTab: false, contact: contact, isSearchRow: false)
+                ContactRowContainer(contact: contact, isSearchRow: false)
                     .onAppear {
                         if viewModel.contacts.last == contact {
                             viewModel.loadMore()
@@ -154,7 +154,7 @@ struct EditCreatedConversationDetail: View {
             .listRowSeparator(.hidden)
             Section {
                 ForEach(viewModel.selectedContacts) { contact in
-                    ContactRow(isInSelectionMode: .constant(false), contact: contact, isMainContactTab: false)
+                    ContactRow(isInSelectionMode: .constant(false), contact: contact)
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.divider)
                 }

@@ -246,6 +246,13 @@ struct DetailTopButtons: View {
             Menu {
                 if let conversation = viewModel.thread {
                     ThreadRowActionMenu(thread: conversation)
+                    if conversation.isPrivate {
+                        Button {
+                            viewModel.threadVM?.threadsViewModel?.makeThreadPublic(conversation)
+                        } label: {
+                            Label("Thread.switchToPublic", systemImage: "arrow.triangle.swap")
+                        }
+                    }
                 } else if let user = viewModel.user {
                     UserActionMenu(participant: user)
                 }

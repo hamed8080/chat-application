@@ -23,7 +23,7 @@ struct ThreadSearchView: View {
                 }
 
                 ForEach(contactsVM.searchedContacts.prefix(5)) { contact in
-                    ContactRow(isInSelectionMode: .constant(false), contact: contact, isMainContactTab: false)
+                    ContactRow(isInSelectionMode: .constant(false), contact: contact)
                         .listRowBackground(Color.App.bgPrimary)
                         .onTapGesture {
                             AppState.shared.openThread(contact: contact)

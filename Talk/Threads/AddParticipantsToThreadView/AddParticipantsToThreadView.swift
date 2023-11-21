@@ -19,11 +19,11 @@ struct AddParticipantsToThreadView: View {
         List {
             if contactsVM.searchedContacts.count > 0 {
                 ForEach(contactsVM.searchedContacts) { contact in
-                    ContactRowContainer(isMainContactTab: false, contact: contact, isSearchRow: true)
+                    ContactRowContainer(contact: contact, isSearchRow: true)
                 }
             } else {
                 ForEach(contactsVM.contacts) { contact in
-                    ContactRowContainer(isMainContactTab: false, contact: contact, isSearchRow: false)
+                    ContactRowContainer(contact: contact, isSearchRow: false)
                         .onAppear {
                             if contactsVM.contacts.last == contact {
                                 contactsVM.loadMore()

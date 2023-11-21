@@ -73,14 +73,6 @@ struct ThreadRowActionMenu: View {
             } label: {
                 Label("Thread.invite", systemImage: "person.crop.circle.badge.plus")
             }
-        }
-
-        if thread.isPrivate {
-            Button {
-                viewModel.makeThreadPublic(thread)
-            } label: {
-                Label("Thread.switchToPublic", systemImage: "arrow.triangle.swap")
-            }
-        }
+        }    
     }
 }

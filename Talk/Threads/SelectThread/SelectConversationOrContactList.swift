@@ -84,7 +84,7 @@ struct SelectContactTab: View {
     var body: some View {
         List {
             ForEach(viewModel.contacts) { contact in
-                ContactRow(isInSelectionMode: .constant(false), contact: contact, isMainContactTab: false)
+                ContactRow(isInSelectionMode: .constant(false), contact: contact)
                     .onTapGesture {
                         onSelect(nil, contact)
                         dismiss()

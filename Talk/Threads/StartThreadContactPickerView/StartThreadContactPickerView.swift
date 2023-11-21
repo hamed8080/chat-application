@@ -48,14 +48,14 @@ struct StartThreadContactPickerView: View {
                 StickyHeaderSection(header: "Contacts.searched")
                     .listRowInsets(.zero)
                 ForEach(viewModel.searchedContacts) { contact in
-                    ContactRowContainer(isMainContactTab: false, contact: contact, isSearchRow: true)
+                    ContactRowContainer(contact: contact, isSearchRow: true)
                 }
             }
 
             StickyHeaderSection(header: "Contacts.sortLabel")
                 .listRowInsets(.zero)
             ForEach(viewModel.contacts) { contact in
-                ContactRowContainer(isMainContactTab: false, contact: contact, isSearchRow: false)
+                ContactRowContainer(contact: contact, isSearchRow: false)
             }
 
             ListLoadingView(isLoading: $viewModel.isLoading)

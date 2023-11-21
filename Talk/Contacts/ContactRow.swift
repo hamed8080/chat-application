@@ -15,7 +15,6 @@ import TalkViewModels
 struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
     var contact: Contact
-    let isMainContactTab: Bool
     var contactImageURL: String? { contact.image ?? contact.user?.image }
 
     var body: some View {
@@ -65,7 +64,7 @@ struct ContactRow: View {
                         .foregroundColor(Color.App.red)
                         .padding(.trailing, 4)
                 }
-                ContactRowRadioButton(contact: contact, isMainContactTab: isMainContactTab, isInSelectionMode: $isInSelectionMode)
+                ContactRowRadioButton(contact: contact)
             }
         }
         .contentShape(Rectangle())
@@ -80,17 +79,12 @@ struct ContactRow: View {
 
 struct ContactRowRadioButton: View {
     let contact: Contact
-    let isMainContactTab: Bool
-    @Binding var isInSelectionMode: Bool
     @EnvironmentObject var viewModel: ContactsViewModel
 
     var body: some View {
-        /// To Prevent blinking in the contacts tab.
-        if isMainContactTab && !viewModel.showConversaitonBuilder || !isMainContactTab && viewModel.showConversaitonBuilder {
-            let isSelected = viewModel.isSelected(contact: contact)
-            RadioButton(visible: $isInSelectionMode, isSelected: .constant(isSelected)) { isSelected in
-                viewModel.toggleSelectedContact(contact: contact)
-            }
+        let isSelected = viewModel.isSelected(contact: contact)
+        RadioButton(visible: $viewModel.isInSelectionMode, isSelected: .constant(isSelected)) { isSelected in
+            viewModel.toggleSelectedContact(contact: contact)
         }
     }
 }
@@ -100,7 +94,7 @@ struct ContactRow_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            ContactRow(isInSelectionMode: $isInSelectionMode, contact: MockData.contact, isMainContactTab: true)
+            ContactRow(isInSelectionMode: $isInSelectionMode, contact: MockData.contact)
                 .environmentObject(ContactsViewModel())
                 .preferredColorScheme(.dark)
         }
