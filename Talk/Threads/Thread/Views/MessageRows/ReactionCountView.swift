@@ -61,7 +61,7 @@ struct ReactionCountRow: View {
                 AppState.shared.objectsContainer.reactions.reaction(tappedStciker, messageId: viewModel.message.id ?? -1, conversationId: conversationId)
             }
         }
-        .customContextMenu(self: self.environmentObject(viewModel)) {
+        .customContextMenu(id: reactionCount.id, self: self.environmentObject(viewModel)) {
             let selectedEmojiTabId = "\(reactionCount.sticker?.emoji ?? "all") \(reactionCount.count ?? 0)"
             MessageReactionDetailView(message: viewModel.message, selectedStickerTabId: selectedEmojiTabId)
                 .frame(width: 300, height: 400)

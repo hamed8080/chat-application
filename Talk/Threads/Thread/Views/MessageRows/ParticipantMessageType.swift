@@ -22,6 +22,7 @@ struct ParticipantMessageType: View {
             let markdownText = try! AttributedString(markdown: "\(message.addOrRemoveParticipantString) - \(date)")
             Text(markdownText)
                 .foregroundStyle(Color.App.text)
+                .multilineTextAlignment(.center)
                 .font(.iransansBody)
                 .padding(2)
         }

@@ -57,25 +57,23 @@ struct MainSendButtons: View {
             }
 
             let showAudio = isRecording == false && text.isEmpty && !isVideoRecordingSelected
-            if showAudio {
-                Button {
-                    viewModel.setupRecording()
-                    isRecording = true
-                } label: {
-                    Image(systemName: "mic.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 26, height: 26)
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.App.hint)
-                }
-                .frame(width: 48, height: 48)
-                .buttonStyle(.borderless)
-                .fontWeight(.light)
-                .keyboardShortcut(.init("r"), modifiers: [.command])
-                .highPriorityGesture(switchRecordingGesture)
-                .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
+            Button {
+                viewModel.setupRecording()
+                isRecording = true
+            } label: {
+                Image(systemName: "mic.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: showAudio ? 26 : 0, height: showAudio ? 26 : 0)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.App.hint)
             }
+            .frame(width: showAudio ? 48 : 0, height: showAudio ? 48 : 0)
+            .buttonStyle(.borderless)
+            .fontWeight(.light)
+            .keyboardShortcut(.init("r"), modifiers: [.command])
+            .highPriorityGesture(switchRecordingGesture)
+            .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
 
             let showCamera = isRecording == false && text.isEmpty && isVideoRecordingSelected
             if showCamera {
@@ -100,6 +98,7 @@ struct MainSendButtons: View {
                 .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
             }
 
+            let showSendButton = !text.isEmpty || viewModel.attachmentsViewModel.attachments.count > 0
             Button {
                 if isRecording {
                     viewModel.audioRecoderVM?.stopAndAddToAttachments()
@@ -116,11 +115,11 @@ struct MainSendButtons: View {
                 Image(systemName: "arrow.up.circle.fill")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: text.isEmpty ? 0 : 26, height: text.isEmpty ? 0 : 26)
+                    .frame(width: showSendButton ? 26 : 0, height: showSendButton ? 26 : 0)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(Color.App.white, Color.App.primary)
             }
-            .frame(width: text.isEmpty ? 0 : 48, height: text.isEmpty ? 0 : 48)
+            .frame(width: showSendButton ? 48 : 0, height: showSendButton ? 48 : 0)
             .buttonStyle(.borderless)
             .fontWeight(.light)
             .keyboardShortcut(.return, modifiers: [.command])

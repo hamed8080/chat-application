@@ -16,15 +16,13 @@ import TalkUI
 struct ReactionMenuView: View {
     @EnvironmentObject var contextMenuVM: ContextMenuModel
     @EnvironmentObject var viewModel: MessageRowViewModel
-    var currentSelectedReaction: Reaction? { ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(viewModel.message.id ?? 0)}
+    var currentSelectedReaction: Reaction? { viewModel.currentUserReaction }
     @State var show = false
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
-                ForEach(Sticker.allCases, id: \.self) { sticker in
-                    let isFirst = sticker == Sticker.allCases.first
-                    let isLast = sticker == Sticker.allCases.last
+            HStack(spacing: 0) {
+                ForEach(Sticker.allCases) { sticker in
                     Button {
                         if let messageId = viewModel.message.id, let conversationId = viewModel.threadVM?.threadId {
                             ReactionViewModel.shared.reaction(sticker, messageId: messageId, conversationId: conversationId)
@@ -32,27 +30,26 @@ struct ReactionMenuView: View {
                         }
                     } label: {
                         Text(verbatim: sticker.emoji)
-                            .frame(width: 26, height: 26)
-                            .font(.system(size: 24))
+                            .frame(width: 38, height: 38)
+                            .font(.system(size: 32))
                             .padding(4)
                             .background(currentSelectedReaction?.reaction == sticker ? Color.App.primary.opacity(0.2) : Color.clear)
-                            .clipShape(RoundedRectangle(cornerRadius:(currentSelectedReaction?.reaction == sticker ? 20 : 0)))
+                            .clipShape(RoundedRectangle(cornerRadius:(currentSelectedReaction?.reaction == sticker ? 22 : 0)))
                     }
-                    .padding([isFirst ? .leading : isLast ? .trailing : .all], isFirst || isLast ? 16 : 0)
+                    .buttonStyle(.plain)
                     .scaleEffect(x: show ? 1.0 : 0.001, y: show ? 1.0 : 0.001, anchor: .center)
                     .transition(.scale)
                     .onAppear {
-                        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-                            withAnimation(.spring(response: 0.55, dampingFraction: 0.55, blendDuration: 0.5)) {
+                        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { _ in
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.55, blendDuration: 0.3)) {
                                 show = true
                             }
                         }
                     }
                 }
-                Spacer()
             }
         }
-        .frame(height: 52)
+        .onTapGesture {} /// It's essential to disable the click of the context menu blur view.
         .background(MixMaterialBackground())
         .clipShape(RoundedRectangle(cornerRadius:(21)))
     }
@@ -75,6 +72,9 @@ struct ReactionMenuView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        Preview()
+        VStack {
+            Preview()
+        }
+        .frame(width: 196)
     }
 }

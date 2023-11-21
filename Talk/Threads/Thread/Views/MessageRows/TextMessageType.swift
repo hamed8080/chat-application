@@ -118,7 +118,7 @@ struct MutableMessageView: View {
             }
         }, including: message.isVideo ? .subviews : .all)
         .contentShape(MessageRowBackground.instance)
-        .customContextMenu(self: selfMessage, menus: { contextMenuWithReactions })
+        .customContextMenu(id: message.id, self: selfMessage, menus: { contextMenuWithReactions })
         .onAppear {
             viewModel.calculate()
         }
@@ -135,7 +135,7 @@ struct MutableMessageView: View {
             ReactionMenuView()
             MessageActionMenu()
         }
-        .frame(maxWidth: 196)
+        .frame(maxWidth: 232)
         .environmentObject(viewModel)
     }
 }

@@ -10,50 +10,60 @@ import SwiftUI
 import OSLog
 
 struct CustomContextMenuContainer: ViewModifier {
-    private let logger = Logger(subsystem: "ActionableContextMenu", category: "CustomContextMenuContainer")
-    @StateObject var viewModel: ContextMenuModel = .init()
+    let viewModel: ContextMenuModel = .init()
 
     func body(content: Content) -> some View {
         ZStack(alignment: .leading) {
             content
-                .opacity(viewModel.isPresented ? 0.7 : 1.0)
-            if viewModel.isPresented {
-                ZStack(alignment: .leading) {
-                    Rectangle()
-                        .fill(Color.clear)
-                        .background(.ultraThinMaterial)
-                        .onTapGesture(perform: viewModel.hide)
-                        .transition(.opacity)
-                        .background(containerSafeAreaReader)
-
-                    if let mainView = viewModel.mainView {
-                        mainView
-                            .scaleEffect(x: viewModel.scale, y: viewModel.scale, anchor: .center)
-                            .position(x: viewModel.x, y: viewModel.y) /// center of the view
-                            .onAppear(perform: viewModel.animateOnAppear)
-                            .transition(.asymmetric(insertion: .identity, removal: .opacity))
-                    }
-
-                    viewModel.menus
-                    .background(stackSizeReader)
-                    .position(x: viewModel.stackX, y: viewModel.stackY)
-                }
-                .environment(\.layoutDirection, .leftToRight)
-            }
+            MutableContextMenuOverlayView()
         }
         .environmentObject(viewModel)
+    }
+}
+
+struct MutableContextMenuOverlayView: View {
+    @EnvironmentObject var viewModel: ContextMenuModel
+    private let logger = Logger(subsystem: "ActionableContextMenu", category: "CustomContextMenuContainer")
+
+    var body: some View {
+        ZStack(alignment: .leading) {
+            Rectangle()
+                .fill(Color.clear)
+                .background(.ultraThinMaterial)
+                .onTapGesture(perform: viewModel.hide)
+                .transition(.opacity.animation(.easeInOut(duration: 0.3)))
+                .background(containerSafeAreaReader)
+                .opacity(viewModel.isPresented ? 1.0 : 0.0)
+            if viewModel.isPresented {
+                if let mainView = viewModel.mainView {
+                    mainView
+                        .scaleEffect(x: viewModel.scale, y: viewModel.scale, anchor: .center)
+                        .position(x: viewModel.x, y: viewModel.y) /// center of the view
+                        .onAppear(perform: viewModel.animateOnAppear)
+                        .transition(.scale.animation(.easeInOut(duration: 0.2)))
+                }
+
+                viewModel.menus
+                    .background(stackSizeReader)
+                    .position(x: viewModel.stackX, y: viewModel.stackY)
+                    .transition(.scale.animation(.easeIn(duration: 0.2)))
+            }
+        }
+        .environment(\.layoutDirection, .leftToRight)
     }
 
     var containerSafeAreaReader: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
-                viewModel.containerSize = reader.size
-                viewModel.safeAreaInsets = reader.safeAreaInsets
-                #if DEBUG
-                logger.info("container size width: \(viewModel.containerSize.width) height: \(viewModel.containerSize.height)")
-                logger.info("container safeAreaInsets Top:\(viewModel.safeAreaInsets.top)")
-                logger.info("container safeAreaInsets Bottom:\(viewModel.safeAreaInsets.bottom)")
-                #endif
+                DispatchQueue.main.async {
+                    viewModel.containerSize = reader.size
+                    viewModel.safeAreaInsets = reader.safeAreaInsets
+#if DEBUG
+                    logger.info("container size width: \(viewModel.containerSize.width) height: \(viewModel.containerSize.height)")
+                    logger.info("container safeAreaInsets Top:\(viewModel.safeAreaInsets.top)")
+                    logger.info("container safeAreaInsets Bottom:\(viewModel.safeAreaInsets.bottom)")
+#endif
+                }
             }
         }
     }
@@ -61,7 +71,9 @@ struct CustomContextMenuContainer: ViewModifier {
     var stackSizeReader: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
-                viewModel.stackSize = reader.size
+                DispatchQueue.main.async {
+                    viewModel.stackSize = reader.size
+                }
             }
         }
     }

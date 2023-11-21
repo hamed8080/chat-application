@@ -17,10 +17,12 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     @GestureState var isTouchedLocalPosition: Bool = false
     let menus: () -> V
     let root: any View
+    var id: Int?
     @State var itemWidth: CGFloat = 0
     @State var globalFrame: CGRect = .zero
 
-    init(root: any View, @ViewBuilder menus: @escaping () -> V) {
+    init(id: Int?, root: any View, @ViewBuilder menus: @escaping () -> V) {
+        self.id = id
         self.root = root
         self.menus = menus
     }
@@ -32,7 +34,9 @@ struct ContextMenuModifire<V: View>: ViewModifier {
             .gesture(tapgesture)
             .gesture(longGesture.simultaneously(with: postionGesture).simultaneously(with: localPostionGesture))
             .onChange(of: viewModel.isPresented) { newValue in
-                withAnimation {
+                var transaction = Transaction()
+                transaction.animation = .easeInOut(duration: 0.2)
+                withTransaction(transaction) {
                     if viewModel.isPresented == false {
                         scale = 1.0
                     }
@@ -43,23 +47,21 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     var tapgesture: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
-#if DEBUG
-                logger.info("on tapped")
-#endif
+                log("on tapped")
             }
     }
 
     var longGesture: some Gesture {
         LongPressGesture(minimumDuration: 0.2, maximumDistance: 0)
             .onEnded { finished in
-                withAnimation(.easeInOut(duration: 0.39)) {
+                withAnimation(.easeInOut(duration: 0.1)) {
                     scale = 0.9
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                     withAnimation(.easeInOut) {
                         viewModel.menus = AnyView(menus().environmentObject(viewModel))
                         scale = 1.2
-                        viewModel.itemWidth = itemWidth
+                        viewModel.presentedId = id
                         viewModel.globalFrame = globalFrame
                         viewModel.mainView = AnyView(root)
                         viewModel.isPresented.toggle()
@@ -75,9 +77,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
             }
             .onChanged { value in
                 viewModel.globalPosition = value.location
-#if DEBUG
-                logger.info("global touched value location x: \(value.location.x) y: \(value.location.y)")
-#endif
+                log("global touched value location x: \(value.location.x) y: \(value.location.y)")
             }
     }
 
@@ -92,9 +92,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                 let beofreY = viewModel.localPosition?.y ?? 0
                 if isPastTheMargin(first: beofreX, newValue: value.location.x) || isPastTheMargin(first: beofreY, newValue: value.location.y) {
                     viewModel.localPosition = value.location
-#if DEBUG
-                    logger.info("local touched value location x: \(value.location.x) y:\(value.location.y)")
-#endif
+                    log("local touched value location x: \(value.location.x) y:\(value.location.y)")
                 }
             }
     }
@@ -107,18 +105,27 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     var frameReader: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
-                itemWidth = reader.size.width
-                globalFrame = reader.frame(in: .global)
-#if DEBUG
-                logger.info("globalFrame width: \(globalFrame.width) height: \(globalFrame.height)  originX: \(globalFrame.origin.x) originY: \(globalFrame.origin.y)")
-#endif
+                DispatchQueue.main.async {
+                    /// We must check the presented is equal to the id of the initialized modifier, unless the viewModel.item Width will be set to another wrong view width.
+                    if viewModel.isPresented, viewModel.presentedId == id {
+                        viewModel.itemWidth = reader.frame(in: .local).width
+                    }
+                    globalFrame = reader.frame(in: .global)
+                    log("globalFrame width: \(globalFrame.width) height: \(globalFrame.height)  originX: \(globalFrame.origin.x) originY: \(globalFrame.origin.y)")
+                }
             }
         }
+    }
+
+    private func log(_ string: String) {
+#if DEBUG
+        logger.info("\(string)")
+#endif
     }
 }
 
 public extension View {
-    func customContextMenu<V: View>(self: any View, @ViewBuilder menus: @escaping () -> V) -> some View {
-        modifier(ContextMenuModifire(root: self, menus: menus))
+    func customContextMenu<V: View>(id: Int?, self: any View, @ViewBuilder menus: @escaping () -> V) -> some View {
+        modifier(ContextMenuModifire(id: id, root: self, menus: menus))
     }
 }

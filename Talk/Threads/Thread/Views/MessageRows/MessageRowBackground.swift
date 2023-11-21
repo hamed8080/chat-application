@@ -15,9 +15,7 @@ struct MessageRowBackground: Shape {
         Path { path in
             let roundedCorner: CGFloat = 3
             let roundeedRect = CGRect(x: 0, y: 0, width: rect.width - MessageRowBackground.tailSize.width, height: rect.height)
-            path.addRoundedRect(in: roundeedRect,
-                                cornerRadii: .init(topLeading: 12, bottomLeading: 12, bottomTrailing: 12, topTrailing: 12)
-            )
+            path.addRoundedRect(in: roundeedRect, cornerSize: .init(width: 12, height: 12))
             path.move(to: .init(x: roundeedRect.width, y: rect.height - MessageRowBackground.tailSize.height))
             path.addQuadCurve(
                 to: .init(x: rect.width - (roundedCorner / 2), y: rect.height - roundedCorner),
@@ -31,8 +29,4 @@ struct MessageRowBackground: Shape {
             path.addLine(to: .init(x: roundeedRect.width - (MessageRowBackground.tailSize.width * 2), y: rect.height))
         }
     }
-}
-
-#Preview {
-    MessageRowBackground()
 }

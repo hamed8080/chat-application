@@ -109,7 +109,7 @@ struct MessageActionMenu: View {
             }
         }
         .foregroundColor(.primary)
-        .frame(minWidth: 196)
+        .frame(width: 196)
         .background(MixMaterialBackground())
         .clipShape(RoundedRectangle(cornerRadius:((12))))
     }
