@@ -58,20 +58,13 @@ extension ThreadViewModel {
               let messages = response.result,
               !response.cache
         else { return }
-        /// 2- Store the uniqueId before the appending to scroll to position we where.
-//        let uniqueIdBeforeAppending = sections.first?.messages.first?.uniqueId
         /// 3- Append and sort the array but not call to update the view.
         appendMessagesAndSort(messages)
-        /// 4- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
-        diableScrollingForHalfASecond()
-        /// 5- Update all the views to draw for the top part.
-        animateObjectWillChange()
-        /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
-//        guard let uniqueId = uniqueIdBeforeAppending else { return }
-//        scrollTo(uniqueId)
-        /// 7- Set whether it has more messages at the top or not.
+        /// 4- Disable excessive loading on the top part.
+        disableExcessiveLoading()
+        /// 5- Set whether it has more messages at the top or not.
         setHasMoreTop(response)
-        /// 8- To update isLoading fields to hide the loading at the top.
+        /// 6- To update isLoading fields to hide the loading at the top.
         animateObjectWillChange()
     }
 
@@ -79,7 +72,7 @@ extension ThreadViewModel {
         if !hasNextBottom || bottomLoading { return }
         bottomLoading = true
         animateObjectWillChange()
-        let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "desc", readOnly: readOnly)
+        let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: readOnly)
         RequestsManager.shared.append(prepend: prepend, value: req)
         ChatManager.activeInstance?.message.history(req)
     }
@@ -89,30 +82,18 @@ extension ThreadViewModel {
               let messages = response.result,
               !response.cache
         else { return }
-        /// 2- Store the uniqueId before the appending to scroll to position we where.
-        let uniqueIdBeforeAppending = sections.last?.messages.last?.uniqueId
         /// 3- Append and sort the array but not call to update the view.
         appendMessagesAndSort(messages)
-        /// 4- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
-        diableScrollingForHalfASecond()
-        /// 5- Update all the views to draw for the bottom part.
-        animateObjectWillChange()
-        /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
-        guard let uniqueId = uniqueIdBeforeAppending else { return }
-        scrollTo(uniqueId)
+        /// 4- Disable excessive loading on the top part.
+        disableExcessiveLoading()
         /// 7- Set whether it has more messages at the bottom or not.
         setHasMoreBottom(response)
         /// 8- To update isLoading fields to hide the loading at the bottom.
         animateObjectWillChange()
     }
 
-    private func diableScrollingForHalfASecond() {
+    private func disableExcessiveLoading() {
         isProgramaticallyScroll = true
-        disableScrolling = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.disableScrolling = false
-            self?.animateObjectWillChange()
-        }
     }
 
     func setHasMoreTop(_ response: ChatResponse<[Message]>) {
@@ -152,8 +133,8 @@ extension ThreadViewModel {
         appendMessagesAndSort(messages)
         /// 3- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
         appenedUnreadMessagesBannerIfNeeed()
-        /// 4- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
-        diableScrollingForHalfASecond()
+        /// 4- Disable excessive loading on the top part.
+        disableExcessiveLoading()
         /// 5- Update all the views to draw for the top part.
         animateObjectWillChange()
         /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
@@ -213,17 +194,16 @@ extension ThreadViewModel {
         if response.result?.count ?? 0 > 0 {
             /// 2- Append and sort the array but not call to update the view.
             appendMessagesAndSort(messages)
-            /// 3- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
-            diableScrollingForHalfASecond()
-            /// 4- Update all the views to draw for the top part.
+            /// 4- Disable excessive loading on the top part.
+            disableExcessiveLoading()
         }
         animateObjectWillChange()
-        /// 5- Get the thread last message uniqueId to scroll to.
+        /// 4- Get the thread last message uniqueId to scroll to.
         guard let uniqueId = thread.lastMessageVO?.uniqueId else { return }
         scrollTo(uniqueId)
-        /// 6- Set whether it has more messages at the top or not.
+        /// 5- Set whether it has more messages at the top or not.
         setHasMoreTop(response)
-        /// 7- To update isLoading fields to hide the loading at the top.
+        /// 6- To update isLoading fields to hide the loading at the top.
         animateObjectWillChange()
     }
 }
@@ -241,7 +221,7 @@ extension ThreadViewModel {
             bottomLoading = true
             animateObjectWillChange()
             let fromTime = lastMessageInListTime.advanced(by: 1)
-            let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "desc", readOnly: readOnly)
+            let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: readOnly)
             RequestsManager.shared.append(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", value: req)
             ChatManager.activeInstance?.message.history(req)
         }
@@ -252,25 +232,15 @@ extension ThreadViewModel {
               let messages = response.result,
               !response.cache
         else { return }
-        /// 2- Store the uniqueId before the appending to scroll to position we where.
-        let beforeLastMessageInListUniqueId = sections.last?.messages.last?.uniqueId
-        /// 3- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
+        /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
         if response.result?.count ?? 0 > 0 {
             appenedUnreadMessagesBannerIfNeeed()
-            /// 4- Append and sort the array but not call to update the view.
+            /// 3- Append and sort the array but not call to update the view.
             appendMessagesAndSort(messages)
-            /// 5- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
-            diableScrollingForHalfASecond()
         }
-        /// 6- Update all the views to draw for the bottom part.
-        animateObjectWillChange()
-        /// 7- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
-        if let uniqueId = beforeLastMessageInListUniqueId, isAtBottomOfTheList {
-            scrollTo(uniqueId)
-        }
-        /// 8- Set whether it has more messages at the bottom or not.
+        /// 4- Set whether it has more messages at the bottom or not.
         setHasMoreBottom(response)
-        /// 9- To update isLoading fields to hide the loading at the bottom.
+        /// 5- To update isLoading fields to hide the loading at the bottom.
         animateObjectWillChange()
     }
 }
@@ -296,10 +266,10 @@ extension ThreadViewModel {
         else { return }
         /// 3- Append and sort the array but not call to update the view.
         appendMessagesAndSort(messages)
-        /// 4- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
-        diableScrollingForHalfASecond()
         centerLoading = false
         /// We set this property to true because in the seven scenario there is no way to set this property to true.
+        /// 4- Disable excessive loading on the top part.
+        disableExcessiveLoading()
         isFetchedServerFirstResponse = true
         /// 5- Update all the views to draw for the top part.
         animateObjectWillChange()
@@ -310,7 +280,7 @@ extension ThreadViewModel {
         else { return }
         showHighlighted(uniqueId, request.messageId)
         /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
-        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "desc", readOnly: readOnly)
+        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "asc", readOnly: readOnly)
         let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)
         RequestsManager.shared.append(prepend: "FROM-TIME", value: fromReqManager)
         ChatManager.activeInstance?.message.history(fromTimeReq)
@@ -324,15 +294,14 @@ extension ThreadViewModel {
         let sortedMessages = messages.sorted(by: {$0.time ?? 0 < $1.time ?? 0})
         /// 8- Append and sort the array but not call to update the view.
         appendMessagesAndSort(sortedMessages)
-        /// 9- Disable the scrolling for 0.5 seconds to make the correct assumption of the rows.
-        diableScrollingForHalfASecond()
-        /// 10- Update all the views to draw for the bottom part.
+        setHasMoreBottom(response)
+        /// 9- Update all the views to draw for the bottom part.
         animateObjectWillChange()
     }
 
     func moreBottomMoveTo(_ message: Message) {
         /// 12- Fetch the next part of the bottom when the user scrolls to the bottom part of move to.
-        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: message.time, offset: 0, order: "desc", readOnly: readOnly)
+        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: message.time, offset: 0, order: "asc", readOnly: readOnly)
         let fromReqManager = OnMoveTime(messageId: message.id ?? 0, request: fromTimeReq, highlight: false)
         RequestsManager.shared.append(prepend: "FROM-TIME", value: fromReqManager)
         ChatManager.activeInstance?.message.history(fromTimeReq)
