@@ -206,7 +206,6 @@ public final class ThreadsViewModel: ObservableObject {
     public func onArchives(_ response: ChatResponse<[Conversation]>) {
         if let archives = response.result, response.value(prepend: "GET-ARCHIVES") != nil {
             self.archives.append(contentsOf: archives.filter({$0.isArchive == true}))
-
         }
         isLoading = false
         animateObjectWillChange()
@@ -241,7 +240,12 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func makeThreadPublic(_ thread: Conversation) {
         guard let threadId = thread.id else { return }
-        ChatManager.activeInstance?.conversation.changeType(.init(threadId: threadId, type: .publicGroup))
+        ChatManager.activeInstance?.conversation.changeType(.init(threadId: threadId, type: thread.publicType, uniqueName: UUID().uuidString))
+    }
+
+    public func makeThreadPrivate(_ thread: Conversation) {
+        guard let threadId = thread.id else { return }
+        ChatManager.activeInstance?.conversation.changeType(.init(threadId: threadId, type: thread.privateType))
     }
 
     public func showAddParticipants(_ thread: Conversation) {
@@ -326,8 +330,8 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public func delete() {
-        guard let threadId = selectedThraed?.id else { return }
+    public func delete(_ threadId: Int?) {
+        guard let threadId = threadId else { return }
         ChatManager.activeInstance?.conversation.delete(.init(subjectId: threadId))
         sheetType = nil
     }

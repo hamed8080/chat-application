@@ -98,8 +98,7 @@ struct ThreadRow: View {
         .animation(.easeInOut, value: viewModel.activeCallThreads.count)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
-                viewModel.selectedThraed = thread
-                viewModel.sheetType = .firstConfrimation
+                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: thread.id))                
             } label: {
                 Label("General.delete", systemImage: "trash")
             }

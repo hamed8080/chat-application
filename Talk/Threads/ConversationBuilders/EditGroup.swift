@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import AdditiveUI
 
 struct EditGroup: View {
     @EnvironmentObject var viewModel: DetailViewModel
@@ -100,7 +101,36 @@ struct EditGroup: View {
                 }
                 .noSeparators()
                 .listRowBackground(Color.App.bgPrimary)
+            let isChannel = viewModel.thread?.type == .channel || viewModel.thread?.type == .publicChannel
+            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
+            let localizedPublic = String(localized: .init("Thread.public"))
+            let localizedDelete = String(localized: .init("Thread.delete"))
+            Group {
+                StickyHeaderSection(header: "", height: 2)
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowInsets(.zero)
+                    .noSeparators()
+
+                Toggle(isOn: $viewModel.isPublic) {
+                    Text(String(format: localizedPublic, typeName))
+                }
+                .padding(.horizontal)
+                .listRowBackground(Color.App.bgPrimary)
+                .listRowSeparatorTint(Color.App.divider)
+                
+                Button {
+                    viewModel.showEditGroup.toggle()
+                    AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: viewModel.thread?.id))
+                } label: {
+                    Label(String(format: localizedDelete, typeName), systemImage: "trash")
+                        .foregroundStyle(Color.App.red)
+                }
+                .padding(.horizontal, 8)
+                .listRowBackground(Color.App.bgPrimary)
+                .listRowSeparatorTint(Color.App.divider)
+            }
         }
+        .environment(\.defaultMinListRowHeight, 8)
         .animation(.easeInOut, value: focusState)
         .padding(0)
         .listStyle(.plain)

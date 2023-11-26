@@ -148,6 +148,7 @@
 "Thread.publicGroup" = "گروه عمومی";
 "Thread.channelGroup" = "کانال گروهی";
 "Thread.channel" = "کانال";
+"Thread.group" = "گروه";
 "Thread.notificationChannel" = "کانال اطلاع رسانی";
 "Thread.publicThread" = "گروه عمومی";
 "Thread.publicChannel" = "کانال عمومی گروهی";
@@ -206,6 +207,9 @@
 "Thread.createdAConversation" = "%@ گفتگویی ساخت.";
 "Thread.Toolbar.participants" = "عضو";
 "Thread.sendAttachments" = "ارسال %@ فایل";
+"Thread.public" = "%@ عمومی";
+"Thread.delete" = "حذف %@";
+"Thread.inviteLink" = "لینک دعوت";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "در حال اتصال";

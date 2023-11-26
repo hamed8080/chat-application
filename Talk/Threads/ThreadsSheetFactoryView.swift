@@ -21,10 +21,6 @@ struct ThreadsSheetFactoryView: View {
                 container.tagsVM.addThreadToTag(tag: tag, threadId: viewModel.selectedThraed?.id)
                 viewModel.sheetType = nil
             }
-        case .firstConfrimation:
-            DeleteThreadConfirmationView()
-        case .secondConfirmation:
-            DeleteThreadConfirmationView()
         case .addParticipant:
             AddParticipantsToThreadView() { contacts in
                 viewModel.addParticipantsToThread(contacts)

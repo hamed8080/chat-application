@@ -148,6 +148,7 @@
 "Thread.publicGroup" = "Grupo público";
 "Thread.channelGroup" = "Grupo de canal";
 "Thread.channel" = "Canal";
+"Thread.group" = "Grupo";
 "Thread.notificationChannel" = "Canal de notificaciones";
 "Thread.publicThread" = "Hilo público";
 "Thread.publicChannel" = "Canal público";
@@ -206,6 +207,9 @@
 "Thread.createdAConversation" = "%@ creó una conversación.";
 "Thread.Toolbar.participants" = "Las participantes";
 "Thread.sendAttachments" = "Enviar %@ archivos";
+"Thread.public" = "Público %@";
+"Thread.delete" = "Eliminar %@";
+"Thread.inviteLink" = "Enlace de invitación";
 
 /* Estado de conexión */
 "ConnectionStatus.connecting" = "conectando";

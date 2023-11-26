@@ -27,6 +27,7 @@ struct DetailView: View {
             VStack(alignment: .leading, spacing: 0) {
                 InfoView()
                 BioDescription()
+                PublicLink()
                 UserName()
                 CellPhoneNumber()
                 StickyHeaderSection(header: "", height: 10)
@@ -164,6 +165,40 @@ struct BioDescription: View {
     }
 }
 
+struct PublicLink: View {
+    @EnvironmentObject var viewModel: DetailViewModel
+    private var joinLink: String { "talk/\(viewModel.thread?.uniqueName ?? "")" }
+
+    var body: some View {
+        if let uniqueName = viewModel.thread?.uniqueName?.prefix(5) {
+            Button {
+                UIPasteboard.general.string = joinLink
+            } label: {
+                InfoRowItem(key: "Thread.inviteLink", value: "talk/\(uniqueName)", button: AnyView(qrButton))
+            }
+        }
+    }
+
+    var qrButton: some View {
+        Button {
+            withAnimation {
+                UIPasteboard.general.string = joinLink
+            }
+        } label: {
+            Image(systemName: "qrcode")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .padding()
+                .foregroundColor(Color.App.gray3)
+                .contentShape(Rectangle())
+        }
+        .frame(width: 40, height: 40)
+        .background(Color.App.gray9)
+        .clipShape(RoundedRectangle(cornerRadius:(20)))
+    }
+}
+
 struct UserName: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
@@ -187,6 +222,14 @@ struct CellPhoneNumber: View {
 struct InfoRowItem: View {
     let key: String
     let value: String
+    let button: AnyView?
+
+    init(key: String, value: String, button: AnyView? = nil) {
+        self.key = key
+        self.value = value
+        self.button = button
+    }
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -198,6 +241,7 @@ struct InfoRowItem: View {
                     .foregroundStyle(Color.App.hint)
             }
             Spacer()
+            button
         }
         .padding()
     }

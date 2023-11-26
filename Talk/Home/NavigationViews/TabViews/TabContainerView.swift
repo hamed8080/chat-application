@@ -47,11 +47,14 @@ struct TabContainerView: View {
     @State var selectedId: String
     let tabs: [TabItem]
     let config: TabContainerConfig
+    let onSelectedTab: ((String)->())?
 
     init(iPadMaxAllowedWidth: CGFloat = .infinity,
          selectedId: String,
          tabs: [TabItem] = [],
-         config: TabContainerConfig) {
+         config: TabContainerConfig,
+         onSelectedTab: ((String) -> ())? = nil) {
+        self.onSelectedTab = onSelectedTab
         self.iPadMaxAllowedWidth = iPadMaxAllowedWidth
         self.tabs = tabs
         self.config = config
@@ -78,6 +81,9 @@ struct TabContainerView: View {
             }
         }
         .frame(minWidth: 0, maxWidth: maxWidth)
+        .onChange(of: selectedId) { newValue in
+            onSelectedTab?(selectedId)
+        }
     }
 }
 

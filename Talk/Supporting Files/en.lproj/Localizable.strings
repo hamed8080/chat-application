@@ -147,6 +147,7 @@
 "Thread.publicGroup" = "Public Group";
 "Thread.channelGroup" = "Channel Group";
 "Thread.channel" = "Channel";
+"Thread.group" = "Group";
 "Thread.notificationChannel" = "Notification Channel";
 "Thread.publicThread" = "Public thread";
 "Thread.publicChannel" = "Public Channel";
@@ -205,6 +206,9 @@
 "Thread.createdAConversation" = "%@ created a conversation.";
 "Thread.Toolbar.participants" = "Participants";
 "Thread.sendAttachments" = "Send %@ files";
+"Thread.public" = "Public %@";
+"Thread.delete" = "Delete %@";
+"Thread.inviteLink" = "Invite Link";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";

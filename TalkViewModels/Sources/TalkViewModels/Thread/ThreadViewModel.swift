@@ -79,6 +79,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public weak var forwardMessage: Message?
     public var seenPublisher = PassthroughSubject<Message, Never>()
     public var participantsViewModel: ParticipantsViewModel
+    var hasSentHistoryRequest = false
     /// The property `DisableScrolling` works as a mechanism to prevent sending a new request to the server every time SwiftUI tries to calculate and layout our views rows, because SwiftUI starts rendering at the top when we load more top.
     public var disableScrolling: Bool = false
     var createThreadCompletion: (()-> Void)?
@@ -148,6 +149,11 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         if status == .connected, isFetchedServerFirstResponse == true, isActiveThread {
             // After connecting again get latest messages.
             tryFifthScenario(status: status)
+        }
+
+        /// Fetch the history for the first time if the internet connection is not available.
+        if status == .connected, hasSentHistoryRequest == true, sections.isEmpty {
+            startFetchingHistory()
         }
     }
 

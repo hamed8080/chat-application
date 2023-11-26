@@ -148,6 +148,7 @@
 "Thread.publicGroup" = "Offentlig grupp";
 "Thread.channelGroup" = "Kanalgrupp";
 "Thread.channel" = "Kanal";
+"Thread.group" = "Grupp";
 "Thread.notificationChannel" = "Notifieringskanal";
 "Thread.publicThread" = "Offentlig tråd";
 "Thread.publicChannel" = "Offentlig kanal";
@@ -206,6 +207,9 @@
 "Thread.createdAConversation" = "%@ skapade en konversation.";
 "Thread.Toolbar.participants" = "Deltagare";
 "Thread.sendAttachments" = "Skicka %@ filer";
+"Thread.public" = "Publik %@";
+"Thread.delete" = "Ta bort %@";
+"Thread.inviteLink" = "Inbjudningslänk";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";

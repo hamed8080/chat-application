@@ -112,14 +112,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 }
 
             Button {
-                withAnimation {
-                    if isInSearchMode {
-                        hideKeyboard()
-                    }
-                    isInSearchMode.toggle()
-                    searchCompletion?("")
-                    searchText = ""
-                }
+                cancelSaerch()
             } label: {
                 Text("General.cancel")
                     .padding(.leading)
@@ -139,6 +132,22 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
             .clipped()
             .foregroundStyle(Color.App.primary)
+            .onReceive(NotificationCenter.default.publisher(for: .cancelSearch)) { newValue in
+                if let cancelSearch = newValue.object as? Bool, cancelSearch == true, cancelSearch && isInSearchMode {
+                    cancelSaerch()
+                }
+            }
+        }
+    }
+
+    private func cancelSaerch() {
+        withAnimation {
+            if isInSearchMode {
+                hideKeyboard()
+            }
+            isInSearchMode.toggle()
+            searchCompletion?("")
+            searchText = ""
         }
     }
 }

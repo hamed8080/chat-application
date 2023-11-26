@@ -41,7 +41,7 @@ extension ThreadsViewModel: ArchiveThreadProtocol {
             let conversation = threads[index]
             conversation.isArchive = true
             archives.append(conversation)
-            threads.remove(at: index)
+            threads.removeAll(where: {$0.id == response.result}) /// Do not remove this line and do not use remove(at:) it will cause 'Precondition failed Orderedset'
             sort()
             animateObjectWillChange()
         }

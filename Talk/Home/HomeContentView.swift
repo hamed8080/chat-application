@@ -19,25 +19,27 @@ struct HomeContentView: View {
     let container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
 
     var body: some View {
-        LoginHomeView(container: container)
-            .environmentObject(container.loginVM)
-            .environmentObject(container.tokenVM)
-            .environmentObject(AppState.shared)
-        SplitView(container: container)
-            .environmentObject(AppState.shared)
-            .environmentObject(container)
-            .environmentObject(container.navVM)
-            .environmentObject(container.settingsVM)
-            .environmentObject(container.contactsVM)
-            .environmentObject(container.threadsVM)
-            .environmentObject(container.loginVM)
-            .environmentObject(container.tokenVM)
-            .environmentObject(container.tagsVM)
-            .environmentObject(container.userConfigsVM)
-            .environmentObject(container.logVM)
-            .environmentObject(container.audioPlayerVM)
-            .environmentObject(container.reactions)
-            .contextMenuContainer()
+        ZStack {
+            LoginHomeView(container: container)
+                .environmentObject(container.loginVM)
+                .environmentObject(container.tokenVM)
+                .environmentObject(AppState.shared)
+            SplitView(container: container)
+                .environmentObject(AppState.shared)
+                .environmentObject(container)
+                .environmentObject(container.navVM)
+                .environmentObject(container.settingsVM)
+                .environmentObject(container.contactsVM)
+                .environmentObject(container.threadsVM)
+                .environmentObject(container.loginVM)
+                .environmentObject(container.tokenVM)
+                .environmentObject(container.tagsVM)
+                .environmentObject(container.userConfigsVM)
+                .environmentObject(container.logVM)
+                .environmentObject(container.audioPlayerVM)
+                .environmentObject(container.reactions)
+        }
+        .contextMenuContainer()
     }
 }
 
@@ -123,7 +125,11 @@ struct SplitViewContent: View {
                     title: "Tab.settings"
                 )
             ],
-            config: .init(alignment: .bottom)
+            config: .init(alignment: .bottom), onSelectedTab: { selectedTabId in
+                if selectedTabId != "Tab.chats", !AppState.shared.objectsContainer.threadsVM.searchText.isEmpty {
+                    NotificationCenter.default.post(name: .cancelSearch, object: true)
+                }
+            }
         )
         .background(Color.App.bgPrimary)
     }

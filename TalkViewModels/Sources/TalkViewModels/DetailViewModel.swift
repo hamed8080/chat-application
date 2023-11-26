@@ -43,6 +43,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var participantViewModel: ParticipantsViewModel? { threadVM?.participantsViewModel }
     public var mutualThreads: [Conversation] = []
     public weak var threadVM: ThreadViewModel?
+    public var isPublic = false
 
     @Published public var editTitle: String = ""
     public var searchText: String = ""
@@ -61,6 +62,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
         self.user = user
         self.thread = thread
         self.contact = contact
+        isPublic = thread?.isPrivate == false
         editTitle = title
         threadDescription = thread?.description ?? ""
         fetchMutualThreads()
@@ -209,6 +211,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
 
     private func onChangeThreadType(_ response: ChatResponse<Conversation>) {
         self.thread?.type = response.result?.type
+        isPublic = thread?.isPrivate == false
         animateObjectWillChange()
     }
 
@@ -239,9 +242,24 @@ public final class DetailViewModel: ObservableObject, Hashable {
                                               wC: width
             )
         }
+        if thread?.isPrivate == false, isPublic == false {
+            switchToPrivateType()
+        } else if thread?.isPrivate == true, isPublic == true {
+            switchPublicType()
+        }
         let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)
         RequestsManager.shared.append(prepend: "EditGroup", value: req)
         ChatManager.activeInstance?.conversation.updateInfo(req)
+    }
+
+    public func switchToPrivateType() {
+        guard let conversation = thread else { return }
+        AppState.shared.objectsContainer.threadsVM.makeThreadPrivate(conversation)
+    }
+
+    public func switchPublicType() {
+        guard let conversation = thread else { return }
+        AppState.shared.objectsContainer.threadsVM.makeThreadPublic(conversation)
     }
 
     public func onEditGroup(_ response: ChatResponse<Conversation>) {

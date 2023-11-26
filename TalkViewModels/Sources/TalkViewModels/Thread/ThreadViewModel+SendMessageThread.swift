@@ -23,7 +23,7 @@ extension ThreadViewModel {
         } else if editMessage != nil {
             sendEditMessage(textMessage)
         } else if attachmentsViewModel.attachments.count > 0 {
-            sendAttachmentsMessage()
+            sendAttachmentsMessage(textMessage)
         } else {
             sendNormalMessage(textMessage)
         }

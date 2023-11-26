@@ -147,6 +147,7 @@
 "Thread.publicGroup" = "مجموعة عامة";
 "Thread.channelGroup" = "مجموعة القناة";
 "Thread.channel" = "القناة";
+"Thread.group" = "مجموعة";
 "Thread.notificationChannel" = "قناة الإشعارات";
 "Thread.publicThread" = "موضوع عام";
 "Thread.publicChannel" = "قناة عامة";
@@ -205,6 +206,9 @@
 "Thread.createdAConversation" = "%@ قام بإنشاء محادثة.";
 "Thread.Toolbar.participants" = "مشاركون";
 "Thread.sendAttachments" = "إرسال %@ ملفات";
+"Thread.public" = "عام %@";
+"Thread.delete" = "حذف %@";
+"Thread.inviteLink" = "رابط الدعوة";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";

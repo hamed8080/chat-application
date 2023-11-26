@@ -54,8 +54,7 @@ struct ThreadRowActionMenu: View {
 
         if thread.admin == true {
             Button(role: .destructive) {
-                viewModel.selectedThraed = thread
-                viewModel.sheetType = .firstConfrimation
+                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: thread.id))
             } label: {
                 Label("General.delete", systemImage: "trash")
             }

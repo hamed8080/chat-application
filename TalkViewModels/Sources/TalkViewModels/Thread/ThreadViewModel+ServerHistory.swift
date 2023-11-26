@@ -35,6 +35,7 @@ extension ThreadViewModel {
         /// We check this to prevent recalling these methods when the view reappears again.
         /// If centerLoading is true it is mean theat the array has gotten clear for Scenario 6 to move to a time.
         if sections.count > 0 || centerLoading { return }
+        hasSentHistoryRequest = true
         tryFirstScenario()
         trySecondScenario()
         trySeventhScenario()
