@@ -48,6 +48,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         self.message = message
         if isInCache {
             state = .completed
+            thumbnailData = nil
             animateObjectWillChange()
         }
         setObservers()
@@ -74,6 +75,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             state = .completed
             downloadPercent = 100
             data = result.data
+            thumbnailData = nil
             animateObjectWillChange()
         }
     }
@@ -155,6 +157,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
                 state = .completed
                 downloadPercent = 100
                 self.data = data
+                thumbnailData = nil
                 animateObjectWillChange()
             }
         }
@@ -166,6 +169,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
                 state = .completed
                 downloadPercent = 100
                 self.data = response.result
+                thumbnailData = nil
                 animateObjectWillChange()
             }
         }

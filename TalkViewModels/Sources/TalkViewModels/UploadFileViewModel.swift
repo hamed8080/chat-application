@@ -9,14 +9,15 @@ import ChatTransceiver
 
 public final class UploadFileViewModel: ObservableObject {
     @Published public private(set) var uploadPercent: Int64 = 0
-    @Published public var state: UploadFileState = .STARTED
-    public var message: Message?
+    @Published public var state: UploadFileState = .uploading
+    public var message: Message
+    var threadId: Int? { (message.uploadFile as? UploadFileMessage)?.conversation?.id }
     public var uploadFileWithTextMessage: UploadWithTextMessageProtocol { message as! UploadWithTextMessageProtocol }
-    public var thread: Conversation?
     public var uploadUniqueId: String?
     public private(set) var cancelable: Set<AnyCancellable> = []
 
-    public init() {
+    public init(message: Message) {
+        self.message = message
         NotificationCenter.default.publisher(for: .upload)
             .compactMap { $0.object as? UploadEventTypes }
             .sink { [weak self] event in
@@ -40,12 +41,10 @@ public final class UploadFileViewModel: ObservableObject {
         }
     }
 
-    public func startUploadFile(message: Message, thread: Conversation?) {
-        if state == .COMPLETED { return }
-        self.message = message
-        self.thread = thread
-        state = .STARTED
-        guard let threadId = thread?.id else { return }
+    public func startUploadFile() {
+        if state == .completed { return }
+        state = .uploading
+        guard let threadId = threadId else { return }
         let isImage: Bool = message.isImage
         let textMessageType: ChatModels.MessageType = isImage ? .podSpacePicture : .podSpaceFile
         let message = SendTextMessageRequest(threadId: threadId, textMessage: message.message ?? "", messageType: textMessageType)
@@ -54,12 +53,10 @@ public final class UploadFileViewModel: ObservableObject {
         }
     }
 
-    public func startUploadImage(message: Message, thread: Conversation?) {
-        if state == .COMPLETED { return }
-        self.message = message
-        self.thread = thread
-        state = .STARTED
-        guard let threadId = thread?.id else { return }
+    public func startUploadImage() {
+        if state == .completed { return }
+        state = .uploading
+        guard let threadId = threadId else { return }
         let isImage: Bool = message.isImage
         let textMessageType: ChatModels.MessageType = isImage ? .podSpacePicture : .podSpaceFile
         let message = SendTextMessageRequest(threadId: threadId, textMessage: message.message ?? "", messageType: textMessageType)
@@ -86,7 +83,7 @@ public final class UploadFileViewModel: ObservableObject {
 
     private func onCompeletedUpload(_ uniqueId: String, _ data: Data?, _ error: Error?) {
         if uniqueId == uploadUniqueId {
-            state = .COMPLETED
+            state = .completed
         }
     }
 
@@ -97,7 +94,7 @@ public final class UploadFileViewModel: ObservableObject {
 
     private func onPause(_ uniqueId: String) {
         if uniqueId == uploadUniqueId {
-            state = .PAUSED
+            state = .paused
         }
     }
 
@@ -108,7 +105,7 @@ public final class UploadFileViewModel: ObservableObject {
 
     private func onResume(_ uniqueId: String) {
         if uniqueId == uploadUniqueId {
-            state = .UPLOADING
+            state = .uploading
         }
     }
 }

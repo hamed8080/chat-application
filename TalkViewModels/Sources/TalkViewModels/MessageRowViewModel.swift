@@ -15,6 +15,7 @@ import TalkModels
 import NaturalLanguage
 import ChatDTO
 import OSLog
+import ChatCore
 
 public final class MessageRowViewModel: ObservableObject {
     public var isCalculated = false
@@ -42,6 +43,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var reactionCountList: [ReactionCount] = []
     private var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
     public var currentUserReaction: Reaction?
+    public var uploadViewModel: UploadFileViewModel?    
     public var avatarImageLoader: ImageLoaderViewModel? {
         if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {
             return imageLoaderVM
@@ -57,6 +59,10 @@ public final class MessageRowViewModel: ObservableObject {
         }
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        if message.uploadFile != nil {
+            uploadViewModel = .init(message: message)
+            isMe = true
+        }
         setupObservers()
         maxWidth = message.isImage ? maxAllowedWidth : nil
         canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.message.isEmptyOrNil == true && message.replyInfo?.deleted == false
@@ -113,6 +119,10 @@ public final class MessageRowViewModel: ObservableObject {
         }
         .store(in: &cancelableSet)
 
+        uploadViewModel?.$state.sink { [weak self] state in
+            self?.deleteUploadedMessage(state: state)
+        }
+        .store(in: &cancelableSet)
     }
 
     @MainActor
@@ -123,7 +133,7 @@ public final class MessageRowViewModel: ObservableObject {
 
     private func startHighlightTimer() {
         highlightTimer?.invalidate()
-        highlightTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { [weak self] _ in
+        highlightTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { [weak self] _ in
             self?.isHighlited = false
             self?.updateWithAnimation()
         }
@@ -208,13 +218,15 @@ public final class MessageRowViewModel: ObservableObject {
     public func calculateMaxWidth() -> CGFloat? {
         let replyWidth = message.replyInfo?.message?.widthOfString(usingFont: MessageRowViewModel.replyFont ?? .systemFont(ofSize: 10)) ?? 0
         let messageWidth = message.message?.widthOfString(usingFont: MessageRowViewModel.messageFont ?? .systemFont(ofSize: 13)) ?? 0
-        let imageWidth = CGFloat(message.fileMetaData?.file?.actualWidth ?? 0)
+        let imageWidth = CGFloat(message.fileMetaData?.file?.actualWidth ?? message.uploadFile?.uploadImageRequest?.wC ?? 0)
         if replyWidth > messageWidth && replyWidth > maxAllowedWidth {
             return maxAllowedWidth
         } else if replyWidth > messageWidth && replyWidth < maxAllowedWidth {
             return imageWidth > maxAllowedWidth ? maxAllowedWidth : nil
         } else if messageWidth > maxAllowedWidth {
             return maxAllowedWidth
+        } else if message.isUnsentMessage {
+            return nil
         } else if message.isImage {
             if imageWidth > maxAllowedWidth {
                 return maxAllowedWidth
@@ -230,6 +242,12 @@ public final class MessageRowViewModel: ObservableObject {
         if let reactionCountList = inMemoryReaction?.summary(for: message.id ?? -1) {
             self.reactionCountList = reactionCountList
             currentUserReaction = ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(message.id ?? -1)
+        }
+    }
+
+    private func deleteUploadedMessage(state: UploadFileState) {
+        if state == .completed {
+            threadVM?.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId, subjectId: threadVM?.threadId))
         }
     }
 

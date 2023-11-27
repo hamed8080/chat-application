@@ -17,8 +17,7 @@ struct UnsentMessageView: View {
 
     var body: some View {
         if message.isUnsentMessage {
-            HStack {
-                Spacer()
+            HStack(spacing: 16) {
                 Button("Messages.resend") {
                     threadVM?.resendUnsetMessage(message)
                 }

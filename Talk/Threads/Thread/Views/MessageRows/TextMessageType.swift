@@ -84,7 +84,7 @@ struct MutableMessageView: View {
             }
             ReplyInfoMessageRow()
             ForwardMessageRow()
-            UploadMessageType(message: message, maxWidth: viewModel.maxWidth)
+            UploadMessageType()
             GroupParticipantNameView()
             MessageTextView()
             MapAddressTextView()

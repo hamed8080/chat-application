@@ -1,7 +1,6 @@
 public enum UploadFileState {
-    case STARTED
-    case COMPLETED
-    case UPLOADING
-    case PAUSED
-    case ERROR
+    case completed
+    case uploading
+    case paused
+    case error
 }
