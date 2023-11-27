@@ -120,7 +120,7 @@ extension ThreadViewModel {
         isInEditMode = false /// Close edit mode in ui
         sheetType = nil
         animateObjectWillChange()
-        let messageIds = selectedMessages.compactMap{$0.message.id}
+        let messageIds = selectedMessagesViewModel.selectedMessages.compactMap{$0.message.id}
         AppState.shared.openThread(from: threadId, conversation: destinationConversation, contact: contact, messageIds: messageIds)
     }
 

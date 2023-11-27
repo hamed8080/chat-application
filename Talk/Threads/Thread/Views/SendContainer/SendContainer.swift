@@ -20,7 +20,7 @@ struct SendContainer: View {
     @State private var text: String = ""
     @State private var isRecording = false
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
-    private var threadId: Int? { viewModel.thread.id }
+    private var threadId: Int { viewModel.threadId }
     @State var showActionButtons: Bool = false
 
     var body: some View {
@@ -40,7 +40,7 @@ struct SendContainer: View {
                     .environmentObject(viewModel.attachmentsViewModel)
                 VStack(spacing: 0) {
                     if isInEditMode {
-                        SelectionView(viewModel: viewModel)
+                        SelectionView(threadVM: viewModel)
                     } else if viewModel.canShowMute {
                         MuteChannelViewPlaceholder()
                             .padding(10)
@@ -93,7 +93,7 @@ struct SendContainer: View {
                     }
                 }
                 .onAppear {
-                    if let threadId = threadId, let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
+                    if let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
                         text = draft
                     }
                 }

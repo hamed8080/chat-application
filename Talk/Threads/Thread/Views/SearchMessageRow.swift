@@ -20,8 +20,7 @@ struct SearchMessageRow: View {
         Button {
             if let time = message.time, let messageId = message.id {
                 threadVM?.moveToTime(time, messageId)
-                threadVM?.searchedMessages.removeAll()
-                threadVM?.isInSearchMode = false
+                threadVM?.searchedMessagesViewModel.cancel()
                 threadVM?.animateObjectWillChange()
             }
         } label: {

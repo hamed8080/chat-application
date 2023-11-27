@@ -12,15 +12,16 @@ import TalkUI
 import TalkModels
 
 struct SelectionView: View {
-    let viewModel: ThreadViewModel
+    let threadVM: ThreadViewModel
+    var viewModel: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     @State private var selectedCount: Int = 0
 
     var body: some View {
         HStack(spacing: 0) {
             SendContainerButton(image: "arrow.turn.up.right") {
-                viewModel.sheetType = .threadPicker
-                viewModel.animateObjectWillChange()
+                threadVM.sheetType = .threadPicker
+                threadVM.animateObjectWillChange()
             }
             HStack(spacing: 2) {
                 Text(selectedCount.localNumber(locale: Language.preferredLocale) ?? "")
@@ -28,7 +29,7 @@ struct SelectionView: View {
                     .foregroundStyle(Color.App.primary)
                 Text("General.selected")
                     .foregroundStyle(Color.App.hint)
-                if viewModel.forwardMessage != nil {
+                if threadVM.forwardMessage != nil {
                     Text("Thread.SendContainer.toForward")
                         .foregroundStyle(Color.App.hint)
                 }
@@ -39,9 +40,9 @@ struct SelectionView: View {
             Spacer()
 
             /// Disable showing the delete button when forwarding in a conversation where we are not the admin and we just want to forward messages, so the delete button should be hidden.
-            if !viewModel.thread.disableSend {
+            if !threadVM.thread.disableSend {
                 Button {
-                    appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: viewModel))
+                    appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: threadVM))
                 } label: {
                     Image("ic_delete")
                         .resizable()
@@ -55,7 +56,7 @@ struct SelectionView: View {
             }
 
             CloseButton {
-                viewModel.isInEditMode = false
+                threadVM.isInEditMode = false
                 viewModel.clearSelection()
                 viewModel.animateObjectWillChange()
             }            
@@ -70,6 +71,6 @@ struct SelectionView: View {
 
 struct SelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        SelectionView(viewModel: .init(thread: .init(id: 1)))
+        SelectionView(threadVM: .init(thread: .init(id: 1)))
     }
 }

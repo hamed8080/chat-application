@@ -41,8 +41,9 @@ struct ThreadView: View, DropDelegate {
                 }
             }
             .overlay {
-                ThreadSearchList(searchText: $searchMessageText)
+                ThreadSearchList(threadVM: viewModel, searchText: $searchMessageText)
                     .environmentObject(viewModel)
+                    .environmentObject(viewModel.searchedMessagesViewModel)
             }
             .toolbar {
                 ToolbarItemGroup(placement: .navigation) {
@@ -64,7 +65,7 @@ struct ThreadView: View, DropDelegate {
                 }
             }
             .onChange(of: searchMessageText) { value in
-                viewModel.searchInsideThread(text: value)
+                viewModel.searchedMessagesViewModel.searchInsideThread(text: value)
             }
             .onAppear {
                 viewModel.startFetchingHistory()
@@ -83,7 +84,7 @@ struct ThreadView: View, DropDelegate {
 struct ThreadView_Previews: PreviewProvider {
     static var vm: ThreadViewModel {
         let vm = ThreadViewModel(thread: MockData.thread)
-        vm.searchedMessages = MockData.generateMessages(count: 15)
+//        vm.searchedMessages = MockData.generateMessages(count: 15)
         vm.objectWillChange.send()
         return vm
     }

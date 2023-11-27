@@ -35,7 +35,7 @@ struct ReplyMessageViewPlaceholder: View {
                 Spacer()
                 CloseButton {
                     viewModel.replyMessage = nil
-                    viewModel.clearSelection()
+                    viewModel.selectedMessagesViewModel.clearSelection()
                     viewModel.animateObjectWillChange()
                 }
                 .padding(.trailing, 4)

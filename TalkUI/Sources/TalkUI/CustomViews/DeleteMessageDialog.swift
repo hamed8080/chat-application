@@ -11,11 +11,12 @@ import TalkViewModels
 
 public struct DeleteMessageDialog: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
-    let viewModel: ThreadViewModel
+    let threadVM: ThreadViewModel
+    var viewModel: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
     private var messages: [Message] { viewModel.selectedMessages.compactMap({$0.message}) }
 
     public init(viewModel: ThreadViewModel) {
-        self.viewModel = viewModel
+        self.threadVM = viewModel
     }
 
     public var body: some View {
@@ -35,7 +36,7 @@ public struct DeleteMessageDialog: View {
             HStack(spacing: 16) {
                 Button {
                     viewModel.clearSelection()
-                    viewModel.isInEditMode = false
+                    threadVM.isInEditMode = false
                     appOverlayVM.dialogView = nil
                     viewModel.animateObjectWillChange()
                 } label: {
@@ -46,8 +47,8 @@ public struct DeleteMessageDialog: View {
                 }
 
                 Button {
-                    viewModel.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
-                    viewModel.isInEditMode = false
+                    threadVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
+                    threadVM.isInEditMode = false
                     appOverlayVM.dialogView = nil
                     viewModel.animateObjectWillChange()
                 } label: {
@@ -58,8 +59,8 @@ public struct DeleteMessageDialog: View {
                 }
 
                 Button {
-                    viewModel.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
-                    viewModel.isInEditMode = false
+                    threadVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
+                    threadVM.isInEditMode = false
                     appOverlayVM.dialogView = nil
                     viewModel.animateObjectWillChange()
                 } label: {

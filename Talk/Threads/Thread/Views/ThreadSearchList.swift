@@ -11,7 +11,8 @@ import TalkUI
 import TalkViewModels
 
 struct ThreadSearchList: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    let threadVM: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadSearchMessagesViewModel
     @Binding var searchText: String
 
     var body: some View {
@@ -20,7 +21,7 @@ struct ThreadSearchList: View {
                 LazyVStack {
                     ForEach(viewModel.searchedMessages) { message in
                         SearchMessageRow()
-                            .environmentObject(MessageRowViewModel(message: message, viewModel: viewModel))
+                            .environmentObject(MessageRowViewModel(message: message, viewModel: threadVM))
                             .onAppear {
                                 if message == viewModel.searchedMessages.last {
                                     viewModel.searchInsideThread(text: searchText, offset: viewModel.searchedMessages.count)
@@ -53,13 +54,13 @@ struct ThreadSearchList_Previews: PreviewProvider {
 
     static var vm: ThreadViewModel {
         let vm = ThreadViewModel(thread: Conversation())
-        vm.searchedMessages = MockData.generateMessages(count: 15)
+//        vm.searchedMessages = MockData.generateMessages(count: 15)
         vm.objectWillChange.send()
         return vm
     }
 
     static var previews: some View {
-        ThreadSearchList(searchText: .constant("TEST"))
+        ThreadSearchList(threadVM: vm, searchText: .constant("TEST"))
             .previewDisplayName("ThreadSearchList")
             .environmentObject(vm)
     }

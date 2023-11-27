@@ -42,8 +42,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var centerLoading = false
     public var topLoading = false
     public var bottomLoading = false
-    public var canLoadMoreTop: Bool { hasNextTop && !topLoading && !disableScrolling }
-    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom && !disableScrolling }
+    public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
+    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom }
     public var canShowMute: Bool { (thread.type == .channel || thread.type == .channelGroup) && thread.admin == false && !isInEditMode }
     public var sections: [MessageSection] = []
     @Published public var editMessage: Message?
@@ -56,8 +56,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var isFetchedServerFirstResponse: Bool = false
     public var unssetMessagesViewModel: ThreadUnsentMessagesViewModel
     public var uploadMessagesViewModel: ThreadUploadMessagesViewModel
-    public var searchedMessages: [Message] = []
-    public var isInSearchMode: Bool = false
+    public var searchedMessagesViewModel: ThreadSearchMessagesViewModel
+    public var selectedMessagesViewModel: ThreadSelectedMessagesViewModel
     public var readOnly = false
     public var textMessage: String?
     public var canScrollToBottomOfTheList: Bool = false
@@ -70,10 +70,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var threadId: Int { thread.id ?? 0 }
     public weak var threadsViewModel: ThreadsViewModel?
     public var signalMessageText: String?
-    public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
-    public var isAtBottomOfTheList: Bool = false
-    var searchOffset: Int = 0
+    public var isAtBottomOfTheList: Bool = false    
     public var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false
@@ -82,8 +80,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var seenPublisher = PassthroughSubject<Message, Never>()
     public var participantsViewModel: ParticipantsViewModel
     var hasSentHistoryRequest = false
-    /// The property `DisableScrolling` works as a mechanism to prevent sending a new request to the server every time SwiftUI tries to calculate and layout our views rows, because SwiftUI starts rendering at the top when we load more top.
-    public var disableScrolling: Bool = false
     var createThreadCompletion: (()-> Void)?
     public lazy var attachmentsViewModel: AttachmentsViewModel = {
         let viewModel = AttachmentsViewModel()
@@ -99,6 +95,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.unssetMessagesViewModel = .init(thread: thread)
         self.uploadMessagesViewModel = .init(thread: thread)
+        self.searchedMessagesViewModel = .init(threadId: thread.id ?? -1)
+        self.selectedMessagesViewModel = .init()
         self.readOnly = readOnly
         self.thread = thread
         self.threadsViewModel = threadsViewModel
@@ -107,6 +105,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         setupNotificationObservers()
         self.canDownloadImages = canDownloadImagesInConversation()
         self.canDownloadFiles = canDownloadFilesInConversation()
+        selectedMessagesViewModel.threadVM = self
     }
 
     private func setupNotificationObservers() {
@@ -363,7 +362,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func deleteMessages(_ messages: [Message], forAll: Bool = false) {
         let messagedIds = messages.compactMap(\.id)
         ChatManager.activeInstance?.message.delete(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: forAll))
-        clearSelection()
+        selectedMessagesViewModel.clearSelection()
     }
 
     /// Delete a message with an Id is needed for when the message has persisted before.
