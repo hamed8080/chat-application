@@ -54,6 +54,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var sheetType: ThreadSheetType?
     public var selectedLocation: MKCoordinateRegion = .init()
     public var isFetchedServerFirstResponse: Bool = false
+    public var unssetMessagesViewModel: ThreadUnsentMessagesViewModel
+    public var uploadMessagesViewModel: ThreadUploadMessagesViewModel
     public var searchedMessages: [Message] = []
     public var isInSearchMode: Bool = false
     public var readOnly = false
@@ -70,7 +72,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var signalMessageText: String?
     public var searchTextTimer: Timer?
     public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
-    public var isAtBottomOfTheList: Bool = false    
+    public var isAtBottomOfTheList: Bool = false
     var searchOffset: Int = 0
     public var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
@@ -95,6 +97,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var canDownloadFiles: Bool = false
 
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
+        self.unssetMessagesViewModel = .init(thread: thread)
+        self.uploadMessagesViewModel = .init(thread: thread)
         self.readOnly = readOnly
         self.thread = thread
         self.threadsViewModel = threadsViewModel
@@ -218,24 +222,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    func onQueueTextMessages(_ response: ChatResponse<[SendTextMessageRequest]>) {
-        appendMessagesAndSort(response.result?.compactMap { SendTextMessage(from: $0, thread: thread) } ?? [])
-    }
-
-    func onQueueEditMessages(_ response: ChatResponse<[EditMessageRequest]>) {
-        appendMessagesAndSort(response.result?.compactMap { EditTextMessage(from: $0, thread: thread) } ?? [])
-    }
-
-    func onQueueForwardMessages(_ response: ChatResponse<[ForwardMessageRequest]>) {
-        appendMessagesAndSort(response.result?.compactMap { ForwardMessage(from: $0,
-                                                                    destinationThread: .init(id: $0.threadId, title: threadName($0.threadId)),
-                                                                    thread: thread) } ?? [])
-    }
-
-    func onQueueFileMessages(_ response: ChatResponse<[(UploadFileRequest, SendTextMessageRequest)]>) {
-        appendMessagesAndSort(response.result?.compactMap { UnsentUploadFileWithTextMessage(uploadFileRequest: $0.0, sendTextMessageRequest: $0.1, thread: thread) } ?? [])
-    }
-
     public func onEditedMessage(_ response: ChatResponse<Message>) {
         guard
             let indices = indicesByMessageId(response.result?.id ?? -1),
@@ -252,10 +238,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         if editedMessage.id == thread.pinMessage?.id {
             thread.pinMessage = PinMessage(message: editedMessage)
         }
-    }
-
-    public func threadName(_ threadId: Int) -> String? {
-        threadsViewModel?.threads.first { $0.id == threadId }?.title
     }
 
     public func sendStartTyping(_ newValue: String) {
@@ -371,7 +353,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func removeByUniqueId(_ uniqueId: String?) {
         guard let uniqueId = uniqueId, let indices = indicesByMessageUniqueId(uniqueId) else { return }
         sections[indices.sectionIndex].messages.remove(at: indices.messageIndex)
-    }    
+    }
 
     private func lastMessageSeenIndicies(isToTime: Bool) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
         guard isToTime, let lastSeenMessageId = thread.lastSeenMessageId else { return nil }
@@ -516,7 +498,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     @discardableResult
     public func messageViewModel(for message: Message) -> MessageRowViewModel {
-        if let viewModel = messageViewModels.first(where: { $0.message.id == message.id }){
+        /// For unsent messages, uniqueId has value but message.id is always nil, so we have to check both to make sure we get the right viewModel, unless it will lead to an overwrite on a message and it will break down all the things.
+        if let viewModel = messageViewModels.first(where: {  $0.message.uniqueId == message.uniqueId && $0.message.id == message.id }){
             return viewModel
         } else {
             let newViewModel = MessageRowViewModel(message: message, viewModel: self)

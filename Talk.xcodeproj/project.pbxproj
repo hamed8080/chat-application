@@ -277,8 +277,8 @@
 		05DE92442B03DFC300C7A006 /* MessageRowVideoDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DE92422B03DFC300C7A006 /* MessageRowVideoDownloader.swift */; };
 		05DE92462B03E8E100C7A006 /* MessageRowFileDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DE92452B03E75800C7A006 /* MessageRowFileDownloader.swift */; };
 		05DE92472B03E8E100C7A006 /* MessageRowFileDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DE92452B03E75800C7A006 /* MessageRowFileDownloader.swift */; };
-		05DE92492B03EB1300C7A006 /* MessageRowAudioDownloader copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DE92482B03EB1300C7A006 /* MessageRowAudioDownloader copy.swift */; };
-		05DE924A2B03EB1300C7A006 /* MessageRowAudioDownloader copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DE92482B03EB1300C7A006 /* MessageRowAudioDownloader copy.swift */; };
+		05DE92492B03EB1300C7A006 /* MessageRowAudioDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DE92482B03EB1300C7A006 /* MessageRowAudioDownloader.swift */; };
+		05DE924A2B03EB1300C7A006 /* MessageRowAudioDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DE92482B03EB1300C7A006 /* MessageRowAudioDownloader.swift */; };
 		05E3CC2B2B145B59002894E1 /* UploadMessageImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E3CC2A2B145B59002894E1 /* UploadMessageImageView.swift */; };
 		05E3CC2C2B145B59002894E1 /* UploadMessageImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E3CC2A2B145B59002894E1 /* UploadMessageImageView.swift */; };
 		05E3CC2E2B145BC6002894E1 /* UploadMessageFileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E3CC2D2B145BC6002894E1 /* UploadMessageFileView.swift */; };
@@ -456,7 +456,7 @@
 		05DE923F2B03DD4E00C7A006 /* MessageRowImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowImageDownloader.swift; sourceTree = "<group>"; };
 		05DE92422B03DFC300C7A006 /* MessageRowVideoDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowVideoDownloader.swift; sourceTree = "<group>"; };
 		05DE92452B03E75800C7A006 /* MessageRowFileDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowFileDownloader.swift; sourceTree = "<group>"; };
-		05DE92482B03EB1300C7A006 /* MessageRowAudioDownloader copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageRowAudioDownloader copy.swift"; sourceTree = "<group>"; };
+		05DE92482B03EB1300C7A006 /* MessageRowAudioDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowAudioDownloader.swift; sourceTree = "<group>"; };
 		05E3CC2A2B145B59002894E1 /* UploadMessageImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadMessageImageView.swift; sourceTree = "<group>"; };
 		05E3CC2D2B145BC6002894E1 /* UploadMessageFileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadMessageFileView.swift; sourceTree = "<group>"; };
 		05E825CC2AF6542B00F3CBB2 /* LogoutDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutDialogView.swift; sourceTree = "<group>"; };
@@ -703,7 +703,7 @@
 				0594FE652B0387370031AADF /* MapAddressTextView.swift */,
 				0594FE682B0387920031AADF /* UnsentMessageView.swift */,
 				05DE92452B03E75800C7A006 /* MessageRowFileDownloader.swift */,
-				05DE92482B03EB1300C7A006 /* MessageRowAudioDownloader copy.swift */,
+				05DE92482B03EB1300C7A006 /* MessageRowAudioDownloader.swift */,
 				05DE923F2B03DD4E00C7A006 /* MessageRowImageDownloader.swift */,
 				05DE92422B03DFC300C7A006 /* MessageRowVideoDownloader.swift */,
 				057A18DE2B04C78A0007868D /* MessageParticipantsSeen.swift */,
@@ -1149,7 +1149,7 @@
 				0570CBEB2AAEE98F001832E9 /* ConversationCallMessageType.swift in Sources */,
 				0570CC172AAEE98F001832E9 /* ReplyInfoMessageRow.swift in Sources */,
 				0570CC612AAEE98F001832E9 /* DetailView.swift in Sources */,
-				05DE924A2B03EB1300C7A006 /* MessageRowAudioDownloader copy.swift in Sources */,
+				05DE924A2B03EB1300C7A006 /* MessageRowAudioDownloader.swift in Sources */,
 				0570CBED2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				05745AF02AF2626B00102193 /* UserActionMenu.swift in Sources */,
 				0570CC5F2AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */,
@@ -1285,7 +1285,7 @@
 				0570CBEC2AAEE98F001832E9 /* ConversationCallMessageType.swift in Sources */,
 				0570CC182AAEE98F001832E9 /* ReplyInfoMessageRow.swift in Sources */,
 				0570CC622AAEE98F001832E9 /* DetailView.swift in Sources */,
-				05DE92492B03EB1300C7A006 /* MessageRowAudioDownloader copy.swift in Sources */,
+				05DE92492B03EB1300C7A006 /* MessageRowAudioDownloader.swift in Sources */,
 				0570CBEE2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				05745AF12AF2628000102193 /* UserActionMenu.swift in Sources */,
 				0570CC602AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */,

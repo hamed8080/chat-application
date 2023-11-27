@@ -22,7 +22,7 @@ struct UnsentMessageView: View {
                     threadVM?.resendUnsetMessage(message)
                 }
                 Button("General.cancel", role: .destructive) {
-                    threadVM?.cancelUnsentMessage(message.uniqueId ?? "")
+                    threadVM?.unssetMessagesViewModel.cancel(message.uniqueId)
                 }
             }
             .padding(.horizontal, 6)

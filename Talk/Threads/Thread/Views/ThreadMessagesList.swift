@@ -93,6 +93,12 @@ struct MessagesLazyStack: View {
                 SectionView(section: section)
                 MessageList(messages: section.messages, viewModel: viewModel)
             }
+
+            UploadMessagesLoop(threadViewModel: viewModel)
+                .environmentObject(viewModel.uploadMessagesViewModel)
+            UnsentMessagesLoop(threadViewModel: viewModel)
+                .environmentObject(viewModel.unssetMessagesViewModel)
+
             ListLoadingView(isLoading: $viewModel.bottomLoading)
                 .id(-2)
                 .padding([.top, .bottom])
@@ -132,6 +138,34 @@ struct MessageList: View {
                     viewModel.onMessageAppear(message)
                 }
         }
+    }
+}
+
+struct UploadMessagesLoop: View {
+    let threadViewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadUploadMessagesViewModel
+
+    var body: some View {
+        /// We must use uniqueId with messageId to force swiftUI to delete the row and make a new one after uploading successfully.
+        ForEach(viewModel.uploadMessages, id: \.uniqueId) { uploadFileMessage in
+            MessageRowFactory(viewModel: threadViewModel.messageViewModel(for: uploadFileMessage))
+                .id("\(uploadFileMessage.uniqueId ?? "")\(uploadFileMessage.id ?? 0)")
+        }
+        .animation(.easeInOut, value: viewModel.uploadMessages.count)
+    }
+}
+
+struct UnsentMessagesLoop: View {
+    let threadViewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadUnsentMessagesViewModel
+
+    var body: some View {
+        /// We have to use \.uniqueId to force the ForLoop to use uniqueId instead of default \.id because id is nil when a message is unsent.
+        ForEach(viewModel.unsentMessages, id: \.uniqueId) { unsentMessage in
+            MessageRowFactory(viewModel: threadViewModel.messageViewModel(for: unsentMessage))
+                .id(unsentMessage.uniqueId)
+        }
+        .animation(.easeInOut, value: viewModel.unsentMessages.count)
     }
 }
 

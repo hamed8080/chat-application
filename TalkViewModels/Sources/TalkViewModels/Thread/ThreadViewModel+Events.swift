@@ -83,14 +83,6 @@ extension ThreadViewModel {
                 ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
             }
             break
-        case .queueTextMessages(let response):
-            onQueueTextMessages(response)
-        case .queueEditMessages(let response):
-            onQueueEditMessages(response)
-        case .queueForwardMessages(let response):
-            onQueueForwardMessages(response)
-        case .queueFileMessages(let response):
-            onQueueFileMessages(response)
         case .new(let response):
             onNewMessage(response)
         case .sent(let response):

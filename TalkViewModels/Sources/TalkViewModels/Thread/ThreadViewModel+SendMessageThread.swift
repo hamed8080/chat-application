@@ -141,7 +141,7 @@ extension ThreadViewModel {
                 let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .picture)
                 let request = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
-                self.appendMessagesAndSort([request])
+                self.uploadMessagesViewModel.append(contentsOf: ([request]))
             }
             attachmentsViewModel.clear()
         }
@@ -163,7 +163,7 @@ extension ThreadViewModel {
                 let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: messageType)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
-                self.appendMessagesAndSort([request])
+                self.uploadMessagesViewModel.append(contentsOf: [request])
             }
             attachmentsViewModel.clear()
             audioRecoderVM?.deleteFile()
@@ -184,7 +184,7 @@ extension ThreadViewModel {
                 let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .file)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
-                self.appendMessagesAndSort([request])
+                self.uploadMessagesViewModel.append(contentsOf: ([request]))
             }
             attachmentsViewModel.clear()
         }
@@ -286,10 +286,12 @@ extension ThreadViewModel {
             removeByUniqueId(req.uniqueId)
             if message.isImage, let imageRequest = req.uploadImageRequest {
                 let imageMessage = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
-                appendMessagesAndSort([imageMessage])
+                self.uploadMessagesViewModel.append(contentsOf: ([imageMessage]))
+                self.animateObjectWillChange()
             } else if let fileRequest = req.uploadFileRequest {
                 let fileMessage = UploadFileWithTextMessage(uploadFileRequest: fileRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
-                appendMessagesAndSort([fileMessage])
+                self.uploadMessagesViewModel.append(contentsOf: ([fileMessage]))
+                self.animateObjectWillChange()
             }
         default:
             log("Type not detected!")
@@ -301,11 +303,6 @@ extension ThreadViewModel {
             onDeleteMessage(response)
             appendMessagesAndSort([message])
         }
-    }
-
-    public func cancelUnsentMessage(_ uniqueId: String) {
-        ChatManager.activeInstance?.message.cancel(uniqueId: uniqueId)
-        onDeleteMessage(ChatResponse(uniqueId: uniqueId, subjectId: threadId))
     }
 
     public func send(completion: @escaping ()-> Void) {

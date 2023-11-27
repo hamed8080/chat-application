@@ -247,7 +247,12 @@ public final class MessageRowViewModel: ObservableObject {
 
     private func deleteUploadedMessage(state: UploadFileState) {
         if state == .completed {
+            threadVM?.uploadMessagesViewModel.cancel(message.uniqueId)
+            threadVM?.unssetMessagesViewModel.cancel(message.uniqueId)
+            threadVM?.messageViewModels.removeAll(where: {$0.message.uniqueId == message.uniqueId})
             threadVM?.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId, subjectId: threadVM?.threadId))
+            threadVM?.animateObjectWillChange()
+            print("Upload Message with uniqueId removed:\(message.uniqueId ?? "")")
         }
     }
 
