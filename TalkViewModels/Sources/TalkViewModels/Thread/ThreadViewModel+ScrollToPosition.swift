@@ -16,7 +16,7 @@ public protocol ScrollToPositionProtocol {
     var canScrollToBottomOfTheList: Bool { get set }
     func scrollTo(_ uniqueId: String, _ animation: Animation?, anchor: UnitPoint?)
     func scrollToBottom(animation: Animation?)
-    func scrollToLastMessageIfLastMessageIsVisible()
+    func scrollToLastMessageIfLastMessageIsVisible(_ message: Message)
 }
 
 extension ThreadViewModel: ScrollToPositionProtocol {
@@ -43,8 +43,8 @@ extension ThreadViewModel: ScrollToPositionProtocol {
         }
     }
 
-    public func scrollToLastMessageIfLastMessageIsVisible() {
-        if isAtBottomOfTheList {
+    public func scrollToLastMessageIfLastMessageIsVisible(_ message: Message) {
+        if isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id) {
             Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
                 self?.scrollToBottom()
             }

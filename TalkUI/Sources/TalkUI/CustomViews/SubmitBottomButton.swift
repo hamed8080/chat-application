@@ -11,7 +11,7 @@ public struct SubmitBottomButton: View {
     @Binding var isLoading: Bool
     @Binding var enableButton: Bool
     let text: String
-    let color: Color = Color.App.primary
+    let color: Color
     let maxInnerWidth: CGFloat
     let action: (()-> Void)?
 
@@ -20,6 +20,7 @@ public struct SubmitBottomButton: View {
                 enableButton: Binding<Bool> = .constant(true),
                 isLoading: Binding<Bool> = .constant(false),
                 maxInnerWidth: CGFloat = .infinity,
+                color: Color = Color.App.primary,
                 action: (()-> Void)? = nil)
     {
         self.action = action
@@ -27,6 +28,7 @@ public struct SubmitBottomButton: View {
         self._enableButton = enableButton
         self._isLoading = isLoading
         self.text = text
+        self.color = color
     }
 
     public var body: some View {
@@ -41,6 +43,7 @@ public struct SubmitBottomButton: View {
                     Text(String(localized: .init(text)))
                         .font(.iransansBody)
                         .contentShape(Rectangle())
+                        .foregroundStyle(Color.App.text)
                     if isLoading {
                         ProgressView()
                             .progressViewStyle(.circular)
@@ -66,7 +69,7 @@ public struct SubmitBottomButton: View {
 
 struct SumbitBottomButton_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
+        List {
             SubmitBottomButton(text: "TEST", enableButton: .constant(false), isLoading: .constant(false)) {
 
             }
@@ -75,6 +78,10 @@ struct SumbitBottomButton_Previews: PreviewProvider {
             }
             SubmitBottomButton(text: "TEST", enableButton: .constant(true), isLoading: .constant(false)) {
 
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            SubmitBottomButton(text: "TEST", enableButton: .constant(true), isLoading: .constant(false)) {
             }
         }
     }

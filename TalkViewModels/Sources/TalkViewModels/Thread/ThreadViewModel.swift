@@ -165,7 +165,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             thread.unreadCount = (thread.unreadCount ?? 0) + 1
             appendMessagesAndSort([message])
             animateObjectWillChange()
-            scrollToLastMessageIfLastMessageIsVisible()
+            scrollToLastMessageIfLastMessageIsVisible(message)
         }
     }
 

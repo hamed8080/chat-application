@@ -128,9 +128,9 @@ struct DownloadPictureButtonView: View {
         case .completed:
             if let fileURL = viewModel.fileURL, let scaledImage = fileURL.imageScale(width: 128)?.image {
                 Image(cgImage: scaledImage)
-                    .resizable(resizingMode: .stretch)
+                    .resizable()
                     .frame(width: itemWidth, height: itemWidth)
-                    .scaledToFill()
+                    .scaledToFit()
                     .clipped()
                     .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
             }
@@ -139,9 +139,9 @@ struct DownloadPictureButtonView: View {
                 let data = viewModel.thumbnailData
                 let image = UIImage(data: data ?? Data()) ?? UIImage()
                 Image(uiImage: image)
-                    .resizable(resizingMode: .stretch)
+                    .resizable()
                     .frame(width: itemWidth, height: itemWidth)
-                    .scaledToFill()
+                    .scaledToFit()
                     .clipped()
                     .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
                     .zIndex(0)

@@ -9,6 +9,7 @@ import SwiftUI
 import TalkViewModels
 import ChatModels
 import TalkUI
+import Chat
 
 struct ConversationPlusContextMenu: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
@@ -16,6 +17,7 @@ struct ConversationPlusContextMenu: View {
     @State var showCreateConversationSheet = false
     @State var showFastMessageSheet = false
     @State var showJoinSheet = false
+    @State var showToken: Bool = false
 
     var body: some View {
         Menu {
@@ -26,6 +28,12 @@ struct ConversationPlusContextMenu: View {
             }
 
             if EnvironmentValues.isTalkTest {
+                Button {
+                    showToken.toggle()
+                } label : {
+                    Label("Set Token", systemImage: "key.icloud.fill")
+                }
+
                 Button {
                     showFastMessageSheet.toggle()
                 } label: {
@@ -41,6 +49,9 @@ struct ConversationPlusContextMenu: View {
         } label: {
             ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat")
                 .foregroundStyle(Color.App.white, Color.App.primary)
+        }
+        .sheet(isPresented: $showToken) {
+            ManuallyConnectionManagerView()
         }
         .sheet(isPresented: $showCreateConversationSheet) {
             contactsVM.showConversaitonBuilder = false
@@ -77,10 +88,12 @@ struct ConversationPlusContextMenu: View {
             return false
         }
     }
+}
 
-    struct ConversationPlusContextMenu_Previews: PreviewProvider {
-        static var previews: some View {
-            ConversationPlusContextMenu()
-        }
+struct ConversationPlusContextMenu_Previews: PreviewProvider {
+    static var previews: some View {
+        ConversationPlusContextMenu()
+            .environmentObject(ThreadsViewModel())
+            .environmentObject(ContactsViewModel())
     }
 }
