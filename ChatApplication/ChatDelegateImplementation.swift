@@ -37,16 +37,16 @@ class ChatDelegateImplementation: ChatDelegate {
             TokenManager.shared.initSetIsLogin()
         }
 
-        Task {
-            await MainActor.run {
-                let ssoToken = SSOTokenResponseResult(accessToken: "176737de47074e09bf149dd57827e0d9.XzIwMjM4", expiresIn: 900)
-                let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
-                let user = User(id: 3_463_768)
-                TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
-                UserConfigManagerVM.instance.appendOrReplace(UserConfig(user: user, config: config, ssoToken: ssoToken))
-                UserConfigManagerVM.instance.createChatObjectAndConnect(userId: user.id, config: config)
-            }
-        }
+//        Task {
+//            await MainActor.run {
+//                let ssoToken = SSOTokenResponseResult(accessToken: "a5763c065a26488d85ea29ea425c9b12.XzIwMjMxMA", expiresIn: 900)
+//                let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: .main)
+//                let user = User(id: 3_463_768)
+//                TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
+//                UserConfigManagerVM.instance.appendOrReplace(UserConfig(user: user, config: config, ssoToken: ssoToken))
+//                UserConfigManagerVM.instance.createChatObjectAndConnect(userId: user.id, config: config)
+//            }
+//        }
     }
 
     func chatState(state: ChatState, currentUser: User?, error _: ChatError?) {

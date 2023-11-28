@@ -1,38 +1,34 @@
-//
-//  SSOTokenResponse.swift
-//  ChatApplication
-//
-//  Created by Hamed Hosseini on 9/17/21.
-//
-
-import Foundation
 public struct SSOTokenResponse: Codable {
-    let result: SSOTokenResponseResult?
-}
+    public let accessToken: String?
+    public let expiresIn: Int
+    public let refreshToken: String?
+    public let scope: String?
+    public let tokenType: String?
+    public let idToken: String?
+    public let deviceUID: String?
+    /// Only when saving for the first time, we should manullay save keyId in the UserDefault Storage.
+    public var keyId: String?
 
-public struct SSOTokenResponseResult: Codable {
-    let accessToken: String?
-    let expiresIn: Int
-    let idToken: String?
-    let refreshToken: String?
-    let scope: String?
-    let tokenType: String?
-
-    internal init(accessToken: String? = nil, expiresIn: Int, idToken: String? = nil, refreshToken: String? = nil, scope: String? = nil, tokenType: String? = nil) {
+    public init(accessToken: String? = nil, expiresIn: Int, idToken: String? = nil, refreshToken: String? = nil, scope: String? = nil, tokenType: String? = nil, deviceUID: String? = nil) {
         self.accessToken = accessToken
         self.expiresIn = expiresIn
         self.idToken = idToken
         self.refreshToken = refreshToken
         self.scope = scope
         self.tokenType = tokenType
+        self.deviceUID = deviceUID
     }
 
     private enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case expiresIn = "expires_in"
-        case idToken = "id_token"
         case refreshToken = "refresh_token"
         case tokenType = "token_type"
-        case scope
+        case idToken = "id_token"
+        case deviceUID = "device_uid"
+        case scope = "scope"
+
+        /// Only when saving for the first time, we should manullay save keyId in the UserDefault Storage.
+        case keyId = "keyId"
     }
 }

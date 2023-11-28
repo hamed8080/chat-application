@@ -4,8 +4,10 @@ platform :ios, '12.0'
 
 def shared_pods
 #  pod 'FanapPodChatSDK', '0.10.3.0'
-  pod 'FanapPodAsyncSDK', :path => '/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/async'
-  pod 'FanapPodChatSDK', :path => '/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat'
+#  pod 'FanapPodAsyncSDK', :path => '/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/async'
+#  pod 'FanapPodChatSDK', :path => '/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat'
+  pod "FanapPodChatSDK", :git => 'http://pubgi.fanapsoft.ir/chat/ios/chat.git', :branch => 'v1.2'
+#  pod 'FanapPodChatSDK', '1.2.5'
 end
 
 target 'ChatApplication' do

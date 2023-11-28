@@ -1,29 +1,33 @@
 PODS:
-  - FanapPodAsyncSDK (1.2.0):
+  - FanapPodAsyncSDK (1.2.2):
     - Starscream (~> 3.0.5)
-  - FanapPodChatSDK (1.2.3):
-    - FanapPodAsyncSDK (~> 1.2.0)
+  - FanapPodChatSDK (1.2.5):
+    - FanapPodAsyncSDK (~> 1.2.2)
   - Starscream (3.0.6)
 
 DEPENDENCIES:
-  - FanapPodAsyncSDK (from `/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/async`)
-  - FanapPodChatSDK (from `/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat`)
+  - FanapPodChatSDK (from `http://pubgi.fanapsoft.ir/chat/ios/chat.git`, branch `v1.2`)
 
 SPEC REPOS:
   trunk:
+    - FanapPodAsyncSDK
     - Starscream
 
 EXTERNAL SOURCES:
-  FanapPodAsyncSDK:
-    :path: "/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/async"
   FanapPodChatSDK:
-    :path: "/Users/hamed/Desktop/Workspace/ios/Fanap/v1.2/chat"
+    :branch: v1.2
+    :git: http://pubgi.fanapsoft.ir/chat/ios/chat.git
+
+CHECKOUT OPTIONS:
+  FanapPodChatSDK:
+    :commit: 120e93c2e21390c2ba1ff41d9ed8dc8e88cf9812
+    :git: http://pubgi.fanapsoft.ir/chat/ios/chat.git
 
 SPEC CHECKSUMS:
-  FanapPodAsyncSDK: e2beeb0f464937444bb1416076630ecae8a02c6a
-  FanapPodChatSDK: 0b3026891e03e2c2dc4951b424614ecf84764aaa
+  FanapPodAsyncSDK: 76f531f838fcfeb076ff8c9bc60abf4c3bd320e6
+  FanapPodChatSDK: 24902ab3d99e083e6cf5eed9a82e6131e8cd95e0
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
 
-PODFILE CHECKSUM: 56237b1039218717d176ac7c908ae879a6b2c108
+PODFILE CHECKSUM: 30fff46a8ae901bdd50494c2c15095810d75a418
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.14.3

@@ -1,24 +1,17 @@
-//
-//  AuthorizeResponse.swift
-//  ChatApplication
-//
-//  Created by Hamed Hosseini on 9/17/21.
-//
+public struct AuthorizeResponse: Codable {
+    public let expiresIn: Int?
+    public let identity: String?
+    public let type: String?
+    public let userId: String?
+    public let codeLength: Int?
+    public let sentBefore: Bool?
 
-import Foundation
-struct AuthorizeResponse: Codable {
-    let result: AuthorizeResponseResult?
-}
-
-struct AuthorizeResponseResult: Codable {
-    let identity: String?
-    let type: String?
-    let userId: String?
-    let expiresIn: Int
-
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case expiresIn = "expires_in"
+        case identity = "identity"
+        case type = "type"
         case userId = "user_id"
-        case type, identity
+        case codeLength = "codeLength"
+        case sentBefore = "sent_before"
     }
 }

@@ -11,7 +11,7 @@ import UIKit
 
 private var token: String? {
     guard let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey),
-          let ssoToken = try? JSONDecoder().decode(SSOTokenResponseResult.self, from: data)
+          let ssoToken = try? JSONDecoder().decode(SSOTokenResponse.self, from: data)
     else {
         return nil
     }

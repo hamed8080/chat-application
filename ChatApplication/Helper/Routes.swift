@@ -8,7 +8,7 @@
 import Foundation
 
 class Routes {
-    static var authBaseUrl = "https://podspace.pod.ir/api/oauth2/"
+    static var authBaseUrl = "https://talkback.pod.ir/api/oauth2/"
     static var handshake = authBaseUrl + "otp/handshake"
     static var authorize = authBaseUrl + "otp/authorize"
     static var verify = authBaseUrl + "otp/verify"

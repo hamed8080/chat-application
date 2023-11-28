@@ -44,7 +44,7 @@ class LoginViewModel: ObservableObject {
     func login() async {
         showLoading(true)
         if selectedServerType == .integration {
-            let ssoToken = SSOTokenResponseResult(accessToken: text,
+            let ssoToken = SSOTokenResponse(accessToken: text,
                                                   expiresIn: Int(Calendar.current.date(byAdding: .year, value: 1, to: .now)?.millisecondsSince1970 ?? 0),
                                                   idToken: nil,
                                                   refreshToken: nil,
@@ -67,13 +67,14 @@ class LoginViewModel: ObservableObject {
             let response = try JSONDecoder().decode(HandshakeResponse.self, from: resp.0)
             await requestOTP(identity: text, handskahe: response)
         } catch {
+            print(error)
             showError(.failed)
         }
         showLoading(false)
     }
 
     func requestOTP(identity: String, handskahe: HandshakeResponse) async {
-        guard let keyId = handskahe.result?.keyId else { return }
+        guard let keyId = handskahe.keyId else { return }
         showLoading(true)
         let req = AuthorizeRequest(identity: identity, keyId: keyId)
         var urlReq = URLRequest(url: URL(string: Routes.authorize)!)
@@ -88,12 +89,13 @@ class LoginViewModel: ObservableObject {
                 self.keyId = keyId
             }
         } catch {
+            print(error)
             showError(.failed)
         }
         showLoading(false)
     }
 
-    fileprivate func saveTokenAndCreateChatObject(_ ssoToken: SSOTokenResponseResult) async {
+    fileprivate func saveTokenAndCreateChatObject(_ ssoToken: SSOTokenResponse) async {
         await MainActor.run {
             TokenManager.shared.saveSSOToken(ssoToken: ssoToken)
             let config = Config.config(token: ssoToken.accessToken ?? "", selectedServerType: selectedServerType)
@@ -112,9 +114,10 @@ class LoginViewModel: ObservableObject {
         urlReq.httpMethod = "POST"
         do {
             let resp = try await session.data(for: urlReq)
-            guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }
+            let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
             await saveTokenAndCreateChatObject(ssoToken)
         } catch {
+            print(error)
             showError(.verificationCodeIncorrect)
         }
         showLoading(false)
@@ -166,7 +169,7 @@ class TokenManager: ObservableObject {
         refreshTokenTask = Task {
             do {
                 let resp = try await session.data(for: urlReq)
-                guard let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0).result else { return }
+                let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
                 await MainActor.run {
                     saveSSOToken(ssoToken: ssoToken)
                     ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
@@ -181,8 +184,8 @@ class TokenManager: ObservableObject {
     }
 
     @discardableResult
-    func getSSOTokenFromUserDefaults() -> SSOTokenResponseResult? {
-        if let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey), let ssoToken = try? JSONDecoder().decode(SSOTokenResponseResult.self, from: data) {
+    func getSSOTokenFromUserDefaults() -> SSOTokenResponse? {
+        if let data = UserDefaults.standard.data(forKey: TokenManager.ssoTokenKey), let ssoToken = try? JSONDecoder().decode(SSOTokenResponse.self, from: data) {
             return ssoToken
         } else {
             return nil
@@ -194,7 +197,7 @@ class TokenManager: ObservableObject {
         setIsLoggedIn(isLoggedIn: getSSOTokenFromUserDefaults() != nil)
     }
 
-    func saveSSOToken(ssoToken: SSOTokenResponseResult) {
+    func saveSSOToken(ssoToken: SSOTokenResponse) {
         let data = (try? JSONEncoder().encode(ssoToken)) ?? Data()
         let str = String(data: data, encoding: .utf8)
         print("save token:\n\(str ?? "")")
