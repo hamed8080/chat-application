@@ -63,11 +63,13 @@ struct FileRowView: View {
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
+    @State var shareDownloadedFile = false
+    private var downloadViewModel: DownloadFileViewModel? { threadVM?.messageViewModel(for: message).downloadFileVM }
 
     var body: some View {
         HStack {
             let view = DownloadFileButtonView()
-            if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
+            if let downloadVM = downloadViewModel {
                 view.environmentObject(downloadVM)
             } else {
                 view
@@ -90,9 +92,25 @@ struct FileRowView: View {
         }
         .padding(.all)
         .contentShape(Rectangle())
+        .contextMenu {
+            Button {
+                threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                viewModel.dismiss = true
+            } label: {
+                Label("General.showMessage", systemImage: "bubble.middle.top")
+            }
+        }
+        .sheet(isPresented: $shareDownloadedFile) {
+            if let fileURL = downloadViewModel?.fileURL {
+                ActivityViewControllerWrapper(activityItems: [fileURL], title: message.fileMetaData?.file?.originalName)
+            }
+        }
         .onTapGesture {
-            threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-            viewModel.dismiss = true
+            if downloadViewModel?.state == .completed {
+                shareDownloadedFile.toggle()
+            } else {
+                downloadViewModel?.startDownload()
+            }
         }
     }
 }

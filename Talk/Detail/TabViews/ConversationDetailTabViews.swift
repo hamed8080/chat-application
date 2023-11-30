@@ -28,7 +28,7 @@ struct ConversationDetailTabViews: View {
             .init(title: "Thread.Tabs.voice", view: AnyView(VoiceView(conversation: thread, messageType: .podSpaceVoice))),
             .init(title: "Thread.Tabs.link", view: AnyView(LinkView(conversation: thread, messageType: .link)))
         ]
-        if thread.group == false || thread.participantCount ?? 0 <= 2 {
+        if thread.group == false {
             tabs.removeAll(where: {$0.title == "Thread.Tabs.members"})
         }
         if thread.group == true || thread.type == .selfThread {

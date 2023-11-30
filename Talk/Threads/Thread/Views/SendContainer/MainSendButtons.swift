@@ -13,38 +13,28 @@ import TalkUI
 struct MainSendButtons: View {
     @EnvironmentObject var viewModel: ThreadViewModel
     @Binding var showActionButtons: Bool
-    @Binding var isRecording: Bool
     @Binding var text: String
     @State var isVideoRecordingSelected = false
 
     var body: some View {
         HStack(spacing: 0) {
-            if isRecording == false {
-                Button {
-                    withAnimation(animation(appear: !showActionButtons)) {
-                        showActionButtons.toggle()
-                    }
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .resizable()
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.App.white, showActionButtons ? Color.App.hint.opacity(0.5) : Color.App.primary)
-                        .frame(width: 26, height: 26)
+            Button {
+                withAnimation(animation(appear: !showActionButtons)) {
+                    showActionButtons.toggle()
                 }
-                .frame(width: 48, height: 48)
-                .clipShape(RoundedRectangle(cornerRadius:(24)))
-                .buttonStyle(.borderless)
-                .fontWeight(.light)
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .resizable()
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.App.white, showActionButtons ? Color.App.hint.opacity(0.5) : Color.App.primary)
+                    .frame(width: 26, height: 26)
             }
+            .frame(width: 48, height: 48)
+            .clipShape(RoundedRectangle(cornerRadius:(24)))
+            .buttonStyle(.borderless)
+            .fontWeight(.light)
 
-            if let recordingVM = viewModel.audioRecoderVM {
-                AudioRecordingView(isRecording: $isRecording)
-                    .environmentObject(recordingVM)
-                    .padding([.trailing], 12)
-            }
-
-            if !isRecording {
-                MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
+            MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
                                    text: $text,
                                    textColor: UIColor(named: "message_text"),
                                    backgroundColor: Color.App.bgSecond,
@@ -54,12 +44,10 @@ struct MainSendButtons: View {
                 .onChange(of: viewModel.textMessage ?? "") { newValue in
                     viewModel.sendStartTyping(newValue)
                 }
-            }
 
-            let showAudio = isRecording == false && text.isEmpty && !isVideoRecordingSelected
+            let showAudio = text.isEmpty && !isVideoRecordingSelected
             Button {
                 viewModel.setupRecording()
-                isRecording = true
             } label: {
                 Image(systemName: "mic.fill")
                     .resizable()
@@ -75,11 +63,10 @@ struct MainSendButtons: View {
             .highPriorityGesture(switchRecordingGesture)
             .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
 
-            let showCamera = isRecording == false && text.isEmpty && isVideoRecordingSelected
+            let showCamera = text.isEmpty && isVideoRecordingSelected
             if showCamera {
                 Button {
                     viewModel.setupRecording()
-                    isRecording = true
                 } label: {
                     Image(systemName: "camera")
                         .resizable()
@@ -100,11 +87,7 @@ struct MainSendButtons: View {
 
             let showSendButton = !text.isEmpty || viewModel.attachmentsViewModel.attachments.count > 0
             Button {
-                if isRecording {
-                    viewModel.audioRecoderVM?.stopAndAddToAttachments()
-                    viewModel.sendAttachmentsMessage()
-                    isRecording = false
-                } else if !text.isEmpty || viewModel.attachmentsViewModel.attachments.count > 0 {
+                if !text.isEmpty || viewModel.attachmentsViewModel.attachments.count > 0 {
                     viewModel.sendTextMessage(text)
                 }
                 text = ""
@@ -143,6 +126,6 @@ struct MainSendButtons: View {
 
 struct MainSendButtons_Previews: PreviewProvider {
     static var previews: some View {
-        MainSendButtons(showActionButtons: .constant(true), isRecording: .constant(false), text: .constant("test"))
+        MainSendButtons(showActionButtons: .constant(true), text: .constant("test"))
     }
 }

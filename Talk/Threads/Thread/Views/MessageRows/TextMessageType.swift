@@ -61,7 +61,6 @@ struct SelectMessageRadio: View {
                         viewModel.isSelected.toggle()
                         viewModel.animateObjectWillChange()
                     }
-                    viewModel.threadVM?.animateObjectWillChange()
                 }
             }
             .padding(EdgeInsets(top: 0, leading: viewModel.isMe ? 8 : 0, bottom: 8, trailing: viewModel.isMe ? 8 : 0))

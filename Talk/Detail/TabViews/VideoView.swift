@@ -65,6 +65,8 @@ struct VideoRowView: View {
     @Environment(\.dismiss) var dismiss
     @State var width: CGFloat? = 48
     @State var height: CGFloat? = 48
+    @State var shareDownloadedFile = false
+    private var downloadViewModel: DownloadFileViewModel? { threadVM?.messageViewModel(for: message).downloadFileVM }
 
     var body: some View {
         HStack {
@@ -101,9 +103,20 @@ struct VideoRowView: View {
         }
         .padding([.leading, .trailing])
         .contentShape(Rectangle())
+        .contextMenu {
+            Button {
+                threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                viewModel.dismiss = true
+            } label: {
+                Label("General.showMessage", systemImage: "bubble.middle.top")
+            }
+        }
         .onTapGesture {
-            threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-            viewModel.dismiss = true
+            if downloadViewModel?.state != .completed {
+                downloadViewModel?.startDownload()
+            } else {
+                AppState.shared.objectsContainer.audioPlayerVM.toggle()
+            }
         }
     }
 }

@@ -19,7 +19,6 @@ public enum AttachmentType {
     case drop
     case map
     case contact
-    case voice
 }
 
 public struct AttachmentFile: Identifiable {
@@ -38,8 +37,6 @@ public struct AttachmentFile: Identifiable {
             return (request as? DropItem)?.ext?.nonCircleIconWithFileExtension ?? "doc.fill"
         } else if type == .contact {
             return "person.fill"
-        } else if type == .voice {
-            return "waveform"
         } else {
             return nil
         }
@@ -56,8 +53,6 @@ public struct AttachmentFile: Identifiable {
             return (request as? DropItem)?.name
         } else if type == .contact {
             return "contact"
-        } else if type == .voice {
-            return "recording"
         } else {
             return nil
         }
@@ -80,8 +75,6 @@ public struct AttachmentFile: Identifiable {
             return "\((item?.data?.count ?? 0)?.toSizeString(locale: Language.preferredLocale) ?? "") - \(item?.ext?.uppercased() ?? "")"
         } else if type == .contact {
             return "contact"
-        } else if type == .voice {
-            return "recording"
         } else {
             return nil
         }

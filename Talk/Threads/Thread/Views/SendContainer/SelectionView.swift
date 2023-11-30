@@ -12,10 +12,11 @@ import TalkUI
 import TalkModels
 
 struct SelectionView: View {
+    @EnvironmentObject var selectedMessagesViewModel: ThreadSelectedMessagesViewModel
     let threadVM: ThreadViewModel
     var viewModel: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
-    @State private var selectedCount: Int = 0
+    private var selectedCount: Int { selectedMessagesViewModel.selectedMessages.count }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -60,11 +61,6 @@ struct SelectionView: View {
                 viewModel.clearSelection()
                 viewModel.animateObjectWillChange()
             }            
-        }
-        .onReceive(viewModel.objectWillChange) { _ in
-            withAnimation {
-                selectedCount = viewModel.selectedMessages.count
-            }
         }
     }
 }

@@ -61,6 +61,7 @@
 "General.KB" = "کیلوبایت";
 "General.MB" = "مگابایت";
 "General.GB" = "گیگا بایت";
+"General.showMessage" = "نمایش پیام";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";
@@ -100,6 +101,7 @@
 "Contacts.sortLabel" = "مرتب شده بر اساس آخرین زمان بازدید";
 "Contacts.lastVisited" = "آخرین بازدید %@";
 "Contacts.selectContacts" = "انتخاب مخا‍طبان";
+"Contctas.notFound" = "مخاطب یافت نشد.";
 "ConversationBuilder.enterGroupName" = "نام گروه را وارد کنید";
 "ConversationBuilder.enterChannelName" = "نام کانال را وارد کنید.";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "لطفا نام گفتگو را وارد نمایید. (حداقل ۲ حرف)";
@@ -210,6 +212,8 @@
 "Thread.public" = "%@ عمومی";
 "Thread.delete" = "حذف %@";
 "Thread.inviteLink" = "لینک دعوت";
+"Thread.isVoiceRecording" = "در حال ضبط صدا";
+"Thread.isVideoRecording" = "در حال ضبط ویدیو";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "در حال اتصال";

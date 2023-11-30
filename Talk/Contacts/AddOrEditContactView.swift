@@ -60,14 +60,16 @@ struct AddOrEditContactView: View {
                 .focused($focusState, equals: .contactValue)
                 .keyboardType(.default)
                 .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", isFocused: focusState == .contactValue) {
+                .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", error: viewModel.userNotFound ? "Contctas.notFound" : nil, isFocused: focusState == .contactValue) {
                     focusState = .contactValue
                 }
+                .disabled(editContact != nil)
+                .opacity(editContact != nil ? 0.3 : 1)
             if isLargeSize {
                 Spacer()
             }
             let title = editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title"
-            SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: .constant(false)) {
+            SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: $viewModel.isLoading) {
                 submit()
             }
         }
@@ -76,7 +78,22 @@ struct AddOrEditContactView: View {
         .presentationDragIndicator(.visible)
         .animation(.easeInOut, value: enableButton)
         .animation(.easeInOut, value: focusState)
+        .animation(.easeInOut, value: viewModel.userNotFound)
         .font(.iransansBody)
+        .onReceive(viewModel.$successAdded) { newValue in
+            if newValue == true {
+                withAnimation {
+                    dismiss()
+                }
+            }
+        }
+        .onChange(of: contactValue) { [contactValue] newValue in
+            if newValue.count != contactValue.count, viewModel.userNotFound {
+                withAnimation {
+                    viewModel.userNotFound = false
+                }
+            }
+        }
         .onTapGesture {
             hideKeyboard()
         }
@@ -85,9 +102,11 @@ struct AddOrEditContactView: View {
             lastName = editContact?.lastName ?? ""
             contactValue = editContact?.computedUserIdentifire ?? ""
             focusState = .firstName
+            viewModel.successAdded = false
         }
         .onDisappear {
             /// Clearing the view for when the user cancels the sheet by dropping it down.
+            viewModel.successAdded = false
             viewModel.showAddOrEditContactSheet = false
             viewModel.editContact = nil
         }
@@ -103,18 +122,12 @@ struct AddOrEditContactView: View {
     }
 
     private var enableButton: Bool {
-        !firstName.isEmpty && !contactValue.isEmpty
+        !firstName.isEmpty && !contactValue.isEmpty && !viewModel.isLoading
     }
 
     func submit() {
-        if let editContact = editContact {
-            viewModel.updateContact(contact: editContact, contactValue: contactValue, firstName: firstName, lastName: lastName)
-        } else {
-            viewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
-        }
-        viewModel.editContact = nil
-        viewModel.showAddOrEditContactSheet = false
-        dismiss()
+        /// Add or edit use same method.
+        viewModel.addContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
     }
 
     func optioanlAPpend(text: String) -> String {

@@ -71,13 +71,13 @@ struct ThreadPinMessage: View {
         Spacer()
         imageView
         textView
-        pinButton
+        pinIcon
         separator
     }
 
     @ViewBuilder private var RTLDesign: some View {
         separator
-        pinButton
+        pinIcon
         imageView
         textView
         Spacer()
@@ -90,14 +90,12 @@ struct ThreadPinMessage: View {
             .frame(width: 3, height: 24)
     }
 
-    private var pinButton: some View {
-        Button {
-            threadVM.unpinMessage(message?.messageId ?? -1)
-        } label: {
-            Label("Thread.unpin", systemImage: "pin.fill")
-                .labelStyle(.iconOnly)
-                .foregroundColor(Color.App.primary)
-        }
+    private var pinIcon: some View {
+        Image(systemName: "pin.fill")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 10, height: 12)
+            .foregroundColor(Color.App.primary)
     }
 
     private var textView: some View {

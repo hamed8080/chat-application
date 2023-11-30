@@ -32,7 +32,8 @@ struct MessageRowAudioDownloaderContent: View {
     var body: some View {
         if downloadVM.state == .completed, let fileURL = downloadVM.fileURL {
             HStack {
-                InlineAudioPlayerView(fileURL: fileURL,
+                InlineAudioPlayerView(message: message,
+                                      fileURL: fileURL,
                                       ext: message.fileMetaData?.file?.mimeType?.ext,
                                       title: message.fileMetaData?.name,
                                       subtitle: message.fileMetaData?.file?.originalName ?? "",
@@ -68,9 +69,10 @@ fileprivate struct AudioMessageProgress: View {
     let config: DownloadFileViewConfig
     @EnvironmentObject var downloadVM: DownloadFileViewModel
     @EnvironmentObject var viewModel: AVAudioPlayerViewModel
+    var isSameFile: Bool { viewModel.fileURL?.absoluteString == downloadVM.fileURL?.absoluteString }
 
     var body: some View {
-        if config.showFileName, message?.isAudio == true, downloadVM.state == .completed {
+        if config.showFileName, message?.isAudio == true, downloadVM.state == .completed, isSameFile {
             VStack(alignment: .leading, spacing: 4) {
                 ProgressView(value: min(viewModel.currentTime / viewModel.duration, 1.0), total: 1.0)
                     .progressViewStyle(.linear)

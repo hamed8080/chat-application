@@ -253,6 +253,8 @@
 		0594FE672B0387370031AADF /* MapAddressTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE652B0387370031AADF /* MapAddressTextView.swift */; };
 		0594FE692B0387920031AADF /* UnsentMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE682B0387920031AADF /* UnsentMessageView.swift */; };
 		0594FE6A2B0387920031AADF /* UnsentMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE682B0387920031AADF /* UnsentMessageView.swift */; };
+		05A4AAA42B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */; };
+		05A4AAA52B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */; };
 		05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
 		05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
@@ -297,6 +299,8 @@
 		05EC8A332ACBED930016361F /* ReactionMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */; };
 		05EC8A342ACBED930016361F /* OverlayEmojiViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */; };
 		05EC8A352ACBED930016361F /* OverlayEmojiViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */; };
+		05F53EEF2B1866A9003DB412 /* CloseRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */; };
+		05F53EF02B1866A9003DB412 /* CloseRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */; };
 		05F89CC02ADD105500A28EBB /* SwipyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F26C62ADD0F8F00BF9841 /* SwipyView.swift */; };
 		05F9151D2AE637FB008C070B /* ThreadLeadingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */; };
 		05F9151E2AE638AE008C070B /* ThreadLeadingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */; };
@@ -445,6 +449,7 @@
 		0594FE622B0386F00031AADF /* MessageTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextView.swift; sourceTree = "<group>"; };
 		0594FE652B0387370031AADF /* MapAddressTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapAddressTextView.swift; sourceTree = "<group>"; };
 		0594FE682B0387920031AADF /* UnsentMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsentMessageView.swift; sourceTree = "<group>"; };
+		05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMentionsButton.swift; sourceTree = "<group>"; };
 		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		05C099C22AD1135D007AAC6C /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
@@ -468,6 +473,7 @@
 		05EC8A2D2ACBED930016361F /* ReactionCountView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionCountView.swift; sourceTree = "<group>"; };
 		05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionMenuView.swift; sourceTree = "<group>"; };
 		05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayEmojiViews.swift; sourceTree = "<group>"; };
+		05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseRecordingButton.swift; sourceTree = "<group>"; };
 		05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadLeadingToolbar.swift; sourceTree = "<group>"; };
 		05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverlayFactory.swift; sourceTree = "<group>"; };
 		05FE15F02ADA5591009AC44A /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
@@ -677,7 +683,9 @@
 				0570CB942AAEE98C001832E9 /* ThreadMessagesList.swift */,
 				0570CB952AAEE98C001832E9 /* ThreadEventView.swift */,
 				0570CB972AAEE98C001832E9 /* MoveToBottomButton.swift */,
+				05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */,
 				058022032AE05DFA002816C7 /* GalleryImagePicker.swift */,
+				05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1057,6 +1065,7 @@
 				0594FE692B0387920031AADF /* UnsentMessageView.swift in Sources */,
 				057A18DF2B04C78A0007868D /* MessageParticipantsSeen.swift in Sources */,
 				05FF13332AF8CD8200F120DF /* SelectedContact.swift in Sources */,
+				05A4AAA42B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */,
 				0570CC512AAEE98F001832E9 /* VideoView.swift in Sources */,
 				0516ACF82AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */,
 				0570CC6D2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
@@ -1120,6 +1129,7 @@
 				0594FE632B0386F00031AADF /* MessageTextView.swift in Sources */,
 				0570CC732AAEE98F001832E9 /* AssistantHistoryView.swift in Sources */,
 				0570CC352AAEE98F001832E9 /* MoveToBottomButton.swift in Sources */,
+				05F53EEF2B1866A9003DB412 /* CloseRecordingButton.swift in Sources */,
 				0570CC6B2AAEE98F001832E9 /* ContactContentList.swift in Sources */,
 				0570CC552AAEE98F001832E9 /* VoiceView.swift in Sources */,
 				05C27FA82AF4BD330008FE2E /* MainSendButtons.swift in Sources */,
@@ -1194,6 +1204,7 @@
 				0594FE6A2B0387920031AADF /* UnsentMessageView.swift in Sources */,
 				057A18E02B04C78A0007868D /* MessageParticipantsSeen.swift in Sources */,
 				05FF13342AF8CD8200F120DF /* SelectedContact.swift in Sources */,
+				05A4AAA52B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */,
 				0570CC522AAEE98F001832E9 /* VideoView.swift in Sources */,
 				0516ACF92AC930C40096E5A2 /* ToolbarButtonItem.swift in Sources */,
 				0570CC6E2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
@@ -1257,6 +1268,7 @@
 				0594FE642B0386F00031AADF /* MessageTextView.swift in Sources */,
 				0570CC742AAEE98F001832E9 /* AssistantHistoryView.swift in Sources */,
 				0570CC362AAEE98F001832E9 /* MoveToBottomButton.swift in Sources */,
+				05F53EF02B1866A9003DB412 /* CloseRecordingButton.swift in Sources */,
 				05F9151E2AE638AE008C070B /* ThreadLeadingToolbar.swift in Sources */,
 				0570CC6C2AAEE98F001832E9 /* ContactContentList.swift in Sources */,
 				05C27FA92AF4BD330008FE2E /* MainSendButtons.swift in Sources */,

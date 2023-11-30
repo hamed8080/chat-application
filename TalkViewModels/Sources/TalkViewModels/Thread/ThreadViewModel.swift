@@ -58,12 +58,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var uploadMessagesViewModel: ThreadUploadMessagesViewModel
     public var searchedMessagesViewModel: ThreadSearchMessagesViewModel
     public var selectedMessagesViewModel: ThreadSelectedMessagesViewModel
+    public var unreadMentionsViewModel: ThreadUnreadMentionsViewModel
     public var readOnly = false
     public var textMessage: String?
     public var canScrollToBottomOfTheList: Bool = false
     private var cancelable: Set<AnyCancellable> = []
     private var typingTimerStarted = false
-    public var audioRecoderVM: AudioRecordingViewModel?
+    public var audioRecoderVM: AudioRecordingViewModel = .init()
     public var hasNextTop = true
     public var hasNextBottom = true
     public var count: Int { 15 }
@@ -95,6 +96,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.unssetMessagesViewModel = .init(thread: thread)
         self.uploadMessagesViewModel = .init(thread: thread)
+        self.unreadMentionsViewModel = .init(thread: thread)
         self.searchedMessagesViewModel = .init(threadId: thread.id ?? -1)
         self.selectedMessagesViewModel = .init()
         self.readOnly = readOnly
@@ -158,6 +160,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         if status == .connected, hasSentHistoryRequest == true, sections.isEmpty {
             startFetchingHistory()
         }
+
+        if status == .connected {
+            unreadMentionsViewModel.fetchAllUnreadMentions()
+        }
     }
 
     public func onNewMessage(_ response: ChatResponse<Message>) {
@@ -185,6 +191,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func onMessageAppear(_ message: Message) {
+        if message.id == thread.lastMessageVO?.id {
+            isAtBottomOfTheList = true
+            animateObjectWillChange()
+        }
         /// We get next item in the list because when we are scrolling up the message is beneth NavigationView so we should get the next item to ensure we are in right position
         guard
             let sectionIndex = sectionIndexByMessageId(message),
@@ -194,22 +204,16 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         if scrollingUP, section.messages.indices.contains(messageIndex + 1) == true {
             let message = section.messages[messageIndex + 1]
             log("Scrolling up lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
-            isAtBottomOfTheList = false
-            animateObjectWillChange()
         } else if !scrollingUP, section.messages.indices.contains(messageIndex - 1), section.messages.last?.id != message.id {
             let message = section.messages[messageIndex - 1]
             log("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
             reduceUnreadCountLocaly(message.id)
             seenPublisher.send(message)
-            isAtBottomOfTheList = sectionIndex == sections.indices.last && messageIndex > section.messages.indices.last! - 3
-            animateObjectWillChange()
         } else {
             // Last Item
             log("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
             reduceUnreadCountLocaly(message.id)
             seenPublisher.send(message)
-            isAtBottomOfTheList = message.id == thread.lastMessageVO?.id
-            animateObjectWillChange()
         }
 
         if !isProgramaticallyScroll, scrollingUP, let lastIndex = sections.first?.messages.firstIndex(where: { message.uniqueId == $0.uniqueId }), lastIndex < 3 {
@@ -218,6 +222,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
         if !isProgramaticallyScroll, !scrollingUP, message.id == sections.last?.messages.last?.id {
             moreBottom(sections.last?.messages.last?.time?.advanced(by: 1))
+        }
+    }
+
+    public func onMessegeDisappear(_ message: Message) {
+        if message.id == thread.lastMessageVO?.id {
+            isAtBottomOfTheList = false
+            animateObjectWillChange()
         }
     }
 
@@ -472,11 +483,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func setupRecording() {
-        if audioRecoderVM == nil {
-            audioRecoderVM = .init()
-            audioRecoderVM?.threadViewModel = self
-        }
-        audioRecoderVM?.toggle()
+        audioRecoderVM.threadViewModel = self
+        audioRecoderVM.toggle()
         animateObjectWillChange()
     }
 

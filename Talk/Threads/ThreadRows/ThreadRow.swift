@@ -55,13 +55,6 @@ struct ThreadRow: View {
                             .font(.iransansCaption2)
                             .foregroundColor(isSelected ? Color.App.white : Color.App.hint)
                     }
-                    if thread.mentioned == true {
-                        Image(systemName: "at.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(isSelected ? Color.App.white : Color.App.primary)
-                    }
 
                     if thread.pin == true {
                         Image(systemName: "pin.fill")
@@ -83,6 +76,17 @@ struct ThreadRow: View {
                             .foregroundStyle(Color.App.textOverlay)
                             .background(isSelected ? Color.App.white : Color.App.primary)
                             .clipShape(RoundedRectangle(cornerRadius:(thread.isCircleUnreadCount ? 16 : 10)))
+                    }
+
+                    if thread.mentioned == true {
+                        Text("@")
+                            .font(.iransansCaption)
+                            .padding(6)
+                            .frame(height: 24)
+                            .frame(minWidth: 24)
+                            .foregroundStyle(Color.App.textOverlay)
+                            .background(Color.App.primary)
+                            .clipShape(RoundedRectangle(cornerRadius:(12)))
                     }
                 }
                 ThreadEventView()

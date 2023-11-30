@@ -56,6 +56,8 @@ public final class ContactsViewModel: ObservableObject {
     @Published public var isPublic: Bool = false
     @Published public var isPublicNameAvailable: Bool = false
     @Published public var isCehckingName: Bool = false
+    @Published public var successAdded: Bool = false
+    @Published public var userNotFound: Bool = false
 
     public init() {
         getContacts()
@@ -246,7 +248,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onAddContacts(_ response: ChatResponse<[Contact]>) {
-        if let contacts = response.result {
+        if response.error == nil, let contacts = response.result {
             contacts.forEach { newContact in
                 if let index = self.contacts.firstIndex(where: {$0.id == newContact.id }) {
                     self.contacts[index].update(newContact)
@@ -254,7 +256,14 @@ public final class ContactsViewModel: ObservableObject {
                     self.contacts.insert(newContact, at: 0)
                 }
             }
+            editContact = nil
+            showAddOrEditContactSheet = false
+            successAdded = true
+            userNotFound = false
+        } else if let error = response.error, error.code == 78 {
+            userNotFound = true
         }
+        isLoading = false
         animateObjectWillChange()
     }
 
@@ -283,6 +292,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func addContact(contactValue: String, firstName: String?, lastName: String?) {
+        isLoading = true
         let isPhone = validatePhone(value: contactValue)
         let req: AddContactRequest = isPhone ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
@@ -348,14 +358,6 @@ public final class ContactsViewModel: ObservableObject {
         }
     }
 
-    public func updateContact(contact _: Contact, contactValue: String, firstName: String?, lastName: String?) {
-        let isPhone = validatePhone(value: contactValue)
-        let req: AddContactRequest = isPhone ?
-            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
-            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
-        ChatManager.activeInstance?.contact.add(req)
-    }
-
     public func moveToNextPage() {
         showCreateConversationDetail = true
     }
@@ -404,7 +406,7 @@ public final class ContactsViewModel: ObservableObject {
             )
         }
         let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: conversationTitle)
-        RequestsManager.shared.append(prepend: "EditConversation", value: req)
+        RequestsManager.shared.append(prepend: "EditConversation", value: req, autoCancel: false)
         ChatManager.activeInstance?.conversation.updateInfo(req)
     }
 

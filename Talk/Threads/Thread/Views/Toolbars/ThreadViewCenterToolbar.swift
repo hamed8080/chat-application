@@ -23,9 +23,14 @@ struct ThreadViewCenterToolbar: View {
 
     var body: some View {
         VStack(alignment: .center) {
-            Text(title)
-                .fixedSize()
-                .font(.iransansBoldSubheadline)
+            Button {
+                appState.objectsContainer.navVM.append(threadDetail: viewModel.thread)
+            } label: {
+                Text(title)
+                    .font(.iransansBoldBody)
+            }
+            .buttonStyle(.plain)
+
             if appState.connectionStatus != .connected {
                 ConnectionStatusToolbar()
             } else if let signalMessageText = viewModel.signalMessageText {

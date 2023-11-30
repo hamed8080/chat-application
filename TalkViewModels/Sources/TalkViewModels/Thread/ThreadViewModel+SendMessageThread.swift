@@ -39,9 +39,6 @@ extension ThreadViewModel {
         } else if type == .file {
             let urls = attchments.compactMap({$0.request as? URL})
             sendFiles(textMessage, urls)
-        } else if type == .voice {
-            let urls = attchments.compactMap({$0.request as? URL})
-            sendFiles(textMessage, urls)
         } else if type == .contact {
             // TODO: It should be implemented whenever the server side is ready.
         } else if type == .map {
@@ -99,6 +96,23 @@ extension ThreadViewModel {
                                             userGroupHash: self.thread.userGroupHash)
             req.messageType = .podSpaceFile
             ChatManager.activeInstance?.message.reply(req, fileReq)
+        }
+    }
+
+    public func sendAudiorecording() {
+        send { [weak self] in
+            guard let self = self, let audioFileURL = audioRecoderVM.recordingOutputPath else { return }
+            guard let data = try? Data(contentsOf: audioFileURL) else { return }
+            self.canScrollToBottomOfTheList = true
+            let uploadRequest = UploadFileRequest(data: data,
+                                                  fileExtension: ".\(audioFileURL.fileExtension)",
+                                                  fileName: audioFileURL.fileName,
+                                                  mimeType: audioFileURL.mimeType,
+                                                  userGroupHash: self.thread.userGroupHash)
+            let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: "", messageType: .podSpaceVoice)
+            let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
+            uploadMessagesViewModel.append(contentsOf: [request])
+            audioRecoderVM.cancel()
         }
     }
 
@@ -166,7 +180,6 @@ extension ThreadViewModel {
                 self.uploadMessagesViewModel.append(contentsOf: [request])
             }
             attachmentsViewModel.clear()
-            audioRecoderVM?.deleteFile()
         }
     }
 

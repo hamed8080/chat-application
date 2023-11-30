@@ -46,7 +46,7 @@ public final class UploadFileViewModel: ObservableObject {
         state = .uploading
         guard let threadId = threadId else { return }
         let isImage: Bool = message.isImage
-        let textMessageType: ChatModels.MessageType = isImage ? .podSpacePicture : .podSpaceFile
+        let textMessageType: ChatModels.MessageType = isImage ? .podSpacePicture : message.messageType ?? .podSpaceFile
         let message = SendTextMessageRequest(threadId: threadId, textMessage: message.message ?? "", messageType: textMessageType)
         if let fileRequest = uploadFileWithTextMessage.uploadFileRequest {
             uploadFile(message, fileRequest)

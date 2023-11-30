@@ -99,6 +99,8 @@ struct MessagesLazyStack: View {
             UnsentMessagesLoop(threadViewModel: viewModel)
                 .environmentObject(viewModel.unssetMessagesViewModel)
 
+            KeyboardHeightView()
+
             ListLoadingView(isLoading: $viewModel.bottomLoading)
                 .id(-2)
                 .padding([.top, .bottom])
@@ -137,6 +139,9 @@ struct MessageList: View {
                 .onAppear {
                     viewModel.onMessageAppear(message)
                 }
+                .onDisappear {
+                    viewModel.onMessegeDisappear(message)
+                }
         }
     }
 }
@@ -166,6 +171,35 @@ struct UnsentMessagesLoop: View {
                 .id(unsentMessage.uniqueId)
         }
         .animation(.easeInOut, value: viewModel.unsentMessages.count)
+    }
+}
+
+struct KeyboardHeightView: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+    @State var keyboardHeight: CGFloat = 0
+    /// We use isInAnimating to prevent multiple calling onKeyboardSize.
+    @State var isInAnimating = false
+
+    var body: some View {
+        Rectangle()
+            .frame(width: 0, height: keyboardHeight)
+            .onKeyboardSize { size in
+                if !isInAnimating {
+                    isInAnimating = true
+                    keyboardHeight = size.height
+                    if size.height > 0, viewModel.isAtBottomOfTheList {
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                            withAnimation(.easeInOut) {
+                                isInAnimating = false
+                                viewModel.scrollProxy?.scrollTo(viewModel.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
+                            }
+                        }
+                    } else if viewModel.isAtBottomOfTheList {
+                        viewModel.scrollToBottom()
+                        isInAnimating = false
+                    }
+                }
+            }
     }
 }
 

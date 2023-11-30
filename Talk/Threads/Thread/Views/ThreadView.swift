@@ -33,11 +33,12 @@ struct ThreadView: View, DropDelegate {
             .onDrop(of: [.image], delegate: self)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 SendContainer(viewModel: viewModel)
+                    .environmentObject(viewModel.audioRecoderVM)
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(spacing: 0) {
                     ThreadPinMessage(threadVM: viewModel)
-                    AudioPlayerView()
+                    AudioPlayerView(threadVM: viewModel)
                 }
             }
             .overlay {

@@ -58,16 +58,19 @@ public struct DeleteMessageDialog: View {
                         .frame(minWidth: 48, minHeight: 48)
                 }
 
-                Button {
-                    threadVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
-                    threadVM.isInEditMode = false
-                    appOverlayVM.dialogView = nil
-                    viewModel.animateObjectWillChange()
-                } label: {
-                    Text("Messages.deleteForAll")
-                        .foregroundStyle(Color.App.red)
-                        .font(.iransansBoldBody)
-                        .frame(minWidth: 48, minHeight: 48)
+                let showDeleteForAll = viewModel.threadVM?.thread.admin == true || viewModel.threadVM?.thread.group == false
+                if showDeleteForAll {
+                    Button {
+                        threadVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
+                        threadVM.isInEditMode = false
+                        appOverlayVM.dialogView = nil
+                        viewModel.animateObjectWillChange()
+                    } label: {
+                        Text("Messages.deleteForAll")
+                            .foregroundStyle(Color.App.red)
+                            .font(.iransansBoldBody)
+                            .frame(minWidth: 48, minHeight: 48)
+                    }
                 }
             }
         }

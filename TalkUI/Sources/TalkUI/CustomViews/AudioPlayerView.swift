@@ -10,8 +10,12 @@ import TalkViewModels
 import TalkModels
 
 public struct AudioPlayerView: View {
+    let threadVM: ThreadViewModel?
     @EnvironmentObject var audioPlayerVM: AVAudioPlayerViewModel
-    public init(){}
+
+    public init(threadVM: ThreadViewModel? = nil){
+        self.threadVM = threadVM
+    }
 
     public var body: some View {
         VStack(spacing: 0) {
@@ -30,14 +34,22 @@ public struct AudioPlayerView: View {
                         .buttonStyle(.plain)
                         .frame(width: 36, height: 48)
 
-                        HStack {
-                            Text(verbatim: audioPlayerVM.title)
-                                .font(.iransansSubheadline)
-                            Text(verbatim: audioPlayerVM.subtitle)
-                                .font(.iransansCaption)
-                                .foregroundColor(.gray)
-                            Spacer()
+                        Button {
+                            if let message = audioPlayerVM.message, let time = message.time, let id = message.id {
+                                threadVM?.moveToTime(time, id)
+                            }
+                        } label: {
+                            HStack {
+                                Text(verbatim: audioPlayerVM.title)
+                                    .font(.iransansSubheadline)
+                                Text(verbatim: audioPlayerVM.subtitle)
+                                    .font(.iransansCaption)
+                                    .foregroundColor(.gray)
+                                Spacer()
+                            }
                         }
+                        .buttonStyle(.plain)
+
                         Spacer()
                         Text(verbatim: audioPlayerVM.currentTime.timerString(locale: Language.preferredLocale) ?? "")
                             .foregroundColor(.gray)

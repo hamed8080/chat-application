@@ -61,16 +61,21 @@ struct MusicRowView: View {
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
+    private var downloadViewModel: DownloadFileViewModel? { threadVM?.messageViewModel(for: message).downloadFileVM }
 
     var body: some View {
         HStack {
-            let view = DownloadMusicButtonView()
-                .frame(width: 48, height: 48)
-                .padding(4)
-            if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
-                view.environmentObject(downloadVM)
+            if downloadViewModel?.state == .completed, let fileURL = downloadViewModel?.fileURL {
+                DownloadedMusicPlayer(message: message, fileURL: fileURL)
             } else {
-                view
+                let view = DownloadMusicButtonView()
+                    .frame(width: 48, height: 48)
+                    .padding(4)
+                if let downloadVM = downloadViewModel {
+                    view.environmentObject(downloadVM)
+                } else {
+                    view
+                }
             }
 
             VStack(alignment: .leading) {
@@ -91,10 +96,61 @@ struct MusicRowView: View {
         }
         .padding([.leading, .trailing])
         .contentShape(Rectangle())
-        .onTapGesture {
-            threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-            viewModel.dismiss = true
+        .contextMenu {
+            Button {
+                threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                viewModel.dismiss = true
+            } label: {
+                Label("General.showMessage", systemImage: "bubble.middle.top")
+            }
         }
+        .onTapGesture {
+            if downloadViewModel?.state != .completed {
+                downloadViewModel?.startDownload()
+            } else {
+                AppState.shared.objectsContainer.audioPlayerVM.toggle()
+            }
+        }
+    }
+}
+
+struct DownloadedMusicPlayer: View {
+    let message: Message
+    let fileURL: URL
+    @EnvironmentObject var viewModel: AVAudioPlayerViewModel
+    var isSameFile: Bool { viewModel.fileURL?.absoluteString == fileURL.absoluteString }
+
+    var body: some View {
+        Button {
+            viewModel.setup(message: message,
+                            fileURL: fileURL,
+                            ext: message.fileMetaData?.file?.mimeType?.ext,
+                            title: message.fileMetaData?.name,
+                            subtitle: message.fileMetaData?.file?.originalName ?? "")
+            viewModel.toggle()
+        } label: {
+            ZStack {
+                Image(systemName: viewModel.isPlaying  && isSameFile ? "pause.fill" : "play.fill" )
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .foregroundStyle(Color.App.text)
+
+                Circle()
+                    .trim(from: 0.0, to: isSameFile ? min(viewModel.currentTime / viewModel.duration, 1.0) : 0)
+                    .stroke(style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
+                    .frame(width: 28, height: 28)
+                    .foregroundStyle(Color.App.text)
+                    .rotationEffect(Angle(degrees: 270))
+                    .environment(\.layoutDirection, .leftToRight)
+            }
+            .frame(width: 36, height: 36)
+            .background(Color.App.primary)
+            .clipShape(RoundedRectangle(cornerRadius: 22))
+            .contentShape(Rectangle())
+        }
+        .frame(width: 48, height: 48)
+        .padding(4)
     }
 }
 

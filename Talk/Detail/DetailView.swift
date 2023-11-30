@@ -42,7 +42,6 @@ struct DetailView: View {
         .background(Color.App.bgPrimary)
         .environmentObject(viewModel)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarTitle("General.info")
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $viewModel.showAddToContactSheet) {
             if let user = viewModel.user {
@@ -72,6 +71,11 @@ struct DetailView: View {
                             .fontWeight(.heavy)
                     }
                 }
+            }
+
+            ToolbarItemGroup(placement: .principal) {
+                Text("General.info")
+                    .font(.iransansBoldBody)
             }
 
             ToolbarItemGroup(placement: .navigation) {

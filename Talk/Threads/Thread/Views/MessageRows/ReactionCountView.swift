@@ -46,7 +46,7 @@ struct ReactionCountRow: View {
 
                 Text(reactionCount.count?.localNumber(locale: Language.preferredLocale) ?? "")
                     .font(.iransansBody)
-                    .foregroundStyle(isMyReaction ? Color.App.white : Color.App.hint)
+                    .foregroundStyle(Color.App.text)
             }
         }
         .animation(.easeInOut, value: reactionCount.count ?? -1)

@@ -8,16 +8,20 @@
 import Foundation
 import SwiftUI
 import TalkViewModels
+import ChatModels
 
 public struct InlineAudioPlayerView: View {
+    public let message: Message?
     public let fileURL: URL
     public let ext: String?
     public var title: String?
     public var subtitle: String
     public var config: DownloadFileViewConfig
     @EnvironmentObject var viewModel: AVAudioPlayerViewModel
+    var isSameFile: Bool { viewModel.fileURL?.absoluteString == fileURL.absoluteString }
 
-    public init(fileURL: URL, ext: String?, title: String? = nil, subtitle: String, config: DownloadFileViewConfig) {
+    public init(message: Message?, fileURL: URL, ext: String?, title: String? = nil, subtitle: String, config: DownloadFileViewConfig) {
+        self.message = message
         self.fileURL = fileURL
         self.ext = ext
         self.title = title
@@ -27,7 +31,7 @@ public struct InlineAudioPlayerView: View {
 
     public var body: some View {
         ZStack {
-            Image(systemName: !viewModel.isPlaying ? "play.fill" : "pause.fill")
+            Image(systemName: viewModel.isPlaying && isSameFile ? "pause.fill" : "play.fill")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 12, height: 12)
@@ -37,7 +41,7 @@ public struct InlineAudioPlayerView: View {
         .background(config.iconCircleColor)
         .clipShape(RoundedRectangle(cornerRadius: config.iconHeight / 2))
         .onTapGesture {
-            viewModel.setup(fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
+            viewModel.setup(message: message, fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
             viewModel.toggle()
         }
     }

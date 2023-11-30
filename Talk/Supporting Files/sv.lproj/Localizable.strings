@@ -61,6 +61,7 @@
 "General.KB" = "KB";
 "General.MB" = "MB";
 "General.GB" = "GB";
+"General.showMessage" = "Visa meddelande";
 
 /* Tabs */
 "Tab.chats" = "Chattar";
@@ -100,6 +101,7 @@
 "Contacts.sortLabel" = "Sorterat efter senast besökt tid";
 "Contacts.lastVisited" = "Senast besökt %@";
 "Contacts.selectContacts" = "Välj kontakter";
+"Contctas.notFound" = "Kontakten har inte hittats.";
 "ConversationBuilder.enterGroupName" = "Ange gruppnamnet";
 "ConversationBuilder.enterChannelName" = "Ange kanalnamnet";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "Vänligen ange namnet på konversationen. (minst två tecken)";
@@ -210,6 +212,8 @@
 "Thread.public" = "Publik %@";
 "Thread.delete" = "Ta bort %@";
 "Thread.inviteLink" = "Inbjudningslänk";
+"Thread.isVoiceRecording" = "Spelar in ljud";
+"Thread.isVideoRecording" = "Spelar in video";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";

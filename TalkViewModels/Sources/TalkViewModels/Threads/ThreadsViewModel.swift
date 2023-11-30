@@ -92,6 +92,10 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].unreadCount = (threads[index].unreadCount ?? 0) + 1
             threads[index].lastMessageVO = response.result
             threads[index].lastMessage = response.result?.message
+            /// We only set the mentioned true because if the user sends multiple messages inside a thread but one message has been mention, the list will set it to false which is wrong.
+            if response.result?.mentioned == true {
+                threads[index].mentioned = true
+            }
             if threads[index].pin == false {
                 sort()
             }

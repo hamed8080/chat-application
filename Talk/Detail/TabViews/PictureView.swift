@@ -103,7 +103,7 @@ struct PictureRowView: View {
                     threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
                     viewModel.dismiss = true
                 } label: {
-                    Label("Show Message", systemImage: "bubble.middle.top")
+                    Label("General.showMessage", systemImage: "bubble.middle.top")
                 }
             }
             .onTapGesture {

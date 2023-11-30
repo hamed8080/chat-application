@@ -2,6 +2,7 @@ import Combine
 import Foundation
 import AVFoundation
 import OSLog
+import ChatModels
 
 public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published public var isPlaying: Bool = false
@@ -11,13 +12,15 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
     public var subtitle: String = ""
     @Published public var duration: Double = 0
     @Published public var currentTime: Double = 0
-    var fileURL: URL?
+    public var fileURL: URL?
+    public var message: Message?
 
     private var timer: Timer?
     public override init() {}
 
-    public func setup(fileURL: URL, ext: String?, category: AVAudioSession.Category = .playback, title: String? = nil, subtitle: String = "") {
+    public func setup(message: Message? = nil, fileURL: URL, ext: String?, category: AVAudioSession.Category = .playback, title: String? = nil, subtitle: String = "") {
         if fileURL.absoluteString == self.fileURL?.absoluteString { return }
+        self.message = message
         self.title = title ?? fileURL.lastPathComponent
         self.subtitle = subtitle
         self.fileURL = fileURL
@@ -77,5 +80,8 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+        isPlaying = false
+        currentTime = 0
+        animateObjectWillChange()
     }
 }

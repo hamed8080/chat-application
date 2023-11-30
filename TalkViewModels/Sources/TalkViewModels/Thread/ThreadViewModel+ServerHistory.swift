@@ -327,3 +327,16 @@ extension ThreadViewModel {
         }
     }
 }
+
+public extension ThreadViewModel {
+    func moveToFirstUnreadMessage() {
+        if let unreadMessage = unreadMentionsViewModel.unreadMentions.first, let time = unreadMessage.time {
+            moveToTime(time, unreadMessage.id ?? -1, highlight: true)
+            unreadMentionsViewModel.setAsRead(id: unreadMessage.id)
+            if unreadMentionsViewModel.unreadMentions.count == 0 {
+                thread.mentioned = false
+                animateObjectWillChange()
+            }
+        }
+    }
+}

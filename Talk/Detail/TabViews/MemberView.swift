@@ -17,21 +17,21 @@ struct MemberView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
-        StickyHeaderSection(header: "", height: 4)
+        ParticipantSearchView()
         AddParticipantButton(conversation: viewModel.thread)
             .listRowSeparatorTint(.gray.opacity(0.2))
             .listRowBackground(Color.App.bgPrimary)
-        ParticipantSearchView()
+        StickyHeaderSection(header: "", height: 10)
         LazyVStack(spacing: 0) {
             if viewModel.searchedParticipants.count > 0 {
                 StickyHeaderSection(header: "Memebers.searchedMembers")
                 ForEach(viewModel.searchedParticipants) { participant in
                     ParticipantRowContainer(participant: participant, isSearchRow: true)
                 }
-            }
-
-            ForEach(viewModel.sorted) { participant in
-                ParticipantRowContainer(participant: participant, isSearchRow: false)
+            } else {
+                ForEach(viewModel.sorted) { participant in
+                    ParticipantRowContainer(participant: participant, isSearchRow: false)
+                }
             }
         }
         .listStyle(.plain)
@@ -154,6 +154,18 @@ struct ParticipantSearchView: View {
 
     var body: some View {
         HStack(spacing: 12) {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(Color.App.hint)
+                    .frame(width: 16, height: 16)
+                TextField("General.searchHere", text: $viewModel.searchText)
+                    .frame(minWidth: 0, maxWidth: 420, minHeight: 36)
+                    .font(.iransansBody)
+            }
+            Spacer()
+
             Menu {
                 ForEach(SearchParticipantType.allCases) { item in
                     Button {
@@ -166,27 +178,22 @@ struct ParticipantSearchView: View {
                     }
                 }
             } label: {
-                Text(String(localized: .init(viewModel.searchType.rawValue)))
-                    .font(.iransansBoldCaption3)
-                    .foregroundColor(Color.App.primary)
+                HStack {
+                    Text(String(localized: .init(viewModel.searchType.rawValue)))
+                        .font(.iransansBoldCaption3)
+                        .foregroundColor(Color.App.hint)
+                    Image(systemName: "chevron.down")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 8, height: 12)
+                        .fontWeight(.medium)
+                        .foregroundColor(Color.App.hint)
+                }
             }
-
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(Color.App.hint)
-                    .frame(width: 16, height: 16)
-                TextField("General.searchHere", text: $viewModel.searchText)
-                    .frame(minWidth: 0, maxWidth: 420)
-                    .font(.iransansBody)
-            }
-            Spacer()
         }
         .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
         .background(Color.App.separator)
         .animation(.easeInOut, value: viewModel.searchText)
-        .animation(.easeInOut, value: viewModel.searchType)
     }
 }
 

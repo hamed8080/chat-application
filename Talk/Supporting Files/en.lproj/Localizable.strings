@@ -60,6 +60,7 @@
 "General.KB" = "KB";
 "General.MB" = "MB";
 "General.GB" = "GB";
+"General.showMessage" = "Show Message";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -99,6 +100,7 @@
 "Contacts.sortLabel" = "Sorted by last visited time";
 "Contacts.lastVisited" = "Last visited %@";
 "Contacts.selectContacts" = "Select contacts";
+"Contctas.notFound" = "The contact has not been found.";
 "ConversationBuilder.enterGroupName" = "Enter the group name";
 "ConversationBuilder.enterChannelName" = "Enter the channel name";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "Please enter the name of the conversation. (at least two characters)";
@@ -209,6 +211,8 @@
 "Thread.public" = "Public %@";
 "Thread.delete" = "Delete %@";
 "Thread.inviteLink" = "Invite Link";
+"Thread.isVoiceRecording" = "Is recording voice";
+"Thread.isVideoRecording" = "Is recording video";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";

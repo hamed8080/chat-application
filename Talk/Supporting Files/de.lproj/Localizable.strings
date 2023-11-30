@@ -61,6 +61,7 @@
 "General.KB" = "KB";
 "General.MB" = "MB";
 "General.GB" = "GB";
+"General.showMessage" = "Nachricht anzeigen";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -100,6 +101,7 @@
 "Contacts.sortLabel" = "Nach zuletzt besuchter Zeit sortiert";
 "Contacts.lastVisited" = "Zuletzt besucht %@";
 "Contacts.selectContacts" = "Kontakte auswählen";
+"Contctas.notFound" = "Der Kontakt wurde nicht gefunden.";
 "ConversationBuilder.enterGroupName" = "Gib den Gruppennamen ein";
 "ConversationBuilder.enterChannelName" = "Geben Sie den Kanalnamen ein";
 "ConversationBuilder.atLeatsEnterTwoCharacter" = "Bitte geben Sie den Namen der Konversation ein. (mindestens zwei Zeichen)";
@@ -210,6 +212,8 @@
 "Thread.public" = "Öffentlich %@";
 "Thread.delete" = "Lösche %@";
 "Thread.inviteLink" = "Einladungslink";
+"Thread.isVoiceRecording" = "Nimmt Sprachaufnahme auf";
+"Thread.isVideoRecording" = "Nimmt Video auf";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "verbinden";
