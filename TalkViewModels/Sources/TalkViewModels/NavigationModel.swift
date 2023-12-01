@@ -3,6 +3,7 @@ import Chat
 import SwiftUI
 import TalkModels
 import ChatModels
+import ChatCore
 
 public enum NavigationType: Hashable {
     case conversation(Conversation)
@@ -18,6 +19,7 @@ public enum NavigationType: Hashable {
     case automaticDownloadsSettings(AutomaticDownloadsNavigationValue)
     case support(SupportNavigationValue)
     case messageParticipantsSeen(MessageParticipantsSeenNavigationValue)
+    case editProfile(EditProfileNavigationValue)
 }
 
 public protocol NavigaitonValueProtocol: Hashable {}
@@ -31,14 +33,45 @@ public struct NotificationSettingsNavigationValue: NavigaitonValueProtocol {}
 public struct AutomaticDownloadsNavigationValue: NavigaitonValueProtocol {}
 public struct SupportNavigationValue: NavigaitonValueProtocol {}
 public struct MessageParticipantsSeenNavigationValue: NavigaitonValueProtocol { public let message: Message }
+public struct EditProfileNavigationValue: NavigaitonValueProtocol {}
 
 public final class NavigationModel: ObservableObject {
     @Published public var selectedThreadId: Conversation.ID?
     public var threadsViewModel: ThreadsViewModel?
     @Published public var paths = NavigationPath()
     var pathsTracking: [Any] = []
-    private var threadStack: [ThreadViewModel] { pathsTracking.compactMap{ $0 as? ThreadViewModel}}
-    public init() {}
+    private var threadStack: [ThreadViewModel] { pathsTracking.compactMap{ $0 as? ThreadViewModel} }
+    private var cancelable: Set<AnyCancellable> = []
+
+    public init() {
+        NotificationCenter.default.publisher(for: .thread)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink { [weak self] event in
+                self?.onThreadEvents(event)
+            }
+            .store(in: &cancelable)
+    }
+
+    private func onThreadEvents(_ event: ThreadEventTypes) {
+        switch event {
+        case .left(let response):
+//            removeFromStack(response)
+            break
+//        case .removedFrom(let chatResponse):
+        case .deleted(let response):
+            removeFromStack(response)
+            break
+//        case .userRemoveFormThread(let chatResponse):
+        default:
+            break
+        }
+    }
+
+    private func removeFromStack(_ response: ChatResponse<Participant>) {
+        if let index = pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
+            pathsTracking.remove(at: index)
+        }
+    }
 
     public func clear() {
         animateObjectWillChange()
@@ -102,6 +135,12 @@ public final class NavigationModel: ObservableObject {
         let language = LanguageNavigationValue()
         paths.append(NavigationType.language(language))
         pathsTracking.append(language)
+    }
+
+    public func appendEditProfile() {
+        let editProfile = EditProfileNavigationValue()
+        paths.append(NavigationType.editProfile(editProfile))
+        pathsTracking.append(editProfile)
     }
 
     public func append(participantDetail: Participant) {

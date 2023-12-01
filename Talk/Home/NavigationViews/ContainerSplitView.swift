@@ -120,6 +120,8 @@ struct NavigationTypeView: View {
             MessageParticipantsSeen(message: model.message)
         case .language(_):
             LanguageView(container: container)
+        case .editProfile(_):
+            EditProfileView()
         }
     }
 }

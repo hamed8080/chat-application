@@ -59,6 +59,7 @@ struct SelectMessageRadio: View {
                 RadioButton(visible: $viewModel.isInSelectMode, isSelected: $viewModel.isSelected) { isSelected in
                     withAnimation(!viewModel.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
                         viewModel.isSelected.toggle()
+                        viewModel.threadVM?.selectedMessagesViewModel.animateObjectWillChange()
                         viewModel.animateObjectWillChange()
                     }
                 }
@@ -95,12 +96,12 @@ struct MutableMessageView: View {
             }
         }
         .padding(
-            EdgeInsets(top: message.isImage ? 4 : 6 + 4,
-                       leading: viewModel.isMe ? 4 : 4 + MessageRowBackground.tailSize.width,
-                       bottom: 4,
-                       trailing: viewModel.isMe ? 4 + MessageRowBackground.tailSize.width : 4)
+            EdgeInsets(top: paddingTop,
+                       leading: paddingLeading,
+                       bottom: paddingBottom,
+                       trailing: paddingTrailing)
         )
-        .frame(maxWidth: viewModel.maxWidth, alignment: viewModel.isMe ? .trailing : .leading)
+        .frame(minWidth: 128, maxWidth: viewModel.maxWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
         .background(
             MessageRowBackground.instance
                 .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
@@ -123,6 +124,42 @@ struct MutableMessageView: View {
         }
     }
 
+    private var isReplyOrForward: Bool {
+        (message.forwardInfo != nil || message.replyInfo != nil) && !message.isImage
+    }
+
+    private var paddingLeading: CGFloat {
+        if isReplyOrForward {
+            return viewModel.isMe ? 10 : 16
+        } else if viewModel.isMe {
+            return 4
+        } else {
+            return 4 + MessageRowBackground.tailSize.width
+        }
+    }
+
+    private var paddingTrailing: CGFloat {
+        if isReplyOrForward {
+            return viewModel.isMe ? 16 : 10
+        } else if viewModel.isMe {
+            return 4 + MessageRowBackground.tailSize.width
+        } else {
+            return 4
+        }
+    }
+
+    private var paddingTop: CGFloat {
+        if isReplyOrForward {
+            return message.replyInfo != nil ? 16 : 10
+        } else {
+            return message.isImage ? 4 : 10
+        }
+    }
+
+    private var paddingBottom: CGFloat {
+        4
+    }
+
     private var selfMessage: some View {
         self
             .environmentObject(viewModel)
@@ -132,9 +169,9 @@ struct MutableMessageView: View {
     private var contextMenuWithReactions: some View {
         VStack {
             ReactionMenuView()
+                .fixedSize()
             MessageActionMenu()
         }
-        .frame(maxWidth: 232)
         .environmentObject(viewModel)
     }
 }

@@ -45,7 +45,6 @@ public final class ContactsViewModel: ObservableObject {
             animateObjectWillChange()
         }
     }
-    @Published public var deleteDialog = false
 
     @Published public var conversationTitle: String = ""
     @Published public var threadDescription: String = ""

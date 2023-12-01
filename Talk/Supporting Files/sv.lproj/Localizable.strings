@@ -131,10 +131,12 @@
 "Log.received" = "Mottaget";
 
 /* Message */
-"Message.Participant.left" = "%@ har lämnat gruppen";
-"Message.Participant.removed" = "%@ tog bort %@ från gruppen";
-"Message.Participant.joined" = "%@ har gått med i gruppen";
-"Message.Participant.added" = "%@ lade till %@ i gruppen";
+"Message.Participant.left" = "%@ har lämnat gruppen.";
+"Message.Participant.removed" = "%@ tog bort %@ från gruppen.";
+"Message.Participant.joined" = "%@ har gått med i gruppen.";
+"Message.Participant.added" = "%@ lade till %@ i gruppen.";
+"Message.forwardedFrom" = "Vidarebefordrad från";
+"Message.replyTo" = "Svara på";
 
 /* System Events */
 "SMT.isTyping" = "skriver...";
@@ -165,7 +167,6 @@
 "Thread.addToFolder" = "Lägg till i mapp";
 "Thread.clearHistory" = "Rensa historik";
 "Thread.spam" = "Skräppost";
-"Thread.leave" = "Lämna";
 "Thread.archive" = "Arkivera";
 "Thread.unarchive" = "Avarkivera";
 "Thread.invite" = "Bjud in";
@@ -192,8 +193,7 @@
 "Thread.Join.enterThreadNameHere" = "Ange chattens namn...";
 "Thread.Join.duplicateName" = "Trådnamnet finns inte!";
 "Thread.Join.footer" = "Gå med i en offentlig tråd genom dess unika namn.";
-"Thread.Delete.permanentlyDelete" = "Radera permanent";
-"Thread.Delete.footer" = "Genom att radera en tråd kan du inte återställa den eller gå med i den igen.";
+"Thread.Delete.footer" = "¿Estás seguro/a de que quieres eliminar esta conversación?";
 "Thread.fastMessageFooter" = "Skapa omedelbart en tråd även om personen du ska skicka ett meddelande till inte finns i kontaktlistan.";
 "Thread.enterFastMessageType" = "Ange %@ här...";
 "Thread.Tabs.members" = "Medlemmar";
@@ -214,6 +214,10 @@
 "Thread.inviteLink" = "Inbjudningslänk";
 "Thread.isVoiceRecording" = "Spelar in ljud";
 "Thread.isVideoRecording" = "Spelar in video";
+"Thread.forwardTheMessage" = "Vidarebefordra meddelandet";
+"Thread.forwardMessages" = "Vidarebefordra %@ meddelanden";
+"Thread.delete" = "Radera %@";
+"Thread.leave" = "Lämna %@";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";
@@ -280,6 +284,17 @@
 "Settings.restartToChangeLanguage" = "Starta om appen för att ändra språk.";
 "Settings.logoutFromAccount" = "Avsluta ditt konto";
 "Settings.areYouSureToLogout" = "Är du säker på att du vill avsluta ditt konto?";
+"Settings.EditProfile.title" = "Redigera profil";
+"Setting.EditProfile.firstName" = "Namn";
+"Setting.EditProfile.firstNameHint" = "Skriv ditt namn här...";
+"Setting.EditProfile.lastName" = "Efternamn";
+"Setting.EditProfile.lastNameHint" = "Skriv ditt efternamn här...";
+"Setting.EditProfile.userName" = "Användarnamn";
+"Setting.EditProfile.userNameHint" = "Skriv ditt användarnamn här...";
+"Setting.EditProfile.bio" = "Biografi";
+"Setting.EditProfile.bioHint" = "Skriv din biografi här...";
+"Setting.EditProfile.bioHintMore" = "Skriv lite om dig själv...";
+"Setting.EditProfile.enterToPodAccount" = "Logga in på ditt POD-konto";
 
 /* Support */
 "Support.version" = "Version: %@";

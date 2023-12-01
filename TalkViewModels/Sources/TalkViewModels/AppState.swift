@@ -50,6 +50,8 @@ public final class AppState: ObservableObject {
     public var replyPrivately: Message?
     public var lifeCycleState: AppLifeCycleState?
     public var objectsContainer: ObjectsContainer!
+    public var forwardMessages: [Message]?
+    public var forwardMessageRequest: ForwardMessageRequest?
 
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
@@ -129,15 +131,15 @@ public final class AppState: ObservableObject {
 
     /// Forward messages form a thread to a destination thread.
     /// If the conversation is nil it try to use contact. Firstly it opens a conversation using the given contact core user id then send messages to the conversation.
-    public func openThread(from: Int, conversation: Conversation?, contact: Contact?, messageIds: [Int]) {
+    public func openThread(from: Int, conversation: Conversation?, contact: Contact?, messages: [Message]) {
+        self.forwardMessages = messages
+        let messageIds = messages.compactMap{$0.id}
         if let conversation = conversation , let destinationConversationId = conversation.id {
             navViewModel?.append(thread: conversation)
-            let req = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
-            ChatManager.activeInstance?.message.send(req)
+            forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
         } else if let coreUserId = contact?.user?.coreUserId, let conversation = checkForP2POffline(coreUserId: coreUserId), let destinationConversationId = conversation.id {
             navViewModel?.append(thread: conversation)
-            let req = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
-            ChatManager.activeInstance?.message.send(req)
+            forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
         } else if let coreUserId = contact?.user?.coreUserId {
             openForwardConversation(coreUserId: coreUserId, fromThread: from, messageIds: messageIds)
         }
@@ -159,9 +161,8 @@ public final class AppState: ObservableObject {
         else { return }
         navViewModel?.append(thread: conversation)
         /// We call send forward messages with a little bit of delay because it will get history in the above code and there should not be anything in the queue to forward messages.
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { timer in
-            let req = ForwardMessageRequest(fromThreadId: request.from, threadId: destinationConversationId, messageIds: request.messageIds)
-            ChatManager.activeInstance?.message.send(req)
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
+            self?.forwardMessageRequest = ForwardMessageRequest(fromThreadId: request.from, threadId: destinationConversationId, messageIds: request.messageIds)
         }
     }
 

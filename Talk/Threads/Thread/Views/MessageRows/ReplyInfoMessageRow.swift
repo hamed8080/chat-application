@@ -25,11 +25,15 @@ struct ReplyInfoMessageRow: View {
                 }
             } label: {
                 HStack(spacing: 8) {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Message.replyTo")
+                            .foregroundStyle(Color.App.primary)
+                            .font(.iransansCaption3)
+                        
                         if let name = message.replyInfo?.participant?.name {
                             Text("\(name)")
                                 .font(.iransansBoldCaption2)
-                                .foregroundStyle(viewModel.isMe ? Color.App.primary : Color.App.text)
+                                .foregroundStyle(Color.App.primary)
                         }
 
                         if message.replyInfo?.deleted == true {
@@ -67,23 +71,25 @@ struct ReplyInfoMessageRow: View {
                             }
                         }
                     }
-                    .padding(.leading, 4)
+                    .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.isMe ? 4 : 8))
                     .overlay(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 3)
                             .stroke(lineWidth: 1.5)
-                            .fill(viewModel.isMe ? Color.App.primary : Color.App.pink)
+                            .fill(Color.App.primary)
                             .frame(maxWidth: 1.5)
-                            .offset(x: -4)
                     }
                 }
             }
+            .frame(minWidth: 128, maxWidth: viewModel.maxWidth, alignment: .leading)
             .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
             .buttonStyle(.borderless)
             .truncationMode(.tail)
             .contentShape(Rectangle())
+            .padding(EdgeInsets(top: 6, leading: viewModel.isMe ? 6 : 0, bottom: 6, trailing: viewModel.isMe ? 0 : 6))
+            .background(Color.App.bgInput.opacity(0.5))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
             .frame(height: 60)
-                .padding(.horizontal, 6)
-                .environmentObject(viewModel)
+            .environmentObject(viewModel)
         }
     }
 }

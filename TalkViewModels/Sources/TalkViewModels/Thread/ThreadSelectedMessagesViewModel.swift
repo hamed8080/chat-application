@@ -23,6 +23,7 @@ public final class ThreadSelectedMessagesViewModel: ObservableObject {
     public func clearSelection() {
         selectedMessages.forEach { viewModel in
             viewModel.isSelected = false
+            viewModel.animateObjectWillChange()
         }
         animateObjectWillChange()
     }

@@ -131,10 +131,12 @@
 "Log.received" = "دریافت شده";
 
 /* Message */
-"Message.Participant.left" = "%@ گروه را ترک کرد";
-"Message.Participant.removed" = "%@ %@ را از گروه حذف کرد";
-"Message.Participant.joined" = "%@ به گروه پیوست";
-"Message.Participant.added" = "%@ %@ را به گروه اضافه کرد";
+"Message.Participant.left" = "%@ گروه را ترک کرد.";
+"Message.Participant.removed" = "%@ %@ را از گروه حذف کرد.";
+"Message.Participant.joined" = "%@ به گروه پیوست.";
+"Message.Participant.added" = "%@ %@ را به گروه اضافه کرد.";
+"Message.forwardedFrom" = "ارسال از طرف";
+"Message.replyTo" = "پاسخ به";
 
 /* System Events */
 "SMT.isTyping" = "در حای تایپ...";
@@ -165,7 +167,6 @@
 "Thread.addToFolder" = "اضافه کردن به پوشه";
 "Thread.clearHistory" = "حذف تاریخچه";
 "Thread.spam" = "اعلام به عنوان مزاحم";
-"Thread.leave" = "ترک کردن";
 "Thread.archive" = "آرشیو کردن";
 "Thread.unarchive" = "از آرشیو خارج کردن";
 "Thread.invite" = "دعوت کردن";
@@ -192,8 +193,7 @@
 "Thread.Join.enterThreadNameHere" = "نام گفتگو را وارد کنید.";
 "Thread.Join.duplicateName" = "گفتگو پیدا نشد";
 "Thread.Join.footer" = "پیوستن به یک گروه عمومی با نام منحصر به فرد";
-"Thread.Delete.permanentlyDelete" = "حذف دائمی";
-"Thread.Delete.footer" = "با حذف یک گفتگو شما نمی توانید آن را بازیابی کنید.";
+"Thread.Delete.footer" = "آیا مطمئن هستید می خواهید این گفتگو را حذف کنید؟";
 "Thread.fastMessageFooter" = "ساخت یک گفتگو بدون وارد کردن فرد مورد نظر در لیست مخاطبان";
 "Thread.enterFastMessageType" = "%@ را اینجا وارد کنید...";
 "Thread.Tabs.members" = "اعضا";
@@ -214,6 +214,10 @@
 "Thread.inviteLink" = "لینک دعوت";
 "Thread.isVoiceRecording" = "در حال ضبط صدا";
 "Thread.isVideoRecording" = "در حال ضبط ویدیو";
+"Thread.forwardTheMessage" = "پیام را ارسال کنید";
+"Thread.forwardMessages" = "%@ پیام را ارسال کنید";
+"Thread.delete" = "حذف %@";
+"Thread.leave" = "ترک %@";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "در حال اتصال";
@@ -280,6 +284,17 @@
 "Settings.restartToChangeLanguage" = "لطفاً برای تغییر زبان اپلیکیشن رو ریستارت کنید.";
 "Settings.logoutFromAccount" = "خروج از حساب";
 "Settings.areYouSureToLogout" = "آیا برای خارج شدن از حساب مطمئن هستید؟";
+"Settings.EditProfile.title" = "ویرایش پروفایل";
+"Setting.EditProfile.firstName" = "نام";
+"Setting.EditProfile.firstNameHint" = "نام خود را اینجا وارد کنید...";
+"Setting.EditProfile.lastName" = "نام خانوادگی";
+"Setting.EditProfile.lastNameHint" = "نام خانوادگی خود را اینجا وارد کنید";
+"Setting.EditProfile.userName" = "نام کاربری";
+"Setting.EditProfile.userNameHint" = "نام کاربری خود را اینجا وارد کنید";
+"Setting.EditProfile.bio" = "بیوگرافی";
+"Setting.EditProfile.bioHint" = "بیوگرافی خود را اینجا وارد کنید...";
+"Setting.EditProfile.bioHintMore" = "در این قسمت می توانید کمی درباره خودتان بنویسید.";
+"Setting.EditProfile.enterToPodAccount" = "ورود به حساب کاربری پاد";
 
 /* Support */
 "Support.version" = "نسخه: %@";

@@ -38,6 +38,7 @@ public final class ThreadsViewModel: ObservableObject {
     @Published public var selectedFilterThreadType: ThreadTypes?
     private var canLoadMore: Bool { hasNext && !isLoading }
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
+    var serverSortedPinConversations: [Int] = []
 
     public init() {
         AppState.shared.$connectionStatus
@@ -197,6 +198,9 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
+            if !response.cache, let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}) {
+                serverSortedPinConversations.append(contentsOf: serverSortedPinConversationIds)
+            }
             appendThreads(threads: threads)
         }
 
@@ -308,6 +312,13 @@ public final class ThreadsViewModel: ObservableObject {
     public func sort() {
         threads.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
         threads.sort(by: { $0.pin == true && $1.pin == false })
+        threads.sort(by: { (firstItem, secondItem) in
+            guard let firstIndex = serverSortedPinConversations.firstIndex(where: {$0 == firstItem.id}),
+                  let secondIndex = serverSortedPinConversations.firstIndex(where: {$0 == secondItem.id}) else {
+                return false // Handle the case when an element is not found in the server-sorted array
+            }
+            return firstIndex < secondIndex
+        })
     }
 
     public func clear() {
@@ -328,10 +339,8 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func removeThread(_ thread: Conversation) {
         guard let index = firstIndex(thread.id) else { return }
-        withAnimation {
-            _ = threads.remove(at: index)
-            animateObjectWillChange()
-        }
+        _ = threads.remove(at: index)
+        animateObjectWillChange()
     }
 
     public func delete(_ threadId: Int?) {
@@ -467,6 +476,12 @@ public final class ThreadsViewModel: ObservableObject {
         if newCount ?? 0 < threads.first(where: {$0.id == threadId})?.unreadCount ?? 0 {
             threads.first(where: {$0.id == threadId})?.unreadCount = newCount
             animateObjectWillChange()
+        }
+    }
+
+    func onLeftThread(_ response: ChatResponse<User>) {
+        if response.result?.id == AppState.shared.user?.id, let conversationId = response.subjectId {
+            removeThread(.init(id: conversationId))
         }
     }
 }

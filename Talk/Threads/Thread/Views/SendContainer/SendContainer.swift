@@ -44,6 +44,8 @@ struct SendContainer: View {
                         MuteChannelViewPlaceholder()
                             .padding(10)
                     } else {
+                        ForwardMessagesViewPlaceholder()
+                            .environmentObject(viewModel)
                         ReplyMessageViewPlaceholder()
                             .environmentObject(viewModel)
                         MentionList(text: $text)

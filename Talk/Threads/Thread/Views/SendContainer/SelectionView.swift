@@ -57,6 +57,7 @@ struct SelectionView: View {
             }
 
             CloseButton {
+                selectedMessagesViewModel.clearSelection()
                 threadVM.isInEditMode = false
                 viewModel.clearSelection()
                 viewModel.animateObjectWillChange()

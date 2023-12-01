@@ -400,7 +400,7 @@ struct UserProfileView: View {
             Spacer()
 
             Button {
-
+                AppState.shared.objectsContainer.navVM.appendEditProfile()
             } label: {
                 Rectangle()
                     .fill(.clear)

@@ -31,6 +31,9 @@ struct ConversationDetailTabViews: View {
         if thread.group == false {
             tabs.removeAll(where: {$0.title == "Thread.Tabs.members"})
         }
+        if thread.group == true, thread.type == .channel || thread.type == .channelGroup, (thread.admin == false || thread.admin == nil) {
+            tabs.removeAll(where: {$0.title == "Thread.Tabs.members"})
+        }
         if thread.group == true || thread.type == .selfThread {
             tabs.removeAll(where: {$0.title == "Thread.Tabs.mutualgroup"})
         }

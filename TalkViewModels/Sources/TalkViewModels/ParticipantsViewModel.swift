@@ -37,6 +37,13 @@ public final class ParticipantsViewModel: ObservableObject {
             }
             .store(in: &cancelable)
 
+        NotificationCenter.default.publisher(for: .participant)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink { [weak self] event in
+                self?.onThreadEvent(event)
+            }
+            .store(in: &cancelable)
+
         NotificationCenter.default.publisher(for: .user)
             .compactMap { $0.object as? UserEventTypes }
             .sink { [weak self] event in
@@ -71,6 +78,15 @@ public final class ParticipantsViewModel: ObservableObject {
         }
     }
 
+    private func onThreadEvent(_ event: ThreadEventTypes) {
+        switch event {
+        case .left(let response):
+            onLeft(response)
+        default:
+            break
+        }
+    }
+
     private func onUserEvent(_ event: UserEventTypes) {
         switch event {
         case .remove(let chatResponse):
@@ -89,6 +105,12 @@ public final class ParticipantsViewModel: ObservableObject {
                     removeParticipant(participant)
                 }
             }
+        }
+    }
+
+    private func onLeft(_ response: ChatResponse<User>) {
+        withAnimation {
+            removeParticipant(.init(id: response.result?.id))
         }
     }
 
@@ -133,7 +155,10 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func onParticipants(_ response: ChatResponse<[Participant]>) {
-        if let participants = response.result {
+        // FIXME: This bug should be fixed in the caching system as described in the text below.
+        /// If we remove this line due to a bug in the Cache, we will get an incorrect participants list.
+        /// For example, after a user leaves a thread, if the user updates their getHistory, the left participant will be shown in the list, which is incorrect.
+        if !response.cache, let participants = response.result {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
             hasNext = response.hasNext

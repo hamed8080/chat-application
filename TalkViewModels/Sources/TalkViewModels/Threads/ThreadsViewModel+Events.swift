@@ -81,6 +81,8 @@ extension ThreadsViewModel {
             onLastSeenMessageUpdated(response)
         case .joined(let response):
             onJoinedToPublicConversatin(response)
+        case .left(let response):
+            onLeftThread(response)
         default:
             break
         }

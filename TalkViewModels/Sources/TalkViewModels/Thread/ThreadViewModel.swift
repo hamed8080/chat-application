@@ -44,11 +44,12 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var bottomLoading = false
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
     public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom }
-    public var canShowMute: Bool { (thread.type == .channel || thread.type == .channelGroup) && thread.admin == false && !isInEditMode }
+    public var canShowMute: Bool { (thread.type == .channel || thread.type == .channelGroup) && (thread.admin == false || thread.admin == nil) && !isInEditMode }
     public var sections: [MessageSection] = []
     @Published public var editMessage: Message?
     public var replyMessage: Message?
     @Published public var isInEditMode: Bool = false
+    @Published public var dismiss = false
     public var exportMessagesVM: ExportMessagesViewModelProtocol?
     public var mentionList: [Participant] = []
     public var sheetType: ThreadSheetType?
@@ -540,6 +541,21 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func setUnreadCount(_ newCount: Int?) {
         if newCount ?? 0 < thread.unreadCount ?? 0 {
             thread.unreadCount = newCount
+            animateObjectWillChange()
+        }
+    }
+
+    func onDeleteThread(_ response: ChatResponse<Participant>) {
+        if response.subjectId == threadId {
+            dismiss = true
+        }
+    }
+
+    func onLeftThread(_ response: ChatResponse<User>) {
+        if response.subjectId == threadId, response.result?.id == AppState.shared.user?.id {
+            dismiss = true
+        } else {
+            thread.participantCount = (thread.participantCount ?? 0) - 1
             animateObjectWillChange()
         }
     }

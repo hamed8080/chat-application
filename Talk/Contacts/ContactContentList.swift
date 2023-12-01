@@ -109,9 +109,6 @@ struct ContactContentList: View {
                 viewModel.searchContactString = searchValue
             }
         }
-        .dialog(.init(localized: .init("Contacts.deleteSelectedTitle")), .init(localized: .init("Contacts.deleteSelectedSubTitle")), "trash", $viewModel.deleteDialog) { _ in
-            viewModel.deleteSelectedItems()
-        }
         .sheet(isPresented: $viewModel.showAddOrEditContactSheet) {
             AddOrEditContactView()
                 .environmentObject(viewModel)
@@ -133,7 +130,7 @@ struct ContactContentList: View {
         if !viewModel.showConversaitonBuilder {
             ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
                 withAnimation {
-                    viewModel.deleteDialog.toggle()
+                    AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteContactView().environmentObject(viewModel))
                 }
             }
             .foregroundStyle(.red)
@@ -189,9 +186,14 @@ struct ContactRowContainer: View {
                     .tint(Color.App.red)
 
                     Button {
-                        if let index = viewModel.contacts.firstIndex(of: contact) {
-                            viewModel.delete(indexSet: IndexSet(integer: index))
-                        }
+                        viewModel.addToSelctedContacts(contact)
+                        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(
+                            DeleteContactView()
+                                .environmentObject(viewModel)
+                                .onDisappear {
+                                    viewModel.removeToSelctedContacts(contact)
+                                }
+                        )
                     } label: {
                         Label("General.delete", systemImage: "trash")
                     }

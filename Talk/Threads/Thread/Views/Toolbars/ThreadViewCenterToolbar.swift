@@ -18,8 +18,7 @@ struct ThreadViewCenterToolbar: View {
     var viewModel: ThreadViewModel
     @State private var title: String = ""
     @State private var participantsCount: Int?
-    private let participantPublisher = NotificationCenter.default.publisher(for: .participant).compactMap { $0.object as? ParticipantEventTypes }
-    private let threadPublisher = NotificationCenter.default.publisher(for: .thread).compactMap { $0.object as? ThreadEventTypes }
+    private let publisher = NotificationCenter.default.publisher(for: .chatEvents).compactMap { $0.object as? ChatEventType }
 
     var body: some View {
         VStack(alignment: .center) {
@@ -51,29 +50,53 @@ struct ThreadViewCenterToolbar: View {
         .onChange(of: viewModel.thread.participantCount) { newValue in
             participantsCount = newValue
         }
-        .onReceive(participantPublisher) { event in
-            if case let .added(response) = event {
-                withAnimation {
-                    participantsCount = (participantsCount ?? 0) + (response.result?.count ?? 0)
-                }
-            }
-
-            if case let .deleted(response) = event {
-                withAnimation {
-                    participantsCount = max(0, (participantsCount ?? 0) - (response.result?.count ?? 0))
-                }
-            }
-        }
-        .onReceive(threadPublisher) { event in
-            if case let .updatedInfo(response) = event {
-                withAnimation {
-                    title = response.result?.computedTitle ?? ""
-                }
-            }
+        .onReceive(publisher) { event in
+            onChatEvent(event)
         }
         .onAppear {
             participantsCount = viewModel.thread.participantCount
             title = viewModel.thread.computedTitle
+        }
+    }
+
+    private func onChatEvent(_ event: ChatEventType) {
+        switch event {
+        case .thread(let threadEventTypes):
+            onThreadEvent(threadEventTypes)
+        case .participant(let participantEventTypes):
+            onParticipantEvent(participantEventTypes)
+        default:
+            break
+        }
+    }
+
+    private func onThreadEvent(_ event: ThreadEventTypes) {
+        switch event {
+        case .updatedInfo(let response):
+            withAnimation {
+                title = response.result?.computedTitle ?? ""
+            }
+        case .left(_):
+            withAnimation {
+                participantsCount = (participantsCount ?? 0) - 1
+            }
+        default:
+            break
+        }
+    }
+
+    private func onParticipantEvent(_ event: ParticipantEventTypes) {
+        switch event {
+        case .added(let response):
+            withAnimation {
+                participantsCount = (participantsCount ?? 0) + (response.result?.count ?? 0)
+            }
+        case .deleted(let response):
+            withAnimation {
+                participantsCount = max(0, (participantsCount ?? 0) - (response.result?.count ?? 0))
+            }
+        default:
+            break
         }
     }
 }

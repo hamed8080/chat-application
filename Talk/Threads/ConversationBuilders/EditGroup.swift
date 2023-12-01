@@ -96,7 +96,7 @@ struct EditGroup: View {
                 .focused($focusState, equals: .description)
                 .keyboardType(.default)
                 .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "EditGroup.groupDescription", minHeigh: 128, isFocused: focusState == .description) {
+                .applyAppTextfieldStyle(topPlaceholder: "EditGroup.groupDescription", minHeight: 128, isFocused: focusState == .description) {
                     focusState = .description
                 }
                 .noSeparators()

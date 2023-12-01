@@ -25,4 +25,12 @@ public struct Language: Identifiable {
         let localIdentifier = Language.languages.first(where: {$0.language == Locale.preferredLanguages[0] })?.identifier
         return Locale(identifier: localIdentifier ?? "en_US")
     }
+
+    public static var rtlLanguages: [Language] {
+        languages.filter{ $0.identifier == "ar_SA" || $0.identifier == "fa_IR" }
+    }
+    
+    public static var isRTL: Bool {
+        rtlLanguages.contains(where: {$0.language == Locale.preferredLanguages[0] })
+    }
 }

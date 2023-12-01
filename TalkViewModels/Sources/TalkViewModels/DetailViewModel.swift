@@ -92,6 +92,10 @@ public final class DetailViewModel: ObservableObject, Hashable {
             onUnMuteChanged(response)
         case .updatedInfo(let response):
             onEditGroup(response)
+        case .deleted(let response):
+            onDeleteThread(response)
+        case .left(let response):
+            onLeftThread(response)
         default:
             break
         }
@@ -276,6 +280,22 @@ public final class DetailViewModel: ObservableObject, Hashable {
             showContactEditSheet.toggle()
         } else if thread?.canEditInfo == true {
             showEditGroup.toggle()
+        }
+    }
+
+    private func onDeleteThread(_ response: ChatResponse<Participant>) {
+        if response.subjectId == thread?.id {
+            dismiss = true
+        }
+    }
+
+    private func onLeftThread(_ response: ChatResponse<User>) {
+        if response.subjectId == thread?.id, response.result?.id == AppState.shared.user?.id {
+            dismiss = true
+        } else {
+            thread?.participantCount = (thread?.participantCount ?? 0) - 1
+            participantViewModel?.removeParticipant(.init(id: response.result?.id))
+            animateObjectWillChange()
         }
     }
 }

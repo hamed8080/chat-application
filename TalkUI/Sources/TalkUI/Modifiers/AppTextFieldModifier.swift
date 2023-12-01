@@ -48,8 +48,8 @@ public struct AppTextFieldModifier: ViewModifier {
 }
 
 public extension View {
-    func applyAppTextfieldStyle(topPlaceholder: String = "", innerBGColor: Color = Color.App.bgInput, error: String? = nil, minHeigh: CGFloat = 52, isFocused: Bool = false, onClick: (() -> Void)? = nil) -> some View {
-        modifier(AppTextFieldModifier(topPlaceholder: topPlaceholder, innerBGColor: innerBGColor, error: error, minHeigh: minHeigh, isFocused: isFocused, onClick: onClick))
+    func applyAppTextfieldStyle(topPlaceholder: String = "", innerBGColor: Color = Color.App.bgInput, error: String? = nil, minHeight: CGFloat = 52, isFocused: Bool = false, onClick: (() -> Void)? = nil) -> some View {
+        modifier(AppTextFieldModifier(topPlaceholder: topPlaceholder, innerBGColor: innerBGColor, error: error, minHeigh: minHeight, isFocused: isFocused, onClick: onClick))
     }
 }
 

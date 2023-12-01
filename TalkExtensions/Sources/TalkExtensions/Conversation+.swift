@@ -118,4 +118,8 @@ public extension Conversation {
             return type ?? .normal
         }
     }
+
+    var isChannelType: Bool {
+        type == .channel || type == .channelGroup
+    }
 }

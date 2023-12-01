@@ -22,56 +22,65 @@ struct ThreadRowActionMenu: View {
             Label((thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", systemImage: "pin")
         }
 
-        Button {
-            viewModel.clearHistory(thread)
-        } label: {
-            Label("Thread.clearHistory", systemImage: "clock")
+        if EnvironmentValues.isTalkTest {
+            Button {
+                viewModel.toggleMute(thread)
+            } label: {
+                Label((thread.mute ?? false) ? "Thread.unmute" : "Thread.mute", systemImage: "speaker.slash")
+            }
+            
+            Button {
+                viewModel.clearHistory(thread)
+            } label: {
+                Label("Thread.clearHistory", systemImage: "clock")
+            }
+            
+            Button {
+                viewModel.showAddThreadToTag(thread)
+            } label: {
+                Label("Thread.addToFolder", systemImage: "folder.badge.plus")
+            }
+            
+            Button {
+                viewModel.spamPV(thread)
+            } label: {
+                Label("Thread.spam", systemImage: "ladybug")
+            }
+            
+            Button {
+                viewModel.toggleArchive(thread)
+            } label: {
+                Label(thread.isArchive == false ? "Thread.archive" : "Thread.unarchive", systemImage: thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
+            }
+            
+            if canAddParticipant {
+                Button {
+                    viewModel.showAddParticipants(thread)
+                } label: {
+                    Label("Thread.invite", systemImage: "person.crop.circle.badge.plus")
+                }
+            }
         }
 
-        Button {
-            viewModel.toggleMute(thread)
-        } label: {
-            Label((thread.mute ?? false) ? "Thread.unmute" : "Thread.mute", systemImage: "speaker.slash")
+        if thread.group == true {
+            let leaveKey = String(localized: .init("Thread.leave"))
+            let key = thread.isChannelType ? "Thread.channel" : "Thread.group"
+            Button(role: .destructive) {
+                viewModel.leave(thread)
+            } label: {
+                Label(String(format: leaveKey, String(localized: .init(key))), systemImage: "rectangle.portrait.and.arrow.right")
+            }
         }
 
-        Button {
-            viewModel.showAddThreadToTag(thread)
-        } label: {
-            Label("Thread.addToFolder", systemImage: "folder.badge.plus")
-        }
-
-        Button {
-            viewModel.spamPV(thread)
-        } label: {
-            Label("Thread.spam", systemImage: "ladybug")
-        }
-
-        Button(role: .destructive) {
-            viewModel.leave(thread)
-        } label: {
-            Label("Thread.leave", systemImage: "rectangle.portrait.and.arrow.right")
-        }
-
-        if thread.admin == true {
+        /// You should be admin or the thread should be a p2p thread with two people.
+        if thread.admin == true || thread.group == false {
+            let deleteKey = String(localized: "Thread.delete")
+            let key = thread.isChannelType ? "Thread.channel" : thread.group == true ? "Thread.group" : ""
             Button(role: .destructive) {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: thread.id))
             } label: {
-                Label("General.delete", systemImage: "trash")
+                Label(String(format: deleteKey, String(localized: .init(key))), systemImage: "trash")
             }
         }
-
-        Button {
-            viewModel.toggleArchive(thread)
-        } label: {
-            Label(thread.isArchive == false ? "Thread.archive" : "Thread.unarchive", systemImage: thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
-        }
-
-        if canAddParticipant {
-            Button {
-                viewModel.showAddParticipants(thread)
-            } label: {
-                Label("Thread.invite", systemImage: "person.crop.circle.badge.plus")
-            }
-        }    
     }
 }

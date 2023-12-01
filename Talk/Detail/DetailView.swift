@@ -294,7 +294,7 @@ struct DetailTopButtons: View {
             Menu {
                 if let conversation = viewModel.thread {
                     ThreadRowActionMenu(thread: conversation)
-                    if conversation.isPrivate {
+                    if conversation.isPrivate && conversation.group == true {
                         Button {
                             viewModel.threadVM?.threadsViewModel?.makeThreadPublic(conversation)
                         } label: {

@@ -1,5 +1,5 @@
 //
-//  DeleteThreadView.swift
+//  DeleteContactView.swift
 //  Talk
 //
 //  Created by hamed on 11/25/23.
@@ -9,13 +9,18 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 
-struct DeleteThreadView: View {
-    let threadId: Int?
-    @EnvironmentObject var container: ObjectsContainer
+struct DeleteContactView: View {
+    @EnvironmentObject var contactViewModel: ContactsViewModel
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 16) {
-            Text("Thread.Delete.footer")
+            Text("Contacts.deleteSelectedTitle")
+                .foregroundStyle(Color.App.text)
+                .font(.iransansBoldSubtitle)
+                .multilineTextAlignment(.leading)
+                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+
+            Text("Contacts.deleteSelectedSubTitle")
                 .foregroundStyle(Color.App.text)
                 .font(.iransansSubheadline)
                 .multilineTextAlignment(.leading)
@@ -23,7 +28,7 @@ struct DeleteThreadView: View {
 
             HStack {
                 Button {
-                    container.appOverlayVM.dialogView = nil
+                    AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
                 } label: {
                     Text("General.cancel")
                         .foregroundStyle(Color.App.placeholder)
@@ -32,8 +37,8 @@ struct DeleteThreadView: View {
                 }
 
                 Button {
-                    container.threadsVM.delete(threadId)
-                    container.appOverlayVM.dialogView = nil
+                    contactViewModel.deleteSelectedItems()
+                    AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
                 } label: {
                     Text("General.delete")
                         .foregroundStyle(Color.App.red)
@@ -48,8 +53,8 @@ struct DeleteThreadView: View {
     }
 }
 
-struct DeleteThreadView_Previews: PreviewProvider {
+struct DeleteContactView_Previews: PreviewProvider {
     static var previews: some View {
-        DeleteThreadView(threadId: 1)
+        DeleteContactView()
     }
 }

@@ -18,6 +18,7 @@ struct ThreadView: View, DropDelegate {
     let viewModel: ThreadViewModel
     let threadsVM: ThreadsViewModel
     @State var searchMessageText: String = ""
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ThreadMessagesList(viewModel: viewModel)
@@ -71,6 +72,12 @@ struct ThreadView: View, DropDelegate {
             .onAppear {
                 viewModel.startFetchingHistory()
                 threadsVM.clearAvatarsOnSelectAnotherThread()
+            }
+            .onReceive(viewModel.$dismiss) { newValue in
+                if newValue {
+                    AppState.shared.navViewModel?.remove(type: ThreadViewModel.self, threadId: thread.id)
+                    dismiss()
+                }
             }
     }
 

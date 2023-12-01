@@ -131,10 +131,12 @@
 "Log.received" = "Empfangen";
 
 /* Message */
-"Message.Participant.left" = "%@ hat die Gruppe verlassen";
-"Message.Participant.removed" = "%@ entfernte %@ aus der Gruppe";
-"Message.Participant.joined" = "%@ ist der Gruppe beigetreten";
-"Message.Participant.added" = "%@ fügte %@ zur Gruppe hinzu";
+"Message.Participant.left" = "%@ hat die Gruppe verlassen.";
+"Message.Participant.removed" = "%@ entfernte %@ aus der Gruppe.";
+"Message.Participant.joined" = "%@ ist der Gruppe beigetreten.";
+"Message.Participant.added" = "%@ fügte %@ zur Gruppe hinzu.";
+"Message.forwardedFrom" = "Weitergeleitet von";
+"Message.replyTo" = "Antworten auf";
 
 /* System Events */
 "SMT.isTyping" = "schreibt gerade...";
@@ -165,7 +167,6 @@
 "Thread.addToFolder" = "Zu Ordner hinzufügen";
 "Thread.clearHistory" = "Verlauf löschen";
 "Thread.spam" = "Spam";
-"Thread.leave" = "Verlassen";
 "Thread.archive" = "Archivieren";
 "Thread.unarchive" = "Archivierung aufheben";
 "Thread.invite" = "Einladen";
@@ -192,8 +193,7 @@
 "Thread.Join.enterThreadNameHere" = "Name des Chats eingeben...";
 "Thread.Join.duplicateName" = "Der Thread-Name existiert nicht!";
 "Thread.Join.footer" = "Treten Sie einem öffentlichen Thread mit seinem eindeutigen Namen bei.";
-"Thread.Delete.permanentlyDelete" = "Endgültig löschen";
-"Thread.Delete.footer" = "Mit dem Löschen eines Threads können Sie ihn nicht wiederherstellen oder ihm erneut beitreten.";
+"Thread.Delete.footer" = "Sind Sie sicher, dass Sie diese Konversation löschen möchten?";
 "Thread.fastMessageFooter" = "Erstellen Sie sofort einen Thread, auch wenn die Person, an die Sie eine Nachricht senden möchten, nicht in der Kontaktliste steht.";
 "Thread.enterFastMessageType" = "%@ hier eingeben...";
 "Thread.Tabs.members" = "Mitglieder";
@@ -214,6 +214,10 @@
 "Thread.inviteLink" = "Einladungslink";
 "Thread.isVoiceRecording" = "Nimmt Sprachaufnahme auf";
 "Thread.isVideoRecording" = "Nimmt Video auf";
+"Thread.forwardTheMessage" = "Nachricht weiterleiten";
+"Thread.forwardMessages" = "%@ Nachrichten weiterleiten";
+"Thread.delete" = "Lösche %@";
+"Thread.leave" = "Verlassen %@";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "verbinden";
@@ -280,6 +284,17 @@
 "Settings.restartToChangeLanguage" = "Bitte starten Sie die App neu, um die Sprache zu ändern.";
 "Settings.logoutFromAccount" = "Verlassen Sie Ihr Konto";
 "Settings.areYouSureToLogout" = "Sind Sie sicher, dass Sie Ihr Konto verlassen möchten?";
+"Settings.EditProfile.title" = "Profil bearbeiten";
+"Setting.EditProfile.firstName" = "Name";
+"Setting.EditProfile.firstNameHint" = "Geben Sie hier Ihren Namen ein...";
+"Setting.EditProfile.lastName" = "Familienname";
+"Setting.EditProfile.lastNameHint" = "Geben Sie hier Ihren Familiennamen ein...";
+"Setting.EditProfile.userName" = "Benutzername";
+"Setting.EditProfile.userNameHint" = "Geben Sie hier Ihren Benutzernamen ein...";
+"Setting.EditProfile.bio" = "Biografie";
+"Setting.EditProfile.bioHint" = "Geben Sie hier Ihre Biografie ein...";
+"Setting.EditProfile.bioHintMore" = "Geben Sie etwas über sich selbst ein...";
+"Setting.EditProfile.enterToPodAccount" = "Geben Sie Ihr POD-Konto ein";
 
 /* Support */
 "Support.version" = "Version: %@";

@@ -43,6 +43,10 @@ extension ThreadViewModel {
             onLastSeenMessageUpdated(response)
         case .created(let response):
             onCreateP2PThread(response)
+        case .deleted(let response):
+            onDeleteThread(response)
+        case .left(let response):
+            onLeftThread(response)
         default:
             break
         }

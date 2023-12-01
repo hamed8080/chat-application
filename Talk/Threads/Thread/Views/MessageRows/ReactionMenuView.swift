@@ -21,8 +21,8 @@ struct ReactionMenuView: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 0) {
-                ForEach(Sticker.allCases) { sticker in
+            HStack(spacing: 4) {
+                ForEach(Sticker.allCases.filter({$0 != .unknown})) { sticker in
                     Button {
                         if let messageId = viewModel.message.id, let conversationId = viewModel.threadVM?.threadId {
                             ReactionViewModel.shared.reaction(sticker, messageId: messageId, conversationId: conversationId)
@@ -48,6 +48,7 @@ struct ReactionMenuView: View {
                     }
                 }
             }
+            .padding(.horizontal, 8)
         }
         .onTapGesture {} /// It's essential to disable the click of the context menu blur view.
         .background(MixMaterialBackground())

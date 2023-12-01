@@ -130,10 +130,12 @@
 "Log.received" = "تم الاستلام";
 
 /* Message */
-"Message.Participant.left" = "غادر %@ المجموعة";
-"Message.Participant.removed" = "قام %@ بإزالة %@ من المجموعة";
-"Message.Participant.joined" = "انضم %@ إلى المجموعة";
-"Message.Participant.added" = "وأضاف %@ %@ إلى المجموعة";
+"Message.Participant.left" = "غادر %@ المجموعة.";
+"Message.Participant.removed" = "قام %@ بإزالة %@ من المجموعة.";
+"Message.Participant.joined" = "انضم %@ إلى المجموعة.";
+"Message.Participant.added" = "وأضاف %@ %@ إلى المجموعة.";
+"Message.forwardedFrom" = "مُعاد توجيهه من";
+"Message.replyTo" = "الرد على";
 
 /* System Events */
 "SMT.isTyping" = "يكتب...";
@@ -164,7 +166,6 @@
 "Thread.addToFolder" = "إضافة إلى المجلد";
 "Thread.clearHistory" = "مسح التاريخ";
 "Thread.spam" = "رسائل غير مرغوب فيها";
-"Thread.leave" = "مغادرة";
 "Thread.archive" = "أرشفة";
 "Thread.unarchive" = "إلغاء الأرشفة";
 "Thread.invite" = "دعوة";
@@ -191,8 +192,7 @@
 "Thread.Join.enterThreadNameHere" = "أدخل اسم المحادثة...";
 "Thread.Join.duplicateName" = "اسم الموضوع غير موجود!";
 "Thread.Join.footer" = "انضم إلى موضوع عام بواسطة اسمه الفريد.";
-"Thread.Delete.permanentlyDelete" = "حذف بشكل دائم";
-"Thread.Delete.footer" = "بحذف الموضوع، لا يمكنك استعادته أو الانضمام إليه مرة أخرى.";
+"Thread.Delete.footer" = "هل أنت متأكد أنك تريد حذف هذه المحادثة؟";
 "Thread.fastMessageFooter" = "أنشئ موضوعًا فورًا حتى وإن لم يكن الشخص الذي ترسل إليهو في قائمة الاتصال.";
 "Thread.enterFastMessageType" = "أدخل %@ هنا...";
 "Thread.Tabs.members" = "الأعضاء";
@@ -213,6 +213,10 @@
 "Thread.inviteLink" = "رابط الدعوة";
 "Thread.isVoiceRecording" = "يتم تسجيل الصوت";
 "Thread.isVideoRecording" = "يتم تسجيل الفيديو";
+"Thread.forwardTheMessage" = "أعد التوجيه للرسالة";
+"Thread.forwardMessages" = "أعد توجيه %@ رسائل";
+"Thread.delete" = "حذف %@";
+"Thread.leave" = "مغادرة %@";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";
@@ -279,6 +283,17 @@
 "Settings.restartToChangeLanguage" = "يرجى إعادة تشغيل التطبيق لتغيير اللغة.";
 "Settings.logoutFromAccount" = "الخروج من حسابك";
 "Settings.areYouSureToLogout" = "هل أنت متأكد أنك تريد الخروج من حسابك؟";
+"Settings.EditProfile.title" = "تعديل الملف الشخصي";
+"Setting.EditProfile.firstName" = "الاسم";
+"Setting.EditProfile.firstNameHint" = "أدخل اسمك هنا...";
+"Setting.EditProfile.lastName" = "العائلة";
+"Setting.EditProfile.lastNameHint" = "أدخل اسم عائلتك هنا...";
+"Setting.EditProfile.userName" = "اسم المستخدم";
+"Setting.EditProfile.userNameHint" = "أدخل اسم المستخدم هنا...";
+"Setting.EditProfile.bio" = "السيرة الذاتية";
+"Setting.EditProfile.bioHint" = "أدخل سيرتك الذاتية هنا...";
+"Setting.EditProfile.bioHintMore" = "أدخل قليلاً عن نفسك...";
+"Setting.EditProfile.enterToPodAccount" = "ادخل إلى حساب POD الخاص بك";
 
 /* Support */
 "Support.version" = "إصدار: %@";

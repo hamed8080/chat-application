@@ -18,7 +18,9 @@ import OSLog
 extension ThreadViewModel {
     /// It triggers when send button tapped
     public func sendTextMessage(_ textMessage: String) {
-        if let replyMessage = replyMessage, let replyMessageId = replyMessage.id {
+        if AppState.shared.forwardMessageRequest?.threadId == threadId {
+            sendForwardMessages()
+        } else if let replyMessage = replyMessage, let replyMessageId = replyMessage.id {
             sendReplyMessage(replyMessageId, textMessage)
         } else if editMessage != nil {
             sendEditMessage(textMessage)
@@ -130,12 +132,31 @@ extension ThreadViewModel {
         }
     }
 
-    public func sendForwardMessage(_ destinationConversation: Conversation?, _ contact: Contact?) {
+    public func openDestinationConversationToForward(_ destinationConversation: Conversation?, _ contact: Contact?) {
         isInEditMode = false /// Close edit mode in ui
         sheetType = nil
         animateObjectWillChange()
-        let messageIds = selectedMessagesViewModel.selectedMessages.compactMap{$0.message.id}
-        AppState.shared.openThread(from: threadId, conversation: destinationConversation, contact: contact, messageIds: messageIds)
+        let messages = selectedMessagesViewModel.selectedMessages.compactMap{$0.message}
+        AppState.shared.openThread(from: threadId, conversation: destinationConversation, contact: contact, messages: messages)
+        selectedMessagesViewModel.clearSelection()
+    }
+
+    public func sendForwardMessages() {
+        if let req = AppState.shared.forwardMessageRequest {
+            if let textMessage = textMessage, !textMessage.isEmpty {
+                let messageReq = SendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .text)
+                ChatManager.activeInstance?.message.send(messageReq)
+                Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                    ChatManager.activeInstance?.message.send(req)
+                    AppState.shared.forwardMessages = nil
+                    AppState.shared.forwardMessageRequest = nil
+                }
+            } else {
+                ChatManager.activeInstance?.message.send(req)
+                AppState.shared.forwardMessages = nil
+                AppState.shared.forwardMessageRequest = nil
+            }
+        }
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image

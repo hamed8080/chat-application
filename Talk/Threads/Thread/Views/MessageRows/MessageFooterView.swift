@@ -19,14 +19,6 @@ struct MessageFooterView: View {
 
     var body: some View {
         HStack {
-            if message.forwardInfo != nil {
-                Image(systemName: "arrow.turn.up.right")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 12, height: 12)
-                    .foregroundColor(Color.App.gray5)
-                    .fontWeight(.bold)
-            }
             Text(viewModel.timeString)
                 .foregroundColor(Color.App.hint)
                 .font(.iransansCaption2)

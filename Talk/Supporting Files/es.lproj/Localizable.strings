@@ -131,10 +131,12 @@
 "Log.received" = "Recibido";
 
 /* Mensaje */
-"Message.Participant.left" = "%@ ha abandonado el grupo";
-"Message.Participant.removed" = "%@ eliminó a %@ del grupo";
-"Message.Participant.joined" = "%@ se ha unido al grupo";
-"Message.Participant.added" = "%@ agregó a %@ al grupo";
+"Message.Participant.left" = "%@ ha abandonado el grupo.";
+"Message.Participant.removed" = "%@ eliminó a %@ del grupo.";
+"Message.Participant.joined" = "%@ se ha unido al grupo.";
+"Message.Participant.added" = "%@ agregó a %@ al grupo.";
+"Message.forwardedFrom" = "Reenviado desde";
+"Message.replyTo" = "Responder a";
 
 /* Eventos del sistema */
 "SMT.isTyping" = "está escribiendo...";
@@ -165,7 +167,6 @@
 "Thread.addToFolder" = "Agregar a carpeta";
 "Thread.clearHistory" = "Borrar historial";
 "Thread.spam" = "Spam";
-"Thread.leave" = "Salir";
 "Thread.archive" = "Archivar";
 "Thread.unarchive" = "Desarchivar";
 "Thread.invite" = "Invitar";
@@ -192,7 +193,6 @@
 "Thread.Join.enterThreadNameHere" = "Ingresa el nombre del chat...";
 "Thread.Join.duplicateName" = "¡El nombre del hilo no existe!";
 "Thread.Join.footer" = "Únete a un hilo público por su nombre único.";
-"Thread.Delete.permanentlyDelete" = "Eliminar permanentemente";
 "Thread.Delete.footer" = "Al eliminar un hilo, no podrás restaurarlo ni unirte a él nuevamente.";
 "Thread.fastMessageFooter" = "Crea un hilo de inmediato aunque la persona a la que vas a enviar un mensaje no esté en la lista de contactos.";
 "Thread.enterFastMessageType" = "Ingresa %@ aquí...";
@@ -214,6 +214,10 @@
 "Thread.inviteLink" = "Enlace de invitación";
 "Thread.isVoiceRecording" = "Se está grabando voz";
 "Thread.isVideoRecording" = "Se está grabando video";
+"Thread.forwardTheMessage" = "Reenviar el mensaje";
+"Thread.forwardMessages" = "Reenviar %@ mensajes";
+"Thread.delete" = "Eliminar %@";
+"Thread.leave" = "Salir de %@";
 
 /* Estado de conexión */
 "ConnectionStatus.connecting" = "conectando";
@@ -280,6 +284,17 @@
 "Settings.restartToChangeLanguage" = "Reinicie la aplicación para cambiar el idioma.";
 "Settings.logoutFromAccount" = "Salir de tu cuenta";
 "Settings.areYouSureToLogout" = "¿Estás seguro de que quieres salir de tu cuenta?";
+"Settings.EditProfile.title" = "Editar perfil";
+"Setting.EditProfile.firstName" = "Nombre";
+"Setting.EditProfile.firstNameHint" = "Ingresa tu nombre aquí...";
+"Setting.EditProfile.lastName" = "Apellido";
+"Setting.EditProfile.lastNameHint" = "Ingresa tu apellido aquí...";
+"Setting.EditProfile.userName" = "Nombre de usuario";
+"Setting.EditProfile.userNameHint" = "Ingresa tu nombre de usuario aquí...";
+"Setting.EditProfile.bio" = "Biografía";
+"Setting.EditProfile.bioHint" = "Ingresa tu biografía aquí...";
+"Setting.EditProfile.bioHintMore" = "Ingresa un poco sobre ti mismo...";
+"Setting.EditProfile.enterToPodAccount" = "Ingresa a tu cuenta POD";
 
 /* Support */
 "Support.version" = "Versión: %@";

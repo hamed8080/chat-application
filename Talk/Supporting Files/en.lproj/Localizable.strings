@@ -130,10 +130,12 @@
 "Log.received" = "Received";
 
 /* Message */
-"Message.Participant.left" = "%@ has left the group";
-"Message.Participant.removed" = "%@ remvoed %@ from the group";
-"Message.Participant.joined" = "%@ has joind the group";
-"Message.Participant.added" = "%@ added %@";
+"Message.Participant.left" = "%@ has left the group.";
+"Message.Participant.removed" = "%@ remvoed %@ from the group.";
+"Message.Participant.joined" = "%@ has joind the group.";
+"Message.Participant.added" = "%@ added %@.";
+"Message.forwardedFrom" = "Forwarded from";
+"Message.replyTo" = "Reply to";
 
 /* System Events */
 "SMT.isTyping" = "is typing...";
@@ -157,7 +159,7 @@
 "Thread.draft" = "Draft:";
 "Thread.callStarted" = "Call started";
 "Thread.callEnded" = "Call ended";
-"Thread.unpin" = "UNPin";
+"Thread.unpin" = "Unpin";
 "Thread.pin" = "Pin";
 "Thread.mute" = "Mute";
 "Thread.unmute" = "UNMute";
@@ -191,8 +193,8 @@
 "Thread.Join.enterThreadNameHere" = "Enter name of the chat...";
 "Thread.Join.duplicateName" = "The thread name is not exist!";
 "Thread.Join.footer" = "Join to a public thread by it's unique name.";
-"Thread.Delete.permanentlyDelete" = "Permanently Delete";
-"Thread.Delete.footer" = "With deleting a thread, you cannot restore or join it again.";
+"Thread.Delete.footer" = "Are you sure you want to delete this conversation?";
+
 "Thread.fastMessageFooter" = "Create a thread immediately even though the person you are going to send a message to is not in the contact list.";
 "Thread.enterFastMessageType" = "Enter %@ here...";
 "Thread.Tabs.members" = "Members";
@@ -213,6 +215,10 @@
 "Thread.inviteLink" = "Invite Link";
 "Thread.isVoiceRecording" = "Is recording voice";
 "Thread.isVideoRecording" = "Is recording video";
+"Thread.forwardTheMessage" = "Forward the message";
+"Thread.forwardMessages" = "Forward %@ messages";
+"Thread.delete" = "Delete %@";
+"Thread.leave" = "Leave %@";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";
@@ -279,6 +285,17 @@
 "Settings.restartToChangeLanguage" = "Please restart the app to change the language.";
 "Settings.logoutFromAccount" = "Logout from your account";
 "Settings.areYouSureToLogout" = "Are you sure you want to exit from your account?";
+"Settings.EditProfile.title" = "Edit profile";
+"Setting.EditProfile.firstName" = "Name";
+"Setting.EditProfile.firstNameHint" = "Enter your name here...";
+"Setting.EditProfile.lastName" = "Family";
+"Setting.EditProfile.lastNameHint" = "Enter your family here...";
+"Setting.EditProfile.userName" = "Username";
+"Setting.EditProfile.userNameHint" = "Enter your username here...";
+"Setting.EditProfile.bio" = "Biography";
+"Setting.EditProfile.bioHint" = "Enter your biography here...";
+"Setting.EditProfile.bioHintMore" = "Enter a little bit about yourself...";
+"Setting.EditProfile.enterToPodAccount" = "Enter to your POD account";
 
 /* Support */
 "Support.version" = "Version: %@";
