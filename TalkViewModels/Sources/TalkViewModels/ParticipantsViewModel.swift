@@ -73,6 +73,10 @@ public final class ParticipantsViewModel: ObservableObject {
             onDelete(chatResponse)
         case .add(let chatResponse):
             onAdded(chatResponse)
+        case .setAdminRoleToUser(let response):
+            onSetAdminRole(response)
+        case .removeAdminRoleFromUser(let response):
+            onRemoveAdminRole(response)
         default:
             break
         }
@@ -193,12 +197,16 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public func makeAdmin(_ participant: Participant) {
         guard let id = participant.id, let threadId = thread?.id else { return }
-        ChatManager.activeInstance?.user.set(RolesRequest(userRoles: [.init(userId: id, roles: Roles.adminRoles)], threadId: threadId))
+        let req = RolesRequest(userRoles: [.init(userId: id, roles: Roles.adminRoles)], threadId: threadId)
+        RequestsManager.shared.append(prepend: "REQUEST-TO-ADMIN-PARTICIPANT", value: req)
+        ChatManager.activeInstance?.user.set(req)
+//        ChatManager.activeInstance?.conversation.participant.addAdminRole(.init(participants: [.init(id: "\(participant.coreUserId ?? 0)", idType: .coreUserId)], conversationId: threadId))
     }
 
     public func removeAdminRole(_ participant: Participant) {
         guard let id = participant.id, let threadId = thread?.id else { return }
         ChatManager.activeInstance?.user.remove(RolesRequest(userRoles: [.init(userId: id, roles: Roles.adminRoles)], threadId: threadId))
+//        ChatManager.activeInstance?.conversation.participant.removeAdminRole(.init(participants: [.init(id: "\(participant.coreUserId ?? 0)", idType: .coreUserId)], conversationId: threadId))
     }
 
     public func preparePaginiation() {
@@ -236,6 +244,33 @@ public final class ParticipantsViewModel: ObservableObject {
             }
         }
 
+//        /// If an admin makes another participant admin the setter will not get a list of roles in the response.
+        if response.value(prepend: "REQUEST-TO-ADMIN-PARTICIPANT") != nil, response.error == nil {
+            response.result?.forEach{ userRole in
+                if let index = participants.firstIndex(where: {$0.id == userRole.id}) {
+                    participants[index].admin = true
+                    animateObjectWillChange()
+                }
+            }
+        }
+    }
+
+    private func onSetAdminRole(_ response: ChatResponse<[AdminRoleResponse]>) {
+        response.result?.forEach{ adminRole in
+            if adminRole.hasError == nil, adminRole.hasError == false, let index = participants.firstIndex(where: {$0.id == adminRole.participant?.id}) {
+                participants[index].admin = true
+                animateObjectWillChange()
+            }
+        }
+    }
+
+    private func onRemoveAdminRole(_ response: ChatResponse<[AdminRoleResponse]>) {
+        response.result?.forEach{ adminRole in
+            if adminRole.hasError == nil, adminRole.hasError == false, let index = participants.firstIndex(where: {$0.id == adminRole.participant?.id}) {
+                participants[index].admin = false
+                animateObjectWillChange()
+            }
+        }
     }
 
     public func removeParticipant(_ participant: Participant) {
