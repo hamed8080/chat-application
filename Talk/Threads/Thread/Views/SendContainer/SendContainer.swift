@@ -46,6 +46,8 @@ struct SendContainer: View {
                     } else {
                         ForwardMessagesViewPlaceholder()
                             .environmentObject(viewModel)
+                        ReplyPrivatelyMessageViewPlaceholder()
+                            .environmentObject(viewModel)
                         ReplyMessageViewPlaceholder()
                             .environmentObject(viewModel)
                         MentionList(text: $text)

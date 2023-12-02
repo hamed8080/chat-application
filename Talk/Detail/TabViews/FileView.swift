@@ -36,10 +36,12 @@ struct FileView: View {
 
 struct MessageListFileView: View {
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-
+    @EnvironmentObject var detailViewModel: DetailViewModel
+    
     var body: some View {
         ForEach(viewModel.messages) { message in
             FileRowView(message: message)
+                .environmentObject(detailViewModel.threadVM?.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
@@ -64,16 +66,11 @@ struct FileRowView: View {
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
     @State var shareDownloadedFile = false
-    private var downloadViewModel: DownloadFileViewModel? { threadVM?.messageViewModel(for: message).downloadFileVM }
+    @EnvironmentObject var downloadViewModel: DownloadFileViewModel
 
     var body: some View {
         HStack {
-            let view = DownloadFileButtonView()
-            if let downloadVM = downloadViewModel {
-                view.environmentObject(downloadVM)
-            } else {
-                view
-            }
+            DownloadFileButtonView()
             VStack(alignment: .leading) {
                 Text(message.fileMetaData?.name ?? message.messageTitle)
                     .font(.iransansBody)
@@ -101,15 +98,15 @@ struct FileRowView: View {
             }
         }
         .sheet(isPresented: $shareDownloadedFile) {
-            if let fileURL = downloadViewModel?.fileURL {
+            if let fileURL = downloadViewModel.fileURL {
                 ActivityViewControllerWrapper(activityItems: [fileURL], title: message.fileMetaData?.file?.originalName)
             }
         }
         .onTapGesture {
-            if downloadViewModel?.state == .completed {
+            if downloadViewModel.state == .completed {
                 shareDownloadedFile.toggle()
             } else {
-                downloadViewModel?.startDownload()
+                downloadViewModel.startDownload()
             }
         }
     }

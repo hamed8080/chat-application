@@ -26,10 +26,10 @@ struct DetailView: View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 0) {
                 InfoView()
-                BioDescription()
-                PublicLink()
                 UserName()
                 CellPhoneNumber()
+                PublicLink()
+                BioDescription()
                 StickyHeaderSection(header: "", height: 10)
                 DetailTopButtons()
                     .padding([.top, .bottom])
@@ -163,7 +163,7 @@ struct BioDescription: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if let description = viewModel.thread?.description.validateString {
+        if let description = viewModel.partner?.chatProfileVO?.bio ?? viewModel.thread?.description.validateString {
             InfoRowItem(key: "General.description", value: description)
         }
     }
@@ -207,7 +207,7 @@ struct UserName: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if let participantName = viewModel.user?.name.validateString {
+        if let participantName = viewModel.partner?.username ?? viewModel.user?.name.validateString {
             InfoRowItem(key: "Settings.userName", value: participantName)
         }
     }
@@ -217,7 +217,7 @@ struct CellPhoneNumber: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if let cellPhoneNumber = viewModel.cellPhoneNumber.validateString {
+        if let cellPhoneNumber = viewModel.partnerContact?.cellphoneNumber ?? viewModel.cellPhoneNumber.validateString {
             InfoRowItem(key: "Participant.Search.Type.cellphoneNumber", value: cellPhoneNumber)
         }
     }
@@ -240,6 +240,9 @@ struct InfoRowItem: View {
                 Text(value)
                     .font(.iransansSubtitle)
                     .foregroundStyle(Color.App.text)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 Text(String(localized: .init(key)))
                     .font(.iransansCaption)
                     .foregroundStyle(Color.App.hint)

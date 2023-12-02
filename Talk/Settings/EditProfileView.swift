@@ -122,7 +122,7 @@ struct EditProfileView: View {
                     .applyAppTextfieldStyle(topPlaceholder: "Setting.EditProfile.userName", isFocused: focusedField == .userName) {
                         focusedField = .userName
                     }
-                TextField("Setting.EditProfile.bioHint", text: $viewModel.bio)
+                TextField("Setting.EditProfile.bioHint", text: $viewModel.bio, axis: .vertical)
                     .focused($focusedField, equals: .bio)
                     .font(.iransansBody)
                     .padding()

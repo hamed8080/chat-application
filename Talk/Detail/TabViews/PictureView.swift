@@ -66,10 +66,12 @@ struct PictureView: View {
 struct MessageListPictureView: View {
     let itemWidth: CGFloat
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-
+    @EnvironmentObject var detailViewModel: DetailViewModel
+    
     var body: some View {
         ForEach(viewModel.messages) { message in
             PictureRowView(message: message, itemWidth: itemWidth)
+                .environmentObject(detailViewModel.threadVM?.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
                 .id(message.id)
                 .frame(width: itemWidth, height: itemWidth)
                 .onAppear {
@@ -95,7 +97,7 @@ struct PictureRowView: View {
     }
 
     var body: some View {
-        let view = DownloadPictureButtonView(itemWidth: itemWidth)
+        DownloadPictureButtonView(itemWidth: itemWidth)
             .frame(width: itemWidth, height: itemWidth)
             .clipped()
             .contextMenu {
@@ -109,12 +111,6 @@ struct PictureRowView: View {
             .onTapGesture {
                 appOverlayViewModel.galleryMessage = message
             }
-        if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
-            view
-                .environmentObject(downloadVM)
-        } else {
-            view
-        }
     }
 }
 

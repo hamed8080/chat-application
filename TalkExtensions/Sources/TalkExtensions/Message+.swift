@@ -136,21 +136,23 @@ public extension Message {
         }
     }
 
-    var addOrRemoveParticipantString: String {
+    static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
+
+    var addOrRemoveParticipantString: String? {
         let effectedName = addRemoveParticipant?.participnats?.first?.name ?? ""
         let participantName = participant?.name ?? ""
-        guard let requestType = addRemoveParticipant?.requestTypeEnum else { return "" }
+        guard let requestType = addRemoveParticipant?.requestTypeEnum else { return nil }
         switch requestType {
         case .leaveThread:
-            return String(format: NSLocalizedString("Message.Participant.left", comment: ""), participantName)
+            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.left", comment: ""), participantName)
         case .joinThread:
-            return String(format: NSLocalizedString("Message.Participant.joined", comment: ""), participantName)
+            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.joined", comment: ""), participantName)
         case .removedFromThread:
-            return String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
+            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
         case .addParticipant:
-            return String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedName)
+            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedName)
         default:
-            return ""
+            return nil
         }
     }
 }

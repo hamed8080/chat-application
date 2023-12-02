@@ -164,10 +164,14 @@ struct UserInformationSection: View {
 
         if !bio.isEmpty {
             VStack(alignment: .leading) {
-                TextField("", text: $bio)
+                Text(bio)
                     .foregroundColor(Color.App.text)
                     .font(.iransansSubheadline)
                     .disabled(true)
+                    .lineLimit(20)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+
                 Text("Settings.bio")
                     .foregroundColor(Color.App.hint)
                     .font(.iransansCaption)

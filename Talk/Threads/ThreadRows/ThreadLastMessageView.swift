@@ -18,26 +18,18 @@ struct ThreadLastMessageView: View {
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
     var lastMsgVO: Message? { thread.lastMessageVO }
-    var isLeftOrJoinMessage: Bool { lastMsgVO?.type == .participantLeft || lastMsgVO?.type == .participantJoin }
-    private static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
-    var key: String? {
-        if !isLeftOrJoinMessage, thread.group == true {
-            return "Thread.Row.lastMessageSender"
-        } else if lastMsgVO?.type == .participantLeft {
-            return "Message.Participant.left"
-        } else if lastMsgVO?.type == .participantJoin {
-            return "Message.Participant.joined"
-        } else {
-            return nil
-        }
-    }
 
     var body: some View {
         VStack(spacing: 2) {
             HStack {
-                if let participantName = lastMsgVO?.participant?.name, let key = key {
-                    let localized = String(localized: .init(key))
-                    Text(ThreadLastMessageView.textDirectionMark + String(format: localized, participantName) )
+                if let addOrRemoveParticipantString = lastMsgVO?.addOrRemoveParticipantString {
+                    Text(addOrRemoveParticipantString)
+                        .font(.iransansBoldBody)
+                        .lineLimit(1)
+                        .foregroundStyle(isSelected ? Color.App.white : Color.App.primary)
+                } else if let participantName = lastMsgVO?.participant?.name, thread.group == true {
+                    let localized = String(localized: .init("Thread.Row.lastMessageSender"))
+                    Text(Message.textDirectionMark + String(format: localized, participantName) )
                         .font(.iransansBoldBody)
                         .lineLimit(1)
                         .foregroundStyle(isSelected ? Color.App.white : Color.App.primary)

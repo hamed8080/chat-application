@@ -34,10 +34,12 @@ struct MusicView: View {
 
 struct MessageListMusicView: View {
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
+    @EnvironmentObject var detailViewModel: DetailViewModel
 
     var body: some View {
         ForEach(viewModel.messages) { message in
             MusicRowView(message: message)
+                .environmentObject(detailViewModel.threadVM?.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
@@ -59,23 +61,18 @@ struct MessageListMusicView: View {
 struct MusicRowView: View {
     let message: Message
     var threadVM: ThreadViewModel? { viewModel.threadVM }
+    @EnvironmentObject var downloadViewModel: DownloadFileViewModel
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
-    private var downloadViewModel: DownloadFileViewModel? { threadVM?.messageViewModel(for: message).downloadFileVM }
 
     var body: some View {
         HStack {
-            if downloadViewModel?.state == .completed, let fileURL = downloadViewModel?.fileURL {
+            if downloadViewModel.state == .completed, let fileURL = downloadViewModel.fileURL {
                 DownloadedMusicPlayer(message: message, fileURL: fileURL)
             } else {
-                let view = DownloadMusicButtonView()
+                DownloadMusicButtonView()
                     .frame(width: 48, height: 48)
                     .padding(4)
-                if let downloadVM = downloadViewModel {
-                    view.environmentObject(downloadVM)
-                } else {
-                    view
-                }
             }
 
             VStack(alignment: .leading) {
@@ -105,8 +102,8 @@ struct MusicRowView: View {
             }
         }
         .onTapGesture {
-            if downloadViewModel?.state != .completed {
-                downloadViewModel?.startDownload()
+            if downloadViewModel.state != .completed {
+                downloadViewModel.startDownload()
             } else {
                 AppState.shared.objectsContainer.audioPlayerVM.toggle()
             }

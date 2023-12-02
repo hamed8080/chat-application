@@ -340,3 +340,13 @@ public extension ThreadViewModel {
         }
     }
 }
+
+public extension ThreadViewModel {
+    func moveToMessageTimeOnOpenConversation() {
+        if let moveToMessageId = AppState.shared.moveToMessageId, let moveToMessageTime = AppState.shared.moveToMessageTime {
+            moveToTime(moveToMessageTime, moveToMessageId, highlight: true)
+            AppState.shared.moveToMessageId = nil
+            AppState.shared.moveToMessageTime = nil
+        }
+    }
+}

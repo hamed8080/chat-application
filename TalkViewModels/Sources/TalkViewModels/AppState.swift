@@ -52,6 +52,8 @@ public final class AppState: ObservableObject {
     public var objectsContainer: ObjectsContainer!
     public var forwardMessages: [Message]?
     public var forwardMessageRequest: ForwardMessageRequest?
+    public var moveToMessageId: Int?
+    public var moveToMessageTime: UInt?
 
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
@@ -105,6 +107,10 @@ public final class AppState: ObservableObject {
         if (response.value(prepend: "SEARCH-P2P") as? ThreadsRequest) != nil, !response.cache {
             onSearchP2PThreads(thread: response.result?.first)
         }
+
+        if (response.value(prepend: "SEARCH-GROUP-THREAD") as? ThreadsRequest) != nil, !response.cache {
+            onSearchGroupThreads(thread: response.result?.first)
+        }
     }
 
     public func showThread(thread: Conversation) {
@@ -127,6 +133,12 @@ public final class AppState: ObservableObject {
     public func openThread(user: User) {
         userToCreateThread = .init(id: user.coreUserId, image: user.image, name: user.name)
         searchForP2PThread(coreUserId: user.coreUserId ?? -1)
+    }
+
+    public func openThreadAndMoveToMessage(conversationId: Int, messageId: Int, messageTime: UInt) {
+        self.moveToMessageId = messageId
+        self.moveToMessageTime = messageTime
+        searchForGroupThread(threadId: conversationId, moveToMessageId: messageId, moveToMessageTime: messageTime)
     }
 
     /// Forward messages form a thread to a destination thread.
@@ -176,6 +188,22 @@ public final class AppState: ObservableObject {
         ChatManager.activeInstance?.conversation.get(req)
     }
 
+    public func searchForGroupThread(threadId: Int, moveToMessageId: Int, moveToMessageTime: UInt) {
+        if let thread = checkForGroupOffline(tharedId: threadId) {
+            onSearchGroupThreads(thread: thread)
+            return
+        }
+        let req = ThreadsRequest(threadIds: [threadId])
+        RequestsManager.shared.append(prepend: "SEARCH-GROUP-THREAD", value: req)
+        ChatManager.activeInstance?.conversation.get(req)
+    }
+
+    public func onSearchGroupThreads(thread: Conversation?) {
+        if let thread = thread {
+            navViewModel?.append(thread: thread)
+        }
+    }
+
     public func onSearchP2PThreads(thread: Conversation?) {
         if let thread = thread {
             navViewModel?.append(thread: thread)
@@ -190,6 +218,11 @@ public final class AppState: ObservableObject {
                 ($0.partner == coreUserId || ($0.participants?.contains(where: {$0.coreUserId == coreUserId}) ?? false))
                 && $0.group == false && $0.type == .normal}
             )
+    }
+
+    public func checkForGroupOffline(tharedId: Int) -> Conversation? {
+        navViewModel?.threadsViewModel?.threads
+            .first(where: { $0.group == true && $0.id == tharedId })
     }
 
     public func showEmptyThread() {

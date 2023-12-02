@@ -36,10 +36,12 @@ struct VideoView: View {
 
 struct MessageListVideoView: View {
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-
+    @EnvironmentObject var detailViewModel: DetailViewModel
+    
     var body: some View {
         ForEach(viewModel.messages) { message in
             VideoRowView(message: message)
+                .environmentObject(detailViewModel.threadVM?.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
@@ -66,24 +68,19 @@ struct VideoRowView: View {
     @State var width: CGFloat? = 48
     @State var height: CGFloat? = 48
     @State var shareDownloadedFile = false
-    private var downloadViewModel: DownloadFileViewModel? { threadVM?.messageViewModel(for: message).downloadFileVM }
+    @EnvironmentObject var downloadViewModel: DownloadFileViewModel
 
     var body: some View {
         HStack {
-            let view = DownloadVideoButtonView()
+            DownloadVideoButtonView()
                 .frame(width: width, height: height)
                 .padding(4)
-            if let downloadVM = threadVM?.messageViewModel(for: message).downloadFileVM {
-                view.environmentObject(downloadVM)
-                    .onReceive(downloadVM.objectWillChange) { newValue in
-                        if downloadVM.state == .completed {
-                            height = nil
-                            width = nil
-                        }
+                .onReceive(downloadViewModel.objectWillChange) { newValue in
+                    if downloadViewModel.state == .completed {
+                        height = nil
+                        width = nil
                     }
-            } else {
-                view
-            }
+                }
 
             VStack(alignment: .leading) {
                 Text(message.fileMetaData?.name ?? message.messageTitle)
@@ -112,8 +109,8 @@ struct VideoRowView: View {
             }
         }
         .onTapGesture {
-            if downloadViewModel?.state != .completed {
-                downloadViewModel?.startDownload()
+            if downloadViewModel.state != .completed {
+                downloadViewModel.startDownload()
             } else {
                 AppState.shared.objectsContainer.audioPlayerVM.toggle()
             }

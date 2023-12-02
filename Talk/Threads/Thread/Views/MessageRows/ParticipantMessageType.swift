@@ -19,7 +19,7 @@ struct ParticipantMessageType: View {
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
             let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
-            let markdownText = try! AttributedString(markdown: "\(message.addOrRemoveParticipantString) - \(date)")
+            let markdownText = try! AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
             Text(markdownText)
                 .foregroundStyle(Color.App.text)
                 .multilineTextAlignment(.center)

@@ -57,6 +57,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
     @Published public var showEditGroup = false
     @Published public var showContactEditSheet: Bool = false
     public var canShowEditButton: Bool {thread?.canEditInfo == true || user?.contactId != nil}
+    public var partner: Participant?
+    public var partnerContact: Contact?
 
     public init(thread: Conversation? = nil, contact: Contact? = nil, user: Participant? = nil) {
         self.user = user
@@ -72,14 +74,31 @@ public final class DetailViewModel: ObservableObject, Hashable {
                 self?.onThreadEvent(value)
             }
             .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: .participant)
+            .compactMap { $0.object as? ParticipantEventTypes }
+            .sink { [weak self] value in
+                self?.onParticipantEvent(value)
+            }
+            .store(in: &cancelable)
         NotificationCenter.default.publisher(for: .contact)
             .compactMap { $0.object as? ContactEventTypes }
             .sink { [weak self] value in
                 self?.onContactEvent(value)
             }
             .store(in: &cancelable)
+        if thread?.group == false || thread?.group == nil {
+            getUserData()
+        }
     }
 
+    private func onParticipantEvent(_ event: ParticipantEventTypes) {
+        switch event {
+        case .participants(let response):
+            onP2PParticipant(response)
+        default:
+            break
+        }
+    }
     private func onThreadEvent(_ event: ThreadEventTypes) {
         switch event {
         case .changedType(let chatResponse):
@@ -103,6 +122,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
 
     private func onContactEvent(_ event: ContactEventTypes) {
         switch event {
+        case .contacts(let response):
+            onP2PContact(response)
         case .blocked(let chatResponse):
             onBlock(chatResponse)
         case .unblocked(let chatResponse):
@@ -293,8 +314,32 @@ public final class DetailViewModel: ObservableObject, Hashable {
         if response.subjectId == thread?.id, response.result?.id == AppState.shared.user?.id {
             dismiss = true
         } else {
-            thread?.participantCount = (thread?.participantCount ?? 0) - 1
             participantViewModel?.removeParticipant(.init(id: response.result?.id))
+            animateObjectWillChange()
+        }
+    }
+
+    private func getUserData() {
+        guard let threadId = thread?.id else { return }
+        let req = ThreadParticipantRequest(threadId: threadId)
+        RequestsManager.shared.append(prepend: "GET-P2P-DETAIL", value: req)
+        ChatManager.activeInstance?.conversation.participant.get(req)
+
+    }
+
+    private func onP2PParticipant(_ response: ChatResponse<[Participant]>) {
+        if response.value(prepend: "GET-P2P-DETAIL") != nil, let partner = response.result?.first(where: {$0.id == thread?.partner}) {
+            self.partner = partner
+            animateObjectWillChange()
+            let req = ContactsRequest(id: partner.contactId)
+            RequestsManager.shared.append(prepend: "GET-P2P-CONTACT-DETAIL", value: req)
+            ChatManager.activeInstance?.contact.get(req)
+        }
+    }
+
+    private func onP2PContact(_ response: ChatResponse<[Contact]>) {
+        if response.value(prepend: "GET-P2P-CONTACT-DETAIL") != nil, let partnerContact = response.result?.first(where: {$0.id == partner?.contactId}) {
+            self.partnerContact = partnerContact
             animateObjectWillChange()
         }
     }

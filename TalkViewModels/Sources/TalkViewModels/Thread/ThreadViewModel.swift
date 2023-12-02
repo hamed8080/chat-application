@@ -109,6 +109,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.canDownloadImages = canDownloadImagesInConversation()
         self.canDownloadFiles = canDownloadFilesInConversation()
         selectedMessagesViewModel.threadVM = self
+        moveToMessageTimeOnOpenConversation()
     }
 
     private func setupNotificationObservers() {

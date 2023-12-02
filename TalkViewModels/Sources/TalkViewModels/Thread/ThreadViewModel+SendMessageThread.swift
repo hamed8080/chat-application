@@ -20,6 +20,8 @@ extension ThreadViewModel {
     public func sendTextMessage(_ textMessage: String) {
         if AppState.shared.forwardMessageRequest?.threadId == threadId {
             sendForwardMessages()
+        } else if AppState.shared.replyPrivately != nil {
+            sendReplyPrivaetlyMessage(textMessage)
         } else if let replyMessage = replyMessage, let replyMessageId = replyMessage.id {
             sendReplyMessage(replyMessageId, textMessage)
         } else if editMessage != nil {
@@ -98,6 +100,59 @@ extension ThreadViewModel {
                                             userGroupHash: self.thread.userGroupHash)
             req.messageType = .podSpaceFile
             ChatManager.activeInstance?.message.reply(req, fileReq)
+        }
+    }
+
+    public func sendReplyPrivaetlyMessage(_ textMessage: String) {
+        guard
+            let replyMessage = AppState.shared.replyPrivately,
+            let replyMessageId = replyMessage.id,
+            let fromConversationId = replyMessage.conversation?.id
+        else { return }
+        canScrollToBottomOfTheList = true
+        if attachmentsViewModel.attachments.count == 1 {
+            sendSingleReplyPrivatelyAttachment(attachmentsViewModel.attachments.first, fromConversationId, replyMessageId, textMessage)
+        } else {
+            if attachmentsViewModel.attachments.count > 1 {
+                let lastItem = attachmentsViewModel.attachments.last
+                if let lastItem {
+                    attachmentsViewModel.remove(lastItem)
+                }
+                sendAttachmentsMessage()
+                sendSingleReplyPrivatelyAttachment(lastItem, fromConversationId, replyMessageId, textMessage)
+            } else {
+                let req = ReplyPrivatelyRequest(repliedTo: replyMessageId,
+                                                messageType: .text,
+                                                content: .init(text: textMessage, targetConversationId: threadId, fromConversationId: fromConversationId))
+                ChatManager.activeInstance?.message.replyPrivately(req)
+            }
+        }
+        attachmentsViewModel.clear()
+        AppState.shared.replyPrivately = nil
+    }
+
+    public func sendSingleReplyPrivatelyAttachment(_ attachmentFile: AttachmentFile?, _ fromConversationId: Int, _ replyMessageId: Int, _ textMessage: String) {
+        var req = ReplyPrivatelyRequest(repliedTo: replyMessageId,
+                                                     messageType: .text,
+                                                     content: .init(text: textMessage, targetConversationId: threadId, fromConversationId: fromConversationId))
+        if let imageItem = attachmentFile?.request as? ImageItem {
+            let imageReq = UploadImageRequest(data: imageItem.imageData,
+                                              fileName: imageItem.fileName ?? "",
+                                              mimeType: "image/jpeg",
+                                              userGroupHash: self.thread.userGroupHash,
+                                              hC: imageItem.height,
+                                              wC: imageItem.width
+            )
+            req.messageType = .podSpacePicture
+            ChatManager.activeInstance?.message.replyPrivately(req, imageReq)
+        } else if let url = attachmentFile?.request as? URL, let data = try? Data(contentsOf: url) {
+            let fileReq = UploadFileRequest(data: data,
+                                            fileExtension: ".\(url.fileExtension)",
+                                            fileName: url.fileName,
+                                            mimeType: url.mimeType,
+                                            userGroupHash: self.thread.userGroupHash)
+            req.messageType = .podSpaceFile
+            ChatManager.activeInstance?.message.replyPrivately(req, fileReq)
         }
     }
 
