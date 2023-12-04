@@ -88,6 +88,7 @@ struct MutableMessageView: View {
             UploadMessageType()
             GroupParticipantNameView()
             MessageTextView()
+            JoinPublicLink(viewModel: viewModel)
             MapAddressTextView()
             UnsentMessageView()
             Group {

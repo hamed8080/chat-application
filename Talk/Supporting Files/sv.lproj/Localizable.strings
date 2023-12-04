@@ -189,7 +189,8 @@
 "ThreadList.Toolbar.fastMessage" = "Snabbt meddelande";
 "ThreadList.Toolbar.createABot" = "Skapa en ny bot";
 "ThreadList.Toolbar.filter" = "Filtrera";
-"Thread.Join.title" = "Gå med";
+"Thread.join" = "Gå med";
+"Thread.Join.question" = "Är du säker på att du vill gå med i den här konversationen?";
 "Thread.Join.enterThreadNameHere" = "Ange chattens namn...";
 "Thread.Join.duplicateName" = "Trådnamnet finns inte!";
 "Thread.Join.footer" = "Gå med i en offentlig tråd genom dess unika namn.";

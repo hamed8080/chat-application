@@ -189,7 +189,8 @@
 "ThreadList.Toolbar.fastMessage" = "Mensaje rápido";
 "ThreadList.Toolbar.createABot" = "Crear un nuevo bot";
 "ThreadList.Toolbar.filter" = "Filtrar";
-"Thread.Join.title" = "Unirse";
+"Thread.join" = "Unirse";
+"Thread.Join.question" = "¿Estás seguro/a de que quieres unirte a esta conversación?";
 "Thread.Join.enterThreadNameHere" = "Ingresa el nombre del chat...";
 "Thread.Join.duplicateName" = "¡El nombre del hilo no existe!";
 "Thread.Join.footer" = "Únete a un hilo público por su nombre único.";

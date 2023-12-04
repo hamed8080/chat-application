@@ -561,6 +561,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             animateObjectWillChange()
         }
     }
+
+    public func disableExcessiveLoading() {
+        isProgramaticallyScroll = true
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { [weak self] _ in
+            self?.isProgramaticallyScroll = false
+        }
+    }
     
     func log(_ string: String) {
 #if DEBUG

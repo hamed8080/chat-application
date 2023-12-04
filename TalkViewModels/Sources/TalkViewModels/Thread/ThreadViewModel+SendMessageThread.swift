@@ -209,6 +209,7 @@ extension ThreadViewModel {
                 ChatManager.activeInstance?.message.send(req)
                 AppState.shared.appStateNavigationModel = .init()
             }
+            sendAttachmentsMessage()
         }
     }
 

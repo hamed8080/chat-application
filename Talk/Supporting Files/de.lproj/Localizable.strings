@@ -189,7 +189,8 @@
 "ThreadList.Toolbar.fastMessage" = "Schnelle Nachricht";
 "ThreadList.Toolbar.createABot" = "Einen neuen Bot erstellen";
 "ThreadList.Toolbar.filter" = "Filtern";
-"Thread.Join.title" = "Beitreten";
+"Thread.join" = "Beitreten";
+"Thread.Join.question" = "Bist du sicher, dass du diesem Gespräch beitreten möchtest?";
 "Thread.Join.enterThreadNameHere" = "Name des Chats eingeben...";
 "Thread.Join.duplicateName" = "Der Thread-Name existiert nicht!";
 "Thread.Join.footer" = "Treten Sie einem öffentlichen Thread mit seinem eindeutigen Namen bei.";

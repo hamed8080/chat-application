@@ -10,6 +10,7 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import Chat
 
 struct ThreadMessagesList: View {
     let viewModel: ThreadViewModel
@@ -37,25 +38,23 @@ struct ThreadMessagesList: View {
         .simultaneousGesture(
             TapGesture()
                 .onEnded { _ in
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    viewModel.isProgramaticallyScroll = false
-                    viewModel.messageViewModels.filter(\.showReactionsOverlay).forEach { rowViewModel in
-                        rowViewModel.showReactionsOverlay = false
-                        rowViewModel.animateObjectWillChange()
-                    }
+                    hideKeyboardOnTapOrDrag()
                 }
         )
         .simultaneousGesture(
             DragGesture(minimumDistance: 10, coordinateSpace: .global)
                 .onChanged { _ in
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    viewModel.isProgramaticallyScroll = false
-                    viewModel.messageViewModels.filter(\.showReactionsOverlay).forEach { rowViewModel in
-                        rowViewModel.showReactionsOverlay = false
-                        rowViewModel.animateObjectWillChange()
-                    }
+                    hideKeyboardOnTapOrDrag()
                 }
         )
+    }
+
+    private func hideKeyboardOnTapOrDrag() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        viewModel.messageViewModels.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
+            rowViewModel.showReactionsOverlay = false
+            rowViewModel.animateObjectWillChange()
+        }
     }
 }
 
@@ -190,19 +189,33 @@ struct KeyboardHeightView: View {
                 if !isInAnimating {
                     isInAnimating = true
                     keyboardHeight = size.height
+                    viewModel.disableExcessiveLoading()
                     if size.height > 0, viewModel.isAtBottomOfTheList {
-                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                            withAnimation(.easeInOut) {
-                                isInAnimating = false
-                                viewModel.scrollProxy?.scrollTo(viewModel.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
-                            }
-                        }
+                        updateHeight()
                     } else if viewModel.isAtBottomOfTheList {
                         viewModel.scrollToBottom()
-                        isInAnimating = false
+                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                            isInAnimating = false
+                        }
                     }
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .message)) { notif in
+                if let event = notif.object as? MessageEventTypes {
+                    if case .new(let response) = event, response.result?.conversation?.id == viewModel.threadId {
+                        updateHeight()
+                    }
+                }
+            }
+    }
+
+    private func updateHeight() {
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+            withAnimation(.easeInOut) {
+                isInAnimating = false
+                viewModel.scrollProxy?.scrollTo(viewModel.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
+            }
+        }
     }
 }
 

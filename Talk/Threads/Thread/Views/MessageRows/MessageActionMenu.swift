@@ -88,9 +88,11 @@ struct MessageActionMenu: View {
             }
 
             let isPinned = message.id == viewModel.threadVM?.thread.pinMessage?.id && viewModel.threadVM?.thread.pinMessage != nil
-            ContextMenuButton(title: isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", image: "pin") {
-                threadVM?.togglePinMessage(message)
-                threadVM?.animateObjectWillChange()
+            if threadVM?.thread.admin == true {
+                ContextMenuButton(title: isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", image: "pin") {
+                    threadVM?.togglePinMessage(message)
+                    threadVM?.animateObjectWillChange()
+                }
             }
 
             ContextMenuButton(title: "General.select", image: "checkmark.circle") {

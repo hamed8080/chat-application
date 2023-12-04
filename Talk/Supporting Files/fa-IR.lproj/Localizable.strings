@@ -189,7 +189,8 @@
 "ThreadList.Toolbar.fastMessage" = "پیام مستقیم";
 "ThreadList.Toolbar.createABot" = "ساخت بات جدید";
 "ThreadList.Toolbar.filter" = "فیلتر";
-"Thread.Join.title" = "پیوستن";
+"Thread.join" = "پیوستن";
+"Thread.Join.question" = "آیا شما مطمئن هستید میخواهید به گفتگو بپیوندید؟";
 "Thread.Join.enterThreadNameHere" = "نام گفتگو را وارد کنید.";
 "Thread.Join.duplicateName" = "گفتگو پیدا نشد";
 "Thread.Join.footer" = "پیوستن به یک گروه عمومی با نام منحصر به فرد";

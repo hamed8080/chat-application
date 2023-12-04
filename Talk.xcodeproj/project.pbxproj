@@ -37,6 +37,8 @@
 		053803D12B11F879005C8FAB /* DeleteThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053803CF2B11F879005C8FAB /* DeleteThreadView.swift */; };
 		05466B0A2AEEA3F7005CC176 /* ArchivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05466B092AEEA3F7005CC176 /* ArchivesView.swift */; };
 		05466B0B2AEEA3F7005CC176 /* ArchivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05466B092AEEA3F7005CC176 /* ArchivesView.swift */; };
+		054EBA6E2B1E0613008F248D /* JoinPublicLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */; };
+		054EBA6F2B1E0613008F248D /* JoinPublicLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */; };
 		05551C262AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
 		05551C272AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
 		05551C292AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */; };
@@ -337,6 +339,7 @@
 		051F26C62ADD0F8F00BF9841 /* SwipyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipyView.swift; sourceTree = "<group>"; };
 		053803CF2B11F879005C8FAB /* DeleteThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteThreadView.swift; sourceTree = "<group>"; };
 		05466B092AEEA3F7005CC176 /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
+		054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinPublicLink.swift; sourceTree = "<group>"; };
 		05551C252AF4C631000F98B6 /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
 		05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainerButton.swift; sourceTree = "<group>"; };
 		05593BA42AFF560A00316E39 /* ThreadSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSearchView.swift; sourceTree = "<group>"; };
@@ -732,6 +735,7 @@
 				05DE92422B03DFC300C7A006 /* MessageRowVideoDownloader.swift */,
 				057A18DE2B04C78A0007868D /* MessageParticipantsSeen.swift */,
 				050620402B0B1FE10024476C /* MessageRowBackground.swift */,
+				054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */,
 			);
 			path = MessageRows;
 			sourceTree = "<group>";
@@ -1169,6 +1173,7 @@
 				05C6DA1B2B19F3020049BCDC /* EditProfileView.swift in Sources */,
 				05551C262AF4C631000F98B6 /* CloseButton.swift in Sources */,
 				058022042AE05DFA002816C7 /* GalleryImagePicker.swift in Sources */,
+				054EBA6E2B1E0613008F248D /* JoinPublicLink.swift in Sources */,
 				0570CC672AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC0F2AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
 				050620412B0B1FE10024476C /* MessageRowBackground.swift in Sources */,
@@ -1312,6 +1317,7 @@
 				05C6DA1C2B19F3020049BCDC /* EditProfileView.swift in Sources */,
 				05551C272AF4C631000F98B6 /* CloseButton.swift in Sources */,
 				051AA77B2AE05E8C008F93C1 /* GalleryImagePicker.swift in Sources */,
+				054EBA6F2B1E0613008F248D /* JoinPublicLink.swift in Sources */,
 				0570CC682AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC102AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
 				050620422B0B1FE10024476C /* MessageRowBackground.swift in Sources */,

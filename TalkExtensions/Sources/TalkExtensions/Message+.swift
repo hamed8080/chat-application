@@ -16,6 +16,7 @@ public extension Message {
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
     var messageTitle: String { message ?? "" }
+    var isPublicLink: Bool { message?.contains(AppRoutes.joinLink) == true }
     var markdownTitle: AttributedString {
         let option: AttributedString.MarkdownParsingOptions = .init(allowsExtendedAttributes: false,
                                                                     interpretedSyntax: .inlineOnly,

@@ -141,14 +141,6 @@ public final class ThreadsViewModel: ObservableObject {
         animateObjectWillChange()
     }
 
-    /// Join to a public thread by it's unqiue name.
-    public func joinToPublicThread(_ publicThreadName: String) {
-        isLoading = true
-        let req = JoinPublicThreadRequest(threadName: publicThreadName)
-        ChatManager.activeInstance?.conversation.join(req)
-        animateObjectWillChange()
-    }
-
     public func searchInsideAllThreads(text _: String) {
         // not implemented yet
         //        ChatManager.activeInstance?.
@@ -219,7 +211,7 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func sort() {
         threads.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
-        threads.sort(by: { $0.pin == true && $1.pin == false })
+        threads.sort(by: { $0.pin == true && ($1.pin == false || $1.pin == nil) })
         threads.sort(by: { (firstItem, secondItem) in
             guard let firstIndex = serverSortedPinConversations.firstIndex(where: {$0 == firstItem.id}),
                   let secondIndex = serverSortedPinConversations.firstIndex(where: {$0 == secondItem.id}) else {
@@ -371,10 +363,9 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func onJoinedToPublicConversatin(_ response: ChatResponse<Conversation>) {
         if let conversation = response.result {
-            threads.insert(conversation, at: 0)
-            AppState.shared.showThread(thread: conversation)
-            selectedThraed = conversation
-            sheetType = nil
+            threads.append(conversation)
+            sort()
+            AppState.shared.showThread(thread: conversation)            
             animateObjectWillChange()
         }
     }
@@ -391,6 +382,10 @@ public final class ThreadsViewModel: ObservableObject {
         if response.result?.id == AppState.shared.user?.id, let conversationId = response.subjectId {
             removeThread(.init(id: conversationId))
         }
+    }
+
+    public func joinPublicGroup(_ publicName: String) {
+        ChatManager.activeInstance?.conversation.join(.init(threadName: publicName))
     }
 }
 

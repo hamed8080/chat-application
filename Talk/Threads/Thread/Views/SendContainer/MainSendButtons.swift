@@ -85,9 +85,8 @@ struct MainSendButtons: View {
                 .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
             }
 
-            let showSendButton = !text.isEmpty || viewModel.attachmentsViewModel.attachments.count > 0
             Button {
-                if !text.isEmpty || viewModel.attachmentsViewModel.attachments.count > 0 {
+                if showSendButton {
                     viewModel.sendTextMessage(text)
                 }
                 text = ""
@@ -108,6 +107,10 @@ struct MainSendButtons: View {
             .keyboardShortcut(.return, modifiers: [.command])
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.3), value: isVideoRecordingSelected)
+    }
+
+    private var showSendButton: Bool {
+        !text.isEmpty || viewModel.attachmentsViewModel.attachments.count > 0 || AppState.shared.appStateNavigationModel.forwardMessageRequest != nil
     }
 
     private func animation(appear: Bool) -> Animation {

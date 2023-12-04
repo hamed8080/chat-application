@@ -93,10 +93,6 @@ extension ThreadViewModel {
         animateObjectWillChange()
     }
 
-    private func disableExcessiveLoading() {
-        isProgramaticallyScroll = true
-    }
-
     func setHasMoreTop(_ response: ChatResponse<[Message]>) {
         if !response.cache {
             hasNextTop = response.hasNext
@@ -279,7 +275,7 @@ extension ThreadViewModel {
             let indices = indicesByMessageId(request.messageId),
             let uniqueId = sections[indices.sectionIndex].messages[indices.messageIndex].uniqueId
         else { return }
-        showHighlighted(uniqueId, request.messageId)
+        showHighlighted(uniqueId, request.messageId, highlight: request.highlight)        
         /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
         let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "asc", readOnly: readOnly)
         let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)
@@ -323,7 +319,7 @@ extension ThreadViewModel {
 extension ThreadViewModel {
     func trySeventhScenario() {
         if thread.lastMessageVO?.id ?? 0 < thread.lastSeenMessageId ?? 0 {
-            moveToTime(thread.lastMessageVO?.time ?? 0, thread.lastMessageVO?.id ?? 0)
+            moveToTime(thread.lastMessageVO?.time ?? 0, thread.lastMessageVO?.id ?? 0, highlight: false)
         }
     }
 }

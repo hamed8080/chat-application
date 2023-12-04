@@ -20,7 +20,7 @@ struct ReplyInfoMessageRow: View {
     var body: some View {
         if message.replyInfo != nil {
             Button {
-                threadVM?.isProgramaticallyScroll = true
+                threadVM?.disableExcessiveLoading()
                 if message.replyInfo?.replyPrivatelyInfo == nil, let time = message.replyInfo?.repliedToMessageTime, let repliedToMessageId = message.replyInfo?.repliedToMessageId {
                     threadVM?.moveToTime(time, repliedToMessageId)
                 } else if let replyPrivatelyInfo = message.replyInfo?.replyPrivatelyInfo {

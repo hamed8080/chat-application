@@ -171,15 +171,14 @@ struct BioDescription: View {
 
 struct PublicLink: View {
     @EnvironmentObject var viewModel: DetailViewModel
-    private var joinLink: String { "talk/\(viewModel.thread?.uniqueName ?? "")" }
+    private var shortJoinLink: String { "talk/\(viewModel.thread?.uniqueName ?? "")" }
+    private var joinLink: String { "\(AppRoutes.joinLink)\(viewModel.thread?.uniqueName ?? "")" }
 
     var body: some View {
-        if let uniqueName = viewModel.thread?.uniqueName?.prefix(5) {
-            Button {
-                UIPasteboard.general.string = joinLink
-            } label: {
-                InfoRowItem(key: "Thread.inviteLink", value: "talk/\(uniqueName)", button: AnyView(qrButton))
-            }
+        Button {
+            UIPasteboard.general.string = joinLink
+        } label: {
+            InfoRowItem(key: "Thread.inviteLink", value: shortJoinLink, button: AnyView(qrButton))
         }
     }
 

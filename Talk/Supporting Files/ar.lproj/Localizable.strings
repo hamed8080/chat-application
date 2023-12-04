@@ -188,7 +188,8 @@
 "ThreadList.Toolbar.fastMessage" = "رسالة سريعة";
 "ThreadList.Toolbar.createABot" = "إنشاء بوت جديد";
 "ThreadList.Toolbar.filter" = "تصفية";
-"Thread.Join.title" = "الانضمام";
+"Thread.join" = "الانضمام";
+"Thread.Join.question" = "هل أنت متأكد أنك تريد الانضمام إلى هذه المحادثة؟";
 "Thread.Join.enterThreadNameHere" = "أدخل اسم المحادثة...";
 "Thread.Join.duplicateName" = "اسم الموضوع غير موجود!";
 "Thread.Join.footer" = "انضم إلى موضوع عام بواسطة اسمه الفريد.";

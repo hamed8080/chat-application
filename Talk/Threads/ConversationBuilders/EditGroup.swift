@@ -105,6 +105,7 @@ struct EditGroup: View {
             let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
             let localizedPublic = String(localized: .init("Thread.public"))
             let localizedDelete = String(localized: .init("Thread.delete"))
+            let isPublic = viewModel.thread?.isPrivate == false
             Group {
                 StickyHeaderSection(header: "", height: 2)
                     .listRowBackground(Color.App.bgPrimary)
@@ -117,6 +118,8 @@ struct EditGroup: View {
                 .padding(.horizontal)
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparatorTint(Color.App.divider)
+                .disabled(isPublic)
+                .opacity(isPublic ? 0.5 : 1.0)
                 
                 Button {
                     viewModel.showEditGroup.toggle()

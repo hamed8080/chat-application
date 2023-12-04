@@ -35,13 +35,13 @@ struct ConversationPlusContextMenu: View {
                 }
 
                 Button {
-                    showFastMessageSheet.toggle()
+                    showJoinSheet.toggle()
                 } label: {
                     Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
                 }
                 
                 Button {
-                    showJoinSheet.toggle()
+                    showFastMessageSheet.toggle()
                 } label: {
                     Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
                 }
@@ -75,7 +75,7 @@ struct ConversationPlusContextMenu: View {
         }
         .sheet(isPresented: $showJoinSheet) {
             JoinToPublicThreadView { publicThreadName in
-                threadsVM.joinToPublicThread(publicThreadName)
+                threadsVM.joinPublicGroup(publicThreadName)
             }
         }
     }
