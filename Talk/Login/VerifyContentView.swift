@@ -123,7 +123,7 @@ struct VerifyContentView: View {
                     Text(formatted)
                         .foregroundStyle(Color.App.hint)
                         .font(.iransansCaption)
-                        .padding(EdgeInsets(top: 20, leading: UIApplication.shared.isInSlimMode ? 12 : 6, bottom: 0, trailing: 0))
+                        .padding(EdgeInsets(top: 20, leading: AppState.isInSlimMode ? 12 : 6, bottom: 0, trailing: 0))
                 } else {
                     Button {
                         viewModel.resend()

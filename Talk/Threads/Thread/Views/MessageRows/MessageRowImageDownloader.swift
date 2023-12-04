@@ -21,10 +21,10 @@ struct MessageRowImageDownloader: View {
         if message.isImage, uploadCompleted, let downloadVM = viewModel.downloadFileVM {
             ZStack {
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
-                let width = max(128, (viewModel.maxWidth ?? 0)) - (8 + MessageRowBackground.tailSize.width)
+                let width = max(128, (MessageRowViewModel.maxAllowedWidth)) - (8 + MessageRowBackground.tailSize.width)
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
                 /// We use min to prevent the image gets bigger than 320 if it's bigger.
-                let height = min(320, max(128, (viewModel.maxWidth ?? 0)))
+                let height = min(320, max(128, (MessageRowViewModel.maxAllowedWidth)))
                 PlaceholderImageView(width: width, height: height)
                     .environmentObject(downloadVM)
                 BlurThumbnailView(width: width, height: height, viewModel: downloadVM)
@@ -118,16 +118,30 @@ struct RealDownloadedImage: View {
     let width: CGFloat
     let height: CGFloat
     @EnvironmentObject var viewModel: DownloadFileViewModel
+    @State var image = UIImage()
 
     var body: some View {
-        if viewModel.state == .completed, let cgImage = viewModel.fileURL?.imageScale(width: 420)?.image {
-            Image(uiImage: UIImage(cgImage: cgImage))
-                .resizable()
-                .scaledToFill()
-                .frame(width: width, height: height)
-                .clipShape(RoundedRectangle(cornerRadius:(8)))
-                .clipped()
-        }
+        Image(uiImage: image)
+            .resizable()
+            .scaledToFill()
+            .frame(width: viewModel.state != .completed ? 0 : width, height: viewModel.state != .completed ? 0 : height)
+            .clipShape(RoundedRectangle(cornerRadius:(8)))
+            .clipped()
+            .onReceive(viewModel.objectWillChange) { _ in
+                Task.detached {
+                    if await viewModel.state == .completed, let cgImage = await viewModel.fileURL?.imageScale(width: 420)?.image {
+                        await MainActor.run {
+                            self.image = UIImage(cgImage: cgImage)
+                        }
+                    }
+                }
+            }
+            .onAppear {
+                if viewModel.isInCache, image.size.width == 0 {
+                    viewModel.state = .completed // it will set the state to complete and then push objectWillChange to call onReceive and start scale the image on the background thread
+                    viewModel.animateObjectWillChange()
+                }
+            }
     }
 }
 

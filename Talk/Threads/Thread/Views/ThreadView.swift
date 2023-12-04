@@ -47,9 +47,19 @@ struct ThreadView: View, DropDelegate {
                     .environmentObject(viewModel)
                     .environmentObject(viewModel.searchedMessagesViewModel)
             }
+            .background {
+                GeometryReader { reader in
+                    Color.clear.onAppear {
+                        DispatchQueue.main.async {
+                            ThreadViewModel.threadWidth = reader.size.width 
+                        }
+                    }
+                }
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .navigation) {
                     NavigationBackButton {
+                        AppState.shared.appStateNavigationModel = .init()
                         AppState.shared.navViewModel?.remove(type: ThreadViewModel.self, threadId: thread.id)
                     }
                 }

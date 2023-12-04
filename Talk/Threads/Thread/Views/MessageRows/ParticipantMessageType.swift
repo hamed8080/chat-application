@@ -13,13 +13,12 @@ import TalkUI
 import TalkViewModels
 
 struct ParticipantMessageType: View {
+    @State var markdownText: AttributedString = .init()
     var message: Message
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
-            let markdownText = try! AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
             Text(markdownText)
                 .foregroundStyle(Color.App.text)
                 .multilineTextAlignment(.center)
@@ -31,5 +30,14 @@ struct ParticipantMessageType: View {
         .background(Color.App.black.opacity(0.2))
         .clipShape(RoundedRectangle(cornerRadius:(25)))
         .frame(maxWidth: .infinity)
+        .onAppear {
+            Task.detached {
+                let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
+                let markdownText = try! AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
+                await MainActor.run {
+                    self.markdownText = markdownText
+                }
+            }
+        }
     }
 }

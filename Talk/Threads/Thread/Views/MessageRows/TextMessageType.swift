@@ -13,6 +13,7 @@ import TalkUI
 import TalkViewModels
 import Combine
 import TalkModels
+import TalkExtensions
 
 struct TextMessageType: View {
     private var message: Message { viewModel.message }
@@ -83,7 +84,7 @@ struct MutableMessageView: View {
                 MessageRowAudioDownloader(viewModel: viewModel)
             }
             ReplyInfoMessageRow()
-            ForwardMessageRow()
+            ForwardMessageRow(viewModel: viewModel)
             UploadMessageType()
             GroupParticipantNameView()
             MessageTextView()
@@ -95,23 +96,13 @@ struct MutableMessageView: View {
                 MessageFooterView()
             }
         }
-        .padding(
-            EdgeInsets(top: paddingTop,
-                       leading: paddingLeading,
-                       bottom: paddingBottom,
-                       trailing: paddingTrailing)
-        )
-        .frame(minWidth: 128, maxWidth: viewModel.maxWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
+        .padding(viewModel.paddingEdgeInset)
         .background(
             MessageRowBackground.instance
                 .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
                 .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
         )
-        .overlay {
-            if viewModel.isHighlited {
-                Color.App.primary.opacity(0.1)
-            }
-        }
+        .frame(minWidth: 128, maxWidth: MessageRowViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
         .simultaneousGesture(TapGesture().onEnded { _ in
             if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
@@ -122,42 +113,6 @@ struct MutableMessageView: View {
         .onAppear {
             viewModel.calculate()
         }
-    }
-
-    private var isReplyOrForward: Bool {
-        (message.forwardInfo != nil || message.replyInfo != nil) && !message.isImage
-    }
-
-    private var paddingLeading: CGFloat {
-        if isReplyOrForward {
-            return viewModel.isMe ? 10 : 16
-        } else if viewModel.isMe {
-            return 4
-        } else {
-            return 4 + MessageRowBackground.tailSize.width
-        }
-    }
-
-    private var paddingTrailing: CGFloat {
-        if isReplyOrForward {
-            return viewModel.isMe ? 16 : 10
-        } else if viewModel.isMe {
-            return 4 + MessageRowBackground.tailSize.width
-        } else {
-            return 4
-        }
-    }
-
-    private var paddingTop: CGFloat {
-        if isReplyOrForward {
-            return message.replyInfo != nil ? 16 : 10
-        } else {
-            return message.isImage ? 4 : 10
-        }
-    }
-
-    private var paddingBottom: CGFloat {
-        4
     }
 
     private var selfMessage: some View {

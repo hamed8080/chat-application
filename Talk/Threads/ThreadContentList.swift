@@ -14,7 +14,6 @@ import TalkViewModels
 struct ThreadContentList: View {
     let container: ObjectsContainer
     @EnvironmentObject var threadsVM: ThreadsViewModel
-    @State var selectedThreadId: Conversation.ID?
     private var sheetBinding: Binding<Bool> { Binding(get: { threadsVM.sheetType != nil }, set: { _ in }) }
 
     var body: some View {
@@ -43,7 +42,7 @@ struct ThreadContentList: View {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
         .background(Color.App.bgPrimary)
-        .animation(.easeInOut, value: threadsVM.searchedConversations.count)
+        .listEmptyBackgroundColor(show: threadsVM.threads.isEmpty)
         .animation(.easeInOut, value: threadsVM.threads.count)
         .animation(.easeInOut, value: threadsVM.isLoading)
         .listStyle(.plain)

@@ -83,6 +83,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var participantsViewModel: ParticipantsViewModel
     var hasSentHistoryRequest = false
     var createThreadCompletion: (()-> Void)?
+    public static var threadWidth: CGFloat = 0
     public lazy var attachmentsViewModel: AttachmentsViewModel = {
         let viewModel = AttachmentsViewModel()
         viewModel.threadViewModel  = self

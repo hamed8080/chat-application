@@ -46,11 +46,11 @@ struct ThreadRowActionMenu: View {
             } label: {
                 Label("Thread.spam", systemImage: "ladybug")
             }
-            
+
             Button {
-                viewModel.toggleArchive(thread)
+                AppState.shared.objectsContainer.archivesVM.toggleArchive(thread)
             } label: {
-                Label(thread.isArchive == false ? "Thread.archive" : "Thread.unarchive", systemImage: thread.isArchive == false ? "tray.and.arrow.down" : "tray.and.arrow.up")
+                Label(thread.isArchive == true ? "Thread.unarchive" : "Thread.archive" , systemImage: thread.isArchive == true ?  "tray.and.arrow.up" : "tray.and.arrow.down")
             }
             
             if canAddParticipant {

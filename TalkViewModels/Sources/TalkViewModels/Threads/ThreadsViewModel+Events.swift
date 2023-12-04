@@ -36,13 +36,9 @@ extension ThreadsViewModel {
     }
 
     public func onThreadEvent(_ event: ThreadEventTypes?) {
-
         switch event {
         case .threads(let response):
             onThreads(response)
-            onArchives(response)
-            onPublicThreadSearch(response)
-            onSearch(response)
         case .created(let response):
             onCreate(response)
         case .deleted(let response):
@@ -61,10 +57,6 @@ extension ThreadsViewModel {
             onMuteThreadChanged(mute: true, threadId: response.result)
         case .unmute(let response):
             onMuteThreadChanged(mute: false, threadId: response.result)
-        case .archive(let response):
-            onArchive(response)
-        case .unArchive(let response):
-            onUNArchive(response)
         case .changedType(let response):
             onChangedType(response)
         case .spammed(let response):

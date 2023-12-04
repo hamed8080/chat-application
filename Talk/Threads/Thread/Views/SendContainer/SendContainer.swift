@@ -130,10 +130,9 @@ struct SendContainerOverButtons: View {
     @EnvironmentObject var audioRecordingVM: AudioRecordingViewModel
 
     var body: some View {
-        if viewModel.isAtBottomOfTheList == false || audioRecordingVM.isRecording || viewModel.thread.mentioned == true {
+        if audioRecordingVM.isRecording || viewModel.thread.mentioned == true {
             VStack(alignment: .trailing, spacing: 8) {
                 UnreadMentionsButton()
-                MoveToBottomButton()
                 CloseRecordingButton()
             }
             .padding(EdgeInsets(top: 0, leading: viewModel.audioRecoderVM.isRecording ? 20 : 14, bottom: 8, trailing: 0))

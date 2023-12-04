@@ -15,8 +15,7 @@ import Chat
 public extension Message {
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
-    var forwardTitle: String? { forwardMessage != nil ? "Forward **\(forwardCount ?? 0)** messages to **\(forwardMessage?.destinationThread.title ?? "")**" : nil }
-    var messageTitle: String { message ?? forwardTitle ?? "" }
+    var messageTitle: String { message ?? "" }
     var markdownTitle: AttributedString {
         let option: AttributedString.MarkdownParsingOptions = .init(allowsExtendedAttributes: false,
                                                                     interpretedSyntax: .inlineOnly,

@@ -18,9 +18,9 @@ import OSLog
 extension ThreadViewModel {
     /// It triggers when send button tapped
     public func sendTextMessage(_ textMessage: String) {
-        if AppState.shared.forwardMessageRequest?.threadId == threadId {
+        if AppState.shared.appStateNavigationModel.forwardMessageRequest?.threadId == threadId {
             sendForwardMessages()
-        } else if AppState.shared.replyPrivately != nil {
+        } else if AppState.shared.appStateNavigationModel.replyPrivately != nil {
             sendReplyPrivaetlyMessage(textMessage)
         } else if let replyMessage = replyMessage, let replyMessageId = replyMessage.id {
             sendReplyMessage(replyMessageId, textMessage)
@@ -105,7 +105,7 @@ extension ThreadViewModel {
 
     public func sendReplyPrivaetlyMessage(_ textMessage: String) {
         guard
-            let replyMessage = AppState.shared.replyPrivately,
+            let replyMessage = AppState.shared.appStateNavigationModel.replyPrivately,
             let replyMessageId = replyMessage.id,
             let fromConversationId = replyMessage.conversation?.id
         else { return }
@@ -128,7 +128,7 @@ extension ThreadViewModel {
             }
         }
         attachmentsViewModel.clear()
-        AppState.shared.replyPrivately = nil
+        AppState.shared.appStateNavigationModel = .init()
     }
 
     public func sendSingleReplyPrivatelyAttachment(_ attachmentFile: AttachmentFile?, _ fromConversationId: Int, _ replyMessageId: Int, _ textMessage: String) {
@@ -197,19 +197,17 @@ extension ThreadViewModel {
     }
 
     public func sendForwardMessages() {
-        if let req = AppState.shared.forwardMessageRequest {
+        if let req = AppState.shared.appStateNavigationModel.forwardMessageRequest {
             if let textMessage = textMessage, !textMessage.isEmpty {
                 let messageReq = SendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .text)
                 ChatManager.activeInstance?.message.send(messageReq)
                 Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
                     ChatManager.activeInstance?.message.send(req)
-                    AppState.shared.forwardMessages = nil
-                    AppState.shared.forwardMessageRequest = nil
+                    AppState.shared.appStateNavigationModel = .init()
                 }
             } else {
                 ChatManager.activeInstance?.message.send(req)
-                AppState.shared.forwardMessages = nil
-                AppState.shared.forwardMessageRequest = nil
+                AppState.shared.appStateNavigationModel = .init()
             }
         }
     }

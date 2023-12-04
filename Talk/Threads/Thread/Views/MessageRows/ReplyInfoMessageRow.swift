@@ -20,6 +20,7 @@ struct ReplyInfoMessageRow: View {
     var body: some View {
         if message.replyInfo != nil {
             Button {
+                threadVM?.isProgramaticallyScroll = true
                 if message.replyInfo?.replyPrivatelyInfo == nil, let time = message.replyInfo?.repliedToMessageTime, let repliedToMessageId = message.replyInfo?.repliedToMessageId {
                     threadVM?.moveToTime(time, repliedToMessageId)
                 } else if let replyPrivatelyInfo = message.replyInfo?.replyPrivatelyInfo {
@@ -55,6 +56,7 @@ struct ReplyInfoMessageRow: View {
                                 .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
                                 .lineLimit(2)
                                 .truncationMode(.tail)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         if viewModel.canShowIconFile {
                             HStack {
@@ -85,7 +87,6 @@ struct ReplyInfoMessageRow: View {
                     }
                 }
             }
-            .frame(minWidth: 128, maxWidth: viewModel.maxWidth, alignment: .leading)
             .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
             .buttonStyle(.borderless)
             .truncationMode(.tail)
@@ -93,7 +94,6 @@ struct ReplyInfoMessageRow: View {
             .padding(EdgeInsets(top: 6, leading: viewModel.isMe ? 6 : 0, bottom: 6, trailing: viewModel.isMe ? 0 : 6))
             .background(Color.App.bgInput.opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 6))
-            .frame(height: 60)
             .environmentObject(viewModel)
         }
     }

@@ -19,9 +19,7 @@ import OSLog
 
 public final class ThreadsViewModel: ObservableObject {
     public var isLoading = false
-    public var threads: OrderedSet<Conversation> = []
-    public var archives: OrderedSet<Conversation> = []
-    @Published public var searchedConversations: OrderedSet<Conversation> = []
+    public var threads: OrderedSet<Conversation> = []     
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
     @Published public var sheetType: ThreadsSheetType?
@@ -29,13 +27,9 @@ public final class ThreadsViewModel: ObservableObject {
     public private(set) var firstSuccessResponse = false
     public private(set) var count = 15
     public private(set) var offset = 0
-    @Published public var searchText: String = ""
     private(set) var hasNext: Bool = true
-    public var archivedOffset: Int = 0
     public var selectedThraed: Conversation?
-    public var folder: Tag?
     public var title: String = ""
-    @Published public var selectedFilterThreadType: ThreadTypes?
     private var canLoadMore: Bool { hasNext && !isLoading }
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
     var serverSortedPinConversations: [Int] = []
@@ -53,23 +47,6 @@ public final class ThreadsViewModel: ObservableObject {
             }
             .store(in: &cancelable)
         getThreads()
-        $searchText
-            .debounce(for: 0.5, scheduler: RunLoop.main)
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .removeDuplicates()
-            .sink { [weak self] newValue in
-                if newValue.first == "@", newValue.count > 2 {
-                    let startIndex = newValue.index(newValue.startIndex, offsetBy: 1)
-                    let newString = newValue[startIndex..<newValue.endIndex]
-                    self?.searchPublicThreads(String(newString))
-                } else if newValue.first != "@" && !newValue.isEmpty {
-                    self?.searchThreads(newValue)
-                } else if newValue.count == 0, self?.hasNext == false {
-                    self?.hasNext = true
-                }
-            }
-            .store(in: &cancelable)
-
         RequestsManager.shared.$cancelRequest
             .sink { [weak self] newValue in
                 if let newValue {
@@ -101,8 +78,6 @@ public final class ThreadsViewModel: ObservableObject {
                 sort()
             }
             animateObjectWillChange()
-        } else if let threadId = response.result?.conversation?.id {
-            getThreadsWith([threadId])
         }
     }
 
@@ -125,69 +100,9 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func getThreads() {
         isLoading = true
-        let req = ThreadsRequest(count: count, offset: offset, type: selectedFilterThreadType)
+        let req = ThreadsRequest(count: count, offset: offset)
         RequestsManager.shared.append(prepend: "GET-THREADS", value: req)
         ChatManager.activeInstance?.conversation.get(req)
-    }
-
-    public func getArchivedThreads() {
-        isLoading = true
-        let req = ThreadsRequest(count: count, offset: archivedOffset, archived: true)
-        RequestsManager.shared.append(prepend: "GET-ARCHIVES", value: req)
-        ChatManager.activeInstance?.conversation.get(req)
-        animateObjectWillChange()
-    }
-
-    public func resetArchiveSettings() {
-        archivedOffset = 0
-        hasNext = true
-        animateObjectWillChange()
-    }
-
-    public func resetFolderSettings() {
-        folder = nil
-        hasNext = true
-        animateObjectWillChange()
-    }
-
-    public func getThreadsInsideFolder(_ folder: Tag) {
-        self.folder = folder
-        let threadIds = folder.tagParticipants?.compactMap(\.conversation?.id) ?? []
-        getThreadsWith(threadIds)
-    }
-
-    public func getThreadsWith(_ threadIds: [Int]) {
-        if threadIds.count == 0 { return }
-        isLoading = true
-        let req = ThreadsRequest(threadIds: threadIds)
-        ChatManager.activeInstance?.conversation.get(req)
-        animateObjectWillChange()
-    }
-
-    public func searchThreads(_ text: String) {
-        searchedConversations.removeAll()
-        let req = ThreadsRequest(searchText: text)
-        RequestsManager.shared.append(prepend: "SEARCH", value: req)
-        ChatManager.activeInstance?.conversation.get(req)
-    }
-
-    public func searchPublicThreads(_ text: String) {
-        searchedConversations.removeAll()
-        let req = ThreadsRequest(name: text, type: .publicGroup)
-        RequestsManager.shared.append(prepend: "SEARCH-PUBLIC-THREAD", value: req)
-        ChatManager.activeInstance?.conversation.get(req)
-    }
-
-    func onSearch(_ response: ChatResponse<[Conversation]>) {
-        if !response.cache, let threads = response.result, response.value(prepend: "SEARCH") != nil {
-            searchedConversations.append(contentsOf: threads)
-        }
-    }
-
-    func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) {
-        if !response.cache, let threads = response.result, response.value(prepend: "SEARCH-PUBLIC-THREAD") != nil {
-            searchedConversations.append(contentsOf: threads)
-        }
     }
 
     public func loadMore() {
@@ -197,6 +112,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
+        if response.value(prepend: "GET-THREADS") == nil { return }
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
             if !response.cache, let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}) {
                 serverSortedPinConversations.append(contentsOf: serverSortedPinConversationIds)
@@ -209,14 +125,6 @@ public final class ThreadsViewModel: ObservableObject {
             firstSuccessResponse = true
         }
         isLoading = false
-    }
-
-    public func onArchives(_ response: ChatResponse<[Conversation]>) {
-        if let archives = response.result, response.value(prepend: "GET-ARCHIVES") != nil {
-            self.archives.append(contentsOf: archives.filter({$0.isArchive == true}))
-        }
-        isLoading = false
-        animateObjectWillChange()
     }
 
     public func refresh() {

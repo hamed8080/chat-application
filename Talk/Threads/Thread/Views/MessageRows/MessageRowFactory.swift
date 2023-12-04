@@ -16,7 +16,6 @@ import TalkViewModels
 struct MessageRowFactory: View {
     private var message: Message { viewModel.message }
     @State var viewModel: MessageRowViewModel
-    @State private(set) var showParticipants: Bool = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -43,16 +42,10 @@ struct MessageRowFactory: View {
 
 struct TextMessageSelectedBackground: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
-    @State var isSelected = false
 
     var body: some View {
-        let color = viewModel.isSelected ? Color.App.primary.opacity(0.1) : Color.clear
-        color
-            .onReceive(viewModel.objectWillChange) { newValue in
-                if viewModel.isSelected != isSelected {
-                    self.isSelected = viewModel.isSelected
-                }
-            }
+        Color.App.primary
+            .opacity(viewModel.isHighlited ? 0.1 : viewModel.isSelected ? 0.1 : 0.0)
     }
 }
 

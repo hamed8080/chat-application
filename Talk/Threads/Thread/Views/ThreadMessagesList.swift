@@ -24,6 +24,9 @@ struct ThreadMessagesList: View {
             .onPreferenceChange(ViewOffsetKey.self) { originY in
                 viewModel.setNewOrigin(newOriginY: originY)
             }
+            .overlay(alignment: .bottom) {
+                MoveToBottomButton()
+            }
             .onAppear {
                 viewModel.scrollProxy = scrollProxy
             }

@@ -93,6 +93,7 @@ struct ContactContentList: View {
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
         }
+        .listEmptyBackgroundColor(show: viewModel.contacts.isEmpty)
         .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)

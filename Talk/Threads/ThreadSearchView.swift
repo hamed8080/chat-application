@@ -10,11 +10,11 @@ import TalkViewModels
 import TalkUI
 
 struct ThreadSearchView: View {
-    @EnvironmentObject var threadsVM: ThreadsViewModel
+    @EnvironmentObject var viewModel: ThreadsSearchViewModel
     @EnvironmentObject var contactsVM: ContactsViewModel
 
     var body: some View {
-        if threadsVM.searchText.count > 0 {
+        if viewModel.searchText.count > 0 {
             List {
                 if contactsVM.searchedContacts.count > 0 {
                     StickyHeaderSection(header: "Contacts.searched", height: 4)
@@ -30,20 +30,20 @@ struct ThreadSearchView: View {
                         }
                 }
 
-                if threadsVM.searchedConversations.count > 0 {
+                if viewModel.searchedConversations.count > 0 {
                     StickyHeaderSection(header: "Tab.chats", height: 4)
                         .listRowBackground(Color.clear)
                         .listRowInsets(.zero)
                 }
 
-                ForEach(threadsVM.searchedConversations) { thread in
+                ForEach(viewModel.searchedConversations) { thread in
                     Button {
                         AppState.shared.objectsContainer.navVM.append(thread: thread)
                     } label: {
                         ThreadRow(isSelected: false, thread: thread)
                             .onAppear {
-                                if self.threadsVM.searchedConversations.last == thread {
-                                    threadsVM.loadMore()
+                                if self.viewModel.searchedConversations.last == thread {
+                                    viewModel.loadMore()
                                 }
                             }
                     }

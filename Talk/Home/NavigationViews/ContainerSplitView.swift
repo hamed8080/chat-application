@@ -115,7 +115,7 @@ struct NavigationTypeView: View {
             SupportView()
         case .archives(_):
             ArchivesView(container: container)
-                .environmentObject(container.threadsVM)
+                .environmentObject(container.archivesVM)
         case .messageParticipantsSeen(let model):
             MessageParticipantsSeen(message: model.message)
         case .language(_):

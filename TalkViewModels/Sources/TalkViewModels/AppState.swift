@@ -35,6 +35,16 @@ struct ForwardCreateConversationRequest: ChatDTO.UniqueIdProtocol {
     }
 }
 
+/// Properties that can transfer between each navigation page and stay alive unless manually destroyed.
+public struct AppStateNavigationModel {
+    public var replyPrivately: Message?
+    public var forwardMessages: [Message]?
+    public var forwardMessageRequest: ForwardMessageRequest?
+    public var moveToMessageId: Int?
+    public var moveToMessageTime: UInt?
+    public init() {}
+}
+
 public final class AppState: ObservableObject {
     public static let shared = AppState()
     public var cachedUser = UserConfigManagerVM.instance.currentUserConfig?.user
@@ -46,14 +56,11 @@ public final class AppState: ObservableObject {
     @Published public var connectionStatusString = ""
     private var cancelable: Set<AnyCancellable> = []
     public var windowMode: WindowMode = .iPhone
+    public static var isInSlimMode = AppState.shared.windowMode.isInSlimMode
     public var userToCreateThread: User?
-    public var replyPrivately: Message?
     public var lifeCycleState: AppLifeCycleState?
     public var objectsContainer: ObjectsContainer!
-    public var forwardMessages: [Message]?
-    public var forwardMessageRequest: ForwardMessageRequest?
-    public var moveToMessageId: Int?
-    public var moveToMessageTime: UInt?
+    public var appStateNavigationModel: AppStateNavigationModel = .init()
 
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
@@ -77,6 +84,10 @@ public final class AppState: ObservableObject {
 
     public func updateWindowMode() {
         windowMode = UIApplication.shared.windowMode()
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+            AppState.isInSlimMode = UIApplication.shared.windowMode().isInSlimMode
+        }
+
         NotificationCenter.default.post(name: .windowMode, object: windowMode)
     }
 
@@ -136,22 +147,22 @@ public final class AppState: ObservableObject {
     }
 
     public func openThreadAndMoveToMessage(conversationId: Int, messageId: Int, messageTime: UInt) {
-        self.moveToMessageId = messageId
-        self.moveToMessageTime = messageTime
+        self.appStateNavigationModel.moveToMessageId = messageId
+        self.appStateNavigationModel.moveToMessageTime = messageTime
         searchForGroupThread(threadId: conversationId, moveToMessageId: messageId, moveToMessageTime: messageTime)
     }
 
     /// Forward messages form a thread to a destination thread.
     /// If the conversation is nil it try to use contact. Firstly it opens a conversation using the given contact core user id then send messages to the conversation.
     public func openThread(from: Int, conversation: Conversation?, contact: Contact?, messages: [Message]) {
-        self.forwardMessages = messages
+        self.appStateNavigationModel.forwardMessages = messages
         let messageIds = messages.compactMap{$0.id}
         if let conversation = conversation , let destinationConversationId = conversation.id {
             navViewModel?.append(thread: conversation)
-            forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
+            appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
         } else if let coreUserId = contact?.user?.coreUserId, let conversation = checkForP2POffline(coreUserId: coreUserId), let destinationConversationId = conversation.id {
             navViewModel?.append(thread: conversation)
-            forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
+            appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
         } else if let coreUserId = contact?.user?.coreUserId {
             openForwardConversation(coreUserId: coreUserId, fromThread: from, messageIds: messageIds)
         }
@@ -174,7 +185,7 @@ public final class AppState: ObservableObject {
         navViewModel?.append(thread: conversation)
         /// We call send forward messages with a little bit of delay because it will get history in the above code and there should not be anything in the queue to forward messages.
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
-            self?.forwardMessageRequest = ForwardMessageRequest(fromThreadId: request.from, threadId: destinationConversationId, messageIds: request.messageIds)
+            self?.appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: request.from, threadId: destinationConversationId, messageIds: request.messageIds)
         }
     }
 

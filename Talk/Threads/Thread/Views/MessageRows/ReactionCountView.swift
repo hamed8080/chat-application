@@ -24,7 +24,7 @@ struct ReactionCountView: View {
                 }
             }
         }
-        .frame(maxWidth: viewModel.maxAllowedWidth)
+        .frame(maxWidth: MessageRowViewModel.maxAllowedWidth)
         .fixedSize(horizontal: true, vertical: false)
         .animation(.easeInOut, value: viewModel.reactionCountList.count)
         .padding(.horizontal, 6)

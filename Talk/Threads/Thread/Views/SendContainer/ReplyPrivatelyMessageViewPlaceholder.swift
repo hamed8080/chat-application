@@ -14,7 +14,7 @@ struct ReplyPrivatelyMessageViewPlaceholder: View {
     @EnvironmentObject var viewModel: ThreadViewModel
 
     var body: some View {
-        if let replyMessage = AppState.shared.replyPrivately {
+        if let replyMessage = AppState.shared.appStateNavigationModel.replyPrivately {
             HStack {
                 SendContainerButton(image: "arrow.turn.up.left")
 
@@ -34,7 +34,7 @@ struct ReplyPrivatelyMessageViewPlaceholder: View {
 
                 Spacer()
                 CloseButton {
-                    AppState.shared.replyPrivately = nil
+                    AppState.shared.appStateNavigationModel = .init()
                     viewModel.animateObjectWillChange()
                 }
                 .padding(.trailing, 4)

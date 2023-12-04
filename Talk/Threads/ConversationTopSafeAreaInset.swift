@@ -23,15 +23,16 @@ struct ConversationTopSafeAreaInset: View {
                 trailingViews: ConversationPlusContextMenu()
             ) { searchValue in
                 container.contactsVM.searchContactString = searchValue
-                threadsVM.searchText = searchValue
+                container.searchVM.searchText = searchValue
             }
 
-            if UIApplication.shared.isInSlimMode {
+            if AppState.isInSlimMode {
                 AudioPlayerView()
             }
             ThreadSearchView()
+                .environmentObject(container.searchVM)
 
-            if threadsVM.threads.count == 0, threadsVM.firstSuccessResponse, UIApplication.shared.isInSlimMode {
+            if threadsVM.threads.count == 0, threadsVM.firstSuccessResponse, AppState.isInSlimMode {
                 NothingHasBeenSelectedView(contactsVM: container.contactsVM)
             }
         }

@@ -55,7 +55,6 @@ struct LoginHomeView: View {
 }
 
 struct SplitView: View {
-    @Environment(\.colorScheme) var colorScheme
     let container: ObjectsContainer
     @State private var isLoggedIn: Bool = TokenManager.shared.isLoggedIn
 
@@ -65,7 +64,6 @@ struct SplitView: View {
                 SplitViewContent(container: container)
             }
         }
-        .background(colorScheme == .dark ? .black : .white)
         .animation(.easeInOut, value: isLoggedIn)
         .overlay {
             AppOverlayView(onDismiss: onDismiss) {
@@ -126,7 +124,7 @@ struct SplitViewContent: View {
                 )
             ],
             config: .init(alignment: .bottom), onSelectedTab: { selectedTabId in
-                if selectedTabId != "Tab.chats", !AppState.shared.objectsContainer.threadsVM.searchText.isEmpty {
+                if selectedTabId != "Tab.chats", !AppState.shared.objectsContainer.searchVM.searchText.isEmpty {
                     NotificationCenter.default.post(name: .cancelSearch, object: true)
                 }
             }

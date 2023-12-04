@@ -17,6 +17,10 @@ public enum WindowMode {
     case ipadHalfSplitView
     case ipadTwoThirdSplitView
     case unknown
+    /// A mode that detect if the deveice is one column mode such as iPhone/ipadOneThirdSplitView/ipadSlideOver.
+    public var isInSlimMode: Bool {
+        return self == .iPhone || self == .ipadSlideOver || self == .ipadOneThirdSplitView
+    }
 }
 
 public extension UIApplication {
@@ -43,12 +47,6 @@ public extension UIApplication {
         } else {
             return .unknown
         }
-    }
-
-    /// A mode that detect if the deveice is one column mode such as iPhone/ipadOneThirdSplitView/ipadSlideOver.
-    var isInSlimMode: Bool {
-        let mode = windowMode()
-        return mode == .iPhone || mode == .ipadSlideOver || mode == .ipadOneThirdSplitView
     }
 
     private func isInThereshold(a: CGFloat, b: CGFloat) -> Bool {

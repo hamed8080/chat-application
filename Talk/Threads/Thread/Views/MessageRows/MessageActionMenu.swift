@@ -31,13 +31,22 @@ struct MessageActionMenu: View {
                 ContextMenuButton(title: "Messages.ActionMenu.replyPrivately", image: "arrowshape.turn.up.left") {
                     withAnimation(animation(appear: true)) {
                         guard let participant = message.participant else { return }
-                        AppState.shared.replyPrivately = message
+                        AppState.shared.appStateNavigationModel.replyPrivately = message
                         AppState.shared.openThread(participant: participant)
                     }
                 }
+                .overlay(alignment: .bottomTrailing) {
+                    Image(systemName: "lock")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 8, height: 8)
+                        .offset(x: -8, y: -8)
+                        .foregroundStyle(Color.App.gray4)
+                        .fontWeight(.semibold)
+                }
             }
 
-            ContextMenuButton(title: "Messages.ActionMenu.forward", image: "arrowshape.turn.up.forward") {
+            ContextMenuButton(title: "Messages.ActionMenu.forward", image: "arrowshape.turn.up.right") {
                 withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
                     threadVM?.forwardMessage = message
                     viewModel.isSelected = true

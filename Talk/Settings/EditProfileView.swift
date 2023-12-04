@@ -132,13 +132,13 @@ struct EditProfileView: View {
                         focusedField = .bio
                     }
 
-                HStack {
-                    Text("Setting.EditProfile.bioHintMore")
-                        .foregroundStyle(Color.App.hint)
-                        .font(.iransansSubheadline)
-                    Spacer()
-                }
-                .padding(.horizontal)
+
+                Text("Setting.EditProfile.bioHintMore")
+                    .foregroundStyle(Color.App.hint)
+                    .font(.iransansSubheadline)
+                    .padding(.horizontal)
+                    .frame(maxWidth: 420, alignment: .leading)
+
 
                 Link(destination: URL(string: "https://panel.pod.ir/Users/Info")!) {
                     HStack {
@@ -149,7 +149,7 @@ struct EditProfileView: View {
                     }
                     .buttonStyle(.plain)
                     .frame(height: 52)
-                    .frame(minWidth: 0, maxWidth: 420 - (16 * 2))
+                    .frame(minWidth: 0, maxWidth: 420)
                     .background(Color.App.bgSecond)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
@@ -158,8 +158,10 @@ struct EditProfileView: View {
                             .stroke(Color.App.gray8, lineWidth: 1)
                     )
                 }
+                .padding(.horizontal)
                 Spacer()
             }
+            .frame(minWidth: 0, maxWidth: .infinity)
         }
         .animation(.easeInOut, value: focusedField)
         .background(Color.App.bgPrimary.ignoresSafeArea())

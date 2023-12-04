@@ -11,19 +11,19 @@ import TalkUI
 
 struct ArchivesView: View {
     let container: ObjectsContainer
-    @EnvironmentObject var threadsVM: ThreadsViewModel
+    @EnvironmentObject var viewModel: ArchiveThreadsViewModel
     @EnvironmentObject var navVM: NavigationModel
 
     var body: some View {
-        List(threadsVM.archives) { thread in
+        List(viewModel.archives) { thread in
             let isSelected = container.navVM.selectedThreadId == thread.id
             Button {
                 navVM.append(thread: thread)
             } label: {
                 ThreadRow(isSelected: isSelected, thread: thread)
                     .onAppear {
-                        if self.threadsVM.threads.last == thread {
-                            threadsVM.loadMore()
+                        if self.viewModel.archives.last == thread {
+                            viewModel.loadMore()
                         }
                     }
             }
@@ -32,11 +32,12 @@ struct ArchivesView: View {
             .listRowBackground(isSelected ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
         }
         .background(Color.App.bgPrimary)
+        .listEmptyBackgroundColor(show: viewModel.archives.isEmpty)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            ListLoadingView(isLoading: $threadsVM.isLoading)
+            ListLoadingView(isLoading: $viewModel.isLoading)
         }
-        .animation(.easeInOut, value: threadsVM.archives.count)
-        .animation(.easeInOut, value: threadsVM.isLoading)
+        .animation(.easeInOut, value: viewModel.archives.count)
+        .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -53,10 +54,7 @@ struct ArchivesView: View {
             }
         }
         .task {
-            container.threadsVM.getArchivedThreads()
-        }
-        .onDisappear {
-            container.threadsVM.resetArchiveSettings()
+            viewModel.getArchivedThreads()
         }
     }
 }

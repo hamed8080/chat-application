@@ -13,23 +13,14 @@ import TalkUI
 import TalkViewModels
 
 struct ThreadPinMessage: View {
-    private var thread: Conversation { threadVM.thread }
-    @State private var message: PinMessage?
     let threadVM: ThreadViewModel
-    @State var thumbnailData: Data?
-    @State var requestUniqueId: String?
-    private var icon: String? { fileMetadata?.file?.mimeType?.systemImageNameForFileExtension }
-    var isEnglish: Bool { message?.text?.naturalTextAlignment == .leading }
-    private var title: String {
-        if let text = message?.text, !text.isEmpty {
-            return text.prefix(150).replacingOccurrences(of: "\n", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
-        } else if let fileName = fileMetadata?.name {
-            return fileName
-        } else {
-            return ""
-        }
-    }
-
+    @State private var message: PinMessage?
+    @State private var thumbnailData: Data?
+    @State private var requestUniqueId: String?
+    @State private var icon: String?
+    @State private var isEnglish: Bool = true
+    @State private var title: String = ""
+    private var thread: Conversation { threadVM.thread }
     private let downloadPublisher = NotificationCenter.default.publisher(for: .download).compactMap { $0.object as? DownloadEventTypes }
     private let messagePublisher = NotificationCenter.default.publisher(for: .message).compactMap { $0.object as? MessageEventTypes }
 
@@ -56,13 +47,16 @@ struct ThreadPinMessage: View {
         }
         .onReceive(downloadPublisher) { event in
             onDownloadEvent(event)
+            setTitleIconIsEnglish()
         }
         .onReceive(messagePublisher) { event in
             onMessageEvent(event)
+            setTitleIconIsEnglish()
         }
         .onAppear {
             message = thread.pinMessage
             downloadImageThumbnail()
+            setTitleIconIsEnglish()
         }
     }
 
@@ -192,6 +186,29 @@ struct ThreadPinMessage: View {
             }
         default:
             break
+        }
+    }
+
+    private func setTitleIconIsEnglish() {
+        Task.detached {
+            let icon = fileMetadata?.file?.mimeType?.systemImageNameForFileExtension
+            let isEnglish = message?.text?.naturalTextAlignment == .leading
+            let title = text
+            await MainActor.run {
+                self.icon = icon
+                self.isEnglish = isEnglish
+                self.title = title
+            }
+        }
+    }
+
+    private var text: String {
+        if let text = message?.text, !text.isEmpty {
+            return text.prefix(150).replacingOccurrences(of: "\n", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        } else if let fileName = fileMetadata?.name {
+            return fileName
+        } else {
+            return ""
         }
     }
 }
