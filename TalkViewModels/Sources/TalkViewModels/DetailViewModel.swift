@@ -64,7 +64,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
         self.user = user
         self.thread = thread
         self.contact = contact
-        isPublic = thread?.isPrivate == false
+        isPublic = thread?.type?.isPrivate == false
         editTitle = title
         threadDescription = thread?.description ?? ""
         fetchMutualThreads()
@@ -115,6 +115,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
             onDeleteThread(response)
         case .left(let response):
             onLeftThread(response)
+        case .userRemoveFormThread(let response):
+            onUserRemovedByAdmin(response)
         default:
             break
         }
@@ -227,16 +229,19 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     public func toggleThreadVisibility() {
-        guard let thread = thread, let threadId = thread.id else { return }
-        let type: ThreadTypes = thread.isPrivate ? thread.publicType : thread.privateType
-        let req = ChangeThreadTypeRequest(threadId: threadId, type: type)
+        guard let thread = thread, let threadId = thread.id, let type = thread.type else { return }
+        let typeValue: ThreadTypes = type.isPrivate == true ? type.publicType : type.privateType
+        let req = ChangeThreadTypeRequest(threadId: threadId, type: typeValue)
         RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.conversation.changeType(req)
     }
 
     private func onChangeThreadType(_ response: ChatResponse<Conversation>) {
         self.thread?.type = response.result?.type
-        isPublic = thread?.isPrivate == false
+        isPublic = thread?.type?.isPrivate == false
+        if let req = response.value(prepend: "CHANGE-TO-PUBLIC") as? ChangeThreadTypeRequest {
+            thread?.uniqueName = req.uniqueName
+        }
         animateObjectWillChange()
     }
 
@@ -267,9 +272,9 @@ public final class DetailViewModel: ObservableObject, Hashable {
                                               wC: width
             )
         }
-        if thread?.isPrivate == false, isPublic == false {
+        if thread?.type?.isPrivate == false, isPublic == false {
             switchToPrivateType()
-        } else if thread?.isPrivate == true, isPublic == true {
+        } else if thread?.type?.isPrivate == true, isPublic == true {
             switchPublicType()
         }
         let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)
@@ -324,7 +329,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
         let req = ThreadParticipantRequest(threadId: threadId)
         RequestsManager.shared.append(prepend: "GET-P2P-DETAIL", value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
-
     }
 
     private func onP2PParticipant(_ response: ChatResponse<[Participant]>) {
@@ -341,6 +345,12 @@ public final class DetailViewModel: ObservableObject, Hashable {
         if response.value(prepend: "GET-P2P-CONTACT-DETAIL") != nil, let partnerContact = response.result?.first(where: {$0.id == partner?.contactId}) {
             self.partnerContact = partnerContact
             animateObjectWillChange()
+        }
+    }
+
+    func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
+        if response.result == thread?.id {
+            dismiss = true
         }
     }
 }

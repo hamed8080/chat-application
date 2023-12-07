@@ -320,6 +320,11 @@ public final class ContactsViewModel: ObservableObject {
         ChatManager.activeInstance?.contact.unBlock(req)
     }
 
+    public func unblockWith(_ contactId: Int) {
+        let req = UnBlockRequest(contactId: contactId)
+        ChatManager.activeInstance?.contact.unBlock(req)
+    }
+
     public func onBlockResponse(_ response: ChatResponse<BlockedContactResponse>) {
         if let result = response.result {
             contacts.first(where: { $0.id == result.contact?.id })?.blocked = true
@@ -372,7 +377,9 @@ public final class ContactsViewModel: ObservableObject {
         let req = CreateThreadRequest(description: threadDescription,
                                       invitees: invitees,
                                       title: conversationTitle,
-                                      type: type)
+                                      type: isPublic ? type.publicType : type,
+                                      uniqueName: isPublic ? UUID().uuidString : nil
+        )
         RequestsManager.shared.append(prepend: "ConversationBuilder", value: req)
         ChatManager.activeInstance?.conversation.create(req)
     }
@@ -427,6 +434,7 @@ public final class ContactsViewModel: ObservableObject {
         showConversaitonBuilder = false
         searchContactString = ""
         showTitleError = false
+        isPublic = false
         AppState.shared.navViewModel?.threadsViewModel?.sheetType = nil
     }
 

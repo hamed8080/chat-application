@@ -84,11 +84,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     var hasSentHistoryRequest = false
     var createThreadCompletion: (()-> Void)?
     public static var threadWidth: CGFloat = 0
-    public lazy var attachmentsViewModel: AttachmentsViewModel = {
-        let viewModel = AttachmentsViewModel()
-        viewModel.threadViewModel  = self
-        return viewModel
-    }()
+    public var attachmentsViewModel: AttachmentsViewModel = .init()
 
     public var messageViewModels: [MessageRowViewModel] = []
     var model: AppSettingsModel
@@ -568,7 +564,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             self?.isProgramaticallyScroll = false
         }
     }
-    
+
+    func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
+        if response.result == threadId {
+            dismiss = true
+        }
+    }
+
     func log(_ string: String) {
 #if DEBUG
         Logger.viewModels.info("\(string, privacy: .sensitive)")

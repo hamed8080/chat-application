@@ -14,7 +14,7 @@ import TalkViewModels
 
 struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
-    var contact: Contact
+    let contact: Contact
     var contactImageURL: String? { contact.image ?? contact.user?.image }
 
     var body: some View {

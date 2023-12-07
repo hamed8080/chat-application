@@ -23,7 +23,6 @@ protocol AudioRecordingViewModelprotocol: ObservableObject {
     func toggle()
     func start()
     func stop()
-    func stopAndAddToAttachments()
     func deleteFile()
     func cancel()
     func requestPermission()
@@ -63,11 +62,16 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         }
         recordingOutputPath = recordingOutputBasePath?.appendingPathComponent(recordingFileName)
         guard let url = recordingOutputPath else { return }
+        deleteFile()
         do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playAndRecord)
+            try session.setActive(true)
+
             let settings = [
                 AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                AVSampleRateKey: 12000,
-                AVNumberOfChannelsKey: 1,
+                AVSampleRateKey: 44100,
+                AVNumberOfChannelsKey: 2,
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
             ]
             audioRecorder = try AVAudioRecorder(url: url, settings: settings)
@@ -77,14 +81,11 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         }
     }
 
-    public func stopAndAddToAttachments() {
-        stop()
-    }
-
     public func stop() {
         isRecording = false
         audioRecorder.stop()
         timer?.invalidate()
+        try? AVAudioSession.sharedInstance().setActive(false)
     }
 
     public func cancel() {

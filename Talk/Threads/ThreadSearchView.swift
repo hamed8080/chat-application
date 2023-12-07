@@ -40,7 +40,7 @@ struct ThreadSearchView: View {
                     Button {
                         AppState.shared.objectsContainer.navVM.append(thread: thread)
                     } label: {
-                        ThreadRow(isSelected: false, thread: thread)
+                        ThreadRow(thread: thread)
                             .onAppear {
                                 if self.viewModel.searchedConversations.last == thread {
                                     viewModel.loadMore()

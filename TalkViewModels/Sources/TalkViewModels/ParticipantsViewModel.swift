@@ -50,6 +50,13 @@ public final class ParticipantsViewModel: ObservableObject {
                 self?.onUserEvent(event)
             }
             .store(in: &cancelable)
+
+        NotificationCenter.default.publisher(for: .error)
+            .compactMap { $0.object as? ChatResponse<Any> }
+            .sink { [weak self] event in
+                self?.onError(event)
+            }
+            .store(in: &cancelable)
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()
@@ -143,6 +150,7 @@ public final class ParticipantsViewModel: ObservableObject {
             req.cellphoneNumber = searchText
         case .admin:
             req.admin = true
+            req.name = searchText
         }
         RequestsManager.shared.append(prepend: "SearchParticipants", value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
@@ -275,5 +283,11 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public func removeParticipant(_ participant: Participant) {
         participants.removeAll(where: { $0.id == participant.id })
+    }
+
+    public func onError(_ response: ChatResponse<Any>) {
+        if response.error != nil, response.value(prepend: "SearchParticipants") != nil {
+            searchedParticipants.removeAll()
+        }
     }
 }

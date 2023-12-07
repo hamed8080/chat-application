@@ -62,7 +62,7 @@ struct SelectConversationTab: View {
     var body: some View {
         List {
             ForEach(viewModel.conversations) { conversation in
-                ThreadRow(isSelected: false, thread: conversation)
+                ThreadRow(thread: conversation)
                     .listRowBackground(Color.App.bgPrimary)
                     .onTapGesture {
                         onSelect(conversation, nil)

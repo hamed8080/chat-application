@@ -25,13 +25,8 @@ struct SecondaryMessageView: View {
             } else {
                 DraftView(draft: draft)
             }
-            if let lastMessageSentStatus = thread.messageStatusIcon(currentUserId: AppState.shared.user?.id) {
-                Image(uiImage: lastMessageSentStatus.icon)
-                    .resizable()
-                    .frame(width: 14, height: 14)
-                    .foregroundColor(isSelected ? Color.App.white : lastMessageSentStatus.fgColor)
-                    .font(.subheadline)
-            }
+            MutableMessageStatusView(isSelected: isSelected)
+                .environmentObject(thread)
         }
         .onReceive(userDfault) { _ in
             let threadId = thread.id ?? 0
@@ -42,6 +37,22 @@ struct SecondaryMessageView: View {
             if let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
                 self.draft = draft
             }
+        }
+    }
+}
+
+
+struct MutableMessageStatusView: View {
+    let isSelected: Bool
+    @EnvironmentObject var thread: Conversation
+
+    var body: some View {
+        if let lastMessageSentStatus = thread.messageStatusIcon(currentUserId: AppState.shared.user?.id) {
+            Image(uiImage: lastMessageSentStatus.icon)
+                .resizable()
+                .frame(width: 14, height: 14)
+                .foregroundColor(isSelected ? Color.App.white : lastMessageSentStatus.fgColor)
+                .font(.subheadline)
         }
     }
 }

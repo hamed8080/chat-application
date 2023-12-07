@@ -19,6 +19,8 @@ extension ThreadsViewModel {
             onThreadEvent(threadEventTypes)
         case .call(let callEventTypes):
             onCallEvent(callEventTypes)
+        case .participant(let participantEventTypes):
+            onParticipantEvent(participantEventTypes)
         default:
             break
         }
@@ -99,6 +101,8 @@ extension ThreadsViewModel {
             onNewMessage(chatResponse)
         case .cleared(let chatResponse):
             onClear(chatResponse)
+        case .seen(let response):
+            onSeen(response)
         default:
             break
         }

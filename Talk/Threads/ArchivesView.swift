@@ -20,7 +20,7 @@ struct ArchivesView: View {
             Button {
                 navVM.append(thread: thread)
             } label: {
-                ThreadRow(isSelected: isSelected, thread: thread)
+                ThreadRow(thread: thread)
                     .onAppear {
                         if self.viewModel.archives.last == thread {
                             viewModel.loadMore()

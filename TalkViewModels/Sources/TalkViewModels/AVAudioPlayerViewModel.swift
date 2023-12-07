@@ -69,6 +69,7 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         stopTimer()
         isClosed = true
         pause()
+        fileURL = nil
     }
 
     public func audioPlayerDidFinishPlaying(_: AVAudioPlayer, successfully _: Bool) {

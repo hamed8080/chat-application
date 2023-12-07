@@ -125,8 +125,10 @@ public final class LoginViewModel: ObservableObject {
             await saveTokenAndCreateChatObject(ssoToken)
             await MainActor.run {
                 resetState()
+                doHaptic()
             }
         } catch {
+            doHaptic(failed: true)
             showError(.verificationCodeIncorrect)
         }
         showLoading(false)
@@ -190,4 +192,9 @@ public final class LoginViewModel: ObservableObject {
         timer?.invalidate()
         timer = nil
     }
+
+    private func doHaptic(failed: Bool = false) {
+        UIImpactFeedbackGenerator(style: failed ? .rigid : .soft).impactOccurred()
+    }
+
 }

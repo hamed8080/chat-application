@@ -32,4 +32,34 @@ public extension ThreadTypes {
             return nil
         }
     }
+
+    var isPrivate: Bool { self == .channel || self == .normal || self == .ownerGroup || self == .channelGroup }
+
+    /// Get Public type equivalent of the thread.
+    var publicType: ThreadTypes {
+        switch self {
+        case .channel, .channelGroup:
+            return .publicChannel
+        case .normal, .ownerGroup:
+            return .publicGroup
+        default:
+            return self
+        }
+    }
+
+    /// Get Private type equivalent of the thread.
+    var privateType: ThreadTypes {
+        switch self {
+        case .publicChannel:
+            return .channel
+        case .publicGroup:
+            return .normal
+        default:
+            return self
+        }
+    }
+
+    var isChannelType: Bool {
+        self == .channel || self == .channelGroup
+    }
 }

@@ -18,83 +18,80 @@ struct SheetEmptyBackground: View {
         Color.clear
             .sheet(isPresented: sheetBinding) {
                 ThreadSheetView(sheetBinding: sheetBinding)
+                    .environmentObject(viewModel)
                     .environmentObject(viewModel.attachmentsViewModel)
             }
     }
 }
 
 struct ThreadSheetView: View {
-    private var viewModel: ThreadViewModel? { attachmentsViewModel.threadViewModel }
-    @EnvironmentObject var attachmentsViewModel: AttachmentsViewModel
+    @EnvironmentObject var viewModel: ThreadViewModel
     @Binding var sheetBinding: Bool
 
     var body: some View {
-        if let viewModel {
-            switch viewModel.sheetType {
-            case .attachment:
-                EmptyView()
-            case .datePicker:
-                DateSelectionView(showDialog: $sheetBinding) { startDate, endDate in
-                    viewModel.sheetType = nil
-                    viewModel.setupExportMessage(startDate: startDate, endDate: endDate)
-                }
-                .onDisappear {
-                    closeSheet()
-                }
-            case .exportMessagesFile:
-                if let exportFileUrl = viewModel.exportMessagesVM?.filePath {
-                    ActivityViewControllerWrapper(activityItems: [exportFileUrl])
-                        .onDisappear {
-                            viewModel.exportMessagesVM = nil
-                            closeSheet()
-                        }
-                } else {
-                    EmptyView()
-                }
-            case .threadPicker:
-                SelectConversationOrContactList { (conversation, contact) in
-                    viewModel.openDestinationConversationToForward(conversation, contact)
-                }
-                .onDisappear {
-                    closeSheet()
-                }
-            case .filePicker:
-                DocumentPicker { urls in
-                    attachmentsViewModel.selectedFileUrls = urls
-                    viewModel.sheetType = nil
-                    viewModel.animateObjectWillChange()
-                }
-                .onAppear {
-                    attachmentsViewModel.oneTimeSetup()
-                }
-                .onDisappear {
-                    closeSheet()
-                }
-            case .locationPicker:
-                MapPickerView()
-                    .environmentObject(viewModel)
-                    .onDisappear {
-                        closeSheet()
-                    }
-            case .galleryPicker:
-                GalleryImagePicker(viewModel: attachmentsViewModel)
-                    .environmentObject(viewModel)
-                    .onAppear {
-                        attachmentsViewModel.oneTimeSetup()
-                    }
-                    .onDisappear {
-                        closeSheet()
-                    }
-            default:
-                Text("Sheet \(viewModel.sheetType.debugDescription) not implemented yet.")
+        switch viewModel.sheetType {
+        case .attachment:
+            EmptyView()
+        case .datePicker:
+            DateSelectionView(showDialog: $sheetBinding) { startDate, endDate in
+                viewModel.sheetType = nil
+                viewModel.setupExportMessage(startDate: startDate, endDate: endDate)
             }
+            .onDisappear {
+                closeSheet()
+            }
+        case .exportMessagesFile:
+            if let exportFileUrl = viewModel.exportMessagesVM?.filePath {
+                ActivityViewControllerWrapper(activityItems: [exportFileUrl])
+                    .onDisappear {
+                        viewModel.exportMessagesVM = nil
+                        closeSheet()
+                    }
+            } else {
+                EmptyView()
+            }
+        case .threadPicker:
+            SelectConversationOrContactList { (conversation, contact) in
+                viewModel.openDestinationConversationToForward(conversation, contact)
+            }
+            .onDisappear {
+                closeSheet()
+            }
+        case .filePicker:
+            DocumentPicker { urls in
+                viewModel.attachmentsViewModel.filePickerViewModel.selectedFileUrls = urls
+                viewModel.attachmentsViewModel.addSelectedFile()
+                viewModel.sheetType = nil
+                viewModel.animateObjectWillChange()
+            }
+            .onDisappear {
+                closeSheet()
+            }
+        case .locationPicker:
+            MapPickerView()
+                .environmentObject(viewModel)
+                .onDisappear {
+                    closeSheet()
+                }
+        case .galleryPicker:
+            GalleryImagePicker()
+                .environmentObject(viewModel)
+                .environmentObject(viewModel.attachmentsViewModel)
+                .onAppear {
+                    viewModel.attachmentsViewModel.imagePickerViewModel.oneTimeSetup()
+                }
+                .onDisappear {
+                    closeSheet()
+                }
+        default:
+            Text("Sheet \(viewModel.sheetType.debugDescription) not implemented yet.")
         }
     }
 
     private func closeSheet() {
         sheetBinding = false
-        viewModel?.sheetType = nil
-        viewModel?.animateObjectWillChange()
+        viewModel.sheetType = nil
+        viewModel.animateObjectWillChange()
     }
 }
 

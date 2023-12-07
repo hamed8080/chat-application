@@ -395,6 +395,7 @@ struct UserProfileView: View {
             ImageLaoderView(imageLoader: imageLoader, url: userConfig?.user.image, userName: userConfig?.user.name)
                 .id("\(userConfig?.user.image ?? "")\(userConfig?.user.id ?? 0)")
                 .frame(width: 64, height: 64)
+                .background(Color.App.blue.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius:(28)))
                 .padding(.trailing, 16)
 

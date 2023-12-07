@@ -84,7 +84,7 @@ struct DetailView: View {
                 }
             }
         }
-        .animation(.easeInOut, value: viewModel.thread?.isPrivate == true)
+        .animation(.easeInOut, value: viewModel.thread?.type?.isPrivate == true)
         .animation(.interactiveSpring(), value: viewModel.isInEditMode)
         .sheet(isPresented: $viewModel.showEditGroup) {
             EditGroup()
@@ -175,10 +175,12 @@ struct PublicLink: View {
     private var joinLink: String { "\(AppRoutes.joinLink)\(viewModel.thread?.uniqueName ?? "")" }
 
     var body: some View {
-        Button {
-            UIPasteboard.general.string = joinLink
-        } label: {
-            InfoRowItem(key: "Thread.inviteLink", value: shortJoinLink, button: AnyView(qrButton))
+        if viewModel.thread?.uniqueName != nil {
+            Button {
+                UIPasteboard.general.string = joinLink
+            } label: {
+                InfoRowItem(key: "Thread.inviteLink", value: shortJoinLink, button: AnyView(qrButton))
+            }
         }
     }
 
@@ -296,7 +298,7 @@ struct DetailTopButtons: View {
             Menu {
                 if let conversation = viewModel.thread {
                     ThreadRowActionMenu(thread: conversation)
-                    if conversation.isPrivate && conversation.group == true {
+                    if conversation.type?.isPrivate == true && conversation.group == true {
                         Button {
                             viewModel.threadVM?.threadsViewModel?.makeThreadPublic(conversation)
                         } label: {

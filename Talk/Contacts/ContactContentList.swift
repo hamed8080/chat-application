@@ -42,52 +42,50 @@ struct ContactContentList: View {
                     .listRowSeparator(.hidden)
             }
 
-            if viewModel.searchedContacts.count == 0 {
-                Button {
-                    viewModel.createConversationType = .normal
-                    viewModel.showConversaitonBuilder.toggle()
-                } label: {
-                    Label("Contacts.createGroup", systemImage: "person.2")
-                        .foregroundStyle(Color.App.primary)
-                }
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.divider)
-
-                Button {
-                    viewModel.createConversationType = .channel
-                    viewModel.showConversaitonBuilder.toggle()
-                } label: {
-                    Label("Contacts.createChannel", systemImage: "megaphone")
-                        .foregroundStyle(Color.App.primary)
-                }
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.divider)
-
-                Button {
-                    viewModel.showAddOrEditContactSheet.toggle()
-                } label: {
-                    Label("Contacts.addContact", systemImage: "person.badge.plus")
-                        .foregroundStyle(Color.App.primary)
-                }
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparator(.hidden)
+            Button {
+                viewModel.createConversationType = .normal
+                viewModel.showConversaitonBuilder.toggle()
+            } label: {
+                Label("Contacts.createGroup", systemImage: "person.2")
+                    .foregroundStyle(Color.App.primary)
             }
-            
-            if viewModel.searchedContacts.count > 0 {
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparatorTint(Color.App.divider)
+
+            Button {
+                viewModel.createConversationType = .channel
+                viewModel.showConversaitonBuilder.toggle()
+            } label: {
+                Label("Contacts.createChannel", systemImage: "megaphone")
+                    .foregroundStyle(Color.App.primary)
+            }
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparatorTint(Color.App.divider)
+
+            Button {
+                viewModel.showAddOrEditContactSheet.toggle()
+            } label: {
+                Label("Contacts.addContact", systemImage: "person.badge.plus")
+                    .foregroundStyle(Color.App.primary)
+            }
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparator(.hidden)
+
+            if viewModel.searchedContacts.count > 0 || !viewModel.searchContactString.isEmpty {
                 StickyHeaderSection(header: "Contacts.searched")
                     .listRowInsets(.zero)
                 ForEach(viewModel.searchedContacts) { contact in
                     ContactRowContainer(contact: contact, isSearchRow: true)
                 }
                 .padding()
+            } else {
+                ForEach(viewModel.contacts) { contact in
+                    ContactRowContainer(contact: contact, isSearchRow: false)
+                }
+                .padding()
+                .listRowInsets(.zero)
             }
 
-            ForEach(viewModel.contacts) { contact in
-                ContactRowContainer(contact: contact, isSearchRow: false)
-            }
-            .padding()
-            .listRowInsets(.zero)
-            
             ListLoadingView(isLoading: $viewModel.isLoading)
                 .id(-2)
                 .listRowBackground(Color.App.bgPrimary)
@@ -165,7 +163,7 @@ struct ContactRowContainer: View {
 
     var body: some View {
         ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
-            .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)")
+            .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)\(contact.blocked == true ? "Blocked" : "UnBlocked")")
             .animation(.spring(), value: viewModel.isInSelectionMode)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)
@@ -179,10 +177,15 @@ struct ContactRowContainer: View {
                     }
                     .tint(Color.App.hint)
 
+                    let isBlocked = contact.blocked == true
                     Button {
-                        viewModel.block(contact)
+                        if isBlocked, let contactId = contact.id {
+                            viewModel.unblockWith(contactId)
+                        } else {
+                            viewModel.block(contact)
+                        }
                     } label: {
-                        Label("General.block", systemImage: "hand.raised.slash")
+                        Label(isBlocked ? "General.unblock" : "General.block", systemImage: isBlocked ? "hand.raised.slash.fill" : "hand.raised.fill")
                     }
                     .tint(Color.App.red)
 

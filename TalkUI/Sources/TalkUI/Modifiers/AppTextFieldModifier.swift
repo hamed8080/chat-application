@@ -33,6 +33,7 @@ public struct AppTextFieldModifier: ViewModifier {
                 .clipShape(RoundedRectangle(cornerRadius:(12)))
                 .padding()
                 .onTapGesture {
+                    /// For clicking when the user clicks the outer side of a TextField and we want to force the TextFeild to Focus when tapping on padding.
                     onClick?()
                 }
 

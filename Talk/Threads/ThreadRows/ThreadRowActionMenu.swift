@@ -64,7 +64,7 @@ struct ThreadRowActionMenu: View {
 
         if thread.group == true {
             let leaveKey = String(localized: .init("Thread.leave"))
-            let key = thread.isChannelType ? "Thread.channel" : "Thread.group"
+            let key = thread.type?.isChannelType == true ? "Thread.channel" : "Thread.group"
             Button(role: .destructive) {
                 viewModel.leave(thread)
             } label: {
@@ -75,7 +75,7 @@ struct ThreadRowActionMenu: View {
         /// You should be admin or the thread should be a p2p thread with two people.
         if thread.admin == true || thread.group == false {
             let deleteKey = String(localized: "Thread.delete")
-            let key = thread.isChannelType ? "Thread.channel" : thread.group == true ? "Thread.group" : ""
+            let key = thread.type?.isChannelType == true ? "Thread.channel" : thread.group == true ? "Thread.group" : ""
             Button(role: .destructive) {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: thread.id))
             } label: {

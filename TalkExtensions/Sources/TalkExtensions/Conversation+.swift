@@ -92,34 +92,4 @@ public extension Conversation {
             return true
         }
     }
-
-    var isPrivate: Bool { type == .channel || type == .normal || type == .ownerGroup || type == .channelGroup }
-
-    /// Get Public type equivalent of the thread.
-    var publicType: ThreadTypes {
-        switch type {
-        case .channel, .channelGroup:
-            return .publicChannel
-        case .normal, .ownerGroup:
-            return .publicGroup
-        default:
-            return type ?? .normal
-        }
-    }
-
-    /// Get Private type equivalent of the thread.
-    var privateType: ThreadTypes {
-        switch type {
-        case .publicChannel:
-            return .channel
-        case .publicGroup:
-            return .normal
-        default:
-            return type ?? .normal
-        }
-    }
-
-    var isChannelType: Bool {
-        type == .channel || type == .channelGroup
-    }
 }

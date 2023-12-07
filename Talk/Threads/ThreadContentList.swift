@@ -19,11 +19,10 @@ struct ThreadContentList: View {
     var body: some View {
         List {
             ForEach(threadsVM.threads) { thread in
-                let isSelected = container.navVM.selectedThreadId == thread.id
                 Button {
                     AppState.shared.objectsContainer.navVM.append(thread: thread)
                 } label: {
-                    ThreadRow(isSelected: isSelected, thread: thread)
+                    ThreadRow(thread: thread)
                         .onAppear {
                             if self.threadsVM.threads.last == thread {
                                 threadsVM.loadMore()
@@ -32,7 +31,7 @@ struct ThreadContentList: View {
                 }
                 .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
                 .listRowSeparatorTint(Color.App.separator)
-                .listRowBackground(isSelected ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
+                .listRowBackground(ThreadListRowBackground(thread: thread))
             }
         }
         .safeAreaInset(edge: .top, spacing: 0) {

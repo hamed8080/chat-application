@@ -152,6 +152,22 @@ struct EditCreatedConversationDetail: View {
             .frame(height: 88)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
+            
+            StickyHeaderSection(header: "", height: 10)
+                .listRowInsets(.zero)
+                .listRowSeparator(.hidden)
+
+            let type = viewModel.createConversationType
+            let isChannel = type == .channel || type == .publicChannel
+            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
+            let localizedPublic = String(localized: .init("Thread.public"))
+
+            Toggle(isOn: $viewModel.isPublic) {
+                Text(String(format: localizedPublic, typeName))
+            }
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparator(.hidden)
+
             Section {
                 ForEach(viewModel.selectedContacts) { contact in
                     ContactRow(isInSelectionMode: .constant(false), contact: contact)
@@ -169,6 +185,7 @@ struct EditCreatedConversationDetail: View {
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)
         }
+        .environment(\.defaultMinListRowHeight, 8)
         .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.isLoading)

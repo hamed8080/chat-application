@@ -84,6 +84,7 @@ struct SingleAttachmentFile: View {
         }
         .frame(height: 46)
         .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+        .onTapGesture {} // To prevent clicking on messages behind the item, especially images.
     }
 }
 

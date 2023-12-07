@@ -139,9 +139,10 @@ public extension Message {
     static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
 
     var addOrRemoveParticipantString: String? {
+        guard let requestType = addRemoveParticipant?.requestTypeEnum else { return nil }
         let effectedName = addRemoveParticipant?.participnats?.first?.name ?? ""
         let participantName = participant?.name ?? ""
-        guard let requestType = addRemoveParticipant?.requestTypeEnum else { return nil }
+        let effectedParticipantsName = addRemoveParticipant?.participnats?.compactMap{$0.name}.joined(separator: ", ") ?? ""
         switch requestType {
         case .leaveThread:
             return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.left", comment: ""), participantName)
@@ -150,7 +151,7 @@ public extension Message {
         case .removedFromThread:
             return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
         case .addParticipant:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedName)
+            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedParticipantsName)
         default:
             return nil
         }

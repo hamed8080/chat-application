@@ -2,7 +2,7 @@ public final class AppRoutes {
     public static let integeration = "https://talkotp-d.fanapsoft.ir/"
     public static let sandbox = "https://talkotp-s.fanapsoft.ir/"
     public static let main = "https://talkback.pod.ir/"
-    public static let joinLink = "https://talk.ir/join?tn="
+    public static let joinLink = "https://talk.pod.ir/join?tn="
 
     public let base: String
     public let api: String

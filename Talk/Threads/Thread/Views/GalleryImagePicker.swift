@@ -11,9 +11,10 @@ import TalkModels
 import TalkUI
 
 struct GalleryImagePicker: View {
-    let viewModel: AttachmentsViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
+    var attachmentVM: AttachmentsViewModel { threadVM.attachmentsViewModel }
     @Environment(\.horizontalSizeClass) var size
-    @State var selectedImageItemsCount = 0
+    @State private var selectedCount = 0
 
     var body: some View {
         ScrollView(.vertical) {
@@ -22,57 +23,56 @@ struct GalleryImagePicker: View {
             }
             .padding(EdgeInsets(top: 8, leading: 4, bottom: 8, trailing: 4))
         }
-        .environmentObject(viewModel)
+        .environmentObject(attachmentVM.imagePickerViewModel)
         .onAppear {
-            viewModel.oneTimeSetup()
-        }
-        .onDisappear {
-            viewModel.refresh()
+            attachmentVM.imagePickerViewModel.oneTimeSetup()
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            SubmitBottomButton(text: "General.add", enableButton: .constant(selectedImageItemsCount > 0), isLoading: .constant(false)) {
-                viewModel.addSelectedPhotos()
+            SubmitBottomButton(text: "General.add", enableButton: .constant(selectedCount > 0), isLoading: .constant(false)) {
+                attachmentVM.addSelectedPhotos()
+                threadVM.sheetType = nil
+                threadVM.animateObjectWillChange()
+            }
+        }
+        .onReceive(attachmentVM.imagePickerViewModel.objectWillChange) { _ in
+            if attachmentVM.imagePickerViewModel.selectedImageItems.count != selectedCount {
+                selectedCount = attachmentVM.imagePickerViewModel.selectedImageItems.count
             }
         }
         .task {
-            await viewModel.loadImages()
-        }
-        .onReceive(viewModel.objectWillChange) { newValue in
-            selectedImageItemsCount = viewModel.selectedImageItems.count
+            attachmentVM.imagePickerViewModel.loadImages()
         }
     }
 }
 
 struct AttachmentMessageList: View {
-    @EnvironmentObject var viewModel: AttachmentsViewModel
+    @EnvironmentObject var viewModel: ImagePickerViewModel
 
     var body: some View {
         ForEach(viewModel.allImageItems) { item in
-            AttachmentImageView(viewModel: viewModel, item: item)
+            AttachmentImageView(viewModel: viewModel)
+                .environmentObject(item)
         }
     }
 }
 
 struct AttachmentImageView: View {
-    var viewModel: AttachmentsViewModel
-    var item: ImageItem
-    var image: UIImage { UIImage(data: item.imageData)! }
+    let viewModel: ImagePickerViewModel
+    @EnvironmentObject var item: ImageItem
     @State private var isSelected: Bool = false
 
     var body: some View {
-        Image(uiImage: image)
-            .resizable()
-            .scaledToFill()
-            .frame(width: 96, height: 96)
-            .clipped()
-            .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
-            .clipShape(RoundedRectangle(cornerRadius:(4)))
+        ImagePickerImageHolder()
             .overlay {
-                RadioButton(visible: .constant(true), isSelected: $isSelected) { _ in
-                    Task {
-                        await viewModel.toggleSelectedImage(item)
-                        withAnimation(!isSelected ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.2) : .linear) {
-                            isSelected = viewModel.selectedImageItems.contains(where: { $0.phAsset === item.phAsset })
+                if item.isIniCloud {
+                    DownloadFromiCloudProgress(viewModel: viewModel)
+                } else {
+                    RadioButton(visible: .constant(true), isSelected: $isSelected) { _ in
+                        Task {
+                            await viewModel.toggleSelectedImage(item)
+                            withAnimation(!isSelected ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.2) : .linear) {
+                                isSelected = viewModel.selectedImageItems.contains(where: { $0.phAsset === item.phAsset })
+                            }
                         }
                     }
                 }
@@ -85,9 +85,48 @@ struct AttachmentImageView: View {
     }
 }
 
+struct ImagePickerImageHolder: View {
+    @EnvironmentObject var item: ImageItem
+
+    var body: some View {
+        Image(uiImage: UIImage(data: item.imageData) ?? .init())
+            .resizable()
+            .scaledToFill()
+            .frame(width: 96, height: 96)
+            .clipped()
+            .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
+            .clipShape(RoundedRectangle(cornerRadius:(4)))
+    }
+}
+
+struct DownloadFromiCloudProgress: View {
+    let viewModel: ImagePickerViewModel
+    @EnvironmentObject var item: ImageItem
+
+    var body: some View {
+        ZStack {
+            Image(systemName: "icloud.and.arrow.down")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+
+            Circle()
+                .trim(from: 0.0, to: item.icouldDownloadProgress)
+                .stroke(style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
+                .foregroundColor(Color.App.primary)
+                .rotationEffect(Angle(degrees: 270))
+                .frame(width: 28, height: 28)
+                .environment(\.layoutDirection, .leftToRight)
+        }
+        .animation(.easeInOut, value: item.icouldDownloadProgress)
+        .onTapGesture {
+            viewModel.downloadFromiCloud(item)
+        }
+    }
+}
 
 struct GalleryImagePicker_Previews: PreviewProvider {
     static var previews: some View {
-        GalleryImagePicker(viewModel: .init())
+        GalleryImagePicker()
     }
 }

@@ -20,23 +20,25 @@ struct JoinPublicLink: View {
             Button {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(JoinToPublicConversationDialog(message: message))
             } label: {
-                HStack {
-                    Text("Thread.join")
-                        .foregroundStyle(Color.App.text)
-                        .font(.iransansBoldBody)
-                        .multilineTextAlignment(.center)
-                }
-                .buttonStyle(.plain)
-                .frame(height: 52)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(minWidth: 196)
-                .background(Color.App.bgSecond)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .inset(by: 0.5)
-                        .stroke(Color.App.gray8, lineWidth: 1)
-                )
+                Text(message.message ?? "")
+                    .foregroundStyle(Color.App.blue)
+//                HStack {
+//                    Text("Thread.join")
+//                        .foregroundStyle(Color.App.text)
+//                        .font(.iransansBoldBody)
+//                        .multilineTextAlignment(.center)
+//                }
+//                .buttonStyle(.plain)
+//                .frame(height: 52)
+//                .fixedSize(horizontal: false, vertical: true)
+//                .frame(minWidth: 196)
+//                .background(Color.App.bgSecond)
+//                .clipShape(RoundedRectangle(cornerRadius: 8))
+//                .overlay(
+//                    RoundedRectangle(cornerRadius: 8)
+//                        .inset(by: 0.5)
+//                        .stroke(Color.App.gray8, lineWidth: 1)
+//                )
             }
             .buttonStyle(.plain)
             .padding(.horizontal, 10)

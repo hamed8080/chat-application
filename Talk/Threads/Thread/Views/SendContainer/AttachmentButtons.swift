@@ -24,41 +24,41 @@ struct AttachmentButtons: View {
 
 struct MutableAttachmentDialog: View {
     @Binding var showActionButtons: Bool
-    @EnvironmentObject var viewModel: AttachmentsViewModel
-    var threadVM: ThreadViewModel? { viewModel.threadViewModel }
+    @EnvironmentObject var viewModel: ThreadViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
         HStack(spacing: 8) {
             Spacer()
 
             AttchmentButtonItem(title: "General.gallery", image: "photo.fill") {
-                threadVM?.sheetType = .galleryPicker
+                threadVM.sheetType = .galleryPicker
                 showActionButtons.toggle()
-                threadVM?.animateObjectWillChange()
+                threadVM.animateObjectWillChange()
             }
 
             Spacer()
 
             AttchmentButtonItem(title: "General.file", image: "doc.fill") {
-                threadVM?.sheetType = .filePicker
+                threadVM.sheetType = .filePicker
                 showActionButtons.toggle()
-                threadVM?.animateObjectWillChange()
+                threadVM.animateObjectWillChange()
             }
 
             Spacer()
 
             AttchmentButtonItem(title: "General.location", image: "location.fill") {
-                threadVM?.sheetType = .locationPicker
+                threadVM.sheetType = .locationPicker
                 showActionButtons.toggle()
-                threadVM?.animateObjectWillChange()
+                threadVM.animateObjectWillChange()
             }
 
             Spacer()
 
             AttchmentButtonItem(title: "General.contact", image: "person.2.crop.square.stack.fill") {
-                threadVM?.sheetType = .contactPicker
+                threadVM.sheetType = .contactPicker
                 showActionButtons.toggle()
-                threadVM?.animateObjectWillChange()
+                threadVM.animateObjectWillChange()
             }
             .disabled(!EnvironmentValues.isTalkTest)
             .opacity(EnvironmentValues.isTalkTest ? 1.0 : 0.2)
@@ -123,15 +123,8 @@ struct AttchmentButtonItem: View {
 }
 
 struct AttachmentDialog_Previews: PreviewProvider {
-    static var viewModel: AttachmentsViewModel {
-        let vm = ThreadViewModel(thread: MockData.thread)
-        let viewModel = AttachmentsViewModel()
-        viewModel.threadViewModel = vm
-        return viewModel
-    }
-
     static var previews: some View {
-        AttachmentButtons(viewModel: viewModel, showActionButtons: .constant(false))
+        AttachmentButtons(viewModel: .init(), showActionButtons: .constant(false))
         //            AttchmentButtonItem(title: "Contacts", image: "person.fill") {
         //
         //            }

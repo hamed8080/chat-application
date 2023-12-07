@@ -17,9 +17,11 @@ import ChatDTO
 import TalkExtensions
 import OSLog
 
+/// It needs to be ObservableObject because when a message is seen deleted... the object needs to update not the whole Thread ViewModel.
+extension Conversation: ObservableObject {}
 public final class ThreadsViewModel: ObservableObject {
     public var isLoading = false
-    public var threads: OrderedSet<Conversation> = []     
+    public var threads: OrderedSet<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
     @Published public var sheetType: ThreadsSheetType?
@@ -58,7 +60,9 @@ public final class ThreadsViewModel: ObservableObject {
 
     func onCreate(_ response: ChatResponse<Conversation>) {
         if let thread = response.result {
-            AppState.shared.showThread(thread: thread)
+            if thread.inviter?.id == AppState.shared.user?.id {
+                AppState.shared.showThread(thread: thread)
+            }
             appendThreads(threads: [thread])
         }
         isLoading = false
@@ -147,13 +151,15 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func makeThreadPublic(_ thread: Conversation) {
-        guard let threadId = thread.id else { return }
-        ChatManager.activeInstance?.conversation.changeType(.init(threadId: threadId, type: thread.publicType, uniqueName: UUID().uuidString))
+        guard let threadId = thread.id, let type = thread.type else { return }
+        let req = ChangeThreadTypeRequest(threadId: threadId, type: type.publicType, uniqueName: UUID().uuidString)
+        RequestsManager.shared.append(prepend: "CHANGE-TO-PUBLIC", value: req)
+        ChatManager.activeInstance?.conversation.changeType(req)
     }
 
     public func makeThreadPrivate(_ thread: Conversation) {
-        guard let threadId = thread.id else { return }
-        ChatManager.activeInstance?.conversation.changeType(.init(threadId: threadId, type: thread.privateType))
+        guard let threadId = thread.id, let type = thread.type else { return }
+        ChatManager.activeInstance?.conversation.changeType(.init(threadId: threadId, type: type.privateType))
     }
 
     public func showAddParticipants(_ thread: Conversation) {
@@ -171,9 +177,9 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onAddPrticipant(_ response: ChatResponse<Conversation>) {
-        if let thread = response.result {
-            /// To navigate to the thread immediately after adding participants
-            AppState.shared.showThread(thread: thread)
+        if response.result?.participants?.first(where: {$0.id == AppState.shared.user?.id}) != nil, let newConversation = response.result {
+            /// It means an admin added a user to the conversation, and if the added user is in the app at the moment, should see this new conversation in its conversation list.
+            appendThreads(threads: [newConversation])
         }
         isLoading = false
         animateObjectWillChange()
@@ -319,6 +325,7 @@ public final class ThreadsViewModel: ObservableObject {
     func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
         if let id = response.result, let index = self.firstIndex(id) {
             threads.remove(at: index)
+            animateObjectWillChange()
         }
     }
 
@@ -365,7 +372,9 @@ public final class ThreadsViewModel: ObservableObject {
         if let conversation = response.result {
             threads.append(conversation)
             sort()
-            AppState.shared.showThread(thread: conversation)            
+            if conversation.participants?.first?.id == AppState.shared.user?.id {
+                AppState.shared.showThread(thread: conversation)
+            }
             animateObjectWillChange()
         }
     }
@@ -386,6 +395,17 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func joinPublicGroup(_ publicName: String) {
         ChatManager.activeInstance?.conversation.join(.init(threadName: publicName))
+    }
+
+    public func onSeen(_ response: ChatResponse<MessageResponse>) {
+        /// Update the status bar in ThreadRow when a receiver seen a message, and in the sender side we have to update the UI.
+        let isMe = AppState.shared.user?.id == response.result?.participantId
+        if !isMe, let index = threads.firstIndex(where: {$0.lastMessageVO?.id == response.result?.messageId}) {
+            threads[index].lastMessageVO?.delivered = true
+            threads[index].lastMessageVO?.seen = true
+            threads[index].partnerLastSeenMessageId = response.result?.messageId
+            threads[index].animateObjectWillChange()
+        }
     }
 }
 

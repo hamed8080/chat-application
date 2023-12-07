@@ -47,6 +47,8 @@ extension ThreadViewModel {
             onDeleteThread(response)
         case .left(let response):
             onLeftThread(response)
+        case .userRemoveFormThread(let response):
+            onUserRemovedByAdmin(response)
         default:
             break
         }

@@ -23,7 +23,7 @@ struct MemberView: View {
             .listRowBackground(Color.App.bgPrimary)
         StickyHeaderSection(header: "", height: 10)
         LazyVStack(spacing: 0) {
-            if viewModel.searchedParticipants.count > 0 {
+            if viewModel.searchedParticipants.count > 0 || !viewModel.searchText.isEmpty {
                 StickyHeaderSection(header: "Memebers.searchedMembers")
                 ForEach(viewModel.searchedParticipants) { participant in
                     ParticipantRowContainer(participant: participant, isSearchRow: true)
@@ -161,7 +161,7 @@ struct ParticipantSearchView: View {
                     .foregroundStyle(Color.App.hint)
                     .frame(width: 16, height: 16)
                 TextField("General.searchHere", text: $viewModel.searchText)
-                    .frame(minWidth: 0, maxWidth: 420, minHeight: 36)
+                    .frame(minWidth: 0, minHeight: 48)
                     .font(.iransansBody)
             }
             Spacer()

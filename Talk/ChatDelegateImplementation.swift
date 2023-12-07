@@ -95,6 +95,11 @@ final class ChatDelegateImplementation: ChatDelegate {
     }
 
     private func onError(_ response: ChatResponse<Any>) {
+        Task.detached(priority: .userInitiated) {
+            await MainActor.run {
+                NotificationCenter.default.post(name: .error, object: response)
+            }
+        }
         guard let error = response.error else { return }
         if error.code == 21 {
             Task {

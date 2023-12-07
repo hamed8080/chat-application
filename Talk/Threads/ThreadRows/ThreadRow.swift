@@ -12,7 +12,8 @@ import TalkUI
 import TalkViewModels
 
 struct ThreadRow: View {
-    let isSelected: Bool
+    @EnvironmentObject var navVM: NavigationModel
+    var isSelected: Bool { navVM.selectedThreadId == thread.id }
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
 
@@ -126,7 +127,7 @@ struct ThreadRow_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadRow(isSelected: false, thread: thread)
+        ThreadRow(thread: thread)
             .environmentObject(ThreadsViewModel())
     }
 }

@@ -83,10 +83,10 @@ struct MutableMessageView: View {
                 MessageRowVideoDownloader(viewModel: viewModel)
                 MessageRowAudioDownloader(viewModel: viewModel)
             }
+            GroupParticipantNameView()
             ReplyInfoMessageRow()
             ForwardMessageRow(viewModel: viewModel)
             UploadMessageType()
-            GroupParticipantNameView()
             MessageTextView()
             JoinPublicLink(viewModel: viewModel)
             MapAddressTextView()
