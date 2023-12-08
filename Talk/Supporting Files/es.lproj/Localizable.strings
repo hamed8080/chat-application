@@ -62,6 +62,8 @@
 "General.MB" = "Megas";
 "General.GB" = "GB";
 "General.showMessage" = "Mostrar mensaje";
+"General.galleyAccessPermissionDenied" = "Se ha denegado el permiso para acceder a la galería.";
+"General.moveToSettings" = "Ir a ajustes";
 
 /* Pestañas */
 "Tab.chats" = "Chats";

@@ -9,20 +9,26 @@ import Foundation
 import TalkModels
 import Photos
 
-public final class ImagePickerViewModel: ObservableObject {
+public final class ImagePickerViewModel: NSObject, ObservableObject, PHPhotoLibraryChangeObserver {
     public var allImageItems: [ImageItem] = []
     public var selectedImageItems: [ImageItem] { allImageItems.filter({$0.isSelected}) }
     private let imageSize = CGSize(width: 128, height: 128)
-    public let fetchCount = 50
-    public var totalCount = 0
-    public var offset = 0
-    public var hasNext: Bool { totalCount > offset }
+    private let fetchCount = 50
+    private var totalCount = 0
+    private var offset = 0
+    private var hasNext: Bool { totalCount > offset }
     private var isAuthorized: Bool = false
     private var isSetupBefore: Bool = false
-    public init() {}
+    private var fetchResult: PHFetchResult<PHAsset>? = nil
+    public override init() {
+        super.init()
+        PHPhotoLibrary.shared().register(self)
+    }
+
     public typealias PHManagerResultType = (data: Data?, uti: String?, orientationProperty: CGImagePropertyOrientation?, info: [AnyHashable : Any]?)
     private typealias AthurizationResponse = CheckedContinuation<PHAuthorizationStatus, Never>
     private typealias FetchContinuation = CheckedContinuation<PHManagerResultType, Never>
+    public var state: PHAuthorizationStatus = .notDetermined
 
     public lazy var option: PHImageRequestOptions = {
         let option = PHImageRequestOptions()
@@ -41,13 +47,6 @@ public final class ImagePickerViewModel: ObservableObject {
     }()
 
     public var indexSet: IndexSet {
-//        let lastIndex = min(offset, totalCount - 1)
-//        if lastIndex == -1 {
-//            return IndexSet() // if the user install app for first time and not accepted the permission to aceess photo gallery it cause crash cause index is equal -1
-//        }
-//        if offset + 1 >= lastIndex {
-//            return IndexSet(offset ..< totalCount)
-//        }
         return IndexSet(offset ..< min(offset + fetchCount, totalCount))
     }
 
@@ -55,13 +54,21 @@ public final class ImagePickerViewModel: ObservableObject {
         if isSetupBefore { return }
         isSetupBefore = true
         setTotalImageCount()
-        let state = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        state = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         if state != .authorized {
             _ = Task {
-                if await checkAuthorization() == .authorized {
+                let state = await checkAuthorization()
+                /// We should check if it is limited to not update the state 
+                if self.state != .limited {
+                    self.state = state
+                }
+                if state == .authorized {
                     self.isAuthorized = true
                     setTotalImageCount()
                     self.loadImages()
+                }
+                if state != .authorized {
+                    animateObjectWillChange()
                 }
             }
         } else {
@@ -76,8 +83,8 @@ public final class ImagePickerViewModel: ObservableObject {
 
     private func fetchImages() {
         Task {
-            let fetchResults = PHAsset.fetchAssets(with: .image, options: opt)
-            let phAssets = fetchResults.objects(at: indexSet)
+            fetchResult = PHAsset.fetchAssets(with: .image, options: opt)
+            let phAssets = fetchResult?.objects(at: indexSet) ?? []
             for asset in phAssets {
                 let result = await self.requestThumbnailImage(asset)
                 await MainActor.run {
@@ -100,14 +107,20 @@ public final class ImagePickerViewModel: ObservableObject {
         let filename = resource?.originalFilename ?? "unknown"
         let isIniCloud = (result.info?[PHImageResultIsInCloudKey] as? NSNumber)?.boolValue ?? false
         if let data = result.data, !isIniCloud {
-            self.allImageItems.append(.init(id: asset.localIdentifier,
-                                            imageData: data,
-                                            width: asset.pixelWidth,
-                                            height: asset.pixelHeight,
-                                            phAsset: asset,
-                                            isIniCloud: false,
-                                            info: result.info,
-                                            originalFilename: filename))
+            if let item = self.allImageItems.first(where: { $0.id == asset.localIdentifier}) {
+                item.imageData = data
+                item.info = result.info
+                item.animateObjectWillChange()
+            } else {
+                self.allImageItems.append(.init(id: asset.localIdentifier,
+                                                imageData: data,
+                                                width: asset.pixelWidth,
+                                                height: asset.pixelHeight,
+                                                phAsset: asset,
+                                                isIniCloud: false,
+                                                info: result.info,
+                                                originalFilename: filename))
+            }
         } else {
             PHImageManager.default().requestImage(for: asset, targetSize: imageSize, contentMode: .default, options: option) { image, info in
                 if let data = image?.pngData() {
@@ -220,5 +233,19 @@ public final class ImagePickerViewModel: ObservableObject {
         Task {
             let _ = await self.requestImageDataAndOrientation(phAsset: phAsset, options: options)
         }
+    }
+
+    public func photoLibraryDidChange(_ changeInstance: PHChange) {
+        if let _fetchResult = self.fetchResult, let _ = changeInstance.changeDetails(for: _fetchResult) {
+            DispatchQueue.main.async {
+                self.setTotalImageCount()
+                self.offset = 0
+                self.fetchImages()
+            }
+        }
+    }
+
+    deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 }

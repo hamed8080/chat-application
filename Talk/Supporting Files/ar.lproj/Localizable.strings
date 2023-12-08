@@ -61,6 +61,8 @@
 "General.MB" = "ميجابايت";
 "General.GB" = "جيجابايت";
 "General.showMessage" = "عرض الرسالة";
+"General.galleyAccessPermissionDenied" = "تم رفض إذن الوصول إلى المعرض.";
+"General.moveToSettings" = "انتقل إلى الإعدادات";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";

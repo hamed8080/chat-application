@@ -77,6 +77,7 @@ struct ThreadSheetView: View {
             GalleryImagePicker()
                 .environmentObject(viewModel)
                 .environmentObject(viewModel.attachmentsViewModel)
+                .environmentObject(viewModel.attachmentsViewModel.imagePickerViewModel)
                 .onAppear {
                     viewModel.attachmentsViewModel.imagePickerViewModel.oneTimeSetup()
                 }

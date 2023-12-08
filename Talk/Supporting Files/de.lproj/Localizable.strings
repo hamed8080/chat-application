@@ -62,6 +62,8 @@
 "General.MB" = "MB";
 "General.GB" = "GB";
 "General.showMessage" = "Nachricht anzeigen";
+"General.galleyAccessPermissionDenied" = "Der Zugriff auf die Galerie wurde verweigert.";
+"General.moveToSettings" = "Zu den Einstellungen wechseln";
 
 /* Tabs */
 "Tab.chats" = "Chats";

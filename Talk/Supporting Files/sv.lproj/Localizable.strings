@@ -62,6 +62,8 @@
 "General.MB" = "MB";
 "General.GB" = "GB";
 "General.showMessage" = "Visa meddelande";
+"General.galleyAccessPermissionDenied" = "Åtkomst till galleriet har nekats.";
+"General.moveToSettings" = "Gå till inställningar";
 
 /* Tabs */
 "Tab.chats" = "Chattar";

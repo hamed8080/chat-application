@@ -62,6 +62,8 @@
 "General.MB" = "مگابایت";
 "General.GB" = "گیگا بایت";
 "General.showMessage" = "نمایش پیام";
+"General.galleyAccessPermissionDenied" = "دسترسی به گالری تصاویر مسدود شده است.";
+"General.moveToSettings" = "رفتن به صفحه تنظیمات";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";

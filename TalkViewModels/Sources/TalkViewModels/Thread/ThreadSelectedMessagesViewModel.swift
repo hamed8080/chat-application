@@ -13,7 +13,7 @@ import ChatDTO
 import TalkModels
 
 public final class ThreadSelectedMessagesViewModel: ObservableObject {
-    public var threadVM: ThreadViewModel?
+    public weak var threadVM: ThreadViewModel?
     public var selectedMessages: [MessageRowViewModel] { threadVM?.messageViewModels.filter({$0.isSelected}) ?? []}
 
     public init(threadVM: ThreadViewModel? = nil) {

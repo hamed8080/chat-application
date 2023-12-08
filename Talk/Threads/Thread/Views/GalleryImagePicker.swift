@@ -9,39 +9,140 @@ import SwiftUI
 import TalkViewModels
 import TalkModels
 import TalkUI
+import PhotosUI
 
 struct GalleryImagePicker: View {
     @EnvironmentObject var threadVM: ThreadViewModel
-    var attachmentVM: AttachmentsViewModel { threadVM.attachmentsViewModel }
+    @EnvironmentObject var viewModel: ImagePickerViewModel
     @Environment(\.horizontalSizeClass) var size
-    @State private var selectedCount = 0
+    @State var showSelecMoreDialog = false
 
     var body: some View {
         ScrollView(.vertical) {
             LazyVGrid(columns: Array(repeating: .init(.flexible(minimum: 96, maximum: 128), spacing: 0), count: size == .compact ? 4 : 7), spacing: 8) {
                 AttachmentMessageList()
+                    .fullScreenCover(isPresented: $showSelecMoreDialog) {
+                        LimitedLibraryPicker() {
+                            showSelecMoreDialog = false
+                        }
+                        .presentationBackground {
+                            Color.clear
+                        }
+                    }
             }
             .padding(EdgeInsets(top: 8, leading: 4, bottom: 8, trailing: 4))
         }
-        .environmentObject(attachmentVM.imagePickerViewModel)
         .onAppear {
-            attachmentVM.imagePickerViewModel.oneTimeSetup()
+            viewModel.oneTimeSetup()
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if viewModel.state == .limited {
+                HStack {
+                    Button {
+                        showSelecMoreDialog = true
+                    } label: {
+                        Text("General.add")
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Color.App.blue)
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .frame(height: 48)
+                .background(.ultraThinMaterial)
+            }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            SubmitBottomButton(text: "General.add", enableButton: .constant(selectedCount > 0), isLoading: .constant(false)) {
-                attachmentVM.addSelectedPhotos()
+            SubmitBottomButton(text: "General.add", enableButton: .constant(viewModel.selectedImageItems.count > 0), isLoading: .constant(false)) {
+                threadVM.attachmentsViewModel.addSelectedPhotos()
                 threadVM.sheetType = nil
                 threadVM.animateObjectWillChange()
             }
         }
-        .onReceive(attachmentVM.imagePickerViewModel.objectWillChange) { _ in
-            if attachmentVM.imagePickerViewModel.selectedImageItems.count != selectedCount {
-                selectedCount = attachmentVM.imagePickerViewModel.selectedImageItems.count
+        .onReceive(viewModel.objectWillChange) { _ in
+            if viewModel.state == .denied {
+                threadVM.sheetType = nil
+                threadVM.animateObjectWillChange()
+                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(PhotoPermissionDeniedDialog())
             }
         }
         .task {
-            attachmentVM.imagePickerViewModel.loadImages()
+            viewModel.loadImages()
         }
+    }
+}
+
+class MYController: UIViewController {
+    var onDismiss: (() -> Void)?
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor.clear
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: self) { selectedItems in
+            self.onDismiss?()
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        onDismiss?()
+    }
+}
+
+struct LimitedLibraryPicker: UIViewControllerRepresentable {
+    let onDismiss: () -> Void
+    func makeUIViewController(context: Context) -> UIViewController {
+        let controller = MYController()
+        controller.modalPresentationStyle = .overCurrentContext
+        controller.onDismiss = onDismiss
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
+
+struct PhotoPermissionDeniedDialog: View {
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 16) {
+            Text("General.galleyAccessPermissionDenied")
+                .foregroundStyle(Color.App.text)
+                .font(.iransansBoldSubheadline)
+                .multilineTextAlignment(.leading)
+                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+
+            HStack(spacing: 16) {
+                Button {
+                    AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
+                } label: {
+                    Text("General.cancel")
+                        .foregroundStyle(Color.App.placeholder)
+                        .font(.iransansBoldBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                }
+
+                Button {
+                    if let appSettingsURL = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(appSettingsURL, options: [:], completionHandler: nil)
+                    }
+                } label: {
+                    Text("General.moveToSettings")
+                        .foregroundStyle(Color.App.orange)
+                        .font(.iransansBoldBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                }
+            }
+        }
+        .frame(maxWidth: 320)
+        .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+        .background(MixMaterialBackground())
     }
 }
 
@@ -127,6 +228,13 @@ struct DownloadFromiCloudProgress: View {
 
 struct GalleryImagePicker_Previews: PreviewProvider {
     static var previews: some View {
-        GalleryImagePicker()
+
+        Text("sss")
+            .fullScreenCover(isPresented: .constant(true)) {
+                LimitedLibraryPicker() {
+                }
+                .presentationBackground(Color.gray.opacity(0.3))
+            }
+//        GalleryImagePicker()
     }
 }

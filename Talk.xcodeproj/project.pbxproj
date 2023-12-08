@@ -279,6 +279,8 @@
 		05C6DA1B2B19F3020049BCDC /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */; };
 		05C6DA1C2B19F3020049BCDC /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */; };
 		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
+		05D493922B21FF3100508472 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 052F46652B21F5B400085C26 /* PhotosUI.framework */; };
+		05D493932B21FF3800508472 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 052F46652B21F5B400085C26 /* PhotosUI.framework */; };
 		05D813B02B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */; };
 		05D813B12B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */; };
 		05DCC0652AE183EA0025B3B7 /* ConversationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */; };
@@ -339,6 +341,7 @@
 		050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageReactionDetailView.swift; sourceTree = "<group>"; };
 		0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButtonItem.swift; sourceTree = "<group>"; };
 		051F26C62ADD0F8F00BF9841 /* SwipyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipyView.swift; sourceTree = "<group>"; };
+		052F46652B21F5B400085C26 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
 		053803CF2B11F879005C8FAB /* DeleteThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteThreadView.swift; sourceTree = "<group>"; };
 		05466B092AEEA3F7005CC176 /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
 		054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinPublicLink.swift; sourceTree = "<group>"; };
@@ -508,6 +511,7 @@
 				0570CCB82AAEEE78001832E9 /* TalkExtensions in Frameworks */,
 				0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */,
 				0570CCBA2AAEEE78001832E9 /* TalkModels in Frameworks */,
+				05D493932B21FF3800508472 /* PhotosUI.framework in Frameworks */,
 				05DDC8482AEC240D009F9942 /* ActionableContextMenu in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -521,6 +525,7 @@
 				0570CCB12AAEEE22001832E9 /* TalkViewModels in Frameworks */,
 				0570CCAD2AAEEE22001832E9 /* TalkModels in Frameworks */,
 				0570CCAB2AAEEE22001832E9 /* TalkExtensions in Frameworks */,
+				05D493922B21FF3100508472 /* PhotosUI.framework in Frameworks */,
 				05DDC84A2AEC2412009F9942 /* ActionableContextMenu in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -892,6 +897,7 @@
 		0570CCA92AAEEE22001832E9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				052F46652B21F5B400085C26 /* PhotosUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
