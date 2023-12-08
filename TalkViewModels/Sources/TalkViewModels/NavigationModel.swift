@@ -159,6 +159,19 @@ public final class NavigationModel: ObservableObject {
         selectedThreadId = threadDetail.id
     }
 
+    public func switchFromThreadList(thread: Conversation) {
+        if paths.count > 0 {
+            for _ in 0...paths.count - 1 {
+                paths.removeLast()
+            }
+        }
+        pathsTracking.removeAll()
+        let threadViewModel = ThreadViewModel(thread: thread, threadsViewModel: threadsViewModel)
+        pathsTracking.append(threadViewModel)
+        paths.append(NavigationType.conversation(thread))
+        selectedThreadId = thread.id
+    }
+
     public func append(thread: Conversation) {
         if !threadStack.contains(where: {$0.threadId == thread.id}) {
             let threadViewModel = ThreadViewModel(thread: thread, threadsViewModel: threadsViewModel)

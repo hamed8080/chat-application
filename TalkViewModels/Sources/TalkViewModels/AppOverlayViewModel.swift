@@ -57,14 +57,14 @@ public class AppOverlayViewModel: ObservableObject {
     }
 
     private func onError(_ newError: ChatError?) {
-        Task {
-            await MainActor.run {
+        Task { [weak self] in
+            await MainActor.run { [weak self] in
                 if let error = newError {
-                    type = .error(error: error)
-                    isPresented = true
+                    self?.type = .error(error: error)
+                    self?.isPresented = true
                 } else if newError == nil {
-                    type = .none
-                    isPresented = false
+                    self?.type = .none
+                    self?.isPresented = false
                 }
             }
         }

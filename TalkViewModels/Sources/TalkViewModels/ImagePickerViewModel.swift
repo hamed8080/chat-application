@@ -56,23 +56,27 @@ public final class ImagePickerViewModel: NSObject, ObservableObject, PHPhotoLibr
         setTotalImageCount()
         state = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         if state != .authorized {
-            _ = Task {
-                let state = await checkAuthorization()
-                /// We should check if it is limited to not update the state 
-                if self.state != .limited {
-                    self.state = state
-                }
-                if state == .authorized {
-                    self.isAuthorized = true
-                    setTotalImageCount()
-                    self.loadImages()
-                }
-                if state != .authorized {
-                    animateObjectWillChange()
-                }
+            _ = Task { [weak self] in
+                await self?.checkAceessAgain()
             }
         } else {
             isAuthorized = true
+        }
+    }
+
+    private func checkAceessAgain() async {
+        let state = await checkAuthorization()
+        /// We should check if it is limited to not update the state
+        if self.state != .limited {
+            self.state = state
+        }
+        if state == .authorized {
+            self.isAuthorized = true
+            setTotalImageCount()
+            self.loadImages()
+        }
+        if state != .authorized {
+            animateObjectWillChange()
         }
     }
 

@@ -20,7 +20,7 @@ struct ThreadContentList: View {
         List {
             ForEach(threadsVM.threads) { thread in
                 Button {
-                    AppState.shared.objectsContainer.navVM.append(thread: thread)
+                    AppState.shared.objectsContainer.navVM.switchFromThreadList(thread: thread)
                 } label: {
                     ThreadRow(thread: thread)
                         .onAppear {

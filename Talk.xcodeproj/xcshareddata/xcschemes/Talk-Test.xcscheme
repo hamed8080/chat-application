@@ -85,7 +85,7 @@
          <EnvironmentVariable
             key = "CG_NUMERICS_SHOW_BACKTRACE"
             value = ""
-            isEnabled = "NO">
+            isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>

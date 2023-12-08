@@ -14,7 +14,6 @@ import TalkViewModels
 
 struct MessageFooterView: View {
     var message: Message { viewModel.message }
-    @State var timeString: String = ""
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {

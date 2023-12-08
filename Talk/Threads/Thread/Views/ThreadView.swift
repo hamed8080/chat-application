@@ -22,7 +22,6 @@ struct ThreadView: View, DropDelegate {
 
     var body: some View {
         ThreadMessagesList(viewModel: viewModel)
-            .id(thread.id)
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
             .navigationTitle(thread.computedTitle)

@@ -50,27 +50,30 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var replyMessage: Message?
     @Published public var isInEditMode: Bool = false
     @Published public var dismiss = false
-    public var exportMessagesVM: ExportMessagesViewModelProtocol?
+
     public var mentionList: [Participant] = []
     public var sheetType: ThreadSheetType?
     public var selectedLocation: MKCoordinateRegion = .init()
     public var isFetchedServerFirstResponse: Bool = false
+    public var exportMessagesVM: ExportMessagesViewModelProtocol?
     public var unssetMessagesViewModel: ThreadUnsentMessagesViewModel
     public var uploadMessagesViewModel: ThreadUploadMessagesViewModel
     public var searchedMessagesViewModel: ThreadSearchMessagesViewModel
     public var selectedMessagesViewModel: ThreadSelectedMessagesViewModel
     public var unreadMentionsViewModel: ThreadUnreadMentionsViewModel
+    public var participantsViewModel: ParticipantsViewModel
+    public var attachmentsViewModel: AttachmentsViewModel = .init()
+    public var audioRecoderVM: AudioRecordingViewModel = .init()
+    public weak var threadsViewModel: ThreadsViewModel?
     public var readOnly = false
     public var textMessage: String?
     public var canScrollToBottomOfTheList: Bool = false
     private var cancelable: Set<AnyCancellable> = []
     private var typingTimerStarted = false
-    public var audioRecoderVM: AudioRecordingViewModel = .init()
     public var hasNextTop = true
     public var hasNextBottom = true
     public var count: Int { 15 }
     public var threadId: Int { thread.id ?? 0 }
-    public weak var threadsViewModel: ThreadsViewModel?
     public var signalMessageText: String?
     public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
     public var isAtBottomOfTheList: Bool = false    
@@ -80,11 +83,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     var lastOrigin: CGFloat = 0
     public weak var forwardMessage: Message?
     public var seenPublisher = PassthroughSubject<Message, Never>()
-    public var participantsViewModel: ParticipantsViewModel
     var hasSentHistoryRequest = false
     var createThreadCompletion: (()-> Void)?
     public static var threadWidth: CGFloat = 0
-    public var attachmentsViewModel: AttachmentsViewModel = .init()
 
     public var messageViewModels: [MessageRowViewModel] = []
     var model: AppSettingsModel
@@ -219,7 +220,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             moreTop(sections.first?.messages.first?.time)
         }
 
-        if !isProgramaticallyScroll, !scrollingUP, message.id == sections.last?.messages.last?.id {
+        if !isProgramaticallyScroll, !scrollingUP, message.id == sections.last?.messages.last?.id, (thread.lastMessageVO?.id ?? 0) != (message.id ?? -1) {
             moreBottom(sections.last?.messages.last?.time?.advanced(by: 1))
         }
     }
@@ -260,7 +261,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func sendSeen(for message: Message) {
         let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId >= lastMsgId, !isMe {
+        if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, !isMe {
             thread.lastSeenMessageId = messageId
             log("send seen for message:\(message.messageTitle) with id:\(messageId)")
             ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
