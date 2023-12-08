@@ -199,6 +199,10 @@ public final class NavigationModel: ObservableObject {
                 paths.removeLast()
             }
         }
+        if let threadId = threadId, (pathsTracking.last as? ThreadViewModel)?.threadId == threadId {
+            pathsTracking.removeLast()
+            paths.removeLast()
+        }
         setSelectedThreadId()
     }
 

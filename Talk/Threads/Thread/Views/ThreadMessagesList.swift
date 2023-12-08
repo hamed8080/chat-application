@@ -184,36 +184,37 @@ struct KeyboardHeightView: View {
 
     var body: some View {
         Rectangle()
+            .id("KeyboardHeightView")
             .frame(width: 0, height: keyboardHeight)
             .onKeyboardSize { size in
                 if !isInAnimating {
                     isInAnimating = true
-                    keyboardHeight = size.height
                     viewModel.disableExcessiveLoading()
                     if size.height > 0, viewModel.isAtBottomOfTheList {
-                        updateHeight()
+                        updateHeight(size.height)
                     } else if viewModel.isAtBottomOfTheList {
-                        viewModel.scrollToBottom()
-                        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                            isInAnimating = false
-                        }
+                        updateHeight(size.height)
+                    } else {
+                        isInAnimating = false
                     }
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .message)) { notif in
                 if let event = notif.object as? MessageEventTypes {
                     if case .new(let response) = event, response.result?.conversation?.id == viewModel.threadId {
-                        updateHeight()
+                        updateHeight(0)
                     }
                 }
             }
     }
 
-    private func updateHeight() {
+    private func updateHeight(_ height: CGFloat) {
+        // We have to wait until all the animations for clicking on TextField are finished and then start our animation.
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-            withAnimation(.easeInOut) {
-                isInAnimating = false
+            withAnimation(.easeInOut(duration: 0.4)) {
+                keyboardHeight = height
                 viewModel.scrollProxy?.scrollTo(viewModel.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
+                isInAnimating = false
             }
         }
     }

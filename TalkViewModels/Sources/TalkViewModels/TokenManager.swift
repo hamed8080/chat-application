@@ -11,6 +11,7 @@ import Foundation
 import ChatModels
 import TalkModels
 import OSLog
+import BackgroundTasks
 
 public final class TokenManager: ObservableObject {
     public static let shared = TokenManager()
@@ -74,7 +75,6 @@ public final class TokenManager: ObservableObject {
 #endif
         UserConfigManagerVM.instance.updateToken(ssoToken)
         refreshCreateTokenDate()
-        startTimerToGetNewToken()
         if let encodedData = try? JSONEncoder().encode(ssoToken) {
             Task {
                 await MainActor.run {
@@ -96,16 +96,6 @@ public final class TokenManager: ObservableObject {
 
     public func getCreateTokenDate() -> Date? {
         UserDefaults.standard.value(forKey: TokenManager.ssoTokenCreateDate) as? Date
-    }
-
-    public func startTimerToGetNewToken() {
-        if let ssoToken = getSSOTokenFromUserDefaults(), let createDate = getCreateTokenDate() {
-            let timeToStart = createDate.advanced(by: Double(ssoToken.expiresIn)).timeIntervalSince1970 - Date().timeIntervalSince1970
-            Task {
-                try? await Task.sleep(for: .seconds(timeToStart))
-                await getNewTokenWithRefreshToken()
-            }
-        }
     }
 
     public func setIsLoggedIn(isLoggedIn: Bool) {

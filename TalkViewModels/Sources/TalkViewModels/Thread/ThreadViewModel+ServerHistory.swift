@@ -39,15 +39,16 @@ extension ThreadViewModel {
         tryFirstScenario()
         trySecondScenario()
         trySeventhScenario()
+        tryEightScenario()
     }
 
-    public func moreTop(prepend: String = "MORE-TOP", _ toTime: UInt?) {
+    public func moreTop(prepend: String = "MORE-TOP", delay: TimeInterval = 0.5, _ toTime: UInt?) {
         if !canLoadMoreTop { return }
         topLoading = true
         animateObjectWillChange()
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: readOnly)
         RequestsManager.shared.append(prepend: prepend, value: req)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
             if self != nil {
                 ChatManager.activeInstance?.message.history(req)
             }
@@ -117,7 +118,7 @@ extension ThreadViewModel {
     func tryFirstScenario() {
         /// 1- Get the top part to time messages
         if thread.lastMessageVO?.id ?? 0 > thread.lastSeenMessageId ?? 0, let toTime = thread.lastSeenMessageTime {
-            moreTop(prepend: "MORE-TOP-FIRST-SCENARIO", toTime.advanced(by: 1))
+            moreTop(prepend: "MORE-TOP-FIRST-SCENARIO", delay: TimeInterval(0), toTime.advanced(by: 1))
         }
     }
 
@@ -320,6 +321,15 @@ extension ThreadViewModel {
     func trySeventhScenario() {
         if thread.lastMessageVO?.id ?? 0 < thread.lastSeenMessageId ?? 0 {
             moveToTime(thread.lastMessageVO?.time ?? 0, thread.lastMessageVO?.id ?? 0, highlight: false)
+        }
+    }
+}
+
+/// Scenario 8 = When a new thread has been built and me is added by another person and this is our first time to visit the thread.
+extension ThreadViewModel {
+    func tryEightScenario() {
+        if thread.lastSeenMessageId == 0, thread.lastSeenMessageTime == nil, let lastMSGId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
+            moveToTime(time, lastMSGId, highlight: false)
         }
     }
 }

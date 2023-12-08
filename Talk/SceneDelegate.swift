@@ -10,8 +10,9 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import UIKit
+import BackgroundTasks
 
-final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDelegate {
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
@@ -36,6 +37,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window = window
             window.makeKeyAndVisible()
         }
+        
+        // MARK: Registering Launch Handlers for Tasks
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "ir.pod.talk.refreshToken", using: nil) { task in
+            // Downcast the parameter to an app refresh task as this identifier is used for a refresh request.
+            self.handleTaskRefreshToken(task as! BGAppRefreshTask)
+        }
     }
 
     func scene(_: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -55,7 +62,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_: UIScene) {
-        TokenManager.shared.startTimerToGetNewToken()
         AppState.shared.updateWindowMode()
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
@@ -80,5 +86,25 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
         AppState.shared.lifeCycleState = .background
+        scheduleAppRefreshToken()
+    }
+
+    private func scheduleAppRefreshToken() {
+        if let ssoToken = TokenManager.shared.getSSOTokenFromUserDefaults(), let createDate = TokenManager.shared.getCreateTokenDate() {
+            let timeToStart = createDate.advanced(by: Double(ssoToken.expiresIn - 50)).timeIntervalSince1970 - Date().timeIntervalSince1970
+            let request = BGAppRefreshTaskRequest(identifier: "ir.pod.talk.refreshToken")
+            request.earliestBeginDate = Date(timeIntervalSince1970: timeToStart)
+            do {
+                try BGTaskScheduler.shared.submit(request)
+            } catch {
+                print("Could not schedule app refresh: \(error)")
+            }
+        }
+    }
+
+    private func handleTaskRefreshToken(_ task: BGAppRefreshTask) {
+        Task {
+            await TokenManager.shared.getNewTokenWithRefreshToken()
+        }
     }
 }

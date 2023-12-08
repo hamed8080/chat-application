@@ -54,7 +54,7 @@ struct MessageRowImageDownloader: View {
         }
     }
 
-    private func downloadBlurImageWithDelay(delay: TimeInterval = 2.0, _ downloadVM: DownloadFileViewModel) {
+    private func downloadBlurImageWithDelay(delay: TimeInterval = 1.0, _ downloadVM: DownloadFileViewModel) {
         /// We wait for 2 seconds to download the thumbnail image.
         /// If we upload the image for the first time we have to wait, due to a server process to make a thumbnail.
         Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { timer in

@@ -50,6 +50,7 @@ struct ForwardMessageRow: View {
                 }
             }
             .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
+            .frame(minWidth: 128, alignment: viewModel.isMe ? .topTrailing : .topLeading)
             .buttonStyle(.borderless)
             .truncationMode(.tail)
             .contentShape(Rectangle())

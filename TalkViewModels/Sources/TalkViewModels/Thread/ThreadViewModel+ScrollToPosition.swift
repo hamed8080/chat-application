@@ -14,15 +14,15 @@ import SwiftUI
 
 public protocol ScrollToPositionProtocol {
     var canScrollToBottomOfTheList: Bool { get set }
-    func scrollTo(_ uniqueId: String, _ animation: Animation?, anchor: UnitPoint?)
+    func scrollTo(_ uniqueId: String, delay: TimeInterval, _ animation: Animation?, anchor: UnitPoint?)
     func scrollToBottom(animation: Animation?)
     func scrollToLastMessageIfLastMessageIsVisible(_ message: Message)
 }
 
 extension ThreadViewModel: ScrollToPositionProtocol {
 
-    public func scrollTo(_ uniqueId: String, _ animation: Animation? = .spring(response: 0.05, dampingFraction: 0.8, blendDuration: 0.2), anchor: UnitPoint? = .center) {
-        Timer.scheduledTimer(withTimeInterval: 0.6, repeats: false) { [weak self] _ in
+    public func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.6), _ animation: Animation? = .spring(response: 0.05, dampingFraction: 0.8, blendDuration: 0.2), anchor: UnitPoint? = .center) {
+        Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
             withAnimation(animation) {
                 self?.scrollProxy?.scrollTo(uniqueId, anchor: anchor)
             }
@@ -39,7 +39,7 @@ extension ThreadViewModel: ScrollToPositionProtocol {
 
     public func scrollToBottom(animation: Animation? = .easeInOut) {
         if let uniqueId = sections.last?.messages.last?.uniqueId {
-            scrollTo(uniqueId, animation)
+            scrollTo(uniqueId, delay: .init(0), animation)
         }
     }
 
