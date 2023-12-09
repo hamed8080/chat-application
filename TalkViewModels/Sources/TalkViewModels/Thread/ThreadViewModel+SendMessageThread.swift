@@ -45,8 +45,8 @@ extension ThreadViewModel {
             sendFiles(textMessage, urls)
         } else if type == .contact {
             // TODO: It should be implemented whenever the server side is ready.
-        } else if type == .map {
-            // TODO: It should be implemented whenever the server side is ready.
+        } else if type == .map, let item = attchments.first(where: {$0.type == .map})?.request as? LocationItem {
+            sendLoaction(textMessage, item)
         } else if type == .drop {
             let dropItems = attchments.compactMap({$0.request as? DropItem})
             sendDropFiles(textMessage, dropItems)
@@ -296,6 +296,7 @@ extension ThreadViewModel {
             let req = LocationMessageRequest(mapCenter: coordinate,
                                              threadId: threadId,
                                              userGroupHash: thread.userGroupHash ?? "",
+                                             mapZoom: 17,
                                              mapImageName: location.name,
                                              textMessage: textMessage)
             ChatManager.activeInstance?.message.send(req)

@@ -73,6 +73,9 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].time = response.result?.conversation?.time
             threads[index].unreadCount = (threads[index].unreadCount ?? 0) + 1
             threads[index].lastMessageVO = response.result
+            threads[index].lastSeenMessageId = response.result?.conversation?.lastSeenMessageId
+            threads[index].lastSeenMessageTime = response.result?.conversation?.lastSeenMessageTime
+            threads[index].lastSeenMessageNanos = response.result?.conversation?.lastSeenMessageNanos
             threads[index].lastMessage = response.result?.message
             /// We only set the mentioned true because if the user sends multiple messages inside a thread but one message has been mention, the list will set it to false which is wrong.
             if response.result?.mentioned == true {

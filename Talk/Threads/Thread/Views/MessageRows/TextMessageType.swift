@@ -80,11 +80,7 @@ struct MutableMessageView: View {
            InnerMessage(viewModel: viewModel)
         }
         .frame(maxWidth: MessageRowViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
-        .simultaneousGesture(TapGesture().onEnded { _ in
-            if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url)
-            }
-        }, including: message.isVideo ? .subviews : .all)
+        .simultaneousGesture(TapGesture().onEnded { _ in }, including: message.isVideo ? .subviews : .all)
         .onAppear {
             viewModel.calculate()
         }
@@ -103,13 +99,13 @@ struct InnerMessage: View {
                 MessageRowVideoDownloader(viewModel: viewModel)
                 MessageRowAudioDownloader(viewModel: viewModel)
             }
+            LocationRowView()
             GroupParticipantNameView()
             ReplyInfoMessageRow()
             ForwardMessageRow(viewModel: viewModel)
             UploadMessageType()
             MessageTextView()
             JoinPublicLink(viewModel: viewModel)
-            MapAddressTextView()
             UnsentMessageView()
             Group {
                 ReactionCountView()

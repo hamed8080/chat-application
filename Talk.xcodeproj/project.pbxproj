@@ -251,8 +251,8 @@
 		0594FE612B0386580031AADF /* GroupParticipantNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE5F2B0386580031AADF /* GroupParticipantNameView.swift */; };
 		0594FE632B0386F00031AADF /* MessageTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE622B0386F00031AADF /* MessageTextView.swift */; };
 		0594FE642B0386F00031AADF /* MessageTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE622B0386F00031AADF /* MessageTextView.swift */; };
-		0594FE662B0387370031AADF /* MapAddressTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE652B0387370031AADF /* MapAddressTextView.swift */; };
-		0594FE672B0387370031AADF /* MapAddressTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE652B0387370031AADF /* MapAddressTextView.swift */; };
+		0594FE662B0387370031AADF /* LocationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE652B0387370031AADF /* LocationRowView.swift */; };
+		0594FE672B0387370031AADF /* LocationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE652B0387370031AADF /* LocationRowView.swift */; };
 		0594FE692B0387920031AADF /* UnsentMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE682B0387920031AADF /* UnsentMessageView.swift */; };
 		0594FE6A2B0387920031AADF /* UnsentMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0594FE682B0387920031AADF /* UnsentMessageView.swift */; };
 		05A0CD712B19314100F13EE5 /* DeleteContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A0CD702B1930C900F13EE5 /* DeleteContactView.swift */; };
@@ -463,7 +463,7 @@
 		0594FE582B034B050031AADF /* SettingNotificationSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingNotificationSection.swift; sourceTree = "<group>"; };
 		0594FE5F2B0386580031AADF /* GroupParticipantNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupParticipantNameView.swift; sourceTree = "<group>"; };
 		0594FE622B0386F00031AADF /* MessageTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextView.swift; sourceTree = "<group>"; };
-		0594FE652B0387370031AADF /* MapAddressTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapAddressTextView.swift; sourceTree = "<group>"; };
+		0594FE652B0387370031AADF /* LocationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationRowView.swift; sourceTree = "<group>"; };
 		0594FE682B0387920031AADF /* UnsentMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsentMessageView.swift; sourceTree = "<group>"; };
 		05A0CD702B1930C900F13EE5 /* DeleteContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteContactView.swift; sourceTree = "<group>"; };
 		05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMentionsButton.swift; sourceTree = "<group>"; };
@@ -736,7 +736,7 @@
 				0570CB8B2AAEE98C001832E9 /* TextMessageType.swift */,
 				0594FE5F2B0386580031AADF /* GroupParticipantNameView.swift */,
 				0594FE622B0386F00031AADF /* MessageTextView.swift */,
-				0594FE652B0387370031AADF /* MapAddressTextView.swift */,
+				0594FE652B0387370031AADF /* LocationRowView.swift */,
 				0594FE682B0387920031AADF /* UnsentMessageView.swift */,
 				05DE92452B03E75800C7A006 /* MessageRowFileDownloader.swift */,
 				05DE92482B03EB1300C7A006 /* MessageRowAudioDownloader.swift */,
@@ -1112,7 +1112,7 @@
 				0570CC4F2AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC292AAEE98F001832E9 /* ThreadView.swift in Sources */,
 				0570CC932AAEE98F001832E9 /* AppDelegate.swift in Sources */,
-				0594FE662B0387370031AADF /* MapAddressTextView.swift in Sources */,
+				0594FE662B0387370031AADF /* LocationRowView.swift in Sources */,
 				0570CBF52AAEE98F001832E9 /* ThreadRow.swift in Sources */,
 				0570CC4B2AAEE98F001832E9 /* LoginNavigationContainerView.swift in Sources */,
 				0570CBFB2AAEE98F001832E9 /* ThreadContentList.swift in Sources */,
@@ -1257,7 +1257,7 @@
 				0570CC502AAEE98F001832E9 /* FileView.swift in Sources */,
 				0570CC2A2AAEE98F001832E9 /* ThreadView.swift in Sources */,
 				0570CC942AAEE98F001832E9 /* AppDelegate.swift in Sources */,
-				0594FE672B0387370031AADF /* MapAddressTextView.swift in Sources */,
+				0594FE672B0387370031AADF /* LocationRowView.swift in Sources */,
 				0570CBF62AAEE98F001832E9 /* ThreadRow.swift in Sources */,
 				0570CC4C2AAEE98F001832E9 /* LoginNavigationContainerView.swift in Sources */,
 				0570CBFC2AAEE98F001832E9 /* ThreadContentList.swift in Sources */,

@@ -33,22 +33,23 @@ public extension Message {
         }
         return AttributedString(attributedString)
     }
-
+    
     var uploadFile: UploadWithTextMessageProtocol? { self as? UploadWithTextMessageProtocol }
     var fileExtension: String? { uploadFile?.uploadFileRequest?.fileExtension ?? uploadFile?.uploadImageRequest?.fileExtension }
     var fileName: String? { uploadFile?.uploadFileRequest?.fileName ?? uploadFile?.uploadImageRequest?.fileName }
     var type: ChatModels.MessageType? { messageType ?? .unknown }
-    var isTextMessageType: Bool { type == .text || type == .link || isFileType }
+    var isTextMessageType: Bool { type == .text || type == .link || isFileType || type == .location || isMapType }
     func isMe(currentUserId: Int?) -> Bool { (ownerId ?? 0 == currentUserId ?? 0) || isUnsentMessage || isUploadMessage }
     /// We should check metadata to be nil. If it has a value, it means that the message file has been successfully uploaded and sent to the chat server.
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol && metadata == nil }
     /// Check id because we know that the message was successfully added in server chat.
     var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
 
-    var isImage: Bool { messageType == .podSpacePicture || messageType == .picture }
+    var isImage: Bool { (messageType == .podSpacePicture || messageType == .picture) && !isMapType }
     var isAudio: Bool { [MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice].contains(messageType ?? .unknown) }
     var isVideo: Bool { [MessageType.video, .podSpaceVideo, .video].contains(messageType ?? .unknown) }
     var reactionableType: Bool { ![MessageType.endCall, .endCall, .participantJoin, .participantLeft].contains(type) }
+    var isMapType: Bool { fileMetaData?.latitude != nil }
 
     var hardLink: URL? {
         guard
@@ -106,8 +107,8 @@ public extension Message {
     }
 
     var coordinate: Coordinate? {
-        guard let data = systemMetadata?.data(using: .utf8) else { return nil }
-        return try? JSONDecoder().decode(Coordinate.self, from: data)
+        guard let latitude = fileMetaData?.latitude, let longitude = fileMetaData?.longitude else { return nil }
+        return Coordinate(lat: latitude, lng: longitude)
     }
 
     var appleMapsURL: URL? {

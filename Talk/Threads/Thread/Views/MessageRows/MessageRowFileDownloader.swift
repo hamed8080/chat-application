@@ -16,7 +16,7 @@ struct MessageRowFileDownloader: View {
     private var message: Message { viewModel.message }
 
     var body: some View {
-        if message.isFileType && !message.isImage && !message.isAudio && !message.isVideo == true, let downloadVM = viewModel.downloadFileVM {
+        if message.isFileType && !message.isMapType && !message.isImage && !message.isAudio && !message.isVideo == true, let downloadVM = viewModel.downloadFileVM {
             MessageRowFileDownloaderContent(viewModel: viewModel)
                 .environmentObject(downloadVM)
         }
