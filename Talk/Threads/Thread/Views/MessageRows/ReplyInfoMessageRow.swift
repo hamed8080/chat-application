@@ -56,7 +56,6 @@ struct ReplyInfoMessageRow: View {
                                 .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
                                 .lineLimit(2)
                                 .truncationMode(.tail)
-                                .fixedSize(horizontal: false, vertical: true)
                         }
                         if viewModel.canShowIconFile {
                             HStack {
@@ -88,7 +87,6 @@ struct ReplyInfoMessageRow: View {
                 }
             }
             .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
-            .frame(minWidth: 128, alignment: viewModel.isMe ? .topTrailing : .topLeading)
             .buttonStyle(.borderless)
             .truncationMode(.tail)
             .contentShape(Rectangle())

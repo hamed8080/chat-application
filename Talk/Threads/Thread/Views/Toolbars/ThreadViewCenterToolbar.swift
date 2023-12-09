@@ -23,7 +23,7 @@ struct ThreadViewCenterToolbar: View {
     var body: some View {
         VStack(alignment: .center) {
             Button {
-                appState.objectsContainer.navVM.append(threadDetail: viewModel.thread)
+                appState.objectsContainer.navVM.append(threadViewModel: viewModel)
             } label: {
                 Text(title)
                     .font(.iransansBoldBody)
@@ -54,7 +54,7 @@ struct ThreadViewCenterToolbar: View {
             onChatEvent(event)
         }
         .onAppear {
-            participantsCount = viewModel.thread.participantCount
+            participantsCount = viewModel.participantsViewModel.thread?.participantCount
             title = viewModel.thread.computedTitle
         }
     }

@@ -15,6 +15,7 @@ import TalkModels
 import ChatCore
 import ChatModels
 import TalkExtensions
+import ChatTransceiver
 
 public final class DetailViewModel: ObservableObject, Hashable {
     public static func == (lhs: DetailViewModel, rhs: DetailViewModel) -> Bool {
@@ -59,11 +60,14 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var canShowEditButton: Bool {thread?.canEditInfo == true || user?.contactId != nil}
     public var partner: Participant?
     public var partnerContact: Contact?
+    public var uploadProfileUniqueId: String?
+    public var uploadProfileProgress: Int64?
 
-    public init(thread: Conversation? = nil, contact: Contact? = nil, user: Participant? = nil) {
+    public init(thread: Conversation? = nil, threadVM: ThreadViewModel? = nil, contact: Contact? = nil, user: Participant? = nil) {
         self.user = user
         self.thread = thread
         self.contact = contact
+        self.threadVM = threadVM
         isPublic = thread?.type?.isPrivate == false
         editTitle = title
         threadDescription = thread?.description ?? ""
@@ -86,8 +90,35 @@ public final class DetailViewModel: ObservableObject, Hashable {
                 self?.onContactEvent(value)
             }
             .store(in: &cancelable)
+
+        NotificationCenter.default.publisher(for: .upload)
+            .compactMap { $0.object as? UploadEventTypes }
+            .sink { [weak self] value in
+                self?.onUploadEvent(value)
+            }
+            .store(in: &cancelable)
+        participantViewModel?.objectWillChange.sink { [weak self] _ in
+            self?.animateObjectWillChange()
+        }
+        .store(in: &cancelable)
         if thread?.group == false || thread?.group == nil {
             getUserData()
+        }
+    }
+
+    private func onUploadEvent(_ event: UploadEventTypes) {
+        switch event {
+        case .progress(let uniqueId, let progress):
+            onUploadConversationProfile(uniqueId, progress)
+        default:
+            break
+        }
+    }
+
+    private func onUploadConversationProfile(_ uniqueId: String, _ progress: UploadFileProgress?) {
+        if uniqueId == uploadProfileUniqueId {
+            uploadProfileProgress = progress?.percent ?? 0
+            animateObjectWillChange()
         }
     }
 
@@ -99,6 +130,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
             break
         }
     }
+
     private func onThreadEvent(_ event: ThreadEventTypes) {
         switch event {
         case .changedType(let chatResponse):
@@ -254,6 +286,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
         animateObjectWillChange()
     }
 
+    /// If the image information '' is nil we have to send a name for our file unless we will end up with an error from podspace,
+    /// so we have to fill it with UUID().uuidString.
     public func submitEditGroup() {
         isLoading = true
         guard let threadId = thread?.id else { return }
@@ -263,14 +297,15 @@ public final class DetailViewModel: ObservableObject, Hashable {
             let height = Int(image.size.height)
             imageRequest = UploadImageRequest(data: image.pngData() ?? Data(),
                                               fileExtension: "png",
-                                              fileName: assetResources.first?.originalFilename ?? "",
+                                              fileName: assetResources.first?.originalFilename ?? UUID().uuidString,
                                               isPublic: true,
                                               mimeType: "image/png",
-                                              originalName: assetResources.first?.originalFilename ?? "",
+                                              originalName: assetResources.first?.originalFilename ?? UUID().uuidString,
                                               userGroupHash: thread?.userGroupHash,
                                               hC: height,
                                               wC: width
             )
+            uploadProfileUniqueId = imageRequest?.uniqueId
         }
         if thread?.type?.isPrivate == false, isPublic == false {
             switchToPrivateType()
@@ -278,7 +313,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
             switchPublicType()
         }
         let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: editTitle)
-        RequestsManager.shared.append(prepend: "EditGroup", value: req)
+        RequestsManager.shared.append(prepend: "EditGroup", value: req, autoCancel: false)
         ChatManager.activeInstance?.conversation.updateInfo(req)
     }
 
@@ -297,6 +332,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
             image = nil
             isLoading = false
             showEditGroup = false
+            uploadProfileUniqueId = nil
+            uploadProfileProgress = nil
         }
     }
 

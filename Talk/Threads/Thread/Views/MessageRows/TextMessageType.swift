@@ -35,7 +35,7 @@ struct TextMessageType: View {
                 AvatarView(message: message, viewModel: viewModel)
             }
 
-            MutableMessageView()
+            MutableMessageView(viewModel: viewModel)
 
             if !viewModel.isMe {
                 Spacer()
@@ -71,9 +71,29 @@ struct SelectMessageRadio: View {
 }
 
 struct MutableMessageView: View {
-    @EnvironmentObject var viewModel: MessageRowViewModel
+    let viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
+
+    var body: some View {
+        HStack {
+           InnerMessage(viewModel: viewModel)
+        }
+        .frame(maxWidth: MessageRowViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
+        .simultaneousGesture(TapGesture().onEnded { _ in
+            if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }, including: message.isVideo ? .subviews : .all)
+        .onAppear {
+            viewModel.calculate()
+        }
+    }
+}
+
+struct InnerMessage: View {
+    let viewModel: MessageRowViewModel
+    private var message: Message { viewModel.message }
 
     var body: some View {
         VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 10) {
@@ -97,29 +117,26 @@ struct MutableMessageView: View {
                 MessageFooterView()
             }
         }
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(minWidth: 128, alignment: viewModel.isMe ? .topTrailing : .topLeading)
         .padding(viewModel.paddingEdgeInset)
         .background(
             MessageRowBackground.instance
                 .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
                 .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
         )
-        .frame(minWidth: 128, maxWidth: MessageRowViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
-        .simultaneousGesture(TapGesture().onEnded { _ in
-            if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url)
-            }
-        }, including: message.isVideo ? .subviews : .all)
         .contentShape(MessageRowBackground.instance)
         .customContextMenu(id: message.id, self: selfMessage, menus: { contextMenuWithReactions })
-        .onAppear {
-            viewModel.calculate()
-        }
     }
 
     private var selfMessage: some View {
-        self
-            .environmentObject(viewModel)
-            .environmentObject(AppState.shared.objectsContainer.audioPlayerVM)
+        HStack {
+            self
+                .environmentObject(viewModel)
+                .environmentObject(AppState.shared.objectsContainer.audioPlayerVM)
+        }
+        .frame(maxWidth: MessageRowViewModel.maxAllowedWidth)
+
     }
 
     private var contextMenuWithReactions: some View {

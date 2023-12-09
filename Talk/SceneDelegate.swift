@@ -105,6 +105,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
     private func handleTaskRefreshToken(_ task: BGAppRefreshTask) {
         Task {
             await TokenManager.shared.getNewTokenWithRefreshToken()
+            scheduleAppRefreshToken() /// Reschedule again when user receive a token.
         }
     }
 }

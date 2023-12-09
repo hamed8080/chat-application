@@ -21,7 +21,7 @@ struct MessageRowImageDownloader: View {
         if message.isImage, uploadCompleted, let downloadVM = viewModel.downloadFileVM {
             ZStack {
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
-                let width = max(128, (MessageRowViewModel.maxAllowedWidth)) - (8 + MessageRowBackground.tailSize.width)
+                let width = max(128, (MessageRowViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
                 /// We use min to prevent the image gets bigger than 320 if it's bigger.
                 let height = min(320, max(128, (MessageRowViewModel.maxAllowedWidth)))

@@ -131,7 +131,7 @@ struct InfoView: View {
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.text)
 
-                let count = viewModel.thread?.participantCount
+                let count = viewModel.participantViewModel?.thread?.participantCount
                 if viewModel.thread?.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
                     let label = String(localized: .init("Participant"))
                     Text("\(label) \(countString)")

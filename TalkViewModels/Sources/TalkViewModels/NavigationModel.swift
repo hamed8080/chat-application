@@ -149,14 +149,11 @@ public final class NavigationModel: ObservableObject {
         pathsTracking.append(detailViewModel)
     }
 
-    public func append(threadDetail: Conversation) {
-        let detailViewModel = DetailViewModel(thread: threadDetail)
-        detailViewModel.threadVM = pathsTracking
-            .compactMap{$0 as? ThreadViewModel}
-            .first(where: {$0.threadId == threadDetail.id})
+    public func append(threadViewModel: ThreadViewModel) {
+        let detailViewModel = DetailViewModel(thread: threadViewModel.thread, threadVM: threadViewModel)
         paths.append(NavigationType.detail(detailViewModel))
         pathsTracking.append(detailViewModel)
-        selectedThreadId = threadDetail.id
+        selectedThreadId = threadViewModel.threadId
     }
 
     public func switchFromThreadList(thread: Conversation) {

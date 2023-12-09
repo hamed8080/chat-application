@@ -113,6 +113,7 @@ public final class ParticipantsViewModel: ObservableObject {
         if let participants = response.result {
             withAnimation {
                 participants.forEach { participant in
+                    /// We decrease the participant count in the ThreadsViewModel and because the thread in this class is a reference it will update automatically.
                     removeParticipant(participant)
                 }
             }
@@ -121,6 +122,9 @@ public final class ParticipantsViewModel: ObservableObject {
 
     private func onLeft(_ response: ChatResponse<User>) {
         withAnimation {
+            if let participantCount = thread?.participantCount {
+                thread?.participantCount = participantCount - 1
+            }
             removeParticipant(.init(id: response.result?.id))
         }
     }
@@ -129,6 +133,10 @@ public final class ParticipantsViewModel: ObservableObject {
         if let participants = response.result?.participants {
             withAnimation {
                 self.participants.insert(contentsOf: participants, at: 0)
+                if let participantCount = response.result?.participantCount {
+                    thread?.participantCount = participantCount
+                }
+                animateObjectWillChange()
             }
         }
     }

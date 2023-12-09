@@ -83,6 +83,12 @@ public final class ThreadsViewModel: ObservableObject {
             }
             animateObjectWillChange()
         }
+
+        if let conversationId = response.result?.conversation?.id, !threads.contains(where: {$0.id == conversationId })  {
+            let req = ThreadsRequest(threadIds: [conversationId])
+            RequestsManager.shared.append(prepend: "GET-NOT-ACTIVE-THREADS", value: req)
+            ChatManager.activeInstance?.conversation.get(req)
+        }
     }
 
     func onChangedType(_ response: ChatResponse<Conversation>) {
@@ -129,6 +135,13 @@ public final class ThreadsViewModel: ObservableObject {
             firstSuccessResponse = true
         }
         isLoading = false
+    }
+
+    public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) {
+        if response.value(prepend: "GET-NOT-ACTIVE-THREADS") == nil { return }
+        if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
+            appendThreads(threads: threads)
+        }
     }
 
     public func refresh() {
@@ -187,7 +200,7 @@ public final class ThreadsViewModel: ObservableObject {
 
     func onDeletePrticipant(_ response: ChatResponse<[Participant]>) {
         if let index = firstIndex(response.subjectId) {
-            threads[index].participantCount = min(0, threads[index].participantCount ?? 0 - 1)
+            threads[index].participantCount = max(0, (threads[index].participantCount ?? 0) - 1)
             animateObjectWillChange()
         }
         isLoading = false

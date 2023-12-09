@@ -16,15 +16,15 @@ struct ThreadEventView: View {
     var smt: SMT { viewModel.smt ?? .unknown }
 
     var body: some View {
-        if let event = smt.titleAndIcon {
-            HStack {
-                Text(.init(localized: .init(event.title)))
-                    .lineLimit(1)
-                    .font(.iransansBoldCaption2)
-                    .foregroundColor(Color.App.primary)
-            }
-            .frame(height: viewModel.isShowingEvent ? 16 : 0)
+        let event = smt.titleAndIcon
+        HStack {
+            Text(.init(localized: .init(event?.title ?? "")))
+                .lineLimit(1)
+                .font(.iransansBoldCaption2)
+                .foregroundColor(Color.App.primary)
         }
+        .frame(height: 16)
+        .animation(.easeInOut, value: viewModel.isShowingEvent)        
     }
 }
 

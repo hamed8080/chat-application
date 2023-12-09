@@ -67,6 +67,7 @@ struct ThreadRow: View {
                 }
                 HStack {
                     SecondaryMessageView(isSelected: isSelected, thread: thread)
+                        .environmentObject(ThreadEventViewModel(threadId: thread.id ?? -1))
                     Spacer()
                     if let unreadCountString = thread.unreadCountString {
                         Text(unreadCountString)
@@ -90,8 +91,6 @@ struct ThreadRow: View {
                             .clipShape(RoundedRectangle(cornerRadius:(12)))
                     }
                 }
-                ThreadEventView()
-                    .environmentObject(ThreadEventViewModel(threadId: thread.id ?? -1))
             }
         }
         .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))

@@ -19,7 +19,7 @@ struct ThreadViewTrailingToolbar: View {
 
     var body: some View {
         Button {
-            navVM.append(threadDetail: thread)
+            navVM.append(threadViewModel: viewModel)
         } label: {
             ZStack {
                 if let imageViewModel {

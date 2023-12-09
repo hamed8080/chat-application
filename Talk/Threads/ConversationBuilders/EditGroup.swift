@@ -46,6 +46,14 @@ struct EditGroup: View {
                                         .scaledToFill()
                                         .frame(width: 72, height: 72)
                                         .clipShape(RoundedRectangle(cornerRadius:(32)))
+                                    if let percent = viewModel.uploadProfileProgress {
+                                        Circle()
+                                            .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+                                            .stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                                            .foregroundColor(Color.App.primary)
+                                            .rotationEffect(Angle(degrees: 270))
+                                            .frame(width: 73, height: 73)
+                                    }
                                 }
                             }
                         Circle()
@@ -148,6 +156,7 @@ struct EditGroup: View {
                 showImagePicker = false
                 self.viewModel.image = image
                 self.viewModel.assetResources = assestResources ?? []
+                self.viewModel.animateObjectWillChange()
             }
         }
     }

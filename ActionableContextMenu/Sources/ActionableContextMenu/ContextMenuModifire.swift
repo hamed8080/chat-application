@@ -52,7 +52,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     }
 
     var longGesture: some Gesture {
-        LongPressGesture(minimumDuration: 0.2, maximumDistance: 0)
+        LongPressGesture(minimumDuration: 0.5, maximumDistance: 0)
             .onEnded { finished in
                 withAnimation(.easeInOut(duration: 0.1)) {
                     scale = 0.9
