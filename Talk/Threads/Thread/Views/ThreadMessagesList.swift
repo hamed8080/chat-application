@@ -50,6 +50,9 @@ struct ThreadMessagesList: View {
     }
 
     private func hideKeyboardOnTapOrDrag() {
+        if viewModel.searchedMessagesViewModel.searchText.isEmpty {
+            NotificationCenter.default.post(name: .cancelSearch, object: true)
+        }
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         viewModel.messageViewModels.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
             rowViewModel.showReactionsOverlay = false

@@ -36,15 +36,15 @@ public struct AppSettingsModel: Codable, Hashable {
 
 /// Automatic download settings.
 public struct AutomaticDownloadSettingModel: Codable {
-    public var downloadImages: Bool = true
-    public var downloadFiles: Bool = true
+    public var downloadImages: Bool = false
+    public var downloadFiles: Bool = false
     public var privateChat: ChatSettings = .init()
     public var channel: ChannelSettings = .init()
     public var group: GroupSettings = .init()
 
     public struct ChatSettings: Codable {
-        public var downloadImages: Bool = true
-        public var downloadFiles: Bool = true
+        public var downloadImages: Bool = false
+        public var downloadFiles: Bool = false
     }
 
     public struct ChannelSettings: Codable {
@@ -71,8 +71,8 @@ public struct NotificationSettingModel: Codable {
     public var group: GroupSettings = .init()
 
     public struct ChatSettings: Codable {
-        public var showNotification: Bool = true
-        public var sound = true
+        public var showNotification: Bool = false
+        public var sound = false
     }
 
     public struct ChannelSettings: Codable {

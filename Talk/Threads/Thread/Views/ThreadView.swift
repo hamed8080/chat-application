@@ -17,18 +17,14 @@ struct ThreadView: View, DropDelegate {
     private var thread: Conversation { viewModel.thread }
     let viewModel: ThreadViewModel
     let threadsVM: ThreadsViewModel
-    @State var searchMessageText: String = ""
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ThreadMessagesList(viewModel: viewModel)
-            .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
-            .navigationTitle(thread.computedTitle)
             .background(Color.App.grayHalf.opacity(0.1).edgesIgnoringSafeArea(.bottom))
             .environmentObject(viewModel)
             .environmentObject(threadsVM)
-            .searchable(text: $searchMessageText, placement: .toolbar, prompt: "General.searchHere")
             .background(SheetEmptyBackground())
             .onDrop(of: [.image], delegate: self)
             .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -37,14 +33,13 @@ struct ThreadView: View, DropDelegate {
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(spacing: 0) {
+                    ThreadMainToolbar(viewModel: viewModel)
                     ThreadPinMessage(threadVM: viewModel)
                     AudioPlayerView(threadVM: viewModel)
+                    ThreadSearchList(threadVM: viewModel)
+                        .environmentObject(viewModel)
+                        .environmentObject(viewModel.searchedMessagesViewModel)
                 }
-            }
-            .overlay {
-                ThreadSearchList(threadVM: viewModel, searchText: $searchMessageText)
-                    .environmentObject(viewModel)
-                    .environmentObject(viewModel.searchedMessagesViewModel)
             }
             .background {
                 GeometryReader { reader in
@@ -54,29 +49,6 @@ struct ThreadView: View, DropDelegate {
                         }
                     }
                 }
-            }
-            .toolbar {
-                ToolbarItemGroup(placement: .navigation) {
-                    NavigationBackButton {
-                        AppState.shared.appStateNavigationModel = .init()
-                        AppState.shared.navViewModel?.remove(type: ThreadViewModel.self, threadId: thread.id)
-                    }
-                }
-
-                ToolbarItemGroup(placement: .navigationBarLeading) {
-                    ThreadLeadingToolbar(viewModel: viewModel)
-                }
-
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    ThreadViewTrailingToolbar(viewModel: viewModel)
-                }
-
-                ToolbarItem(placement: .principal) {
-                    ThreadViewCenterToolbar(viewModel: viewModel)
-                }
-            }
-            .onChange(of: searchMessageText) { value in
-                viewModel.searchedMessagesViewModel.searchInsideThread(text: value)
             }
             .onAppear {
                 viewModel.startFetchingHistory()

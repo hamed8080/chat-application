@@ -85,7 +85,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var seenPublisher = PassthroughSubject<Message, Never>()
     var hasSentHistoryRequest = false
     var createThreadCompletion: (()-> Void)?
-    public static var threadWidth: CGFloat = 0
+    public static var threadWidth: CGFloat = 0 {
+        didSet {
+            // 38 = Avatar width + tail width + leading padding + trailing padding
+            maxAllowedWidth = min(600, ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize))
+        }
+    }
+
+    public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize)
 
     public var messageViewModels: [MessageRowViewModel] = []
     var model: AppSettingsModel

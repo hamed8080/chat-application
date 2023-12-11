@@ -31,9 +31,11 @@ struct NotificationSettings: View {
                 Toggle("Notification.Sound", isOn: $model.notificationSettings.soundEnable)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.divider)
-                Toggle("Notification.ShowDetails", isOn: $model.notificationSettings.showDetails)
-                    .listRowBackground(Color.App.bgPrimary)
-                    .listRowSeparatorTint(Color.App.divider)
+                if EnvironmentValues.isTalkTest {
+                    Toggle("Notification.ShowDetails", isOn: $model.notificationSettings.showDetails)
+                        .listRowBackground(Color.App.bgPrimary)
+                        .listRowSeparatorTint(Color.App.divider)
+                }
                 Toggle("Notification.Vibration", isOn: $model.notificationSettings.vibration)
                     .listRowBackground(Color.App.bgPrimary)
                     .listSectionSeparator(.hidden)
@@ -42,42 +44,44 @@ struct NotificationSettings: View {
             .toggleStyle(MyToggleStyle())
             .listSectionSeparator(.hidden)
 
-            Group {
-                StickyHeaderSection(header: "", height: 10)
-                    .listRowInsets(.zero)
-                    .listRowSeparator(.hidden)
+            if EnvironmentValues.isTalkTest {
+                Group {
+                    StickyHeaderSection(header: "", height: 10)
+                        .listRowInsets(.zero)
+                        .listRowSeparator(.hidden)
 
-                NavigationLink {
-                    PrivateNotificationSetting()
-                } label: {
-                    SectionNavigationLabel(imageName: "person.fill",
-                                           title: "Notification.PrivateSettings",
-                                           color: Color.App.purple)
-                }
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.divider)
+                    NavigationLink {
+                        PrivateNotificationSetting()
+                    } label: {
+                        SectionNavigationLabel(imageName: "person.fill",
+                                               title: "Notification.PrivateSettings",
+                                               color: Color.App.purple)
+                    }
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowSeparatorTint(Color.App.divider)
 
-                NavigationLink {
-                    GroupNotificationSetting()
-                } label: {
-                    SectionNavigationLabel(imageName: "person.3.fill",
-                                           title: "Notification.GroupSettings",
-                                           color: Color.App.green)
-                }
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.divider)
+                    NavigationLink {
+                        GroupNotificationSetting()
+                    } label: {
+                        SectionNavigationLabel(imageName: "person.3.fill",
+                                               title: "Notification.GroupSettings",
+                                               color: Color.App.green)
+                    }
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowSeparatorTint(Color.App.divider)
 
-                NavigationLink {
-                    ChannelNotificationSetting()
-                } label: {
-                    SectionNavigationLabel(imageName: "megaphone.fill",
-                                           title: "Notification.ChannelSettings",
-                                           color: Color.App.yellow)
+                    NavigationLink {
+                        ChannelNotificationSetting()
+                    } label: {
+                        SectionNavigationLabel(imageName: "megaphone.fill",
+                                               title: "Notification.ChannelSettings",
+                                               color: Color.App.yellow)
+                    }
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listSectionSeparator(.hidden)
                 }
-                .listRowBackground(Color.App.bgPrimary)
-                .listSectionSeparator(.hidden)
+                .listRowSeparatorTint(Color.clear)
             }
-            .listRowSeparatorTint(Color.clear)
         }
         .environment(\.defaultMinListRowHeight, 8)
         .font(.iransansSubheadline)

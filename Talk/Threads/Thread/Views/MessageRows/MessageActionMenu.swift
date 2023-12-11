@@ -27,7 +27,7 @@ struct MessageActionMenu: View {
                 }
             }
 
-            if threadVM?.thread.group == true {
+            if threadVM?.thread.group == true, !viewModel.isMe {
                 ContextMenuButton(title: "Messages.ActionMenu.replyPrivately", image: "arrowshape.turn.up.left") {
                     withAnimation(animation(appear: true)) {
                         guard let participant = message.participant else { return }
@@ -76,8 +76,10 @@ struct MessageActionMenu: View {
                 }
             }
 
-            ContextMenuButton(title: "Messages.ActionMenu.copy", image: "doc.on.doc") {
-                UIPasteboard.general.string = message.message
+            if !viewModel.message.isFileType || message.message?.isEmpty == false {
+                ContextMenuButton(title: "Messages.ActionMenu.copy", image: "doc.on.doc") {
+                    UIPasteboard.general.string = message.message
+                }
             }
 
             if message.isFileType == true {

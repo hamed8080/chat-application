@@ -79,7 +79,7 @@ struct MutableMessageView: View {
         HStack {
            InnerMessage(viewModel: viewModel)
         }
-        .frame(maxWidth: MessageRowViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
+        .frame(maxWidth: ThreadViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
         .simultaneousGesture(TapGesture().onEnded { _ in }, including: message.isVideo ? .subviews : .all)
         .onAppear {
             viewModel.calculate()
@@ -131,7 +131,7 @@ struct InnerMessage: View {
                 .environmentObject(viewModel)
                 .environmentObject(AppState.shared.objectsContainer.audioPlayerVM)
         }
-        .frame(maxWidth: MessageRowViewModel.maxAllowedWidth)
+        .frame(maxWidth: ThreadViewModel.maxAllowedWidth)
 
     }
 

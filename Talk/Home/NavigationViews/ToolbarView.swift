@@ -15,15 +15,14 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     @ViewBuilder let trailingNavigationViews: TrailingContentView?
     var searchCompletion: ((String) -> ())?
     @Environment(\.horizontalSizeClass) var sizeClass
-    @State var ipadSidebarWidth: CGFloat = 400
     let title: String?
     let searchPlaceholder: String?
     var isIpad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
-    var maxWidth: CGFloat { sizeClass == .compact || !isIpad ? .infinity : ipadSidebarWidth }
     @State var searchText: String = ""
     @State var isInSearchMode: Bool = false
     let toolbarHeight: CGFloat = 36
     let searchKeyboardType: UIKeyboardType
+    private var searchId: String?
 
     enum Field: Hashable {
         case saerch
@@ -31,7 +30,8 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
 
     @FocusState var searchFocus: Field?
 
-    init(title: String? = nil,
+    init(searchId: String? = nil,
+         title: String? = nil,
          searchPlaceholder: String? = nil,
          searchKeyboardType: UIKeyboardType = .default,
          leadingViews:  LeadingContentView? = nil,
@@ -39,6 +39,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
          trailingViews: TrailingContentView? = nil,
          searchCompletion: ((String) -> ())? = nil
     ) {
+        self.searchId = searchId
         self.title = title
         self.searchPlaceholder = searchPlaceholder
         self.searchCompletion = searchCompletion
@@ -53,7 +54,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             toolbars
         }
         .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: isInSearchMode)
-        .frame(minWidth: 0, maxWidth: sizeClass == .compact ? nil : maxWidth)
+        .frame(minWidth: 0, maxWidth: sizeClass == .compact ? nil : .infinity)
         .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
         .background(MixMaterialBackground().ignoresSafeArea())
         .onChange(of: searchText) { newValue in
@@ -137,6 +138,14 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                     cancelSaerch()
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .forceSearch)) { newValue in
+                if (newValue.object as? String) == searchId {
+                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                        isInSearchMode.toggle()
+                        searchFocus = .saerch
+                    }
+                }
+            }
         }
     }
 
@@ -146,8 +155,8 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 hideKeyboard()
             }
             isInSearchMode.toggle()
-            searchCompletion?("")
             searchText = ""
+            searchCompletion?("")
         }
     }
 }

@@ -26,7 +26,8 @@ public struct NavigationBackButton: View {
                 Image(systemName: "chevron.backward")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 16, height: 16)
+                    .padding(EdgeInsets(top: 12, leading: 0, bottom: 12, trailing: navViewModel.previousTitle.isEmpty ? 12 : 2))
+                    .fontWeight(.light)
                 let localized = String(localized: .init(navViewModel.previousTitle))
                 let maxLength = UIDevice.current.userInterfaceIdiom == .pad ? 35 : 15
                 let string = String(localized.prefix(maxLength))
@@ -34,7 +35,9 @@ public struct NavigationBackButton: View {
                     .font(.iransansBody)
             }
             .foregroundColor(Color.App.primary)
+            .contentShape(Rectangle())
         }
+        .frame(minWidth: ToolbarButtonItem.buttonWidth, minHeight: ToolbarButtonItem.buttonWidth)
     }
 }
 

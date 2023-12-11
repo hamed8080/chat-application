@@ -17,9 +17,13 @@ struct UserActionMenu: View {
     var body: some View {
         if participant.contactId == nil {
             Button {
-                contactViewModel.addContact(contactValue: participant.username ?? "",
-                                            firstName: participant.firstName,
-                                            lastName: participant.lastName)
+                let contact = Contact(cellphoneNumber: participant.cellphoneNumber,
+                                      email: participant.email,
+                                      firstName: participant.firstName,
+                                      lastName: participant.lastName,
+                                      user: .init(username: participant.username))
+                contactViewModel.addContact = contact
+                contactViewModel.showAddOrEditContactSheet = true
             } label: {
                 Label("General.add", systemImage: "person.badge.plus")
             }
@@ -31,21 +35,23 @@ struct UserActionMenu: View {
             Label("General.block", systemImage: "hand.raised")
         }
 
-        Button {
+        if EnvironmentValues.isTalkTest {
+            Button {
 
-        } label: {
-            Label("General.share", systemImage: "square.and.arrow.up")
+            } label: {
+                Label("General.share", systemImage: "square.and.arrow.up")
+            }
+            .disabled(true)
+
+            Button {
+
+            } label: {
+                Label("Thread.export", systemImage: "tray.and.arrow.up")
+            }
+            .disabled(true)
         }
-        .disabled(true)
 
-        Button {
-
-        } label: {
-            Label("Thread.export", systemImage: "tray.and.arrow.up")
-        }
-        .disabled(true)
-
-        if participant.contactId != nil {
+        if participant.contactId != nil, viewModel.thread == nil {
             Button(role: .destructive) {
                 contactViewModel.delete(.init(id: participant.contactId))
             } label: {

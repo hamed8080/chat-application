@@ -279,6 +279,8 @@
 		05C6DA1B2B19F3020049BCDC /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */; };
 		05C6DA1C2B19F3020049BCDC /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */; };
 		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
+		05D235602B24A1520090656C /* ThreadMainToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D2355F2B24A1520090656C /* ThreadMainToolbar.swift */; };
+		05D235612B24A1560090656C /* ThreadMainToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D2355F2B24A1520090656C /* ThreadMainToolbar.swift */; };
 		05D493922B21FF3100508472 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 052F46652B21F5B400085C26 /* PhotosUI.framework */; };
 		05D493932B21FF3800508472 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 052F46652B21F5B400085C26 /* PhotosUI.framework */; };
 		05D813B02B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */; };
@@ -478,6 +480,7 @@
 		05C27FA42AF4BD010008FE2E /* SelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionView.swift; sourceTree = "<group>"; };
 		05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSendButtons.swift; sourceTree = "<group>"; };
 		05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
+		05D2355F2B24A1520090656C /* ThreadMainToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMainToolbar.swift; sourceTree = "<group>"; };
 		05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplyPrivatelyMessageViewPlaceholder.swift; sourceTree = "<group>"; };
 		05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationBuilder.swift; sourceTree = "<group>"; };
 		05DDC8462AEC23DF009F9942 /* ActionableContextMenu */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ActionableContextMenu; sourceTree = "<group>"; };
@@ -937,6 +940,7 @@
 				0570CB902AAEE98C001832E9 /* ThreadViewCenterToolbar.swift */,
 				0570CB922AAEE98C001832E9 /* ThreadViewTrailingToolbar.swift */,
 				05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */,
+				05D2355F2B24A1520090656C /* ThreadMainToolbar.swift */,
 			);
 			path = Toolbars;
 			sourceTree = "<group>";
@@ -1167,6 +1171,7 @@
 				0570CC552AAEE98F001832E9 /* VoiceView.swift in Sources */,
 				05C27FA82AF4BD330008FE2E /* MainSendButtons.swift in Sources */,
 				05FE15F12ADA5591009AC44A /* SupportView.swift in Sources */,
+				05D235602B24A1520090656C /* ThreadMainToolbar.swift in Sources */,
 				0594FE602B0386580031AADF /* GroupParticipantNameView.swift in Sources */,
 				0570CC572AAEE98F001832E9 /* MusicView.swift in Sources */,
 				05A0CD712B19314100F13EE5 /* DeleteContactView.swift in Sources */,
@@ -1312,6 +1317,7 @@
 				0570CC6C2AAEE98F001832E9 /* ContactContentList.swift in Sources */,
 				05C27FA92AF4BD330008FE2E /* MainSendButtons.swift in Sources */,
 				0570CC562AAEE98F001832E9 /* VoiceView.swift in Sources */,
+				05D235612B24A1560090656C /* ThreadMainToolbar.swift in Sources */,
 				0594FE612B0386580031AADF /* GroupParticipantNameView.swift in Sources */,
 				0570CC582AAEE98F001832E9 /* MusicView.swift in Sources */,
 				05A0CD722B19314100F13EE5 /* DeleteContactView.swift in Sources */,

@@ -8,7 +8,6 @@
 import Chat
 import Combine
 import Foundation
-import OrderedCollections
 import SwiftUI
 import ChatModels
 import TalkModels
@@ -21,7 +20,7 @@ import OSLog
 extension Conversation: ObservableObject {}
 public final class ThreadsViewModel: ObservableObject {
     public var isLoading = false
-    public var threads: OrderedSet<Conversation> = []
+    public var threads: [Conversation] = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
     @Published public var sheetType: ThreadsSheetType?
@@ -127,13 +126,13 @@ public final class ThreadsViewModel: ObservableObject {
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
         if response.value(prepend: "GET-THREADS") == nil { return }
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
-            if !response.cache, let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}) {
+            if let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}) {
                 serverSortedPinConversations.append(contentsOf: serverSortedPinConversationIds)
             }
             appendThreads(threads: threads)
         }
 
-        if !response.cache, response.result?.count ?? 0 > 0 {
+        if response.result?.count ?? 0 > 0 {
             hasNext = response.hasNext
             firstSuccessResponse = true
         }
@@ -267,7 +266,13 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func delete(_ threadId: Int?) {
         guard let threadId = threadId else { return }
-        ChatManager.activeInstance?.conversation.delete(.init(subjectId: threadId))
+        let conversation = threads.first(where: { $0.id == threadId})
+        let isGroup = conversation?.group == true
+        if isGroup {
+            ChatManager.activeInstance?.conversation.delete(.init(subjectId: threadId))
+        } else {
+            ChatManager.activeInstance?.conversation.leave(.init(threadId: threadId))
+        }
         sheetType = nil
     }
 

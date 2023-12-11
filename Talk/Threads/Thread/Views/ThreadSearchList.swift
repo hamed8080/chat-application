@@ -13,7 +13,6 @@ import TalkViewModels
 struct ThreadSearchList: View {
     let threadVM: ThreadViewModel
     @EnvironmentObject var viewModel: ThreadSearchMessagesViewModel
-    @Binding var searchText: String
 
     var body: some View {
         if viewModel.isInSearchMode, viewModel.searchedMessages.count > 0 {
@@ -24,7 +23,7 @@ struct ThreadSearchList: View {
                             .environmentObject(MessageRowViewModel(message: message, viewModel: threadVM))
                             .onAppear {
                                 if message == viewModel.searchedMessages.last {
-                                    viewModel.searchInsideThread(text: searchText, offset: viewModel.searchedMessages.count)
+                                    viewModel.loadMore()
                                 }
                             }
                     }
@@ -60,7 +59,7 @@ struct ThreadSearchList_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadSearchList(threadVM: vm, searchText: .constant("TEST"))
+        ThreadSearchList(threadVM: vm)
             .previewDisplayName("ThreadSearchList")
             .environmentObject(vm)
     }

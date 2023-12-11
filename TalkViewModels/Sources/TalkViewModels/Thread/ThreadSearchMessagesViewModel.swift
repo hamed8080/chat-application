@@ -16,10 +16,12 @@ import Combine
 public final class ThreadSearchMessagesViewModel: ObservableObject {
     private let threadId: Int
     @Published public private(set) var searchedMessages: [Message] = []
-    public var searchTextTimer: Timer?
-    private var searchOffset: Int = 0
     private var cancelable: Set<AnyCancellable> = []
     public var isInSearchMode: Bool = false
+    private var offset = 0
+    private let count = 50
+    @Published public var searchText: String = ""
+    private var hasMore = true
 
     public static func == (lhs: ThreadSearchMessagesViewModel, rhs: ThreadSearchMessagesViewModel) -> Bool {
         rhs.threadId == lhs.threadId
@@ -46,23 +48,29 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
                 self?.onChatEvent(event)
             }
             .store(in: &cancelable)
-    }
 
-    public func searchInsideThread(text: String, offset: Int = 0) {
-        searchTextTimer?.invalidate()
-        searchTextTimer = nil
-        searchTextTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
-            self?.doSearch(text: text, offset: offset)
-        }
+        $searchText
+            .debounce(for: 0.5, scheduler: RunLoop.main)
+            .sink { [weak self] newValue in
+                self?.doSearch(text: newValue)
+            }
+            .store(in: &cancelable)
     }
 
     public func doSearch(text: String, offset: Int = 0) {
         isInSearchMode = text.count >= 2
         animateObjectWillChange()
         guard text.count >= 2 else { return }
-        let req = GetHistoryRequest(threadId: threadId, count: 50, offset: searchOffset, query: "\(text)")
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: offset, query: "\(text)")
         RequestsManager.shared.append(prepend: "SEARCH", value: req)
         ChatManager.activeInstance?.message.history(req)
+        self.offset = offset + count
+    }
+
+    public func loadMore() {
+        if hasMore {
+            doSearch(text: searchText)
+        }
     }
 
     func onSearch(_ response: ChatResponse<[Message]>) {
@@ -72,6 +80,9 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
             if !(searchedMessages.contains(where: { $0.id == message.id })) {
                 searchedMessages.append(message)
             }
+        }
+        if !response.cache, !response.hasNext {
+            hasMore = false
         }
         animateObjectWillChange()
     }

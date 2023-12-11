@@ -30,15 +30,17 @@ struct AddOrEditContactView: View {
     @State var lastName: String = ""
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var viewModel: ContactsViewModel
+    var addContact: Contact? { viewModel.addContact }
     var editContact: Contact? { viewModel.editContact }
     @FocusState var focusState: ContactFocusFileds?
+    var isInEditMode: Bool { addContact == nil && editContact != nil }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             if !isLargeSize{
                 Spacer()
             }
-            Text(editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title")
+            Text(isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title")
                 .font(.iransansBoldSubtitle)
                 .padding()
                 .offset(y: 24)
@@ -63,12 +65,12 @@ struct AddOrEditContactView: View {
                 .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", error: viewModel.userNotFound ? "Contctas.notFound" : nil, isFocused: focusState == .contactValue) {
                     focusState = .contactValue
                 }
-                .disabled(editContact != nil)
-                .opacity(editContact != nil ? 0.3 : 1)
+                .disabled(isInEditMode)
+                .opacity(isInEditMode ? 0.3 : 1)
             if isLargeSize {
                 Spacer()
             }
-            let title = editContact != nil ? "Contacts.Edit.title" : "Contacts.Add.title"
+            let title = isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title"
             SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: $viewModel.isLoading) {
                 submit()
             }
@@ -98,9 +100,15 @@ struct AddOrEditContactView: View {
             hideKeyboard()
         }
         .onAppear {
-            firstName = editContact?.firstName ?? ""
-            lastName = editContact?.lastName ?? ""
-            contactValue = editContact?.computedUserIdentifire ?? ""
+            if isInEditMode {
+                firstName = editContact?.firstName ?? ""
+                lastName = editContact?.lastName ?? ""
+                contactValue = editContact?.computedUserIdentifire ?? ""
+            } else {
+                firstName = addContact?.firstName ?? ""
+                lastName = addContact?.lastName ?? ""
+                contactValue = addContact?.computedUserIdentifire ?? ""
+            }
             focusState = .firstName
             viewModel.successAdded = false
         }
@@ -108,6 +116,7 @@ struct AddOrEditContactView: View {
             /// Clearing the view for when the user cancels the sheet by dropping it down.
             viewModel.successAdded = false
             viewModel.showAddOrEditContactSheet = false
+            viewModel.addContact = nil
             viewModel.editContact = nil
         }
     }

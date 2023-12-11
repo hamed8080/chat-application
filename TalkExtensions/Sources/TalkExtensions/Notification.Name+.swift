@@ -35,6 +35,7 @@ public extension Notification.Name {
     static let selectTab = Notification.Name("selectTab")
     static let appSettingsModel = Notification.Name("appSettingsModel")
     static let cancelSearch = Notification.Name("cancelSearch")
+    static let forceSearch = Notification.Name("forceSearch")
     static let error = Notification.Name("error")
 }
 

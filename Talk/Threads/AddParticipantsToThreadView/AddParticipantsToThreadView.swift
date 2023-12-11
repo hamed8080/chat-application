@@ -63,6 +63,7 @@ struct AddParticipantsToThreadView: View {
             contactsVM.isInSelectionMode = true
         }
         .onDisappear {
+            contactsVM.searchContactString = ""
             contactsVM.isInSelectionMode = false
         }
     }

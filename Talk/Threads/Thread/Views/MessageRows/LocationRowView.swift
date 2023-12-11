@@ -19,10 +19,10 @@ struct LocationRowView: View {
         if message.isMapType, let fileLink = meta?.file?.link, let downloadVM = viewModel.downloadFileVM {
             ZStack {
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
-                let width = max(128, (MessageRowViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
+                let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
                 /// We use min to prevent the image gets bigger than 320 if it's bigger.
-                let height = min(320, max(128, (MessageRowViewModel.maxAllowedWidth)))
+                let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
                 MapImageDownloader()
                     .id(fileLink)
                     .environmentObject(downloadVM)
@@ -30,7 +30,7 @@ struct LocationRowView: View {
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
             }
             .onTapGesture {
-                if let url = message.appleMapsURL, UIApplication.shared.canOpenURL(url) {
+                if let url = message.neshanURL, UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url)
                 }
             }
@@ -46,7 +46,7 @@ struct MapImageDownloader: View {
 
     var body: some View {
         /// We use max to at least have a width, because there are times that maxWidth is nil.
-        let width = max(128, (MessageRowViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
+        let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
         if viewModel.state == .completed, let image = viewModel.fileURL?.imageScale(width: Int(width))?.image {
             Image(uiImage: UIImage(cgImage: image))
                 .resizable()

@@ -19,7 +19,8 @@ struct MessageParticipantsSeen: View {
     var body: some View {
         ScrollView(.vertical) {
             VStack {
-                ForEach(viewModel.participants) { participant in
+                let me = AppState.shared.user?.id
+                ForEach(viewModel.participants.filter({$0.id != me})) { participant in
                     MessageSeenParticipantRow(participant: participant)
                         .onAppear {
                             if participant == viewModel.participants.last {

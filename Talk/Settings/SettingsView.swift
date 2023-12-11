@@ -36,18 +36,17 @@ struct SettingsView: View {
                     .listRowSeparator(.hidden)
                 SettingSettingSection()
                 SavedMessageSection()
-                BlockedMessageSection()
-                // SettingCallHistorySection()
-                // SettingSavedMessagesSection()
-                // SettingCallSection()
-                SettingArchivesSection()
-                AutomaticDownloadSection()
                 SettingLanguageSection()
                 SettingLogSection()
                 if EnvironmentValues.isTalkTest {
+                    BlockedMessageSection()
+                    // SettingCallHistorySection()
+                    // SettingSavedMessagesSection()
+                    // SettingCallSection()
+                    SettingArchivesSection()
+                    AutomaticDownloadSection()
                     SettingAssistantSection()
                 }
-
                 SettingNotificationSection()
                     .listRowSeparator(.hidden)
             }

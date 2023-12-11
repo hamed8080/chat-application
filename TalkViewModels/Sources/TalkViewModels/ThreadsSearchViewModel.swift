@@ -84,6 +84,7 @@ public final class ThreadsSearchViewModel: ObservableObject {
         if !canLoadMore { return }
         isLoading = true
         searchedConversations.removeAll()
+        offset = 0
         let req = ThreadsRequest(searchText: text, count: count, offset: offset)
         RequestsManager.shared.append(prepend: "SEARCH", value: req)
         ChatManager.activeInstance?.conversation.get(req)

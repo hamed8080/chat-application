@@ -40,8 +40,10 @@ extension ThreadsViewModel {
     public func onThreadEvent(_ event: ThreadEventTypes?) {
         switch event {
         case .threads(let response):
-            onThreads(response)
-            onNotActiveThreads(response)
+            if !response.cache {
+                onThreads(response)
+                onNotActiveThreads(response)
+            }
         case .created(let response):
             onCreate(response)
         case .deleted(let response):

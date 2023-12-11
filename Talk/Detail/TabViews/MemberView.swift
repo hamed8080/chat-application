@@ -191,7 +191,7 @@ struct ParticipantSearchView: View {
                 }
             }
         }
-        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
+        .padding(EdgeInsets(top: 8, leading: 8, bottom: 0, trailing: 8))
         .background(Color.App.separator)
         .animation(.easeInOut, value: viewModel.searchText)
     }

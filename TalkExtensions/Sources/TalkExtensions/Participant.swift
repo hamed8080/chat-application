@@ -6,10 +6,10 @@ public extension Participant {
         Contact(blocked: blocked,
                 cellphoneNumber: cellphoneNumber,
                 email: email,
-                firstName: firstName,
+                firstName: contactFirstName ?? firstName,
                 id: contactId,
                 image: image,
-                lastName: lastName,
+                lastName: contactLastName ?? lastName,
                 user: .init(
                     cellphoneNumber: cellphoneNumber,
                     coreUserId: coreUserId,

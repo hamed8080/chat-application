@@ -29,12 +29,12 @@ public final class ContactsViewModel: ObservableObject {
     @Published public private(set) var searchedContacts: [Contact] = []
     @Published public var isLoading = false
     @Published public var searchContactString: String = ""
-    private var searchUniqueId: String?
     public var blockedContacts: [BlockedContactResponse] = []
     @Published public var createConversationType: ThreadTypes?
     @Published public var showTitleError: Bool = false
     @Published public var showConversaitonBuilder = false
     @Published public var showCreateConversationDetail = false
+    @Published public var addContact: Contact?
     @Published public var editContact: Contact?
     @Published public var showAddOrEditContactSheet = false
     /// When the user initiates a create group/channel with the plus button in the Conversation List.
@@ -114,11 +114,8 @@ public final class ContactsViewModel: ObservableObject {
     public func onContactEvent(_ event: ContactEventTypes?) {
         switch event {
         case let .contacts(response):
-            if searchUniqueId == response.uniqueId {
-                onSearchContacts(response)
-            } else {
-                onContacts(response)
-            }
+            onSearchContacts(response)
+            onContacts(response)
         case let .add(response):
             onAddContacts(response)
         case let .delete(response, deleted):
@@ -148,13 +145,17 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onContacts(_ response: ChatResponse<[Contact]>) {
-        if let contacts = response.result {
-            firstSuccessResponse = !response.cache
-            appendOrUpdateContact(contacts)
-            hasNext = response.hasNext
-            setMaxContactsCountInServer(count: response.contentCount ?? 0)
+        if response.value(prepend: "GET-CONTACTS") != nil {
+            if let contacts = response.result {
+                firstSuccessResponse = !response.cache
+                appendOrUpdateContact(contacts)
+                setMaxContactsCountInServer(count: response.contentCount ?? 0)
+            }
+            if !response.cache {
+                hasNext = response.hasNext
+            }
+            isLoading = false
         }
-        isLoading = false
     }
 
     func onBlockedList(_ response: ChatResponse<[BlockedContactResponse]>) {
@@ -163,19 +164,22 @@ public final class ContactsViewModel: ObservableObject {
 
     public func getContacts() {
         isLoading = true
-        ChatManager.activeInstance?.contact.get(.init(count: count, offset: offset))
+        let req = ContactsRequest(count: count, offset: offset)
+        RequestsManager.shared.append(prepend: "GET-CONTACTS", value: req)
+        ChatManager.activeInstance?.contact.get(req)
     }
 
     public func searchContacts(_ searchText: String) {
         isLoading = true
         let req = ContactsRequest(query: searchText)
-        searchUniqueId = req.uniqueId
+        RequestsManager.shared.append(prepend: "SEARCH-CONTACTS", value: req)
         ChatManager.activeInstance?.contact.search(req)
     }
 
     public func onDeleteContacts(_ response: ChatResponse<[Contact]>, _ deleted: Bool) {
         if deleted {
             response.result?.forEach{ contact in
+                searchedContacts.removeAll(where: {$0.id == contact.id})
                 contacts.removeAll(where: {$0.id == contact.id})
             }
             animateObjectWillChange()
@@ -198,7 +202,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func clear() {
-        hasNext = false
+        hasNext = true
         offset = 0
         count = 15
         contacts = []
@@ -286,14 +290,21 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onSearchContacts(_ response: ChatResponse<[Contact]>) {
-        isLoading = false
-        searchedContacts = response.result ?? []
+        if response.value(prepend: "SEARCH-CONTACTS") != nil {
+            isLoading = false
+            searchedContacts = response.result ?? []
+        }
     }
 
     public func addContact(contactValue: String, firstName: String?, lastName: String?) {
         isLoading = true
-        let isPhone = validatePhone(value: contactValue)
-        let req: AddContactRequest = isPhone ?
+        let isNumber = isNumber(value: contactValue)
+        if isNumber && contactValue.count < 10 {
+            userNotFound = true
+            isLoading = false
+            return
+        }
+        let req: AddContactRequest = isNumber ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
         ChatManager.activeInstance?.contact.add(req)
@@ -303,8 +314,8 @@ public final class ContactsViewModel: ObservableObject {
         contacts.first { $0.id == contact.id }
     }
 
-    public func validatePhone(value: String) -> Bool {
-        let phoneRegex = "^[0-9+]{0,1}+[0-9]{5,16}$"
+    public func isNumber(value: String) -> Bool {
+        let phoneRegex = "^[0-9]*$"
         let phoneTest = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
         let result = phoneTest.evaluate(with: value)
         return result

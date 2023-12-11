@@ -24,10 +24,10 @@ public struct UploadMessageImageView: View {
         ZStack {
             if let data = message.uploadFile?.uploadImageRequest?.dataToSend, let image = UIImage(data: data) {
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
-                let width = max(128, (MessageRowViewModel.maxAllowedWidth)) - (8 + MessageRowBackground.tailSize.width)
+                let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (8 + MessageRowBackground.tailSize.width)
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
                 /// We use min to prevent the image gets bigger than 320 if it's bigger.
-                let height = min(320, max(128, (MessageRowViewModel.maxAllowedWidth)))
+                let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
                 
                 Image(uiImage: image)
                     .resizable()

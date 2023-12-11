@@ -120,22 +120,24 @@ struct ContactContentList: View {
     }
     
     @ViewBuilder var leadingViews: some View {
-        ToolbarButtonItem(imageName: "list.bullet", hint: "General.select") {
-            withAnimation {
-                viewModel.isInSelectionMode.toggle()
-            }
-        }
-
-        if !viewModel.showConversaitonBuilder {
-            ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
+        if EnvironmentValues.isTalkTest {
+            ToolbarButtonItem(imageName: "list.bullet", hint: "General.select") {
                 withAnimation {
-                    AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteContactView().environmentObject(viewModel))
+                    viewModel.isInSelectionMode.toggle()
                 }
             }
-            .foregroundStyle(.red)
-            .opacity(viewModel.isInSelectionMode ? 1 : 0.2)
-            .disabled(!viewModel.isInSelectionMode)
-            .scaleEffect(x: viewModel.isInSelectionMode ? 1.0 : 0.002, y: viewModel.isInSelectionMode ? 1.0 : 0.002)
+            
+            if !viewModel.showConversaitonBuilder {
+                ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
+                    withAnimation {
+                        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteContactView().environmentObject(viewModel))
+                    }
+                }
+                .foregroundStyle(.red)
+                .opacity(viewModel.isInSelectionMode ? 1 : 0.2)
+                .disabled(!viewModel.isInSelectionMode)
+                .scaleEffect(x: viewModel.isInSelectionMode ? 1.0 : 0.002, y: viewModel.isInSelectionMode ? 1.0 : 0.002)
+            }
         }
     }
     

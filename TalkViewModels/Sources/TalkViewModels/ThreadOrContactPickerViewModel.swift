@@ -10,19 +10,18 @@ import ChatModels
 import Combine
 import ChatDTO
 import ChatCore
-import OrderedCollections
 import Chat
 
 public class ThreadOrContactPickerViewModel: ObservableObject {
     private var cancellableSet: Set<AnyCancellable> = .init()
     @Published public var searchText: String = ""
-    public var conversations: OrderedSet<Conversation> = .init()
-    public var contacts: OrderedSet<Contact> = .init()
+    public var conversations: [Conversation] = .init()
+    public var contacts: [Contact] = .init()
     @Published public var isLoading = false
 
     public init() {
         conversations = AppState.shared.objectsContainer.threadsVM.threads
-        contacts = OrderedSet(AppState.shared.objectsContainer.contactsVM.contacts)
+        contacts = AppState.shared.objectsContainer.contactsVM.contacts
         setupObservers()
     }
 
@@ -41,7 +40,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
             .filter{$0.count == 0}
             .sink { [weak self] newValue in
                 self?.conversations = AppState.shared.objectsContainer.threadsVM.threads
-                self?.contacts = OrderedSet(AppState.shared.objectsContainer.contactsVM.contacts)
+                self?.contacts = AppState.shared.objectsContainer.contactsVM.contacts
             }
             .store(in: &cancellableSet)
 

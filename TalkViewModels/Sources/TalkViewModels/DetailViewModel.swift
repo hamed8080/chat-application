@@ -44,6 +44,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var participantViewModel: ParticipantsViewModel? { threadVM?.participantsViewModel }
     public var mutualThreads: [Conversation] = []
     public weak var threadVM: ThreadViewModel?
+    public var p2pPartnerContact: Contact?
     public var isPublic = false
 
     @Published public var editTitle: String = ""
@@ -57,7 +58,9 @@ public final class DetailViewModel: ObservableObject, Hashable {
     @Published public var isLoading = false
     @Published public var showEditGroup = false
     @Published public var showContactEditSheet: Bool = false
-    public var canShowEditButton: Bool {thread?.canEditInfo == true || user?.contactId != nil}
+    public var isGroup: Bool { thread?.group == true }
+    public var canEditContact: Bool { !isGroup && p2pPartnerContact != nil }
+    public var canShowEditButton: Bool {(thread?.canEditInfo == true || user?.contactId != nil || canEditContact) && thread?.type != .selfThread }
     public var partner: Participant?
     public var partnerContact: Contact?
     public var uploadProfileUniqueId: String?
@@ -98,6 +101,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
             }
             .store(in: &cancelable)
         participantViewModel?.objectWillChange.sink { [weak self] _ in
+            self?.user = self?.participantViewModel?.participants.first(where: { $0.id == thread?.partner})
             self?.animateObjectWillChange()
         }
         .store(in: &cancelable)
@@ -338,8 +342,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     public func showEditContactOrEditGroup(contactsVM: ContactsViewModel) {
-        if user?.contactId != nil {
-            contactsVM.editContact = user?.toContact
+        if user?.contactId != nil || p2pPartnerContact != nil {
+            contactsVM.editContact = p2pPartnerContact ?? user?.toContact
             showContactEditSheet.toggle()
         } else if thread?.canEditInfo == true {
             showEditGroup.toggle()

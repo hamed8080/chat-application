@@ -23,7 +23,7 @@ struct SelectConversationOrContactList: View {
         self.onSelect = onSelect
         tabs = [
             .init(title: "Tab.chats", view: AnyView(SelectConversationTab(onSelect: onSelect))),
-            .init(title: "Tab.contacts", view: AnyView(SelectContactTab(onSelect: onSelect)))
+//            .init(title: "Tab.contacts", view: AnyView(SelectContactTab(onSelect: onSelect)))
         ]
     }
 

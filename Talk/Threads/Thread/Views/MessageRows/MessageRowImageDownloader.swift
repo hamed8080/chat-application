@@ -20,23 +20,16 @@ struct MessageRowImageDownloader: View {
     var body: some View {
         if message.isImage, uploadCompleted, let downloadVM = viewModel.downloadFileVM {
             ZStack {
-                /// We use max to at least have a width, because there are times that maxWidth is nil.
-                let width = max(128, (MessageRowViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
-                /// We use max to at least have a width, because there are times that maxWidth is nil.
-                /// We use min to prevent the image gets bigger than 320 if it's bigger.
-                let height = min(320, max(128, (MessageRowViewModel.maxAllowedWidth)))
-                PlaceholderImageView(width: width, height: height)
+                PlaceholderImageView(width: viewModel.imageWidth, height: viewModel.imageHeight)
                     .environmentObject(downloadVM)
-                BlurThumbnailView(width: width, height: height, viewModel: downloadVM)
+                BlurThumbnailView(width: viewModel.imageWidth, height: viewModel.imageHeight, viewModel: downloadVM)
                     .environmentObject(downloadVM)
-                RealDownloadedImage(width: width, height: height)
+                RealDownloadedImage(width: viewModel.imageWidth, height: viewModel.imageHeight)
                     .environmentObject(downloadVM)
                 OverlayDownloadImageButton(message: message)
                     .environmentObject(downloadVM)
             }
-            .onTapGesture {
-                AppState.shared.objectsContainer.appOverlayVM.galleryMessage = message
-            }
+            .clipped()
             .onReceive(NotificationCenter.default.publisher(for: .upload)) { notification in
                 guard
                     let event = notification.object as? UploadEventTypes,
@@ -107,6 +100,10 @@ struct BlurThumbnailView: View {
                     self.hasShown = true
                 }
             }
+            .contentShape(RoundedRectangle(cornerRadius: 8))
+            .onTapGesture {
+                AppState.shared.objectsContainer.appOverlayVM.galleryMessage = viewModel.message
+            }
     }
 
     var image: UIImage {
@@ -141,6 +138,10 @@ struct RealDownloadedImage: View {
                     viewModel.state = .completed // it will set the state to complete and then push objectWillChange to call onReceive and start scale the image on the background thread
                     viewModel.animateObjectWillChange()
                 }
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 8))
+            .onTapGesture {
+                AppState.shared.objectsContainer.appOverlayVM.galleryMessage = viewModel.message
             }
     }
 }

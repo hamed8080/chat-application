@@ -22,13 +22,15 @@ struct ThreadRowActionMenu: View {
             Label((thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", systemImage: "pin")
         }
 
-        if EnvironmentValues.isTalkTest {
+        if thread.type != .selfThread {
             Button {
                 viewModel.toggleMute(thread)
             } label: {
                 Label((thread.mute ?? false) ? "Thread.unmute" : "Thread.mute", systemImage: "speaker.slash")
             }
-            
+        }
+
+        if EnvironmentValues.isTalkTest {
             Button {
                 viewModel.clearHistory(thread)
             } label: {

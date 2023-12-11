@@ -278,8 +278,11 @@ struct DetailTopButtons: View {
 //                }
 //            }
 
-            DetailViewButton(accessibilityText: "", icon: "magnifyingglass") {
-
+            if let threadId = viewModel.threadVM?.threadId {
+                DetailViewButton(accessibilityText: "", icon: "magnifyingglass") {
+                    viewModel.dismiss.toggle()
+                    NotificationCenter.default.post(name: .forceSearch, object: "\(threadId)")
+                }
             }
 
             DetailViewButton(accessibilityText: "", icon: "phone.and.waveform.fill") {
@@ -299,14 +302,8 @@ struct DetailTopButtons: View {
             Menu {
                 if let conversation = viewModel.thread {
                     ThreadRowActionMenu(thread: conversation)
-                    if conversation.type?.isPrivate == true && conversation.group == true {
-                        Button {
-                            viewModel.threadVM?.threadsViewModel?.makeThreadPublic(conversation)
-                        } label: {
-                            Label("Thread.switchToPublic", systemImage: "arrow.triangle.swap")
-                        }
-                    }
-                } else if let user = viewModel.user {
+                }
+                if let user = viewModel.user {
                     UserActionMenu(participant: user)
                 }
             } label: {

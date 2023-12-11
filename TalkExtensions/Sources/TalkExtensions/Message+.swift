@@ -49,7 +49,7 @@ public extension Message {
     var isAudio: Bool { [MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice].contains(messageType ?? .unknown) }
     var isVideo: Bool { [MessageType.video, .podSpaceVideo, .video].contains(messageType ?? .unknown) }
     var reactionableType: Bool { ![MessageType.endCall, .endCall, .participantJoin, .participantLeft].contains(type) }
-    var isMapType: Bool { fileMetaData?.latitude != nil }
+    var isMapType: Bool { fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil }
 
     var hardLink: URL? {
         guard
@@ -106,13 +106,27 @@ public extension Message {
         return fileTypes.contains(messageType ?? .unknown)
     }
 
+    var mapCoordinate: Coordinate? {
+        guard
+            let array = fileMetaData?.mapLink?.replacingOccurrences(of: Routes.baseMapLink.rawValue, with: "").split(separator: ","),
+            let lat = Double(String(array[0])),
+            let lng = Double(String(array[1]))
+        else { return nil }
+        return Coordinate(lat: lat, lng: lng)
+    }
+
     var coordinate: Coordinate? {
         guard let latitude = fileMetaData?.latitude, let longitude = fileMetaData?.longitude else { return nil }
         return Coordinate(lat: latitude, lng: longitude)
     }
 
+    var neshanURL: URL? {
+        guard let coordinate = mapCoordinate else { return nil }
+        return URL(string: "https://neshan.org/maps/@\(coordinate.lat),\(coordinate.lng),18.1z,0p")
+    }
+
     var appleMapsURL: URL? {
-        guard let coordinate = coordinate else { return nil }
+        guard let coordinate = mapCoordinate else { return nil }
         return URL(string: "maps://?q=\(message ?? "")&ll=\(coordinate.lat),\(coordinate.lng)")
     }
 

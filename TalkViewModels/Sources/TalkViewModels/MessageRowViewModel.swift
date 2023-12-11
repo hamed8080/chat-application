@@ -20,7 +20,6 @@ import ChatCore
 public final class MessageRowViewModel: ObservableObject {
     public var isCalculated = false
     public var isEnglish = true
-//    public var maxWidth: CGFloat?
     public var markdownTitle = AttributedString()
     public var addressDetail: String?
     public var timeString: String = ""
@@ -38,13 +37,15 @@ public final class MessageRowViewModel: ObservableObject {
     public var showReactionsOverlay = false
     public var isNextMessageTheSameUser: Bool = false
     public var canShowIconFile: Bool = false
-    public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true) }
+    public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
     public var canDelete: Bool { (message.deletable == true && isMe) || (message.deletable == true && threadVM?.thread.admin == true) }
     public var reactionCountList: [ReactionCount] = []
     private var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
     public var currentUserReaction: Reaction?
     public var uploadViewModel: UploadFileViewModel?
     public var paddingEdgeInset: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+    public var imageWidth: CGFloat = 128
+    public var imageHeight: CGFloat = 128
 
     public var avatarImageLoader: ImageLoaderViewModel? {
         if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {
@@ -66,7 +67,6 @@ public final class MessageRowViewModel: ObservableObject {
             isMe = true
         }
         setupObservers()
-//        maxWidth = message.isImage ? MessageRowViewModel.maxAllowedWidth : nil
         canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.message.isEmptyOrNil == true && message.replyInfo?.deleted == false
         let isReplyOrForward = (message.forwardInfo != nil || message.replyInfo != nil) && !message.isImage
         let tailWidth: CGFloat = 6
@@ -75,6 +75,25 @@ public final class MessageRowViewModel: ObservableObject {
         let paddingTop: CGFloat = isReplyOrForward ? 10 : 4
         let paddingBottom: CGFloat = 4
         paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
+
+
+        if message.isImage || message.isMapType {
+            let isOnlyImage = (message.message ?? "").isEmpty == true && (message.replyInfo == nil) && (message.forwardInfo == nil)
+
+            /// We use max to at least have a width, because there are times that maxWidth is nil.
+            let imageWidth = CGFloat(message.fileMetaData?.file?.actualWidth ?? 0)
+            let minWidth: CGFloat = 128
+            let maxWidth = ThreadViewModel.maxAllowedWidth - (18 + 6)
+            let dynamicWidth = min(max(minWidth, imageWidth), maxWidth)
+            self.imageWidth = isOnlyImage ? dynamicWidth : maxWidth
+
+            /// We use max to at least have a width, because there are times that maxWidth is nil.
+            let imageHeight = CGFloat(message.fileMetaData?.file?.actualHeight ?? 0)
+            let minHeight: CGFloat = 128
+            let maxHeight: CGFloat = 320
+            let dynamicHeight = min(max(minHeight, imageHeight), maxHeight)
+            self.imageHeight = isOnlyImage ? dynamicHeight : maxHeight
+        }
     }
 
     func setupObservers() {
@@ -209,45 +228,10 @@ public final class MessageRowViewModel: ObservableObject {
         isNextMessageTheSameUser = threadVM?.thread.group == true && (threadVM?.isNextSameUser(message: message) == true) && message.participant != nil
         addressDetail = await message.addressDetail
         isEnglish = message.message?.naturalTextAlignment == .leading
-//        maxWidth = self.calculateMaxWidth()
         markdownTitle = message.markdownTitle
         timeString = message.time?.date.localFormattedTime ?? ""
         setReactionList()
     }
-
-    public static var maxAllowedWidth: CGFloat {
-        let isInSlimMode = AppState.isInSlimMode
-        // In slim mode we use ThreadView width
-        // 38 = Avatar width + tail width + leading padding + trailing padding
-        let max: CGFloat = isInSlimMode ? ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize) : 560
-        return max
-    }
-
-//    static let replyFont = UIFont(name: "IRANSansX", size: 11)
-//    static let messageFont = UIFont(name: "IRANSansX", size: 14)
-//    public func calculateMaxWidth() -> CGFloat? {
-//        let replyWidth = message.replyInfo?.message?.widthOfString(usingFont: MessageRowViewModel.replyFont ?? .systemFont(ofSize: 10)) ?? 0
-//        let messageWidth = message.message?.widthOfString(usingFont: MessageRowViewModel.messageFont ?? .systemFont(ofSize: 13)) ?? 0
-//        let imageWidth = CGFloat(message.fileMetaData?.file?.actualWidth ?? message.uploadFile?.uploadImageRequest?.wC ?? 0)
-//        let maxAllowedWidth = MessageRowViewModel.maxAllowedWidth
-//        if replyWidth > messageWidth && replyWidth > maxAllowedWidth {
-//            return maxAllowedWidth
-//        } else if replyWidth > messageWidth && replyWidth < maxAllowedWidth {
-//            return imageWidth > maxAllowedWidth ? maxAllowedWidth : nil
-//        } else if messageWidth > maxAllowedWidth {
-//            return maxAllowedWidth
-//        } else if message.isUnsentMessage {
-//            return nil
-//        } else if message.isImage {
-//            if imageWidth > maxAllowedWidth {
-//                return maxAllowedWidth
-//            } else {
-//                return imageWidth
-//            }
-//        } else {
-//            return nil
-//        }
-//    }
 
     func setReactionList() {
         if let reactionCountList = inMemoryReaction?.summary(for: message.id ?? -1) {

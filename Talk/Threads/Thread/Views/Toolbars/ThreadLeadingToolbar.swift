@@ -16,27 +16,17 @@ struct ThreadLeadingToolbar: View {
     
     var body: some View {
         if UIDevice.current.userInterfaceIdiom == .pad && sizeClass != .compact {
-            Button {
+            ToolbarButtonItem(imageName: "sidebar.leading") {
+                AppState.isInSlimMode = UIApplication.shared.windowMode().isInSlimMode
                 NotificationCenter.default.post(name: Notification.Name.closeSideBar, object: nil)
-            } label : {
-                Image(systemName: "sidebar.leading")
-                    .foregroundStyle(Color.App.primary)
             }
         }
 
-        if thread.group == true, thread.type != .channel {
-            Image(systemName: "person.2.fill")
-                .resizable()
-                .scaledToFit()
-                .foregroundColor(Color.App.primary)
-                .frame(width: 16, height: 16)
+        NavigationBackButton {
+            AppState.shared.appStateNavigationModel = .init()
+            AppState.shared.navViewModel?.remove(type: ThreadViewModel.self, threadId: viewModel.thread.id)
         }
-        if thread.type == .channel {
-            Image(systemName: "megaphone.fill")
-                .resizable()
-                .scaledToFit()
-                .foregroundColor(Color.App.primary)
-                .frame(width: 16, height: 16)
-        }
+
+        
     }
 }
