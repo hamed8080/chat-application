@@ -116,18 +116,31 @@ struct DownloadedMusicPlayer: View {
     let fileURL: URL
     @EnvironmentObject var viewModel: AVAudioPlayerViewModel
     var isSameFile: Bool { viewModel.fileURL?.absoluteString == fileURL.absoluteString }
+    @State var failed = false
+
+    var icon: String {
+        if failed {
+            return "exclamationmark.circle.fill"
+        } else {
+            return viewModel.isPlaying && isSameFile ? "pause.fill" : "play.fill"
+        }
+    }
 
     var body: some View {
         Button {
-            viewModel.setup(message: message,
-                            fileURL: fileURL,
-                            ext: message.fileMetaData?.file?.mimeType?.ext,
-                            title: message.fileMetaData?.name,
-                            subtitle: message.fileMetaData?.file?.originalName ?? "")
-            viewModel.toggle()
+            do {
+                try viewModel.setup(message: message,
+                                fileURL: fileURL,
+                                ext: message.fileMetaData?.file?.mimeType?.ext,
+                                title: message.fileMetaData?.name,
+                                subtitle: message.fileMetaData?.file?.originalName ?? "")
+                viewModel.toggle()
+            } catch {
+                failed = true
+            }
         } label: {
             ZStack {
-                Image(systemName: viewModel.isPlaying  && isSameFile ? "pause.fill" : "play.fill" )
+                Image(systemName: icon)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
@@ -142,7 +155,7 @@ struct DownloadedMusicPlayer: View {
                     .environment(\.layoutDirection, .leftToRight)
             }
             .frame(width: 36, height: 36)
-            .background(Color.App.primary)
+            .background(failed ? Color.App.red : Color.App.primary)
             .clipShape(RoundedRectangle(cornerRadius: 22))
             .contentShape(Rectangle())
         }

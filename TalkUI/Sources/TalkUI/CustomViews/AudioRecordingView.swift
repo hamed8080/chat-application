@@ -124,7 +124,7 @@ struct InVoiceRecordingView: View {
                 Button {
                     viewModel.stop()
                     if let fileURL = viewModel.recordingOutputPath {
-                        AppState.shared.objectsContainer.audioPlayerVM.setup(fileURL: fileURL,
+                        try? AppState.shared.objectsContainer.audioPlayerVM.setup(fileURL: fileURL,
                                                                              ext: fileURL.fileExtension,
                                                                              title: fileURL.fileName,
                                                                              subtitle: "")

@@ -19,6 +19,7 @@ public struct InlineAudioPlayerView: View {
     public var config: DownloadFileViewConfig
     @EnvironmentObject var viewModel: AVAudioPlayerViewModel
     var isSameFile: Bool { viewModel.fileURL?.absoluteString == fileURL.absoluteString }
+    @State var failed = false
 
     public init(message: Message?, fileURL: URL, ext: String?, title: String? = nil, subtitle: String, config: DownloadFileViewConfig) {
         self.message = message
@@ -29,20 +30,32 @@ public struct InlineAudioPlayerView: View {
         self.config = config
     }
 
+    var icon: String {
+        if failed {
+            return "exclamationmark.circle.fill"
+        } else {
+            return viewModel.isPlaying && isSameFile ? "pause.fill" : "play.fill"
+        }
+    }
+
     public var body: some View {
         ZStack {
-            Image(systemName: viewModel.isPlaying && isSameFile ? "pause.fill" : "play.fill")
+            Image(systemName: icon)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 12, height: 12)
                 .foregroundStyle(config.iconColor)
         }
         .frame(width: config.iconWidth, height: config.iconHeight)
-        .background(config.iconCircleColor)
+        .background(failed ? Color.App.red : config.iconCircleColor)
         .clipShape(RoundedRectangle(cornerRadius: config.iconHeight / 2))
         .onTapGesture {
-            viewModel.setup(message: message, fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
-            viewModel.toggle()
+            do {
+                try viewModel.setup(message: message, fileURL: fileURL, ext: ext, title: title, subtitle: subtitle)
+                viewModel.toggle()
+            } catch {
+                failed = true
+            }
         }
     }
 }

@@ -80,7 +80,7 @@ public final class ObjectsContainer: ObservableObject {
 
     private func playMessageSound(sent: Bool) {
         if let fileURL = Bundle.main.url(forResource: sent ? "sent_message" : "new_message", withExtension: "mp3") {
-            messagePlayer.setup(message: nil, fileURL: fileURL, ext: "mp3", category: .ambient)
+            try? messagePlayer.setup(message: nil, fileURL: fileURL, ext: "mp3", category: .ambient)
             messagePlayer.toggle()
         }
     }

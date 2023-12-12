@@ -18,8 +18,7 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
     private var timer: Timer?
     public override init() {}
 
-    public func setup(message: Message? = nil, fileURL: URL, ext: String?, category: AVAudioSession.Category = .playback, title: String? = nil, subtitle: String = "") {
-        if fileURL.absoluteString == self.fileURL?.absoluteString { return }
+    public func setup(message: Message? = nil, fileURL: URL, ext: String?, category: AVAudioSession.Category = .playback, title: String? = nil, subtitle: String = "") throws {
         self.message = message
         self.title = title ?? fileURL.lastPathComponent
         self.subtitle = subtitle
@@ -35,6 +34,8 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
 #if DEBUG
             Logger.viewModels.info("\(error.description)")
 #endif
+            close()
+            throw error
         }
     }
 

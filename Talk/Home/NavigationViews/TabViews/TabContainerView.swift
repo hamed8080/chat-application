@@ -70,12 +70,7 @@ struct TabContainerView: View {
                         .offset(x: selectedId == tab.title ? 0 : -(screenWidth + 200))
                 }
             }
-            .safeAreaInset(edge: .bottom) {
-                EmptyView()
-                    .frame(width: 0, height: 46)
-            }
-            .frame(minWidth: 0, maxWidth: maxWidth)
-            .overlay(alignment: config.alignment) {
+            .safeAreaInset(edge: .bottom, spacing: 0) {
                 TabButtonsContainer(selectedId: $selectedId, tabs: tabs)
                     .environment(\.layoutDirection, .leftToRight)
             }

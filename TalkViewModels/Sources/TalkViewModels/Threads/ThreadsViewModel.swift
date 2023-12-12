@@ -58,13 +58,12 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onCreate(_ response: ChatResponse<Conversation>) {
+        isLoading = false
         if let thread = response.result {
             if thread.inviter?.id == AppState.shared.user?.id {
                 AppState.shared.showThread(thread: thread)
             }
-            appendThreads(threads: [thread])
         }
-        isLoading = false
     }
 
     public func onNewMessage(_ response: ChatResponse<Message>) {

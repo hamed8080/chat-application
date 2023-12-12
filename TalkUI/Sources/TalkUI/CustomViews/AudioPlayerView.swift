@@ -94,7 +94,7 @@ struct AudioPlayerPreview: PreviewProvider {
             AudioPlayerView()
                 .environmentObject(audioPlayerVm)
                 .onAppear {
-                    audioPlayerVm.setup(fileURL: URL(string: "https://www.google.com")!, ext: "mp3", title: "Note", subtitle: "Test")
+                    try? audioPlayerVm.setup(fileURL: URL(string: "https://www.google.com")!, ext: "mp3", title: "Note", subtitle: "Test")
                     audioPlayerVm.isClosed = false
                 }
         }

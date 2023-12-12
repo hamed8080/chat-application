@@ -45,7 +45,7 @@ struct ThreadView: View, DropDelegate {
                 GeometryReader { reader in
                     Color.clear.onAppear {
                         DispatchQueue.main.async {
-                            ThreadViewModel.threadWidth = reader.size.width 
+                            ThreadViewModel.threadWidth = reader.size.width
                         }
                     }
                 }

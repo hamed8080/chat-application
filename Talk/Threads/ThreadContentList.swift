@@ -68,7 +68,7 @@ private struct Preview: View {
                     container.threadsVM.title = "Tab.chats"
                     container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 5))
                     if let fileURL = Bundle.main.url(forResource: "new_message", withExtension: "mp3") {
-                        container.audioPlayerVM.setup(fileURL: fileURL, ext: "mp3", title: "Note")
+                        try? container.audioPlayerVM.setup(fileURL: fileURL, ext: "mp3", title: "Note")
                         container.audioPlayerVM.toggle()
                     }
                 }
@@ -84,7 +84,7 @@ struct ThreadContentList_Previews: PreviewProvider {
             AudioPlayerView()
                 .environmentObject(audioPlayerVm)
                 .onAppear {
-                    audioPlayerVm.setup(fileURL: URL(string: "https://www.google.com")!, ext: "mp3", title: "Note", subtitle: "Test")
+                    try? audioPlayerVm.setup(fileURL: URL(string: "https://www.google.com")!, ext: "mp3", title: "Note", subtitle: "Test")
                     audioPlayerVm.isClosed = false
                 }
         }
