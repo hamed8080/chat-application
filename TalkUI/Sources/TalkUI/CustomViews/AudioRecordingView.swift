@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkViewModels
 import ChatModels
+import DSWaveformImage
 
 public struct AudioRecordingView: View {
     @EnvironmentObject var viewModel: AudioRecordingViewModel
@@ -28,6 +29,7 @@ public struct AudioRecordingView: View {
 struct VoiceRecoderSenderView: View {
     @EnvironmentObject var viewModel: AudioRecordingViewModel
     @EnvironmentObject var audioPlayerVM: AVAudioPlayerViewModel
+    @State var image: UIImage = .init()
 
     var body: some View {
         HStack(spacing: 0){
@@ -54,7 +56,7 @@ struct VoiceRecoderSenderView: View {
                     .foregroundStyle(Color.App.text)
                     .font(.iransansCaption2)
 
-                Image("waveform")
+                Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
 
@@ -95,6 +97,30 @@ struct VoiceRecoderSenderView: View {
             }
             .buttonStyle(.borderless)
             .frame(width: 48, height: 48)
+        }.task {
+            do {
+                guard let url = audioPlayerVM.fileURL else { return }
+                let waveformImageDrawer = WaveformImageDrawer()
+                let image = try await waveformImageDrawer.waveformImage(
+                    fromAudioAt: url,
+                    with: .init(
+                        size: .init(width: 250, height: 48),
+                        style: .striped(
+                            .init(
+                                color: UIColor.white.withAlphaComponent(0.7),
+                                width: 3,
+                                spacing: 2,
+                                lineCap: .round
+                            )
+                        ),
+                        shouldAntialias: true
+                    ),
+                    renderer: LinearWaveformRenderer()
+                )
+                await MainActor.run {
+                    self.image = image
+                }
+            } catch {}
         }
     }
 }

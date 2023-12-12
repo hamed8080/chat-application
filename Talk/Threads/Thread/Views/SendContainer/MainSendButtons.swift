@@ -47,6 +47,7 @@ struct MainSendButtons: View {
 
             let showAudio = text.isEmpty && !isVideoRecordingSelected
             Button {
+                viewModel.attachmentsViewModel.clear()
                 viewModel.setupRecording()
             } label: {
                 Image(systemName: "mic.fill")

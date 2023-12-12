@@ -35,7 +35,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
     @Published public var isRecording: Bool = false
     private var timer: Timer?
     public var isPermissionGranted: Bool { AVAudioSession.sharedInstance().recordPermission == .granted }
-    public var recordingFileName: String { "recording.m4a" }
+    public var recordingFileName: String = ""
     public var recordingOutputBasePath: URL? { FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first }
     public var recordingOutputPath: URL?
     public weak var threadViewModel: ThreadViewModel?
@@ -60,6 +60,14 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
             guard let self = self else { return }
             self.timerString = self.startDate.distance(to: Date()).timerString(locale: Language.preferredLocale) ?? ""
         }
+
+        let date = Date()
+        let calendar = Calendar.current
+        let dateCmp = calendar.dateComponents([.year, .month, .day], from: date)
+        let timeCmp = calendar.dateComponents([.hour, .minute], from: date)
+        let dateString = "\(dateCmp.year ?? 0)-\(dateCmp.month ?? 0)-\(dateCmp.day ?? 0)"
+        let time = "\(timeCmp.hour ?? 0)-\(timeCmp.minute ?? 0)"
+        recordingFileName = "Voice-\(dateString)-\(time).m4a"
         recordingOutputPath = recordingOutputBasePath?.appendingPathComponent(recordingFileName)
         guard let url = recordingOutputPath else { return }
         deleteFile()

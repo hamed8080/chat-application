@@ -239,7 +239,12 @@ public final class AppState: ObservableObject {
     public func showEmptyThread() {
         guard let userToCreateThread else { return }
         withAnimation {
-            navViewModel?.append(thread: .init(id: LocalId.emptyThread.rawValue, image: userToCreateThread.image, title: userToCreateThread.name, participants: [.init(coreUserId: userToCreateThread.id)]))
+            let particpants = [Participant(coreUserId: userToCreateThread.id)]
+            let conversation = Conversation(id: LocalId.emptyThread.rawValue,
+                                            image: userToCreateThread.image,
+                                            title: userToCreateThread.name,
+                                            participants: particpants)
+            navViewModel?.append(thread: conversation)
             isLoading = false
         }
     }

@@ -38,7 +38,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var isNextMessageTheSameUser: Bool = false
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
-    public var canDelete: Bool { (message.deletable == true && isMe) || (message.deletable == true && threadVM?.thread.admin == true) }
+    public var canDelete: Bool { (message.deletable != false && threadVM?.thread.group != true) || (message.deletable != false && threadVM?.thread.admin == true) }
     public var reactionCountList: [ReactionCount] = []
     private var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
     public var currentUserReaction: Reaction?
@@ -46,6 +46,8 @@ public final class MessageRowViewModel: ObservableObject {
     public var paddingEdgeInset: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
     public var imageWidth: CGFloat = 128
     public var imageHeight: CGFloat = 128
+    public var isReplyImage: Bool = false
+    public var replyLink: String?
 
     public var avatarImageLoader: ImageLoaderViewModel? {
         if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {
@@ -93,6 +95,15 @@ public final class MessageRowViewModel: ObservableObject {
             let maxHeight: CGFloat = 320
             let dynamicHeight = min(max(minHeight, imageHeight), maxHeight)
             self.imageHeight = isOnlyImage ? dynamicHeight : maxHeight
+        }
+
+        /// Reply file info
+        if let replyInfo = message.replyInfo {
+            self.isReplyImage = [MessageType.picture, .podSpacePicture].contains(replyInfo.messageType)
+            let metaData = replyInfo.metadata
+            if let data = metaData?.data(using: .utf8), let fileMetaData = try? JSONDecoder.instance.decode(FileMetaData.self, from: data) {
+                replyLink = fileMetaData.file?.link
+            }
         }
     }
 

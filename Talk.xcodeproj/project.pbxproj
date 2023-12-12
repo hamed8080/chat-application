@@ -54,6 +54,8 @@
 		0560C3622AB77B0B009F6A58 /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */; };
 		0560C3632AB77B0B009F6A58 /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */; };
 		056A1E7B2AB564DA00B51359 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 056A1E7A2AB564DA00B51359 /* Swipy */; };
+		056ACA4D2B28485800C7E9FF /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 056ACA4C2B28485800C7E9FF /* DSWaveformImage */; };
+		056ACA4F2B286F6000C7E9FF /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 056ACA4E2B286F6000C7E9FF /* DSWaveformImage */; };
 		0570CBDF2AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */; };
 		0570CBE02AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */; };
 		0570CBE32AAEE98F001832E9 /* HomeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB662AAEE98C001832E9 /* HomeContentView.swift */; };
@@ -509,6 +511,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				056ACA4D2B28485800C7E9FF /* DSWaveformImage in Frameworks */,
 				05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */,
 				0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */,
 				0570CCB82AAEEE78001832E9 /* TalkExtensions in Frameworks */,
@@ -523,6 +526,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				056ACA4F2B286F6000C7E9FF /* DSWaveformImage in Frameworks */,
 				056A1E7B2AB564DA00B51359 /* Swipy in Frameworks */,
 				0570CCAF2AAEEE22001832E9 /* TalkUI in Frameworks */,
 				0570CCB12AAEEE22001832E9 /* TalkViewModels in Frameworks */,
@@ -968,6 +972,7 @@
 				0570CCBD2AAEEE78001832E9 /* TalkViewModels */,
 				05D1DB8B2ABC0E2000513DE5 /* Swipy */,
 				05DDC8472AEC240D009F9942 /* ActionableContextMenu */,
+				056ACA4C2B28485800C7E9FF /* DSWaveformImage */,
 			);
 			productName = Talk;
 			productReference = 0570CB172AAEE02A001832E9 /* Talk.app */;
@@ -993,6 +998,7 @@
 				0570CCB02AAEEE22001832E9 /* TalkViewModels */,
 				056A1E7A2AB564DA00B51359 /* Swipy */,
 				05DDC8492AEC2412009F9942 /* ActionableContextMenu */,
+				056ACA4E2B286F6000C7E9FF /* DSWaveformImage */,
 			);
 			productName = Talk;
 			productReference = 0570CB332AAEE04B001832E9 /* Talk-Test.app */;
@@ -1032,6 +1038,7 @@
 			);
 			mainGroup = 0570CB0E2AAEE02A001832E9;
 			packageReferences = (
+				056ACA4B2B28485800C7E9FF /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
 			);
 			productRefGroup = 0570CB182AAEE02A001832E9 /* Products */;
 			projectDirPath = "";
@@ -1700,10 +1707,31 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		056ACA4B2B28485800C7E9FF /* XCRemoteSwiftPackageReference "DSWaveformImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dmrschmidt/DSWaveformImage";
+			requirement = {
+				kind = exactVersion;
+				version = 14.2.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		056A1E7A2AB564DA00B51359 /* Swipy */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Swipy;
+		};
+		056ACA4C2B28485800C7E9FF /* DSWaveformImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 056ACA4B2B28485800C7E9FF /* XCRemoteSwiftPackageReference "DSWaveformImage" */;
+			productName = DSWaveformImage;
+		};
+		056ACA4E2B286F6000C7E9FF /* DSWaveformImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 056ACA4B2B28485800C7E9FF /* XCRemoteSwiftPackageReference "DSWaveformImage" */;
+			productName = DSWaveformImage;
 		};
 		0570CCAA2AAEEE22001832E9 /* TalkExtensions */ = {
 			isa = XCSwiftPackageProductDependency;

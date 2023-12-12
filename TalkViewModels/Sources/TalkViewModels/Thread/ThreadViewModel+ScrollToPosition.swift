@@ -45,9 +45,8 @@ extension ThreadViewModel: ScrollToPositionProtocol {
 
     public func scrollToLastMessageIfLastMessageIsVisible(_ message: Message) {
         if isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id), let uniqueId = message.uniqueId {
-            withAnimation(.easeInOut.delay(0.1)) {
-                scrollProxy?.scrollTo(uniqueId, anchor: .bottom)
-            }
+            disableExcessiveLoading()
+            scrollTo(uniqueId, delay: 0.1, .easeInOut)
         }
     }
 

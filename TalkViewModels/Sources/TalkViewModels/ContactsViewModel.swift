@@ -400,6 +400,7 @@ public final class ContactsViewModel: ObservableObject {
             isLoading = false
             if let conversation = response.result {
                 editGroup(createdConversation: conversation)
+                AppState.shared.showThread(thread: conversation)
             }
         }
     }

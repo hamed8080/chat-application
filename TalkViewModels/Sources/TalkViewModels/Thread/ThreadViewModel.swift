@@ -176,6 +176,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
             thread.unreadCount = (thread.unreadCount ?? 0) + 1
+            thread.time = response.result?.conversation?.time
+            thread.lastMessageVO = response.result
+            thread.lastSeenMessageId = response.result?.conversation?.lastSeenMessageId
+            thread.lastSeenMessageTime = response.result?.conversation?.lastSeenMessageTime
+            thread.lastSeenMessageNanos = response.result?.conversation?.lastSeenMessageNanos
+            thread.lastMessage = response.result?.message
+
             appendMessagesAndSort([message])
             animateObjectWillChange()
             scrollToLastMessageIfLastMessageIsVisible(message)

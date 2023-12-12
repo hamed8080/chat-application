@@ -76,7 +76,7 @@ struct VoiceRowView: View {
                     .padding(4)
             }
             VStack(alignment: .leading) {
-                Text(message.fileMetaData?.name ?? message.messageTitle)
+                Text(message.fileMetaData?.file?.originalName ?? message.messageTitle)
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.text)
                 HStack {

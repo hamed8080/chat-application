@@ -11,6 +11,7 @@ import SwiftUI
 import TalkViewModels
 import ActionableContextMenu
 import TalkUI
+import TalkModels
 
 struct MessageActionMenu: View {
     private var message: Message { viewModel.message }
@@ -35,12 +36,12 @@ struct MessageActionMenu: View {
                         AppState.shared.openThread(participant: participant)
                     }
                 }
-                .overlay(alignment: .bottomTrailing) {
+                .overlay(alignment: Language.isRTL ? .bottomTrailing : .bottomLeading) {
                     Image(systemName: "lock")
                         .resizable()
                         .scaledToFill()
                         .frame(width: 8, height: 8)
-                        .offset(x: -8, y: -8)
+                        .offset(x: Language.isRTL ? -8 : 8, y: -8)
                         .foregroundStyle(Color.App.gray4)
                         .fontWeight(.semibold)
                 }
@@ -116,9 +117,6 @@ struct MessageActionMenu: View {
                     }
                 }
                 .foregroundStyle(Color.App.red)
-                .disabled((message.deletable ?? false) == false)
-                .opacity((message.deletable ?? false) == false  ? 0.3 : 1.0)
-                .allowsHitTesting((message.deletable ?? false) == true)
             }
         }
         .foregroundColor(.primary)

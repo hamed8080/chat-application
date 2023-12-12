@@ -35,7 +35,7 @@ struct ReplyInfoMessageRow: View {
                         Text("Message.replyTo")
                             .foregroundStyle(Color.App.primary)
                             .font(.iransansCaption3)
-                        
+
                         if let name = message.replyInfo?.participant?.name {
                             Text("\(name)")
                                 .font(.iransansBoldCaption2)
@@ -57,24 +57,10 @@ struct ReplyInfoMessageRow: View {
                                 .lineLimit(2)
                                 .truncationMode(.tail)
                         }
-                        if viewModel.canShowIconFile {
-                            HStack {
-                                if let iconName = self.message.iconName {
-                                    Image(systemName: iconName)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 16, height: 16)
-                                        .foregroundColor(Color.App.blue)
-                                        .clipped()
-                                }
 
-                                if let fileStringName = self.message.fileStringName {
-                                    Text(fileStringName)
-                                        .font(.iransansCaption2)
-                                        .foregroundStyle(Color.App.blue)
-                                        .lineLimit(1)
-                                }
-                            }
+                        HStack {
+                            ReplyImageIcon(viewModel: viewModel)
+                            ReplyFileIcon()
                         }
                     }
                     .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.isMe ? 4 : 8))
@@ -94,6 +80,43 @@ struct ReplyInfoMessageRow: View {
             .background(Color.App.bgInput.opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .environmentObject(viewModel)
+        }
+    }
+}
+
+struct ReplyImageIcon: View {
+    let viewModel: MessageRowViewModel
+
+    var body: some View {
+        if viewModel.isReplyImage, let link = viewModel.replyLink {
+            ImageLaoderView(imageLoader: .init(), url: link, metaData: viewModel.message.replyInfo?.metadata, size: .SMALL)
+                .frame(width: 48, height: 48)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .clipped()
+        }
+    }
+}
+
+struct ReplyFileIcon: View {
+    private var message: Message { viewModel.message }
+    @EnvironmentObject var viewModel: MessageRowViewModel
+
+    var body: some View {
+        if !viewModel.isReplyImage, viewModel.canShowIconFile {
+            if let iconName = self.message.iconName {
+                Image(systemName: iconName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(Color.App.blue)
+                    .clipped()
+            }
+            if let fileStringName = self.message.fileStringName {
+                Text(fileStringName)
+                    .font(.iransansCaption2)
+                    .foregroundStyle(Color.App.blue)
+                    .lineLimit(1)
+            }
         }
     }
 }
