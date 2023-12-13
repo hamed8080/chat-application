@@ -11,7 +11,6 @@ import TalkModels
 
 struct ContactListSearchBarFilterView: View {
     @Binding var isInSearchMode: Bool
-    @State var text: String = ""
     @EnvironmentObject var viewModel: ContactsViewModel
     enum Field: Hashable {
         case saerch
@@ -21,7 +20,7 @@ struct ContactListSearchBarFilterView: View {
     var body: some View {
         HStack {
             if isInSearchMode {
-                TextField(String(localized: String.LocalizationValue("General.searchHere")), text: $text)
+                TextField(String(localized: String.LocalizationValue("General.searchHere")), text: $viewModel.searchContactString)
                     .font(.iransansBody)
                     .textFieldStyle(.clear)
                     .focused($searchFocus, equals: .saerch)
@@ -62,10 +61,7 @@ struct ContactListSearchBarFilterView: View {
             }
         }
         .animation(.easeInOut.speed(2), value: isInSearchMode)
-        .padding(EdgeInsets(top: isInSearchMode ? 4 : 0, leading: 4, bottom: isInSearchMode ? 6 : 0, trailing: 4))
-        .onChange(of: text) { newValue in
-            viewModel.searchContactString = newValue
-        }
+        .padding(EdgeInsets(top: isInSearchMode ? 4 : 0, leading: 4, bottom: isInSearchMode ? 6 : 0, trailing: 4))        
         .onReceive(NotificationCenter.default.publisher(for: .forceSearch)) { newValue in
             Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
                 isInSearchMode.toggle()

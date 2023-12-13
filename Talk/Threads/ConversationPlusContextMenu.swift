@@ -20,39 +20,48 @@ struct ConversationPlusContextMenu: View {
     @State var showToken: Bool = false
 
     var body: some View {
-        Menu {
-            Button {
+        ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat") {
+            withAnimation {
                 showCreateConversationSheet.toggle()
-            } label: {
-                Label("ThreadList.Toolbar.startNewChat", systemImage: "bubble.left.and.bubble.right.fill")
             }
-
-            if EnvironmentValues.isTalkTest {
-                Button {
-                    showToken.toggle()
-                } label : {
-                    Label("Set Token", systemImage: "key.icloud.fill")
-                }
-
-                Button {
-                    showJoinSheet.toggle()
-                } label: {
-                    Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
-                }
-                
-                Button {
-                    showFastMessageSheet.toggle()
-                } label: {
-                    Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
-                }
-            }
-        } label: {
-            ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat")
-                .foregroundStyle(Color.App.white, Color.App.primary)
         }
-        .sheet(isPresented: $showToken) {
-            ManuallyConnectionManagerView()
-        }
+        .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: 38)
+        .clipped()
+        .foregroundStyle(Color.App.white, Color.App.primary)
+//
+//        Menu {
+//            Button {
+//                showCreateConversationSheet.toggle()
+//            } label: {
+//                Label("ThreadList.Toolbar.startNewChat", systemImage: "bubble.left.and.bubble.right.fill")
+//            }
+//
+//            if EnvironmentValues.isTalkTest {
+//                Button {
+//                    showToken.toggle()
+//                } label : {
+//                    Label("Set Token", systemImage: "key.icloud.fill")
+//                }
+//
+//                Button {
+//                    showJoinSheet.toggle()
+//                } label: {
+//                    Label("ThreadList.Toolbar.joinToPublicThread", systemImage: "door.right.hand.open")
+//                }
+//
+//                Button {
+//                    showFastMessageSheet.toggle()
+//                } label: {
+//                    Label("ThreadList.Toolbar.fastMessage", systemImage: "arrow.up.circle.fill")
+//                }
+//            }
+//        } label: {
+//            ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat")
+//                .foregroundStyle(Color.App.white, Color.App.primary)
+//        }
+//        .sheet(isPresented: $showToken) {
+//            ManuallyConnectionManagerView()
+//        }
         .sheet(isPresented: $showCreateConversationSheet) {
             StartThreadContactPickerView()
         }
@@ -65,16 +74,16 @@ struct ConversationPlusContextMenu: View {
                 }
             }
         }
-        .sheet(isPresented: $showFastMessageSheet) {
-            CreateDirectThreadView { invitee, message in
-                threadsVM.fastMessage(invitee, message)
-            }
-        }
-        .sheet(isPresented: $showJoinSheet) {
-            JoinToPublicThreadView { publicThreadName in
-                threadsVM.joinPublicGroup(publicThreadName)
-            }
-        }
+//        .sheet(isPresented: $showFastMessageSheet) {
+//            CreateDirectThreadView { invitee, message in
+//                threadsVM.fastMessage(invitee, message)
+//            }
+//        }
+//        .sheet(isPresented: $showJoinSheet) {
+//            JoinToPublicThreadView { publicThreadName in
+//                threadsVM.joinPublicGroup(publicThreadName)
+//            }
+//        }
     }
 
     private var isLargeSize: Bool {

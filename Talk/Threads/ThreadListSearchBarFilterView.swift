@@ -11,7 +11,6 @@ import TalkModels
 
 struct ThreadListSearchBarFilterView: View {
     @Binding var isInSearchMode: Bool
-    @State var text: String = ""
     @EnvironmentObject var viewModel: ThreadsSearchViewModel
     enum Field: Hashable {
         case saerch
@@ -21,7 +20,7 @@ struct ThreadListSearchBarFilterView: View {
     var body: some View {
         HStack {
             if isInSearchMode {
-                TextField(String(localized: String.LocalizationValue("General.searchHere")), text: $text)
+                TextField(String(localized: String.LocalizationValue("General.searchHere")), text: $viewModel.searchText)
                     .font(.iransansBody)
                     .textFieldStyle(.clear)
                     .focused($searchFocus, equals: .saerch)
@@ -63,7 +62,7 @@ struct ThreadListSearchBarFilterView: View {
         }
         .animation(.easeInOut.speed(2), value: isInSearchMode)
         .padding(EdgeInsets(top: isInSearchMode ? 4 : 0, leading: 4, bottom: isInSearchMode ? 6 : 0, trailing: 4))
-        .onChange(of: text) { newValue in
+        .onChange(of: viewModel.searchText) { newValue in
             AppState.shared.objectsContainer.contactsVM.searchContactString = newValue
             viewModel.searchText = newValue
         }

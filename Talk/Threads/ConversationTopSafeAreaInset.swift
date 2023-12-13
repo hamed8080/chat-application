@@ -41,6 +41,8 @@ struct ConversationTopSafeAreaInset: View {
     @ViewBuilder var searchButton: some View {
         if isInSearchMode {
             Button {
+                AppState.shared.objectsContainer.contactsVM.searchContactString = ""
+                AppState.shared.objectsContainer.searchVM.searchText = ""
                 isInSearchMode.toggle()
             } label: {
                 Text("General.cancel")
@@ -49,7 +51,7 @@ struct ConversationTopSafeAreaInset: View {
                     .foregroundStyle(Color.App.primary)
             }
             .buttonStyle(.borderless)
-            .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
+            .frame(minWidth: 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
             .clipped()
         } else {
             ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search") {

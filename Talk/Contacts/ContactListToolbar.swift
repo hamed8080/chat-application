@@ -12,12 +12,7 @@ import TalkUI
 
 struct ContactListToolbar: View {
     @State var isInSearchMode: Bool = false
-    @State var text: String = ""
     @EnvironmentObject var viewModel: ContactsViewModel
-    enum Field: Hashable {
-        case saerch
-    }
-    @FocusState var searchFocus: Field?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -44,6 +39,8 @@ struct ContactListToolbar: View {
     @ViewBuilder var searchButton: some View {
         if isInSearchMode {
             Button {
+                AppState.shared.objectsContainer.contactsVM.searchContactString = ""
+                AppState.shared.objectsContainer.searchVM.searchText = ""
                 isInSearchMode.toggle()
             } label: {
                 Text("General.cancel")
@@ -52,7 +49,7 @@ struct ContactListToolbar: View {
                     .foregroundStyle(Color.App.primary)
             }
             .buttonStyle(.borderless)
-            .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
+            .frame(minWidth: 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
             .clipped()
         } else {
             ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search") {
