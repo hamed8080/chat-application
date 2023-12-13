@@ -27,12 +27,13 @@ public struct NavigationBackButton: View {
                     .resizable()
                     .scaledToFit()
                     .padding(EdgeInsets(top: 12, leading: 0, bottom: 12, trailing: navViewModel.previousTitle.isEmpty ? 12 : 2))
-                    .fontWeight(.light)
+                    .fontWeight(.semibold)
                 let localized = String(localized: .init(navViewModel.previousTitle))
                 let maxLength = UIDevice.current.userInterfaceIdiom == .pad ? 35 : 15
                 let string = String(localized.prefix(maxLength))
                 Text(string)
                     .font(.iransansBody)
+                    .offset(y: 1)
             }
             .foregroundColor(Color.App.primary)
             .contentShape(Rectangle())

@@ -43,9 +43,15 @@ public class VideoPlayerViewModel: NSObject, ObservableObject, AVAssetResourceLo
             let item = AVPlayerItem(asset: asset)
             player = AVPlayer(playerItem: item)
             item.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: [.old, .new], context: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(finishedPlaying), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: item)
         } catch {
             log("error in hardlinking: \(error.localizedDescription)")
         }
+    }
+
+    @objc private func finishedPlaying(_ notif: Notification) {
+        NotificationCenter.default.post(name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+        player?.seek(to: .zero)
     }
 
     override public func observeValue(forKeyPath keyPath: String?,

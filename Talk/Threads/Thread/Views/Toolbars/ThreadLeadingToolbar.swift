@@ -26,7 +26,5 @@ struct ThreadLeadingToolbar: View {
             AppState.shared.appStateNavigationModel = .init()
             AppState.shared.navViewModel?.remove(type: ThreadViewModel.self, threadId: viewModel.thread.id)
         }
-
-        
     }
 }

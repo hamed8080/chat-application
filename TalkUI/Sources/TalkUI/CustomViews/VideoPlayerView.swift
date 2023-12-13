@@ -65,6 +65,11 @@ public struct PlayerViewRepresentable: UIViewControllerRepresentable {
     var player: AVPlayer
     @Binding var showFullScreen: Bool
 
+    public init(player: AVPlayer, showFullScreen: Binding<Bool>) {
+        self.player = player
+        self._showFullScreen = showFullScreen
+    }
+
     public func makeUIViewController(context: Context) -> AVPlayerViewController {
         let controller = AVPlayerViewController()
         controller.player = player

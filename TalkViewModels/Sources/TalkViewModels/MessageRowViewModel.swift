@@ -38,7 +38,6 @@ public final class MessageRowViewModel: ObservableObject {
     public var isNextMessageTheSameUser: Bool = false
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
-    public var canDelete: Bool { (message.deletable != false && threadVM?.thread.group != true) || (message.deletable != false && threadVM?.thread.admin == true) }
     public var reactionCountList: [ReactionCount] = []
     private var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
     public var currentUserReaction: Reaction?
@@ -259,6 +258,25 @@ public final class MessageRowViewModel: ObservableObject {
             threadVM?.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId, subjectId: threadVM?.threadId))
             threadVM?.animateObjectWillChange()
             print("Upload Message with uniqueId removed:\(message.uniqueId ?? "")")
+        }
+    }
+
+    public static func isDeletable(isMe: Bool, message: Message, thread: Conversation?) -> (forMe: Bool, ForOthers: Bool) {
+        let isChannel = thread?.type?.isChannelType == true
+        let isGroup = thread?.group == true
+        let isAdmin = thread?.admin == true
+        if isMe {
+            return (true, true)
+        } else if !isMe && !isGroup {
+            return (true, false)
+        } else if isChannel && !isAdmin {
+            return (false, false)
+        } else if !isMe && isGroup && !isAdmin {
+            return (true, false)
+        } else if !isMe && isGroup && isAdmin {
+            return (true, true)
+        } else {
+            return (false, false)
         }
     }
 

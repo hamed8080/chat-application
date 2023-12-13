@@ -34,11 +34,11 @@ struct SettingsView: View {
                 StickyHeaderSection(header: "", height: 10)
                     .listRowInsets(.zero)
                     .listRowSeparator(.hidden)
-                SettingSettingSection()
                 SavedMessageSection()
                 SettingLanguageSection()
                 SettingLogSection()
                 if EnvironmentValues.isTalkTest {
+                    SettingSettingSection()
                     BlockedMessageSection()
                     // SettingCallHistorySection()
                     // SettingSavedMessagesSection()

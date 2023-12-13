@@ -126,19 +126,58 @@ struct DownloadVideoButtonView: View {
         switch viewModel.state {
         case .completed:
             if message?.isVideo == true, let fileURL = viewModel.fileURL {
-                VideoPlayerView()
-                    .frame(width: 196, height: 196)
-                    .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
-                                                            ext: message?.fileMetaData?.file?.mimeType?.ext,
-                                                            title: message?.fileMetaData?.name,
-                                                            subtitle: message?.fileMetaData?.file?.originalName ?? ""))
-                    .id(fileURL)
+                FullScreenPlayer(fileURL: fileURL, message: message)
             }
         case .downloading, .started, .paused, .undefined, .thumbnail:
             DownloadFileView(viewModel: viewModel, config: .detail)
                 .frame(width: 72, height: 72)
         default:
             EmptyView()
+        }
+    }
+}
+
+struct FullScreenPlayer: View {
+    let fileURL: URL
+    @StateObject var playerVM: VideoPlayerViewModel
+    @State var showFullScreen = false
+
+    init(fileURL: URL, message: Message?, showFullScreen: Bool = false) {
+        self.fileURL = fileURL
+        self._playerVM = StateObject(wrappedValue: VideoPlayerViewModel(fileURL: fileURL,
+                                             ext: message?.fileMetaData?.file?.mimeType?.ext,
+                                             title: message?.fileMetaData?.name,
+                                             subtitle: message?.fileMetaData?.file?.originalName ?? ""))
+        self.showFullScreen = showFullScreen
+    }
+
+    var body: some View {
+        Button {
+            playerVM.toggle()
+            playerVM.animateObjectWillChange()
+            showFullScreen = true
+        } label: {
+            ZStack {
+                Image(systemName: "play.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                    .foregroundStyle(Color.App.text)
+            }
+            .frame(width: 36, height: 36)
+            .background(Color.App.primary)
+            .clipShape(RoundedRectangle(cornerRadius: 22))
+            .contentShape(Rectangle())
+        }
+        .frame(width: 48, height: 48)
+        .padding(4)
+        .fullScreenCover(isPresented: $showFullScreen) {
+            if let player = playerVM.player {
+                PlayerViewRepresentable(player: player, showFullScreen: $showFullScreen)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name.AVPlayerItemDidPlayToEndTime)) { _ in
+            showFullScreen = false
         }
     }
 }

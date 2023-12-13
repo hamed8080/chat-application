@@ -287,6 +287,8 @@
 		05D493932B21FF3800508472 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 052F46652B21F5B400085C26 /* PhotosUI.framework */; };
 		05D813B02B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */; };
 		05D813B12B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */; };
+		05DAA42C2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DAA42B2B296C12007427DC /* SelectMessageInsideClickOverlay.swift */; };
+		05DAA42D2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DAA42B2B296C12007427DC /* SelectMessageInsideClickOverlay.swift */; };
 		05DCC0652AE183EA0025B3B7 /* ConversationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */; };
 		05DCC0662AE187D80025B3B7 /* ConversationBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */; };
 		05DDC8482AEC240D009F9942 /* ActionableContextMenu in Frameworks */ = {isa = PBXBuildFile; productRef = 05DDC8472AEC240D009F9942 /* ActionableContextMenu */; };
@@ -484,6 +486,7 @@
 		05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
 		05D2355F2B24A1520090656C /* ThreadMainToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMainToolbar.swift; sourceTree = "<group>"; };
 		05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplyPrivatelyMessageViewPlaceholder.swift; sourceTree = "<group>"; };
+		05DAA42B2B296C12007427DC /* SelectMessageInsideClickOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMessageInsideClickOverlay.swift; sourceTree = "<group>"; };
 		05DCC0642AE183EA0025B3B7 /* ConversationBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationBuilder.swift; sourceTree = "<group>"; };
 		05DDC8462AEC23DF009F9942 /* ActionableContextMenu */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ActionableContextMenu; sourceTree = "<group>"; };
 		05DE923F2B03DD4E00C7A006 /* MessageRowImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowImageDownloader.swift; sourceTree = "<group>"; };
@@ -752,6 +755,7 @@
 				057A18DE2B04C78A0007868D /* MessageParticipantsSeen.swift */,
 				050620402B0B1FE10024476C /* MessageRowBackground.swift */,
 				054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */,
+				05DAA42B2B296C12007427DC /* SelectMessageInsideClickOverlay.swift */,
 			);
 			path = MessageRows;
 			sourceTree = "<group>";
@@ -1233,6 +1237,7 @@
 				05C27FA22AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC5B2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC6F2AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
+				05DAA42C2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */,
 				0570CC392AAEE98F001832E9 /* TagRow.swift in Sources */,
 				051F26C72ADD0F8F00BF9841 /* SwipyView.swift in Sources */,
 				05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */,
@@ -1379,6 +1384,7 @@
 				05C27FA32AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC442AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
 				0570CC5C2AAEE98F001832E9 /* LinkView.swift in Sources */,
+				05DAA42D2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */,
 				0570CC702AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
 				05F89CC02ADD105500A28EBB /* SwipyView.swift in Sources */,
 				0570CC3A2AAEE98F001832E9 /* TagRow.swift in Sources */,

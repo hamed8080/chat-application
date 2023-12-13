@@ -34,16 +34,18 @@ struct MainSendButtons: View {
             .buttonStyle(.borderless)
             .fontWeight(.light)
 
-            MultilineTextField(text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
-                                   text: $text,
-                                   textColor: UIColor(named: "message_text"),
-                                   backgroundColor: Color.App.bgSecond,
-                                   mention: true)
-                .clipShape(RoundedRectangle(cornerRadius:(24)))
-                .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
-                .onChange(of: viewModel.textMessage ?? "") { newValue in
-                    viewModel.sendStartTyping(newValue)
-                }
+            MultilineTextField(
+                text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
+                text: $text,
+                textColor: UIColor(named: "message_text"),
+                backgroundColor: Color.App.bgSecond,
+                mention: true
+            )
+            .clipShape(RoundedRectangle(cornerRadius:(24)))
+            .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
+            .onChange(of: viewModel.textMessage ?? "") { newValue in
+                viewModel.sendStartTyping(newValue)
+            }
 
             let showAudio = text.isEmpty && !isVideoRecordingSelected
             Button {

@@ -70,7 +70,7 @@ struct TabContainerView: View {
                         .offset(x: selectedId == tab.title ? 0 : -(screenWidth + 200))
                 }
             }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
+            .safeAreaInset(edge: config.alignment == .bottom ? .bottom : .top, spacing: 0) {
                 TabButtonsContainer(selectedId: $selectedId, tabs: tabs)
                     .environment(\.layoutDirection, .leftToRight)
             }

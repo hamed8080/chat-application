@@ -44,8 +44,17 @@ struct TextMessageSelectedBackground: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        Color.App.primary
-            .opacity(viewModel.isHighlited ? 0.1 : viewModel.isSelected ? 0.1 : 0.0)
+        let selectedColor = Color.App.primary.opacity(0.1)
+        let color: Color = viewModel.isHighlited || viewModel.isSelected ? selectedColor : Color.clear
+        color
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if viewModel.threadVM?.isInEditMode == true {
+                    viewModel.isSelected.toggle()
+                    viewModel.threadVM?.selectedMessagesViewModel.animateObjectWillChange()
+                    viewModel.animateObjectWillChange()
+                }
+            }
     }
 }
 

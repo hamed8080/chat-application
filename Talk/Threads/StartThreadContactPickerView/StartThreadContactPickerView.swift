@@ -13,6 +13,7 @@ import TalkUI
 import TalkViewModels
 
 struct StartThreadContactPickerView: View {
+    @Environment(\.dismiss) var dismiss
     @EnvironmentObject var viewModel: ContactsViewModel
 
     var body: some View {
@@ -22,7 +23,8 @@ struct StartThreadContactPickerView: View {
                 .listRowSeparator(.hidden)
             if viewModel.searchedContacts.count == 0 {
                 Button {
-                    withAnimation {
+                    dismiss()
+                    Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { _ in
                         viewModel.createConversationType = .normal
                         viewModel.showConversaitonBuilder.toggle()
                     }
@@ -34,8 +36,11 @@ struct StartThreadContactPickerView: View {
                 .listRowSeparatorTint(Color.App.divider)
 
                 Button {
-                    viewModel.createConversationType = .channel
-                    viewModel.showConversaitonBuilder.toggle()
+                    dismiss()
+                    Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { _ in
+                        viewModel.createConversationType = .channel
+                        viewModel.showConversaitonBuilder.toggle()
+                    }
                 } label: {
                     Label("Contacts.createChannel", systemImage: "megaphone")
                         .foregroundStyle(Color.App.primary)

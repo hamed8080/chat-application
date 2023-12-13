@@ -123,6 +123,7 @@ struct InnerMessage: View {
         )
         .contentShape(MessageRowBackground.instance)
         .customContextMenu(id: message.id, self: selfMessage, menus: { contextMenuWithReactions })
+        .overlay(alignment: .center) { SelectMessageInsideClickOverlay() }
     }
 
     private var selfMessage: some View {

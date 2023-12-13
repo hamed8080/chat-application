@@ -21,7 +21,6 @@ public final class ParticipantsViewModel: ObservableObject {
     private var offset = 0
     private(set) var firstSuccessResponse = false
     @Published public var isLoading = false
-    @Published public private(set) var totalCount = 0
     @Published public private(set) var participants: [Participant] = []
     @Published public private(set) var searchedParticipants: [Participant] = []
     @Published public var searchText: String = ""
@@ -122,9 +121,6 @@ public final class ParticipantsViewModel: ObservableObject {
 
     private func onLeft(_ response: ChatResponse<User>) {
         withAnimation {
-            if let participantCount = thread?.participantCount {
-                thread?.participantCount = participantCount - 1
-            }
             removeParticipant(.init(id: response.result?.id))
         }
     }
@@ -202,7 +198,6 @@ public final class ParticipantsViewModel: ObservableObject {
     public func clear() {
         offset = 0
         count = 15
-        totalCount = 0
         participants = []
     }
 

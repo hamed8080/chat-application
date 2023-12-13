@@ -41,12 +41,6 @@ struct ThreadMessagesList: View {
                     hideKeyboardOnTapOrDrag()
                 }
         )
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 10, coordinateSpace: .global)
-                .onChanged { _ in
-                    hideKeyboardOnTapOrDrag()
-                }
-        )
     }
 
     private func hideKeyboardOnTapOrDrag() {

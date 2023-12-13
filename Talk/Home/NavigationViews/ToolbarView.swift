@@ -105,11 +105,13 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 .font(.iransansBody)
                 .textFieldStyle(.clear)
                 .focused($searchFocus, equals: .saerch)
-                .frame(minWidth: 0, maxWidth: isInSearchMode ? nil : 0, minHeight: 0, maxHeight: isInSearchMode ? 32 : 0)
+                .frame(minWidth: 0, maxWidth: isInSearchMode ? nil : 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
                 .clipped()
-                .overlay {
+                .background {
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.App.primary.opacity(0.2), style: .init(lineWidth: 0.3, lineCap: .round))
+                        .fill(.clear)
+                        .background(.thinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
 
             Button {

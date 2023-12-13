@@ -54,9 +54,6 @@ struct ConversationPlusContextMenu: View {
             ManuallyConnectionManagerView()
         }
         .sheet(isPresented: $showCreateConversationSheet) {
-            contactsVM.showConversaitonBuilder = false
-            contactsVM.closeBuilder()
-        } content: {
             StartThreadContactPickerView()
         }
         .onReceive(contactsVM.objectWillChange) {

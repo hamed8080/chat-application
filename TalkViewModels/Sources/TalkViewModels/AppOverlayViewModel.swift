@@ -98,6 +98,7 @@ public class AppOverlayViewModel: ObservableObject {
                 showCloseButton = false
                 type = .none
                 isPresented = false
+                animateObjectWillChange()
             }
         }
     }

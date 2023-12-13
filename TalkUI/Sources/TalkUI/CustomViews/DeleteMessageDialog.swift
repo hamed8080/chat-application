@@ -14,8 +14,12 @@ public struct DeleteMessageDialog: View {
     let threadVM: ThreadViewModel
     var viewModel: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
     private var messages: [Message] { viewModel.selectedMessages.compactMap({$0.message}) }
+    private let deleteForMe: Bool
+    private let deleteForOthers: Bool
 
-    public init(viewModel: ThreadViewModel) {
+    public init(deleteForMe: Bool, deleteForOthers: Bool, viewModel: ThreadViewModel) {
+        self.deleteForMe = deleteForMe
+        self.deleteForOthers = deleteForOthers
         self.threadVM = viewModel
     }
 
@@ -46,20 +50,21 @@ public struct DeleteMessageDialog: View {
                         .frame(minWidth: 48, minHeight: 48)
                 }
 
-                Button {
-                    threadVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
-                    threadVM.isInEditMode = false
-                    appOverlayVM.dialogView = nil
-                    viewModel.animateObjectWillChange()
-                } label: {
-                    Text("Messages.deleteForMe")
-                        .foregroundStyle(Color.App.orange)
-                        .font(.iransansBoldBody)
-                        .frame(minWidth: 48, minHeight: 48)
+                if deleteForMe {
+                    Button {
+                        threadVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
+                        threadVM.isInEditMode = false
+                        appOverlayVM.dialogView = nil
+                        viewModel.animateObjectWillChange()
+                    } label: {
+                        Text("Messages.deleteForMe")
+                            .foregroundStyle(Color.App.orange)
+                            .font(.iransansBoldBody)
+                            .frame(minWidth: 48, minHeight: 48)
+                    }
                 }
 
-                let showDeleteForAll = viewModel.threadVM?.thread.admin == true || viewModel.threadVM?.thread.group == false
-                if showDeleteForAll {
+                if deleteForOthers {
                     Button {
                         threadVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
                         threadVM.isInEditMode = false
@@ -82,6 +87,6 @@ public struct DeleteMessageDialog: View {
 
 struct DeleteMessageDialog_Previews: PreviewProvider {
     static var previews: some View {
-        DeleteMessageDialog(viewModel: .init(thread: Conversation(id: 1)))
+        DeleteMessageDialog(deleteForMe: false, deleteForOthers: false, viewModel: .init(thread: Conversation(id: 1)))
     }
 }
