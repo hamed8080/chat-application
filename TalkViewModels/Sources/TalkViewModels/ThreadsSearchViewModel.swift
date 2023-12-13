@@ -26,6 +26,7 @@ public final class ThreadsSearchViewModel: ObservableObject {
     public var isLoading = false
     private var canLoadMore: Bool { hasNext && !isLoading }
     @Published public var selectedFilterThreadType: ThreadTypes?
+    @Published public var searchType: SearchParticipantType = .name
 
     public init() {
         NotificationCenter.default.publisher(for: .thread)
@@ -34,6 +35,11 @@ public final class ThreadsSearchViewModel: ObservableObject {
                 self?.onThreadEvent(event)
             }
             .store(in: &cancelable)
+        $searchType.sink { [weak self] newValue in
+            self?.offset = 0
+            self?.hasNext = true
+        }
+        .store(in: &cancelable)
         $searchText
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -84,7 +90,13 @@ public final class ThreadsSearchViewModel: ObservableObject {
         isLoading = true
         searchedConversations.removeAll()
         offset = 0
-        let req = ThreadsRequest(searchText: text, count: count, offset: offset)
+        var newText = text
+        if searchType == .username {
+            newText = "uname:\(newText)"
+        } else if searchType == .cellphoneNumber {
+            newText = "tel:\(newText)"
+        }
+        let req = ThreadsRequest(searchText: newText, count: count, offset: offset)
         RequestsManager.shared.append(prepend: "SEARCH", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }

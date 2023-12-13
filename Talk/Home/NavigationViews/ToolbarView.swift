@@ -25,7 +25,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     private var searchId: String?
 
     enum Field: Hashable {
-        case saerch
+        case search
     }
 
     @FocusState var searchFocus: Field?
@@ -104,7 +104,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 .keyboardType(searchKeyboardType)
                 .font(.iransansBody)
                 .textFieldStyle(.clear)
-                .focused($searchFocus, equals: .saerch)
+                .focused($searchFocus, equals: .search)
                 .frame(minWidth: 0, maxWidth: isInSearchMode ? nil : 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
                 .clipped()
                 .background {
@@ -129,7 +129,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search") {
                 withAnimation {
                     isInSearchMode.toggle()
-                    searchFocus = isInSearchMode ? .saerch : .none
+                    searchFocus = isInSearchMode ? .search : .none
                 }
             }
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
@@ -144,7 +144,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 if (newValue.object as? String) == searchId {
                     Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
                         isInSearchMode.toggle()
-                        searchFocus = .saerch
+                        searchFocus = .search
                     }
                 }
             }

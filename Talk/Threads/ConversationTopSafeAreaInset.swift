@@ -8,24 +8,24 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
+import TalkModels
 
 struct ConversationTopSafeAreaInset: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
     let container: ObjectsContainer
+    @State var isInSearchMode: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
             ToolbarView(
                 title: "Tab.chats",
-                searchPlaceholder: "General.searchHere",
-                leadingViews: EmptyView().frame(width: 0, height: 0).hidden(),
+                leadingViews: searchButton,
                 centerViews: ConnectionStatusToolbar(),
                 trailingViews: ConversationPlusContextMenu()
-            ) { searchValue in
-                container.contactsVM.searchContactString = searchValue
-                container.searchVM.searchText = searchValue
-            }
-
+            )
+            ThreadListSearchBarFilterView(isInSearchMode: $isInSearchMode)
+                .background(MixMaterialBackground())
+                .environmentObject(container.searchVM)
             if AppState.isInSlimMode {
                 AudioPlayerView()
             }
@@ -34,6 +34,36 @@ struct ConversationTopSafeAreaInset: View {
 
             if threadsVM.threads.count == 0, threadsVM.firstSuccessResponse, AppState.isInSlimMode {
                 NothingHasBeenSelectedView(contactsVM: container.contactsVM)
+            }
+        }
+    }
+
+    @ViewBuilder var searchButton: some View {
+        if isInSearchMode {
+            Button {
+                isInSearchMode.toggle()
+            } label: {
+                Text("General.cancel")
+                    .padding(.leading)
+                    .font(.iransansBody)
+                    .foregroundStyle(Color.App.primary)
+            }
+            .buttonStyle(.borderless)
+            .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
+            .clipped()
+        } else {
+            ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search") {
+                withAnimation {
+                    isInSearchMode.toggle()
+                }
+            }
+            .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : 38)
+            .clipped()
+            .foregroundStyle(Color.App.primary)
+            .onReceive(NotificationCenter.default.publisher(for: .cancelSearch)) { newValue in
+                if let cancelSearch = newValue.object as? Bool, cancelSearch == true, cancelSearch && isInSearchMode {
+                    isInSearchMode.toggle()
+                }
             }
         }
     }

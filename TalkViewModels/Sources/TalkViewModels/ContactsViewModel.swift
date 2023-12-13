@@ -26,6 +26,7 @@ public final class ContactsViewModel: ObservableObject {
     private var canLoadNextPage: Bool { !isLoading && hasNext }
     @Published public private(set) var maxContactsCountInServer = 0
     public private(set) var contacts: ContiguousArray<Contact> = []
+    @Published public var searchType: SearchParticipantType = .name
     @Published public private(set) var searchedContacts: ContiguousArray<Contact> = []
     @Published public var isLoading = false
     @Published public var searchContactString: String = ""
@@ -171,7 +172,14 @@ public final class ContactsViewModel: ObservableObject {
 
     public func searchContacts(_ searchText: String) {
         isLoading = true
-        let req = ContactsRequest(query: searchText)
+        let req: ContactsRequest
+        if searchType == .username {
+            req = ContactsRequest(userName: searchText)
+        } else if searchType == .cellphoneNumber {
+            req = ContactsRequest(cellphoneNumber: searchText)
+        } else {
+            req = ContactsRequest(query: searchText)
+        }
         RequestsManager.shared.append(prepend: "SEARCH-CONTACTS", value: req)
         ChatManager.activeInstance?.contact.search(req)
     }

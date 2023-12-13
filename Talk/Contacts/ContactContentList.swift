@@ -98,15 +98,7 @@ struct ContactContentList: View {
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
         .safeAreaInset(edge: .top, spacing: 0) {
-            ToolbarView(
-                title: "Tab.contacts",
-                searchPlaceholder: "General.searchHere",
-                leadingViews: leadingViews,
-                centerViews: centerViews,
-                trailingViews: trailingViews
-            ) { searchValue in
-                viewModel.searchContactString = searchValue
-            }
+           ContactListToolbar()
         }
         .sheet(isPresented: $viewModel.showAddOrEditContactSheet) {
             AddOrEditContactView()
@@ -117,36 +109,6 @@ struct ContactContentList: View {
         } content: {
             ConversationBuilder()
         }
-    }
-    
-    @ViewBuilder var leadingViews: some View {
-        if EnvironmentValues.isTalkTest {
-            ToolbarButtonItem(imageName: "list.bullet", hint: "General.select") {
-                withAnimation {
-                    viewModel.isInSelectionMode.toggle()
-                }
-            }
-            
-            if !viewModel.showConversaitonBuilder {
-                ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
-                    withAnimation {
-                        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteContactView().environmentObject(viewModel))
-                    }
-                }
-                .foregroundStyle(.red)
-                .opacity(viewModel.isInSelectionMode ? 1 : 0.2)
-                .disabled(!viewModel.isInSelectionMode)
-                .scaleEffect(x: viewModel.isInSelectionMode ? 1.0 : 0.002, y: viewModel.isInSelectionMode ? 1.0 : 0.002)
-            }
-        }
-    }
-    
-    @ViewBuilder var centerViews: some View {
-        ConnectionStatusToolbar()
-    }
-    
-    @ViewBuilder var trailingViews: some View {
-        EmptyView()
     }
 }
 
