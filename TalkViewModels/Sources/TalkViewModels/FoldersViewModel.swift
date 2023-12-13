@@ -8,7 +8,6 @@
 import Chat
 import Combine
 import Foundation
-import OrderedCollections
 import SwiftUI
 import ChatModels
 import TalkModels
@@ -26,7 +25,7 @@ public final class FoldersViewModel: ObservableObject {
     private var canLoadMore: Bool { hasNext && !isLoading }
     private var threadsVM: ThreadsViewModel { AppState.shared.objectsContainer.threadsVM }
     public var selectedFolder: Tag?
-    public var threads: OrderedSet<Conversation> = []
+    public var threads: ContiguousArray<Conversation> = []
 
     public init() {
         NotificationCenter.default.publisher(for: .thread)

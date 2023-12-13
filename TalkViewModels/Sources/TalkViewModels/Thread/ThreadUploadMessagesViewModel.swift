@@ -15,7 +15,7 @@ import Combine
 
 public final class ThreadUploadMessagesViewModel: ObservableObject {
     let thread: Conversation
-    @Published public private(set) var uploadMessages: [Message] = []
+    @Published public private(set) var uploadMessages: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
 
     public static func == (lhs: ThreadUploadMessagesViewModel, rhs: ThreadUploadMessagesViewModel) -> Bool {

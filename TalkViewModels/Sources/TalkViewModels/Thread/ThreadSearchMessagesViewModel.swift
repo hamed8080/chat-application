@@ -15,7 +15,7 @@ import Combine
 
 public final class ThreadSearchMessagesViewModel: ObservableObject {
     private let threadId: Int
-    @Published public private(set) var searchedMessages: [Message] = []
+    @Published public private(set) var searchedMessages: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
     public var isInSearchMode: Bool = false
     private var offset = 0

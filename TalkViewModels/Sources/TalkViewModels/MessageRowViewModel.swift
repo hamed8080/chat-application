@@ -38,7 +38,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var isNextMessageTheSameUser: Bool = false
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
-    public var reactionCountList: [ReactionCount] = []
+    public var reactionCountList: ContiguousArray<ReactionCount> = []
     private var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
     public var currentUserReaction: Reaction?
     public var uploadViewModel: UploadFileViewModel?
@@ -245,7 +245,7 @@ public final class MessageRowViewModel: ObservableObject {
 
     func setReactionList() {
         if let reactionCountList = inMemoryReaction?.summary(for: message.id ?? -1) {
-            self.reactionCountList = reactionCountList
+            self.reactionCountList = .init(reactionCountList)
             currentUserReaction = ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(message.id ?? -1)
         }
     }

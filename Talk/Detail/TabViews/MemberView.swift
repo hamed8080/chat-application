@@ -141,7 +141,7 @@ struct AddParticipantButton: View {
         }
     }
 
-    public func addParticipantsToThread(_ contacts: [Contact]) {
+    public func addParticipantsToThread(_ contacts: ContiguousArray<Contact>) {
         guard let threadId = conversation?.id else { return }
         let contactIds = contacts.compactMap(\.id)
         let req = AddParticipantRequest(contactIds: contactIds, threadId: threadId)

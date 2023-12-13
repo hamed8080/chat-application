@@ -8,7 +8,6 @@
 import Chat
 import Combine
 import Foundation
-import OrderedCollections
 import SwiftUI
 import ChatModels
 import TalkModels
@@ -24,7 +23,7 @@ public final class ArchiveThreadsViewModel: ObservableObject {
     private(set) var hasNext: Bool = true
     public var isLoading = false
     private var canLoadMore: Bool { hasNext && !isLoading }
-    public var archives: OrderedSet<Conversation> = []
+    public var archives: ContiguousArray<Conversation> = []
     private var threadsVM: ThreadsViewModel { AppState.shared.objectsContainer.threadsVM }
 
     public init() {

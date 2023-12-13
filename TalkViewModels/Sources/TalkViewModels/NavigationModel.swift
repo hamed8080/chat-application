@@ -54,14 +54,8 @@ public final class NavigationModel: ObservableObject {
 
     private func onThreadEvents(_ event: ThreadEventTypes) {
         switch event {
-        case .left(let response):
-//            removeFromStack(response)
-            break
-//        case .removedFrom(let chatResponse):
         case .deleted(let response):
             removeFromStack(response)
-            break
-//        case .userRemoveFormThread(let chatResponse):
         default:
             break
         }

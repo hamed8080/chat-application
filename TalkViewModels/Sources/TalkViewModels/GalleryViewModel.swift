@@ -10,7 +10,7 @@ import SwiftUI
 
 public final class GalleryViewModel: ObservableObject {
     public var starter: Message
-    public var pictures: [Message] = []
+    public var pictures: ContiguousArray<Message> = []
     public var isLoading: Bool = false
     var thread: Conversation? { starter.conversation }
     var threadId: Int? { thread?.id }

@@ -15,7 +15,7 @@ import Combine
 
 public final class ThreadUnsentMessagesViewModel: ObservableObject {
     let thread: Conversation
-    @Published public private(set) var unsentMessages: [Message] = []
+    @Published public private(set) var unsentMessages: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
 
     public static func == (lhs: ThreadUnsentMessagesViewModel, rhs: ThreadUnsentMessagesViewModel) -> Bool {

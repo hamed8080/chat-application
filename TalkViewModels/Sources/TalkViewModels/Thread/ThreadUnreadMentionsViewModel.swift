@@ -14,7 +14,7 @@ import Combine
 
 public final class ThreadUnreadMentionsViewModel: ObservableObject {
     let thread: Conversation
-    @Published public private(set) var unreadMentions: [Message] = []
+    @Published public private(set) var unreadMentions: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
 
     public static func == (lhs: ThreadUnreadMentionsViewModel, rhs: ThreadUnreadMentionsViewModel) -> Bool {

@@ -20,7 +20,7 @@ import OSLog
 extension Conversation: ObservableObject {}
 public final class ThreadsViewModel: ObservableObject {
     public var isLoading = false
-    public var threads: [Conversation] = []
+    public var threads: ContiguousArray<Conversation> = []
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
     @Published public var sheetType: ThreadsSheetType?
@@ -179,7 +179,7 @@ public final class ThreadsViewModel: ObservableObject {
         sheetType = .addParticipant
     }
 
-    public func addParticipantsToThread(_ contacts: [Contact]) {
+    public func addParticipantsToThread(_ contacts: ContiguousArray<Contact>) {
         isLoading = true
         guard let threadId = selectedThraed?.id else { return }
         let contactIds = contacts.compactMap(\.id)

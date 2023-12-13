@@ -15,15 +15,14 @@ import TalkModels
 import ChatCore
 import ChatDTO
 import SwiftUI
-import OrderedCollections
 import OSLog
 
 public struct MessageSection: Identifiable, Hashable, Equatable {
     public var id: Date { date }
     public let date: Date
-    public var messages: [Message]
+    public var messages: ContiguousArray<Message>
 
-    public init(date: Date, messages: [Message]) {
+    public init(date: Date, messages: ContiguousArray<Message>) {
         self.date = date
         self.messages = messages
     }
@@ -45,13 +44,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
     public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom }
     public var canShowMute: Bool { (thread.type == .channel || thread.type == .channelGroup) && (thread.admin == false || thread.admin == nil) && !isInEditMode }
-    public var sections: [MessageSection] = []
+    public var sections: ContiguousArray<MessageSection> = .init()
     @Published public var editMessage: Message?
     public var replyMessage: Message?
     @Published public var isInEditMode: Bool = false
     @Published public var dismiss = false
 
-    public var mentionList: [Participant] = []
+    public var mentionList: ContiguousArray<Participant> = .init()
     public var sheetType: ThreadSheetType?
     public var selectedLocation: MKCoordinateRegion = .init()
     public var isFetchedServerFirstResponse: Bool = false
@@ -94,7 +93,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize)
 
-    public var messageViewModels: [MessageRowViewModel] = []
+    public var messageViewModels: ContiguousArray<MessageRowViewModel> = .init()
     var model: AppSettingsModel
     public var canDownloadImages: Bool = false
     public var canDownloadFiles: Bool = false
@@ -450,7 +449,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     func onMentionParticipants(_ response: ChatResponse<[Participant]>) {
         if let mentionList = response.result, response.value != nil {
-            self.mentionList = mentionList
+            self.mentionList = .init(mentionList)
             animateObjectWillChange()
         }
     }

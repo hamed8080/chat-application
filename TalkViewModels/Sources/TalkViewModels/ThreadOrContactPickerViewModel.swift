@@ -15,8 +15,8 @@ import Chat
 public class ThreadOrContactPickerViewModel: ObservableObject {
     private var cancellableSet: Set<AnyCancellable> = .init()
     @Published public var searchText: String = ""
-    public var conversations: [Conversation] = .init()
-    public var contacts: [Contact] = .init()
+    public var conversations: ContiguousArray<Conversation> = .init()
+    public var contacts:ContiguousArray<Contact> = .init()
     @Published public var isLoading = false
 
     public init() {

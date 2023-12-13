@@ -42,7 +42,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var showInfoGroupBox: Bool { bio != nil || cellPhoneNumber != nil || canBlock == true }
     public var url: String? { thread?.computedImageURL ?? user?.image ?? contact?.image }
     public var participantViewModel: ParticipantsViewModel? { threadVM?.participantsViewModel }
-    public var mutualThreads: [Conversation] = []
+    public var mutualThreads: ContiguousArray<Conversation> = []
     public weak var threadVM: ThreadViewModel?
     public var p2pPartnerContact: Contact?
     public var isPublic = false
@@ -259,7 +259,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
 
     private func onMutual(_ response: ChatResponse<[Conversation]>) {
         if let threads = response.result {
-            mutualThreads = threads
+            mutualThreads = .init(threads)
             animateObjectWillChange()
         }
     }

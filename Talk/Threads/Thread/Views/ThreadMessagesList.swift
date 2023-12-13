@@ -128,7 +128,7 @@ struct SectionView: View {
 }
 
 struct MessageList: View {
-    let messages: [Message]
+    let messages: ContiguousArray<Message>
     let viewModel: ThreadViewModel
 
     var body: some View {

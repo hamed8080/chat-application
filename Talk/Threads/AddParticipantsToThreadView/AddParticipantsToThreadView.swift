@@ -13,7 +13,7 @@ import TalkUI
 
 struct AddParticipantsToThreadView: View {
     @EnvironmentObject var contactsVM: ContactsViewModel
-    var onCompleted: ([Contact]) -> Void
+    var onCompleted: (ContiguousArray<Contact>) -> Void
 
     var body: some View {
         List {

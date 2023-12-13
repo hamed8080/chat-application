@@ -8,7 +8,6 @@
 import Chat
 import Combine
 import Foundation
-import OrderedCollections
 import SwiftUI
 import ChatModels
 import TalkModels
@@ -18,7 +17,7 @@ import TalkExtensions
 import OSLog
 
 public final class ThreadsSearchViewModel: ObservableObject {
-    @Published public var searchedConversations: OrderedSet<Conversation> = []
+    @Published public var searchedConversations: ContiguousArray<Conversation> = []
     @Published public var searchText: String = ""
     public private(set) var count = 15
     public private(set) var offset = 0

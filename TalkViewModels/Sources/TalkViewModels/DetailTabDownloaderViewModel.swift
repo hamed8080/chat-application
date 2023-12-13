@@ -14,7 +14,7 @@ import SwiftUI
 import TalkExtensions
 
 public class DetailTabDownloaderViewModel: ObservableObject {
-    public private(set) var messages: [Message] = []
+    public private(set) var messages: ContiguousArray<Message> = []
     private var conversation: Conversation
     private var offset = 0
     private var requests: [String: GetHistoryRequest] = [:]

@@ -20,16 +20,16 @@ public final class ContactsViewModel: ObservableObject {
     private var count = 15
     private var offset = 0
     private var hasNext: Bool = true
-    public private(set) var selectedContacts: [Contact] = []
+    public private(set) var selectedContacts: ContiguousArray<Contact> = []
     public private(set) var canceableSet: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
     private var canLoadNextPage: Bool { !isLoading && hasNext }
     @Published public private(set) var maxContactsCountInServer = 0
-    public private(set) var contacts: [Contact] = []
-    @Published public private(set) var searchedContacts: [Contact] = []
+    public private(set) var contacts: ContiguousArray<Contact> = []
+    @Published public private(set) var searchedContacts: ContiguousArray<Contact> = []
     @Published public var isLoading = false
     @Published public var searchContactString: String = ""
-    public var blockedContacts: [BlockedContactResponse] = []
+    public var blockedContacts: ContiguousArray<BlockedContactResponse> = []
     @Published public var createConversationType: ThreadTypes?
     @Published public var showTitleError: Bool = false
     @Published public var showConversaitonBuilder = false
@@ -159,7 +159,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     func onBlockedList(_ response: ChatResponse<[BlockedContactResponse]>) {
-        blockedContacts = response.result ?? []
+        blockedContacts = .init(response.result ?? [])
     }
 
     public func getContacts() {
@@ -292,7 +292,7 @@ public final class ContactsViewModel: ObservableObject {
     public func onSearchContacts(_ response: ChatResponse<[Contact]>) {
         if response.value(prepend: "SEARCH-CONTACTS") != nil {
             isLoading = false
-            searchedContacts = response.result ?? []
+            searchedContacts = .init(response.result ?? [])
         }
     }
 

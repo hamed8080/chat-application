@@ -10,8 +10,8 @@ import TalkModels
 import Photos
 
 public final class ImagePickerViewModel: NSObject, ObservableObject, PHPhotoLibraryChangeObserver {
-    public var allImageItems: [ImageItem] = []
-    public var selectedImageItems: [ImageItem] { allImageItems.filter({$0.isSelected}) }
+    public var allImageItems: ContiguousArray<ImageItem> = []
+    public var selectedImageItems: ContiguousArray<ImageItem> { allImageItems.filter({$0.isSelected}) }
     private let imageSize = CGSize(width: 128, height: 128)
     private let fetchCount = 50
     private var totalCount = 0
