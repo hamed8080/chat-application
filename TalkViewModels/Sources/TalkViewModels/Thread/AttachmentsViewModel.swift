@@ -17,7 +17,7 @@ public enum AttachmentType {
 }
 
 public struct AttachmentFile: Identifiable {
-    public var id: UUID = UUID()
+    public let id: UUID
     public let type: AttachmentType
 
     public var url: URL?
@@ -57,7 +57,7 @@ public struct AttachmentFile: Identifiable {
         if type == .map {
             return (request as? LocationItem)?.name
         } else if type == .gallery {
-            return ((request as? ImageItem)?.imageData.count ?? 0)?.toSizeString(locale: Language.preferredLocale)
+            return ((request as? ImageItem)?.data.count ?? 0)?.toSizeString(locale: Language.preferredLocale)
         } else if type == .file {
             let item = request as? URL
             var size = 0
@@ -75,7 +75,8 @@ public struct AttachmentFile: Identifiable {
         }
     }
 
-    public init(type: AttachmentType = .file, url: URL? = nil, request: Any? = nil) {
+    public init(id: UUID = UUID(), type: AttachmentType = .file, url: URL? = nil, request: Any? = nil) {
+        self.id = id
         self.type = type
         self.url = url
         self.request = request
@@ -93,16 +94,15 @@ public final class FilePickerViewModel: ObservableObject {
 public final class AttachmentsViewModel: ObservableObject {
     public private(set)var attachments: [AttachmentFile] = []
     @Published public var isExpanded: Bool = false
-    public var imagePickerViewModel: ImagePickerViewModel = .init()
+    public var allImageItems: ContiguousArray<ImageItem> = []
     public var filePickerViewModel: FilePickerViewModel = .init()
 
     public init() {}
 
-    public func addSelectedPhotos() {
+    public func addSelectedPhotos(imageItem: ImageItem) {
         attachments.removeAll(where: {$0.type != .gallery})
-        imagePickerViewModel.selectedImageItems.forEach { imageItem in
-            attachments.append(.init(type: .gallery, request: imageItem))
-        }
+        allImageItems.append(imageItem)
+        attachments.append(.init(id: imageItem.id, type: .gallery, request: imageItem))
         animateObjectWillChange()
     }
 
@@ -115,7 +115,7 @@ public final class AttachmentsViewModel: ObservableObject {
     }
 
     public func clear() {
-        imagePickerViewModel.clear()
+        allImageItems.removeAll()
         filePickerViewModel.clear()
         attachments.removeAll()
         animateObjectWillChange()
@@ -129,7 +129,7 @@ public final class AttachmentsViewModel: ObservableObject {
 
     public func remove(_ attachment: AttachmentFile) {
         attachments.removeAll(where: {$0.id == attachment.id})
-        imagePickerViewModel.clearSelected()
+        allImageItems.removeAll(where: {$0.id == attachment.id})
         animateObjectWillChange()
     }
 }

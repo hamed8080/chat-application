@@ -14,9 +14,10 @@ import TalkModels
 struct MessageRowVideoDownloader: View {
     let viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
+    private var uploadCompleted: Bool { message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed }
 
     var body: some View {
-        if message.isVideo == true, let downloadVM = viewModel.downloadFileVM {
+        if uploadCompleted, message.isVideo == true, let downloadVM = viewModel.downloadFileVM {
             MessageRowVideoDownloaderContent(viewModel: viewModel)
                 .environmentObject(downloadVM)
         }
@@ -33,13 +34,12 @@ struct MessageRowVideoDownloaderContent: View {
         if downloadVM.state == .completed, let fileURL = downloadVM.fileURL {
             VStack {
                 VideoPlayerView()
-                    .frame(maxWidth: 256, maxHeight: 256)
+                    .frame(maxWidth: ThreadViewModel.maxAllowedWidth, maxHeight: 320)
                     .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
                                                             ext: message.fileMetaData?.file?.mimeType?.ext,
                                                             title: message.fileMetaData?.name,
                                                             subtitle: message.fileMetaData?.file?.originalName ?? ""))
                     .id(fileURL)
-                fileNameTextView
             }
         }
 

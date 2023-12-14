@@ -8,6 +8,8 @@
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
+import UniformTypeIdentifiers
 
 /// We have to use this due to in the ThreadView we used let viewModel in it will never trigger the sheet.
 struct SheetEmptyBackground: View {
@@ -74,16 +76,42 @@ struct ThreadSheetView: View {
                     closeSheet()
                 }
         case .galleryPicker:
-            GalleryImagePicker()
-                .environmentObject(viewModel)
-                .environmentObject(viewModel.attachmentsViewModel)
-                .environmentObject(viewModel.attachmentsViewModel.imagePickerViewModel)
-                .onAppear {
-                    viewModel.attachmentsViewModel.imagePickerViewModel.oneTimeSetup()
+            MyPHPicker() { itemProviders in
+
+                itemProviders.forEach { provider in
+                    if provider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+                        _ = provider.loadDataRepresentation(for: .movie) { data, error in
+                            Task {
+                                DispatchQueue.main.async {
+                                    if let data = data {
+                                        let item = ImageItem(isVideo: true,
+                                                             data: data,
+                                                             width: 0,
+                                                             height: 0,
+                                                             originalFilename: provider.suggestedName ?? "unknown")
+                                        self.viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                        provider.loadObject(ofClass: UIImage.self) { item, error in
+                            if let image = item as? UIImage {
+                                let item = ImageItem(data: image.pngData() ?? Data(),
+                                                     width: Int(image.size.width),
+                                                     height: Int(image.size.height),
+                                                     originalFilename: provider.suggestedName ?? "unknown")
+                                viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+                            }
+                        }
+                    }
                 }
-                .onDisappear {
-                    closeSheet()
-                }
+            }
+            .onDisappear {
+                closeSheet()
+            }
         default:
             Text("Sheet \(viewModel.sheetType.debugDescription) not implemented yet.")
         }

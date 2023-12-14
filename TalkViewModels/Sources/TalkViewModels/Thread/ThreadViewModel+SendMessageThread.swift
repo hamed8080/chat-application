@@ -83,7 +83,7 @@ extension ThreadViewModel {
                                       textMessage: textMessage,
                                       messageType: .text)
         if let imageItem = attachmentFile?.request as? ImageItem {
-            let imageReq = UploadImageRequest(data: imageItem.imageData,
+            let imageReq = UploadImageRequest(data: imageItem.data,
                                               fileName: imageItem.fileName ?? "",
                                               mimeType: "image/jpeg",
                                               userGroupHash: self.thread.userGroupHash,
@@ -136,7 +136,7 @@ extension ThreadViewModel {
                                                      messageType: .text,
                                                      content: .init(text: textMessage, targetConversationId: threadId, fromConversationId: fromConversationId))
         if let imageItem = attachmentFile?.request as? ImageItem {
-            let imageReq = UploadImageRequest(data: imageItem.imageData,
+            let imageReq = UploadImageRequest(data: imageItem.data,
                                               fileName: imageItem.fileName ?? "",
                                               mimeType: "image/jpeg",
                                               userGroupHash: self.thread.userGroupHash,
@@ -217,22 +217,41 @@ extension ThreadViewModel {
     public func sendPhotos(_ textMessage: String = "", _ imageItems: [ImageItem]) {
         send { [weak self] in
             guard let self = self else {return}
-            imageItems.forEach { imageItem in
+            imageItems.filter({!$0.isVideo}).forEach { imageItem in
                 let index = imageItems.firstIndex(where: { $0 == imageItem })!
                 self.canScrollToBottomOfTheList = true
-                let imageRequest = UploadImageRequest(data: imageItem.imageData,
-                                                      fileName: imageItem.fileName ?? "",
-                                                      mimeType: "image/jpeg",
+                let imageRequest = UploadImageRequest(data: imageItem.data,
+                                                      fileExtension: "png",
+                                                      fileName: "\(imageItem.fileName ?? "").png",
+                                                      mimeType: "image/png",
                                                       userGroupHash: self.thread.userGroupHash,
                                                       hC: imageItem.height,
                                                       wC: imageItem.width
                 )
-                let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .picture)
+                let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .podSpacePicture)
                 let request = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
                 self.uploadMessagesViewModel.append(contentsOf: ([request]))
             }
+            sendVideos(textMessage, imageItems.filter({$0.isVideo}))
             attachmentsViewModel.clear()
+        }
+    }
+
+    public func sendVideos(_ textMessage: String = "", _ imageItems: [ImageItem]) {
+        imageItems.filter({$0.isVideo}).forEach { imageItem in
+            let index = imageItems.firstIndex(where: { $0 == imageItem })!
+            self.canScrollToBottomOfTheList = true
+            self.canScrollToBottomOfTheList = true
+            let uploadRequest = UploadFileRequest(data: imageItem.data,
+                                                  fileExtension: "mp4",
+                                                  fileName: imageItem.fileName,
+                                                  mimeType: "video/mp4",
+                                                  userGroupHash: self.thread.userGroupHash)
+            let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .podSpaceVideo)
+            let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
+            request.id = -index
+            self.uploadMessagesViewModel.append(contentsOf: ([request]))
         }
     }
 

@@ -34,18 +34,21 @@ struct SingleAttachmentFile: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            if let icon = attachment.icon {
+            let imageItem = attachment.request as? ImageItem
+            let isVideo = imageItem?.isVideo == true
+            let icon = attachment.icon
+            if icon != nil || isVideo {
                 HStack {
-                    Image(systemName: icon)
+                    Image(systemName: isVideo ? "film.fill" : icon ?? "")
                         .resizable()
                         .scaledToFit()
                         .padding(8)
                 }
                 .frame(width: 32, height: 32)
-                .padding(attachment.request is ImageItem ? 0 : 6)
+                .padding(isVideo || icon != nil ? 6 : 0)
                 .background(Color.App.bgInput)
                 .clipShape(RoundedRectangle(cornerRadius:(6)))
-            } else if let cgImage = (attachment.request as? ImageItem)?.imageData.imageScale(width: 48)?.image {
+            } else if !isVideo, let cgImage = imageItem?.data.imageScale(width: 48)?.image {
                 Image(cgImage: cgImage)
                     .resizable()
                     .scaledToFill()

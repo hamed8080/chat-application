@@ -23,7 +23,7 @@ public struct VideoPlayerView: View {
             if let player = videoPlayerVM.player {
                 PlayerViewRepresentable(player: player, showFullScreen: $showFullScreen)
                     .frame(minHeight: 196)
-                    .clipShape(RoundedRectangle(cornerRadius:(12)))
+                    .clipShape(RoundedRectangle(cornerRadius:(8)))
                     .disabled(true)
             }
         }
@@ -33,13 +33,12 @@ public struct VideoPlayerView: View {
                 showFullScreen = true
             }
         }
-        .padding()
         .overlay(alignment: .topLeading) {
             Text(String(localized:.init(videoPlayerVM.timerString)))
                 .padding(6)
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius:(8)))
-                .offset(x: 24, y: 24)
+                .offset(x: 8, y: 8)
                 .font(.iransansCaption)
         }
         .overlay(alignment: .center) {
