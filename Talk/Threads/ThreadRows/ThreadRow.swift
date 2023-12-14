@@ -80,16 +80,8 @@ struct ThreadRow: View {
                             .clipShape(RoundedRectangle(cornerRadius:(thread.isCircleUnreadCount ? 16 : 10)))
                     }
 
-                    if thread.mentioned == true {
-                        Text("@")
-                            .font(.iransansCaption)
-                            .padding(6)
-                            .frame(height: 24)
-                            .frame(minWidth: 24)
-                            .foregroundStyle(Color.App.textOverlay)
-                            .background(Color.App.primary)
-                            .clipShape(RoundedRectangle(cornerRadius:(12)))
-                    }
+                    ThreadMentionSign()
+                        .environmentObject(thread)
                 }
             }
         }
@@ -113,6 +105,22 @@ struct ThreadRow: View {
     }
 }
 
+struct ThreadMentionSign: View {
+    @EnvironmentObject var thread: Conversation
+
+    var body: some View {
+        if thread.mentioned == true {
+            Text("@")
+                .font(.iransansCaption)
+                .padding(6)
+                .frame(height: 24)
+                .frame(minWidth: 24)
+                .foregroundStyle(Color.App.textOverlay)
+                .background(Color.App.primary)
+                .clipShape(RoundedRectangle(cornerRadius:(12)))
+        }
+    }
+}
 struct ThreadRow_Previews: PreviewProvider {
     static var thread: Conversation {
         let thread = MockData.thread

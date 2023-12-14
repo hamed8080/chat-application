@@ -54,7 +54,7 @@ struct ConversationTopSafeAreaInset: View {
             .frame(minWidth: 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
             .clipped()
         } else {
-            ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search") {
+            ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search", padding: 10) {
                 withAnimation {
                     isInSearchMode.toggle()
                 }

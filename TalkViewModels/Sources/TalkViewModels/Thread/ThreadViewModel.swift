@@ -216,16 +216,16 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         let section = sections[sectionIndex]
         if scrollingUP, section.messages.indices.contains(messageIndex + 1) == true {
             let message = section.messages[messageIndex + 1]
-            log("Scrolling up lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
+            log("Scrolling Up with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
         } else if !scrollingUP, section.messages.indices.contains(messageIndex - 1), section.messages.last?.id != message.id {
             let message = section.messages[messageIndex - 1]
-            log("Scroling Down lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
-            reduceUnreadCountLocaly(message.id)
+            log("Scroling Down with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
+            reduceUnreadCountLocaly(message)
             seenPublisher.send(message)
         } else {
             // Last Item
-            log("Last Item lastVisibleUniqueId :\(message.uniqueId ?? "") and message is: \(message.message ?? "")")
-            reduceUnreadCountLocaly(message.id)
+            log("Last Item with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
+            reduceUnreadCountLocaly(message)
             seenPublisher.send(message)
         }
 
@@ -278,10 +278,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             thread.lastSeenMessageId = messageId
             log("send seen for message:\(message.messageTitle) with id:\(messageId)")
             ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
-            if let unreadCount = thread.unreadCount, unreadCount > 0 {
-                thread.unreadCount = unreadCount - 1
-                objectWillChange.send()
-            }
         } else if thread.unreadCount ?? 0 > 0 {
             log("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(self.thread.lastSeenMessageId ?? 0)")
             thread.unreadCount = 0
@@ -484,17 +480,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    /// This method will be called whenver we send seen for an unseen message by ourself.
-    public func onLastSeenMessageUpdated(_ response: ChatResponse<LastSeenMessageResponse>) {
-        if threadId == response.subjectId {
-            thread.lastSeenMessageTime = response.result?.lastSeenMessageTime
-            thread.lastSeenMessageId = response.result?.lastSeenMessageId
-            thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
-            setUnreadCount(response.result?.unreadCount ?? response.contentCount)
-            animateObjectWillChange()
-        }
-    }
-
     public func setupRecording() {
         audioRecoderVM.threadViewModel = self
         audioRecoderVM.toggle()
@@ -536,22 +521,39 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     /// We reduce it locally to keep the UI Sync and user feels it really read the message.
     /// However, we only send seen request with debouncing
-    private func reduceUnreadCountLocaly(_ messageId: Int?) {
-        if (thread.unreadCount ?? -1) > 0, messageId ?? -1 >= thread.lastSeenMessageId ?? 0 {
-            let newUnreadCount = (thread.unreadCount ?? 1) - 1
+    private func reduceUnreadCountLocaly(_ message: Message?) {
+        let messageId = message?.id ?? -1
+        let beforeUnreadCount = thread.unreadCount ?? -1
+        if beforeUnreadCount > 0, messageId > thread.lastSeenMessageId ?? 0 {
+            log("Reduced unread count before is: \(beforeUnreadCount) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
+            let newUnreadCount = beforeUnreadCount - 1
             thread.unreadCount = newUnreadCount
-            animateObjectWillChange()
+            log("Reduced unread count after in thread object is: \(thread.unreadCount ?? 0) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
             if let index = threadsViewModel?.threads.firstIndex(where: {$0.id == threadId}) {
+                log("Reduced unread count before in threadsViewModel object is: \(threadsViewModel?.threads[index].unreadCount ?? 0) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
                 threadsViewModel?.threads[index].unreadCount = newUnreadCount
+                log("Reduced unread count after in threadsViewModel object is: \(threadsViewModel?.threads[index].unreadCount ?? 0) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
             }
             threadsViewModel?.animateObjectWillChange()
-            log("locally count is: \(newUnreadCount)")
+            animateObjectWillChange()
+            log("Reduced unread count is: \(newUnreadCount) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
+        }
+
+        /// We do this to remove number 1 as fast as the user scrolls to the last Message in the thread
+        /// If we remove these lines it will work, however, we should wait for the server's response to remove the number 1 unread count when the user scrolls fast.
+        if thread.unreadCount == 1, messageId == thread.lastMessageVO?.id {
+            if let index = threadsViewModel?.threads.firstIndex(where: {$0.id == threadId}) {
+                log("Reduced unread count before in threadsViewModel object is: \(threadsViewModel?.threads[index].unreadCount ?? 0) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
+                threadsViewModel?.threads[index].unreadCount = 0
+                threadsViewModel?.animateObjectWillChange()
+            }
+            animateObjectWillChange()
         }
     }
 
     /// This method prevents to update unread count if the local unread count is smaller than server unread count.
     public func setUnreadCount(_ newCount: Int?) {
-        if newCount ?? 0 < thread.unreadCount ?? 0 {
+        if newCount ?? 0 <= thread.unreadCount ?? 0 {
             thread.unreadCount = newCount
             animateObjectWillChange()
         }

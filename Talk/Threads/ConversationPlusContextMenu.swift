@@ -20,7 +20,7 @@ struct ConversationPlusContextMenu: View {
     @State var showToken: Bool = false
 
     var body: some View {
-        ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat") {
+        ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat", padding: 8) {
             withAnimation {
                 showCreateConversationSheet.toggle()
             }

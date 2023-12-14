@@ -42,25 +42,24 @@ struct ReplyInfoMessageRow: View {
                                 .foregroundStyle(Color.App.primary)
                         }
 
-                        if message.replyInfo?.deleted == true {
-                            Text("Messages.deletedMessageReply")
-                                .font(.iransansBoldCaption2)
-                                .foregroundColor(Color.App.red)
-                        }
-
-                        if let message = message.replyInfo?.message, !message.isEmpty {
-                            Text(message)
-                                .font(.iransansCaption3)
-                                .clipShape(RoundedRectangle(cornerRadius:(8)))
-                                .foregroundStyle(Color.App.gray3)
-                                .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
-                                .lineLimit(2)
-                                .truncationMode(.tail)
-                        }
-
                         HStack {
                             ReplyImageIcon(viewModel: viewModel)
                             ReplyFileIcon()
+                            if message.replyInfo?.deleted == true {
+                                Text("Messages.deletedMessageReply")
+                                    .font(.iransansBoldCaption2)
+                                    .foregroundColor(Color.App.red)
+                            }
+
+                            if let message = message.replyInfo?.message, !message.isEmpty {
+                                Text(message)
+                                    .font(.iransansCaption3)
+                                    .clipShape(RoundedRectangle(cornerRadius:(8)))
+                                    .foregroundStyle(Color.App.gray3)
+                                    .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
+                                    .lineLimit(2)
+                                    .truncationMode(.tail)
+                            }
                         }
                     }
                     .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.isMe ? 4 : 8))
@@ -90,7 +89,7 @@ struct ReplyImageIcon: View {
     var body: some View {
         if viewModel.isReplyImage, let link = viewModel.replyLink {
             ImageLaoderView(imageLoader: .init(), url: link, metaData: viewModel.message.replyInfo?.metadata, size: .SMALL)
-                .frame(width: 48, height: 48)
+                .frame(width: 28, height: 28)
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .clipped()
         }

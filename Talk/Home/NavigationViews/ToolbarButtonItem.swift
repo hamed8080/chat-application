@@ -11,10 +11,12 @@ import SwiftUI
 public struct ToolbarButtonItem: View {
     let imageName: String
     let hint: String
+    let padding: CGFloat
     let action: (() -> Void)?
     static let buttonWidth: CGFloat = 38
 
-    init(imageName: String, hint: String = "", action: (() -> Void)? = nil) {
+    init(imageName: String, hint: String = "", padding: CGFloat = 6, action: (() -> Void)? = nil) {
+        self.padding = padding
         self.imageName = imageName
         self.hint = hint
         self.action = action
@@ -27,7 +29,7 @@ public struct ToolbarButtonItem: View {
             Image(systemName: imageName)
                 .resizable()
                 .scaledToFit()
-                .padding(10)
+                .padding(padding)
                 .frame(width: ToolbarButtonItem.buttonWidth, height: ToolbarButtonItem.buttonWidth)
                 .accessibilityHint(hint)
                 .fontWeight(.light)

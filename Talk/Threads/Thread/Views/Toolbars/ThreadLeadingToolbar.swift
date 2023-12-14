@@ -20,6 +20,7 @@ struct ThreadLeadingToolbar: View {
                 AppState.isInSlimMode = UIApplication.shared.windowMode().isInSlimMode
                 NotificationCenter.default.post(name: Notification.Name.closeSideBar, object: nil)
             }
+            .offset(y: -1.5)
         }
 
         NavigationBackButton {

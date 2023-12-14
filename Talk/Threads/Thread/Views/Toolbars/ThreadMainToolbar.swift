@@ -16,6 +16,7 @@ struct ThreadMainToolbar: View {
         ToolbarView(
             searchId: "\(viewModel.threadId)",
             title: nil,
+            showSearchButton: false,
             searchPlaceholder: "General.searchHere",
             leadingViews: ThreadLeadingToolbar(viewModel: viewModel),
             centerViews:  ThreadViewCenterToolbar(viewModel: viewModel),

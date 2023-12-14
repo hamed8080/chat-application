@@ -341,6 +341,7 @@ public extension ThreadViewModel {
             unreadMentionsViewModel.setAsRead(id: unreadMessage.id)
             if unreadMentionsViewModel.unreadMentions.count == 0 {
                 thread.mentioned = false
+                thread.animateObjectWillChange()
                 animateObjectWillChange()
             }
         }

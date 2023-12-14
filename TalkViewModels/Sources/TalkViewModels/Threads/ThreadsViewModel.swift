@@ -399,7 +399,7 @@ public final class ThreadsViewModel: ObservableObject {
 
     /// This method prevents to update unread count if the local unread count is smaller than server unread count.
     public func setUnreadCount(_ newCount: Int?, threadId: Int?) {
-        if newCount ?? 0 < threads.first(where: {$0.id == threadId})?.unreadCount ?? 0 {
+        if newCount ?? 0 <= threads.first(where: {$0.id == threadId})?.unreadCount ?? 0 {
             threads.first(where: {$0.id == threadId})?.unreadCount = newCount
             animateObjectWillChange()
         }

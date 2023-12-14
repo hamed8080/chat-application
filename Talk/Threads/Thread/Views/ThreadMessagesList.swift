@@ -73,7 +73,7 @@ struct ThreadbackgroundView: View {
             .resizable(resizingMode: .tile)
             .renderingMode(.template)
             .id("chat_bg_\(threadId)")
-            .opacity(colorScheme == .dark ? 0.9 : 0.25)
+            .opacity(colorScheme == .dark ? 0.2 : 0.25)
             .colorInvert()
             .colorMultiply(colorScheme == .dark ? Color.App.white : Color.App.cyan)
             .ignoresSafeArea()

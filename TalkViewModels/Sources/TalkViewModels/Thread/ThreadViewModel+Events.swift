@@ -39,8 +39,6 @@ extension ThreadViewModel {
             }
         case .updatedUnreadCount(let response):
             onUnreadCount(response)
-        case .lastSeenMessageUpdated(let response):
-            onLastSeenMessageUpdated(response)
         case .created(let response):
             onCreateP2PThread(response)
         case .deleted(let response):

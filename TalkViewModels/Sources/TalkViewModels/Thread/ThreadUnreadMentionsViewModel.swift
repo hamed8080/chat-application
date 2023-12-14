@@ -40,7 +40,6 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     }
 
     public func fetchAllUnreadMentions() {
-
         let req = GetHistoryRequest(threadId: thread.id ?? -1, count: 25, offset: 0, order: "desc", unreadMentioned: true)
         RequestsManager.shared.append(prepend: "UnreadMentions", value: req)
         ChatManager.activeInstance?.message.history(req)

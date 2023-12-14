@@ -64,8 +64,7 @@ struct SendContainer: View {
                 }
                 .opacity(disableSend ? 0.3 : 1.0)
                 .disabled(disableSend)
-                .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))             
-
+                .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                 .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: text.isEmpty)
                 .background(
                     MixMaterialBackground()

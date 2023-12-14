@@ -394,4 +394,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
             dismiss = true
         }
     }
+
+    deinit{
+        print("deinit DetailViewModel")
+    }
 }

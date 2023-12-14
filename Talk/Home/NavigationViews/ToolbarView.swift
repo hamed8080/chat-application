@@ -20,6 +20,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     var isIpad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
     @State var searchText: String = ""
     @State var isInSearchMode: Bool = false
+    let showSearchButton: Bool
     let toolbarHeight: CGFloat = 36
     let searchKeyboardType: UIKeyboardType
     private var searchId: String?
@@ -32,6 +33,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
 
     init(searchId: String? = nil,
          title: String? = nil,
+         showSearchButton: Bool = true,
          searchPlaceholder: String? = nil,
          searchKeyboardType: UIKeyboardType = .default,
          leadingViews:  LeadingContentView? = nil,
@@ -41,6 +43,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
     ) {
         self.searchId = searchId
         self.title = title
+        self.showSearchButton = showSearchButton
         self.searchPlaceholder = searchPlaceholder
         self.searchCompletion = searchCompletion
         self.leadingNavigationViews = leadingViews
@@ -71,6 +74,19 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 centerNavigationViews
                     .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 48)
                     .clipped()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .cancelSearch)) { newValue in
+            if let cancelSearch = newValue.object as? Bool, cancelSearch == true, cancelSearch && isInSearchMode {
+                cancelSaerch()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .forceSearch)) { newValue in
+            if (newValue.object as? String) == searchId {
+                Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                    isInSearchMode.toggle()
+                    searchFocus = .search
+                }
             }
         }
     }
@@ -126,27 +142,16 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? toolbarHeight : 0)
             .clipped()
 
-            ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search") {
-                withAnimation {
-                    isInSearchMode.toggle()
-                    searchFocus = isInSearchMode ? .search : .none
-                }
-            }
-            .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
-            .clipped()
-            .foregroundStyle(Color.App.primary)
-            .onReceive(NotificationCenter.default.publisher(for: .cancelSearch)) { newValue in
-                if let cancelSearch = newValue.object as? Bool, cancelSearch == true, cancelSearch && isInSearchMode {
-                    cancelSaerch()
-                }
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .forceSearch)) { newValue in
-                if (newValue.object as? String) == searchId {
-                    Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+            if showSearchButton {
+                ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search", padding: 8) {
+                    withAnimation {
                         isInSearchMode.toggle()
-                        searchFocus = .search
+                        searchFocus = isInSearchMode ? .search : .none
                     }
                 }
+                .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
+                .clipped()
+                .foregroundStyle(Color.App.primary)
             }
         }
     }

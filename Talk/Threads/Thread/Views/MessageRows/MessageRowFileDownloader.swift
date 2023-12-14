@@ -14,9 +14,11 @@ import TalkModels
 struct MessageRowFileDownloader: View {
     let viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
+    private var uploadCompleted: Bool { message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed }
+    private var isFileView: Bool { uploadCompleted && message.isFileType && !message.isMapType && !message.isImage && !message.isAudio && !message.isVideo == true }
 
     var body: some View {
-        if message.isFileType && !message.isMapType && !message.isImage && !message.isAudio && !message.isVideo == true, let downloadVM = viewModel.downloadFileVM {
+        if isFileView, let downloadVM = viewModel.downloadFileVM {
             MessageRowFileDownloaderContent(viewModel: viewModel)
                 .environmentObject(downloadVM)
         }

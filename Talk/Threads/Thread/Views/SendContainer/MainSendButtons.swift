@@ -62,7 +62,7 @@ struct MainSendButtons: View {
             .frame(width: showAudio ? 48 : 0, height: showAudio ? 48 : 0)
             .buttonStyle(.borderless)
             .fontWeight(.light)
-            .keyboardShortcut(.init("r"), modifiers: [.command])
+//            .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
             .highPriorityGesture(switchRecordingGesture)
             .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
 
@@ -81,7 +81,7 @@ struct MainSendButtons: View {
                 .frame(width: 48, height: 48)
                 .buttonStyle(.borderless)
                 .fontWeight(.light)
-                .keyboardShortcut(.init("r"), modifiers: [.command])
+//                .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
                 .disabled(true)
                 .opacity(0.2)
                 .highPriorityGesture(switchRecordingGesture)
@@ -107,7 +107,7 @@ struct MainSendButtons: View {
             .frame(width: showSendButton ? 48 : 0, height: showSendButton ? 48 : 0)
             .buttonStyle(.borderless)
             .fontWeight(.light)
-            .keyboardShortcut(.return, modifiers: [.command])
+//            .keyboardShortcut(.return, modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.3), value: isVideoRecordingSelected)
     }

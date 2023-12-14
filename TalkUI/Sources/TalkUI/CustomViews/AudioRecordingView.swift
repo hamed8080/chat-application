@@ -48,7 +48,7 @@ struct VoiceRecoderSenderView: View {
             .frame(width: 48, height: 48)
             .buttonStyle(.borderless)
             .fontWeight(.light)
-            .keyboardShortcut(.return, modifiers: [.command])
+//            .keyboardShortcut(.return, modifiers: [.command])
 
             Spacer()
             HStack(spacing: 4) {
@@ -75,7 +75,7 @@ struct VoiceRecoderSenderView: View {
                 }
                 .frame(width: 28, height: 28)
                 .buttonStyle(.borderless)
-                .keyboardShortcut(.return, modifiers: [.command])
+//                .keyboardShortcut(.return, modifiers: [.command])
             }
             .frame(height: 28)
             .padding(.horizontal, 12)
