@@ -165,6 +165,7 @@ struct EditCreatedConversationDetail: View {
             Toggle(isOn: $viewModel.isPublic) {
                 Text(String(format: localizedPublic, typeName))
             }
+            .toggleStyle(MyToggleStyle())
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
 

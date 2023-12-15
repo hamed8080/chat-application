@@ -64,6 +64,8 @@
 "General.showMessage" = "Nachricht anzeigen";
 "General.galleyAccessPermissionDenied" = "Der Zugriff auf die Galerie wurde verweigert.";
 "General.moveToSettings" = "Zu den Einstellungen wechseln";
+"General.imageSaved" = "Bild gespeichert.";
+"General.copied" = "In die Zwischenablage kopiert.";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -330,6 +332,7 @@
 "Messages.ActionMenu.deleteCache" = "Zwischengespeicherte Datei löschen";
 "Messages.ActionMenu.pinMessage" = "Anheften";
 "Messages.ActionMenu.unpinMessage" = "Lösen";
+"Messages.ActionMenu.saveImage" = "In Fotos speichern";
 "Messages.unreadMessages" = "Ungelesene Nachrichten";
 "Messages.deleteForMe" = "Für mich löschen";
 "Messages.deleteForAll" = "Für alle löschen";

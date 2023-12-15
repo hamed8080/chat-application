@@ -21,7 +21,7 @@ public struct AppOverlayView<Content>: View where Content: View {
     public var body: some View {
         ZStack {
             if viewModel.isPresented {
-                if !viewModel.isError {
+                if !viewModel.isError && !viewModel.isToast {
                     Rectangle()
                         .fill(Color.clear)
                         .background(.ultraThinMaterial)

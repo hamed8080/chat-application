@@ -40,7 +40,6 @@ struct NotificationSettings: View {
                     .listRowBackground(Color.App.bgPrimary)
                     .listSectionSeparator(.hidden)
             }
-            .toggleStyle(.switch)
             .toggleStyle(MyToggleStyle())
             .listSectionSeparator(.hidden)
 
@@ -111,6 +110,7 @@ struct PrivateNotificationSetting: View {
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
+        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -129,6 +129,7 @@ struct GroupNotificationSetting: View {
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
+        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -147,6 +148,7 @@ struct ChannelNotificationSetting: View {
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
+        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)

@@ -51,17 +51,47 @@ public extension Message {
     var reactionableType: Bool { ![MessageType.endCall, .endCall, .participantJoin, .participantLeft].contains(type) }
     var isMapType: Bool { fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil }
 
+    var diskURL: URL? {
+        guard let link = fileMetaData?.file?.link,
+            let url = URL(string: link),
+            let diskURL = ChatManager.activeInstance?.file.filePath(url)
+        else { return nil }
+        return diskURL
+    }
+
     var hardLink: URL? {
         guard
             let name = fileMetaData?.name,
-            let link = fileMetaData?.file?.link,
-            let ext = fileMetaData?.file?.extension,
-            let url = URL(string: link),
-            let diskURL = ChatManager.activeInstance?.file.filePath(url)
+            let diskURL = diskURL,
+            let ext = fileMetaData?.file?.extension
         else { return nil }
         let hardLink = diskURL.appendingPathComponent(name).appendingPathExtension(ext)
         try? FileManager.default.linkItem(at: diskURL, to: hardLink)
         return hardLink
+    }
+
+    var tempURL: URL {
+        let originalName = fileMetaData?.file?.originalName /// FileName + Extension
+        var name: String? = nil
+        if let fileName = fileMetaData?.file?.name, let ext = fileMetaData?.file?.extension {
+            name = "\(fileName).\(ext)"
+        }
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(name ?? originalName ?? "")
+        return tempURL
+    }
+
+    func makeTempURL() async -> URL? {
+        guard
+            let diskURL = diskURL,
+            FileManager.default.fileExists(atPath: diskURL.path)
+        else { return nil }
+        do {
+            let data = try Data(contentsOf: diskURL)
+            try data.write(to: tempURL)
+            return tempURL
+        } catch {
+            return nil
+        }
     }
 
     func updateMessage(message: Message) {

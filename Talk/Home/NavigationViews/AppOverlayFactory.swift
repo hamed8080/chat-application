@@ -30,6 +30,10 @@ struct AppOverlayFactory: View {
                     .background(.ultraThickMaterial)
                     .ignoresSafeArea(.all)
             }
+        case .toast(let leadingView, let text):
+            ToastView(message: text, messageColor: Color.App.white){
+                leadingView
+            }
         case .error(let error):
             let title = String(format: String(localized: "Errors.occuredTitle"), "\(error?.code ?? 0)")
             ToastView(title: title, message: error?.message ?? "") {}

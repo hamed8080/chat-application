@@ -10,15 +10,16 @@ import TalkViewModels
 import TalkUI
 
 public struct ToastView<ContentView: View>: View {
-    @EnvironmentObject var appState: AppState
     let title: String?
     let message: String
     let titleFont: Font
     let messageFont: Font
+    let messageColor: Color
     let leadingView: () -> ContentView
 
     public init(title: String? = nil,
                 message: String,
+                messageColor: Color = Color.App.red,
                 titleFont: Font = .iransansBoldBody,
                 messageFont: Font = .iransansCaption,
                 @ViewBuilder leadingView: @escaping () -> ContentView)
@@ -28,30 +29,33 @@ public struct ToastView<ContentView: View>: View {
         self.leadingView = leadingView
         self.titleFont = titleFont
         self.messageFont = messageFont
+        self.messageColor = messageColor
     }
 
     public var body: some View {
         GeometryReader { reader in
             VStack {
+                Spacer()
                 VStack(alignment: .leading, spacing: 0) {
                     if let title = title {
                         Text(title)
                             .font(titleFont)
                     }
-                    HStack(spacing: 0) {
+                    HStack(spacing: 8) {
                         leadingView()
-                        Text(message)
+                        Text(String(localized: .init(message)))
                             .font(messageFont)
-                            .foregroundStyle(Color.App.red)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(messageColor)
                         Spacer()
                     }
                 }
                 .padding()
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius:(12)))
-                Spacer()
+                .frame(maxWidth: 380)
             }
-            .padding(EdgeInsets(top: 96, leading: 8, bottom: 0, trailing: 8))
+            .padding(EdgeInsets(top: 0, leading: 8, bottom: 96, trailing: 8))
         }
     }
 }

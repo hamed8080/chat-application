@@ -64,6 +64,7 @@
 "General.showMessage" = "Visa meddelande";
 "General.galleyAccessPermissionDenied" = "Åtkomst till galleriet har nekats.";
 "General.moveToSettings" = "Gå till inställningar";
+"General.imageSaved" = "Bild sparad.";
 
 /* Tabs */
 "Tab.chats" = "Chattar";
@@ -329,6 +330,7 @@
 "Messages.ActionMenu.deleteCache" = "Ta bort cachad fil";
 "Messages.ActionMenu.pinMessage" = "Nåla";
 "Messages.ActionMenu.unpinMessage" = "Avnåla";
+"Messages.ActionMenu.saveImage" = "Spara i Bilder";
 "Messages.unreadMessages" = "Olästa meddelanden";
 "Messages.deleteForMe" = "Ta bort åt mig";
 "Messages.deleteForAll" = "Ta bort för alla";

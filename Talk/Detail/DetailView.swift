@@ -140,12 +140,6 @@ struct InfoView: View {
                         .foregroundStyle(Color.App.hint)
                 }
 
-                if let bio = viewModel.bio {
-                    Text(bio)
-                        .font(.iransansCaption)
-                        .foregroundColor(.gray)
-                }
-
                 if let notSeenString = viewModel.notSeenString {
                     Text(notSeenString)
                         .font(.iransansCaption3)
@@ -164,8 +158,10 @@ struct BioDescription: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if let description = viewModel.partner?.chatProfileVO?.bio ?? viewModel.thread?.description.validateString {
-            InfoRowItem(key: "General.description", value: description)
+        if EnvironmentValues.isTalkTest {
+            if let description = viewModel.partner?.chatProfileVO?.bio ?? viewModel.thread?.description.validateString {
+                InfoRowItem(key: "General.description", value: description)
+            }
         }
     }
 }
@@ -179,6 +175,10 @@ struct PublicLink: View {
         if viewModel.thread?.uniqueName != nil {
             Button {
                 UIPasteboard.general.string = joinLink
+                let icon = Image(systemName: "doc.on.doc")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.App.white)
+                AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, text: "General.copied")
             } label: {
                 InfoRowItem(key: "Thread.inviteLink", value: shortJoinLink, button: AnyView(qrButton))
             }

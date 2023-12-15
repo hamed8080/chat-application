@@ -105,12 +105,14 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     var frameReader: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
+                let itemWidth = reader.frame(in: .local).width
+                let globalFrame = reader.frame(in: .global)
                 DispatchQueue.main.async {
                     /// We must check the presented is equal to the id of the initialized modifier, unless the viewModel.item Width will be set to another wrong view width.
                     if viewModel.isPresented, viewModel.presentedId == id {
-                        viewModel.itemWidth = reader.frame(in: .local).width
+                        viewModel.itemWidth = itemWidth
                     }
-                    globalFrame = reader.frame(in: .global)
+                    self.globalFrame = globalFrame
                     log("globalFrame width: \(globalFrame.width) height: \(globalFrame.height)  originX: \(globalFrame.origin.x) originY: \(globalFrame.origin.y)")
                 }
             }

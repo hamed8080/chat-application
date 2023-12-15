@@ -52,7 +52,7 @@ struct ContactListToolbar: View {
             .frame(minWidth: 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
             .clipped()
         } else {
-            ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search") {
+            ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search", padding: 10) {
                 withAnimation {
                     isInSearchMode.toggle()
                 }
@@ -71,14 +71,14 @@ struct ContactListToolbar: View {
     @ViewBuilder var leadingViews: some View {
         searchButton
         if EnvironmentValues.isTalkTest {
-            ToolbarButtonItem(imageName: "list.bullet", hint: "General.select") {
+            ToolbarButtonItem(imageName: "list.bullet", hint: "General.select", padding: 10) {
                 withAnimation {
                     viewModel.isInSelectionMode.toggle()
                 }
             }
 
             if !viewModel.showConversaitonBuilder {
-                ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete") {
+                ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete", padding: 10) {
                     withAnimation {
                         AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteContactView().environmentObject(viewModel))
                     }

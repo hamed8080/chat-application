@@ -195,10 +195,10 @@ extension ThreadViewModel {
             /// 4- Disable excessive loading on the top part.
             disableExcessiveLoading()
         }
-        animateObjectWillChange()
         /// 4- Get the thread last message uniqueId to scroll to.
-        guard let uniqueId = thread.lastMessageVO?.uniqueId else { return }
-        scrollTo(uniqueId)
+        if let uniqueId = thread.lastMessageVO?.uniqueId {
+            scrollTo(uniqueId)
+        }
         /// 5- Set whether it has more messages at the top or not.
         setHasMoreTop(response)
         /// 6- To update isLoading fields to hide the loading at the top.

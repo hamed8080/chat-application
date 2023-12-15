@@ -10,10 +10,28 @@ import ChatModels
 import SwiftUI
 import ChatCore
 
+public enum ToastDuration {
+    case fast
+    case slow
+    case custom(duration: Int)
+
+    var duration: Int {
+        switch self {
+        case .fast:
+            return 3
+        case .slow:
+            return 6
+        case .custom(let duration):
+            return duration
+        }
+    }
+}
+
 public enum AppOverlayTypes {
     case gallery(message: Message)
     case galleryImageView(uiimage: UIImage)
     case error(error: ChatError?)
+    case toast(leadingView: AnyView?, text: String)
     case dialog
     case none
 }
@@ -22,6 +40,7 @@ public class AppOverlayViewModel: ObservableObject {
     @Published public var isPresented = false
     public var type: AppOverlayTypes = .none
     private var cancelableSet: Set<AnyCancellable> = .init()
+    public var isToast: Bool = false
     public var isError: Bool { AppState.shared.error != nil }
     public var showCloseButton: Bool = false
 
@@ -100,6 +119,19 @@ public class AppOverlayViewModel: ObservableObject {
                 isPresented = false
                 animateObjectWillChange()
             }
+        }
+    }
+
+    public func toast<T: View>(leadingView: T, text: String, duration: ToastDuration = .fast) {
+        type = .toast(leadingView: AnyView(leadingView), text: text)
+        isToast = true
+        isPresented = true
+        animateObjectWillChange()
+        Timer.scheduledTimer(withTimeInterval: TimeInterval(duration.duration), repeats: false) { [weak self] _ in
+            self?.isToast = false
+            self?.type = .none
+            self?.isPresented = false
+            self?.animateObjectWillChange()
         }
     }
 

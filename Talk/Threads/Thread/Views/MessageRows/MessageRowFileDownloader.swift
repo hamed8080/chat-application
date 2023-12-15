@@ -34,7 +34,7 @@ struct MessageRowFileDownloaderContent: View {
     private let config = DownloadFileViewConfig.normal
 
     var body: some View {
-        if downloadVM.state == .completed, let fileURL = downloadVM.fileURL {
+        if downloadVM.state == .completed {
             HStack {
                 if let iconName = message.iconName {
                     Image(systemName: iconName)
@@ -48,10 +48,17 @@ struct MessageRowFileDownloaderContent: View {
                 }
             }
             .sheet(isPresented: $shareDownloadedFile) {
-                ActivityViewControllerWrapper(activityItems: [fileURL], title: message.fileMetaData?.file?.originalName)
+                ActivityViewControllerWrapper(activityItems: [message.tempURL], title: message.fileMetaData?.file?.originalName)
             }
             .onTapGesture {
-                shareDownloadedFile.toggle()
+                Task {
+                    _ = await message.makeTempURL()
+                    print("original disk url is:\(message.diskURL?.absoluteString ?? "")")
+                    print("url is:\(message.tempURL.absoluteString)")
+                    await MainActor.run {
+                        shareDownloadedFile.toggle()
+                    }
+                }
             }
         }
 

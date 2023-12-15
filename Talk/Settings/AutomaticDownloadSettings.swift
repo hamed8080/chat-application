@@ -35,7 +35,6 @@ struct AutomaticDownloadSettings: View {
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowSeparatorTint(Color.App.divider)
             }
-            .toggleStyle(.switch)
             .toggleStyle(MyToggleStyle())
             .listSectionSeparator(.hidden)
 
@@ -108,6 +107,7 @@ struct PrivateDownloadSetting: View {
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
+        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -130,6 +130,7 @@ struct GroupDownloadSetting: View {
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
+        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
@@ -152,6 +153,7 @@ struct ChannelDownloadSetting: View {
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
         }
+        .toggleStyle(MyToggleStyle())
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)

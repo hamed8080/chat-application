@@ -64,6 +64,8 @@
 "General.showMessage" = "نمایش پیام";
 "General.galleyAccessPermissionDenied" = "دسترسی به گالری تصاویر مسدود شده است.";
 "General.moveToSettings" = "رفتن به صفحه تنظیمات";
+"General.imageSaved" = "تصویر ذخیره شد.";
+"General.copied" = "کپی شد در کلیپبورد.";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";
@@ -329,6 +331,7 @@
 "Messages.ActionMenu.deleteCache" = "حذف فایل کش شده";
 "Messages.ActionMenu.pinMessage" = "سنجاق کردن";
 "Messages.ActionMenu.unpinMessage" = "از سنجاق در آوردن";
+"Messages.ActionMenu.saveImage" = "ذخیره در گالری";
 "Messages.unreadMessages" = "پیام های خوانده نشده";
 "Messages.deleteForMe" = "حذف برای خودم";
 "Messages.deleteForAll" = "حذف برای همه";

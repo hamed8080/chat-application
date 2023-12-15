@@ -28,6 +28,7 @@ struct ManuallyConnectionManagerView: View {
             Toggle(isOn: $recreate) {
                 Label("Recreate", systemImage: "repeat")
             }
+            .toggleStyle(MyToggleStyle())
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack {

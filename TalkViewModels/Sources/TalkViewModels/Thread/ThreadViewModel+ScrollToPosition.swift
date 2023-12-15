@@ -21,7 +21,7 @@ public protocol ScrollToPositionProtocol {
 
 extension ThreadViewModel: ScrollToPositionProtocol {
 
-    public func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.6), _ animation: Animation? = .spring(response: 0.05, dampingFraction: 0.8, blendDuration: 0.2), anchor: UnitPoint? = .center) {
+    public func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.6), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .center) {
         Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
             withAnimation(animation) {
                 self?.scrollProxy?.scrollTo(uniqueId, anchor: anchor)

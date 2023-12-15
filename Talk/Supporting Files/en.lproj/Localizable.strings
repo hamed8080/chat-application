@@ -63,6 +63,9 @@
 "General.showMessage" = "Show Message";
 "General.galleyAccessPermissionDenied" = "Permission to the gallery has been denied.";
 "General.moveToSettings" = "Move to settings";
+"General.imageSaved" = "Image saved.";
+"General.copied" = "Copied to clipboard.";
+
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -329,6 +332,7 @@
 "Messages.ActionMenu.deleteCache" = "Delete cached file";
 "Messages.ActionMenu.pinMessage" = "Pin";
 "Messages.ActionMenu.unpinMessage" = "UNPin";
+"Messages.ActionMenu.saveImage" = "Save in Photos";
 "Messages.unreadMessages" = "Unread Messages";
 "Messages.deleteForMe" = "Delete for me";
 "Messages.deleteForAll" = "Delete for all";

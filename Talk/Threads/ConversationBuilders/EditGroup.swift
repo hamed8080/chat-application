@@ -123,6 +123,7 @@ struct EditGroup: View {
                 Toggle(isOn: $viewModel.isPublic) {
                     Text(String(format: localizedPublic, typeName))
                 }
+                .toggleStyle(MyToggleStyle())
                 .padding(.horizontal)
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparatorTint(Color.App.divider)

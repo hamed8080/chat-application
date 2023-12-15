@@ -63,6 +63,8 @@
 "General.showMessage" = "عرض الرسالة";
 "General.galleyAccessPermissionDenied" = "تم رفض إذن الوصول إلى المعرض.";
 "General.moveToSettings" = "انتقل إلى الإعدادات";
+"General.imageSaved" = "تم حفظ الصورة.";
+"General.copied" = "تم النسخ إلى الحافظة.";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";
@@ -328,6 +330,7 @@
 "Messages.ActionMenu.deleteCache" = "حذف الملف المخزن مؤقتا";
 "Messages.ActionMenu.pinMessage" = "تثبيت";
 "Messages.ActionMenu.unpinMessage" = "إلغاء تثبيت";
+"Messages.ActionMenu.saveImage" = "حفظ في الصور";
 "Messages.unreadMessages" = "رسائل غير مقروءة";
 "Messages.deleteForMe" = "حذف بالنسبة لي";
 "Messages.deleteForAll" = "الحذف للجميع";

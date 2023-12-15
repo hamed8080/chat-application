@@ -64,6 +64,9 @@
 "General.showMessage" = "Mostrar mensaje";
 "General.galleyAccessPermissionDenied" = "Se ha denegado el permiso para acceder a la galería.";
 "General.moveToSettings" = "Ir a ajustes";
+"General.imageSaved" = "Imagen guardada.";
+"General.copied" = "Copiado al portapapeles";
+"General.copied" = "Kopierat till urklipp.";
 
 /* Pestañas */
 "Tab.chats" = "Chats";
@@ -329,6 +332,7 @@
 "Messages.ActionMenu.deleteCache" = "Eliminar archivo en caché";
 "Messages.ActionMenu.pinMessage" = "Anclar";
 "Messages.ActionMenu.unpinMessage" = "Desanclar";
+"Messages.ActionMenu.saveImage" = "Guardar en Fotos";
 "Messages.unreadMessages" = "Mensajes sin leer";
 "Messages.deleteForMe" = "eliminar por mi";
 "Messages.deleteForAll" = "Eliminar para todas";

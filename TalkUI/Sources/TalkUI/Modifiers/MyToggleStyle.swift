@@ -7,13 +7,57 @@
 
 import SwiftUI
 
+struct ToggleShape: Shape {
+
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            let roundedCorner: CGFloat = rect.height
+            let roundeedRect = CGRect(x: 0, y: 0, width: rect.width, height: rect.height)
+            path.addRoundedRect(in: roundeedRect, cornerSize: .init(width: roundedCorner, height: roundedCorner))
+        }
+    }
+}
+
+struct ToggleRingShape: Shape {
+
+    func path(in rect: CGRect) -> Path {
+        Path { path in
+            let roundedCorner: CGFloat = rect.height / 2
+            let roundeedRect = CGRect(x: 0, y: 0, width: rect.width, height: rect.height)
+            path.addRoundedRect(in: roundeedRect, cornerSize: .init(width: roundedCorner, height: roundedCorner))
+        }
+    }
+}
+
 public struct MyToggleStyle: ToggleStyle {
     public init() {}
     public func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-            .background(configuration.isOn ? Color.App.gray1.opacity(0.3) : Color.clear)
-            .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
-            .padding([.top, .bottom], 16)
+        Button {
+            configuration.isOn.toggle()
+        } label: {
+            HStack {
+                configuration.label
+                    .foregroundStyle(Color.App.text)
+                    .font(.iransansSubheadline)
+                    .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
+                    .padding([.top, .bottom], 16)
+                Spacer()
+                ZStack(alignment: configuration.isOn ? .trailing : .leading) {
+                    ToggleShape()
+                        .fill(configuration.isOn ? Color.App.primary : Color.App.gray7)
+                        .frame(height: 20)
+                    ToggleRingShape()
+                        .stroke(configuration.isOn ? Color.App.primary : Color.App.gray7, style: .init(lineWidth: 6))
+                        .frame(width: 28, height: 28)
+                        .background(Color.App.bgPrimary)
+                        .clipShape(RoundedRectangle(cornerRadius: 28 / 2))
+                }
+                .frame(width: 48, height: 28)
+            }
+        }
+        .animation(.interpolatingSpring(mass: 0.1, stiffness: 1, damping: 0.4, initialVelocity: 1).speed(5), value: configuration.isOn)
+        .tint(.primary)
+        .buttonStyle(.borderless)
     }
 }
 

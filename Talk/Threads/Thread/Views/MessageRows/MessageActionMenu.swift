@@ -77,9 +77,24 @@ struct MessageActionMenu: View {
                 }
             }
 
-            if !viewModel.message.isFileType || message.message?.isEmpty == false {
-                ContextMenuButton(title: "Messages.ActionMenu.copy", image: "doc.on.doc") {
-                    UIPasteboard.general.string = message.message
+            Group {
+                if viewModel.message.isImage,
+                   let url = viewModel.downloadFileVM?.fileURL,
+                   let data = try? Data(contentsOf: url),
+                   let image = UIImage(data: data) {
+                    ContextMenuButton(title: "Messages.ActionMenu.saveImage", image: "square.and.arrow.down") {
+                        UIImageWriteToSavedPhotosAlbum(image, viewModel, nil, nil)
+                        let icon = Image(systemName: "externaldrive.badge.checkmark")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(Color.App.white)
+                        AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, text: "General.imageSaved")
+                    }
+                }
+
+                if !viewModel.message.isFileType || message.message?.isEmpty == false {
+                    ContextMenuButton(title: "Messages.ActionMenu.copy", image: "doc.on.doc") {
+                        UIPasteboard.general.string = message.message
+                    }
                 }
             }
 

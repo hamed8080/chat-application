@@ -264,9 +264,10 @@ extension ThreadViewModel {
                 guard let data = try? Data(contentsOf: url) else { return }
                 self.canScrollToBottomOfTheList = true
                 let uploadRequest = UploadFileRequest(data: data,
-                                                      fileExtension: ".\(url.fileExtension)",
-                                                      fileName: url.fileName,
+                                                      fileExtension: "\(url.fileExtension)",
+                                                      fileName: "\(url.fileName).\(url.fileExtension)", // it should have file name and extension
                                                       mimeType: url.mimeType,
+                                                      originalName: "\(url.fileName).\(url.fileExtension)",
                                                       userGroupHash: self.thread.userGroupHash)
                 let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: messageType)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
@@ -284,8 +285,8 @@ extension ThreadViewModel {
                 let index = items.firstIndex(where: { $0.id == item.id })!
                 self.canScrollToBottomOfTheList = true
                 let uploadRequest = UploadFileRequest(data: item.data ?? Data(),
-                                                      fileExtension: ".\(item.ext ?? "")",
-                                                      fileName: item.name,
+                                                      fileExtension: "\(item.ext ?? "")",
+                                                      fileName: "\(item.name ?? "").\(item.ext ?? "")", // it should have file name and extension
                                                       mimeType: nil,
                                                       userGroupHash: self.thread.userGroupHash)
                 let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .podSpaceFile)

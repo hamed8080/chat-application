@@ -52,6 +52,7 @@ struct ThreadSearchView: View {
                     .listRowBackground(thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
                 }
             }
+            .listStyle(.plain)
             .background(MixMaterialBackground())
             .environment(\.defaultMinListRowHeight, 24)
             .animation(.easeInOut, value: AppState.shared.objectsContainer.contactsVM.searchedContacts.count)           

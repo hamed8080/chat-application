@@ -34,17 +34,17 @@ struct ThreadContentList: View {
                 .listRowBackground(ThreadListRowBackground(thread: thread))
             }
         }
+        .listStyle(.plain)
+        .background(Color.App.bgPrimary)
+        .animation(.easeInOut, value: threadsVM.threads.count)
+        .animation(.easeInOut, value: threadsVM.isLoading)
+        .listEmptyBackgroundColor(show: threadsVM.threads.isEmpty)
         .safeAreaInset(edge: .top, spacing: 0) {
             ConversationTopSafeAreaInset(container: container)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
-        .background(Color.App.bgPrimary)
-        .listEmptyBackgroundColor(show: threadsVM.threads.isEmpty)
-        .animation(.easeInOut, value: threadsVM.threads.count)
-        .animation(.easeInOut, value: threadsVM.isLoading)
-        .listStyle(.plain)
         .sheet(isPresented: sheetBinding) {
             threadsVM.sheetType = nil
             container.contactsVM.closeBuilder()
