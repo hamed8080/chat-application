@@ -110,6 +110,7 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func getThreads() {
         isLoading = true
+        animateObjectWillChange()
         let req = ThreadsRequest(count: count, offset: offset)
         RequestsManager.shared.append(prepend: "GET-THREADS", value: req)
         ChatManager.activeInstance?.conversation.get(req)

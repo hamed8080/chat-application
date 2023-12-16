@@ -100,10 +100,6 @@ struct ParticiapntsPageSticker: View {
             }
         }
         .listStyle(.plain)
-        .safeAreaInset(edge: .top) {
-            EmptyView()
-                .frame(width: 0, height: 48)
-        }
         .onAppear {
             if !viewHasAppeared {
                 viewHasAppeared = true

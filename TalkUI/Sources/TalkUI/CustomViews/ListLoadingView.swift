@@ -12,6 +12,7 @@ public struct ListLoadingView: View {
     @Binding var isLoading: Bool
     @State var isAnimating: Bool = false
     public var color: Color = .orange
+    @State private var timer: Timer?
 
     public init(isLoading: Binding<Bool>, color: Color = Color.App.primary) {
         self._isLoading = isLoading
@@ -35,7 +36,26 @@ public struct ListLoadingView: View {
                             }
                         }
                     }
+                    .task {
+                        print("newTask started")
+                        timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { timer in
+                            if timer.isValid, isLoading {
+                                DispatchQueue.main.async {
+                                    withAnimation(.easeInOut(duration: 2).delay(0.05)) {
+                                        self.isAnimating.toggle()
+                                    }
+                                }
+                            } else {
+                                self.timer?.invalidate()
+                                self.timer = nil
+                            }
+                        }
+                    }
                 Spacer()
+            }
+            .onDisappear {
+                timer?.invalidate()
+                timer = nil
             }
         }
     }

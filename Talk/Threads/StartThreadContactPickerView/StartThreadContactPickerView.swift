@@ -18,9 +18,6 @@ struct StartThreadContactPickerView: View {
 
     var body: some View {
         List {
-            ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparator(.hidden)
             if viewModel.searchedContacts.count == 0 {
                 Button {
                     dismiss()
@@ -62,10 +59,6 @@ struct StartThreadContactPickerView: View {
             ForEach(viewModel.contacts) { contact in
                 ContactRowContainer(contact: contact, isSearchRow: false)
             }
-
-            ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparator(.hidden)
         }
         .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
@@ -81,6 +74,9 @@ struct StartThreadContactPickerView: View {
             }
             .frame(height: 48)
             .background(.ultraThinMaterial)
+        }
+        .overlay(alignment: .bottom) {
+            ListLoadingView(isLoading: $viewModel.isLoading)
         }
     }
 }

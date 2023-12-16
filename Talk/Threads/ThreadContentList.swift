@@ -42,7 +42,7 @@ struct ThreadContentList: View {
         .safeAreaInset(edge: .top, spacing: 0) {
             ConversationTopSafeAreaInset(container: container)
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
+        .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
         .sheet(isPresented: sheetBinding) {

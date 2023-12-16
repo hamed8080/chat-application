@@ -11,6 +11,7 @@ import ChatModels
 import TalkUI
 
 struct MessageParticipantsSeen: View {
+    @EnvironmentObject var threadVM: ThreadViewModel
     @StateObject var viewModel: MessageParticipantsSeenViewModel
     init(message: Message) {
         self._viewModel = StateObject(wrappedValue: .init(message: message))
@@ -29,16 +30,19 @@ struct MessageParticipantsSeen: View {
                         }
                 }
             }
-            ListLoadingView(isLoading: $viewModel.isLoading)
         }
         .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: viewModel.participants.count)
         .padding(.horizontal, 6)
         .navigationBarBackButtonHidden(true)
         .navigationTitle("SeenParticipants.title")
+        .overlay(alignment: .bottom) {
+            ListLoadingView(isLoading: $viewModel.isLoading)
+        }
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 NavigationBackButton {
+                    threadVM.disableExcessiveLoading()
                     AppState.shared.navViewModel?.remove(type: MessageParticipantsSeenNavigationValue.self)
                 }
             }

@@ -40,10 +40,6 @@ struct ConversationBuilder: View {
             .onDelete(perform: viewModel.delete)
             .padding()
             .listRowInsets(.zero)
-
-            ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparator(.hidden)
         }
         .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
@@ -69,6 +65,9 @@ struct ConversationBuilder: View {
             {
                 viewModel.moveToNextPage()
             }
+        }
+        .overlay(alignment: .bottom) {
+            ListLoadingView(isLoading: $viewModel.isLoading)
         }
         .sheet(isPresented: $viewModel.showCreateConversationDetail) {
             viewModel.showTitleError = false
@@ -181,10 +180,6 @@ struct EditCreatedConversationDetail: View {
                 StickyHeaderSection(header: "Thread.Tabs.members")
             }
             .listRowInsets(.zero)
-
-            ListLoadingView(isLoading: $viewModel.isLoading)
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparator(.hidden)
         }
         .environment(\.defaultMinListRowHeight, 8)
         .background(Color.App.bgPrimary)
@@ -199,6 +194,9 @@ struct EditCreatedConversationDetail: View {
             {
                 viewModel.createGroupWithSelectedContacts()
             }
+        }
+        .overlay(alignment: .bottom) {
+            ListLoadingView(isLoading: $viewModel.isLoading)
         }
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(sourceType: .photoLibrary) { image, assestResources in

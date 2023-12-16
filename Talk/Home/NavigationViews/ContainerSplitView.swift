@@ -119,6 +119,7 @@ struct NavigationTypeView: View {
                 .environmentObject(container.archivesVM)
         case .messageParticipantsSeen(let model):
             MessageParticipantsSeen(message: model.message)
+                .environmentObject(model.threadVM)
         case .language(_):
             LanguageView(container: container)
         case .editProfile(_):

@@ -33,7 +33,7 @@ struct ArchivesView: View {
         }
         .background(Color.App.bgPrimary)
         .listEmptyBackgroundColor(show: viewModel.archives.isEmpty)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
+        .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $viewModel.isLoading)
         }
         .animation(.easeInOut, value: viewModel.archives.count)

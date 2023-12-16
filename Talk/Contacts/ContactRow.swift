@@ -20,27 +20,13 @@ struct ContactRow: View {
     var body: some View {
         VStack {
             HStack(spacing: 0) {
-                ZStack {
-                    ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
-                        .id("\(contact.image ?? "")\(contact.id ?? 0)")
-                        .font(.iransansBody)
-                        .foregroundColor(Color.App.text)
-                        .frame(width: 52, height: 52)
-                        .background(Color.App.blue.opacity(0.4))
-                        .clipShape(RoundedRectangle(cornerRadius:(22)))
-                    Circle()
-                        .fill(Color.App.green)
-                        .frame(width: 13, height: 13)
-                        .offset(x: -20, y: 18)
-                        .blendMode(.destinationOut)
-                        .overlay {
-                            Circle()
-                                .fill(isOnline ? Color.App.green : Color.App.gray5)
-                                .frame(width: 10, height: 10)
-                                .offset(x: -20, y: 18)
-                        }
-                }
-                .compositingGroup()
+                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
+                    .id("\(contact.image ?? "")\(contact.id ?? 0)")
+                    .font(.iransansBody)
+                    .foregroundColor(Color.App.text)
+                    .frame(width: 52, height: 52)
+                    .background(Color.App.blue.opacity(0.4))
+                    .clipShape(RoundedRectangle(cornerRadius:(22)))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: "\(contact.firstName ?? "") \(contact.lastName ?? "")")

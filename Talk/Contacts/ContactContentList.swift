@@ -18,10 +18,6 @@ struct ContactContentList: View {
     
     var body: some View {
         List {
-            ListLoadingView(isLoading: $viewModel.isLoading)
-                .id(-1)
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparator(.hidden)
             if viewModel.maxContactsCountInServer > 0, EnvironmentValues.isTalkTest {
                 HStack(spacing: 4) {
                     Spacer()
@@ -85,11 +81,6 @@ struct ContactContentList: View {
                 .padding()
                 .listRowInsets(.zero)
             }
-
-            ListLoadingView(isLoading: $viewModel.isLoading)
-                .id(-2)
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparator(.hidden)
         }
         .listEmptyBackgroundColor(show: viewModel.contacts.isEmpty)
         .environment(\.defaultMinListRowHeight, 24)
@@ -99,6 +90,9 @@ struct ContactContentList: View {
         .listStyle(.plain)
         .safeAreaInset(edge: .top, spacing: 0) {
            ContactListToolbar()
+        }
+        .overlay(alignment: .bottom) {
+            ListLoadingView(isLoading: $viewModel.isLoading)
         }
         .sheet(isPresented: $viewModel.showAddOrEditContactSheet) {
             AddOrEditContactView()

@@ -82,7 +82,7 @@ struct SettingsView: View {
 
     @ViewBuilder var leadingViews: some View {
         if EnvironmentValues.isTalkTest {
-            ToolbarButtonItem(imageName: "qrcode", hint: "General.edit")
+            ToolbarButtonItem(imageName: "qrcode", hint: "General.edit", padding: 10)
         } else {
             Rectangle()
                 .fill(Color.clear)
@@ -97,13 +97,13 @@ struct SettingsView: View {
     @ViewBuilder
     var trailingViews: some View {
         if EnvironmentValues.isTalkTest {
-            ToolbarButtonItem(imageName: "plus.app", hint: "General.add") {
+            ToolbarButtonItem(imageName: "plus.app", hint: "General.add", padding: 10) {
                 withAnimation {
                     container.loginVM.resetState()
                     showLoginSheet.toggle()
                 }
             }
-            ToolbarButtonItem(imageName: "magnifyingglass", hint: "General.search") {}
+            ToolbarButtonItem(imageName: "magnifyingglass", hint: "General.search", padding: 10) {}
         }
     }
 }

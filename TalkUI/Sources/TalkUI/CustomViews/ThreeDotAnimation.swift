@@ -8,38 +8,36 @@
 import SwiftUI
 
 struct ThreeDotAnimation: View {
-    @State private var dot1Opacity: Double = 0
-    @State private var dot2Opacity: Double = 0
-    @State private var dot3Opacity: Double = 0
+    @State private var drawCount: Double = 0
+    @State private var timer: Timer?
 
     var body: some View {
-        HStack(spacing: 8) {
-            Circle()
-                .opacity(dot1Opacity)
-                .onAppear {
-                    withAnimation(Animation.easeInOut(duration: 0.8)) {
-                        dot1Opacity = 1
-                    }
-                }
-
-            Circle()
-                .opacity(dot2Opacity)
-                .onAppear {
-                    withAnimation(Animation.easeInOut(duration: 0.8).delay(0.3)) {
-                        dot2Opacity = 1
-                    }
-                }
-
-            Circle()
-                .opacity(dot3Opacity)
-                .onAppear {
-                    withAnimation(Animation.easeInOut(duration: 0.8).delay(0.6)) {
-                        dot3Opacity = 1
-                    }
-                }
+        HStack(spacing: 0) {
+            ForEach(0..<Int(drawCount), id: \.self) { i in
+                Circle()
+                    .frame(width: 4, height: 4)
+                    .transition(.asymmetric(insertion: .scale.combined(with: .opacity), removal: .scale).combined(with: .opacity))
+                    .foregroundColor(Color.App.hint)
+                    .padding(.horizontal, 3)
+            }
+            Spacer()
         }
-        .font(.iransansBoldCaption3)
-        .foregroundColor(Color.App.hint)
+        .task {
+            timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+                if timer.isValid {
+                    if drawCount == 3 {
+                        drawCount = 0
+                    } else {
+                        drawCount += 1
+                    }
+                }
+            }
+        }
+        .animation(.easeInOut, value: drawCount)
+        .onDisappear {
+            timer?.invalidate()
+            timer = nil
+        }
     }
 }
 struct ThreeDotAnimation_Previews: PreviewProvider {

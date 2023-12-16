@@ -32,7 +32,10 @@ public struct BlockedContactsNavigationValue: NavigaitonValueProtocol {}
 public struct NotificationSettingsNavigationValue: NavigaitonValueProtocol {}
 public struct AutomaticDownloadsNavigationValue: NavigaitonValueProtocol {}
 public struct SupportNavigationValue: NavigaitonValueProtocol {}
-public struct MessageParticipantsSeenNavigationValue: NavigaitonValueProtocol { public let message: Message }
+public struct MessageParticipantsSeenNavigationValue: NavigaitonValueProtocol { 
+    public let message: Message
+    public let threadVM: ThreadViewModel
+}
 public struct EditProfileNavigationValue: NavigaitonValueProtocol {}
 
 public final class NavigationModel: ObservableObject {
@@ -101,8 +104,8 @@ public final class NavigationModel: ObservableObject {
         pathsTracking.append(downloads)
     }
 
-    public func appendMessageParticipantsSeen(_ message: Message) {
-        let seen = MessageParticipantsSeenNavigationValue(message: message)
+    public func appendMessageParticipantsSeen(_ message: Message, threadVM: ThreadViewModel) {
+        let seen = MessageParticipantsSeenNavigationValue(message: message, threadVM: threadVM)
         paths.append(NavigationType.messageParticipantsSeen(seen))
         pathsTracking.append(seen)
     }

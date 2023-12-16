@@ -69,10 +69,10 @@ struct MessageActionMenu: View {
                 .allowsHitTesting((message.editable ?? false) == true)
             }
 
-            if viewModel.message.ownerId == AppState.shared.user?.id && viewModel.threadVM?.thread.group == true {
+            if let threadVM = threadVM, viewModel.message.ownerId == AppState.shared.user?.id && threadVM.thread.group == true {
                 ContextMenuButton(title: "SeenParticipants.title", image: "info.bubble") {
-                    withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
-                        AppState.shared.objectsContainer.navVM.appendMessageParticipantsSeen(viewModel.message)
+                    withAnimation(animation(appear: threadVM.forwardMessage != nil)) {
+                        AppState.shared.objectsContainer.navVM.appendMessageParticipantsSeen(viewModel.message, threadVM: threadVM)
                     }
                 }
             }
