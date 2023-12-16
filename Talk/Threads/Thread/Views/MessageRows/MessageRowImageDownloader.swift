@@ -60,7 +60,7 @@ struct PlaceholderImageView: View {
     let width: CGFloat
     let height: CGFloat
     @EnvironmentObject var viewModel: DownloadFileViewModel
-    private static let emptyImageGradient = LinearGradient(colors: [Color.App.bgInput, Color.App.bgInputDark], startPoint: .top, endPoint: .bottom)
+    static let emptyImageGradient = LinearGradient(colors: [Color.App.bgInput, Color.App.bgInputDark], startPoint: .top, endPoint: .bottom)
 
     var body: some View {
         if viewModel.thumbnailData == nil, viewModel.state != .completed, let emptyImage = UIImage(named: "empty_image") {

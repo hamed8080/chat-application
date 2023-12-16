@@ -45,7 +45,7 @@ public struct MyToggleStyle: ToggleStyle {
                 ZStack(alignment: configuration.isOn ? .trailing : .leading) {
                     ToggleShape()
                         .fill(configuration.isOn ? Color.App.primary : Color.App.gray7)
-                        .frame(height: 20)
+                        .frame(height: 22)
                     ToggleRingShape()
                         .stroke(configuration.isOn ? Color.App.primary : Color.App.gray7, style: .init(lineWidth: 6))
                         .frame(width: 28, height: 28)
@@ -53,6 +53,7 @@ public struct MyToggleStyle: ToggleStyle {
                         .clipShape(RoundedRectangle(cornerRadius: 28 / 2))
                 }
                 .frame(width: 48, height: 28)
+                .shadow(radius: 5)
             }
         }
         .animation(.interpolatingSpring(mass: 0.1, stiffness: 1, damping: 0.4, initialVelocity: 1).speed(5), value: configuration.isOn)

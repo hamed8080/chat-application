@@ -278,10 +278,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             thread.lastSeenMessageId = messageId
             log("send seen for message:\(message.messageTitle) with id:\(messageId)")
             ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
-        } else if thread.unreadCount ?? 0 > 0 {
-            log("messageId \(message.id ?? 0) was bigger than threadLastSeesn\(self.thread.lastSeenMessageId ?? 0)")
-            thread.unreadCount = 0
-            objectWillChange.send()
         }
     }
 

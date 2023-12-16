@@ -23,7 +23,7 @@ struct LocationRowView: View {
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
                 /// We use min to prevent the image gets bigger than 320 if it's bigger.
                 let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
-                MapImageDownloader()
+                MapImageDownloader(width: width, height: width)
                     .id(fileLink)
                     .environmentObject(downloadVM)
                     .frame(width: width, height: height)
@@ -42,15 +42,24 @@ struct LocationRowView: View {
 }
 
 struct MapImageDownloader: View {
+    let width: CGFloat
+    let height: CGFloat
     @EnvironmentObject var viewModel: DownloadFileViewModel
 
     var body: some View {
-        /// We use max to at least have a width, because there are times that maxWidth is nil.
-        let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
-        if viewModel.state == .completed, let image = viewModel.fileURL?.imageScale(width: Int(width))?.image {
+        if viewModel.state == .completed, let image = viewModel.fileURL?.imageScale(width: Int(800))?.image {
             Image(uiImage: UIImage(cgImage: image))
                 .resizable()
                 .scaledToFill()
+        } else if let emptyImage = UIImage(named: "empty_image") {
+            Image(uiImage: emptyImage)
+                .resizable()
+                .scaledToFill()
+                .frame(width: width, height: height)
+                .clipped()
+                .zIndex(0)
+                .background(PlaceholderImageView.emptyImageGradient)
+                .clipShape(RoundedRectangle(cornerRadius:(8)))
         }
     }
 }

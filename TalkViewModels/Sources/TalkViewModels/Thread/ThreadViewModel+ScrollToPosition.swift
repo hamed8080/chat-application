@@ -14,15 +14,21 @@ import SwiftUI
 
 public protocol ScrollToPositionProtocol {
     var canScrollToBottomOfTheList: Bool { get set }
-    func scrollTo(_ uniqueId: String, delay: TimeInterval, _ animation: Animation?, anchor: UnitPoint?)
     func scrollToBottom(animation: Animation?)
     func scrollToLastMessageIfLastMessageIsVisible(_ message: Message)
 }
 
 extension ThreadViewModel: ScrollToPositionProtocol {
 
-    public func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.6), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .center) {
+    private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.6), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) {
         Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
+            withAnimation(animation) {
+                self?.scrollProxy?.scrollTo(uniqueId, anchor: anchor)
+            }
+        }
+
+         /// Ensure the view is shown as a result of SwiftUI can't properly move for the first time
+        Timer.scheduledTimer(withTimeInterval: .init(1.5), repeats: false) { [weak self] _ in
             withAnimation(animation) {
                 self?.scrollProxy?.scrollTo(uniqueId, anchor: anchor)
             }
@@ -38,8 +44,8 @@ extension ThreadViewModel: ScrollToPositionProtocol {
     }
 
     public func scrollToBottom(animation: Animation? = .easeInOut) {
-        if let uniqueId = sections.last?.messages.last?.uniqueId {
-            scrollTo(uniqueId, delay: .init(0), animation)
+        if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
+            moveToTime(time, messageId, highlight: false)
         }
     }
 

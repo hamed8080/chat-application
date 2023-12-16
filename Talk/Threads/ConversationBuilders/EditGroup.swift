@@ -12,20 +12,20 @@ import AdditiveUI
 
 struct EditGroup: View {
     @EnvironmentObject var viewModel: DetailViewModel
-
+    
     enum EditGroupFocusFields: Hashable {
         case name
         case description
     }
-
+    
     @FocusState var focusState: EditGroupFocusFields?
     @State var showImagePicker: Bool = false
-
+    
     var body: some View {
         List {
             HStack{
                 Spacer()
-
+                
                 Button {
                     showImagePicker = true
                 } label: {
@@ -73,7 +73,7 @@ struct EditGroup: View {
                                     .foregroundColor(.white)
                                     .fontWeight(.heavy)
                                     .offset(x: 42, y: 22)
-
+                                
                             }
                     }
                     .compositingGroup()
@@ -84,12 +84,12 @@ struct EditGroup: View {
             .padding()
             .listRowBackground(Color.App.bgPrimary)
             .noSeparators()
-
+            
             StickyHeaderSection(header: "", height: 2)
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowInsets(.zero)
                 .noSeparators()
-
+            
             TextField("EditGroup.groupName", text: $viewModel.editTitle)
                 .focused($focusState, equals: .name)
                 .keyboardType(.default)
@@ -99,7 +99,7 @@ struct EditGroup: View {
                 }
                 .noSeparators()
                 .listRowBackground(Color.App.bgPrimary)
-
+            
             TextField("EditGroup.groupDescription", text: $viewModel.threadDescription)
                 .focused($focusState, equals: .description)
                 .keyboardType(.default)
@@ -119,7 +119,7 @@ struct EditGroup: View {
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowInsets(.zero)
                     .noSeparators()
-
+                
                 Toggle(isOn: $viewModel.isPublic) {
                     Text(String(format: localizedPublic, typeName))
                 }

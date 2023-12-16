@@ -133,22 +133,19 @@ extension ThreadViewModel {
         appenedUnreadMessagesBannerIfNeeed()
         /// 4- Disable excessive loading on the top part.
         disableExcessiveLoading()
-        /// 5- Update all the views to draw for the top part.
-        animateObjectWillChange()
         /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
-        guard let lastSeenMessageId = thread.lastSeenMessageId,
-              let indices = indicesByMessageId(lastSeenMessageId),
-              let uniqueId = sections[indices.sectionIndex].messages[indices.messageIndex].uniqueId
-        else { return }
-        scrollTo(uniqueId)
+        if let lastSeenMessageId = thread.lastSeenMessageId, let indices = indicesByMessageId(lastSeenMessageId),
+           let uniqueId = sections[indices.sectionIndex].messages[indices.messageIndex].uniqueId {
+            showHighlighted(uniqueId, lastSeenMessageId, highlight: false)
+            /// 9- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
+            if let fromTime = sections[indices.sectionIndex].messages[indices.messageIndex].time {
+                moreBottom(prepend: "MORE-BOTTOM-FIRST-SCENARIO", fromTime.advanced(by: -1))
+            }
+        }
         /// 7- Set whether it has more messages at the top or not.
         setHasMoreTop(response)
         /// 8- To update isLoading fields to hide the loading at the top.
         animateObjectWillChange()
-        /// 9- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
-        if let fromTime = sections[indices.sectionIndex].messages[indices.messageIndex].time {
-            moreBottom(prepend: "MORE-BOTTOM-FIRST-SCENARIO", fromTime.advanced(by: -1))
-        }
     }
 
     public func onMoreBottomFirstScenario(_ response: ChatResponse<[Message]>) {
@@ -195,9 +192,8 @@ extension ThreadViewModel {
             /// 4- Disable excessive loading on the top part.
             disableExcessiveLoading()
         }
-        /// 4- Get the thread last message uniqueId to scroll to.
-        if let uniqueId = thread.lastMessageVO?.uniqueId {
-            scrollTo(uniqueId)
+        if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
+            showHighlighted(uniqueId, messageId, highlight: false)
         }
         /// 5- Set whether it has more messages at the top or not.
         setHasMoreTop(response)

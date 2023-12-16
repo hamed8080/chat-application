@@ -45,7 +45,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var mutualThreads: ContiguousArray<Conversation> = []
     public weak var threadVM: ThreadViewModel?
     public var p2pPartnerContact: Contact?
-    public var isPublic = false
+    @Published public var isPublic = false
 
     @Published public var editTitle: String = ""
     public var searchText: String = ""
