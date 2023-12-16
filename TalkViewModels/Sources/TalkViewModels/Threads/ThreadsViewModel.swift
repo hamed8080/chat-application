@@ -80,6 +80,7 @@ public final class ThreadsViewModel: ObservableObject {
             if threads[index].pin == false {
                 sort()
             }
+            threads[index].animateObjectWillChange()
             animateObjectWillChange()
         }
 
