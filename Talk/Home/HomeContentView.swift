@@ -13,7 +13,6 @@ import Swipy
 import TalkModels
 import TalkUI
 import TalkViewModels
-import ActionableContextMenu
 
 struct HomeContentView: View {
     let container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
@@ -39,7 +38,6 @@ struct HomeContentView: View {
                 .environmentObject(container.audioPlayerVM)
                 .environmentObject(container.reactions)
         }
-        .contextMenuContainer()
     }
 }
 

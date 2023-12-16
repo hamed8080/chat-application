@@ -24,7 +24,6 @@ struct ReactionCountView: View {
                 }
             }
         }
-//        .frame(maxWidth: MessageRowViewModel.maxAllowedWidth)
         .fixedSize(horizontal: true, vertical: false)
         .animation(.easeInOut, value: viewModel.reactionCountList.count)
         .padding(.horizontal, 6)
@@ -34,6 +33,7 @@ struct ReactionCountView: View {
 struct ReactionCountRow: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     let reactionCount: ReactionCount
+    @State private var presentReactionDetailView: Bool = false
 
     var body: some View {
         HStack {
@@ -57,15 +57,11 @@ struct ReactionCountRow: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .onTapGesture {
-            if let conversationId = viewModel.message.threadId ?? viewModel.message.conversation?.id, let tappedStciker = reactionCount.sticker {
-                AppState.shared.objectsContainer.reactions.reaction(tappedStciker, messageId: viewModel.message.id ?? -1, conversationId: conversationId)
-            }
+            presentReactionDetailView.toggle()
         }
-        .customContextMenu(id: reactionCount.id, self: self.environmentObject(viewModel)) {
+        .sheet(isPresented: $presentReactionDetailView) {
             let selectedEmojiTabId = "\(reactionCount.sticker?.emoji ?? "all") \(reactionCount.count ?? 0)"
             MessageReactionDetailView(message: viewModel.message, selectedStickerTabId: selectedEmojiTabId)
-                .frame(width: 300, height: 400)
-                .clipShape(RoundedRectangle(cornerRadius:(12)))
         }
     }
 

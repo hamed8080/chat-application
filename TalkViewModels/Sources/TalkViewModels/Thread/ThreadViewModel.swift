@@ -94,6 +94,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize)
 
     public var messageViewModels: ContiguousArray<MessageRowViewModel> = .init()
+    public var closedMessageReactionId: Int?
     var model: AppSettingsModel
     public var canDownloadImages: Bool = false
     public var canDownloadFiles: Bool = false

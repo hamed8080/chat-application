@@ -35,7 +35,10 @@ struct TextMessageType: View {
                 AvatarView(message: message, viewModel: viewModel)
             }
 
-            MutableMessageView(viewModel: viewModel)
+            VStack(alignment: viewModel.isMe ? .trailing : .leading) {
+                ReactionContainer()
+                MutableMessageView(viewModel: viewModel)
+            }
 
             if !viewModel.isMe {
                 Spacer()
@@ -47,6 +50,17 @@ struct TextMessageType: View {
         }
         .environmentObject(viewModel)
         .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+    }
+}
+
+struct ReactionContainer: View {
+    @EnvironmentObject var viewModel: MessageRowViewModel
+
+    var body: some View {
+        if viewModel.showReactionView {
+            ReactionMenuView()
+                .fixedSize()
+        }
     }
 }
 
@@ -122,27 +136,23 @@ struct InnerMessage: View {
                 .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
         )
         .contentShape(MessageRowBackground.instance)
-        .customContextMenu(id: message.id, self: selfMessage, menus: { contextMenuWithReactions })
-        .overlay(alignment: .center) { SelectMessageInsideClickOverlay() }
-    }
-
-    private var selfMessage: some View {
-        HStack {
-            self
-                .environmentObject(viewModel)
-                .environmentObject(AppState.shared.objectsContainer.audioPlayerVM)
+        .onTapGesture {
+            /// Close all the previous oppened reacitons
+            viewModel.threadVM?.messageViewModels.filter({$0.showReactionView && $0.message.id != viewModel.message.id}).forEach({ viewModel in
+                viewModel.showReactionView = false
+                viewModel.animateObjectWillChange()
+            })
+            if viewModel.threadVM?.closedMessageReactionId == viewModel.message.id {
+                viewModel.threadVM?.closedMessageReactionId = nil
+            } else {
+                viewModel.showReactionView = true
+            }
+            viewModel.animateObjectWillChange()
         }
-        .frame(maxWidth: ThreadViewModel.maxAllowedWidth)
-
-    }
-
-    private var contextMenuWithReactions: some View {
-        VStack {
-            ReactionMenuView()
-                .fixedSize()
+        .contextMenu {
             MessageActionMenu()
         }
-        .environmentObject(viewModel)
+        .overlay(alignment: .center) { SelectMessageInsideClickOverlay() }
     }
 }
 

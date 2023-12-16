@@ -44,6 +44,11 @@ struct ThreadMessagesList: View {
     }
 
     private func hideKeyboardOnTapOrDrag() {
+        viewModel.messageViewModels.filter({$0.showReactionView}).forEach({ viewModel in
+            self.viewModel.closedMessageReactionId = viewModel.message.id
+            viewModel.showReactionView = false
+            viewModel.animateObjectWillChange()
+        })
         if viewModel.searchedMessagesViewModel.searchText.isEmpty {
             NotificationCenter.default.post(name: .cancelSearch, object: true)
         }

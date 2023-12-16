@@ -47,6 +47,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var imageHeight: CGFloat = 128
     public var isReplyImage: Bool = false
     public var replyLink: String?
+    public var showReactionView: Bool = false
 
     public var avatarImageLoader: ImageLoaderViewModel? {
         if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {

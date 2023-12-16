@@ -86,7 +86,7 @@ struct ParticiapntsPageSticker: View {
     var body: some View {
         List {
             ForEach(reactions) { reaction in
-                ReactionParticipantRow(reaction: reaction)
+                ReactionParticipantRow(reaction: reaction, messageId: messageId)
                     .listRowBackground(Color.App.bgPrimary)
                     .onAppear {
                         if reactions.last == reaction {
@@ -100,10 +100,6 @@ struct ParticiapntsPageSticker: View {
             }
         }
         .listStyle(.plain)
-        .safeAreaInset(edge: .top) {
-            EmptyView()
-                .frame(width: 0, height: 48)
-        }
         .onAppear {
             if !viewHasAppeared {
                 viewHasAppeared = true
@@ -140,35 +136,18 @@ struct ParticiapntsPageSticker: View {
 
 struct ReactionParticipantRow: View {
     let reaction: Reaction
+    let messageId: Int
 
     var body: some View {
-        HStack {
-            ZStack(alignment: .leading) {
-                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: reaction.participant?.image, userName: reaction.participant?.name)
-                    .scaledToFit()
-                    .id(reaction.participant?.id)
-                    .font(.iransansBoldCaption2)
-                    .foregroundColor(.white)
-                    .frame(width: 64, height: 64)
-                    .background(Color.App.blue.opacity(0.4))
-                    .clipShape(RoundedRectangle(cornerRadius:(24)))
-                Circle()
-                    .fill(.red)
-                    .frame(width: 28, height: 28)
-                    .offset(x: 0, y: 26)
-                    .blendMode(.destinationOut)
-                    .overlay {
-                        Text(verbatim: reaction.reaction?.emoji ?? "")
-                            .font(.system(size: 13))
-                            .frame(width: 22, height: 22)
-                            .background(Color.App.primary.opacity(0.3))
-                            .clipShape(RoundedRectangle(cornerRadius:(18)))
-                            .offset(x: 0, y: 26)
-
-                    }
-            }
-            .compositingGroup()
-            .opacity(0.9)
+        HStack(alignment: .center) {
+            ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: reaction.participant?.image, userName: reaction.participant?.name)
+                .scaledToFit()
+                .id(reaction.participant?.id)
+                .font(.iransansBoldCaption2)
+                .foregroundColor(.white)
+                .frame(width: 64, height: 64)
+                .background(Color.App.blue.opacity(0.4))
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(reaction.participant?.name ?? "")
@@ -182,6 +161,12 @@ struct ReactionParticipantRow: View {
                         .foregroundColor(Color.App.gray1)
                 }
             }
+            Spacer()
+            Text(verbatim: reaction.reaction?.emoji ?? "")
+                .font(.system(size: 18))
+                .frame(width: 28, height: 28)
+                .background(ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(messageId)?.reaction?.emoji == reaction.reaction?.emoji ? Color.App.primary.opacity(0.3) : .clear)
+                .clipShape(RoundedRectangle(cornerRadius:(14)))
         }
     }
 }
@@ -190,7 +175,7 @@ struct MessageReactionDetailView_Previews: PreviewProvider {
     static var previews: some View {
         MessageReactionDetailView(message: Message(id: 1, message: "TEST", conversation: Conversation(id: 1)))
 
-        ReactionParticipantRow(reaction: .init(id: 1, reaction: .like, participant: .init(image: "https://imgv3.fotor.com/images/cover-photo-image/a-beautiful-girl-with-gray-hair-and-lucxy-neckless-generated-by-Fotor-AI.jpg"), time: nil))
+        ReactionParticipantRow(reaction: .init(id: 1, reaction: .like, participant: .init(image: "https://imgv3.fotor.com/images/cover-photo-image/a-beautiful-girl-with-gray-hair-and-lucxy-neckless-generated-by-Fotor-AI.jpg"), time: nil), messageId: 1)
             .frame(width: 300, height: 300)
     }
 }

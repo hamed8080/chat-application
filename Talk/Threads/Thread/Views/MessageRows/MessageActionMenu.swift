@@ -9,7 +9,6 @@ import ChatModels
 import Foundation
 import SwiftUI
 import TalkViewModels
-import ActionableContextMenu
 import TalkUI
 import TalkModels
 
@@ -21,33 +20,29 @@ struct MessageActionMenu: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ContextMenuButton(title: "Messages.ActionMenu.reply", image: "arrowshape.turn.up.left") {
+            Button {
                 withAnimation(animation(appear: threadVM?.replyMessage != nil)) {
                     threadVM?.replyMessage = message
                     threadVM?.objectWillChange.send()
                 }
+            } label: {
+                Label("Messages.ActionMenu.reply", systemImage: "arrowshape.turn.up.left")
             }
 
             if threadVM?.thread.group == true, !viewModel.isMe {
-                ContextMenuButton(title: "Messages.ActionMenu.replyPrivately", image: "arrowshape.turn.up.left") {
+                Button {
                     withAnimation(animation(appear: true)) {
                         guard let participant = message.participant else { return }
                         AppState.shared.appStateNavigationModel.replyPrivately = message
                         AppState.shared.openThread(participant: participant)
                     }
-                }
-                .overlay(alignment: Language.isRTL ? .bottomTrailing : .bottomLeading) {
-                    Image(systemName: "lock")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 8, height: 8)
-                        .offset(x: Language.isRTL ? -8 : 8, y: -8)
-                        .foregroundStyle(Color.App.gray4)
-                        .fontWeight(.semibold)
+                } label: {
+                    Label("Messages.ActionMenu.replyPrivately", systemImage: "arrowshape.turn.up.left")
                 }
             }
 
-            ContextMenuButton(title: "Messages.ActionMenu.forward", image: "arrowshape.turn.up.right") {
+
+            Button {
                 withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
                     threadVM?.forwardMessage = message
                     viewModel.isSelected = true
@@ -55,14 +50,18 @@ struct MessageActionMenu: View {
                     viewModel.animateObjectWillChange()
                     threadVM?.animateObjectWillChange()
                 }
+            } label: {
+                Label("Messages.ActionMenu.forward", systemImage: "arrowshape.turn.up.right")
             }
 
             if viewModel.canEdit {
-                ContextMenuButton(title: "General.edit", image: "pencil.circle") {
+                Button {
                     withAnimation(animation(appear: threadVM?.editMessage != nil)) {
                         threadVM?.editMessage = message
                         threadVM?.objectWillChange.send()
                     }
+                } label: {
+                    Label("General.edit", systemImage: "pencil.circle")
                 }
                 .disabled((message.editable ?? false) == false)
                 .opacity((message.editable ?? false) == false ? 0.3 : 1.0)
@@ -70,10 +69,12 @@ struct MessageActionMenu: View {
             }
 
             if viewModel.message.ownerId == AppState.shared.user?.id && viewModel.threadVM?.thread.group == true {
-                ContextMenuButton(title: "SeenParticipants.title", image: "info.bubble") {
+                Button {
                     withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
                         AppState.shared.objectsContainer.navVM.appendMessageParticipantsSeen(viewModel.message)
                     }
+                } label: {
+                    Label("SeenParticipants.title", systemImage: "info.bubble")
                 }
             }
 
@@ -82,49 +83,59 @@ struct MessageActionMenu: View {
                    let url = viewModel.downloadFileVM?.fileURL,
                    let data = try? Data(contentsOf: url),
                    let image = UIImage(data: data) {
-                    ContextMenuButton(title: "Messages.ActionMenu.saveImage", image: "square.and.arrow.down") {
+                    Button {
                         UIImageWriteToSavedPhotosAlbum(image, viewModel, nil, nil)
                         let icon = Image(systemName: "externaldrive.badge.checkmark")
                             .fontWeight(.semibold)
                             .foregroundStyle(Color.App.white)
                         AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, text: "General.imageSaved")
+                    } label: {
+                        Label("Messages.ActionMenu.saveImage", systemImage: "square.and.arrow.down")
                     }
                 }
 
                 if !viewModel.message.isFileType || message.message?.isEmpty == false {
-                    ContextMenuButton(title: "Messages.ActionMenu.copy", image: "doc.on.doc") {
+                    Button {
                         UIPasteboard.general.string = message.message
+                    } label: {
+                        Label("Messages.ActionMenu.copy", systemImage: "doc.on.doc")
                     }
                 }
             }
 
             if message.isFileType == true {
-                ContextMenuButton(title: "Messages.ActionMenu.deleteCache", image: "cylinder.split.1x2") {
+                Button {
                     threadVM?.clearCacheFile(message: message)
                     threadVM?.animateObjectWillChange()
+                } label: {
+                    Label("Messages.ActionMenu.deleteCache", systemImage: "cylinder.split.1x2")
                 }
             }
 
             let isPinned = message.id == viewModel.threadVM?.thread.pinMessage?.id && viewModel.threadVM?.thread.pinMessage != nil
             if threadVM?.thread.admin == true {
-                ContextMenuButton(title: isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", image: "pin") {
+                Button {
                     threadVM?.togglePinMessage(message)
                     threadVM?.animateObjectWillChange()
+                } label: {
+                    Label(isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", systemImage: "pin")
                 }
             }
 
-            ContextMenuButton(title: "General.select", image: "checkmark.circle") {
+            Button {
                 withAnimation(animation(appear: threadVM?.isInEditMode == true)) {
                     threadVM?.isInEditMode = true
                     viewModel.isSelected = true
                     viewModel.animateObjectWillChange()
                     threadVM?.animateObjectWillChange()
                 }
+            } label: {
+                Label("General.select", systemImage: "checkmark.circle")
             }
 
             let delete = MessageRowViewModel.isDeletable(isMe: viewModel.isMe, message: viewModel.message, thread: viewModel.threadVM?.thread)
             if delete.forMe || delete.ForOthers {
-                ContextMenuButton(title: "General.delete", image: "trash", showSeparator: false) {
+                Button(role: .destructive) {
                     withAnimation(animation(appear: true)) {
                         if let threadVM {
                             threadVM.messageViewModels.first(where: {$0.message.id == message.id})?.isSelected = true
@@ -134,8 +145,9 @@ struct MessageActionMenu: View {
                             AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
                         }
                     }
+                } label: {
+                    Label("General.delete", systemImage: "trash")
                 }
-                .foregroundStyle(Color.App.red)
             }
         }
         .foregroundColor(.primary)
