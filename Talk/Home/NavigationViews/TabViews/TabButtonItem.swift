@@ -13,6 +13,7 @@ struct TabButtonItem: View {
     var imageView: (any View)?
     let contextMenu: (any View)?
     var isSelected: Bool
+    var showSelectedDivider: Bool
     var onClick: () -> Void
 
     var body: some View {
@@ -32,6 +33,13 @@ struct TabButtonItem: View {
             Text(String(localized: .init(title)))
                 .font(.iransansBoldCaption)
                 .foregroundColor(isSelected ? Color.App.primary : Color.App.gray5)
+
+            if showSelectedDivider, isSelected {
+                Rectangle()
+                    .fill(Color.App.primary)
+                    .frame(width: 72, height: 3)
+                    .cornerRadius(2, corners: [.topLeft, .topRight])
+            }
         }
         .contentShape(Rectangle())
         .padding(4)
@@ -50,6 +58,6 @@ struct TabButtonItem: View {
 
 struct TabItem_Previews: PreviewProvider {
     static var previews: some View {
-        TabButtonItem(title: "", image: Image(systemName: ""), contextMenu: nil, isSelected: false) {}
+        TabButtonItem(title: "", image: Image(systemName: ""), contextMenu: nil, isSelected: false, showSelectedDivider: true) {}
     }
 }

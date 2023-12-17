@@ -50,7 +50,8 @@ struct MessageReactionDetailView: View {
                 messageId: messageId,
                 conversationId: conversationId
             ),
-            title: "General.all"
+            title: "General.all",
+            showSelectedDivider: true
         )
     }
 
@@ -63,7 +64,8 @@ struct MessageReactionDetailView: View {
                         messageId: messageId,
                         conversationId: conversationId
                     ),
-                    title: "\(reaction.sticker?.emoji ?? "all") \(reaction.count ?? 0)"
+                    title: "\(reaction.sticker?.emoji ?? "all") \(reaction.count ?? 0)",
+                    showSelectedDivider: true
                 )
             } ?? []
     }

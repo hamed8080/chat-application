@@ -22,6 +22,7 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     private let count = 50
     @Published public var searchText: String = ""
     private var hasMore = true
+    @Published public var isLoading = false
 
     public static func == (lhs: ThreadSearchMessagesViewModel, rhs: ThreadSearchMessagesViewModel) -> Bool {
         rhs.threadId == lhs.threadId
@@ -55,12 +56,22 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
                 self?.doSearch(text: newValue)
             }
             .store(in: &cancelable)
+
+        RequestsManager.shared.$cancelRequest
+            .sink { [weak self] newValue in
+                if let newValue {
+                    self?.onCancelTimer(key: newValue)
+                }
+            }
+            .store(in: &cancelable)
     }
 
     public func doSearch(text: String, offset: Int = 0) {
         isInSearchMode = text.count >= 2
+        searchedMessages.removeAll()
         animateObjectWillChange()
         guard text.count >= 2 else { return }
+        isLoading = true
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: offset, query: "\(text)")
         RequestsManager.shared.append(prepend: "SEARCH", value: req)
         ChatManager.activeInstance?.message.history(req)
@@ -74,17 +85,19 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     }
 
     func onSearch(_ response: ChatResponse<[Message]>) {
-        guard response.value(prepend: "SEARCH") != nil else { return }
-        searchedMessages.removeAll()
-        response.result?.forEach { message in
-            if !(searchedMessages.contains(where: { $0.id == message.id })) {
-                searchedMessages.append(message)
+        if !response.cache {
+            isLoading = true
+            guard response.value(prepend: "SEARCH") != nil else { return }
+            response.result?.forEach { message in
+                if !(searchedMessages.contains(where: { $0.id == message.id })) {
+                    searchedMessages.append(message)
+                }
             }
+            if !response.cache, !response.hasNext {
+                hasMore = false
+            }
+            animateObjectWillChange()
         }
-        if !response.cache, !response.hasNext {
-            hasMore = false
-        }
-        animateObjectWillChange()
     }
     
     public func onChatEvent(_ event: ChatEventType) {
@@ -103,5 +116,11 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
         default:
             break
         }
+    }
+
+
+    private func onCancelTimer(key: String) {
+        isLoading = false
+        animateObjectWillChange()
     }
 }

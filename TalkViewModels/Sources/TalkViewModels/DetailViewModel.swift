@@ -149,8 +149,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
             onEditGroup(response)
         case .deleted(let response):
             onDeleteThread(response)
-        case .left(let response):
-            onLeftThread(response)
         case .userRemoveFormThread(let response):
             onUserRemovedByAdmin(response)
         default:
@@ -353,15 +351,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
     private func onDeleteThread(_ response: ChatResponse<Participant>) {
         if response.subjectId == thread?.id {
             dismiss = true
-        }
-    }
-
-    private func onLeftThread(_ response: ChatResponse<User>) {
-        if response.subjectId == thread?.id, response.result?.id == AppState.shared.user?.id {
-            dismiss = true
-        } else {
-            participantViewModel?.removeParticipant(.init(id: response.result?.id))
-            animateObjectWillChange()
         }
     }
 

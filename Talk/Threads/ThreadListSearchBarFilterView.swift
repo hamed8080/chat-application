@@ -67,9 +67,11 @@ struct ThreadListSearchBarFilterView: View {
             viewModel.searchText = newValue
         }
         .onReceive(NotificationCenter.default.publisher(for: .forceSearch)) { newValue in
-            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                isInSearchMode.toggle()
-                searchFocus = .saerch
+            if newValue.object as? String == "Tab.chats" {
+                Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                    isInSearchMode.toggle()
+                    searchFocus = .saerch
+                }
             }
         }
     }

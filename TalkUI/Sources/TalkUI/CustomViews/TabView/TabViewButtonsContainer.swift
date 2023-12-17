@@ -41,7 +41,6 @@ struct TabViewButtonsContainer: View {
                                     .frame(height: 3)
                                     .cornerRadius(2, corners: [.topLeft, .topRight])
                                     .matchedGeometryEffect(id: "DetailTabSeparator", in: id)
-
                             }
                         }
                         .frame(height: 48)

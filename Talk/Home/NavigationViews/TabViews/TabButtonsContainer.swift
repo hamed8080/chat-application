@@ -20,7 +20,9 @@ struct TabButtonsContainer: View {
                               image: tab.image,
                               imageView: tab.tabImageView,
                               contextMenu: tab.contextMenus,
-                              isSelected: selectedId == tab.title) {
+                              isSelected: selectedId == tab.title,
+                              showSelectedDivider: tab.showSelectedDivider
+                ) {
                     selectedId = tab.title
                     NotificationCenter.default.post(name: .selectTab, object: tab.title)
                 }

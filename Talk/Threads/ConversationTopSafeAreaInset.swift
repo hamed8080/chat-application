@@ -18,6 +18,7 @@ struct ConversationTopSafeAreaInset: View {
     var body: some View {
         VStack(spacing: 0) {
             ToolbarView(
+                searchId: "Tab.chats",
                 title: "Tab.chats",
                 leadingViews: searchButton,
                 centerViews: ConnectionStatusToolbar(),

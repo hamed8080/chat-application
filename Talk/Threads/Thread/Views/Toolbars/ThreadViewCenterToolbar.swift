@@ -47,14 +47,14 @@ struct ThreadViewCenterToolbar: View {
         .onChange(of: viewModel.thread.computedTitle) { newValue in
             title = newValue
         }
-        .onChange(of: viewModel.thread.participantCount) { newValue in
-            participantsCount = newValue
+        .onReceive(viewModel.objectWillChange) { newValue in
+            participantsCount = viewModel.thread.participantCount ?? 0
         }
         .onReceive(publisher) { event in
             onChatEvent(event)
         }
         .onAppear {
-            participantsCount = viewModel.participantsViewModel.thread?.participantCount
+            participantsCount = viewModel.thread.participantCount
             title = viewModel.thread.computedTitle
         }
     }
@@ -76,10 +76,6 @@ struct ThreadViewCenterToolbar: View {
             withAnimation {
                 title = response.result?.computedTitle ?? ""
             }
-        case .left(_):
-            withAnimation {
-                participantsCount = (participantsCount ?? 0) - 1
-            }
         default:
             break
         }
@@ -87,10 +83,6 @@ struct ThreadViewCenterToolbar: View {
 
     private func onParticipantEvent(_ event: ParticipantEventTypes) {
         switch event {
-        case .added(let response):
-            withAnimation {
-                participantsCount = (participantsCount ?? 0) + (response.result?.count ?? 0)
-            }
         case .deleted(let response):
             withAnimation {
                 participantsCount = max(0, (participantsCount ?? 0) - (response.result?.count ?? 0))

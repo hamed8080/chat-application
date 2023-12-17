@@ -36,8 +36,12 @@ struct ThreadSearchList: View {
             .environment(\.layoutDirection, .leftToRight)
         } else if viewModel.isInSearchMode {
             ZStack {
-                Text("General.nothingFound")
-                    .font(.iransansTitle)
+                if viewModel.isLoading {
+                    ListLoadingView(isLoading: $viewModel.isLoading)
+                } else {
+                    Text("General.nothingFound")
+                        .font(.iransansTitle)
+                }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .background(.ultraThickMaterial)

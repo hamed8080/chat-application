@@ -17,6 +17,7 @@ struct ContactListToolbar: View {
     var body: some View {
         VStack(spacing: 0) {
             ToolbarView(
+                searchId: "Tab.contacts",
                 title: "Tab.contacts",
                 leadingViews: leadingViews,
                 centerViews: centerViews,

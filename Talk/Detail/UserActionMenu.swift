@@ -30,9 +30,13 @@ struct UserActionMenu: View {
         }
 
         Button {
-            contactViewModel.block(.init(id: participant.contactId))
+            if participant.blocked == true, let contactId = participant.contactId {
+                contactViewModel.unblockWith(contactId)
+            } else {
+                contactViewModel.block(.init(id: participant.contactId))
+            }
         } label: {
-            Label("General.block", systemImage: "hand.raised")
+            Label(participant.blocked == true ? "General.unblock" : "General.block", systemImage: participant.blocked == true ? "hand.raised.slash" : "hand.raised")
         }
 
         if EnvironmentValues.isTalkTest {

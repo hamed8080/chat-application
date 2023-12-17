@@ -36,13 +36,6 @@ public final class ParticipantsViewModel: ObservableObject {
             }
             .store(in: &cancelable)
 
-        NotificationCenter.default.publisher(for: .participant)
-            .compactMap { $0.object as? ThreadEventTypes }
-            .sink { [weak self] event in
-                self?.onThreadEvent(event)
-            }
-            .store(in: &cancelable)
-
         NotificationCenter.default.publisher(for: .user)
             .compactMap { $0.object as? UserEventTypes }
             .sink { [weak self] event in
@@ -77,21 +70,10 @@ public final class ParticipantsViewModel: ObservableObject {
             onSearchedParticipants(chatResponse)
         case .deleted(let chatResponse):
             onDelete(chatResponse)
-        case .add(let chatResponse):
-            onAdded(chatResponse)
         case .setAdminRoleToUser(let response):
             onSetAdminRole(response)
         case .removeAdminRoleFromUser(let response):
             onRemoveAdminRole(response)
-        default:
-            break
-        }
-    }
-
-    private func onThreadEvent(_ event: ThreadEventTypes) {
-        switch event {
-        case .left(let response):
-            onLeft(response)
         default:
             break
         }
@@ -119,21 +101,10 @@ public final class ParticipantsViewModel: ObservableObject {
         }
     }
 
-    private func onLeft(_ response: ChatResponse<User>) {
+    public func onAdded(_ participants: [Participant]) {
         withAnimation {
-            removeParticipant(.init(id: response.result?.id))
-        }
-    }
-
-    private func onAdded(_ response: ChatResponse<Conversation>) {
-        if let participants = response.result?.participants {
-            withAnimation {
-                self.participants.insert(contentsOf: participants, at: 0)
-                if let participantCount = response.result?.participantCount {
-                    thread?.participantCount = participantCount
-                }
-                animateObjectWillChange()
-            }
+            self.participants.insert(contentsOf: participants, at: 0)
+            animateObjectWillChange()
         }
     }
 

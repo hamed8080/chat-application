@@ -53,20 +53,91 @@ public final class NavigationModel: ObservableObject {
                 self?.onThreadEvents(event)
             }
             .store(in: &cancelable)
+
+        NotificationCenter.default.publisher(for: .participant)
+            .compactMap { $0.object as? ParticipantEventTypes }
+            .sink { [weak self] event in
+                self?.onParticipantsEvents(event)
+            }
+            .store(in: &cancelable)
     }
 
     private func onThreadEvents(_ event: ThreadEventTypes) {
         switch event {
+        case .created(let response):
+            onCreated(response)
         case .deleted(let response):
-            removeFromStack(response)
+            onDeleted(response)
+        case .left(let response):
+            onLeft(response)
         default:
             break
         }
     }
 
-    private func removeFromStack(_ response: ChatResponse<Participant>) {
+    private func onParticipantsEvents(_ event: ParticipantEventTypes) {
+        switch event {
+        case .add(let response):
+            onAddParticipants(response)
+        default:
+            break
+        }
+    }
+
+    private func onDeleted(_ response: ChatResponse<Participant>) {
         if let index = pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
             pathsTracking.remove(at: index)
+        }
+    }
+
+    private func onLeft(_ response: ChatResponse<User>) {
+        let deletedUserId = response.result?.id
+        let myId = AppState.shared.user?.id
+        let threadsVM = AppState.shared.objectsContainer.threadsVM
+        let conversation = threadsVM.threads.first(where: {$0.id == response.subjectId})
+        let threadVM = threadStack.first(where: {$0.threadId == conversation?.id})
+        let participant = threadVM?.participantsViewModel.participants.first(where: {$0.id == deletedUserId})
+
+        if deletedUserId == myId {
+            if let conversation = conversation {
+                threadsVM.removeThread(conversation)
+            }
+
+            /// Remove the ThreadViewModel for cleaning the memory.
+            if let index = pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
+                pathsTracking.remove(at: index)
+            }
+
+            /// If I am in the detail view and press leave thread I should remove first DetailViewModel -> ThreadViewModel
+            /// That is the reason why we call paths.removeLast() twice.
+            if let index = pathsTracking.firstIndex(where: { ($0 as? DetailViewModel)?.thread?.id == response.subjectId }) {
+                pathsTracking.remove(at: index)
+                paths.removeLast()
+                paths.removeLast()
+            }
+        } else {
+            if let participant = participant {
+                threadVM?.participantsViewModel.removeParticipant(participant)
+            }
+            conversation?.participantCount = (conversation?.participantCount ?? 0) - 1
+            threadVM?.thread.participantCount = conversation?.participantCount
+            threadVM?.animateObjectWillChange()
+        }
+    }
+
+    func onAddParticipants(_ response: ChatResponse<Conversation>) {
+        let addedParticipants = response.result?.participants ?? []
+        let threadsVM = AppState.shared.objectsContainer.threadsVM
+        let conversation = threadsVM.threads.first(where: {$0.id == response.result?.id})
+        let threadVM = threadStack.first(where: {$0.threadId == conversation?.id})
+        conversation?.participantCount = response.result?.participantCount ?? (conversation?.participantCount ?? 0) + addedParticipants.count
+        threadVM?.participantsViewModel.onAdded(addedParticipants)
+        threadVM?.animateObjectWillChange()
+    }
+
+    func onCreated(_ response: ChatResponse<Conversation>) {
+        if let conversation = response.result, conversation.type == .selfThread {
+            append(thread: conversation)
         }
     }
 

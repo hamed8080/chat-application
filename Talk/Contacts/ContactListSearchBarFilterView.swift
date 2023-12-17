@@ -13,7 +13,7 @@ struct ContactListSearchBarFilterView: View {
     @Binding var isInSearchMode: Bool
     @EnvironmentObject var viewModel: ContactsViewModel
     enum Field: Hashable {
-        case saerch
+        case search
     }
     @FocusState var searchFocus: Field?
 
@@ -23,7 +23,7 @@ struct ContactListSearchBarFilterView: View {
                 TextField(String(localized: String.LocalizationValue("General.searchHere")), text: $viewModel.searchContactString)
                     .font(.iransansBody)
                     .textFieldStyle(.clear)
-                    .focused($searchFocus, equals: .saerch)
+                    .focused($searchFocus, equals: .search)
                     .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: 38)
                     .clipped()
                     .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top).combined(with: .opacity)))
@@ -63,9 +63,11 @@ struct ContactListSearchBarFilterView: View {
         .animation(.easeInOut.speed(2), value: isInSearchMode)
         .padding(EdgeInsets(top: isInSearchMode ? 4 : 0, leading: 4, bottom: isInSearchMode ? 6 : 0, trailing: 4))        
         .onReceive(NotificationCenter.default.publisher(for: .forceSearch)) { newValue in
-            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                isInSearchMode.toggle()
-                searchFocus = .saerch
+            if newValue.object as? String == "Tab.contacts" {
+                Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                    isInSearchMode.toggle()
+                    searchFocus = .search
+                }
             }
         }
     }
