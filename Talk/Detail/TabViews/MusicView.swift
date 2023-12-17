@@ -115,6 +115,8 @@ struct DownloadedMusicPlayer: View {
     let message: Message
     let fileURL: URL
     @EnvironmentObject var viewModel: AVAudioPlayerViewModel
+    /// Because of shared AVAudioPlayerViewModel we have to check that the file is the same.
+    /// There are cases where we can play more than one audio and pause them. In these situations, progress should be checked.
     var isSameFile: Bool { viewModel.fileURL?.absoluteString == fileURL.absoluteString }
     @State var failed = false
 

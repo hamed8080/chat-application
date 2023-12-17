@@ -53,7 +53,7 @@ struct MessageRowFileDownloaderContent: View {
             .onTapGesture {
                 Task {
                     _ = await message.makeTempURL()
-                    print("original disk url is:\(message.diskURL?.absoluteString ?? "")")
+                    print("original disk url is:\(message.fileURL?.absoluteString ?? "")")
                     print("url is:\(message.tempURL.absoluteString)")
                     await MainActor.run {
                         shareDownloadedFile.toggle()

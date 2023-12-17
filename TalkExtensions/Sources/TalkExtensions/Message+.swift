@@ -51,18 +51,25 @@ public extension Message {
     var reactionableType: Bool { ![MessageType.endCall, .endCall, .participantJoin, .participantLeft].contains(type) }
     var isMapType: Bool { fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil }
 
-    var diskURL: URL? {
-        guard let link = fileMetaData?.file?.link,
-            let url = URL(string: link),
-            let diskURL = ChatManager.activeInstance?.file.filePath(url)
-        else { return nil }
-        return diskURL
+
+    var fileHashCode: String { fileMetaData?.fileHash ?? fileMetaData?.file?.hashCode ?? "" }
+
+    var fileURL: URL? {
+        guard let url = url else { return nil }
+        let chat = ChatManager.activeInstance
+        return chat?.file.filePath(url) ?? chat?.file.filePathInGroup(url)
+    }
+
+    var url: URL? {
+        let path = isImage == true ? Routes.images.rawValue : Routes.files.rawValue
+        let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(path)/\(fileHashCode)"
+        return URL(string: url)
     }
 
     var hardLink: URL? {
         guard
             let name = fileMetaData?.name,
-            let diskURL = diskURL,
+            let diskURL = fileURL,
             let ext = fileMetaData?.file?.extension
         else { return nil }
         let hardLink = diskURL.appendingPathComponent(name).appendingPathExtension(ext)
@@ -82,7 +89,7 @@ public extension Message {
 
     func makeTempURL() async -> URL? {
         guard
-            let diskURL = diskURL,
+            let diskURL = fileURL,
             FileManager.default.fileExists(atPath: diskURL.path)
         else { return nil }
         do {

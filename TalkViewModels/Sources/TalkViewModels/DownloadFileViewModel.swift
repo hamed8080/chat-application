@@ -27,22 +27,13 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public var state: DownloadFileState = .undefined
     public var thumbnailData: Data?
     public var data: Data?
-    public var fileHashCode: String { message?.fileMetaData?.fileHash ?? message?.fileMetaData?.file?.hashCode ?? "" }
+    public var fileHashCode: String { message?.fileHashCode ?? "" }
     var chat: Chat? { ChatManager.activeInstance }
     var uniqueId: String = ""
-     public weak var message: Message?
+    public weak var message: Message?
     private var cancellableSet: Set<AnyCancellable> = .init()
-
-    public var fileURL: URL? {
-        guard let url = url else { return nil }
-        return chat?.file.filePath(url) ?? chat?.file.filePathInGroup(url)
-    }
-
-    public var url: URL? {
-        let path = message?.isImage == true ? Routes.images.rawValue : Routes.files.rawValue
-        let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(path)/\(fileHashCode)"
-        return URL(string: url)
-    }
+    public var fileURL: URL? { message?.fileURL }
+    public var url: URL? { message?.url }
 
     public init(message: Message) {
         self.message = message
@@ -176,21 +167,21 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     private func onSuspend(_ uniqueId: String) {
-        if RequestsManager.shared.value(for: self.uniqueId) != nil {
+        if RequestsManager.shared.value(for: self.uniqueId) != nil, uniqueId == self.uniqueId {
             state = .paused
             animateObjectWillChange()
         }
     }
 
     private func onResumed(_ uniqueId: String) {
-        if RequestsManager.shared.value(for: self.uniqueId) != nil {
+        if RequestsManager.shared.value(for: self.uniqueId) != nil, uniqueId == self.uniqueId {
             state = .downloading
             animateObjectWillChange()
         }
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
-        if RequestsManager.shared.value(for: self.uniqueId) != nil {
+        if RequestsManager.shared.value(for: self.uniqueId) != nil, uniqueId == self.uniqueId {
             self.downloadPercent = progress?.percent ?? 0
             animateObjectWillChange()
         }

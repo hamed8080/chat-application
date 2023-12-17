@@ -98,13 +98,18 @@ struct FileRowView: View {
             }
         }
         .sheet(isPresented: $shareDownloadedFile) {
-            if let fileURL = downloadViewModel.fileURL {
-                ActivityViewControllerWrapper(activityItems: [fileURL], title: message.fileMetaData?.file?.originalName)
-            }
+            ActivityViewControllerWrapper(activityItems: [message.tempURL], title: message.fileMetaData?.file?.originalName)
         }
         .onTapGesture {
             if downloadViewModel.state == .completed {
-                shareDownloadedFile.toggle()
+                Task {
+                    _ = await message.makeTempURL()
+                    print("original disk url is:\(message.fileURL?.absoluteString ?? "")")
+                    print("url is:\(message.tempURL.absoluteString)")
+                    await MainActor.run {
+                        shareDownloadedFile.toggle()
+                    }
+                }
             } else {
                 downloadViewModel.startDownload()
             }
