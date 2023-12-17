@@ -16,7 +16,7 @@ struct MutualThreadsView: View {
         StickyHeaderSection(header: "", height:  4)
         if !viewModel.mutualThreads.isEmpty {
             ForEach(viewModel.mutualThreads) { thread in
-                SelectThreadRow(thread: thread)
+                MutualThreadRow(thread: thread)
                     .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 0))
             }
         }

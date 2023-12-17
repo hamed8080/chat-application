@@ -12,8 +12,10 @@ import TalkUI
 import TalkViewModels
 
 struct ThreadRow: View {
+    /// It is essential in the case of forwarding. We don't want to highlight the row in forwarding mode.
+    var forceSelected: Bool?
     @EnvironmentObject var navVM: NavigationModel
-    var isSelected: Bool { navVM.selectedThreadId == thread.id }
+    var isSelected: Bool { forceSelected ?? (navVM.selectedThreadId == thread.id) }
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
 

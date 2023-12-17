@@ -75,6 +75,7 @@ extension ThreadViewModel {
         }
         attachmentsViewModel.clear()
         replyMessage = nil
+        focusOnTextInput = false
     }
 
     public func sendSingleReplyAttachment(_ attachmentFile: AttachmentFile?, _ replyMessageId: Int, _ textMessage: String) {

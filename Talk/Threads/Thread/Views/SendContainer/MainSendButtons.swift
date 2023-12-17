@@ -39,7 +39,8 @@ struct MainSendButtons: View {
                 text: $text,
                 textColor: UIColor(named: "message_text"),
                 backgroundColor: Color.App.bgSecond,
-                mention: true
+                mention: true,
+                focus: $viewModel.focusOnTextInput
             )
             .clipShape(RoundedRectangle(cornerRadius:(24)))
             .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)

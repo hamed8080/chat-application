@@ -143,7 +143,7 @@
 "Message.replyTo" = "پاسخ به";
 
 /* System Events */
-"SMT.isTyping" = "در حای تایپ...";
+"SMT.isTyping" = "در حال تایپ...";
 "SMT.recordVoice" = "در حال ضبط صدا";
 "SMT.uploadPicture" = "در حال ارسال تصویر";
 "SMT.uploadVideo" = "در حال ارسال ویدیو";

@@ -84,6 +84,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var seenPublisher = PassthroughSubject<Message, Never>()
     var hasSentHistoryRequest = false
     var createThreadCompletion: (()-> Void)?
+    public var focusOnTextInput: Bool = false
     public static var threadWidth: CGFloat = 0 {
         didSet {
             // 38 = Avatar width + tail width + leading padding + trailing padding

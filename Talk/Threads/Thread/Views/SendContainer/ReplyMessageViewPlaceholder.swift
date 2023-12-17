@@ -35,6 +35,7 @@ struct ReplyMessageViewPlaceholder: View {
                 Spacer()
                 CloseButton {
                     viewModel.replyMessage = nil
+                    viewModel.focusOnTextInput = false
                     viewModel.selectedMessagesViewModel.clearSelection()
                     viewModel.animateObjectWillChange()
                 }

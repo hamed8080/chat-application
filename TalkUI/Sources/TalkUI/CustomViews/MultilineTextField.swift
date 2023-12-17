@@ -13,6 +13,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
     @Binding var text: String
     var textColor: UIColor
     @Binding var calculatedHeight: CGFloat
+    @Binding var focus: Bool
     var keyboardReturnType: UIReturnKeyType = .done
     var mention: Bool = false
     var onDone: ((String?) -> Void)?
@@ -46,6 +47,9 @@ private struct UITextViewWrapper: UIViewRepresentable {
             }
             uiView.font = UIFont(name: "IRANSansX", size: 16)
             uiView.textColor = textColor
+        }
+        if focus {
+            uiView.becomeFirstResponder()
         }
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
     }
@@ -101,6 +105,7 @@ public struct MultilineTextField: View {
     var mention: Bool = false
 
     @Binding private var text: String
+    @Binding private var focus: Bool
     @State private var dynamicHeight: CGFloat = 64
     @State private var showingPlaceholder = false
 
@@ -111,6 +116,7 @@ public struct MultilineTextField: View {
          placeholderColor: Color = Color.App.placeholder,
          keyboardReturnType: UIReturnKeyType = .done,
          mention: Bool = false,
+         focus: Binding<Bool> = .constant(false),
          onDone: ((String?) -> Void)? = nil)
     {
         self.placeholder = placeholder
@@ -120,6 +126,7 @@ public struct MultilineTextField: View {
         self.backgroundColor = backgroundColor
         self.keyboardReturnType = keyboardReturnType
         self.mention = mention
+        self._focus = focus
         self.placeholderColor = placeholderColor
         _showingPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
@@ -128,6 +135,7 @@ public struct MultilineTextField: View {
         UITextViewWrapper(text: $text,
                           textColor: textColor ?? (colorScheme == .dark ? UIColor(named: "white") ?? .white : UIColor(named: "black") ?? .black),
                           calculatedHeight: $dynamicHeight,
+                          focus: $focus,
                           keyboardReturnType: keyboardReturnType,
                           mention: mention,
                           onDone: onDone)

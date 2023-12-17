@@ -11,6 +11,7 @@ import TalkUI
 struct SendContainerButton: View {
     let image: String?
     let imageColor: Color
+    let fontWeight: Font.Weight
     let textColor: Color
     let text: String?
     let action: (() -> Void)?
@@ -18,6 +19,7 @@ struct SendContainerButton: View {
     init(image: String? = nil,
          text: String? = nil,
          imageColor: Color = Color.App.primary,
+         fontWeight: Font.Weight = .medium,
          textColor: Color = Color.App.hint,
          action: (() -> Void)? = nil
     ) {
@@ -26,6 +28,7 @@ struct SendContainerButton: View {
         self.action = action
         self.textColor = textColor
         self.imageColor = imageColor
+        self.fontWeight = fontWeight
     }
 
     var body: some View {
@@ -40,6 +43,7 @@ struct SendContainerButton: View {
                     .scaledToFit()
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(imageColor)
+                    .fontWeight(fontWeight)
                     .frame(width: 12, height: 12)
             }
             if let text {

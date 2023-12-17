@@ -58,11 +58,12 @@ struct SelectConversationTab: View {
     @EnvironmentObject var viewModel: ThreadOrContactPickerViewModel
     var onSelect: (Conversation?, Contact?) -> Void
     @Environment(\.dismiss) var dismiss
+    private var conversations: [Conversation] { viewModel.conversations.sorted(by: {$0.type == .selfThread && $1.type != .selfThread }) }
 
     var body: some View {
         List {
-            ForEach(viewModel.conversations) { conversation in
-                ThreadRow(thread: conversation)
+            ForEach(conversations) { conversation in
+                ThreadRow(forceSelected: false, thread: conversation)
                     .listRowBackground(Color.App.bgPrimary)
                     .onTapGesture {
                         onSelect(conversation, nil)
@@ -74,7 +75,6 @@ struct SelectConversationTab: View {
         .animation(.easeInOut, value: viewModel.conversations.count)
     }
 }
-
 
 struct SelectContactTab: View {
     @EnvironmentObject var viewModel: ThreadOrContactPickerViewModel

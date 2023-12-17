@@ -76,7 +76,9 @@ struct SendContainer: View {
                 }
                 .onReceive(viewModel.$isInEditMode) { newValue in
                     if newValue != isInEditMode {
-                        isInEditMode = newValue
+                        withAnimation {
+                            isInEditMode = newValue
+                        }
                     }
                 }
                 .onChange(of: text) { newValue in

@@ -143,6 +143,9 @@ struct InnerMessage: View {
             MessageActionMenu()
         }
         .environmentObject(viewModel)
+        .onAppear {
+            hideKeyboard()
+        }
     }
 }
 

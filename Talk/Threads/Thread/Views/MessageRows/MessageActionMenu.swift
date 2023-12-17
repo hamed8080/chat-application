@@ -24,7 +24,8 @@ struct MessageActionMenu: View {
             ContextMenuButton(title: "Messages.ActionMenu.reply", image: "arrowshape.turn.up.left") {
                 withAnimation(animation(appear: threadVM?.replyMessage != nil)) {
                     threadVM?.replyMessage = message
-                    threadVM?.objectWillChange.send()
+                    threadVM?.focusOnTextInput = true
+                    threadVM?.animateObjectWillChange()
                 }
             }
 
