@@ -52,19 +52,18 @@ struct ThreadRow: View {
                             .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
                     }
                     Spacer()
-                    if let timeString = thread.time?.date.localFormattedTime {
-                        Text(timeString)
-                            .lineLimit(1)
-                            .font(.iransansCaption2)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.hint)
-                    }
-
                     if thread.pin == true {
                         Image(systemName: "pin.fill")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
                             .foregroundStyle(isSelected ? Color.App.white : Color.App.gray6)
+                    }
+                    if let timeString = thread.time?.date.localFormattedTime {
+                        Text(timeString)
+                            .lineLimit(1)
+                            .font(.iransansCaption2)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.hint)
                     }
                 }
                 HStack {

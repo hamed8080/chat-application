@@ -20,16 +20,6 @@ struct SelectionView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            if threadVM.selectedMessagesViewModel.selectedMessages.count == 1, let replyMessage = threadVM.selectedMessagesViewModel.selectedMessages.first?.message {
-                SendContainerButton(image: "arrow.turn.up.left", fontWeight: .bold) {
-                    threadVM.selectedMessagesViewModel.clearSelection()
-                    threadVM.isInEditMode = false /// To hide the selection view and show reply bar and send container
-                    threadVM.replyMessage = replyMessage
-                    threadVM.focusOnTextInput = true
-                    threadVM.animateObjectWillChange()
-                }
-            }
-
             SendContainerButton(image: "arrow.turn.up.right", fontWeight: .bold) {
                 threadVM.sheetType = .threadPicker
                 threadVM.animateObjectWillChange()

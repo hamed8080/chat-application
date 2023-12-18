@@ -67,7 +67,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         let timeCmp = calendar.dateComponents([.hour, .minute], from: date)
         let dateString = "\(dateCmp.year ?? 0)-\(dateCmp.month ?? 0)-\(dateCmp.day ?? 0)"
         let time = "\(timeCmp.hour ?? 0)-\(timeCmp.minute ?? 0)"
-        recordingFileName = "Voice-\(dateString)-\(time).m4a"
+        recordingFileName = "Voice-\(dateString)-\(time).wave"
         recordingOutputPath = recordingOutputBasePath?.appendingPathComponent(recordingFileName)
         guard let url = recordingOutputPath else { return }
         deleteFile()
@@ -77,7 +77,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
             try session.setActive(true)
 
             let settings = [
-                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                AVFormatIDKey: Int(kAudioFormatLinearPCM),
                 AVSampleRateKey: 44100,
                 AVNumberOfChannelsKey: 2,
                 AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,

@@ -37,7 +37,6 @@ public struct ListLoadingView: View {
                         }
                     }
                     .task {
-                        print("newTask started")
                         timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { timer in
                             if timer.isValid, isLoading {
                                 DispatchQueue.main.async {

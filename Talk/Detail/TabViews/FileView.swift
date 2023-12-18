@@ -104,8 +104,6 @@ struct FileRowView: View {
             if downloadViewModel.state == .completed {
                 Task {
                     _ = await message.makeTempURL()
-                    print("original disk url is:\(message.fileURL?.absoluteString ?? "")")
-                    print("url is:\(message.tempURL.absoluteString)")
                     await MainActor.run {
                         shareDownloadedFile.toggle()
                     }

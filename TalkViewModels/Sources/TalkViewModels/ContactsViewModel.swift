@@ -146,7 +146,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onContacts(_ response: ChatResponse<[Contact]>) {
-        if response.value(prepend: "GET-CONTACTS") != nil {
+        if !response.cache, response.value(prepend: "GET-CONTACTS") != nil {
             if let contacts = response.result {
                 firstSuccessResponse = !response.cache
                 appendOrUpdateContact(contacts)
@@ -313,8 +313,8 @@ public final class ContactsViewModel: ObservableObject {
             return
         }
         let req: AddContactRequest = isNumber ?
-            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil) :
-            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue)
+            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
+            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
         ChatManager.activeInstance?.contact.add(req)
     }
 

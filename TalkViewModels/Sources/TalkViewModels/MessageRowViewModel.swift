@@ -257,7 +257,7 @@ public final class MessageRowViewModel: ObservableObject {
             threadVM?.messageViewModels.removeAll(where: {$0.message.uniqueId == message.uniqueId})
             threadVM?.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId, subjectId: threadVM?.threadId))
             threadVM?.animateObjectWillChange()
-            print("Upload Message with uniqueId removed:\(message.uniqueId ?? "")")
+            Logger.viewModels.info("Upload Message with uniqueId removed:\(self.message.uniqueId ?? "")")
         }
     }
 
