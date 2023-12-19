@@ -43,14 +43,11 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var bottomLoading = false
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
     public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.messages.last?.id != thread.lastMessageVO?.id && hasNextBottom }
-    public var canShowMute: Bool { (thread.type == .channel || thread.type == .channelGroup) && (thread.admin == false || thread.admin == nil) && !isInEditMode }
     public var sections: ContiguousArray<MessageSection> = .init()
-    @Published public var editMessage: Message?
     public var replyMessage: Message?
     @Published public var isInEditMode: Bool = false
     @Published public var dismiss = false
 
-    public var mentionList: ContiguousArray<Participant> = .init()
     public var sheetType: ThreadSheetType?
     public var selectedLocation: MKCoordinateRegion = .init()
     public var isFetchedServerFirstResponse: Bool = false
@@ -62,10 +59,11 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var unreadMentionsViewModel: ThreadUnreadMentionsViewModel
     public var participantsViewModel: ParticipantsViewModel
     public var attachmentsViewModel: AttachmentsViewModel = .init()
+    public var mentionListPickerViewModel: MentionListPickerViewModel
+    public var sendContainerViewModel: SendContainerViewModel
     public var audioRecoderVM: AudioRecordingViewModel = .init()
     public weak var threadsViewModel: ThreadsViewModel?
     public var readOnly = false
-    public var textMessage: String?
     public var canScrollToBottomOfTheList: Bool = false
     private var cancelable: Set<AnyCancellable> = []
     private var typingTimerStarted = false
@@ -83,8 +81,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public weak var forwardMessage: Message?
     public var seenPublisher = PassthroughSubject<Message, Never>()
     var hasSentHistoryRequest = false
-    var createThreadCompletion: (()-> Void)?
-    public var focusOnTextInput: Bool = false
+    var createThreadCompletion: (()-> Void)?    
     public static var threadWidth: CGFloat = 0 {
         didSet {
             // 38 = Avatar width + tail width + leading padding + trailing padding
@@ -103,6 +100,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.unssetMessagesViewModel = .init(thread: thread)
         self.uploadMessagesViewModel = .init(thread: thread)
         self.unreadMentionsViewModel = .init(thread: thread)
+        self.mentionListPickerViewModel = .init(thread: thread)
+        self.sendContainerViewModel = .init(thread: thread)
         self.searchedMessagesViewModel = .init(threadId: thread.id ?? -1)
         self.selectedMessagesViewModel = .init()
         self.readOnly = readOnly
@@ -114,7 +113,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.canDownloadImages = canDownloadImagesInConversation()
         self.canDownloadFiles = canDownloadFilesInConversation()
         selectedMessagesViewModel.threadVM = self
-        moveToMessageTimeOnOpenConversation()
+        sendContainerViewModel.threadVM = self
     }
 
     private func setupNotificationObservers() {
@@ -133,8 +132,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             .filter{ [weak self] in $0.id ?? -1 >= self?.thread.lastSeenMessageId ?? 0 }
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()
-            .sink { [weak self] newVlaue in
-                self?.sendSeen(for: newVlaue)
+            .sink { [weak self] newValue in
+                self?.sendSeen(for: newValue)
             }
             .store(in: &cancelable)
 
@@ -425,28 +424,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         return false
     }
 
-    public func searchForParticipantInMentioning(_ text: String) {
-        if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
-            let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
-            let req = ThreadParticipantRequest(threadId: threadId, name: rangeText)
-            RequestsManager.shared.append(value: req)
-            ChatManager.activeInstance?.conversation.participant.get(req)
-        } else {
-            let mentionListWasFill = mentionList.count > 0
-            mentionList = []
-            if mentionListWasFill {
-                animateObjectWillChange()
-            }
-        }
-    }
-
-    func onMentionParticipants(_ response: ChatResponse<[Participant]>) {
-        if let mentionList = response.result, response.value != nil {
-            self.mentionList = .init(mentionList)
-            animateObjectWillChange()
-        }
-    }
-    
     public func clearCacheFile(message: Message) {
         if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
             let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(Routes.files.rawValue)/\(fileHashCode)"

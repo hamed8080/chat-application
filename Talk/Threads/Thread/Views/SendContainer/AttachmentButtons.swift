@@ -13,18 +13,16 @@ import TalkViewModels
 
 struct AttachmentButtons: View {
     let viewModel: AttachmentsViewModel
-    @Binding var showActionButtons: Bool
 
     var body: some View {
-        MutableAttachmentDialog(showActionButtons: $showActionButtons)
+        MutableAttachmentDialog()
             .environmentObject(viewModel)
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
     }
 }
 
 struct MutableAttachmentDialog: View {
-    @Binding var showActionButtons: Bool
-    @EnvironmentObject var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: SendContainerViewModel
     @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
@@ -33,7 +31,7 @@ struct MutableAttachmentDialog: View {
 
             AttchmentButtonItem(title: "General.gallery", image: "photo.fill") {
                 threadVM.sheetType = .galleryPicker
-                showActionButtons.toggle()
+                viewModel.showActionButtons.toggle()
                 threadVM.animateObjectWillChange()
             }
 
@@ -41,7 +39,7 @@ struct MutableAttachmentDialog: View {
 
             AttchmentButtonItem(title: "General.file", image: "doc.fill") {
                 threadVM.sheetType = .filePicker
-                showActionButtons.toggle()
+                viewModel.showActionButtons.toggle()
                 threadVM.animateObjectWillChange()
             }
 
@@ -49,7 +47,7 @@ struct MutableAttachmentDialog: View {
 
             AttchmentButtonItem(title: "General.location", image: "location.fill") {
                 threadVM.sheetType = .locationPicker
-                showActionButtons.toggle()
+                viewModel.showActionButtons.toggle()
                 threadVM.animateObjectWillChange()
             }
 
@@ -57,7 +55,7 @@ struct MutableAttachmentDialog: View {
 
             AttchmentButtonItem(title: "General.contact", image: "person.2.crop.square.stack.fill") {
                 threadVM.sheetType = .contactPicker
-                showActionButtons.toggle()
+                viewModel.showActionButtons.toggle()
                 threadVM.animateObjectWillChange()
             }
             .disabled(!EnvironmentValues.isTalkTest)
@@ -66,7 +64,7 @@ struct MutableAttachmentDialog: View {
         }
         .font(.iransansBody)
         .padding()
-        .animation(.easeInOut, value: showActionButtons)
+        .animation(.easeInOut, value: viewModel.showActionButtons)
         .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
     }
 }
@@ -102,8 +100,9 @@ struct AttchmentButtonItem: View {
                 }
             }
             Text(String(localized: .init(title)))
-                .font(.iransansCaption2)
+                .font(.iransansCaption3)
                 .foregroundStyle(Color.App.hint)
+                .multilineTextAlignment(.center)
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -124,7 +123,7 @@ struct AttchmentButtonItem: View {
 
 struct AttachmentDialog_Previews: PreviewProvider {
     static var previews: some View {
-        AttachmentButtons(viewModel: .init(), showActionButtons: .constant(false))
+        AttachmentButtons(viewModel: .init())
         //            AttchmentButtonItem(title: "Contacts", image: "person.fill") {
         //
         //            }

@@ -24,7 +24,7 @@ extension ThreadViewModel {
             sendReplyPrivaetlyMessage(textMessage)
         } else if let replyMessage = replyMessage, let replyMessageId = replyMessage.id {
             sendReplyMessage(replyMessageId, textMessage)
-        } else if editMessage != nil {
+        } else if sendContainerViewModel.editMessage != nil {
             sendEditMessage(textMessage)
         } else if attachmentsViewModel.attachments.count > 0 {
             sendAttachmentsMessage(textMessage)
@@ -75,7 +75,7 @@ extension ThreadViewModel {
         }
         attachmentsViewModel.clear()
         replyMessage = nil
-        focusOnTextInput = false
+        sendContainerViewModel.focusOnTextInput = false
     }
 
     public func sendSingleReplyAttachment(_ attachmentFile: AttachmentFile?, _ replyMessageId: Int, _ textMessage: String) {
@@ -164,7 +164,7 @@ extension ThreadViewModel {
             self.canScrollToBottomOfTheList = true
             let uploadRequest = UploadFileRequest(data: data,
                                                   fileExtension: ".\(audioFileURL.fileExtension)",
-                                                  fileName: audioFileURL.fileName,
+                                                  fileName: "\(audioFileURL.fileName).\(audioFileURL.fileExtension)",
                                                   mimeType: audioFileURL.mimeType,
                                                   userGroupHash: self.thread.userGroupHash)
             let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: "", messageType: .podSpaceVoice)
@@ -199,7 +199,8 @@ extension ThreadViewModel {
 
     public func sendForwardMessages() {
         if let req = AppState.shared.appStateNavigationModel.forwardMessageRequest {
-            if let textMessage = textMessage, !textMessage.isEmpty {
+            let textMessage = sendContainerViewModel.textMessage
+            if !textMessage.isEmpty {
                 let messageReq = SendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .text)
                 ChatManager.activeInstance?.message.send(messageReq)
                 Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
@@ -270,7 +271,8 @@ extension ThreadViewModel {
                                                       mimeType: url.mimeType,
                                                       originalName: "\(url.fileName).\(url.fileExtension)",
                                                       userGroupHash: self.thread.userGroupHash)
-                let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: messageType)
+                let textMessage = self.sendContainerViewModel.textMessage
+                let textRequest = textMessage.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: messageType)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
                 self.uploadMessagesViewModel.append(contentsOf: [request])
@@ -290,7 +292,8 @@ extension ThreadViewModel {
                                                       fileName: "\(item.name ?? "").\(item.ext ?? "")", // it should have file name and extension
                                                       mimeType: nil,
                                                       userGroupHash: self.thread.userGroupHash)
-                let textRequest = self.textMessage == nil || self.textMessage?.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .podSpaceFile)
+                let textMessage = self.sendContainerViewModel.textMessage
+                let textRequest = textMessage.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .podSpaceFile)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
                 self.uploadMessagesViewModel.append(contentsOf: ([request]))
@@ -300,12 +303,12 @@ extension ThreadViewModel {
     }
 
     public func sendEditMessage(_ textMessage: String) {
-        guard let editMessage = editMessage, let messageId = editMessage.id else { return }
+        guard let editMessage = sendContainerViewModel.editMessage, let messageId = editMessage.id else { return }
         let req = EditMessageRequest(threadId: threadId,
                                      messageType: .text,
                                      messageId: messageId,
                                      textMessage: textMessage)
-        self.editMessage = nil
+        sendContainerViewModel.editMessage = nil
         isInEditMode = false
         ChatManager.activeInstance?.message.edit(req)
     }

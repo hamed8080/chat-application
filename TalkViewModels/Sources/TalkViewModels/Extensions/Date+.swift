@@ -17,6 +17,10 @@ public extension Date {
     var yearCondence: String? {
         yearCondence(local: Language.preferredLocale)
     }
+
+    var localTimeOrDate: String? {
+        timeOrDate(local: Language.preferredLocale)
+    }
 }
 
 public extension Int {

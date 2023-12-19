@@ -14,7 +14,7 @@ struct EditMessagePlaceholderView: View {
     @EnvironmentObject var viewModel: ThreadViewModel
 
     var body: some View {
-        if let editMessage = viewModel.editMessage {
+        if let editMessage = viewModel.sendContainerViewModel.editMessage {
             HStack {
                 SendContainerButton(image: "pencil")
                 VStack(alignment: .leading, spacing: 0) {
@@ -34,8 +34,8 @@ struct EditMessagePlaceholderView: View {
                 Spacer()
                 CloseButton {
                     viewModel.isInEditMode = false
-                    viewModel.editMessage = nil
-                    viewModel.textMessage = nil
+                    viewModel.sendContainerViewModel.editMessage = nil
+                    viewModel.sendContainerViewModel.textMessage = ""
                     viewModel.animateObjectWillChange()
                 }
                 .padding(.trailing, 4)
@@ -49,7 +49,7 @@ struct EditMessagePlaceholderView_Previews: PreviewProvider {
     struct Preview: View {
         var viewModel: ThreadViewModel {
             let viewModel = ThreadViewModel(thread: .init(id: 1))
-            viewModel.editMessage = .init(threadId: 1,
+            viewModel.sendContainerViewModel.editMessage = .init(threadId: 1,
                                           message: "Test message", messageType: .text,
                                           participant: .init(name: "John Doe"))
             return viewModel

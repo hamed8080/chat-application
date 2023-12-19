@@ -24,7 +24,7 @@ struct MessageActionMenu: View {
             ContextMenuButton(title: "Messages.ActionMenu.reply", image: "arrowshape.turn.up.left") {
                 withAnimation(animation(appear: threadVM?.replyMessage != nil)) {
                     threadVM?.replyMessage = message
-                    threadVM?.focusOnTextInput = true
+                    threadVM?.sendContainerViewModel.focusOnTextInput = true
                     threadVM?.animateObjectWillChange()
                 }
             }
@@ -60,8 +60,8 @@ struct MessageActionMenu: View {
 
             if viewModel.canEdit {
                 ContextMenuButton(title: "General.edit", image: "pencil.circle") {
-                    withAnimation(animation(appear: threadVM?.editMessage != nil)) {
-                        threadVM?.editMessage = message
+                    withAnimation(animation(appear: threadVM?.sendContainerViewModel.editMessage != nil)) {
+                        threadVM?.sendContainerViewModel.editMessage = message
                         threadVM?.objectWillChange.send()
                     }
                 }
@@ -79,16 +79,18 @@ struct MessageActionMenu: View {
             }
 
             Group {
-                if viewModel.message.isImage,
-                   let url = viewModel.downloadFileVM?.fileURL,
-                   let data = try? Data(contentsOf: url),
-                   let image = UIImage(data: data) {
-                    ContextMenuButton(title: "Messages.ActionMenu.saveImage", image: "square.and.arrow.down") {
-                        UIImageWriteToSavedPhotosAlbum(image, viewModel, nil, nil)
-                        let icon = Image(systemName: "externaldrive.badge.checkmark")
-                            .fontWeight(.semibold)
-                            .foregroundStyle(Color.App.white)
-                        AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, text: "General.imageSaved")
+                if EnvironmentValues.isTalkTest {
+                    if viewModel.message.isImage,
+                       let url = viewModel.downloadFileVM?.fileURL,
+                       let data = try? Data(contentsOf: url),
+                       let image = UIImage(data: data) {
+                        ContextMenuButton(title: "Messages.ActionMenu.saveImage", image: "square.and.arrow.down") {
+                            UIImageWriteToSavedPhotosAlbum(image, viewModel, nil, nil)
+                            let icon = Image(systemName: "externaldrive.badge.checkmark")
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color.App.white)
+                            AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, text: "General.imageSaved")
+                        }
                     }
                 }
 

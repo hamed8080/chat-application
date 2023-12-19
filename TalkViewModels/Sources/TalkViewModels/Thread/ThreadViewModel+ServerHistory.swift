@@ -34,7 +34,9 @@ extension ThreadViewModel {
     public func startFetchingHistory() {
         /// We check this to prevent recalling these methods when the view reappears again.
         /// If centerLoading is true it is mean theat the array has gotten clear for Scenario 6 to move to a time.
-        if sections.count > 0 || centerLoading { return }
+        let hasAnythingToLoadOnOpen = AppState.shared.appStateNavigationModel.moveToMessageId != nil
+        moveToMessageTimeOnOpenConversation()
+        if sections.count > 0 || centerLoading || hasAnythingToLoadOnOpen { return }
         hasSentHistoryRequest = true
         tryFirstScenario()
         trySecondScenario()

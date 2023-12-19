@@ -141,7 +141,9 @@ struct InfoView: View {
                 }
 
                 if let notSeenString = viewModel.notSeenString {
-                    Text(notSeenString)
+                    let localized = String(localized: .init("Contacts.lastVisited"))
+                    let formatted = String(format: localized, notSeenString)
+                    Text(formatted)
                         .font(.iransansCaption3)
                 }
             }

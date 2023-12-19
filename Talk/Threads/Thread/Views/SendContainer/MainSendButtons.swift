@@ -11,22 +11,20 @@ import TalkExtensions
 import TalkUI
 
 struct MainSendButtons: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
-    @Binding var showActionButtons: Bool
-    @Binding var text: String
-    @State var isVideoRecordingSelected = false
+    @EnvironmentObject var viewModel: SendContainerViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
         HStack(spacing: 0) {
             Button {
-                withAnimation(animation(appear: !showActionButtons)) {
-                    showActionButtons.toggle()
+                withAnimation(animation(appear: !viewModel.showActionButtons)) {
+                    viewModel.showActionButtons.toggle()
                 }
             } label: {
                 Image(systemName: "plus.circle.fill")
                     .resizable()
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.white, showActionButtons ? Color.App.hint.opacity(0.5) : Color.App.primary)
+                    .foregroundStyle(Color.App.white, viewModel.showActionButtons ? Color.App.hint.opacity(0.5) : Color.App.primary)
                     .frame(width: 26, height: 26)
             }
             .frame(width: 48, height: 48)
@@ -35,8 +33,8 @@ struct MainSendButtons: View {
             .fontWeight(.light)
 
             MultilineTextField(
-                text.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
-                text: $text,
+                viewModel.textMessage.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
+                text: $viewModel.textMessage,
                 textColor: UIColor(named: "message_text"),
                 backgroundColor: Color.App.bgSecond,
                 mention: true,
@@ -44,33 +42,31 @@ struct MainSendButtons: View {
             )
             .clipShape(RoundedRectangle(cornerRadius:(24)))
             .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
-            .onChange(of: viewModel.textMessage ?? "") { newValue in
-                viewModel.sendStartTyping(newValue)
+            .onChange(of: viewModel.textMessage) { newValue in
+                threadVM.sendStartTyping(newValue)
             }
 
-            let showAudio = text.isEmpty && !isVideoRecordingSelected
             Button {
-                viewModel.attachmentsViewModel.clear()
-                viewModel.setupRecording()
+                threadVM.attachmentsViewModel.clear()
+                threadVM.setupRecording()
             } label: {
                 Image(systemName: "mic.fill")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: showAudio ? 26 : 0, height: showAudio ? 26 : 0)
+                    .frame(width: viewModel.showAudio ? 26 : 0, height: viewModel.showAudio ? 26 : 0)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(Color.App.hint)
             }
-            .frame(width: showAudio ? 48 : 0, height: showAudio ? 48 : 0)
+            .frame(width: viewModel.showAudio ? 48 : 0, height: viewModel.showAudio ? 48 : 0)
             .buttonStyle(.borderless)
             .fontWeight(.light)
-//            .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
+            //            .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
             .highPriorityGesture(switchRecordingGesture)
             .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
-
-            let showCamera = text.isEmpty && isVideoRecordingSelected
-            if showCamera {
+            
+            if viewModel.showCamera {
                 Button {
-                    viewModel.setupRecording()
+                    threadVM.setupRecording()
                 } label: {
                     Image(systemName: "camera")
                         .resizable()
@@ -82,7 +78,7 @@ struct MainSendButtons: View {
                 .frame(width: 48, height: 48)
                 .buttonStyle(.borderless)
                 .fontWeight(.light)
-//                .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
+                //                .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
                 .disabled(true)
                 .opacity(0.2)
                 .highPriorityGesture(switchRecordingGesture)
@@ -90,31 +86,28 @@ struct MainSendButtons: View {
             }
 
             Button {
-                if showSendButton {
-                    viewModel.sendTextMessage(text)
+                if viewModel.showSendButton {
+                    threadVM.sendTextMessage(viewModel.textMessage)
                 }
-                text = ""
-                viewModel.sheetType = nil
-                viewModel.animateObjectWillChange()
-                UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
+                viewModel.textMessage = ""
+                threadVM.mentionListPickerViewModel.text = ""
+                threadVM.sheetType = nil
+                threadVM.animateObjectWillChange()
+                UserDefaults.standard.removeObject(forKey: "draft-\(threadVM.threadId)")
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: showSendButton ? 26 : 0, height: showSendButton ? 26 : 0)
+                    .frame(width: viewModel.showSendButton ? 26 : 0, height: viewModel.showSendButton ? 26 : 0)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(Color.App.white, Color.App.primary)
             }
-            .frame(width: showSendButton ? 48 : 0, height: showSendButton ? 48 : 0)
+            .frame(width: viewModel.showSendButton ? 48 : 0, height: viewModel.showSendButton ? 48 : 0)
             .buttonStyle(.borderless)
             .fontWeight(.light)
-//            .keyboardShortcut(.return, modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
+            //            .keyboardShortcut(.return, modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.3), value: isVideoRecordingSelected)
-    }
-
-    private var showSendButton: Bool {
-        !text.isEmpty || viewModel.attachmentsViewModel.attachments.count > 0 || AppState.shared.appStateNavigationModel.forwardMessageRequest != nil
+        .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.3), value: viewModel.isVideoRecordingSelected)
     }
 
     private func animation(appear: Bool) -> Animation {
@@ -125,7 +118,7 @@ struct MainSendButtons: View {
         DragGesture(minimumDistance: 10, coordinateSpace: .local)
             .onEnded { newValue in
                 if abs(newValue.translation.height) > 32 {
-                    isVideoRecordingSelected.toggle()
+                    viewModel.isVideoRecordingSelected.toggle()
                 }
             }
     }
@@ -133,6 +126,6 @@ struct MainSendButtons: View {
 
 struct MainSendButtons_Previews: PreviewProvider {
     static var previews: some View {
-        MainSendButtons(showActionButtons: .constant(true), text: .constant("test"))
+        MainSendButtons()
     }
 }

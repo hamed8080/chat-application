@@ -12,7 +12,8 @@ import TalkUI
 import Chat
 
 struct MuteChannelViewPlaceholder: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
+    @EnvironmentObject var viewModel: SendContainerViewModel
     @State var mute: Bool = false
 
     var body: some View {
@@ -32,21 +33,21 @@ struct MuteChannelViewPlaceholder: View {
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
             .onTapGesture {
-                viewModel.threadsViewModel?.toggleMute(viewModel.thread)
+                threadVM.threadsViewModel?.toggleMute(threadVM.thread)
             }
             .onReceive(NotificationCenter.default.publisher(for: .thread)) { newValue in
                 if let event = newValue.object as? ThreadEventTypes {
-                    if case let .mute(response) = event, response.subjectId == viewModel.threadId {
+                    if case let .mute(response) = event, response.subjectId == threadVM.threadId {
                         mute = true
                     }
 
-                    if case let .unmute(response) = event, response.subjectId == viewModel.threadId {
+                    if case let .unmute(response) = event, response.subjectId == threadVM.threadId {
                         mute = false
                     }
                 }
             }
             .onAppear {
-                mute = viewModel.thread.mute ?? false
+                mute = threadVM.thread.mute ?? false
             }
             .animation(.easeInOut, value: mute)
         }

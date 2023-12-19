@@ -90,6 +90,7 @@ struct ThreadSheetView: View {
                                                              height: 0,
                                                              originalFilename: provider.suggestedName ?? "unknown")
                                         self.viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+                                        viewModel.animateObjectWillChange() /// Send button to appear
                                     }
                                 }
                             }
@@ -104,6 +105,7 @@ struct ThreadSheetView: View {
                                                      height: Int(image.size.height),
                                                      originalFilename: provider.suggestedName ?? "unknown")
                                 viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+                                viewModel.animateObjectWillChange() /// Send button to appear
                             }
                         }
                     }

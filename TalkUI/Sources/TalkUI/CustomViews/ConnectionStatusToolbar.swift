@@ -23,8 +23,9 @@ public struct ConnectionStatusToolbar: View {
             HStack {
                 let localized = String(localized: .init(connectionStatus.stringValue))
                 Text(localized)
-                    .font(.iransansBoldCaption3)
-                    .foregroundColor(Color.App.hint)
+                    .fixedSize()
+                    .foregroundColor(Color.App.gray1)
+                    .font(.iransansFootnote)
                     .onReceive(appstate.$connectionStatus) { newSate in
                         if EnvironmentValues.isTalkTest {
                             connectionStatus = newSate
@@ -37,7 +38,7 @@ public struct ConnectionStatusToolbar: View {
                         }
                     }
                 ThreeDotAnimation()
-                    .frame(width: 26, height: 8)
+                    .frame(width: 26)
             }
         } else {
             EmptyView()

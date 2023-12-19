@@ -28,7 +28,8 @@ struct ThreadView: View, DropDelegate {
             .background(SheetEmptyBackground())
             .onDrop(of: [.image], delegate: self)
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                SendContainer(viewModel: viewModel)
+                SendContainer(threadVM: viewModel)
+                    .environmentObject(viewModel.sendContainerViewModel)
                     .environmentObject(viewModel.audioRecoderVM)
             }
             .safeAreaInset(edge: .top, spacing: 0) {

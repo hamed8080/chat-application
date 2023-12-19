@@ -67,7 +67,7 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         let timeCmp = calendar.dateComponents([.hour, .minute], from: date)
         let dateString = "\(dateCmp.year ?? 0)-\(dateCmp.month ?? 0)-\(dateCmp.day ?? 0)"
         let time = "\(timeCmp.hour ?? 0)-\(timeCmp.minute ?? 0)"
-        recordingFileName = "Voice-\(dateString)-\(time).wave"
+        recordingFileName = "Voice-\(dateString)-\(time).wav"
         recordingOutputPath = recordingOutputBasePath?.appendingPathComponent(recordingFileName)
         guard let url = recordingOutputPath else { return }
         deleteFile()

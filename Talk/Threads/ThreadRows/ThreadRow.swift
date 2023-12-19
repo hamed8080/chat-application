@@ -59,7 +59,7 @@ struct ThreadRow: View {
                             .frame(width: 16, height: 16)
                             .foregroundStyle(isSelected ? Color.App.white : Color.App.gray6)
                     }
-                    if let timeString = thread.time?.date.localFormattedTime {
+                    if let timeString = thread.time?.date.localTimeOrDate {
                         Text(timeString)
                             .lineLimit(1)
                             .font(.iransansCaption2)
@@ -72,12 +72,12 @@ struct ThreadRow: View {
                     Spacer()
                     if let unreadCountString = thread.unreadCountString {
                         Text(unreadCountString)
-                            .font(.iransansCaption2)
+                            .font(.iransansBoldCaption2)
                             .padding(thread.isCircleUnreadCount ? 4 : 6)
                             .frame(height: 24)
                             .frame(minWidth: 24)
-                            .foregroundStyle(Color.App.textOverlay)
-                            .background(isSelected ? Color.App.white : Color.App.primary)
+                            .foregroundStyle(thread.mute == true ? Color.App.text : Color.App.textOverlay)
+                            .background(thread.mute == true ? Color.App.gray7 : isSelected ? Color.App.white : Color.App.primary)
                             .clipShape(RoundedRectangle(cornerRadius:(thread.isCircleUnreadCount ? 16 : 10)))
                     }
 

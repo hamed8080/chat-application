@@ -24,7 +24,7 @@ public struct SendTextViewWithButtons: View {
 
             MultilineTextField(text.isEmpty == true ? String(localized: .init("General.typeMessageHere")) : "", text: $text, textColor: UIColor(named: "message_text"), mention: true)
                 .clipShape(RoundedRectangle(cornerRadius:(16)))
-                .onChange(of: viewModel.textMessage ?? "") { newValue in
+                .onChange(of: viewModel.sendContainerViewModel.textMessage) { newValue in
                     viewModel.sendStartTyping(newValue)
                 }
 
@@ -48,14 +48,13 @@ public struct SendTextViewWithButtons: View {
         )
         .opacity(viewModel.thread.type == .channel && viewModel.thread.admin == false ? 0.3 : 1.0)
         .disabled(viewModel.thread.type == .channel && viewModel.thread.admin == false)
-        .onReceive(viewModel.$editMessage) { editMessage in
+        .onReceive(viewModel.sendContainerViewModel.$editMessage) { editMessage in
             if let editMessage = editMessage {
                 text = editMessage.message ?? ""
             }
         }
         .onChange(of: text) { newValue in
-            viewModel.searchForParticipantInMentioning(newValue)
-            viewModel.textMessage = newValue
+            viewModel.sendContainerViewModel.textMessage = newValue
         }
     }
 }

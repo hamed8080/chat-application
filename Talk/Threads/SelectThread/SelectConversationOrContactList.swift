@@ -23,13 +23,13 @@ struct SelectConversationOrContactList: View {
         self.onSelect = onSelect
         tabs = [
             .init(title: "Tab.chats", view: AnyView(SelectConversationTab(onSelect: onSelect))),
-//            .init(title: "Tab.contacts", view: AnyView(SelectContactTab(onSelect: onSelect)))
+            .init(title: "Tab.contacts", view: AnyView(SelectContactTab(onSelect: onSelect)))
         ]
     }
 
     var body: some View {
         CustomTabView(selectedTabIndex: $selectedTabId, tabs: tabs)
-            .frame(minWidth: 0, maxWidth: .infinity)
+            .frame(minWidth: 300, maxWidth: .infinity)/// We have to use a fixed minimum width for a bug tabs goes to the end.
             .environmentObject(viewModel)
             .background(Color.App.bgPrimary)
             .listStyle(.plain)

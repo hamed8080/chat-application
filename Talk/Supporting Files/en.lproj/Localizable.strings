@@ -240,7 +240,7 @@
 "Participant.Search.Type.admin" = "Admin";
 "Participant.admin" = "Admin";
 "Participant.online" = "Online";
-"Participant.inviter" = "Inviter";
+"Participant.owner" = "Owner";
 "Participant.assistant" = "Assistant";
 "Participant.addAdminAccess" = "Add Admin Access";
 "Participant.removeAdminAccess" = "Remove Admin Access";

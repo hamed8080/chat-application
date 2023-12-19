@@ -65,6 +65,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                         viewModel.globalFrame = globalFrame
                         viewModel.mainView = AnyView(root)
                         viewModel.isPresented.toggle()
+                        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                     }
                 }
             }

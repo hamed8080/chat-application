@@ -15,17 +15,6 @@ extension ThreadViewModel {
             onMessageEvent(messageEventTypes)
         case .thread(let threadEventTypes):
             onThreadEvent(threadEventTypes)
-        case .participant(let participantEventTypes):
-            onParticipantEvent(participantEventTypes)
-        default:
-            break
-        }
-    }
-
-    public func onParticipantEvent(_ event: ParticipantEventTypes?) {
-        switch event {
-        case .participants(let response):
-            onMentionParticipants(response)
         default:
             break
         }

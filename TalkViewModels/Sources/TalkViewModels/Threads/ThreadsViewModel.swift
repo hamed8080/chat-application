@@ -104,7 +104,9 @@ public final class ThreadsViewModel: ObservableObject {
             getThreads()
         } else if status == .connected, firstSuccessResponse == true {
             // After connecting again
-            refreshThreadsUnreadCount()
+            offset = 0
+            getThreads()
+//            refreshThreadsUnreadCount()
         }
     }
 

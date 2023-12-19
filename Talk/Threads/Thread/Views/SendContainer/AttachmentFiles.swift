@@ -31,6 +31,7 @@ struct AttachmentFiles: View {
 struct SingleAttachmentFile: View {
     @EnvironmentObject var viewModel: AttachmentsViewModel
     let attachment: AttachmentFile
+    @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
@@ -74,6 +75,7 @@ struct SingleAttachmentFile: View {
             Spacer()
             Button {
                 viewModel.remove(attachment)
+                threadVM.animateObjectWillChange() /// Send button to appear
             } label: {
                 Image(systemName: "xmark")
                     .resizable()
@@ -129,6 +131,7 @@ struct ListAttachmentFile: View {
 
 struct ExpandHeader: View {
     @EnvironmentObject var viewModel: AttachmentsViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
         HStack {
@@ -141,6 +144,7 @@ struct ExpandHeader: View {
             Button {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2)) {
                     viewModel.clear()
+                    threadVM.animateObjectWillChange()
                 }
             } label: {
                 Text("General.cancel")

@@ -15,31 +15,28 @@ import Chat
 import TalkExtensions
 
 struct SendContainer: View {
-    @State private var isInEditMode: Bool = false
-    let viewModel: ThreadViewModel
-    @State private var text: String = ""
-    /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
-    @State var showActionButtons: Bool = false
+    @EnvironmentObject var viewModel: SendContainerViewModel
+    let threadVM: ThreadViewModel
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            if showActionButtons {
+            if viewModel.showActionButtons {
                 Rectangle()
                     .fill(Color.App.black.opacity(0.5))
                     .onTapGesture {
                         withAnimation(.easeOut(duration: 0.13)) {
-                            showActionButtons.toggle()
+                            viewModel.showActionButtons.toggle()
                         }
                     }
             }
             VStack(spacing: 0) {
                 SendContainerOverButtons()
                 AttachmentFiles()
-                    .environmentObject(viewModel.attachmentsViewModel)
+                    .environmentObject(threadVM.attachmentsViewModel)
                 VStack(spacing: 0) {
-                    if isInEditMode {
-                        SelectionView(threadVM: viewModel)
-                            .environmentObject(viewModel.selectedMessagesViewModel)
+                    if viewModel.isInEditMode {
+                        SelectionView(threadVM: threadVM)
+                            .environmentObject(threadVM.selectedMessagesViewModel)
                     } else if viewModel.canShowMute {
                         MuteChannelViewPlaceholder()
                             .padding(10)
@@ -50,79 +47,70 @@ struct SendContainer: View {
                             .environmentObject(viewModel)
                         ReplyMessageViewPlaceholder()
                             .environmentObject(viewModel)
-                        MentionList(text: $text)
-                            .frame(maxHeight: 320)
+                        MentionList()
+                            .environmentObject(threadVM.mentionListPickerViewModel)
                             .environmentObject(viewModel)
                         EditMessagePlaceholderView()
                             .environmentObject(viewModel)
-
-                        if showActionButtons {
-                            AttachmentButtons(viewModel: viewModel.attachmentsViewModel, showActionButtons: $showActionButtons)
+                        if viewModel.showActionButtons {
+                            AttachmentButtons(viewModel: threadVM.attachmentsViewModel)
                         }
-                        AudioOrTextContainer(text: $text, showActionButtons: $showActionButtons, threadId: viewModel.threadId)
+                        AudioOrTextContainer()
                     }
                 }
-                .opacity(disableSend ? 0.3 : 1.0)
-                .disabled(disableSend)
+                .opacity(viewModel.disableSend ? 0.3 : 1.0)
+                .disabled(viewModel.disableSend)
                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: text.isEmpty)
+                .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: viewModel.textMessage.isEmpty)
                 .background(
                     MixMaterialBackground()
-                        .cornerRadius(showActionButtons && viewModel.attachmentsViewModel.attachments.count == 0 ? 24 : 0, corners: [.topLeft, .topRight])
+                        .cornerRadius(viewModel.showActionButtons && threadVM.attachmentsViewModel.attachments.count == 0 ? 24 : 0, corners: [.topLeft, .topRight])
                         .ignoresSafeArea()
                 )
                 .onReceive(viewModel.$editMessage) { editMessage in
-                    text = editMessage?.message ?? ""
+                    viewModel.textMessage = editMessage?.message ?? ""
                 }
-                .onReceive(viewModel.$isInEditMode) { newValue in
-                    if newValue != isInEditMode {
+                .onReceive(threadVM.$isInEditMode) { newValue in
+                    if newValue != viewModel.isInEditMode {
                         withAnimation {
-                            isInEditMode = newValue
+                            viewModel.isInEditMode = newValue
                         }
                     }
                 }
-                .onChange(of: text) { newValue in
-                    viewModel.searchForParticipantInMentioning(newValue)
-                    if newValue != viewModel.textMessage {
-                        viewModel.textMessage = newValue
-                    }
+                .onReceive(viewModel.$textMessage) { newValue in
+                    threadVM.mentionListPickerViewModel.text = newValue
                     if !newValue.isEmpty {
                         UserDefaults.standard.setValue(newValue, forKey: "draft-\(viewModel.threadId)")
                     } else {
                         UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
                     }
                 }
-
             }
         }
     }
-
-    private var disableSend: Bool { viewModel.thread.disableSend && isInEditMode == false && !viewModel.canShowMute }
 }
 
 struct AudioOrTextContainer: View {
-    @Binding var text: String
-    @Binding var showActionButtons: Bool
-    var threadId: Int
+    @EnvironmentObject var viewModel: SendContainerViewModel
     @EnvironmentObject var audioRecordingVM: AudioRecordingViewModel
-    var showRecordingView: Bool { audioRecordingVM.isRecording == true || audioRecordingVM.recordingOutputPath != nil }
+
     var body: some View {
         ZStack {
             AudioRecordingView()
                 .padding([.trailing], 12)
                 .animation(audioRecordingVM.isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: audioRecordingVM.isRecording)
-                .scaleEffect(x: showRecordingView ? 1.0 : 0.001, y: showRecordingView ? 1.0 : 0.001, anchor: .center)
-            MainSendButtons(showActionButtons: $showActionButtons, text: $text)
+                .scaleEffect(x: viewModel.showRecordingView ? 1.0 : 0.001, y: viewModel.showRecordingView ? 1.0 : 0.001, anchor: .center)
+            MainSendButtons()
                 .environment(\.layoutDirection, .leftToRight)
                 .animation(audioRecordingVM.isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: audioRecordingVM.isRecording)
-                .scaleEffect(x: showRecordingView ? 0.001 : 1.0, y: showRecordingView ? 0.001 : 1.0, anchor: .center)
+                .scaleEffect(x: viewModel.showRecordingView ? 0.001 : 1.0, y: viewModel.showRecordingView ? 0.001 : 1.0, anchor: .center)
                 .onAppear {
-                    if let draft = UserDefaults.standard.string(forKey: "draft-\(threadId)"), !draft.isEmpty {
-                        text = draft
+                    if let draft = UserDefaults.standard.string(forKey: "draft-\(viewModel.threadId)"), !draft.isEmpty {
+                        viewModel.textMessage = draft
                     }
                 }
         }
-        .animation(.easeInOut, value: showRecordingView)
+        .animation(.easeInOut, value: viewModel.showRecordingView)
     }
 }
 
@@ -143,6 +131,6 @@ struct SendContainerOverButtons: View {
 
 struct SendContainer_Previews: PreviewProvider {
     static var previews: some View {
-        SendContainer(viewModel: ThreadViewModel(thread: Conversation(id: 0)))
+        SendContainer(threadVM: ThreadViewModel(thread: Conversation(id: 0)))
     }
 }

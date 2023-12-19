@@ -78,20 +78,16 @@ struct ParticipantRowLables: View {
     var body: some View {
         HStack {
             if let participant = paritcipant {
-                if AppState.shared.user?.id != participant.id, participant.conversation?.inviter?.id == participantId {
-                    Text("Participant.inviter")
+                if viewModel.thread?.inviter?.id == participantId {
+                    Text("Participant.owner")
                         .padding(EdgeInsets(top: 2, leading: 4, bottom: 2, trailing: 4))
                         .foregroundColor(Color.App.primary)
-                }
-
-                if participant.auditor == true {
-                    Text("Participant.assistant")
+                } else if participant.admin == true {
+                    Text("Participant.admin")
                         .padding(EdgeInsets(top: 2, leading: 3, bottom: 2, trailing: 4))
                         .foregroundColor(Color.App.primary)
-                }
-
-                if participant.admin == true {
-                    Text("Participant.admin")
+                } else if participant.auditor == true {
+                    Text("Participant.assistant")
                         .padding(EdgeInsets(top: 2, leading: 3, bottom: 2, trailing: 4))
                         .foregroundColor(Color.App.primary)
                 }
