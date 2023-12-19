@@ -13,6 +13,7 @@ import TalkUI
 import TalkViewModels
 
 struct MapPickerView: View {
+    @Environment(\.dismiss) var dismiss
     @StateObject var locationManager: LocationManager = .init()
     @EnvironmentObject var viewModel: ThreadViewModel
 
@@ -35,6 +36,28 @@ struct MapPickerView: View {
                 }
                 .environmentObject(viewModel)
             }
+        }
+        .overlay(alignment: .topTrailing) {
+            Button {
+                withAnimation {
+                    viewModel.sheetType = nil
+                    viewModel.animateObjectWillChange()
+                    dismiss()
+                }
+            } label: {
+                Image(systemName: "xmark")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .padding()
+                    .foregroundColor(Color.App.primary)
+                    .aspectRatio(contentMode: .fit)
+                    .contentShape(Rectangle())
+            }
+            .frame(width: 40, height: 40)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius:(20)))
+            .padding(4)
         }
     }
 }

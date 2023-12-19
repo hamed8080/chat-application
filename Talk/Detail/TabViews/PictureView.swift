@@ -11,6 +11,7 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkExtensions
 
 struct PictureView: View {
     @EnvironmentObject var detailViewModel: DetailViewModel
@@ -69,7 +70,7 @@ struct MessageListPictureView: View {
     @EnvironmentObject var detailViewModel: DetailViewModel
     
     var body: some View {
-        ForEach(viewModel.messages) { message in
+        ForEach(viewModel.messages.filter({!$0.isMapType})) { message in
             PictureRowView(message: message, itemWidth: itemWidth)
                 .environmentObject(detailViewModel.threadVM?.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
                 .id(message.id)

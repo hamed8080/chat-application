@@ -69,7 +69,7 @@ extension ThreadViewModel {
 //                appendMessagesAndSort(response.result ?? [])
 //                animateObjectWillChange()
 //            }
-            if !response.cache, let messageIds = response.result?.filter({$0.reactionableType}).compactMap({$0.id}) {
+            if !response.cache, let messageIds = response.result?.filter({$0.reactionableType}).compactMap({$0.id}), !searchedMessagesViewModel.isInSearchMode {
                 ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
             }
             break

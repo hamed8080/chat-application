@@ -120,7 +120,7 @@ struct RealDownloadedImage: View {
     var body: some View {
         Image(uiImage: image)
             .resizable()
-            .scaledToFill()
+            .scaledToFit()
             .frame(width: viewModel.state != .completed ? 0 : width, height: viewModel.state != .completed ? 0 : height)
             .clipShape(RoundedRectangle(cornerRadius:(8)))
             .clipped()

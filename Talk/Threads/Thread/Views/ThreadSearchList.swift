@@ -29,7 +29,6 @@ struct ThreadSearchList: View {
                     }
                 }
             }
-            .padding()
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .transition(.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .bottom)))
             .background(.ultraThickMaterial)
@@ -38,7 +37,7 @@ struct ThreadSearchList: View {
             ZStack {
                 if viewModel.isLoading {
                     ListLoadingView(isLoading: $viewModel.isLoading)
-                } else {
+                } else if viewModel.isInSearchMode {
                     Text("General.nothingFound")
                         .font(.iransansTitle)
                 }

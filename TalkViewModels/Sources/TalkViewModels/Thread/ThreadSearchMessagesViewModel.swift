@@ -73,7 +73,7 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
         guard text.count >= 2 else { return }
         isLoading = true
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: offset, query: "\(text)")
-        RequestsManager.shared.append(prepend: "SEARCH", value: req)
+        RequestsManager.shared.append(prepend: "SEARCH", value: req, autoCancel: false)
         ChatManager.activeInstance?.message.history(req)
         self.offset = offset + count
     }
@@ -86,7 +86,7 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
 
     func onSearch(_ response: ChatResponse<[Message]>) {
         if !response.cache {
-            isLoading = true
+            isLoading = false
             guard response.value(prepend: "SEARCH") != nil else { return }
             response.result?.forEach { message in
                 if !(searchedMessages.contains(where: { $0.id == message.id })) {

@@ -61,9 +61,10 @@ public final class ObjectsContainer: ObservableObject {
 
     private func onNewMessage(_ response: ChatResponse<Message>) {
         let notificationSettings = AppSettingsModel.restore().notificationSettings
+        if response.result?.conversation?.mute == true { return }
         guard notificationSettings.soundEnable,
               AppState.shared.user?.id != response.result?.ownerId,
-              let conversation = threadsVM.threads.first(where: { $0.id == response.result?.conversation?.id })
+              let conversation = response.result?.conversation
         else { return }
         if conversation.group == false, notificationSettings.privateChat.sound {
             playMessageSound(sent: false)

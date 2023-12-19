@@ -71,18 +71,18 @@ public struct NotificationSettingModel: Codable {
     public var group: GroupSettings = .init()
 
     public struct ChatSettings: Codable {
-        public var showNotification: Bool = false
-        public var sound = false
+        public var showNotification: Bool = true
+        public var sound = true
     }
 
     public struct ChannelSettings: Codable {
-        public  var showNotification: Bool = false
-        public  var sound = false
+        public  var showNotification: Bool = true
+        public  var sound = true
     }
 
     public struct GroupSettings: Codable {
-        public var showNotification: Bool = false
-        public var sound = false
+        public var showNotification: Bool = true
+        public var sound = true
     }
 
     public func reset() {

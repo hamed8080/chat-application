@@ -18,6 +18,7 @@ public struct ImageLaoderView: View {
     let metaData: String?
     let userName: String?
     let size: ImageSize
+    let contentMode: ContentMode
     let textFont: Font
 
     public init(imageLoader: ImageLoaderViewModel,
@@ -25,6 +26,7 @@ public struct ImageLaoderView: View {
                 metaData: String? = nil,
                 userName: String? = nil,
                 size: ImageSize = .SMALL,
+                contentMode: ContentMode = .fill,
                 textFont: Font = .iransansBody
     ) {
         self.textFont = textFont
@@ -32,6 +34,7 @@ public struct ImageLaoderView: View {
         self.url = url
         self.userName = userName?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.size = size
+        self.contentMode = contentMode
         self._imageLoader = StateObject(wrappedValue: imageLoader)
     }
 
@@ -43,7 +46,7 @@ public struct ImageLaoderView: View {
             } else if imageLoader.isImageReady {
                 Image(uiImage: imageLoader.image)
                     .resizable()
-                    .scaledToFill()
+                    .aspectRatio(contentMode: contentMode)
             }
         }
         .animation(.easeInOut, value: imageLoader.image)
