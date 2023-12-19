@@ -50,7 +50,3 @@ struct SendContainerOverlayView: View {
         }
     }
 }
-
-#Preview {
-    SendContainerOverlayView()
-}

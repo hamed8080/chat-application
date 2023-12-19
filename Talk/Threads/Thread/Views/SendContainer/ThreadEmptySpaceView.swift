@@ -27,7 +27,3 @@ struct ThreadEmptySpaceView: View {
             .frame(width: 0, height: height)
     }
 }
-
-#Preview {
-    ThreadEmptySpaceView()
-}
