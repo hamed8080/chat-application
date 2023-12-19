@@ -125,6 +125,8 @@ struct SplitViewContent: View {
             ],
             config: .init(alignment: .bottom), onSelectedTab: { selectedTabId in
                 if selectedTabId != "Tab.chats", !AppState.shared.objectsContainer.searchVM.searchText.isEmpty {
+                    AppState.shared.objectsContainer.searchVM.searchText = ""
+                    AppState.shared.objectsContainer.contactsVM.searchContactString = ""
                     NotificationCenter.default.post(name: .cancelSearch, object: true)
                 }
             }

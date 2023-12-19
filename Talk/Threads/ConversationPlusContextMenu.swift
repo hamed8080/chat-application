@@ -22,6 +22,9 @@ struct ConversationPlusContextMenu: View {
     var body: some View {
         ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat", padding: 8) {
             withAnimation {
+                AppState.shared.objectsContainer.searchVM.searchText = ""
+                AppState.shared.objectsContainer.contactsVM.searchContactString = ""
+                NotificationCenter.default.post(name: .cancelSearch, object: true)
                 showCreateConversationSheet.toggle()
             }
         }

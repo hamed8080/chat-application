@@ -37,6 +37,11 @@ struct ConversationTopSafeAreaInset: View {
                 NothingHasBeenSelectedView(contactsVM: container.contactsVM)
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .cancelSearch)) { newValue in
+            if let cancelSearch = newValue.object as? Bool, cancelSearch == true, cancelSearch && isInSearchMode {
+                isInSearchMode.toggle()
+            }
+        }
     }
 
     @ViewBuilder var searchButton: some View {
@@ -63,11 +68,6 @@ struct ConversationTopSafeAreaInset: View {
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : 38)
             .clipped()
             .foregroundStyle(Color.App.primary)
-            .onReceive(NotificationCenter.default.publisher(for: .cancelSearch)) { newValue in
-                if let cancelSearch = newValue.object as? Bool, cancelSearch == true, cancelSearch && isInSearchMode {
-                    isInSearchMode.toggle()
-                }
-            }
         }
     }
 }
