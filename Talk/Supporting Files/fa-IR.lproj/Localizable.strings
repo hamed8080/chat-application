@@ -257,6 +257,11 @@
 "DeleteMessageDialog.title" = "حذف پیام های انتخاب شده";
 "DeleteMessageDialog.subtitle" = "آیا شما مطمئن هستید می خواهید پیام های انتخاب شده را پاک کنید؟";
 
+/* PinMessageDialog */
+"PinMessageDialog.title" = "چسباندن پیام به چه نحوی باشد؟";
+"PinMessageDialog.pinAndNotify" = "چسباندن و با خبرسازی همه";
+"PinMessageDialog.justPin" = "فقط چسباندن به بالا";
+
 /* Login */
 "Login.title" = "ورود";
 "Login.loginOrSignup" = "ورود و ثبت نام";

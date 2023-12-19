@@ -12,17 +12,17 @@ import ChatModels
 
 extension ThreadViewModel {
 
-    public func togglePinMessage(_ message: Message) {
+    public func togglePinMessage(_ message: Message, notifyAll: Bool) {
         guard let messageId = message.id else { return }
         if message.pinned == false || message.pinned == nil {
-            pinMessage(messageId)
+            pinMessage(messageId, notifyAll: notifyAll)
         } else {
             unpinMessage(messageId)
         }
     }
     
-    public func pinMessage(_ messageId: Int) {
-        ChatManager.activeInstance?.message.pin(.init(messageId: messageId))
+    public func pinMessage(_ messageId: Int, notifyAll: Bool) {
+        ChatManager.activeInstance?.message.pin(.init(messageId: messageId, notifyAll: notifyAll))
     }
 
     func onPinMessage(_ response: ChatResponse<PinMessage>) {

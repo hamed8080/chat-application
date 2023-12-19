@@ -257,6 +257,11 @@
 "DeleteMessageDialog.title" = "Ausgewählte Nachrichten löschen";
 "DeleteMessageDialog.subtitle" = "Sind Sie sicher, dass Sie alle ausgewählten Nachrichten löschen möchten?";
 
+/* PinMessageDialog */
+"PinMessageDialog.title" = "Wie möchtest du diese Nachricht anheften?";
+"PinMessageDialog.pinAndNotify" = "Anheften und alle benachrichtigen";
+"PinMessageDialog.justPin" = "Nur anheften";
+
 /* Login */
 "Login.title" = "Anmelden";
 "Login.loginOrSignup" = "Anmelden oder Registrieren";

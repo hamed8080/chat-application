@@ -256,6 +256,11 @@
 "DeleteMessageDialog.title" = "Radera markerade meddelanden";
 "DeleteMessageDialog.subtitle" = "Är du säker på att du vill radera alla markerade meddelanden?";
 
+/* PinMessageDialog */
+"PinMessageDialog.title" = "Hur vill du sätta fast detta meddelande?";
+"PinMessageDialog.pinAndNotify" = "Sätt fast och meddela alla";
+"PinMessageDialog.justPin" = "Bara sätt fast";
+
 /* Login */
 "Login.title" = "Logga in";
 "Login.loginOrSignup" = "Logga in eller registrera dig";

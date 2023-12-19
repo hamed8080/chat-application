@@ -108,11 +108,17 @@ struct MessageActionMenu: View {
                 }
             }
 
-            let isPinned = message.id == viewModel.threadVM?.thread.pinMessage?.id && viewModel.threadVM?.thread.pinMessage != nil
+            let isPinned = message.id == threadVM?.thread.pinMessage?.id && threadVM?.thread.pinMessage != nil
             if threadVM?.thread.admin == true {
                 ContextMenuButton(title: isPinned ? "Messages.ActionMenu.unpinMessage" : "Messages.ActionMenu.pinMessage", image: "pin") {
-                    threadVM?.togglePinMessage(message)
-                    threadVM?.animateObjectWillChange()
+                    if !isPinned, let threadVM = threadVM {
+                        let dialog = PinMessageDialog(message: viewModel.message)
+                            .environmentObject(threadVM)
+                        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
+                    } else {
+                        threadVM?.unpinMessage(message.id ?? -1)
+                        threadVM?.animateObjectWillChange()
+                    }
                 }
             }
 

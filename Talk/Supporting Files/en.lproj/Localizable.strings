@@ -258,6 +258,11 @@
 "DeleteMessageDialog.title" = "Delete selected messages";
 "DeleteMessageDialog.subtitle" = "Are you sure you want to delete all selected messages?";
 
+/* PinMessageDialog */
+"PinMessageDialog.title" = "How would you like to pin this message?";
+"PinMessageDialog.pinAndNotify" = "Pin and notify all";
+"PinMessageDialog.justPin" = "Just pin";
+
 /* Login */
 "Login.title" = "Login";
 "Login.loginOrSignup" = "Login or Sign Up";

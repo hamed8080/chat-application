@@ -256,6 +256,11 @@
 "DeleteMessageDialog.title" = "حذف الرسائل المحددة";
 "DeleteMessageDialog.subtitle" = "هل أنت متأكد من رغبتك في حذف جميع الرسائل المحددة؟";
 
+/* PinMessageDialog */
+"PinMessageDialog.title" = "كيف ترغب في تثبيت هذه الرسالة؟";
+"PinMessageDialog.pinAndNotify" = "تثبيت وإعلام الجميع";
+"PinMessageDialog.justPin" = "فقط تثبيت";
+
 /* Login */
 "Login.title" = "تسجيل الدخول";
 "Login.loginOrSignup" = "تسجيل الدخول أو الاشتراك";

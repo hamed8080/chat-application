@@ -258,6 +258,11 @@
 "DeleteMessageDialog.title" = "Eliminar mensajes seleccionados";
 "DeleteMessageDialog.subtitle" = "¿Estás seguro de que deseas eliminar todos los mensajes seleccionados?";
 
+/* PinMessageDialog */
+"PinMessageDialog.title" = "¿Cómo te gustaría fijar este mensaje?";
+"PinMessageDialog.justPin" = "Solo fijar";
+"PinMessageDialog.pinAndNotify" = "Fijar y notificar a todos";
+
 /* Inicio de sesión */
 "Login.title" = "Iniciar sesión";
 "Login.loginOrSignup" = "Iniciar sesión o registrarse";
