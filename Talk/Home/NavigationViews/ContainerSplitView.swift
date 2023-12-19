@@ -87,6 +87,11 @@ struct NavigationTypeView: View {
                     .id(conversation.id) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
                     .environmentObject(container.appOverlayVM)
                     .environmentObject(viewModel)
+                    .environmentObject(container.threadsVM)
+                    .environmentObject(viewModel.audioRecoderVM)
+                    .environmentObject(viewModel.sendContainerViewModel)
+                    .environmentObject(viewModel.attachmentsViewModel)
+                    .environmentObject(viewModel.searchedMessagesViewModel)
             }
         case .contact(let contact):
             Text(contact.firstName ?? "")

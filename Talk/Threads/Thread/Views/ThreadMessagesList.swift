@@ -26,7 +26,10 @@ struct ThreadMessagesList: View {
                 viewModel.setNewOrigin(newOriginY: originY)
             }
             .overlay(alignment: .bottom) {
-                MoveToBottomButton()
+                VStack {
+                    MoveToBottomButton()
+                    SendContainerOverButtons()
+                }
             }
             .onAppear {
                 viewModel.scrollProxy = scrollProxy

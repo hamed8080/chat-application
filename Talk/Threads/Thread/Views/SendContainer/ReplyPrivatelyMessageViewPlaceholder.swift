@@ -23,10 +23,12 @@ struct ReplyPrivatelyMessageViewPlaceholder: View {
                         Text(name)
                             .font(.iransansBoldBody)
                             .foregroundStyle(Color.App.primary)
+                            .lineLimit(2)
                     }
                     Text(replyMessage.message ?? replyMessage.fileMetaData?.name ?? "")
                         .font(.iransansCaption2)
                         .foregroundColor(Color.App.placeholder)
+                        .lineLimit(2)
                         .onTapGesture {
                             // TODO: Go to reply message location
                         }
@@ -34,6 +36,7 @@ struct ReplyPrivatelyMessageViewPlaceholder: View {
 
                 Spacer()
                 CloseButton {
+                    viewModel.disableExcessiveLoading()
                     AppState.shared.appStateNavigationModel = .init()
                     viewModel.animateObjectWillChange()
                 }

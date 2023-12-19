@@ -18,6 +18,7 @@ struct CloseRecordingButton: View {
                 Spacer()
                 Button {
                     withAnimation {
+                        viewModel.threadViewModel?.disableExcessiveLoading()
                         viewModel.cancel()
                     }
                 } label: {

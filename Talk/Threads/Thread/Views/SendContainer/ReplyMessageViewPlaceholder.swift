@@ -23,10 +23,12 @@ struct ReplyMessageViewPlaceholder: View {
                         Text(name)
                             .font(.iransansBoldBody)
                             .foregroundStyle(Color.App.primary)
+                            .lineLimit(2)
                     }
                     Text(replyMessage.message ?? replyMessage.fileMetaData?.name ?? "")
                         .font(.iransansCaption2)
                         .foregroundColor(Color.App.placeholder)
+                        .lineLimit(2)
                         .onTapGesture {
                             // TODO: Go to reply message location
                         }
@@ -34,6 +36,7 @@ struct ReplyMessageViewPlaceholder: View {
 
                 Spacer()
                 CloseButton {
+                    viewModel.disableExcessiveLoading()
                     viewModel.replyMessage = nil
                     viewModel.sendContainerViewModel.focusOnTextInput = false
                     viewModel.selectedMessagesViewModel.clearSelection()

@@ -120,16 +120,18 @@ struct EditGroup: View {
                     .listRowInsets(.zero)
                     .noSeparators()
                 
-                Toggle(isOn: $viewModel.isPublic) {
-                    Text(String(format: localizedPublic, typeName))
+                if EnvironmentValues.isTalkTest {
+                    Toggle(isOn: $viewModel.isPublic) {
+                        Text(String(format: localizedPublic, typeName))
+                    }
+                    .toggleStyle(MyToggleStyle())
+                    .padding(.horizontal)
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowSeparatorTint(Color.App.divider)
+                    .disabled(isPublic)
+                    .opacity(isPublic ? 0.5 : 1.0)
                 }
-                .toggleStyle(MyToggleStyle())
-                .padding(.horizontal)
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.divider)
-                .disabled(isPublic)
-                .opacity(isPublic ? 0.5 : 1.0)
-                
+
                 Button {
                     viewModel.showEditGroup.toggle()
                     AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: viewModel.thread?.id))

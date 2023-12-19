@@ -327,6 +327,10 @@
 		05EC8A352ACBED930016361F /* OverlayEmojiViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */; };
 		05F53EEF2B1866A9003DB412 /* CloseRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */; };
 		05F53EF02B1866A9003DB412 /* CloseRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */; };
+		05F70E5A2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */; };
+		05F70E5B2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */; };
+		05F70E5D2B31E90700E0EF92 /* ThreadEmptySpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */; };
+		05F70E5E2B31E90700E0EF92 /* ThreadEmptySpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */; };
 		05F89CC02ADD105500A28EBB /* SwipyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F26C62ADD0F8F00BF9841 /* SwipyView.swift */; };
 		05F9151D2AE637FB008C070B /* ThreadLeadingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */; };
 		05F9151E2AE638AE008C070B /* ThreadLeadingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */; };
@@ -512,6 +516,8 @@
 		05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionMenuView.swift; sourceTree = "<group>"; };
 		05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayEmojiViews.swift; sourceTree = "<group>"; };
 		05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseRecordingButton.swift; sourceTree = "<group>"; };
+		05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainerOverlayView.swift; sourceTree = "<group>"; };
+		05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEmptySpaceView.swift; sourceTree = "<group>"; };
 		05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadLeadingToolbar.swift; sourceTree = "<group>"; };
 		05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOverlayFactory.swift; sourceTree = "<group>"; };
 		05FE15F02ADA5591009AC44A /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
@@ -940,6 +946,8 @@
 				05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */,
 				05551C252AF4C631000F98B6 /* CloseButton.swift */,
 				05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */,
+				05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */,
+				05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */,
 			);
 			path = SendContainer;
 			sourceTree = "<group>";
@@ -1119,6 +1127,7 @@
 				0570CBE32AAEE98F001832E9 /* HomeContentView.swift in Sources */,
 				0570CC1B2AAEE98F001832E9 /* MessageActionMenu.swift in Sources */,
 				050B29182AB40DC20072706C /* ToolbarView.swift in Sources */,
+				05F70E5A2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */,
 				0594FE692B0387920031AADF /* UnsentMessageView.swift in Sources */,
 				057A18DF2B04C78A0007868D /* MessageParticipantsSeen.swift in Sources */,
 				052191562B2F262300CC99D1 /* MutualThreadRow.swift in Sources */,
@@ -1252,6 +1261,7 @@
 				05C27FA22AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC5B2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC6F2AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
+				05F70E5D2B31E90700E0EF92 /* ThreadEmptySpaceView.swift in Sources */,
 				05DAA42C2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */,
 				0570CC392AAEE98F001832E9 /* TagRow.swift in Sources */,
 				051F26C72ADD0F8F00BF9841 /* SwipyView.swift in Sources */,
@@ -1269,6 +1279,7 @@
 				0570CBE42AAEE98F001832E9 /* HomeContentView.swift in Sources */,
 				0570CC1C2AAEE98F001832E9 /* MessageActionMenu.swift in Sources */,
 				050B29192AB40DC20072706C /* ToolbarView.swift in Sources */,
+				05F70E5B2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */,
 				0594FE6A2B0387920031AADF /* UnsentMessageView.swift in Sources */,
 				057A18E02B04C78A0007868D /* MessageParticipantsSeen.swift in Sources */,
 				052191572B2F262300CC99D1 /* MutualThreadRow.swift in Sources */,
@@ -1402,6 +1413,7 @@
 				05C27FA32AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC442AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
 				0570CC5C2AAEE98F001832E9 /* LinkView.swift in Sources */,
+				05F70E5E2B31E90700E0EF92 /* ThreadEmptySpaceView.swift in Sources */,
 				05DAA42D2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */,
 				0570CC702AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
 				05F89CC02ADD105500A28EBB /* SwipyView.swift in Sources */,

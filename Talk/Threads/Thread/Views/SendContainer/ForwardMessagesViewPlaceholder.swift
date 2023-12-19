@@ -28,6 +28,7 @@ struct ForwardMessagesViewPlaceholder: View {
                         Text(message.message ?? "")
                             .font(.iransansCaption2)
                             .foregroundColor(Color.App.placeholder)
+                            .lineLimit(2)
                     } else {
                         let localized = String(localized: .init("Thread.forwardMessages"))
                         let localNumber = (model.forwardMessages?.count ?? 0).localNumber(locale: Language.preferredLocale) ?? ""
@@ -38,6 +39,7 @@ struct ForwardMessagesViewPlaceholder: View {
                         Text(messages ?? "")
                             .font(.iransansCaption2)
                             .foregroundColor(Color.App.placeholder)
+                            .lineLimit(2)
                     }
                 }
                 Spacer()

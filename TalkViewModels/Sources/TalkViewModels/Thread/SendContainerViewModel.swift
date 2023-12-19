@@ -33,6 +33,7 @@ public final class SendContainerViewModel: ObservableObject {
     @Published public var isVideoRecordingSelected = false
     @Published public var isInEditMode: Bool = false
     @Published public var editMessage: Message?
+    public var height: CGFloat = 0
 
     public static func == (lhs: SendContainerViewModel, rhs: SendContainerViewModel) -> Bool {
         rhs.thread.id == lhs.thread.id

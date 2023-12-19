@@ -36,9 +36,11 @@ struct NotificationSettings: View {
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.divider)
                 }
-                Toggle("Notification.Vibration", isOn: $model.notificationSettings.vibration)
-                    .listRowBackground(Color.App.bgPrimary)
-                    .listSectionSeparator(.hidden)
+                if EnvironmentValues.isTalkTest {
+                    Toggle("Notification.Vibration", isOn: $model.notificationSettings.vibration)
+                        .listRowBackground(Color.App.bgPrimary)
+                        .listSectionSeparator(.hidden)
+                }
             }
             .toggleStyle(MyToggleStyle())
             .listSectionSeparator(.hidden)

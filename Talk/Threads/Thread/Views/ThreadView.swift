@@ -22,24 +22,21 @@ struct ThreadView: View, DropDelegate {
     var body: some View {
         ThreadMessagesList(viewModel: viewModel)
             .navigationBarBackButtonHidden(true)
-            .background(Color.App.grayHalf.opacity(0.1).edgesIgnoringSafeArea(.bottom))
-            .environmentObject(viewModel)
-            .environmentObject(threadsVM)
+            .background(Color.App.grayHalf.opacity(0.1).edgesIgnoringSafeArea(.bottom))            
             .background(SheetEmptyBackground())
             .onDrop(of: [.image], delegate: self)
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                SendContainer(threadVM: viewModel)
-                    .environmentObject(viewModel.sendContainerViewModel)
-                    .environmentObject(viewModel.audioRecoderVM)
+            .safeAreaInset(edge: .bottom) {
+                ThreadEmptySpaceView()                    
+            }
+            .overlay(alignment: .bottom) {
+                SendContainerOverlayView()                    
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(spacing: 0) {
                     ThreadMainToolbar(viewModel: viewModel)
                     ThreadPinMessage(threadVM: viewModel)
                     AudioPlayerView(threadVM: viewModel)
-                    ThreadSearchList(threadVM: viewModel)
-                        .environmentObject(viewModel)
-                        .environmentObject(viewModel.searchedMessagesViewModel)
+                    ThreadSearchList(threadVM: viewModel)                        
                 }
             }
             .background {

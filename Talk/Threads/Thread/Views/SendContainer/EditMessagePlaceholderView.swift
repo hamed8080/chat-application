@@ -33,6 +33,7 @@ struct EditMessagePlaceholderView: View {
 
                 Spacer()
                 CloseButton {
+                    viewModel.disableExcessiveLoading()
                     viewModel.isInEditMode = false
                     viewModel.sendContainerViewModel.editMessage = nil
                     viewModel.sendContainerViewModel.textMessage = ""

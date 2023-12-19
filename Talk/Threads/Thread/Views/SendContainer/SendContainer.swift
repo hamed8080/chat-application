@@ -19,20 +19,8 @@ struct SendContainer: View {
     let threadVM: ThreadViewModel
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            if viewModel.showActionButtons {
-                Rectangle()
-                    .fill(Color.App.black.opacity(0.5))
-                    .onTapGesture {
-                        withAnimation(.easeOut(duration: 0.13)) {
-                            viewModel.showActionButtons.toggle()
-                        }
-                    }
-            }
+        ZStack(alignment: .bottom) {           
             VStack(spacing: 0) {
-                SendContainerOverButtons()
-                AttachmentFiles()
-                    .environmentObject(threadVM.attachmentsViewModel)
                 VStack(spacing: 0) {
                     if viewModel.isInEditMode {
                         SelectionView(threadVM: threadVM)
@@ -52,9 +40,6 @@ struct SendContainer: View {
                             .environmentObject(viewModel)
                         EditMessagePlaceholderView()
                             .environmentObject(viewModel)
-                        if viewModel.showActionButtons {
-                            AttachmentButtons(viewModel: threadVM.attachmentsViewModel)
-                        }
                         AudioOrTextContainer()
                     }
                 }
@@ -62,11 +47,6 @@ struct SendContainer: View {
                 .disabled(viewModel.disableSend)
                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                 .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: viewModel.textMessage.isEmpty)
-                .background(
-                    MixMaterialBackground()
-                        .cornerRadius(viewModel.showActionButtons && threadVM.attachmentsViewModel.attachments.count == 0 ? 24 : 0, corners: [.topLeft, .topRight])
-                        .ignoresSafeArea()
-                )
                 .onReceive(viewModel.$editMessage) { editMessage in
                     viewModel.textMessage = editMessage?.message ?? ""
                 }

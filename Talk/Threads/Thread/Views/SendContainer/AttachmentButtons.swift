@@ -63,7 +63,7 @@ struct MutableAttachmentDialog: View {
             Spacer()
         }
         .font(.iransansBody)
-        .padding()
+        .padding(.top)
         .animation(.easeInOut, value: viewModel.showActionButtons)
         .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
     }
