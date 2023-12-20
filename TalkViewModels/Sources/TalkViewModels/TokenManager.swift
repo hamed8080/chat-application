@@ -48,7 +48,14 @@ public final class TokenManager: ObservableObject {
                 ssoToken.keyId = keyId
                 saveSSOToken(ssoToken: ssoToken)
                 ChatManager.activeInstance?.setToken(newToken: ssoToken.accessToken ?? "", reCreateObject: false)
-                AppState.shared.connectionStatus = .connected
+                if AppState.shared.connectionStatus != .connected {
+                    AppState.shared.connectionStatus = .connected
+                    let log = Log(prefix: "TALK_APP", time: .now, message: "App State was not connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
+                    NotificationCenter.default.post(name: .logs, object: log)
+                } else {
+                    let log = Log(prefix: "TALK_APP", time: .now, message: "App State was connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
+                    NotificationCenter.default.post(name: .logs, object: log)
+                }
             }
         } catch {
 #if DEBUG

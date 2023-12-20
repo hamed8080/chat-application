@@ -9,6 +9,7 @@ import SwiftUI
 import TalkUI
 import Chat
 import TalkViewModels
+import Logger
 
 struct ManuallyConnectionManagerView: View {
     @FocusState var isFocused
@@ -34,6 +35,8 @@ struct ManuallyConnectionManagerView: View {
             VStack {
                 SubmitBottomButton(text: "Refresh Token", color: Color.App.red) {
                     Task {
+                        let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in ManuallyConnectionManagerView method", level: .error, type: .sent, userInfo: nil)
+                        NotificationCenter.default.post(name: .logs, object: log)
                         await TokenManager.shared.getNewTokenWithRefreshToken()
                     }
                 }

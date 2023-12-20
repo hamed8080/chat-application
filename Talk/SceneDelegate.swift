@@ -11,6 +11,7 @@ import TalkUI
 import TalkViewModels
 import UIKit
 import BackgroundTasks
+import Logger
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDelegate {
     var window: UIWindow?
@@ -104,6 +105,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
 
     private func handleTaskRefreshToken(_ task: BGAppRefreshTask) {
         Task {
+            let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in handleTaskRefreshToken method", level: .error, type: .sent, userInfo: nil)
+            NotificationCenter.default.post(name: .logs, object: log)
             await TokenManager.shared.getNewTokenWithRefreshToken()
             scheduleAppRefreshToken() /// Reschedule again when user receive a token.
         }

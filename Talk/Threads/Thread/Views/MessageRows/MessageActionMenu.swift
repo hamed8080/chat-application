@@ -101,10 +101,12 @@ struct MessageActionMenu: View {
                 }
             }
 
-            if message.isFileType == true {
-                ContextMenuButton(title: "Messages.ActionMenu.deleteCache", image: "cylinder.split.1x2") {
-                    threadVM?.clearCacheFile(message: message)
-                    threadVM?.animateObjectWillChange()
+            if EnvironmentValues.isTalkTest {
+                if message.isFileType == true {
+                    ContextMenuButton(title: "Messages.ActionMenu.deleteCache", image: "cylinder.split.1x2") {
+                        threadVM?.clearCacheFile(message: message)
+                        threadVM?.animateObjectWillChange()
+                    }
                 }
             }
 

@@ -167,27 +167,6 @@ public extension Message {
         return URL(string: "maps://?q=\(message ?? "")&ll=\(coordinate.lat),\(coordinate.lng)")
     }
 
-    var addressDetail: String? {
-        get async {
-            typealias AddressContinuation = CheckedContinuation<String?, Never>
-            return await withCheckedContinuation { (continuation: AddressContinuation) in
-                if let coordinate = coordinate {
-                    let geocoder = CLGeocoder()
-                    geocoder.reverseGeocodeLocation(CLLocation(latitude: coordinate.lat, longitude: coordinate.lng), preferredLocale: .current) { placeMarks, _ in
-                        if let place = placeMarks?.first?.postalAddress {
-                            let addressDetail = "\(place.country) - \(place.city) - \(place.state) - \(place.street)"
-                            continuation.resume(returning: addressDetail)
-                        } else {
-                            continuation.resume(returning: nil)
-                        }
-                    }
-                } else {
-                    continuation.resume(returning: nil)
-                }
-            }
-        }
-    }
-
     static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
 
     var addOrRemoveParticipantString: String? {

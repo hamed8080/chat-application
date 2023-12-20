@@ -21,7 +21,6 @@ public final class MessageRowViewModel: ObservableObject {
     public var isCalculated = false
     public var isEnglish = true
     public var markdownTitle = AttributedString()
-    public var addressDetail: String?
     public var timeString: String = ""
     public static var avatarSize: CGFloat = 34
     public var downloadFileVM: DownloadFileViewModel?
@@ -227,16 +226,13 @@ public final class MessageRowViewModel: ObservableObject {
     }
 
     private func recalculateWithAnimation() {
-        Task { [weak self] in
-            await self?.performaCalculation()
-            self?.animateObjectWillChange()
-        }
+        performaCalculation()
+        animateObjectWillChange()
     }
 
-    private func performaCalculation() async {
+    private func performaCalculation() {
         isCalculated = true
         isNextMessageTheSameUser = threadVM?.thread.group == true && (threadVM?.isNextSameUser(message: message) == true) && message.participant != nil
-        addressDetail = await message.addressDetail
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = message.markdownTitle
         timeString = message.time?.date.localFormattedTime ?? ""
