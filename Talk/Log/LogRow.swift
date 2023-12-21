@@ -23,12 +23,29 @@ struct LogRow: View {
         }
     }
 
+    static var formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .full
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSS"
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter
+    }()
+
     var body: some View {
         ZStack(alignment: .leading) {
             color.opacity(0.2)
-            Text("\(log.message ?? "")")
-                .font(.iransansCaption)
-                .padding()
+            VStack (alignment: .leading){
+                HStack {
+                    Text(verbatim: "\(log.time?.millisecondsSince1970 ?? 0)")
+                        .font(.iransansCaption)
+                    Text(verbatim: "\(LogRow.formatter.string(from: log.time ?? .now))")
+                        .font(.iransansCaption)
+                }
+                Text("\(log.message ?? "")")
+                    .font(.iransansCaption)
+            }
+            .padding()
         }
         .environment(\.layoutDirection, .leftToRight)
         .overlay(alignment: .bottom) {

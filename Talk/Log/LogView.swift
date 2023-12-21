@@ -13,6 +13,8 @@ import TalkUI
 
 struct LogView: View {
     @EnvironmentObject var viewModel: LogViewModel
+    @State private var shareDownloadedFile = false
+    @State private var logFileURL: URL?
 
     var body: some View {
         List(viewModel.filtered) {
@@ -46,6 +48,11 @@ struct LogView: View {
                 }
             }
         }
+        .sheet(isPresented: $shareDownloadedFile) {
+            if let logFileURL {
+                ActivityViewControllerWrapper(activityItems: [logFileURL], title: logFileURL.lastPathComponent)
+            }
+        }
     }
 
     @ViewBuilder var trailingToolbars: some View {
@@ -56,6 +63,37 @@ struct LogView: View {
                 Text("General.delete")
             } icon: {
                 Image(systemName: "trash")
+            }
+        }
+
+        Button {
+            Task {
+                let name = Date().getDate()
+                let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("\(name).txt")
+                let url = tmp
+                let logMessages = viewModel.logs.compactMap{ log in
+                    var message = "==================================\n"
+                    message += "Type: \(String(describing: log.type ?? .internalLog).uppercased())\n"
+                    message += "Level: \(String(describing: log.level ?? .verbose).uppercased())\n"
+                    message += "Prefix: \(log.prefix ?? "")\n"
+                    message += "UserInfo: \(log.userInfo ?? [:])\n"
+                    message += "DateTime: \(LogRow.formatter.string(from: log.time ?? .now))\n"
+                    message += "\(log.message ?? "")\n"
+                    message += "==================================\n"
+                    return message
+                }
+                let string = logMessages.joined(separator: "\n")
+                try? string.write(to: url, atomically: true, encoding: .utf8)
+                await MainActor.run {
+                    self.logFileURL = url
+                    shareDownloadedFile.toggle()
+                }
+            }
+        } label: {
+            Label {
+                Text("General.save")
+            } icon: {
+                Image(systemName: "square.and.arrow.up")
             }
         }
 
