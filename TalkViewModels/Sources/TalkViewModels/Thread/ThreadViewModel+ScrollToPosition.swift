@@ -35,14 +35,6 @@ extension ThreadViewModel: ScrollToPositionProtocol {
         }
     }
 
-    public func setNewOrigin(newOriginY: CGFloat) {
-        scrollingUP = lastOrigin > newOriginY
-        lastOrigin = newOriginY
-        if !isProgramaticallyScroll, scrollingUP, newOriginY < 0, canLoadMoreTop, isFetchedServerFirstResponse {
-            moreTop(sections.first?.messages.first?.time?.advanced(by: -1))
-        }
-    }
-
     public func scrollToBottom(animation: Animation? = .easeInOut) {
         if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
             moveToTime(time, messageId, highlight: false)

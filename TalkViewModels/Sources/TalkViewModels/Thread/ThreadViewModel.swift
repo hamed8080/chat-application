@@ -77,7 +77,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false
-    var lastOrigin: CGFloat = 0
     public weak var forwardMessage: Message?
     public var seenPublisher = PassthroughSubject<Message, Never>()
     var hasSentHistoryRequest = false

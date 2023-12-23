@@ -17,14 +17,8 @@ struct ThreadMessagesList: View {
 
     var body: some View {
         ScrollViewReader { scrollProxy in
-            ScrollView {
-                MessagesLazyStack()
-            }
+            MessagesLazyStack()
             .background(ThreadbackgroundView(threadId: viewModel.threadId))
-            .coordinateSpace(name: "scroll")
-            .onPreferenceChange(ViewOffsetKey.self) { originY in
-                viewModel.setNewOrigin(newOriginY: originY)
-            }
             .overlay(alignment: .bottom) {
                 VStack {
                     MoveToBottomButton()
@@ -33,11 +27,19 @@ struct ThreadMessagesList: View {
             }
             .onAppear {
                 viewModel.scrollProxy = scrollProxy
+                UICollectionViewCell.appearance().backgroundView = UIView()
+                UITableViewHeaderFooterView.appearance().backgroundView = UIView()
             }
             .overlay(alignment: .center) {
                 CenterLoading()
             }
         }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 20, coordinateSpace: .local)
+                .onChanged{ newValue in
+                    viewModel.scrollingUP = newValue.translation.height > 20
+                }
+        )
         .simultaneousGesture(
             TapGesture()
                 .onEnded { _ in
@@ -87,33 +89,36 @@ struct MessagesLazyStack: View {
     @EnvironmentObject var viewModel: ThreadViewModel
 
     var body: some View {
-        LazyVStack(spacing: 0) {
-            ListLoadingView(isLoading: $viewModel.topLoading)
-                .id(-1)
-                .padding([.top, .bottom])
-            ForEach(viewModel.sections) { section in
-                SectionView(section: section)
-                MessageList(messages: section.messages, viewModel: viewModel)
+        VStack(spacing: 0) {
+            List {
+                ListLoadingView(isLoading: $viewModel.topLoading)
+                    .id(-1)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.zero)
+                    .listRowBackground(Color.clear)
+                    .padding([.top, .bottom])
+                ForEach(viewModel.sections) { section in
+                    Section {
+                        MessageList(messages: section.messages, viewModel: viewModel)
+                    } header: {
+                        SectionView(section: section)
+                    }
+                }
+                UploadMessagesLoop(threadViewModel: viewModel)
+                    .environmentObject(viewModel.uploadMessagesViewModel)
+                UnsentMessagesLoop(threadViewModel: viewModel)
+                    .environmentObject(viewModel.unssetMessagesViewModel)
+                ListLoadingView(isLoading: $viewModel.bottomLoading)
+                    .id(-2)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.zero)
+                    .listRowBackground(Color.clear)
+                    .padding([.top, .bottom])
             }
-
-            UploadMessagesLoop(threadViewModel: viewModel)
-                .environmentObject(viewModel.uploadMessagesViewModel)
-            UnsentMessagesLoop(threadViewModel: viewModel)
-                .environmentObject(viewModel.unssetMessagesViewModel)
-
+            .listStyle(.plain)
             KeyboardHeightView()
-
-            ListLoadingView(isLoading: $viewModel.bottomLoading)
-                .id(-2)
-                .padding([.top, .bottom])
         }
         .environment(\.layoutDirection, .leftToRight)
-        .background(
-            GeometryReader {
-                Color.clear.preference(key: ViewOffsetKey.self, value: -$0.frame(in: .named("scroll")).origin.y)
-            }
-        )
-        .padding(.bottom)
     }
 }
 
@@ -142,6 +147,9 @@ struct MessageList: View {
         ForEach(messages) { message in
             MessageRowFactory(viewModel: viewModel.messageViewModel(for: message))
                 .id(message.uniqueId)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
                 .onAppear {
                     viewModel.onMessageAppear(message)
                 }
@@ -182,14 +190,13 @@ struct UnsentMessagesLoop: View {
 
 struct KeyboardHeightView: View {
     @EnvironmentObject var viewModel: ThreadViewModel
-    @State var keyboardHeight: CGFloat = 0
     /// We use isInAnimating to prevent multiple calling onKeyboardSize.
     @State var isInAnimating = false
 
     var body: some View {
         Rectangle()
             .id("KeyboardHeightView")
-            .frame(width: 0, height: keyboardHeight)
+            .frame(width: 0, height: 0)
             .onKeyboardSize { size in
                 if !isInAnimating {
                     isInAnimating = true
@@ -216,7 +223,6 @@ struct KeyboardHeightView: View {
         // We have to wait until all the animations for clicking on TextField are finished and then start our animation.
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
             withAnimation(.easeInOut(duration: 0.4)) {
-                keyboardHeight = height
                 viewModel.scrollProxy?.scrollTo(viewModel.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
                 isInAnimating = false
             }
