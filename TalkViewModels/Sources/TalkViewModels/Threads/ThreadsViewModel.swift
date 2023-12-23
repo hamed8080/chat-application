@@ -363,8 +363,10 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onCancelTimer(key: String) {
-        isLoading = false
-        animateObjectWillChange()
+        if isLoading {
+            isLoading = false
+            animateObjectWillChange()
+        }
     }
 
     public func avatars(for imageURL: String) -> ImageLoaderViewModel {

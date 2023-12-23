@@ -14,8 +14,7 @@ import ChatModels
 
 struct ContactContentList: View {
     @EnvironmentObject var viewModel: ContactsViewModel
-    @EnvironmentObject var navVM: NavigationModel
-    
+
     var body: some View {
         List {
             if viewModel.maxContactsCountInServer > 0, EnvironmentValues.isTalkTest {
@@ -108,7 +107,6 @@ struct ContactContentList: View {
 
 struct ContactRowContainer: View {
     @EnvironmentObject var viewModel: ContactsViewModel
-    @EnvironmentObject var threadsViewModel: ThreadsViewModel
     let contact: Contact
     let isSearchRow: Bool
     var separatorColor: Color {

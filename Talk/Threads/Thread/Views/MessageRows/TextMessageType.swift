@@ -46,7 +46,7 @@ struct TextMessageType: View {
             }
         }
         .environmentObject(viewModel)
-        .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
     }
 }
 
@@ -122,30 +122,39 @@ struct InnerMessage: View {
                 .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
         )
         .contentShape(MessageRowBackground.instance)
-        .customContextMenu(id: message.id, self: selfMessage, menus: { contextMenuWithReactions })
+        .customContextMenu(id: message.id, self: SelfContextMenu(viewModel: viewModel), menus: { ContextMenuContent(viewModel: viewModel) })
         .overlay(alignment: .center) { SelectMessageInsideClickOverlay() }
     }
+}
 
-    private var selfMessage: some View {
-        HStack {
-            self
-                .environmentObject(viewModel)
-                .environmentObject(AppState.shared.objectsContainer.audioPlayerVM)
-        }
-        .frame(maxWidth: ThreadViewModel.maxAllowedWidth)
+struct ContextMenuContent: View {
+    let viewModel: MessageRowViewModel
 
-    }
-
-    private var contextMenuWithReactions: some View {
+    var body: some View {
         VStack {
             ReactionMenuView()
                 .fixedSize()
             MessageActionMenu()
         }
+        .id("SelfContextMenu\(viewModel.message.id ?? 0)")
         .environmentObject(viewModel)
         .onAppear {
             hideKeyboard()
         }
+    }
+}
+
+struct SelfContextMenu: View {
+    let viewModel: MessageRowViewModel
+
+    var body: some View {
+        HStack {
+            InnerMessage(viewModel: viewModel)
+                .environmentObject(viewModel)
+                .environmentObject(AppState.shared.objectsContainer.audioPlayerVM)
+        }
+        .id("SelfContextMenu\(viewModel.message.id ?? 0)")
+        .frame(maxWidth: ThreadViewModel.maxAllowedWidth)
     }
 }
 

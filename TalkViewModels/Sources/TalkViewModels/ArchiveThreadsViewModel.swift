@@ -123,7 +123,9 @@ public final class ArchiveThreadsViewModel: ObservableObject {
     }
 
     private func onCancelTimer(key: String) {
-        isLoading = false
-        animateObjectWillChange()
+        if isLoading {
+            isLoading = false
+            animateObjectWillChange()
+        }
     }
 }

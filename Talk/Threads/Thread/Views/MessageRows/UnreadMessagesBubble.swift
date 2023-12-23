@@ -9,12 +9,16 @@ import SwiftUI
 
 struct UnreadMessagesBubble: View {
     var body: some View {
-        Text("Messages.unreadMessages")
-            .font(.iransansCaption)
-            .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-            .background(Color.App.hint)
-            .clipShape(RoundedRectangle(cornerRadius:(16)))
-            .foregroundColor(Color.App.white)
+        HStack {
+            Spacer()
+            Text("Messages.unreadMessages")
+                .font(.iransansCaption)
+                .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                .background(Color.App.hint)
+                .clipShape(RoundedRectangle(cornerRadius:(16)))
+                .foregroundColor(Color.App.white)
+            Spacer()
+        }
     }
 }
 

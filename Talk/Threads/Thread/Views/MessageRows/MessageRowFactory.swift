@@ -15,7 +15,7 @@ import TalkViewModels
 
 struct MessageRowFactory: View {
     private var message: Message { viewModel.message }
-    @State var viewModel: MessageRowViewModel
+    let viewModel: MessageRowViewModel
 
     var body: some View {
         HStack(spacing: 0) {

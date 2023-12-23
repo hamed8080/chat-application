@@ -34,6 +34,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     private var cancellableSet: Set<AnyCancellable> = .init()
     public var fileURL: URL? { message?.fileURL }
     public var url: URL? { message?.url }
+    public var isInCache: Bool = false
 
     public init(message: Message) {
         self.message = message
@@ -41,6 +42,9 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             state = .completed
             thumbnailData = nil
             animateObjectWillChange()
+        }
+        if let url = url {
+            isInCache = chat?.file.isFileExist(url) ?? false || chat?.file.isFileExistInGroup(url) ?? false
         }
         setObservers()
     }
@@ -86,11 +90,6 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         default:
             break
         }
-    }
-
-    public var isInCache: Bool {
-        guard let url = url else { return false }
-        return chat?.file.isFileExist(url) ?? false || chat?.file.isFileExistInGroup(url) ?? false
     }
 
     public func startDownload() {
@@ -149,6 +148,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
                 downloadPercent = 100
                 self.data = data
                 thumbnailData = nil
+                isInCache = true
                 animateObjectWillChange()
             }
         }
@@ -161,6 +161,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
                 downloadPercent = 100
                 self.data = response.result
                 thumbnailData = nil
+                isInCache = true
                 animateObjectWillChange()
             }
         }

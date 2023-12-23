@@ -121,12 +121,16 @@ struct SectionView: View {
     let section: MessageSection
 
     var body: some View {
-        Text(verbatim: section.date.yearCondence ?? "")
-            .font(.iransansCaption)
-            .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-            .background(Color.App.black.opacity(0.2))
-            .clipShape(RoundedRectangle(cornerRadius:(24)))
-            .foregroundStyle(Color.App.text)
+        HStack {
+            Spacer()
+            Text(verbatim: section.date.yearCondence ?? "")
+                .font(.iransansCaption)
+                .padding(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                .background(Color.App.black.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
+                .foregroundStyle(Color.App.text)
+            Spacer()
+        }
     }
 }
 

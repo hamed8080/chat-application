@@ -131,7 +131,9 @@ public final class ThreadsSearchViewModel: ObservableObject {
     }
 
     private func onCancelTimer(key: String) {
-        isLoading = false
-        animateObjectWillChange()
+        if isLoading {
+            isLoading = false
+            animateObjectWillChange()
+        }
     }
 }

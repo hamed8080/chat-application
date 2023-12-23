@@ -22,7 +22,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var isEnglish = true
     public var markdownTitle = AttributedString()
     public var timeString: String = ""
-    public static var avatarSize: CGFloat = 34
+    public static var avatarSize: CGFloat = 37
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     private var cancelableSet = Set<AnyCancellable>()
@@ -46,6 +46,12 @@ public final class MessageRowViewModel: ObservableObject {
     public var imageHeight: CGFloat = 128
     public var isReplyImage: Bool = false
     public var replyLink: String?
+    private static var formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        formatter.locale = Language.preferredLocale
+        return formatter
+    }()
 
     public var avatarImageLoader: ImageLoaderViewModel? {
         if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {
@@ -235,7 +241,9 @@ public final class MessageRowViewModel: ObservableObject {
         isNextMessageTheSameUser = threadVM?.thread.group == true && (threadVM?.isNextSameUser(message: message) == true) && message.participant != nil
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = message.markdownTitle
-        timeString = message.time?.date.localFormattedTime ?? ""
+        if let date = message.time?.date {
+            timeString = MessageRowViewModel.formatter.string(from: date)
+        }
         setReactionList()
     }
 

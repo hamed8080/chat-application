@@ -69,7 +69,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     private var typingTimerStarted = false
     public var hasNextTop = true
     public var hasNextBottom = true
-    public var count: Int { 15 }
+    public let count: Int = 50
     public var threadId: Int { thread.id ?? 0 }
     public var signalMessageText: String?
     public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
@@ -81,7 +81,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public weak var forwardMessage: Message?
     public var seenPublisher = PassthroughSubject<Message, Never>()
     var hasSentHistoryRequest = false
-    var createThreadCompletion: (()-> Void)?    
+    var createThreadCompletion: (()-> Void)?
+    private var topSliceId: Int = 0
+    private var bottomSliceId: Int = 0
     public static var threadWidth: CGFloat = 0 {
         didSet {
             // 38 = Avatar width + tail width + leading padding + trailing padding
@@ -204,7 +206,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func onMessageAppear(_ message: Message) {
-        if message.id == thread.lastMessageVO?.id {
+        if message.id == thread.lastMessageVO?.id, !isAtBottomOfTheList {
             isAtBottomOfTheList = true
             animateObjectWillChange()
         }
@@ -229,17 +231,25 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             seenPublisher.send(message)
         }
 
-        if !isProgramaticallyScroll, scrollingUP, let lastIndex = sections.first?.messages.firstIndex(where: { message.uniqueId == $0.uniqueId }), lastIndex < 3 {
+        if !isProgramaticallyScroll, isInTopSlice(message) {
             moreTop(sections.first?.messages.first?.time)
         }
 
-        if !isProgramaticallyScroll, !scrollingUP, message.id == sections.last?.messages.last?.id, (thread.lastMessageVO?.id ?? 0) != (message.id ?? -1) {
+        if !isProgramaticallyScroll, isInBottomSlice(message) {
             moreBottom(sections.last?.messages.last?.time?.advanced(by: 1))
         }
     }
 
+    private func isInTopSlice(_ message: Message) -> Bool {
+        return message.id ?? 0 <= topSliceId
+    }
+
+    private func isInBottomSlice(_ message: Message) -> Bool {
+        return message.id ?? 0 >= bottomSliceId
+    }
+
     public func onMessegeDisappear(_ message: Message) {
-        if message.id == thread.lastMessageVO?.id {
+        if message.id == thread.lastMessageVO?.id, isAtBottomOfTheList {
             isAtBottomOfTheList = false
             animateObjectWillChange()
         }
@@ -291,6 +301,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             insertOrUpdate(message)
         }
         sort()
+        topSliceId = sections.flatMap{$0.messages}.prefix(15).compactMap{$0.id}.last ?? 0
+        bottomSliceId = sections.flatMap{$0.messages}.suffix(15).compactMap{$0.id}.first ?? 0
     }
 
     func insertOrUpdate(_ message: Message) {
@@ -488,9 +500,11 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     private func onCancelTimer(key: String) {
-        topLoading = false
-        bottomLoading = false
-        animateObjectWillChange()
+        if topLoading || bottomLoading {
+            topLoading = false
+            bottomLoading = false
+            animateObjectWillChange()
+        }
     }
 
     /// We reduce it locally to keep the UI Sync and user feels it really read the message.

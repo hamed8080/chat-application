@@ -87,7 +87,6 @@ struct SplitViewContent: View {
     let container: ObjectsContainer
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.localStatusBarStyle) var statusBarStyle
-    @EnvironmentObject var navVM: NavigationModel
 
     var body: some View {
         ContainerSplitView(sidebarView: sidebarViews, container: container)

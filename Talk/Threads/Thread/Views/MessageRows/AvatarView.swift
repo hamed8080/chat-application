@@ -58,7 +58,7 @@ struct AvatarView: View {
                 }
             }
             .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-            .padding(.trailing, 8)
+            .padding(.trailing, 2)
             .onTapGesture {
                 if let participant = message.participant {
                     navVM.append(participantDetail: participant)

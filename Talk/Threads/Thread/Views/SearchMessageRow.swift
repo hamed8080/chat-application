@@ -14,7 +14,7 @@ import TalkViewModels
 struct SearchMessageRow: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
-    @EnvironmentObject var viewModel: MessageRowViewModel
+    @State var viewModel: MessageRowViewModel
 
     var body: some View {
         Button {
@@ -32,7 +32,7 @@ struct SearchMessageRow: View {
 
 struct SearchMessageRow_Previews: PreviewProvider {
     static var previews: some View {
-        SearchMessageRow()
+        SearchMessageRow(viewModel: .init(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
             .environmentObject(MessageRowViewModel(message: MockData.message, viewModel: .init(thread: Conversation())))
     }
 }
