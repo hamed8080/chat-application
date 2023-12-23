@@ -77,13 +77,14 @@ fileprivate struct VideoDownloadButton: View {
     }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 10) {
             ZStack {
                 Image(systemName: stateIcon)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
                     .foregroundStyle(config.iconColor)
+                    .fontWeight(.semibold)
 
                 Circle()
                     .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
@@ -92,6 +93,7 @@ fileprivate struct VideoDownloadButton: View {
                     .rotationEffect(Angle(degrees: 270))
                     .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
                     .environment(\.layoutDirection, .leftToRight)
+                    .fontWeight(.semibold)
             }
             .frame(width: config.iconWidth, height: config.iconHeight)
             .background(config.iconCircleColor)
@@ -122,6 +124,7 @@ fileprivate struct VideoDownloadButton: View {
                 }
             }
         }
+        .padding(.horizontal, 10)
     }
 }
 

@@ -90,6 +90,7 @@
 "Contacts.total" = "مجموع مخاطبان";
 "Contacts.searched" = "مخاطبان جستجو شده";
 "Contacts.createNew" = "ساخت مخاطب جدید";
+"Contacts.delete" = "حذف مخاطب";
 "Contacts.deleteSelectedTitle" = "حذف مخاطبان انتخاب شده";
 "Contacts.deleteSelectedSubTitle" = "آیا مطمئن هستید که می خواهید مخاطبان انتخاب شده را حذف کنید؟";
 "Contacts.blockedList" = "لیست مسدودی ها";

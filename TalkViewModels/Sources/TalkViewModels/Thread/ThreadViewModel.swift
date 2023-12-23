@@ -70,6 +70,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var hasNextTop = true
     public var hasNextBottom = true
     public let count: Int = 50
+    private let thresholdToLoad = 40
     public var threadId: Int { thread.id ?? 0 }
     public var signalMessageText: String?
     public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
@@ -83,6 +84,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     var createThreadCompletion: (()-> Void)?
     private var topSliceId: Int = 0
     private var bottomSliceId: Int = 0
+    public var lastTopVisibleMessage: Message?
     public static var threadWidth: CGFloat = 0 {
         didSet {
             // 38 = Avatar width + tail width + leading padding + trailing padding
@@ -205,6 +207,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func onMessageAppear(_ message: Message) {
+        if message.id == sections.first?.messages.first?.id {
+            lastTopVisibleMessage = message
+        }
         if message.id == thread.lastMessageVO?.id, !isAtBottomOfTheList {
             isAtBottomOfTheList = true
             animateObjectWillChange()
@@ -230,11 +235,12 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             seenPublisher.send(message)
         }
 
-        if !isProgramaticallyScroll, isInTopSlice(message) {
+
+        if scrollingUP, !isProgramaticallyScroll, isInTopSlice(message) {
             moreTop(sections.first?.messages.first?.time)
         }
 
-        if !isProgramaticallyScroll, isInBottomSlice(message) {
+        if !scrollingUP, !isProgramaticallyScroll, isInBottomSlice(message) {
             moreBottom(sections.last?.messages.last?.time?.advanced(by: 1))
         }
     }
@@ -300,8 +306,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             insertOrUpdate(message)
         }
         sort()
-        topSliceId = sections.flatMap{$0.messages}.prefix(15).compactMap{$0.id}.last ?? 0
-        bottomSliceId = sections.flatMap{$0.messages}.suffix(15).compactMap{$0.id}.first ?? 0
+        topSliceId = sections.flatMap{$0.messages}.prefix(thresholdToLoad).compactMap{$0.id}.last ?? 0
+        bottomSliceId = sections.flatMap{$0.messages}.suffix(thresholdToLoad).compactMap{$0.id}.first ?? 0
     }
 
     func insertOrUpdate(_ message: Message) {

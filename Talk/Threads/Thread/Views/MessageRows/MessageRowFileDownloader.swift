@@ -47,6 +47,7 @@ struct MessageRowFileDownloaderContent: View {
                     fileNameTextView
                 }
             }
+            .padding(10)
             .sheet(isPresented: $shareDownloadedFile) {
                 ActivityViewControllerWrapper(activityItems: [message.tempURL], title: message.fileMetaData?.file?.originalName)
             }
@@ -94,13 +95,14 @@ fileprivate struct FileDownloadButton: View {
     }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             ZStack {
                 Image(systemName: stateIcon)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 12, height: 12)
+                    .frame(width: 16, height: 16)
                     .foregroundStyle(config.iconColor)
+                    .fontWeight(.semibold)
 
                 Circle()
                     .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
@@ -109,6 +111,7 @@ fileprivate struct FileDownloadButton: View {
                     .rotationEffect(Angle(degrees: 270))
                     .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
                     .environment(\.layoutDirection, .leftToRight)
+                    .fontWeight(.semibold)
             }
             .frame(width: config.iconWidth, height: config.iconHeight)
             .background(config.iconCircleColor)
@@ -139,6 +142,7 @@ fileprivate struct FileDownloadButton: View {
                 }
             }
         }
+        .padding(10)
     }
 }
 

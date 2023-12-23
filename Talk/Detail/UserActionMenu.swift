@@ -15,6 +15,7 @@ struct UserActionMenu: View {
     let participant: Participant
 
     var body: some View {
+        Divider()
         if participant.contactId == nil {
             Button {
                 let contact = Contact(cellphoneNumber: participant.cellphoneNumber,
@@ -55,11 +56,11 @@ struct UserActionMenu: View {
             .disabled(true)
         }
 
-        if participant.contactId != nil, viewModel.thread == nil {
+        if participant.contactId != nil {
             Button(role: .destructive) {
                 contactViewModel.delete(.init(id: participant.contactId))
             } label: {
-                Label("General.delete", systemImage: "trash")
+                Label("Contacts.delete", systemImage: "trash")
             }
         }
     }

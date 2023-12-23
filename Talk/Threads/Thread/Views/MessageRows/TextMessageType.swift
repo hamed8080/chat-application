@@ -109,6 +109,7 @@ struct InnerMessage: View {
             UnsentMessageView()
             Group {
                 ReactionCountView()
+                    .environmentObject(viewModel.reactionsVM)
                     .environmentObject(viewModel)
                 MessageFooterView()
             }
@@ -133,6 +134,7 @@ struct ContextMenuContent: View {
     var body: some View {
         VStack {
             ReactionMenuView()
+                .environmentObject(viewModel.reactionsVM)
                 .fixedSize()
             MessageActionMenu()
         }

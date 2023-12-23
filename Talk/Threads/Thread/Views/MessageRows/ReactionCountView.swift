@@ -14,7 +14,7 @@ import TalkUI
 import TalkModels
 
 struct ReactionCountView: View {
-    @EnvironmentObject var viewModel: MessageRowViewModel
+    @EnvironmentObject var viewModel: MessageReactionsViewModel
 
     var body: some View {
         ScrollView(.horizontal) {
@@ -32,7 +32,7 @@ struct ReactionCountView: View {
 }
 
 struct ReactionCountRow: View {
-    @EnvironmentObject var viewModel: MessageRowViewModel
+    @EnvironmentObject var viewModel: MessageReactionsViewModel
     let reactionCount: ReactionCount
 
     var body: some View {
@@ -57,15 +57,17 @@ struct ReactionCountRow: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .onTapGesture {
-            if let conversationId = viewModel.message.threadId ?? viewModel.message.conversation?.id, let tappedStciker = reactionCount.sticker {
-                AppState.shared.objectsContainer.reactions.reaction(tappedStciker, messageId: viewModel.message.id ?? -1, conversationId: conversationId)
+            if let message = viewModel.message, let conversationId = message.threadId ?? message.conversation?.id, let tappedStciker = reactionCount.sticker {
+                AppState.shared.objectsContainer.reactions.reaction(tappedStciker, messageId: message.id ?? -1, conversationId: conversationId)
             }
         }
         .customContextMenu(id: reactionCount.id, self: self.environmentObject(viewModel)) {
             let selectedEmojiTabId = "\(reactionCount.sticker?.emoji ?? "all") \(reactionCount.count ?? 0)"
-            MessageReactionDetailView(message: viewModel.message, selectedStickerTabId: selectedEmojiTabId)
-                .frame(width: 300, height: 400)
-                .clipShape(RoundedRectangle(cornerRadius:(12)))
+            if let message = viewModel.message {
+                MessageReactionDetailView(message: message, selectedStickerTabId: selectedEmojiTabId)
+                    .frame(width: 300, height: 400)
+                    .clipShape(RoundedRectangle(cornerRadius:(12)))
+            }
         }
     }
 

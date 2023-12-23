@@ -270,8 +270,24 @@ struct DetailTopButtons: View {
                 }
             }
 
-            DetailViewButton(accessibilityText: "", icon: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill") {
-                viewModel.toggleMute()
+            if viewModel.thread?.type != .selfThread {
+                DetailViewButton(accessibilityText: "", icon: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill") {
+                    viewModel.toggleMute()
+                }
+
+                DetailViewButton(accessibilityText: "", icon: "phone.and.waveform.fill") {
+
+                }
+                .disabled(true)
+                .opacity(0.4)
+                .allowsHitTesting(false)
+
+                DetailViewButton(accessibilityText: "", icon: "video.fill") {
+
+                }
+                .disabled(true)
+                .opacity(0.4)
+                .allowsHitTesting(false)
             }
 //
 //            if viewModel.thread?.admin == true {
@@ -286,20 +302,6 @@ struct DetailTopButtons: View {
                     NotificationCenter.default.post(name: .forceSearch, object: "\(threadId)")
                 }
             }
-
-            DetailViewButton(accessibilityText: "", icon: "phone.and.waveform.fill") {
-
-            }
-            .disabled(true)
-            .opacity(0.4)
-            .allowsHitTesting(false)
-
-            DetailViewButton(accessibilityText: "", icon: "video.fill") {
-
-            }
-            .disabled(true)
-            .opacity(0.4)
-            .allowsHitTesting(false)
 
             Menu {
                 if let conversation = viewModel.thread {

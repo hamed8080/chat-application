@@ -15,7 +15,7 @@ import TalkUI
 
 struct ReactionMenuView: View {
     @EnvironmentObject var contextMenuVM: ContextMenuModel
-    @EnvironmentObject var viewModel: MessageRowViewModel
+    @EnvironmentObject var viewModel: MessageReactionsViewModel
     var currentSelectedReaction: Reaction? { viewModel.currentUserReaction }
     @State var show = false
 
@@ -24,7 +24,7 @@ struct ReactionMenuView: View {
             HStack(spacing: 4) {
                 ForEach(Sticker.allCases.filter({$0 != .unknown})) { sticker in
                     Button {
-                        if let messageId = viewModel.message.id, let conversationId = viewModel.threadVM?.threadId {
+                        if let messageId = viewModel.message?.id, let conversationId = viewModel.viewModel?.threadVM?.threadId {
                             ReactionViewModel.shared.reaction(sticker, messageId: messageId, conversationId: conversationId)
                             contextMenuVM.hide()
                         }

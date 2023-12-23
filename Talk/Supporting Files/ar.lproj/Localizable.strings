@@ -89,6 +89,7 @@
 "Contacts.total" = "إجمالي جهات الاتصال";
 "Contacts.searched" = "جهات الاتصال المبحوث عنها";
 "Contacts.createNew" = "إنشاء جهات اتصال جديدة";
+"Contacts.delete" = "حذف جهة اتصال";
 "Contacts.deleteSelectedTitle" = "حذف جهات الاتصال المحددة";
 "Contacts.deleteSelectedSubTitle" = "هل ترغب في حذف جهات الاتصال المحددة؟";
 "Contacts.blockedList" = "جهات الاتصال المحظورة";

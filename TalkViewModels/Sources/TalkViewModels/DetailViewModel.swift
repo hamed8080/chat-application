@@ -166,6 +166,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
             onUNBlock(chatResponse)
         case .add(let chatResponse):
             onAddContact(chatResponse)
+        case .delete(let response, let deleted):
+            onDeletedContact(response, deleted)
         default:
             break
         }
@@ -381,6 +383,17 @@ public final class DetailViewModel: ObservableObject, Hashable {
     func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
         if response.result == thread?.id {
             dismiss = true
+        }
+    }
+
+    private func onDeletedContact(_ response: ChatResponse<[Contact]>, _ deleted: Bool) {
+        if deleted {
+            if response.result?.first?.id == (partner?.contactId ?? user?.contactId) {
+                partner?.contactId = nil
+                user?.contactId = nil
+                partnerContact = nil
+                animateObjectWillChange()
+            }
         }
     }
 

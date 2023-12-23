@@ -89,6 +89,7 @@
 "Contacts.total" = "Totalt antal kontakter";
 "Contacts.searched" = "Sökta kontakter";
 "Contacts.createNew" = "Skapa nya kontakter";
+"Contacts.delete" = "Ta bort kontakt";
 "Contacts.deleteSelectedTitle" = "Radera valda kontakter";
 "Contacts.deleteSelectedSubTitle" = "Vill du radera de valda kontakterna?";
 "Contacts.blockedList" = "Blockerade kontakter";

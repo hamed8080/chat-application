@@ -40,7 +40,7 @@ public extension String {
 
     func matches(char: Character) -> [NSTextCheckingResult]? {
         let range = NSRange(startIndex..., in: self)
-        return try? NSRegularExpression(pattern: "\(char)[0-9a-zA-Z\\-](\\.?[0-9a-zA-Z\\-])*").matches(in: self, range: range)
+        return try? NSRegularExpression(pattern: "\(char)[0-9a-zA-Z\\-\\p{Arabic}](\\.?[0-9a-zA-Z\\--\\p{Arabic}])*").matches(in: self, range: range)
     }
 
     var systemImageNameForFileExtension: String {

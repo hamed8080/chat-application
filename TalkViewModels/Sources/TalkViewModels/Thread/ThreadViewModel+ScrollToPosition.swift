@@ -48,8 +48,8 @@ extension ThreadViewModel: ScrollToPositionProtocol {
         }
     }
 
-    func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true) {
-        scrollTo(uniqueId, anchor: .bottom)
+    func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) {
+        scrollTo(uniqueId, anchor: anchor)
         if highlight {
             NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
         }

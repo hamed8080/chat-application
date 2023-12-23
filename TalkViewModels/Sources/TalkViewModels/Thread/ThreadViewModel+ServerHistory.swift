@@ -70,6 +70,11 @@ extension ThreadViewModel {
         setHasMoreTop(response)
         /// 6- To update isLoading fields to hide the loading at the top.
         animateObjectWillChange()
+
+        if let uniqueId = lastTopVisibleMessage?.uniqueId, let id = lastTopVisibleMessage?.id {
+            showHighlighted(uniqueId, id, highlight: false, anchor: .top)
+            lastTopVisibleMessage = nil
+        }
     }
 
     public func moreBottom(prepend: String = "MORE-BOTTOM", _ fromTime: UInt?) {

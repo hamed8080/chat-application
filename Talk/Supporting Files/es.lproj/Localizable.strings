@@ -91,6 +91,7 @@
 "Contacts.total" = "Total de contactos";
 "Contacts.searched" = "Contactos buscados";
 "Contacts.createNew" = "Crear nuevos contactos";
+"Contacts.delete" = "Eliminar contacto";
 "Contacts.deleteSelectedTitle" = "Eliminar contactos seleccionados";
 "Contacts.deleteSelectedSubTitle" = "¿Deseas eliminar los contactos seleccionados?";
 "Contacts.blockedList" = "Contactos bloqueados";

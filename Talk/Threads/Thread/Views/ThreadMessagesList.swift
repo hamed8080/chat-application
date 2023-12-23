@@ -34,18 +34,22 @@ struct ThreadMessagesList: View {
                 CenterLoading()
             }
         }
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 20, coordinateSpace: .local)
-                .onChanged{ newValue in
-                    viewModel.scrollingUP = newValue.translation.height > 20
-                }
-        )
-        .simultaneousGesture(
-            TapGesture()
-                .onEnded { _ in
-                    hideKeyboardOnTapOrDrag()
-                }
-        )
+        .simultaneousGesture(tap.simultaneously(with: drag))
+    }
+
+    private var drag: some Gesture {
+        DragGesture(minimumDistance: 10, coordinateSpace: .global)
+            .onChanged { newValue in
+                viewModel.isProgramaticallyScroll = false
+                viewModel.scrollingUP = newValue.translation.height > 10
+            }
+    }
+
+    private var tap: some Gesture {
+        TapGesture()
+            .onEnded { _ in
+                hideKeyboardOnTapOrDrag()
+            }
     }
 
     private func hideKeyboardOnTapOrDrag() {

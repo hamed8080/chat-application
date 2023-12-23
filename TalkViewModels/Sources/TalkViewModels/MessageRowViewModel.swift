@@ -17,12 +17,49 @@ import ChatDTO
 import OSLog
 import ChatCore
 
+public final class MessageReactionsViewModel: ObservableObject {
+    public var message: Message? { viewModel?.message }
+    public weak var viewModel: MessageRowViewModel?
+    public var reactionCountList: ContiguousArray<ReactionCount> = []
+    private var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
+    public var currentUserReaction: Reaction?
+    private var cancelableSet = Set<AnyCancellable>()
+
+    init() {
+        setupObservers()
+    }
+
+    func setupObservers() {
+        NotificationCenter.default.publisher(for: .reactionMessageUpdated)
+            .sink { notification in
+                if notification.object as? Int == self.message?.id {
+                    Task {
+                        try? await Task.sleep(for: .seconds(0.1))
+                        await self.setReactionList()
+                    }
+                }
+            }
+            .store(in: &cancelableSet)
+    }
+
+    func setReactionList() async {
+        if let reactionCountList = inMemoryReaction?.summary(for: message?.id ?? -1) {
+            self.reactionCountList = .init(reactionCountList)
+            currentUserReaction = ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(message?.id ?? -1)
+            await MainActor.run {
+                self.animateObjectWillChange()
+            }
+        }
+    }
+}
+
 public final class MessageRowViewModel: ObservableObject {
     public var isCalculated = false
     public var isEnglish = true
     public var markdownTitle = AttributedString()
     public var timeString: String = ""
     public static var avatarSize: CGFloat = 37
+    public var reactionsVM: MessageReactionsViewModel
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     private var cancelableSet = Set<AnyCancellable>()
@@ -37,9 +74,6 @@ public final class MessageRowViewModel: ObservableObject {
     public var isNextMessageTheSameUser: Bool = false
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
-    public var reactionCountList: ContiguousArray<ReactionCount> = []
-    private var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
-    public var currentUserReaction: Reaction?
     public var uploadViewModel: UploadFileViewModel?
     public var paddingEdgeInset: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
     public var imageWidth: CGFloat = 128
@@ -68,6 +102,8 @@ public final class MessageRowViewModel: ObservableObject {
         }
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        reactionsVM = MessageReactionsViewModel()
+        reactionsVM.viewModel = self
         if message.uploadFile != nil {
             uploadViewModel = .init(message: message)
             isMe = true
@@ -153,15 +189,6 @@ public final class MessageRowViewModel: ObservableObject {
         }
         .store(in: &cancelableSet)
 
-        NotificationCenter.default.publisher(for: .reactionMessageUpdated)
-        .sink { [weak self] notification in
-            if notification.object as? Int == self?.message.id {
-                self?.setReactionList()
-                self?.animateObjectWillChange()
-            }
-        }
-        .store(in: &cancelableSet)
-
         uploadViewModel?.$state.sink { [weak self] state in
             self?.deleteUploadedMessage(state: state)
         }
@@ -232,25 +259,21 @@ public final class MessageRowViewModel: ObservableObject {
     }
 
     private func recalculateWithAnimation() {
-        performaCalculation()
-        animateObjectWillChange()
+        Task {
+            await performaCalculation()
+            await MainActor.run {
+                self.animateObjectWillChange()
+            }
+        }
     }
 
-    private func performaCalculation() {
+    private func performaCalculation() async {
         isCalculated = true
         isNextMessageTheSameUser = threadVM?.thread.group == true && (threadVM?.isNextSameUser(message: message) == true) && message.participant != nil
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = message.markdownTitle
         if let date = message.time?.date {
             timeString = MessageRowViewModel.formatter.string(from: date)
-        }
-        setReactionList()
-    }
-
-    func setReactionList() {
-        if let reactionCountList = inMemoryReaction?.summary(for: message.id ?? -1) {
-            self.reactionCountList = .init(reactionCountList)
-            currentUserReaction = ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(message.id ?? -1)
         }
     }
 
