@@ -11,6 +11,7 @@ import TalkUI
 
 struct CloseRecordingButton: View {
     @EnvironmentObject var viewModel: AudioRecordingViewModel
+    @EnvironmentObject var scrollVM: ThreadScrollingViewModel
 
     var body: some View {
         if viewModel.isRecording {
@@ -18,7 +19,7 @@ struct CloseRecordingButton: View {
                 Spacer()
                 Button {
                     withAnimation {
-                        viewModel.threadViewModel?.disableExcessiveLoading()
+                        scrollVM.disableExcessiveLoading()
                         viewModel.cancel()
                     }
                 } label: {
@@ -49,7 +50,7 @@ struct CloseRecordingButton_Previews: PreviewProvider {
             CloseRecordingButton()
                 .environmentObject(vm)
                 .onAppear {
-                    vm.isAtBottomOfTheList = false
+                    vm.scrollVM.isAtBottomOfTheList = false
                     vm.thread.unreadCount = 10
                     vm.animateObjectWillChange()
                 }

@@ -138,7 +138,7 @@ struct MessageActionMenu: View {
                 ContextMenuButton(title: "General.delete", image: "trash", showSeparator: false) {
                     withAnimation(animation(appear: true)) {
                         if let threadVM {
-                            threadVM.messageViewModels.first(where: {$0.message.id == message.id})?.isSelected = true
+                            threadVM.historyVM.messageViewModels.first(where: {$0.message.id == message.id})?.isSelected = true
                             let dialog = DeleteMessageDialog(deleteForMe: delete.forMe,
                                                              deleteForOthers: delete.ForOthers,
                                                              viewModel: threadVM)

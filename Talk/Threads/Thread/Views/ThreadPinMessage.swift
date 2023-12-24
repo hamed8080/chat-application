@@ -40,7 +40,7 @@ struct ThreadPinMessage: View {
                 .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top)))
                 .onTapGesture {
                     if let time = message?.time, let messageId = message?.messageId {
-                        threadVM.moveToTime(time, messageId)
+                        threadVM.historyVM.moveToTime(time, messageId)
                     }
                 }
             }

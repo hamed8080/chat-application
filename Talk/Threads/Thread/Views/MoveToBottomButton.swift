@@ -10,11 +10,10 @@ import TalkViewModels
 import TalkUI
 
 struct MoveToBottomButton: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
-    @State private var timerToUpdate: Timer?
+    @EnvironmentObject var viewModel: ThreadScrollingViewModel
 
     var body: some View {
-        if !viewModel.isAtBottomOfTheList {
+        if viewModel.isAtBottomOfTheList == false {
             HStack {
                 Spacer()
                 Button {
@@ -39,23 +38,31 @@ struct MoveToBottomButton: View {
                 .shadow(color: .gray.opacity(0.4), radius: 2)
                 .scaleEffect(x: 1.0, y: 1.0, anchor: .center)
                 .overlay(alignment: .top) {
-                    let unreadCount = viewModel.thread.unreadCount ?? 0
-                    let hide = unreadCount == 0
-                    Text(verbatim: unreadCount == 0 ? "" : "\(viewModel.thread.unreadCountString ?? "")")
-                        .font(.iransansBoldCaption)
-                        .frame(height: hide ? 0 : 24)
-                        .frame(minWidth: hide ? 0 : 24)
-                        .scaleEffect(x: hide ? 0.0001 : 1.0, y: hide ? 0.0001 : 1.0, anchor: .center)
-                        .background(Color.App.primary)
-                        .foregroundStyle(Color.App.white)
-                        .clipShape(RoundedRectangle(cornerRadius:(hide ? 0 : 24)))
-                        .offset(x: 0, y: -16)
-                        .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCount)
+                    UnreadCountOverMoveToButtonView()
                 }
             }
             .environment(\.layoutDirection, .leftToRight)
             .padding(EdgeInsets(top: 0, leading: 8, bottom: 8, trailing: 8))
         }
+    }
+}
+
+struct UnreadCountOverMoveToButtonView: View {
+    @EnvironmentObject var viewModel: ThreadViewModel
+
+    var body: some View {
+        let unreadCount = viewModel.thread.unreadCount ?? 0
+        let hide = unreadCount == 0
+        Text(verbatim: unreadCount == 0 ? "" : "\(viewModel.thread.unreadCountString ?? "")")
+            .font(.iransansBoldCaption)
+            .frame(height: hide ? 0 : 24)
+            .frame(minWidth: hide ? 0 : 24)
+            .scaleEffect(x: hide ? 0.0001 : 1.0, y: hide ? 0.0001 : 1.0, anchor: .center)
+            .background(Color.App.primary)
+            .foregroundStyle(Color.App.white)
+            .clipShape(RoundedRectangle(cornerRadius:(hide ? 0 : 24)))
+            .offset(x: 0, y: -16)
+            .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCount)
     }
 }
 
@@ -66,7 +73,7 @@ struct MoveToBottomButton_Previews: PreviewProvider {
             MoveToBottomButton()
                 .environmentObject(vm)
                 .onAppear {
-                    vm.isAtBottomOfTheList = false
+                    vm.scrollVM.isAtBottomOfTheList = false
                     vm.thread.unreadCount = 10
                     vm.animateObjectWillChange()
                 }

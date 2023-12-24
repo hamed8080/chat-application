@@ -84,7 +84,7 @@ struct LinkRowView: View {
         .padding()
         .contentShape(Rectangle())
         .onTapGesture {
-            threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+            threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
             viewModel.dismiss = true
         }
     }

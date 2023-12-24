@@ -20,9 +20,9 @@ struct ReplyInfoMessageRow: View {
     var body: some View {
         if message.replyInfo != nil {
             Button {
-                threadVM?.disableExcessiveLoading()
+                threadVM?.scrollVM.disableExcessiveLoading()
                 if message.replyInfo?.replyPrivatelyInfo == nil, let time = message.replyInfo?.repliedToMessageTime, let repliedToMessageId = message.replyInfo?.repliedToMessageId {
-                    threadVM?.moveToTime(time, repliedToMessageId)
+                    threadVM?.historyVM.moveToTime(time, repliedToMessageId)
                 } else if let replyPrivatelyInfo = message.replyInfo?.replyPrivatelyInfo {
                     AppState.shared.openThreadAndMoveToMessage(conversationId: replyPrivatelyInfo.threadId ?? -1,
                                                                messageId: message.replyInfo?.repliedToMessageId ?? -1,

@@ -49,7 +49,7 @@ struct ThreadView: View, DropDelegate {
                 }
             }
             .onAppear {
-                viewModel.startFetchingHistory()
+                viewModel.historyVM.startFetchingHistory()
                 threadsVM.clearAvatarsOnSelectAnotherThread()
             }
             .onReceive(viewModel.$dismiss) { newValue in

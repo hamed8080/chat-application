@@ -36,7 +36,7 @@ struct ReplyMessageViewPlaceholder: View {
 
                 Spacer()
                 CloseButton {
-                    viewModel.disableExcessiveLoading()
+                    viewModel.scrollVM.disableExcessiveLoading()
                     viewModel.replyMessage = nil
                     viewModel.sendContainerViewModel.focusOnTextInput = false
                     viewModel.selectedMessagesViewModel.clearSelection()

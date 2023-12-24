@@ -36,7 +36,7 @@ public struct AudioPlayerView: View {
 
                         Button {
                             if let message = audioPlayerVM.message, let time = message.time, let id = message.id {
-                                threadVM?.moveToTime(time, id)
+                                threadVM?.historyVM.moveToTime(time, id)
                             }
                         } label: {
                             HStack {

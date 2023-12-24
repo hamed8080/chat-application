@@ -54,7 +54,7 @@ extension ThreadViewModel {
     }
 
     public func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String) {
-        canScrollToBottomOfTheList = true
+        scrollVM.canScrollToBottomOfTheList = true
         if attachmentsViewModel.attachments.count == 1 {
             sendSingleReplyAttachment(attachmentsViewModel.attachments.first, replyMessageId, textMessage)
         } else {
@@ -110,7 +110,7 @@ extension ThreadViewModel {
             let replyMessageId = replyMessage.id,
             let fromConversationId = replyMessage.conversation?.id
         else { return }
-        canScrollToBottomOfTheList = true
+        scrollVM.canScrollToBottomOfTheList = true
         if attachmentsViewModel.attachments.count == 1 {
             sendSingleReplyPrivatelyAttachment(attachmentsViewModel.attachments.first, fromConversationId, replyMessageId, textMessage)
         } else {
@@ -161,7 +161,7 @@ extension ThreadViewModel {
         send { [weak self] in
             guard let self = self, let audioFileURL = audioRecoderVM.recordingOutputPath else { return }
             guard let data = try? Data(contentsOf: audioFileURL) else { return }
-            self.canScrollToBottomOfTheList = true
+            self.scrollVM.canScrollToBottomOfTheList = true
             let uploadRequest = UploadFileRequest(data: data,
                                                   fileExtension: ".\(audioFileURL.fileExtension)",
                                                   fileName: "\(audioFileURL.fileName).\(audioFileURL.fileExtension)",
@@ -177,13 +177,13 @@ extension ThreadViewModel {
     public func sendNormalMessage(_ textMessage: String) {
         send { [weak self] in
             guard let self = self else {return}
-            canScrollToBottomOfTheList = true
+            scrollVM.canScrollToBottomOfTheList = true
             let req = SendTextMessageRequest(threadId: threadId,
                                              textMessage: textMessage,
                                              messageType: .text)
             let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
             let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().millisecondsSince1970), uniqueId: req.uniqueId, conversation: thread)
-            appendMessagesAndSort([message])
+            historyVM.appendMessagesAndSort([message])
             ChatManager.activeInstance?.message.send(req)
         }
     }
@@ -221,7 +221,7 @@ extension ThreadViewModel {
             guard let self = self else {return}
             imageItems.filter({!$0.isVideo}).forEach { imageItem in
                 let index = imageItems.firstIndex(where: { $0 == imageItem })!
-                self.canScrollToBottomOfTheList = true
+                self.scrollVM.canScrollToBottomOfTheList = true
                 let imageRequest = UploadImageRequest(data: imageItem.data,
                                                       fileExtension: "png",
                                                       fileName: "\(imageItem.fileName ?? "").png",
@@ -243,8 +243,7 @@ extension ThreadViewModel {
     public func sendVideos(_ textMessage: String = "", _ imageItems: [ImageItem]) {
         imageItems.filter({$0.isVideo}).forEach { imageItem in
             let index = imageItems.firstIndex(where: { $0 == imageItem })!
-            self.canScrollToBottomOfTheList = true
-            self.canScrollToBottomOfTheList = true
+            self.scrollVM.canScrollToBottomOfTheList = true
             let uploadRequest = UploadFileRequest(data: imageItem.data,
                                                   fileExtension: "mp4",
                                                   fileName: imageItem.fileName,
@@ -264,7 +263,7 @@ extension ThreadViewModel {
             urls.forEach { url in
                 let index = urls.firstIndex(where: { $0 == url })!
                 guard let data = try? Data(contentsOf: url) else { return }
-                self.canScrollToBottomOfTheList = true
+                self.scrollVM.canScrollToBottomOfTheList = true
                 let uploadRequest = UploadFileRequest(data: data,
                                                       fileExtension: "\(url.fileExtension)",
                                                       fileName: "\(url.fileName).\(url.fileExtension)", // it should have file name and extension
@@ -286,7 +285,7 @@ extension ThreadViewModel {
             guard let self = self else {return}
             items.forEach { item in
                 let index = items.firstIndex(where: { $0.id == item.id })!
-                self.canScrollToBottomOfTheList = true
+                self.scrollVM.canScrollToBottomOfTheList = true
                 let uploadRequest = UploadFileRequest(data: item.data ?? Data(),
                                                       fileExtension: "\(item.ext ?? "")",
                                                       fileName: "\(item.name ?? "").\(item.ext ?? "")", // it should have file name and extension
@@ -328,64 +327,6 @@ extension ThreadViewModel {
         }
     }
 
-    public func onSent(_ response: ChatResponse<MessageResponse>) {
-        guard
-            threadId == response.result?.threadId,
-            let indices = indicesByMessageUniqueId(response.uniqueId ?? "")
-        else { return }
-        if !replaceUploadMessage(response) {
-            sections[indices.sectionIndex].messages[indices.messageIndex].id = response.result?.messageId
-            sections[indices.sectionIndex].messages[indices.messageIndex].time = response.result?.messageTime
-        }
-    }
-
-    func replaceUploadMessage(_ response: ChatResponse<MessageResponse>) -> Bool {
-        let lasSectionIndex = sections.firstIndex(where: {$0.id == sections.last?.id})
-        if let lasSectionIndex,
-           sections.indices.contains(lasSectionIndex),
-           let oldUploadFileIndex = sections[lasSectionIndex].messages.firstIndex(where: { $0.isUploadMessage && $0.uniqueId == response.uniqueId }) {
-            sections[lasSectionIndex].messages.remove(at: oldUploadFileIndex) /// Remove because it was of type UploadWithTextMessageProtocol
-            sections[lasSectionIndex].messages.append(.init(threadId: response.subjectId, id: response.result?.messageId, time: response.result?.messageTime, uniqueId: response.uniqueId))
-            return true
-        }
-        return false
-    }
-
-    public func onDeliver(_ response: ChatResponse<MessageResponse>) {
-        guard threadId == response.result?.threadId,
-              let indices = findIncicesBy(uniqueId: response.uniqueId ?? "", response.result?.messageId ?? 0)
-        else { return }
-        sections[indices.sectionIndex].messages[indices.messageIndex].delivered = true
-    }
-
-    public func onSeen(_ response: ChatResponse<MessageResponse>) {
-        guard threadId == response.result?.threadId,
-              let indices = findIncicesBy(uniqueId: response.uniqueId ?? "", response.result?.messageId ?? 0),
-              sections[indices.sectionIndex].messages[indices.messageIndex].seen == nil
-        else { return }
-        sections[indices.sectionIndex].messages[indices.messageIndex].delivered = true
-        sections[indices.sectionIndex].messages[indices.messageIndex].seen = true
-        setSeenForOlderMessages(messageId: response.result?.messageId)
-    }
-
-    private func setSeenForOlderMessages(messageId: Int?) {
-        if let messageId = messageId {
-            sections.indices.forEach { sectionIndex in
-                sections[sectionIndex].messages.indices.forEach { messageIndex in
-                    let message = sections[sectionIndex].messages[messageIndex]
-                    if (message.id ?? 0 < messageId) &&
-                        (message.seen ?? false == false || message.delivered ?? false == false)
-                        && message.ownerId == ChatManager.activeInstance?.userInfo?.id {
-                        sections[sectionIndex].messages[messageIndex].delivered = true
-                        sections[sectionIndex].messages[messageIndex].seen = true
-                        let result = MessageResponse(messageState: .seen, threadId: threadId, messageId: message.id)
-                        NotificationCenter.default.post(name: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"), object: result)
-                    }
-                }
-            }
-        }
-    }
-
     public func resendUnsetMessage(_ message: Message) {
         switch message {
         case let req as SendTextMessage:
@@ -396,7 +337,7 @@ extension ThreadViewModel {
             ChatManager.activeInstance?.message.send(req.forwardMessageRequest)
         case let req as UploadFileMessage:
             // remove unset message type to start upload again the new one.
-            removeByUniqueId(req.uniqueId)
+            historyVM.removeByUniqueId(req.uniqueId)
             if message.isImage, let imageRequest = req.uploadImageRequest {
                 let imageMessage = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
                 self.uploadMessagesViewModel.append(contentsOf: ([imageMessage]))
@@ -413,8 +354,8 @@ extension ThreadViewModel {
 
     public func onUnSentEditCompletionResult(_ response: ChatResponse<Message>) {
         if let message = response.result, threadId == message.conversation?.id {
-            onDeleteMessage(response)
-            appendMessagesAndSort([message])
+            historyVM.onDeleteMessage(response)
+            historyVM.appendMessagesAndSort([message])
         }
     }
 

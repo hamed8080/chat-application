@@ -41,7 +41,7 @@ struct MessageListVideoView: View {
     var body: some View {
         ForEach(viewModel.messages) { message in
             VideoRowView(message: message)
-                .environmentObject(detailViewModel.threadVM?.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
+                .environmentObject(detailViewModel.threadVM?.historyVM.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
@@ -102,7 +102,7 @@ struct VideoRowView: View {
         .contentShape(Rectangle())
         .contextMenu {
             Button {
-                threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
                 viewModel.dismiss = true
             } label: {
                 Label("General.showMessage", systemImage: "bubble.middle.top")

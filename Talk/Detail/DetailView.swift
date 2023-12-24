@@ -80,7 +80,7 @@ struct DetailView: View {
 
             ToolbarItemGroup(placement: .navigation) {
                 NavigationBackButton {
-                    viewModel.threadVM?.disableExcessiveLoading()
+                    viewModel.threadVM?.scrollVM.disableExcessiveLoading()
                     AppState.shared.navViewModel?.remove(type: DetailViewModel.self)
                 }
             }

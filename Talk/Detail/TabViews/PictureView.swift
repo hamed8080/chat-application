@@ -72,7 +72,7 @@ struct MessageListPictureView: View {
     var body: some View {
         ForEach(viewModel.messages.filter({!$0.isMapType})) { message in
             PictureRowView(message: message, itemWidth: itemWidth)
-                .environmentObject(detailViewModel.threadVM?.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
+                .environmentObject(detailViewModel.threadVM?.historyVM.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
                 .id(message.id)
                 .frame(width: itemWidth, height: itemWidth)
                 .onAppear {
@@ -103,7 +103,7 @@ struct PictureRowView: View {
             .clipped()
             .contextMenu {
                 Button {
-                    threadVM?.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                    threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
                     viewModel.dismiss = true
                 } label: {
                     Label("General.showMessage", systemImage: "bubble.middle.top")

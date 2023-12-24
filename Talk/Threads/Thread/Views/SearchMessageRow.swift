@@ -19,7 +19,7 @@ struct SearchMessageRow: View {
     var body: some View {
         Button {
             if let time = message.time, let messageId = message.id {
-                threadVM?.moveToTime(time, messageId)
+                threadVM?.historyVM.moveToTime(time, messageId)
                 threadVM?.searchedMessagesViewModel.cancel()
                 threadVM?.animateObjectWillChange()
             }

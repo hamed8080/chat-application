@@ -52,7 +52,7 @@ public struct DeleteMessageDialog: View {
 
                 if deleteForMe {
                     Button {
-                        threadVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
+                        threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
                         threadVM.isInEditMode = false
                         appOverlayVM.dialogView = nil
                         viewModel.animateObjectWillChange()
@@ -66,7 +66,7 @@ public struct DeleteMessageDialog: View {
 
                 if deleteForOthers {
                     Button {
-                        threadVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
+                        threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
                         threadVM.isInEditMode = false
                         appOverlayVM.dialogView = nil
                         viewModel.animateObjectWillChange()

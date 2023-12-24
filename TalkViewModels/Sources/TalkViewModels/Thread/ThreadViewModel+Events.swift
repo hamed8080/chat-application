@@ -41,48 +41,8 @@ extension ThreadViewModel {
 
     public func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
-        case .history(let response):
-            if !response.cache {
-                /// For the first scenario.
-                onMoreTopFirstScenario(response)
-                onMoreBottomFirstScenario(response)
-                
-                /// For the second scenario.
-                onMoreTopSecondScenario(response)
-                
-                /// For the scenario three and four.
-                onMoreTop(response)
-                
-                /// For the scenario three and four.
-                onMoreBottom(response)
-                
-                /// For the fifth scenario.
-                onMoreBottomFifthScenario(response)
-
-                /// For the sixth scenario.
-                onMoveToTime(response)
-                onMoveFromTime(response)
-            }
-
-//            if response.cache == true {
-//                isProgramaticallyScroll = true
-//                appendMessagesAndSort(response.result ?? [])
-//                animateObjectWillChange()
-//            }
-            if !response.cache, let messageIds = response.result?.filter({$0.reactionableType}).compactMap({$0.id}), !searchedMessagesViewModel.isInSearchMode {
-                ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
-            }
-            break
         case .new(let response):
             onNewMessage(response)
-        case .sent(let response):
-            onSent(response)
-        case .delivered(let response):
-            onDeliver(response)
-        case .seen(let response):
-            onSeen(response)
-        case .deleted(let response):
-            onDeleteMessage(response)
         case .pin(let response):
             onPinMessage(response)
         case .unpin(let response):

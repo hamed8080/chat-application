@@ -14,7 +14,7 @@ import TalkModels
 
 public final class ThreadSelectedMessagesViewModel: ObservableObject {
     public weak var threadVM: ThreadViewModel?
-    public var selectedMessages: [MessageRowViewModel] { threadVM?.messageViewModels.filter({$0.isSelected}) ?? []}
+    public var selectedMessages: [MessageRowViewModel] { threadVM?.historyVM.messageViewModels.filter({$0.isSelected}) ?? []}
 
     public init(threadVM: ThreadViewModel? = nil) {
         self.threadVM = threadVM

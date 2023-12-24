@@ -92,6 +92,10 @@ struct NavigationTypeView: View {
                     .environmentObject(viewModel.sendContainerViewModel)
                     .environmentObject(viewModel.attachmentsViewModel)
                     .environmentObject(viewModel.searchedMessagesViewModel)
+                    .environmentObject(viewModel.scrollVM)
+                    .environmentObject(viewModel.historyVM)
+                    .environmentObject(viewModel.uploadMessagesViewModel)
+                    .environmentObject(viewModel.unssetMessagesViewModel)
             }
         case .contact(let contact):
             Text(contact.firstName ?? "")

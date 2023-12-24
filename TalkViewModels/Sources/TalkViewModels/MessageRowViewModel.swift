@@ -281,8 +281,8 @@ public final class MessageRowViewModel: ObservableObject {
         if state == .completed {
             threadVM?.uploadMessagesViewModel.cancel(message.uniqueId)
             threadVM?.unssetMessagesViewModel.cancel(message.uniqueId)
-            threadVM?.messageViewModels.removeAll(where: {$0.message.uniqueId == message.uniqueId})
-            threadVM?.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId, subjectId: threadVM?.threadId))
+            threadVM?.historyVM.messageViewModels.removeAll(where: {$0.message.uniqueId == message.uniqueId})
+            threadVM?.historyVM.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId, subjectId: threadVM?.threadId))
             threadVM?.animateObjectWillChange()
             Logger.viewModels.info("Upload Message with uniqueId removed:\(self.message.uniqueId ?? "")")
         }

@@ -26,7 +26,7 @@ struct ThreadMessagesList: View {
                 }
             }
             .onAppear {
-                viewModel.scrollProxy = scrollProxy
+                viewModel.scrollVM.scrollProxy = scrollProxy
                 UICollectionViewCell.appearance().backgroundView = UIView()
                 UITableViewHeaderFooterView.appearance().backgroundView = UIView()
             }
@@ -40,8 +40,9 @@ struct ThreadMessagesList: View {
     private var drag: some Gesture {
         DragGesture(minimumDistance: 10, coordinateSpace: .global)
             .onChanged { newValue in
-                viewModel.isProgramaticallyScroll = false
-                viewModel.scrollingUP = newValue.translation.height > 10
+                viewModel.scrollVM.isProgramaticallyScroll = false
+                viewModel.scrollVM.scrollingUP = newValue.translation.height > 10
+                viewModel.scrollVM.animateObjectWillChange()
             }
     }
 
@@ -57,7 +58,7 @@ struct ThreadMessagesList: View {
             NotificationCenter.default.post(name: .cancelSearch, object: true)
         }
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        viewModel.messageViewModels.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
+        viewModel.historyVM.messageViewModels.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
             rowViewModel.showReactionsOverlay = false
             rowViewModel.animateObjectWillChange()
         }
@@ -73,6 +74,7 @@ struct CenterLoading: View {
             .id(-3)
     }
 }
+
 struct ThreadbackgroundView: View {
     @Environment(\.colorScheme) var colorScheme
     let threadId: Int
@@ -90,7 +92,7 @@ struct ThreadbackgroundView: View {
 }
 
 struct MessagesLazyStack: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadHistoryViewModel
 
     var body: some View {
         VStack(spacing: 0) {
@@ -108,10 +110,8 @@ struct MessagesLazyStack: View {
                         SectionView(section: section)
                     }
                 }
-                UploadMessagesLoop(threadViewModel: viewModel)
-                    .environmentObject(viewModel.uploadMessagesViewModel)
-                UnsentMessagesLoop(threadViewModel: viewModel)
-                    .environmentObject(viewModel.unssetMessagesViewModel)
+                UploadMessagesLoop(historyVM: viewModel)
+                UnsentMessagesLoop(historyVM: viewModel)
                 ListLoadingView(isLoading: $viewModel.bottomLoading)
                     .id(-2)
                     .listRowSeparator(.hidden)
@@ -145,7 +145,7 @@ struct SectionView: View {
 
 struct MessageList: View {
     let messages: ContiguousArray<Message>
-    let viewModel: ThreadViewModel
+    let viewModel: ThreadHistoryViewModel
 
     var body: some View {
         ForEach(messages) { message in
@@ -165,13 +165,13 @@ struct MessageList: View {
 }
 
 struct UploadMessagesLoop: View {
-    let threadViewModel: ThreadViewModel
+    let historyVM: ThreadHistoryViewModel
     @EnvironmentObject var viewModel: ThreadUploadMessagesViewModel
 
     var body: some View {
         /// We must use uniqueId with messageId to force swiftUI to delete the row and make a new one after uploading successfully.
         ForEach(viewModel.uploadMessages, id: \.uniqueId) { uploadFileMessage in
-            MessageRowFactory(viewModel: threadViewModel.messageViewModel(for: uploadFileMessage))
+            MessageRowFactory(viewModel: historyVM.messageViewModel(for: uploadFileMessage))
                 .id("\(uploadFileMessage.uniqueId ?? "")\(uploadFileMessage.id ?? 0)")
         }
         .animation(.easeInOut, value: viewModel.uploadMessages.count)
@@ -179,13 +179,13 @@ struct UploadMessagesLoop: View {
 }
 
 struct UnsentMessagesLoop: View {
-    let threadViewModel: ThreadViewModel
+    let historyVM: ThreadHistoryViewModel
     @EnvironmentObject var viewModel: ThreadUnsentMessagesViewModel
 
     var body: some View {
         /// We have to use \.uniqueId to force the ForLoop to use uniqueId instead of default \.id because id is nil when a message is unsent.
         ForEach(viewModel.unsentMessages, id: \.uniqueId) { unsentMessage in
-            MessageRowFactory(viewModel: threadViewModel.messageViewModel(for: unsentMessage))
+            MessageRowFactory(viewModel: historyVM.messageViewModel(for: unsentMessage))
                 .id(unsentMessage.uniqueId)
         }
         .animation(.easeInOut, value: viewModel.unsentMessages.count)
@@ -193,7 +193,7 @@ struct UnsentMessagesLoop: View {
 }
 
 struct KeyboardHeightView: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadScrollingViewModel
     /// We use isInAnimating to prevent multiple calling onKeyboardSize.
     @State var isInAnimating = false
 
@@ -216,7 +216,7 @@ struct KeyboardHeightView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: .message)) { notif in
                 if let event = notif.object as? MessageEventTypes {
-                    if case .new(let response) = event, response.result?.conversation?.id == viewModel.threadId {
+                    if case .new(let response) = event, response.result?.conversation?.id == viewModel.threadVM.threadId, viewModel.isAtBottomOfTheList {
                         updateHeight(0)
                     }
                 }
@@ -227,7 +227,7 @@ struct KeyboardHeightView: View {
         // We have to wait until all the animations for clicking on TextField are finished and then start our animation.
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
             withAnimation(.easeInOut(duration: 0.4)) {
-                viewModel.scrollProxy?.scrollTo(viewModel.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
+                viewModel.scrollProxy?.scrollTo(viewModel.threadVM.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
                 isInAnimating = false
             }
         }
@@ -246,7 +246,7 @@ struct ThreadMessagesList_Previews: PreviewProvider {
                                   conversation: .init(id: 1))
 
             let viewModel = ThreadViewModel(thread: Conversation(id: 1), threadsViewModel: .init())
-            viewModel.sections.append(MessageSection(date: .init(), messages: [message]))
+            viewModel.historyVM.sections.append(MessageSection(date: .init(), messages: [message]))
             viewModel.animateObjectWillChange()
             self._viewModel = StateObject(wrappedValue: viewModel)
         }
