@@ -42,7 +42,7 @@ struct AssistantActionRow: View {
 
     var body: some View {
         HStack {
-            ImageLaoderView(imageLoader: imageViewModel, url: action.participant?.image, userName: action.participant?.name)
+            ImageLoaderView(imageLoader: imageViewModel, url: action.participant?.image, userName: action.participant?.name)
                 .frame(width: 28, height: 28)
                 .background(.blue.opacity(0.8))
                 .clipShape(RoundedRectangle(cornerRadius:(18)))

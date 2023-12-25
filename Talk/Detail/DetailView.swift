@@ -111,7 +111,7 @@ struct InfoView: View {
         HStack(spacing: 16) {
             let image = viewModel.url
             let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image ?? "") ?? .init()
-            ImageLaoderView(imageLoader: avatarVM, url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
+            ImageLoaderView(imageLoader: avatarVM, url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
                 .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)

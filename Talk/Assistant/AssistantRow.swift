@@ -20,7 +20,7 @@ struct AssistantRow: View {
             if viewModel.isInSelectionMode {
                 SelectAssistantRadio(assistant: assistant)
             }
-            ImageLaoderView(imageLoader: imageViewModel, url: assistant.participant?.image, userName: assistant.participant?.name)
+            ImageLoaderView(imageLoader: imageViewModel, url: assistant.participant?.image, userName: assistant.participant?.name)
                 .frame(width: 28, height: 28)
                 .background(.blue.opacity(0.8))
                 .clipShape(RoundedRectangle(cornerRadius:(18)))

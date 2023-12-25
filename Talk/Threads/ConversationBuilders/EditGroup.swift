@@ -30,7 +30,7 @@ struct EditGroup: View {
                     showImagePicker = true
                 } label: {
                     ZStack(alignment: .leading) {
-                        ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: viewModel.thread?.computedImageURL, userName: viewModel.thread?.computedTitle)
+                        ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: viewModel.thread?.computedImageURL, userName: viewModel.thread?.computedTitle)
                             .scaledToFit()
                             .id(viewModel.thread?.id)
                             .font(.iransansBoldCaption2)

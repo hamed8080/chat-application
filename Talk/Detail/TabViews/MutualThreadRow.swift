@@ -20,7 +20,7 @@ struct MutualThreadRow: View {
 
     var body: some View {
         HStack {
-            ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: thread.computedImageURL, userName: thread.title)
+            ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: thread.computedImageURL, userName: thread.title)
                 .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
                 .font(.iransansSubtitle)
                 .foregroundColor(.white)

@@ -17,7 +17,7 @@ struct MentionList: View {
         if viewModel.mentionList.count > 0 {
             List(viewModel.mentionList) { participant in
                 HStack {
-                    ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: participant.image, userName: participant.name ?? participant.username)
+                    ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: participant.image, userName: participant.name ?? participant.username)
                         .id("\(participant.image ?? "")\(participant.id ?? 0)")
                         .font(.iransansBoldBody)
                         .foregroundColor(.white)

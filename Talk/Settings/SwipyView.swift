@@ -80,7 +80,7 @@ struct UserConfigView: View {
 
     var body: some View {
         HStack {
-            ImageLaoderView(imageLoader: imageLoader, url: userConfig.user.image, userName: userConfig.user.name)
+            ImageLoaderView(imageLoader: imageLoader, url: userConfig.user.image, userName: userConfig.user.name)
                 .id("\(userConfig.user.image ?? "")\(userConfig.user.id ?? 0)")
                 .frame(width: 48, height: 48)
                 .clipShape(RoundedRectangle(cornerRadius:(24)))

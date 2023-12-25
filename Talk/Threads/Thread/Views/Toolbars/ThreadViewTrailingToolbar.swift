@@ -23,7 +23,7 @@ struct ThreadViewTrailingToolbar: View {
         } label: {
             ZStack {
                 if let imageViewModel {
-                    ImageLaoderView(imageLoader: imageViewModel, url: thread.computedImageURL, userName: thread.title)
+                    ImageLoaderView(imageLoader: imageViewModel, url: thread.computedImageURL, userName: thread.title)
                 } else {
                     Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
                 }

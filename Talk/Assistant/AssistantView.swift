@@ -121,7 +121,7 @@ struct AddAssistantRow: View {
 
     var body: some View {
         HStack {
-            ImageLaoderView(imageLoader: imageViewModel, url: contact.image ?? contact.user?.image, userName: contact.firstName)
+            ImageLoaderView(imageLoader: imageViewModel, url: contact.image ?? contact.user?.image, userName: contact.firstName)
                 .id("\(contact.image ?? "")\(contact.id ?? 0)")
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)

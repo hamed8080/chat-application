@@ -1,5 +1,5 @@
 //
-//  ImageLaoderView.swift
+//  ImageLoaderView.swift
 //  TalkUI
 //
 //  Created by hamed on 1/18/23.
@@ -12,7 +12,7 @@ import TalkModels
 import TalkViewModels
 import ChatDTO
 
-public struct ImageLaoderView: View {
+public struct ImageLoaderView: View {
     @StateObject var imageLoader: ImageLoaderViewModel
     let url: String?
     let metaData: String?
@@ -61,7 +61,7 @@ public struct ImageLaoderView: View {
 
 struct ImageLoaderView_Previews: PreviewProvider {
     static var previews: some View {
-        ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: "https://podspace.podland.ir/api/images/FQW4R5QUPE4XNDUV", userName: "Hamed")
+        ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: "https://podspace.podland.ir/api/images/FQW4R5QUPE4XNDUV", userName: "Hamed")
             .font(.system(size: 16).weight(.heavy))
             .foregroundColor(.white)
             .frame(width: 128, height: 128)

@@ -20,7 +20,7 @@ struct ContactRow: View {
     var body: some View {
         VStack {
             HStack(spacing: 0) {
-                ImageLaoderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
+                ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName)
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
                     .font(.iransansBody)
                     .foregroundColor(Color.App.text)

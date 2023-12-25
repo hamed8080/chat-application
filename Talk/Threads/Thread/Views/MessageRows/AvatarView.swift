@@ -40,7 +40,7 @@ struct AvatarView: View {
         } else if showAvatarOrUserName {
             HStack(spacing: 0) {
                 if let avatarImageLoader = viewModel.avatarImageLoader {
-                    ImageLaoderView(imageLoader: avatarImageLoader, url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
+                    ImageLoaderView(imageLoader: avatarImageLoader, url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
                         .id(imageLoaderId)
                         .font(.iransansCaption)
                         .foregroundColor(.white)
