@@ -13,6 +13,7 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkModels
+import ActionableContextMenu
 
 struct FileView: View {
     @State var viewModel: DetailTabDownloaderViewModel
@@ -41,7 +42,7 @@ struct MessageListFileView: View {
     var body: some View {
         ForEach(viewModel.messages) { message in
             FileRowView(message: message)
-                .environmentObject(detailViewModel.threadVM?.historyVM.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
+                .environmentObject(downloadMV(message))
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
@@ -58,11 +59,16 @@ struct MessageListFileView: View {
         }
         DetailLoading()
     }
+    
+    private func downloadMV(_ message: Message) -> DownloadFileViewModel {
+        detailViewModel.threadVM?.historyVM.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message)
+    }
 }
 
 struct FileRowView: View {
     let message: Message
     var threadVM: ThreadViewModel? { viewModel.threadVM }
+    @EnvironmentObject var downloadVM: DownloadFileViewModel
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
     @State var shareDownloadedFile = false
@@ -89,14 +95,6 @@ struct FileRowView: View {
         }
         .padding(.all)
         .contentShape(Rectangle())
-        .contextMenu {
-            Button {
-                threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-                viewModel.dismiss = true
-            } label: {
-                Label("General.showMessage", systemImage: "bubble.middle.top")
-            }
-        }
         .sheet(isPresented: $shareDownloadedFile) {
             ActivityViewControllerWrapper(activityItems: [message.tempURL], title: message.fileMetaData?.file?.originalName)
         }
@@ -111,6 +109,18 @@ struct FileRowView: View {
             } else {
                 downloadViewModel.startDownload()
             }
+        }
+        .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
+            VStack {
+                ContextMenuButton(title: "General.showMessage", image: "message.fill") {
+                    threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                    viewModel.dismiss = true
+                }
+            }
+            .foregroundColor(.primary)
+            .frame(width: 196)
+            .background(MixMaterialBackground())
+            .clipShape(RoundedRectangle(cornerRadius:((12))))
         }
     }
 }

@@ -23,6 +23,7 @@ struct MessageTextView: View {
                 .padding(.horizontal, 6)
                 .font(.iransansBody)
                 .foregroundColor(Color.App.text)
+                .frame(height: viewModel.textHeight)
         } else if let fileName = message.fileName, message.isUnsentMessage == true {
             Text(fileName)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)

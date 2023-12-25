@@ -12,6 +12,7 @@ import TalkUI
 
 struct ReplyMessageViewPlaceholder: View {
     @EnvironmentObject var viewModel: ThreadViewModel
+    @State private var message: String = ""
 
     var body: some View {
         if let replyMessage = viewModel.replyMessage {
@@ -25,7 +26,7 @@ struct ReplyMessageViewPlaceholder: View {
                             .foregroundStyle(Color.App.primary)
                             .lineLimit(2)
                     }
-                    Text(replyMessage.message ?? replyMessage.fileMetaData?.name ?? "")
+                    Text(message)
                         .font(.iransansCaption2)
                         .foregroundColor(Color.App.placeholder)
                         .lineLimit(2)
@@ -45,6 +46,9 @@ struct ReplyMessageViewPlaceholder: View {
                 .padding(.trailing, 4)
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+            .task {
+                self.message = replyMessage.message ?? replyMessage.fileMetaData?.name ?? ""
+            }
         }
     }
 }

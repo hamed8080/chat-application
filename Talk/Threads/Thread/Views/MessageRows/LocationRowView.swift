@@ -15,8 +15,8 @@ struct LocationRowView: View {
     var message: Message { viewModel.message }
     
     var body: some View {
-        let meta = message.fileMetaData
-        if message.isMapType, let fileLink = meta?.file?.link, let downloadVM = viewModel.downloadFileVM {
+        let meta = viewModel.fileMetaData
+        if viewModel.isMapType, let fileLink = meta?.file?.link, let downloadVM = viewModel.downloadFileVM {
             ZStack {
                 /// We use max to at least have a width, because there are times that maxWidth is nil.
                 let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)

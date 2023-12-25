@@ -33,15 +33,15 @@ struct AvatarView: View {
     }
 
     @ViewBuilder var body: some View {
-        if viewModel.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false {
+        if hiddenView {
             EmptyView()
                 .frame(width: 0, height: 0)
                 .hidden()
-        } else if !viewModel.isMe, !viewModel.isNextMessageTheSameUser, viewModel.isCalculated {
+        } else if showAvatarOrUserName {
             HStack(spacing: 0) {
                 if let avatarImageLoader = viewModel.avatarImageLoader {
                     ImageLaoderView(imageLoader: avatarImageLoader, url: message.participant?.image, userName: message.participant?.name ?? message.participant?.username)
-                        .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
+                        .id(imageLoaderId)
                         .font(.iransansCaption)
                         .foregroundColor(.white)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
@@ -64,9 +64,25 @@ struct AvatarView: View {
                     navVM.append(participantDetail: participant)
                 }
             }
-        } else if !viewModel.isMe, viewModel.isNextMessageTheSameUser {
+        } else if isSameUser {
             /// Place a empty view to show the message has sent by the same user.
             AvatarView.emptyViewSender
         }
+    }
+
+    private var hiddenView: Bool {
+        viewModel.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false
+    }
+
+    private var imageLoaderId: String {
+        "\(message.participant?.image ?? "")\(message.participant?.id ?? 0)"
+    }
+
+    private var showAvatarOrUserName: Bool {
+        !viewModel.isMe && !viewModel.isNextMessageTheSameUser && viewModel.isCalculated
+    }
+
+    private var isSameUser: Bool {
+        !viewModel.isMe && viewModel.isNextMessageTheSameUser
     }
 }

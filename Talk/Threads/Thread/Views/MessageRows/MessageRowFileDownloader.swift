@@ -15,21 +15,21 @@ struct MessageRowFileDownloader: View {
     let viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
     private var uploadCompleted: Bool { message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed }
-    private var isFileView: Bool { uploadCompleted && message.isFileType && !message.isMapType && !message.isImage && !message.isAudio && !message.isVideo }
+    private var isFileView: Bool { uploadCompleted && message.isFileType && !viewModel.isMapType && !message.isImage && !message.isAudio && !message.isVideo }
 
     var body: some View {
         if isFileView, let downloadVM = viewModel.downloadFileVM {
-            MessageRowFileDownloaderContent(viewModel: viewModel)
+            MessageRowFileDownloaderContent()
                 .environmentObject(downloadVM)
         }
     }
 }
 
 struct MessageRowFileDownloaderContent: View {
-    let viewModel: MessageRowViewModel
+    @EnvironmentObject var viewModel: MessageRowViewModel
     @EnvironmentObject var downloadVM: DownloadFileViewModel
     private var message: Message { viewModel.message }
-    var fileName: String? { message.fileName ?? message.fileMetaData?.file?.originalName }
+    var fileName: String? { message.fileName ?? viewModel.fileMetaData?.file?.originalName }
     @State var shareDownloadedFile: Bool = false
     private let config = DownloadFileViewConfig.normal
 
@@ -49,7 +49,7 @@ struct MessageRowFileDownloaderContent: View {
             }
             .padding(10)
             .sheet(isPresented: $shareDownloadedFile) {
-                ActivityViewControllerWrapper(activityItems: [message.tempURL], title: message.fileMetaData?.file?.originalName)
+                ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.fileMetaData?.file?.originalName)
             }
             .onTapGesture {
                 Task {
@@ -81,6 +81,7 @@ struct MessageRowFileDownloaderContent: View {
 
 fileprivate struct FileDownloadButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
+    @EnvironmentObject var messageRowVM: MessageRowViewModel
     let message: Message?
     var percent: Int64 { viewModel.downloadPercent }
     let config: DownloadFileViewConfig
@@ -134,7 +135,7 @@ fileprivate struct FileDownloadButton: View {
                         .foregroundColor(.white)
                 }
 
-                if let fileZize = message?.fileMetaData?.file?.size, config.showFileSize {
+                if let fileZize = messageRowVM.fileMetaData?.file?.size, config.showFileSize {
                     Text(String(fileZize))
                         .multilineTextAlignment(.leading)
                         .font(.iransansBoldCaption2)

@@ -12,6 +12,7 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkExtensions
+import ActionableContextMenu
 
 struct PictureView: View {
     @EnvironmentObject var detailViewModel: DetailViewModel
@@ -70,9 +71,9 @@ struct MessageListPictureView: View {
     @EnvironmentObject var detailViewModel: DetailViewModel
     
     var body: some View {
-        ForEach(viewModel.messages.filter({!$0.isMapType})) { message in
+        ForEach(viewModel.messages) { message in
             PictureRowView(message: message, itemWidth: itemWidth)
-                .environmentObject(detailViewModel.threadVM?.historyVM.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
+                .environmentObject(downloadMV(message))
                 .id(message.id)
                 .frame(width: itemWidth, height: itemWidth)
                 .onAppear {
@@ -83,10 +84,15 @@ struct MessageListPictureView: View {
         }
         DetailLoading()
     }
+
+    private func downloadMV(_ message: Message) -> DownloadFileViewModel {
+        detailViewModel.threadVM?.historyVM.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message)
+    }
 }
 
 struct PictureRowView: View {
     let message: Message
+    @EnvironmentObject var downloadVM: DownloadFileViewModel
     @EnvironmentObject var appOverlayViewModel: AppOverlayViewModel
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: DetailViewModel
@@ -101,16 +107,20 @@ struct PictureRowView: View {
         DownloadPictureButtonView(itemWidth: itemWidth)
             .frame(width: itemWidth, height: itemWidth)
             .clipped()
-            .contextMenu {
-                Button {
-                    threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-                    viewModel.dismiss = true
-                } label: {
-                    Label("General.showMessage", systemImage: "bubble.middle.top")
-                }
-            }
             .onTapGesture {
                 appOverlayViewModel.galleryMessage = message
+            }
+            .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
+                VStack {
+                    ContextMenuButton(title: "General.showMessage", image: "message.fill") {
+                        threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                        viewModel.dismiss = true
+                    }
+                }
+                .foregroundColor(.primary)
+                .frame(width: 196)
+                .background(MixMaterialBackground())
+                .clipShape(RoundedRectangle(cornerRadius:((12))))
             }
     }
 }

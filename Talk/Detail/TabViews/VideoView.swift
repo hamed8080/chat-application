@@ -13,6 +13,7 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkModels
+import ActionableContextMenu
 
 struct VideoView: View {
     @State var viewModel: DetailTabDownloaderViewModel
@@ -41,7 +42,7 @@ struct MessageListVideoView: View {
     var body: some View {
         ForEach(viewModel.messages) { message in
             VideoRowView(message: message)
-                .environmentObject(detailViewModel.threadVM?.historyVM.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message))
+                .environmentObject(downloadMV(message))
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
@@ -58,11 +59,16 @@ struct MessageListVideoView: View {
         }
         DetailLoading()
     }
+
+    private func downloadMV(_ message: Message) -> DownloadFileViewModel {
+        detailViewModel.threadVM?.historyVM.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message)
+    }
 }
 
 struct VideoRowView: View {
     let message: Message
     var threadVM: ThreadViewModel? { viewModel.threadVM }
+    @EnvironmentObject var downloadVM: DownloadFileViewModel
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
     @State var width: CGFloat? = 48
@@ -100,20 +106,24 @@ struct VideoRowView: View {
         }
         .padding([.leading, .trailing])
         .contentShape(Rectangle())
-        .contextMenu {
-            Button {
-                threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
-                viewModel.dismiss = true
-            } label: {
-                Label("General.showMessage", systemImage: "bubble.middle.top")
-            }
-        }
         .onTapGesture {
             if downloadViewModel.state != .completed {
                 downloadViewModel.startDownload()
             } else {
                 AppState.shared.objectsContainer.audioPlayerVM.toggle()
             }
+        }
+        .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
+            VStack {
+                ContextMenuButton(title: "General.showMessage", image: "message.fill") {
+                    threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
+                    viewModel.dismiss = true
+                }
+            }
+            .foregroundColor(.primary)
+            .frame(width: 196)
+            .background(MixMaterialBackground())
+            .clipShape(RoundedRectangle(cornerRadius:((12))))
         }
     }
 }

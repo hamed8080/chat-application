@@ -203,7 +203,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         ChatManager.activeInstance?.system.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
     }
 
-    public func isNextSameUser(message: Message) -> Bool {
+    public func isNextSameUser(message: Message) async -> Bool {
         guard let tuples = historyVM.message(for: message.id) else { return false }
         let sectionIndex = tuples.sectionIndex
         let currentMessage = tuples.message
@@ -217,8 +217,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func clearCacheFile(message: Message) {
-        if let metadata = message.metadata?.data(using: .utf8), let fileHashCode = try? JSONDecoder().decode(FileMetaData.self, from: metadata).fileHash {
-            let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(Routes.files.rawValue)/\(fileHashCode)"
+        if let fileHashCode = message.fileMetaData?.fileHash {
+            let path = message.isImage ? Routes.images.rawValue : Routes.files.rawValue
+            let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(path)/\(fileHashCode)"
             ChatManager.activeInstance?.file.deleteCacheFile(URL(string: url)!)
             NotificationCenter.default.post(.init(name: .message, object: message))
         }

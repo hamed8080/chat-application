@@ -365,8 +365,25 @@ public final class ThreadHistoryViewModel: ObservableObject {
     /// Scenario 7 = When lastMessgeSeenId is bigger than thread.lastMessageVO.id as a result of server chat bug.
     func trySeventhScenario() {
         if thread.lastMessageVO?.id ?? 0 < thread.lastSeenMessageId ?? 0 {
-            moveToTime(thread.lastMessageVO?.time ?? 0, thread.lastMessageVO?.id ?? 0, highlight: false)
+            requestBottoPartByCountAndOffset()
         }
+    }
+
+    func requestBottoPartByCountAndOffset() {
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, readOnly: threadViewModel.readOnly)
+        RequestsManager.shared.append(prepend: "FETCH-BY-OFFSET", value: req)
+        ChatManager.activeInstance?.message.history(req)
+    }
+
+    func onFetchByOffset(_ response: ChatResponse<[Message]>) {
+        guard
+            response.value(prepend: "FETCH-BY-OFFSET") != nil,
+            let messages = response.result
+        else { return }
+        let sortedMessages = messages.sorted(by: {$0.time ?? 0 < $1.time ?? 0})
+        appendMessagesAndSort(sortedMessages)
+        animateObjectWillChange()
+        threadViewModel.scrollVM.showHighlighted(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
     }
 
     /// Scenario 8 = When a new thread has been built and me is added by another person and this is our first time to visit the thread.
@@ -660,6 +677,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
                 /// For the fifth scenario.
                 onMoreBottomFifthScenario(response)
+
+                /// For the seventh scenario.
+                onFetchByOffset(response)
 
                 /// For the sixth scenario.
                 onMoveToTime(response)

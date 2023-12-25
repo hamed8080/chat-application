@@ -57,12 +57,8 @@ struct SelectMessageRadio: View {
         if viewModel.isInSelectMode {
             VStack {
                 Spacer()
-                RadioButton(visible: $viewModel.isInSelectMode, isSelected: $viewModel.isSelected) { isSelected in
-                    withAnimation(!viewModel.isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
-                        viewModel.isSelected.toggle()
-                        viewModel.threadVM?.selectedMessagesViewModel.animateObjectWillChange()
-                        viewModel.animateObjectWillChange()
-                    }
+                RadioButton(visible: $viewModel.isInSelectMode, isSelected: $viewModel.isSelected) { _ in
+                    viewModel.toggleSelection()
                 }
             }
             .padding(EdgeInsets(top: 0, leading: viewModel.isMe ? 8 : 0, bottom: 8, trailing: viewModel.isMe ? 8 : 0))
@@ -81,9 +77,6 @@ struct MutableMessageView: View {
         }
         .frame(maxWidth: ThreadViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
         .simultaneousGesture(TapGesture().onEnded { _ in }, including: message.isVideo ? .subviews : .all)
-        .onAppear {
-            viewModel.calculate()
-        }
     }
 }
 
@@ -95,7 +88,7 @@ struct InnerMessage: View {
         VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 10) {
             Group {
                 MessageRowFileDownloader(viewModel: viewModel)
-                MessageRowImageDownloader(viewModel: viewModel)
+                MessageRowImageDownloader()
                 MessageRowVideoDownloader(viewModel: viewModel)
                 MessageRowAudioDownloader(viewModel: viewModel)
             }

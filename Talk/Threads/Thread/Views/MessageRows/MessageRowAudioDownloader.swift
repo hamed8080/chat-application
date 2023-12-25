@@ -27,16 +27,16 @@ struct MessageRowAudioDownloaderContent: View {
     let viewModel: MessageRowViewModel
     @EnvironmentObject var downloadVM: DownloadFileViewModel
     private var message: Message { viewModel.message }
-    var fileName: String? { message.fileName ?? message.fileMetaData?.file?.originalName }
+    var fileName: String? { message.fileName ?? viewModel.fileMetaData?.file?.originalName }
 
     var body: some View {
         if downloadVM.state == .completed, let fileURL = downloadVM.fileURL {
             HStack {
                 InlineAudioPlayerView(message: message,
                                       fileURL: fileURL,
-                                      ext: message.fileMetaData?.file?.mimeType?.ext,
-                                      title: message.fileMetaData?.name,
-                                      subtitle: message.fileMetaData?.file?.originalName ?? "",
+                                      ext: viewModel.fileMetaData?.file?.mimeType?.ext,
+                                      title: viewModel.fileMetaData?.name,
+                                      subtitle: viewModel.fileMetaData?.file?.originalName ?? "",
                                       config: .normal)
                 .id(fileURL)
                 VStack(alignment: .leading, spacing: 4) {
@@ -87,6 +87,7 @@ fileprivate struct AudioMessageProgress: View {
 
 fileprivate struct AudioDownloadButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
+    @EnvironmentObject var messageRowVM: MessageRowViewModel
     let message: Message?
     var percent: Int64 { viewModel.downloadPercent }
     let config: DownloadFileViewConfig
@@ -138,7 +139,7 @@ fileprivate struct AudioDownloadButton: View {
                         .foregroundColor(.white)
                 }
 
-                if let fileZize = message?.fileMetaData?.file?.size, config.showFileSize {
+                if let fileZize = messageRowVM.fileMetaData?.file?.size, config.showFileSize {
                     Text(String(fileZize))
                         .multilineTextAlignment(.leading)
                         .font(.iransansBoldCaption2)

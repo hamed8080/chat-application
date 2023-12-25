@@ -92,7 +92,7 @@ struct OverladUploadImageButton: View {
                 .clipShape(RoundedRectangle(cornerRadius:(13)))
 
                 let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-                let realServerFileSize = message.fileMetaData?.file?.size
+                let realServerFileSize = messageRowVM.fileMetaData?.file?.size
                 if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
                     Text(fileSize)
                         .multilineTextAlignment(.leading)

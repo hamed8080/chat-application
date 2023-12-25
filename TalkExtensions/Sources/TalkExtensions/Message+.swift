@@ -13,6 +13,13 @@ import ChatDTO
 import Chat
 
 public extension Message {
+    static let textTypes = [ChatModels.MessageType.text, MessageType.link, MessageType.location]
+    static let imageTypes = [ChatModels.MessageType.podSpacePicture, MessageType.picture]
+    static let audioTypes = [ChatModels.MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice]
+    static let videoTypes = [ChatModels.MessageType.video, .podSpaceVideo, .video]
+    static let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice, .podSpaceVideo]
+    static let reactionableTypes = [ChatModels.MessageType.endCall, .endCall, .participantJoin, .participantLeft]
+
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
     var messageTitle: String { message ?? "" }
@@ -38,19 +45,17 @@ public extension Message {
     var fileExtension: String? { uploadFile?.uploadFileRequest?.fileExtension ?? uploadFile?.uploadImageRequest?.fileExtension }
     var fileName: String? { uploadFile?.uploadFileRequest?.fileName ?? uploadFile?.uploadImageRequest?.fileName }
     var type: ChatModels.MessageType? { messageType ?? .unknown }
-    var isTextMessageType: Bool { type == .text || type == .link || isFileType || type == .location || isMapType }
+    var isTextMessageType: Bool { Message.textTypes.contains(messageType ?? .unknown) || isFileType }
     func isMe(currentUserId: Int?) -> Bool { (ownerId ?? 0 == currentUserId ?? 0) || isUnsentMessage || isUploadMessage }
     /// We should check metadata to be nil. If it has a value, it means that the message file has been successfully uploaded and sent to the chat server.
     var isUploadMessage: Bool { self is UploadWithTextMessageProtocol && metadata == nil }
     /// Check id because we know that the message was successfully added in server chat.
     var isUnsentMessage: Bool { self is UnSentMessageProtocol && id == nil }
 
-    var isImage: Bool { (messageType == .podSpacePicture || messageType == .picture) && !isMapType }
-    var isAudio: Bool { [MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice].contains(messageType ?? .unknown) }
-    var isVideo: Bool { [MessageType.video, .podSpaceVideo, .video].contains(messageType ?? .unknown) }
-    var reactionableType: Bool { ![MessageType.endCall, .endCall, .participantJoin, .participantLeft].contains(type) }
-    var isMapType: Bool { fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil }
-
+    var isImage: Bool { Message.imageTypes.contains(messageType ?? .unknown) }
+    var isAudio: Bool { Message.audioTypes.contains(messageType ?? .unknown) }
+    var isVideo: Bool { Message.videoTypes.contains(messageType ?? .unknown) }
+    var reactionableType: Bool { !Message.reactionableTypes.contains(messageType ?? .unknown) }
 
     var fileHashCode: String { fileMetaData?.fileHash ?? fileMetaData?.file?.hashCode ?? "" }
 
@@ -139,8 +144,7 @@ public extension Message {
     }
 
     var isFileType: Bool {
-        let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice, .podSpaceVideo]
-        return fileTypes.contains(messageType ?? .unknown)
+        return Message.fileTypes.contains(messageType ?? .unknown)
     }
 
     var mapCoordinate: Coordinate? {

@@ -13,22 +13,22 @@ import TalkModels
 import Chat
 
 struct MessageRowImageDownloader: View {
-    let viewModel: MessageRowViewModel
+    @EnvironmentObject var viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
     private var uploadCompleted: Bool { message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed }
 
     var body: some View {
         if message.isImage, uploadCompleted, let downloadVM = viewModel.downloadFileVM {
             ZStack {
-                PlaceholderImageView(width: viewModel.imageWidth, height: viewModel.imageHeight)
-                    .environmentObject(downloadVM)
-                BlurThumbnailView(width: viewModel.imageWidth, height: viewModel.imageHeight, viewModel: downloadVM)
-                    .environmentObject(downloadVM)
-                RealDownloadedImage(width: viewModel.imageWidth, height: viewModel.imageHeight)
-                    .environmentObject(downloadVM)
-                OverlayDownloadImageButton(message: message)
-                    .environmentObject(downloadVM)
+                if viewModel.downloadFileVM?.state != .completed {
+                    PlaceholderImageView(width: viewModel.imageWidth, height: viewModel.imageHeight)
+                    BlurThumbnailView(width: viewModel.imageWidth, height: viewModel.imageHeight, viewModel: downloadVM)
+                    OverlayDownloadImageButton(message: message)
+                } else {
+                    RealDownloadedImage(width: viewModel.imageWidth, height: viewModel.imageHeight)
+                }
             }
+            .environmentObject(downloadVM)
             .clipped()
             .onReceive(NotificationCenter.default.publisher(for: .upload)) { notification in
                 guard
@@ -39,9 +39,16 @@ struct MessageRowImageDownloader: View {
                 else { return }
                 downloadBlurImageWithDelay(downloadVM)
             }
+            .onReceive(downloadVM.objectWillChange) { _ in
+                viewModel.animateObjectWillChange()
+            }
             .task {
                 if !downloadVM.isInCache, downloadVM.thumbnailData == nil {
-                    downloadVM.downloadBlurImage(quality: 0.5, size: .SMALL)
+                    downloadVM.downloadBlurImage()
+                } else if downloadVM.isInCache {
+                    downloadVM.state = .completed // it will set the state to complete and then push objectWillChange to call onReceive and start scale the image on the background thread
+                    downloadVM.animateObjectWillChange()
+                    viewModel.animateObjectWillChange()
                 }
             }
         }
@@ -51,7 +58,7 @@ struct MessageRowImageDownloader: View {
         /// We wait for 2 seconds to download the thumbnail image.
         /// If we upload the image for the first time we have to wait, due to a server process to make a thumbnail.
         Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { timer in
-            downloadVM.downloadBlurImage(quality: 0.5, size: .SMALL)
+            downloadVM.downloadBlurImage()
         }
     }
 }
@@ -125,29 +132,31 @@ struct RealDownloadedImage: View {
             .clipShape(RoundedRectangle(cornerRadius:(8)))
             .clipped()
             .onReceive(viewModel.objectWillChange) { _ in
-                Task.detached {
-                    if await viewModel.state == .completed, let cgImage = await viewModel.fileURL?.imageScale(width: 420)?.image {
-                        await MainActor.run {
-                            self.image = UIImage(cgImage: cgImage)
-                        }
-                    }
-                }
+                setImageOnBackground()
             }
-            .onAppear {
-                if viewModel.isInCache, image.size.width == 0 {
-                    viewModel.state = .completed // it will set the state to complete and then push objectWillChange to call onReceive and start scale the image on the background thread
-                    viewModel.animateObjectWillChange()
-                }
+            .task {
+                setImageOnBackground()
             }
             .contentShape(RoundedRectangle(cornerRadius: 8))
             .onTapGesture {
                 AppState.shared.objectsContainer.appOverlayVM.galleryMessage = viewModel.message
             }
     }
+
+    private func setImageOnBackground() {
+        Task.detached {
+            if await viewModel.state == .completed, let cgImage = await viewModel.fileURL?.imageScale(width: 420)?.image {
+                await MainActor.run {
+                    self.image = UIImage(cgImage: cgImage)
+                }
+            }
+        }
+    }
 }
 
 struct OverlayDownloadImageButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
+    @EnvironmentObject var messageRowVM: MessageRowViewModel
     let message: Message?
     var percent: Int64 { viewModel.downloadPercent }
     var stateIcon: String {
@@ -183,7 +192,7 @@ struct OverlayDownloadImageButton: View {
                 .clipShape(RoundedRectangle(cornerRadius:(13)))
 
                 let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-                let realServerFileSize = message?.fileMetaData?.file?.size
+                let realServerFileSize = messageRowVM.fileMetaData?.file?.size
                 if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
                     Text(fileSize)
                         .multilineTextAlignment(.leading)
@@ -213,6 +222,7 @@ struct OverlayDownloadImageButton: View {
 
 struct MessageRowImageDownloader_Previews: PreviewProvider {
     static var previews: some View {
-        MessageRowImageDownloader(viewModel: .init(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
+        MessageRowImageDownloader()
+            .environmentObject(MessageRowViewModel(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
     }
 }

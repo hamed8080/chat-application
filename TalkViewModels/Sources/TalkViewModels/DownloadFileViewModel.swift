@@ -101,31 +101,40 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         }
     }
 
+    /// We use a Task to decode fileMetaData and hashCode inside the fileHashCode.
     private func downloadFile() {
-        state = .downloading
-        let req = FileRequest(hashCode: fileHashCode)
-        uniqueId = req.uniqueId
-        RequestsManager.shared.append(value: req, autoCancel: false)
-        ChatManager.activeInstance?.file.get(req)
-        animateObjectWillChange()
+        Task {
+            state = .downloading
+            let req = FileRequest(hashCode: fileHashCode)
+            uniqueId = req.uniqueId
+            RequestsManager.shared.append(value: req, autoCancel: false)
+            ChatManager.activeInstance?.file.get(req)
+            animateObjectWillChange()
+        }
     }
 
+    /// We use a Task to decode fileMetaData and hashCode inside the fileHashCode.
     private func downloadImage() {
-        state = .downloading
-        let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
-        uniqueId = req.uniqueId
-        RequestsManager.shared.append(value: req, autoCancel: false)
-        ChatManager.activeInstance?.file.get(req)
-        animateObjectWillChange()
+        Task {
+            state = .downloading
+            let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
+            uniqueId = req.uniqueId
+            RequestsManager.shared.append(value: req, autoCancel: false)
+            ChatManager.activeInstance?.file.get(req)
+            animateObjectWillChange()
+        }
     }
 
-    public func downloadBlurImage(quality: Float = 0.4, size: ImageSize = .SMALL) {
-        state = .thumbnailDownloaing
-        let req = ImageRequest(hashCode: fileHashCode, quality: quality, size: size, thumbnail: true)
-        uniqueId = req.uniqueId
-        RequestsManager.shared.append(prepend: "THUMBNAIL", value: req, autoCancel: false)
-        ChatManager.activeInstance?.file.get(req)
-        animateObjectWillChange()
+    /// We use a Task to decode fileMetaData and hashCode inside the fileHashCode.
+    public func downloadBlurImage(quality: Float = 0.02, size: ImageSize = .SMALL) {
+        Task {
+            state = .thumbnailDownloaing
+            let req = ImageRequest(hashCode: fileHashCode, quality: quality, size: size, thumbnail: true)
+            uniqueId = req.uniqueId
+            RequestsManager.shared.append(prepend: "THUMBNAIL", value: req, autoCancel: false)
+            ChatManager.activeInstance?.file.get(req)
+            animateObjectWillChange()
+        }
     }
 
     private func onResponse(_ response: ChatResponse<Data>, _ url: URL?) {

@@ -18,24 +18,15 @@ struct ReplyInfoMessageRow: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if message.replyInfo != nil {
+        if hasReplyInfo {
             Button {
-                threadVM?.scrollVM.disableExcessiveLoading()
-                if message.replyInfo?.replyPrivatelyInfo == nil, let time = message.replyInfo?.repliedToMessageTime, let repliedToMessageId = message.replyInfo?.repliedToMessageId {
-                    threadVM?.historyVM.moveToTime(time, repliedToMessageId)
-                } else if let replyPrivatelyInfo = message.replyInfo?.replyPrivatelyInfo {
-                    AppState.shared.openThreadAndMoveToMessage(conversationId: replyPrivatelyInfo.threadId ?? -1,
-                                                               messageId: message.replyInfo?.repliedToMessageId ?? -1,
-                                                               messageTime: message.replyInfo?.repliedToMessageTime ?? 0
-                    )
-                }
+                moveToMessage()
             } label: {
                 HStack(spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Message.replyTo")
                             .foregroundStyle(Color.App.primary)
                             .font(.iransansCaption3)
-
                         if let name = message.replyInfo?.participant?.name {
                             Text("\(name)")
                                 .font(.iransansBoldCaption2)
@@ -79,6 +70,35 @@ struct ReplyInfoMessageRow: View {
             .background(Color.App.bgInput.opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .environmentObject(viewModel)
+        }
+    }
+
+    private var hasReplyInfo: Bool {
+        message.replyInfo != nil
+    }
+
+    private var isReplyPrivately: Bool {
+        message.replyInfo?.replyPrivatelyInfo != nil
+    }
+
+    private var replayTimeId: (time: UInt, id: Int)? {
+        guard
+            !isReplyPrivately,
+            let time = message.replyInfo?.repliedToMessageTime,
+            let repliedToMessageId = message.replyInfo?.repliedToMessageId
+        else { return nil }
+        return(time, repliedToMessageId)
+    }
+
+    private func moveToMessage() {
+        threadVM?.scrollVM.disableExcessiveLoading()
+        if !isReplyPrivately, let tuple = replayTimeId {
+            threadVM?.historyVM.moveToTime(tuple.time, tuple.id)
+        } else if let replyPrivatelyInfo = message.replyInfo?.replyPrivatelyInfo {
+            AppState.shared.openThreadAndMoveToMessage(conversationId: replyPrivatelyInfo.threadId ?? -1,
+                                                       messageId: message.replyInfo?.repliedToMessageId ?? -1,
+                                                       messageTime: message.replyInfo?.repliedToMessageTime ?? 0
+            )
         }
     }
 }

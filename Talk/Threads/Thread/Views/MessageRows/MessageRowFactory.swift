@@ -19,16 +19,17 @@ struct MessageRowFactory: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            if message is UnreadMessageProtocol {
-                UnreadMessagesBubble()
-            } else {
-                if let type = message.type {
+            if let type = message.type {
+                switch type {
+                case .endCall, .startCall:
+                    CallMessageType(message: message)
+                case .participantJoin, .participantLeft:
+                    ParticipantMessageType(message: message)
+                default:
                     if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
                         TextMessageType(viewModel: viewModel)
-                    } else if type == .participantJoin || type == .participantLeft {
-                        ParticipantMessageType(message: message)
-                    } else if type == .endCall || type == .startCall {
-                        CallMessageType(message: message)
+                    } else if message is UnreadMessageProtocol {
+                        UnreadMessagesBubble()
                     } else {
                         UnknownMessageType(message: message)
                     }

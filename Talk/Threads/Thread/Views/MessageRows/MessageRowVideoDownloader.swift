@@ -28,7 +28,7 @@ struct MessageRowVideoDownloaderContent: View {
     let viewModel: MessageRowViewModel
     @EnvironmentObject var downloadVM: DownloadFileViewModel
     private var message: Message { viewModel.message }
-    var fileName: String? { message.fileName ?? message.fileMetaData?.file?.originalName }
+    var fileName: String? { message.fileName ?? viewModel.fileMetaData?.file?.originalName }
 
     var body: some View {
         if downloadVM.state == .completed, let fileURL = downloadVM.fileURL {
@@ -36,9 +36,9 @@ struct MessageRowVideoDownloaderContent: View {
                 VideoPlayerView()
                     .frame(maxWidth: ThreadViewModel.maxAllowedWidth, maxHeight: 320)
                     .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
-                                                            ext: message.fileMetaData?.file?.mimeType?.ext,
-                                                            title: message.fileMetaData?.name,
-                                                            subtitle: message.fileMetaData?.file?.originalName ?? ""))
+                                                            ext: viewModel.fileMetaData?.file?.mimeType?.ext,
+                                                            title: viewModel.fileMetaData?.name,
+                                                            subtitle: viewModel.fileMetaData?.file?.originalName ?? ""))
                     .id(fileURL)
             }
         }
@@ -63,6 +63,7 @@ struct MessageRowVideoDownloaderContent: View {
 
 fileprivate struct VideoDownloadButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
+    @EnvironmentObject var messageRowVM: MessageRowViewModel
     let message: Message?
     var percent: Int64 { viewModel.downloadPercent }
     let config: DownloadFileViewConfig
@@ -116,7 +117,7 @@ fileprivate struct VideoDownloadButton: View {
                         .foregroundColor(.white)
                 }
 
-                if let fileZize = message?.fileMetaData?.file?.size, config.showFileSize {
+                if let fileZize = messageRowVM.fileMetaData?.file?.size, config.showFileSize {
                     Text(String(fileZize))
                         .multilineTextAlignment(.leading)
                         .font(.iransansBoldCaption2)

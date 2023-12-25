@@ -21,7 +21,7 @@ public struct UploadMessageFileView: View {
         HStack(spacing: 4) {
             UploadImageButton(messageRowVM: viewModel)
                 .environmentObject(viewModel.uploadViewModel!)
-            if let fileName = message.fileName ?? message.fileMetaData?.file?.originalName {
+            if let fileName = message.fileName ?? viewModel.fileMetaData?.file?.originalName {
                 Text("\(fileName)\(message.fileExtension ?? "")")
                     .foregroundStyle(Color.App.text)
                     .font(.iransansBoldCaption)
@@ -78,7 +78,7 @@ struct UploadImageButton: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    if let fileZize = message.fileMetaData?.file?.size {
+                    if let fileZize = messageRowVM.fileMetaData?.file?.size {
                         Text(String(fileZize))
                             .multilineTextAlignment(.leading)
                             .font(.iransansBoldCaption2)

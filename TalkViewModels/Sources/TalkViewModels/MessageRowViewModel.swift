@@ -86,6 +86,9 @@ public final class MessageRowViewModel: ObservableObject {
         formatter.locale = Language.preferredLocale
         return formatter
     }()
+    public var isMapType: Bool = false
+    public var fileMetaData: FileMetaData?
+    public private(set) var textHeight: CGFloat = 48
 
     public var avatarImageLoader: ImageLoaderViewModel? {
         if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {
@@ -118,33 +121,8 @@ public final class MessageRowViewModel: ObservableObject {
         let paddingBottom: CGFloat = 4
         paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
 
-
-        if message.isImage || message.isMapType {
-            let isOnlyImage = (message.message ?? "").isEmpty == true && (message.replyInfo == nil) && (message.forwardInfo == nil)
-
-            /// We use max to at least have a width, because there are times that maxWidth is nil.
-            let imageWidth = CGFloat(message.fileMetaData?.file?.actualWidth ?? 0)
-            let minWidth: CGFloat = 128
-            let maxWidth = ThreadViewModel.maxAllowedWidth - (18 + 6)
-            let dynamicWidth = min(max(minWidth, imageWidth), maxWidth)
-            self.imageWidth = isOnlyImage ? dynamicWidth : maxWidth
-
-            /// We use max to at least have a width, because there are times that maxWidth is nil.
-            let imageHeight = CGFloat(message.fileMetaData?.file?.actualHeight ?? 0)
-            let minHeight: CGFloat = 128
-            let maxHeight: CGFloat = 320
-            let dynamicHeight = min(max(minHeight, imageHeight), maxHeight)
-            self.imageHeight = isOnlyImage ? dynamicHeight : maxHeight
-        }
-
-        /// Reply file info
-        if let replyInfo = message.replyInfo {
-            self.isReplyImage = [MessageType.picture, .podSpacePicture].contains(replyInfo.messageType)
-            let metaData = replyInfo.metadata
-            if let data = metaData?.data(using: .utf8), let fileMetaData = try? JSONDecoder.instance.decode(FileMetaData.self, from: data) {
-                replyLink = fileMetaData.file?.link
-            }
-        }
+        /// We must pre-calculate the text/image size even if the row is not displayed or appears.
+        recalculateWithAnimation()
     }
 
     func setupObservers() {
@@ -193,12 +171,6 @@ public final class MessageRowViewModel: ObservableObject {
             self?.deleteUploadedMessage(state: state)
         }
         .store(in: &cancelableSet)
-    }
-
-    @MainActor
-    public func calculate() {
-        if isCalculated { return }
-        recalculateWithAnimation()
     }
 
     private func startHighlightTimer() {
@@ -269,11 +241,55 @@ public final class MessageRowViewModel: ObservableObject {
 
     private func performaCalculation() async {
         isCalculated = true
-        isNextMessageTheSameUser = threadVM?.thread.group == true && (threadVM?.isNextSameUser(message: message) == true) && message.participant != nil
+        fileMetaData = message.fileMetaData /// decoding data so expensive if it will happen on the main thread.
+        textHeight = await textHeight()
+        await calculateImageSize()
+        await setReplyInfo()
+        isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
+        let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
+        isNextMessageTheSameUser = threadVM?.thread.group == true && isSameResponse && message.participant != nil
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = message.markdownTitle
         if let date = message.time?.date {
             timeString = MessageRowViewModel.formatter.string(from: date)
+        }
+    }
+
+    private func calculateImageSize() async {
+        if message.isImage {
+            let isOnlyImage = (message.message ?? "").isEmpty == true && (message.replyInfo == nil) && (message.forwardInfo == nil)
+
+            /// We use max to at least have a width, because there are times that maxWidth is nil.
+            let imageWidth = CGFloat(fileMetaData?.file?.actualWidth ?? 0)
+            let minWidth: CGFloat = 128
+            let maxWidth = ThreadViewModel.maxAllowedWidth - (18 + 6)
+            let dynamicWidth = min(max(minWidth, imageWidth), maxWidth)
+            self.imageWidth = isOnlyImage ? dynamicWidth : maxWidth
+
+            /// We use max to at least have a width, because there are times that maxWidth is nil.
+            let imageHeight = CGFloat(fileMetaData?.file?.actualHeight ?? 0)
+            let minHeight: CGFloat = 128
+            let maxHeight: CGFloat = 320
+            let dynamicHeight = min(max(minHeight, imageHeight), maxHeight)
+            self.imageHeight = isOnlyImage ? dynamicHeight : maxHeight
+        }
+    }
+
+    static let iransansBody = UIFont(name: "IRANSansX", size: 14)!
+    func textHeight() async -> CGFloat {
+        let constraintRect = CGSize(width: ThreadViewModel.maxAllowedWidth - 38, height: .greatestFiniteMagnitude) /// We reduce 36 pixels for avatar and paddings.
+        let boundingBox = message.message?.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: MessageRowViewModel.iransansBody], context: nil)
+        return ceil(boundingBox?.height ?? 48) + 8 /// We use 8 pixels for a safe height to not cut the text.
+    }
+
+    private func setReplyInfo() async {
+        /// Reply file info
+        if let replyInfo = message.replyInfo {
+            self.isReplyImage = [MessageType.picture, .podSpacePicture].contains(replyInfo.messageType)
+            let metaData = replyInfo.metadata
+            if let data = metaData?.data(using: .utf8), let fileMetaData = try? JSONDecoder.instance.decode(FileMetaData.self, from: data) {
+                replyLink = fileMetaData.file?.link
+            }
         }
     }
 
@@ -304,6 +320,14 @@ public final class MessageRowViewModel: ObservableObject {
             return (true, true)
         } else {
             return (false, false)
+        }
+    }
+
+    public func toggleSelection() {
+        withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
+            isSelected.toggle()
+            threadVM?.selectedMessagesViewModel.animateObjectWillChange()
+            animateObjectWillChange()
         }
     }
 
