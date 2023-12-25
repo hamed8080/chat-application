@@ -40,9 +40,9 @@ public struct AudioPlayerView: View {
                             }
                         } label: {
                             HStack {
-                                Text(verbatim: audioPlayerVM.subtitle)
+                                Text(verbatim: audioPlayerVM.title)
                                     .font(.iransansCaption)
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(Color.App.text)
                                 Spacer()
                             }
                         }

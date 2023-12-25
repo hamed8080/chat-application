@@ -18,7 +18,7 @@ struct MessageRowImageDownloader: View {
     private var uploadCompleted: Bool { message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed }
 
     var body: some View {
-        if message.isImage, uploadCompleted, let downloadVM = viewModel.downloadFileVM {
+        if !viewModel.isMapType, message.isImage, uploadCompleted, let downloadVM = viewModel.downloadFileVM {
             ZStack {
                 if viewModel.downloadFileVM?.state != .completed {
                     PlaceholderImageView(width: viewModel.imageWidth, height: viewModel.imageHeight)

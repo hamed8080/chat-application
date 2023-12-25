@@ -35,7 +35,12 @@ struct LocationRowView: View {
                 }
             }
             .task {
-                downloadVM.startDownload()
+                if downloadVM.isInCache {
+                    downloadVM.state = .completed
+                    viewModel.animateObjectWillChange()
+                } else {
+                    downloadVM.startDownload()
+                }
             }
         }
     }

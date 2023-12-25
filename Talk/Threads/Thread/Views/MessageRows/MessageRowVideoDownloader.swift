@@ -20,6 +20,12 @@ struct MessageRowVideoDownloader: View {
         if uploadCompleted, message.isVideo == true, let downloadVM = viewModel.downloadFileVM {
             MessageRowVideoDownloaderContent(viewModel: viewModel)
                 .environmentObject(downloadVM)
+                .task {
+                    if downloadVM.isInCache {
+                        downloadVM.state = .completed
+                        viewModel.animateObjectWillChange()
+                    }
+                }
         }
     }
 }

@@ -14,22 +14,29 @@ class RequestsManager: ObservableObject {
     @Published
     public var requests: [String: ChatDTO.UniqueIdProtocol] = [:]
     @Published var cancelRequest: String?
+    private var queue = DispatchQueue(label: "RequestQueue")
 
     private init(){}
 
     func append(value: ChatDTO.UniqueIdProtocol, autoCancel: Bool = true) {
-        let key = "\(value.uniqueId)"
-        requests[key] = value
-        if autoCancel {
-            addCancelTimer(key: key)
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            let key = "\(value.uniqueId)"
+            requests[key] = value
+            if autoCancel {
+                addCancelTimer(key: key)
+            }
         }
     }
 
     func append(prepend: String, value: ChatDTO.UniqueIdProtocol, autoCancel: Bool = true) {
-        let key = "\(prepend)-\(value.uniqueId)"
-        requests[key] = value
-        if autoCancel {
-            addCancelTimer(key: key)
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            let key = "\(prepend)-\(value.uniqueId)"
+            requests[key] = value
+            if autoCancel {
+                addCancelTimer(key: key)
+            }
         }
     }
 

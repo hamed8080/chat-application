@@ -21,6 +21,12 @@ struct MessageRowFileDownloader: View {
         if isFileView, let downloadVM = viewModel.downloadFileVM {
             MessageRowFileDownloaderContent()
                 .environmentObject(downloadVM)
+                .task {
+                    if downloadVM.isInCache {
+                        downloadVM.state = .completed
+                        viewModel.animateObjectWillChange()
+                    }
+                }
         }
     }
 }

@@ -155,9 +155,15 @@ struct DownloadPictureButtonView: View {
                     .background(Color.App.separator)
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
                     .onAppear {
-                        if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
-                            viewModel.downloadBlurImage(quality: 1.0, size: .SMALL)
+                        if viewModel.isInCache {
+                            viewModel.state = .completed
+                            viewModel.animateObjectWillChange()
+                        } else {
+                            if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
+                                viewModel.downloadBlurImage(quality: 1.0, size: .SMALL)
+                            }
                         }
+
                     }
             }
             .frame(width: itemWidth, height: itemWidth)

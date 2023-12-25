@@ -71,6 +71,7 @@ struct VoiceRowView: View {
     @Environment(\.dismiss) var dismiss
     @State var shareDownloadedFile = false
     @EnvironmentObject var downloadViewModel: DownloadFileViewModel
+    @EnvironmentObject var audioVM: AVAudioPlayerViewModel
 
     var body: some View {
         HStack {
@@ -106,7 +107,7 @@ struct VoiceRowView: View {
                 AppState.shared.objectsContainer.audioPlayerVM.toggle()
             }
         }
-        .customContextMenu(id: message.id, self: self.environmentObject(downloadVM)) {
+        .customContextMenu(id: message.id, self: self.environmentObject(audioVM).environmentObject(downloadVM)) {
             VStack {
                 ContextMenuButton(title: "General.showMessage", image: "message.fill") {
                     threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)

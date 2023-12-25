@@ -492,10 +492,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     public func appendMessagesAndSort(_ messages: [Message], isToTime: Bool = false) {
         guard messages.count > 0 else { return }
-        messages.forEach { message in
+        for message in messages {
             insertOrUpdate(message)
         }
         sort()
+        createMessageViewModels(messages: messages)
         topSliceId = sections.flatMap{$0.messages}.prefix(thresholdToLoad).compactMap{$0.id}.last ?? 0
         bottomSliceId = sections.flatMap{$0.messages}.suffix(thresholdToLoad).compactMap{$0.id}.first ?? 0
     }
@@ -511,8 +512,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 sections.append(.init(date: message.time?.date ?? Date(), messages: [message]))
             }
         }
+    }
+
+    func createMessageViewModels(messages: [Message]) {
         /// Create if there is no viewModel inside messageViewModels array. It is essential for highlighting and more
-        messageViewModel(for: message)
+        for message in messages {
+            messageViewModel(for: message)
+        }
     }
 
     func sectionIndexByUniqueId(_ message: Message) -> Array<MessageSection>.Index? {

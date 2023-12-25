@@ -19,6 +19,12 @@ struct MessageRowAudioDownloader: View {
         if message.isAudio == true, let downloadVM = viewModel.downloadFileVM {
             MessageRowAudioDownloaderContent(viewModel: viewModel)
                 .environmentObject(downloadVM)
+                .task {
+                    if downloadVM.isInCache {
+                        downloadVM.state = .completed
+                        viewModel.animateObjectWillChange()
+                    }
+                }
         }
     }
 }
@@ -35,7 +41,7 @@ struct MessageRowAudioDownloaderContent: View {
                 InlineAudioPlayerView(message: message,
                                       fileURL: fileURL,
                                       ext: viewModel.fileMetaData?.file?.mimeType?.ext,
-                                      title: viewModel.fileMetaData?.name,
+                                      title: viewModel.fileMetaData?.file?.originalName ?? viewModel.fileMetaData?.name ?? "",
                                       subtitle: viewModel.fileMetaData?.file?.originalName ?? "",
                                       config: .normal)
                 .id(fileURL)
