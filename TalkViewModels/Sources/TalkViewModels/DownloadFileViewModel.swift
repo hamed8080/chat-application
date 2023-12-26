@@ -38,15 +38,22 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     public init(message: Message) {
         self.message = message
+        setObservers()
+        Task {
+            await setup()
+        }
+    }
+
+    /// It should be on the background thread because it decodes metadata in message.url.
+    private func setup() async {
+        if let url = url {
+            isInCache = chat?.file.isFileExist(url) ?? false || chat?.file.isFileExistInGroup(url) ?? false
+        }
         if isInCache {
             state = .completed
             thumbnailData = nil
             animateObjectWillChange()
         }
-        if let url = url {
-            isInCache = chat?.file.isFileExist(url) ?? false || chat?.file.isFileExistInGroup(url) ?? false
-        }
-        setObservers()
     }
 
     public func setObservers() {
@@ -150,7 +157,6 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             return
         }
 
-        if response.uniqueId != uniqueId { return }
         if RequestsManager.shared.value(for: uniqueId) != nil, let data = response.result {
             autoreleasepool {
                 state = .completed
@@ -177,21 +183,21 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     private func onSuspend(_ uniqueId: String) {
-        if RequestsManager.shared.value(for: self.uniqueId) != nil, uniqueId == self.uniqueId {
+        if isSameUnqiueId(uniqueId) {
             state = .paused
             animateObjectWillChange()
         }
     }
 
     private func onResumed(_ uniqueId: String) {
-        if RequestsManager.shared.value(for: self.uniqueId) != nil, uniqueId == self.uniqueId {
+        if isSameUnqiueId(uniqueId) {
             state = .downloading
             animateObjectWillChange()
         }
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
-        if RequestsManager.shared.value(for: self.uniqueId) != nil, uniqueId == self.uniqueId {
+        if isSameUnqiueId(uniqueId) {
             self.downloadPercent = progress?.percent ?? 0
             animateObjectWillChange()
         }
@@ -209,6 +215,10 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         cancellableSet.forEach { cancellable in
             cancellable.cancel()
         }
+    }
+    
+    private func isSameUnqiueId(_ uniqueId: String) -> Bool {
+        RequestsManager.shared.value(for: self.uniqueId) != nil && uniqueId == self.uniqueId
     }
 
     deinit {

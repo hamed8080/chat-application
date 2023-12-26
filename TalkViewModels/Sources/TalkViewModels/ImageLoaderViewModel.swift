@@ -34,6 +34,35 @@ public final class ImageLoaderViewModel: ObservableObject {
     public private(set) var cancelable: Set<AnyCancellable> = []
     var uniqueId: String = ""
 
+    private var URLObject: URL? { URL(string: url ?? "") }
+    private var isSDKImage: Bool { hashCode != "" }
+    private var fileMetadataModel: FileMetaData? {
+        guard let fileMetadata = fileMetadata?.data(using: .utf8) else { return nil }
+        return try? JSONDecoder.instance.decode(FileMetaData.self, from: fileMetadata)
+    }
+    private var fileURL: URL? {
+        guard let URLObject = URLObject else { return nil }
+        let chat = ChatManager.activeInstance
+        if chat?.file.isFileExist(URLObject) == true {
+            return chat?.file.filePath(URLObject)
+        } else if chat?.file.isFileExistInGroup(URLObject) == true {
+            return chat?.file.filePathInGroup(URLObject)
+        }
+        return nil
+    }
+
+    var fileServerURL: URL? {
+        guard let fileServer = ChatManager.activeInstance?.config.fileServer else { return nil }
+        return URL(string: fileServer)
+    }
+
+    private var oldURLHash: String? {
+        guard let urlObject = URLObject, let comp = URLComponents(url: urlObject, resolvingAgainstBaseURL: true) else { return nil }
+        return comp.queryItems?.first(where: { $0.name == "hash" })?.value
+    }
+
+    private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
+
     public init() {
         NotificationCenter.default.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
@@ -91,55 +120,29 @@ public final class ImageLoaderViewModel: ObservableObject {
         }
     }
 
-    private var URLObject: URL? { URL(string: url ?? "") }
-    private var isSDKImage: Bool { hashCode != "" }
-    private var fileMetadataModel: FileMetaData? {
-        guard let fileMetadata = fileMetadata?.data(using: .utf8) else { return nil }
-        return try? JSONDecoder().decode(FileMetaData.self, from: fileMetadata)
-    }
-    private var fileURL: URL? {
-        guard let URLObject = URLObject else { return nil }
-        let chat = ChatManager.activeInstance
-        if chat?.file.isFileExist(URLObject) == true {
-            return chat?.file.filePath(URLObject)
-        } else if chat?.file.isFileExistInGroup(URLObject) == true {
-            return chat?.file.filePathInGroup(URLObject)
-        }
-        return nil
-    }
-
-    var fileServerURL: URL? {
-        guard let fileServer = ChatManager.activeInstance?.config.fileServer else { return nil }
-        return URL(string: fileServer)
-    }
-
-    private var oldURLHash: String? {
-        guard let urlObject = URLObject, let comp = URLComponents(url: urlObject, resolvingAgainstBaseURL: true) else { return nil }
-        return comp.queryItems?.first(where: { $0.name == "hash" })?.value
-    }
-
-    private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
-
-    public func fetch(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL, forceToDownloadFromServer: Bool = false) {
-        fileMetadata = metaData
-        self.url = url
-        self.userName = userName
-        self.size = size
-        if url == nil {
-            animateObjectWillChange()
-            return
-        }
-        if isSDKImage {
-            getFromSDK(forceToDownloadFromServer: forceToDownloadFromServer)
-        } else if let fileURL = fileURL {
-            setImage(fileURL: fileURL)
-        } else {
-            downloadFromAnyURL()
+    /// The hashCode decode FileMetaData so it needs to be done on the background thread.
+    public func fetch(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL, forceToDownloadFromServer: Bool = false, thumbnail: Bool = false) {
+        Task {
+            fileMetadata = metaData
+            self.url = url
+            self.userName = userName
+            self.size = size
+            if url == nil {
+                animateObjectWillChange()
+                return
+            }
+            if isSDKImage {
+                getFromSDK(forceToDownloadFromServer: forceToDownloadFromServer, thumbnail: thumbnail)
+            } else if let fileURL = fileURL {
+                setImage(fileURL: fileURL)
+            } else {
+                downloadFromAnyURL(thumbnail: thumbnail)
+            }
         }
     }
 
-    private func getFromSDK(forceToDownloadFromServer: Bool = false) {
-        let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: forceToDownloadFromServer, size: size ?? .LARG)
+    private func getFromSDK(forceToDownloadFromServer: Bool = false, thumbnail: Bool) {
+        let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: forceToDownloadFromServer, size: size ?? .LARG, thumbnail: thumbnail)
         uniqueId = req.uniqueId
         RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.file.get(req)
@@ -156,11 +159,13 @@ public final class ImageLoaderViewModel: ObservableObject {
         }
     }
 
-    private func downloadFromAnyURL() {
+    private func downloadFromAnyURL(thumbnail: Bool) {
         guard let req = reqWithHeader else { return }
         let task = URLSession.shared.dataTask(with: req) { [weak self] data, _, _ in
             self?.update(data: data)
-            self?.storeInCache(data: data)
+            if !thumbnail {
+                self?.storeInCache(data: data)
+            }
         }
         task.resume()
     }

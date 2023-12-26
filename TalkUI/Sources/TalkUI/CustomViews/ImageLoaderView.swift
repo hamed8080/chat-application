@@ -19,12 +19,14 @@ public struct ImageLoaderView: View {
     let userName: String?
     let size: ImageSize
     let contentMode: ContentMode
+    let thumbnail: Bool
     let textFont: Font
 
     public init(imageLoader: ImageLoaderViewModel,
                 url: String? = nil,
                 metaData: String? = nil,
                 userName: String? = nil,
+                thumbnail: Bool = false, /// To prevent save on the disk for situation like small images in reply.
                 size: ImageSize = .SMALL,
                 contentMode: ContentMode = .fill,
                 textFont: Font = .iransansBody
@@ -35,6 +37,7 @@ public struct ImageLoaderView: View {
         self.userName = userName?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.size = size
         self.contentMode = contentMode
+        self.thumbnail = thumbnail
         self._imageLoader = StateObject(wrappedValue: imageLoader)
     }
 
@@ -53,7 +56,7 @@ public struct ImageLoaderView: View {
         .animation(.easeInOut, value: imageLoader.isImageReady)
         .onAppear {
             if !imageLoader.isImageReady {
-                imageLoader.fetch(url: url, metaData: metaData, userName: userName, size: size)
+                imageLoader.fetch(url: url, metaData: metaData, userName: userName, size: size, thumbnail: thumbnail)
             }
         }
     }

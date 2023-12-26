@@ -138,18 +138,21 @@ struct ThreadPinMessage: View {
         return file
     }
 
+    /// We use a Task due to fileMetadata decoding.
     private func downloadImageThumbnail() {
-        guard let file = fileMetadata,
-              let hashCode = file.file?.hashCode,
-              file.file?.mimeType == "image/jpeg" || file.file?.mimeType == "image/png"
-        else {
-            thumbnailData = nil
-            return
-        }
+        Task {
+            guard let file = fileMetadata,
+                  let hashCode = file.file?.hashCode,
+                  file.file?.mimeType == "image/jpeg" || file.file?.mimeType == "image/png"
+            else {
+                thumbnailData = nil
+                return
+            }
 
-        let req = ImageRequest(hashCode: hashCode, quality: 0.1, size: .SMALL, thumbnail: true)
-        requestUniqueId = req.uniqueId
-        ChatManager.activeInstance?.file.get(req)
+            let req = ImageRequest(hashCode: hashCode, quality: 0.1, size: .SMALL, thumbnail: true)
+            requestUniqueId = req.uniqueId
+            ChatManager.activeInstance?.file.get(req)
+        }
     }
 
     private func onDownloadEvent(_ event: DownloadEventTypes) {

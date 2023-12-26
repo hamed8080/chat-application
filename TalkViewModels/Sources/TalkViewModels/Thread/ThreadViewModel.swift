@@ -75,7 +75,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize)
-    var model: AppSettingsModel
+    var model: AppSettingsModel = .init()
     public var canDownloadImages: Bool = false
     public var canDownloadFiles: Bool = false
 
@@ -93,12 +93,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.thread = thread
         self.threadsViewModel = threadsViewModel
         self.participantsViewModel = ParticipantsViewModel(thread: thread)
-        model = AppSettingsModel.restore()
         scrollVM.threadVM = self
         historyVM.threadViewModel = self
         setupNotificationObservers()
-        self.canDownloadImages = canDownloadImagesInConversation()
-        self.canDownloadFiles = canDownloadFilesInConversation()
+        setAppSettingsModel()
         selectedMessagesViewModel.threadVM = self
         sendContainerViewModel.threadVM = self
     }
@@ -126,13 +124,17 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
         NotificationCenter.default.publisher(for: .appSettingsModel)
             .sink { [weak self] _ in
-                if let self {
-                    self.model = AppSettingsModel.restore()
-                    self.canDownloadImages = self.canDownloadImagesInConversation()
-                    self.canDownloadFiles = self.canDownloadFilesInConversation()
-                }
+                self?.setAppSettingsModel()
             }
             .store(in: &cancelable)
+    }
+
+    private func setAppSettingsModel() {
+        Task {
+            model = AppSettingsModel.restore()
+            canDownloadImages = canDownloadImagesInConversation()
+            canDownloadFiles = canDownloadFilesInConversation()
+        }
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
@@ -143,18 +145,21 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
-            thread.unreadCount = (thread.unreadCount ?? 0) + 1
-            thread.time = response.result?.conversation?.time
-            thread.lastMessageVO = response.result
-            thread.lastSeenMessageId = response.result?.conversation?.lastSeenMessageId
-            thread.lastSeenMessageTime = response.result?.conversation?.lastSeenMessageTime
-            thread.lastSeenMessageNanos = response.result?.conversation?.lastSeenMessageNanos
-            thread.lastMessage = response.result?.message
-
+            onNewMessageUpdateThreadProperties(with: response.result, conversation: response.result?.conversation)
             historyVM.appendMessagesAndSort([message])
             historyVM.animateObjectWillChange()
             scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
         }
+    }
+
+    private func onNewMessageUpdateThreadProperties(with message: Message?, conversation: Conversation?) {
+        thread.unreadCount = (thread.unreadCount ?? 0) + 1
+        thread.time = conversation?.time
+        thread.lastMessageVO = message
+        thread.lastSeenMessageId = conversation?.lastSeenMessageId
+        thread.lastSeenMessageTime = conversation?.lastSeenMessageTime
+        thread.lastSeenMessageNanos = conversation?.lastSeenMessageNanos
+        thread.lastMessage = message?.message
     }
 
     public func onLastMessageChanged(_ thread: Conversation) {
