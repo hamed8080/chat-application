@@ -64,7 +64,8 @@ struct MessageSeenParticipantRow: View {
 
     var body: some View {
         HStack {
-            ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: participant.image, userName: participant.name ?? participant.username)
+            let config = ImageLoaderConfig(url: participant.image ?? "", userName: participant.name ?? participant.username)
+            ImageLoaderView(imageLoader: .init(config: config))
                 .id("\(participant.image ?? "")\(participant.id ?? 0)")
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)

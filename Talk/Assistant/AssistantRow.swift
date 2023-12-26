@@ -12,7 +12,6 @@ import TalkViewModels
 
 struct AssistantRow: View {
     let assistant: Assistant
-    @StateObject var imageViewModel: ImageLoaderViewModel = .init()
     @EnvironmentObject var viewModel: AssistantViewModel
 
     var body: some View {
@@ -20,7 +19,8 @@ struct AssistantRow: View {
             if viewModel.isInSelectionMode {
                 SelectAssistantRadio(assistant: assistant)
             }
-            ImageLoaderView(imageLoader: imageViewModel, url: assistant.participant?.image, userName: assistant.participant?.name)
+            let config = ImageLoaderConfig(url: assistant.participant?.image ?? "", userName: assistant.participant?.name)
+            ImageLoaderView(imageLoader: .init(config: config))
                 .frame(width: 28, height: 28)
                 .background(.blue.opacity(0.8))
                 .clipShape(RoundedRectangle(cornerRadius:(18)))

@@ -38,11 +38,11 @@ struct AssistantHistoryView: View {
 
 struct AssistantActionRow: View {
     let action: AssistantAction
-    @StateObject var imageViewModel: ImageLoaderViewModel = .init()
 
     var body: some View {
         HStack {
-            ImageLoaderView(imageLoader: imageViewModel, url: action.participant?.image, userName: action.participant?.name)
+            let config = ImageLoaderConfig(url: action.participant?.image ?? "", userName: action.participant?.name)
+            ImageLoaderView(imageLoader: .init(config: config))
                 .frame(width: 28, height: 28)
                 .background(.blue.opacity(0.8))
                 .clipShape(RoundedRectangle(cornerRadius:(18)))

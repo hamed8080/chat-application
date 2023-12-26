@@ -22,8 +22,8 @@ struct ThreadViewTrailingToolbar: View {
             navVM.append(threadViewModel: viewModel)
         } label: {
             ZStack {
-                if let imageViewModel {
-                    ImageLoaderView(imageLoader: imageViewModel, url: thread.computedImageURL, userName: thread.title)
+                if let imageLoader = imageLoader() {
+                    ImageLoaderView(imageLoader: imageLoader)
                 } else {
                     Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
                 }
@@ -35,19 +35,18 @@ struct ThreadViewTrailingToolbar: View {
             .background(Color.App.blue.opacity(0.4))
             .clipShape(RoundedRectangle(cornerRadius:(16)))
         }
-        .onAppear {
-            updateImageLoaderViewModel()
-        }
         .onReceive(NotificationCenter.default.publisher(for: .thread)) { notification in
             if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(let resposne) = threadEvent, resposne.result?.id == thread.id {
-                updateImageLoaderViewModel()
+                imageViewModel = .init(config: .init(url: thread.computedImageURL ?? "", userName: thread.title))
             }
         }
     }
 
-    func updateImageLoaderViewModel() {
-        if let image = thread.computedImageURL, let avatarVM = viewModel.threadsViewModel?.avatars(for: image) {
-            imageViewModel = avatarVM
+    private func imageLoader() -> ImageLoaderViewModel? {
+        if let image = thread.computedImageURL, let avatarVM = viewModel.threadsViewModel?.avatars(for: image, metaData: nil, userName: thread.title){
+            return avatarVM
+        } else {
+            return nil
         }
     }
 }

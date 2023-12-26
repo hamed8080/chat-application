@@ -25,7 +25,7 @@ struct DetailView: View {
     var body: some View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 0) {
-                InfoView()
+                InfoView(viewModel: viewModel)
                 UserName()
                 CellPhoneNumber()
                 PublicLink()
@@ -105,13 +105,24 @@ struct DetailView: View {
 struct InfoView: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     @EnvironmentObject var viewModel: DetailViewModel
-    @StateObject private var fullScreenImageLoader: ImageLoaderViewModel = .init()
+    @StateObject private var fullScreenImageLoader: ImageLoaderViewModel
+
+    init(viewModel: DetailViewModel) {
+        let config = ImageLoaderConfig(url: viewModel.url ?? "",
+                                       size: .ACTUAL,
+                                       metaData: viewModel.thread?.metadata,
+                                       userName: viewModel.title,
+                                       forceToDownloadFromServer: true)
+        self._fullScreenImageLoader = .init(wrappedValue: .init(config: config))
+    }
 
     var body: some View {
         HStack(spacing: 16) {
             let image = viewModel.url
-            let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image ?? "") ?? .init()
-            ImageLoaderView(imageLoader: avatarVM, url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title)
+            let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image ?? "", metaData: nil, userName: nil)
+            let config = ImageLoaderConfig(url: viewModel.url ?? "", metaData: viewModel.thread?.metadata, userName: viewModel.title)
+            let defaultLoader = ImageLoaderViewModel(config: config)
+            ImageLoaderView(imageLoader: avatarVM ?? defaultLoader)
                 .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
@@ -119,11 +130,16 @@ struct InfoView: View {
                 .background(Color.App.blue.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius:(28)))
                 .onTapGesture {
-                    fullScreenImageLoader.fetch(url: viewModel.url, metaData: viewModel.thread?.metadata, userName: viewModel.title, size: .ACTUAL, forceToDownloadFromServer: true)
+                    fullScreenImageLoader.fetch()
                 }
                 .onReceive(fullScreenImageLoader.$image) { newValue in
                     if newValue.size.width > 0 {
                         appOverlayVM.galleryImageView = newValue
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .thread)) { notification in
+                    if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(_) = threadEvent {
+                        defaultLoader.fetch()
                     }
                 }
 

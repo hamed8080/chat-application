@@ -14,37 +14,22 @@ import ChatDTO
 
 public struct ImageLoaderView: View {
     @StateObject var imageLoader: ImageLoaderViewModel
-    let url: String?
-    let metaData: String?
-    let userName: String?
-    let size: ImageSize
     let contentMode: ContentMode
-    let thumbnail: Bool
     let textFont: Font
 
     public init(imageLoader: ImageLoaderViewModel,
-                url: String? = nil,
-                metaData: String? = nil,
-                userName: String? = nil,
-                thumbnail: Bool = false, /// To prevent save on the disk for situation like small images in reply.
-                size: ImageSize = .SMALL,
                 contentMode: ContentMode = .fill,
                 textFont: Font = .iransansBody
     ) {
         self.textFont = textFont
-        self.metaData = metaData
-        self.url = url
-        self.userName = userName?.trimmingCharacters(in: .whitespacesAndNewlines)
-        self.size = size
         self.contentMode = contentMode
-        self.thumbnail = thumbnail
         self._imageLoader = StateObject(wrappedValue: imageLoader)
     }
 
     public var body: some View {
         ZStack {
             if !imageLoader.isImageReady {
-                Text(String(userName?.first ?? " "))
+                Text(String(imageLoader.config.userName?.first ?? " "))
                     .font(textFont)
             } else if imageLoader.isImageReady {
                 Image(uiImage: imageLoader.image)
@@ -56,7 +41,7 @@ public struct ImageLoaderView: View {
         .animation(.easeInOut, value: imageLoader.isImageReady)
         .onAppear {
             if !imageLoader.isImageReady {
-                imageLoader.fetch(url: url, metaData: metaData, userName: userName, size: size, thumbnail: thumbnail)
+                imageLoader.fetch()
             }
         }
     }
@@ -64,7 +49,8 @@ public struct ImageLoaderView: View {
 
 struct ImageLoaderView_Previews: PreviewProvider {
     static var previews: some View {
-        ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: "https://podspace.podland.ir/api/images/FQW4R5QUPE4XNDUV", userName: "Hamed")
+        let config = ImageLoaderConfig(url: "https://podspace.podland.ir/api/images/FQW4R5QUPE4XNDUV", userName: "Hamed")
+        ImageLoaderView(imageLoader: ImageLoaderViewModel(config: config))
             .font(.system(size: 16).weight(.heavy))
             .foregroundColor(.white)
             .frame(width: 128, height: 128)

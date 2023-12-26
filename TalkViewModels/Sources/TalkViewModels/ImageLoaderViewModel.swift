@@ -25,28 +25,43 @@ private var token: String? {
     return ssoToken.accessToken
 }
 
+public struct ImageLoaderConfig {
+    public let url: String
+    public let metaData: String?
+    public let userName: String?
+    public let size: ImageSize
+    public let forceToDownloadFromServer: Bool
+    public let thumbnail: Bool
+    
+    public init(url: String, size: ImageSize = .SMALL, metaData: String? = nil, userName: String? = nil, thumbnail: Bool = false, forceToDownloadFromServer: Bool = false) {
+        self.url = url
+        self.metaData = metaData
+        self.userName = userName
+        self.size = size
+        self.forceToDownloadFromServer = forceToDownloadFromServer
+        self.thumbnail = thumbnail
+    }
+}
+
 public final class ImageLoaderViewModel: ObservableObject {
     @Published public private(set) var image: UIImage = .init()
-    private(set) var url: String?
     private(set) var fileMetadata: String?
-    private(set) var size: ImageSize?
-    private(set) var userName: String?
     public private(set) var cancelable: Set<AnyCancellable> = []
     var uniqueId: String = ""
-
-    private var URLObject: URL? { URL(string: url ?? "") }
+    public let config: ImageLoaderConfig
+    private var URLObject: URL? { URL(string: config.url) }
     private var isSDKImage: Bool { hashCode != "" }
     private var fileMetadataModel: FileMetaData? {
         guard let fileMetadata = fileMetadata?.data(using: .utf8) else { return nil }
         return try? JSONDecoder.instance.decode(FileMetaData.self, from: fileMetadata)
     }
+    
     private var fileURL: URL? {
-        guard let URLObject = URLObject else { return nil }
-        let chat = ChatManager.activeInstance
-        if chat?.file.isFileExist(URLObject) == true {
-            return chat?.file.filePath(URLObject)
-        } else if chat?.file.isFileExistInGroup(URLObject) == true {
-            return chat?.file.filePathInGroup(URLObject)
+        guard let URLObject = URLObject, let fileManager = ChatManager.activeInstance?.file else { return nil }
+        if fileManager.isFileExist(URLObject) {
+            return fileManager.filePath(URLObject)
+        } else if fileManager.isFileExistInGroup(URLObject) {
+            return fileManager.filePathInGroup(URLObject)
         }
         return nil
     }
@@ -63,7 +78,8 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     private var hashCode: String { fileMetadataModel?.fileHash ?? oldURLHash ?? "" }
 
-    public init() {
+    public init(config: ImageLoaderConfig) {
+        self.config = config
         NotificationCenter.default.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
             .sink{ [weak self] event in
@@ -90,10 +106,10 @@ public final class ImageLoaderViewModel: ObservableObject {
     private func setImage(data: Data) {
         autoreleasepool {
             var image: UIImage? = nil
-            if size == nil || size == .ACTUAL {
+            if config.size == .ACTUAL {
                 image = UIImage(data: data) ?? UIImage()
             } else {
-                guard let cgImage = data.imageScale(width: size == .SMALL ? 128 : 256)?.image else { return }
+                guard let cgImage = data.imageScale(width: config.size == .SMALL ? 128 : 256)?.image else { return }
                 image = UIImage(cgImage: cgImage)
             }
 
@@ -107,10 +123,10 @@ public final class ImageLoaderViewModel: ObservableObject {
     private func setImage(fileURL: URL) {
         autoreleasepool {
             var image: UIImage? = nil
-            if size == nil || size == .ACTUAL, let data = fileURL.data {
+            if config.size == .ACTUAL, let data = fileURL.data {
                 image = UIImage(data: data) ?? UIImage()
             } else {
-                guard let cgImage = fileURL.imageScale(width: size == .SMALL ? 128 : 256)?.image else { return }
+                guard let cgImage = fileURL.imageScale(width: config.size == .SMALL ? 128 : 256)?.image else { return }
                 image = UIImage(cgImage: cgImage)
             }
             DispatchQueue.main.async { [weak self] in
@@ -121,28 +137,21 @@ public final class ImageLoaderViewModel: ObservableObject {
     }
 
     /// The hashCode decode FileMetaData so it needs to be done on the background thread.
-    public func fetch(url: String? = nil, metaData: String? = nil, userName: String? = nil, size: ImageSize = .SMALL, forceToDownloadFromServer: Bool = false, thumbnail: Bool = false) {
+    public func fetch() {
         Task {
-            fileMetadata = metaData
-            self.url = url
-            self.userName = userName
-            self.size = size
-            if url == nil {
-                animateObjectWillChange()
-                return
-            }
+            fileMetadata = config.metaData
             if isSDKImage {
-                getFromSDK(forceToDownloadFromServer: forceToDownloadFromServer, thumbnail: thumbnail)
+                getFromSDK(forceToDownloadFromServer: config.forceToDownloadFromServer, thumbnail: config.thumbnail)
             } else if let fileURL = fileURL {
                 setImage(fileURL: fileURL)
             } else {
-                downloadFromAnyURL(thumbnail: thumbnail)
+                downloadFromAnyURL(thumbnail: config.thumbnail)
             }
         }
     }
 
     private func getFromSDK(forceToDownloadFromServer: Bool = false, thumbnail: Bool) {
-        let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: forceToDownloadFromServer, size: size ?? .LARG, thumbnail: thumbnail)
+        let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: config.forceToDownloadFromServer, size: config.size, thumbnail: config.thumbnail)
         uniqueId = req.uniqueId
         RequestsManager.shared.append(value: req)
         ChatManager.activeInstance?.file.get(req)
@@ -180,7 +189,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         guard let data = data else { return }
         if !isRealImage(data: data) { return }
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, let url = URL(string: self.url ?? "") else { return }
+            guard let self = self, let url = URL(string: self.config.url) else { return }
             ChatManager.activeInstance?.file.saveFileInGroup(url: url, data: data) { _ in }
         }
     }

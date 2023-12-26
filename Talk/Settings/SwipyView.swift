@@ -76,11 +76,17 @@ struct SwipyView: View {
 struct UserConfigView: View {
     let userConfig: UserConfig
     @EnvironmentObject var viewModel: SettingViewModel
-    @StateObject var imageLoader = ImageLoaderViewModel()
+    @StateObject var imageLoader: ImageLoaderViewModel
+
+    init(userConfig: UserConfig) {
+        self.userConfig = userConfig
+        let config = ImageLoaderConfig(url: userConfig.user.image ?? "", size: .LARG, userName: userConfig.user.name)
+        _imageLoader = .init(wrappedValue: ImageLoaderViewModel(config: config))
+    }
 
     var body: some View {
         HStack {
-            ImageLoaderView(imageLoader: imageLoader, url: userConfig.user.image, userName: userConfig.user.name)
+            ImageLoaderView(imageLoader: imageLoader)
                 .id("\(userConfig.user.image ?? "")\(userConfig.user.id ?? 0)")
                 .frame(width: 48, height: 48)
                 .clipShape(RoundedRectangle(cornerRadius:(24)))
@@ -91,7 +97,7 @@ struct UserConfigView: View {
                 .onReceive(NotificationCenter.default.publisher(for: .connect)) { notification in
                     /// We use this to fetch the user profile image once the active instance is initialized.
                     if let status = notification.object as? ChatState, status == .connected, !imageLoader.isImageReady {
-                        imageLoader.fetch(url: userConfig.user.image, userName: userConfig.user.name, size: .LARG)
+                        imageLoader.fetch()
                     }
                 }
 

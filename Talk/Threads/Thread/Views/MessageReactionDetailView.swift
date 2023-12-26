@@ -142,7 +142,8 @@ struct ReactionParticipantRow: View {
     var body: some View {
         HStack {
             ZStack(alignment: .leading) {
-                ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: reaction.participant?.image, userName: reaction.participant?.name)
+                let config = ImageLoaderConfig(url: reaction.participant?.image ?? "", userName: reaction.participant?.name)
+                ImageLoaderView(imageLoader: .init(config: config))
                     .scaledToFit()
                     .id(reaction.participant?.id)
                     .font(.iransansBoldCaption2)

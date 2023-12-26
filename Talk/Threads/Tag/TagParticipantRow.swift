@@ -21,7 +21,8 @@ struct TagParticipantRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     if let thread = tagParticipant.conversation {
-                        ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: tagParticipant.conversation?.computedImageURL, metaData: thread.metadata, userName: tagParticipant.conversation?.title)
+                        let config = ImageLoaderConfig(url: tagParticipant.conversation?.computedImageURL ?? "", metaData: thread.metadata, userName: tagParticipant.conversation?.title)
+                        ImageLoaderView(imageLoader: .init(config: config))
                             .id("\(tagParticipant.conversation?.computedImageURL ?? "")\(tagParticipant.conversation?.id ?? 0)")
                             .font(.system(size: 16).weight(.heavy))
                             .foregroundColor(.white)

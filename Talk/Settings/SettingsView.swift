@@ -387,11 +387,11 @@ struct UserProfileView: View {
     var userConfig: UserConfig? { container.userConfigsVM.currentUserConfig }
     var user: User? { userConfig?.user }
     @EnvironmentObject var viewModel: SettingViewModel
-    @StateObject var imageLoader = ImageLoaderViewModel()
+    @State var imageLoader: ImageLoaderViewModel?
 
     var body: some View {
         HStack(spacing: 0) {
-            ImageLoaderView(imageLoader: imageLoader, url: userConfig?.user.image, userName: userConfig?.user.name)
+            ImageLoaderView(imageLoader: imageLoader ?? .init(config: .init(url: "")))
                 .id("\(userConfig?.user.image ?? "")\(userConfig?.user.id ?? 0)")
                 .frame(width: 64, height: 64)
                 .background(Color.App.blue.opacity(0.4))
@@ -425,9 +425,16 @@ struct UserProfileView: View {
         .frame(height: 70)
         .onReceive(NotificationCenter.default.publisher(for: .user)) { notification in
             let event = notification.object as? UserEventTypes
-            if !imageLoader.isImageReady, case let .user(response) = event, let user = response.result {
-                imageLoader.fetch(url: user.image, userName: user.name, size: .LARG)
+            if imageLoader?.isImageReady == false, case let .user(response) = event, let user = response.result {
+                let config = ImageLoaderConfig(url: user.image ?? "", size: .LARG, userName: user.name)
+                imageLoader = .init(config: config)
+                imageLoader?.fetch()
             }
+        }
+        .onAppear {
+            let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: user?.name)
+            imageLoader = .init(config: config)
+            imageLoader?.fetch()
         }
     }
 }

@@ -117,11 +117,11 @@ struct PickAssitstantListView: View {
 
 struct AddAssistantRow: View {
     let contact: Contact
-    @StateObject var imageViewModel = ImageLoaderViewModel()
 
     var body: some View {
         HStack {
-            ImageLoaderView(imageLoader: imageViewModel, url: contact.image ?? contact.user?.image, userName: contact.firstName)
+            let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: contact.firstName)
+            ImageLoaderView(imageLoader: .init(config: config))
                 .id("\(contact.image ?? "")\(contact.id ?? 0)")
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)

@@ -47,7 +47,8 @@ struct SelectedContact: View {
 
    @ViewBuilder var userImage: some View {
         if !isSelectedToDelete {
-            ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: contact.image ?? contact.user?.image, userName: contact.firstName, textFont: .iransansBoldCaption2)
+            let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: contact.firstName)
+            ImageLoaderView(imageLoader: .init(config: config), textFont: .iransansBoldCaption2)
                 .id("\(contact.image ?? "")\(contact.id ?? 0)")
                 .foregroundColor(Color.App.text)
                 .frame(width: 18, height: 18)

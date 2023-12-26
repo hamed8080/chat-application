@@ -358,6 +358,7 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].lastSeenMessageId = response.result?.lastSeenMessageId
             threads[index].lastSeenMessageNanos = response.result?.lastSeenMessageNanos
             setUnreadCount(response.result?.unreadCount ?? response.contentCount, threadId: response.subjectId)
+            threads[index].animateObjectWillChange()
             animateObjectWillChange()
         }
     }
@@ -369,11 +370,12 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public func avatars(for imageURL: String) -> ImageLoaderViewModel {
+    public func avatars(for imageURL: String, metaData: String?, userName: String?) -> ImageLoaderViewModel {
         if let avatarVM = avatarsVM[imageURL] {
             return avatarVM
         } else {
-            let newAvatarVM = ImageLoaderViewModel()
+            let config = ImageLoaderConfig(url: imageURL, metaData: metaData, userName: userName)
+            let newAvatarVM = ImageLoaderViewModel(config: config)
             avatarsVM[imageURL] = newAvatarVM
             return newAvatarVM
         }

@@ -20,7 +20,8 @@ struct BlockedContacts: View {
                 let name = blocked.nickName ?? contactName
                 let userId = blocked.contact?.cellphoneNumber ?? blocked.contact?.email ?? "\(blocked.coreUserId ?? 0)"
 
-                ImageLoaderView(imageLoader: ImageLoaderViewModel(), url: blocked.profileImage ?? blocked.contact?.image, userName: name)
+                let config = ImageLoaderConfig(url: blocked.profileImage ?? blocked.contact?.image ?? "", userName: name)
+                ImageLoaderView(imageLoader: .init(config: config))
                     .id(userId)
                     .font(.iransansBody)
                     .foregroundColor(.white)

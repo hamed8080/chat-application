@@ -108,7 +108,8 @@ struct ReplyImageIcon: View {
 
     var body: some View {
         if viewModel.isReplyImage, let link = viewModel.replyLink {
-            ImageLoaderView(imageLoader: .init(), url: link, metaData: viewModel.message.replyInfo?.metadata, thumbnail: true, size: .SMALL, contentMode: .fit)
+            let config = ImageLoaderConfig(url: link, size: .SMALL, metaData: viewModel.message.replyInfo?.metadata, thumbnail: true)
+            ImageLoaderView(imageLoader: .init(config: config), contentMode: .fit)
                 .frame(width: 28, height: 28)
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .clipped()

@@ -22,7 +22,6 @@ struct ThreadRow: View {
     var body: some View {
         HStack(spacing: 16) {
             ThreadImageView(thread: thread, threadsVM: viewModel)
-                .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     if thread.type == .channel {
@@ -59,28 +58,15 @@ struct ThreadRow: View {
                             .frame(width: 16, height: 16)
                             .foregroundStyle(isSelected ? Color.App.white : Color.App.gray6)
                     }
-                    if let timeString = thread.time?.date.localTimeOrDate {
-                        Text(timeString)
-                            .lineLimit(1)
-                            .font(.iransansCaption2)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.hint)
-                    }
+
+                    ThreadTimeText(thread: thread, isSelected: isSelected)
                 }
                 HStack {
                     SecondaryMessageView(isSelected: isSelected, thread: thread)
                         .environmentObject(ThreadEventViewModel(threadId: thread.id ?? -1))
                     Spacer()
-                    if let unreadCountString = thread.unreadCountString {
-                        Text(unreadCountString)
-                            .font(.iransansBoldCaption2)
-                            .padding(thread.isCircleUnreadCount ? 4 : 6)
-                            .frame(height: 24)
-                            .frame(minWidth: 24)
-                            .foregroundStyle(thread.mute == true ? Color.App.text : Color.App.textOverlay)
-                            .background(thread.mute == true ? Color.App.gray7 : isSelected ? Color.App.white : Color.App.primary)
-                            .clipShape(RoundedRectangle(cornerRadius:(thread.isCircleUnreadCount ? 16 : 10)))
-                    }
-
+                    ThreadUnreadCount(isSelected: isSelected)
+                        .environmentObject(thread)
                     ThreadMentionSign()
                         .environmentObject(thread)
                 }
@@ -122,6 +108,73 @@ struct ThreadMentionSign: View {
         }
     }
 }
+
+struct ThreadUnreadCount: View {
+    @EnvironmentObject var thread: Conversation
+    let isSelected: Bool
+    @State private var unreadCountString = ""
+    @EnvironmentObject var viewModel: ThreadsViewModel
+
+    var body: some View {
+        ZStack {
+            if !unreadCountString.isEmpty {
+                Text(unreadCountString)
+                    .font(.iransansBoldCaption2)
+                    .padding(thread.isCircleUnreadCount ? 4 : 6)
+                    .frame(height: 24)
+                    .frame(minWidth: 24)
+                    .foregroundStyle(thread.mute == true ? Color.App.text : Color.App.textOverlay)
+                    .background(thread.mute == true ? Color.App.gray7 : isSelected ? Color.App.white : Color.App.primary)
+                    .clipShape(RoundedRectangle(cornerRadius:(thread.isCircleUnreadCount ? 16 : 10)))
+
+            }
+        }
+        .animation(.easeInOut, value: unreadCountString)
+        .onReceive(thread.objectWillChange) { newValue in
+            Task {
+                await updateCountAsync()
+            }
+        }
+        .task {
+            await updateCountAsync()
+        }
+    }
+
+    private func updateCountAsync() async {
+        unreadCountString = thread.unreadCountString ?? ""
+    }
+}
+
+struct ThreadTimeText: View {
+    let thread: Conversation
+    let isSelected: Bool
+    @State private var timeString: String = ""
+
+    var body: some View {
+        ZStack {
+            if !timeString.isEmpty {
+                Text(timeString)
+                    .lineLimit(1)
+                    .font(.iransansCaption2)
+                    .foregroundColor(isSelected ? Color.App.white : Color.App.hint)
+            }
+        }
+        .animation(.easeInOut, value: timeString)
+        .onReceive(thread.objectWillChange) { newValue in
+            Task {
+                await updateTimeAsync()
+            }
+        }
+        .task {
+            await updateTimeAsync()
+        }
+    }
+
+    private func updateTimeAsync() async {
+        timeString = thread.time?.date.localTimeOrDate ?? ""
+    }
+}
+
 struct ThreadRow_Previews: PreviewProvider {
     static var thread: Conversation {
         let thread = MockData.thread

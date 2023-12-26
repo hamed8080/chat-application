@@ -91,7 +91,9 @@ public final class MessageRowViewModel: ObservableObject {
     public private(set) var textHeight: CGFloat = 48
 
     public var avatarImageLoader: ImageLoaderViewModel? {
-        if let image = message.participant?.image, let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image) {
+        let userName = message.participant?.name ?? message.participant?.username
+        if let image = message.participant?.image,
+           let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: userName) {
             return imageLoaderVM
         } else {
             return nil
