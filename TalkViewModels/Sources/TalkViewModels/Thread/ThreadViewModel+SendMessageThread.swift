@@ -260,8 +260,7 @@ extension ThreadViewModel {
     public func sendFiles(_ textMessage: String = "", _ urls: [URL], messageType: ChatModels.MessageType = .podSpaceFile) {
         send { [weak self] in
             guard let self = self else {return}
-            urls.forEach { url in
-                let index = urls.firstIndex(where: { $0 == url })!
+            for (index, url) in urls.enumerated() {
                 guard let data = try? Data(contentsOf: url) else { return }
                 self.scrollVM.canScrollToBottomOfTheList = true
                 let uploadRequest = UploadFileRequest(data: data,
@@ -271,7 +270,12 @@ extension ThreadViewModel {
                                                       originalName: "\(url.fileName).\(url.fileExtension)",
                                                       userGroupHash: self.thread.userGroupHash)
                 let textMessage = self.sendContainerViewModel.textMessage
-                let textRequest = textMessage.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: messageType)
+                let isMusic = url.isMusicMimetype
+                let newMessageType = isMusic ? ChatModels.MessageType.podSpaceSound : messageType
+                var textRequest: SendTextMessageRequest? = nil
+                if url == urls.last || urls.count == 1 {
+                    textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: newMessageType)
+                }
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
                 self.uploadMessagesViewModel.append(contentsOf: [request])

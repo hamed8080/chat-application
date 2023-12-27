@@ -94,6 +94,7 @@ struct FileRowView: View {
             Spacer()
         }
         .padding(.all)
+        .background(Color.App.bgPrimary)
         .contentShape(Rectangle())
         .sheet(isPresented: $shareDownloadedFile) {
             ActivityViewControllerWrapper(activityItems: [message.tempURL], title: message.fileMetaData?.file?.originalName)

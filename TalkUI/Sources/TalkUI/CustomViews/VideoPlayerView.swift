@@ -22,7 +22,7 @@ public struct VideoPlayerView: View {
         VStack {
             if let player = videoPlayerVM.player {
                 PlayerViewRepresentable(player: player, showFullScreen: $showFullScreen)
-                    .frame(minHeight: 196)
+                    .frame(maxWidth: 320, minHeight: 196)
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
                     .disabled(true)
             }

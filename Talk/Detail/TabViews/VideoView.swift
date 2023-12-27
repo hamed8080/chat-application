@@ -106,6 +106,7 @@ struct VideoRowView: View {
         }
         .padding([.leading, .trailing])
         .contentShape(Rectangle())
+        .background(Color.App.bgPrimary)
         .onTapGesture {
             if downloadViewModel.state != .completed {
                 downloadViewModel.startDownload()

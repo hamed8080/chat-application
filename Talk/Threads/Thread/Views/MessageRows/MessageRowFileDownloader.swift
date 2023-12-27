@@ -35,52 +35,41 @@ struct MessageRowFileDownloaderContent: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     @EnvironmentObject var downloadVM: DownloadFileViewModel
     private var message: Message { viewModel.message }
-    var fileName: String? { message.fileName ?? viewModel.fileMetaData?.file?.originalName }
     @State var shareDownloadedFile: Bool = false
-    private let config = DownloadFileViewConfig.normal
 
     var body: some View {
-        if downloadVM.state == .completed {
-            HStack {
-                if let iconName = message.iconName {
-                    Image(systemName: iconName)
-                        .resizable()
-                        .foregroundStyle(config.iconColor, config.iconCircleColor)
-                        .scaledToFit()
-                        .frame(width: config.iconWidth, height: config.iconHeight)
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    fileNameTextView
-                }
-            }
-            .padding(10)
-            .sheet(isPresented: $shareDownloadedFile) {
-                ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.fileMetaData?.file?.originalName)
-            }
-            .onTapGesture {
-                Task {
-                    _ = await message.makeTempURL()
-                    await MainActor.run {
-                        shareDownloadedFile.toggle()
-                    }
-                }
-            }
+        HStack {
+            FileDownloadButton(config: .normal)
         }
-
-        if downloadVM.state != .completed {
-            HStack(spacing: 4) {
-                FileDownloadButton(message: viewModel.message, config: .normal)
-                    .environmentObject(downloadVM)
-                fileNameTextView
+        .environmentObject(downloadVM)
+        .sheet(isPresented: $shareDownloadedFile) {
+            ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.fileMetaData?.file?.originalName)
+        }
+        .onTapGesture {
+            if downloadVM.state == .completed {
+                shareFile()
+            } else {
+                manageDownload()
             }
         }
     }
 
-    @ViewBuilder var fileNameTextView: some View {
-        if let fileName {
-            Text("\(fileName)\(message.fileExtension ?? "")")
-                .foregroundStyle(Color.App.text)
-                .font(.iransansBoldCaption)
+    private func shareFile() {
+        Task {
+            _ = await message.makeTempURL()
+            await MainActor.run {
+                shareDownloadedFile.toggle()
+            }
+        }
+    }
+
+    private func manageDownload() {
+        if downloadVM.state == .paused {
+            downloadVM.resumeDownload()
+        } else if downloadVM.state == .downloading {
+            downloadVM.pauseDownload()
+        } else {
+            downloadVM.startDownload()
         }
     }
 }
@@ -88,11 +77,13 @@ struct MessageRowFileDownloaderContent: View {
 fileprivate struct FileDownloadButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     @EnvironmentObject var messageRowVM: MessageRowViewModel
-    let message: Message?
-    var percent: Int64 { viewModel.downloadPercent }
+    private var message: Message? { viewModel.message }
+    private var percent: Int64 { viewModel.downloadPercent }
     let config: DownloadFileViewConfig
-    var stateIcon: String {
-        if viewModel.state == .downloading {
+    private var stateIcon: String {
+        if let iconName = message?.iconName, viewModel.state == .completed {
+            return iconName
+        } else if viewModel.state == .downloading {
             return "pause.fill"
         } else if viewModel.state == .paused {
             return "play.fill"
@@ -102,54 +93,76 @@ fileprivate struct FileDownloadButton: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 8) {
             ZStack {
-                Image(systemName: stateIcon)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .foregroundStyle(config.iconColor)
-                    .fontWeight(.semibold)
-
-                Circle()
-                    .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
-                    .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                    .foregroundColor(config.progressColor)
-                    .rotationEffect(Angle(degrees: 270))
-                    .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
-                    .environment(\.layoutDirection, .leftToRight)
-                    .fontWeight(.semibold)
+                iconView
+                progress
             }
             .frame(width: config.iconWidth, height: config.iconHeight)
-            .background(config.iconCircleColor)
+            .background(Color.App.btnDownload)
             .clipShape(RoundedRectangle(cornerRadius:(config.iconHeight / 2)))
-            .onTapGesture {
-                if viewModel.state == .paused {
-                    viewModel.resumeDownload()
-                } else if viewModel.state == .downloading {
-                    viewModel.pauseDownload()
-                } else {
-                    viewModel.startDownload()
-                }
-            }
 
-            VStack(alignment: .leading, spacing: 8) {
-                if let fileName = message?.fileName, config.showTrailingFileName {
-                    Text(fileName)
-                        .multilineTextAlignment(.leading)
-                        .font(.iransansBoldSubheadline)
-                        .foregroundColor(.white)
-                }
-
-                if let fileZize = messageRowVM.fileMetaData?.file?.size, config.showFileSize {
-                    Text(String(fileZize))
-                        .multilineTextAlignment(.leading)
-                        .font(.iransansBoldCaption2)
-                        .foregroundColor(.white)
+            VStack(alignment: .leading, spacing: 4) {
+                fileNameView
+                HStack {
+                    fileTypeView
+                    fileSizeView
                 }
             }
         }
-        .padding(10)
+        .padding(4)
+    }
+
+    @ViewBuilder private var iconView: some View {
+        Image(systemName: stateIcon.replacingOccurrences(of: ".circle", with: ""))
+            .resizable()
+            .scaledToFit()
+            .frame(width: 16, height: 16)
+            .foregroundStyle(Color.App.bgPrimary)
+            .fontWeight(.medium)
+    }
+
+    @ViewBuilder private var progress: some View {
+        if viewModel.state == .downloading {
+            Circle()
+                .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+                .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                .foregroundColor(Color.App.primary)
+                .rotationEffect(Angle(degrees: 270))
+                .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
+                .environment(\.layoutDirection, .leftToRight)
+                .fontWeight(.semibold)
+        }
+    }
+
+    @ViewBuilder private var fileNameView: some View {
+        if let fileName = message?.fileMetaData?.file?.name ?? message?.uploadFileName {
+            Text(fileName)
+                .foregroundStyle(Color.App.text)
+                .font(.iransansBoldCaption)
+        }
+    }
+
+    @ViewBuilder private var fileTypeView: some View {
+        let split = messageRowVM.fileMetaData?.file?.originalName?.split(separator: ".")
+        let ext = messageRowVM.fileMetaData?.file?.extension
+        let lastSplit = String(split?.last ?? "")
+        let extensionName = (ext ?? lastSplit)
+        if !extensionName.isEmpty {
+            Text(extensionName.uppercased())
+                .multilineTextAlignment(.leading)
+                .font(.iransansBoldCaption3)
+                .foregroundColor(Color.App.hint)
+        }
+    }
+
+    @ViewBuilder private var fileSizeView: some View {
+        if let fileZize = messageRowVM.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) {
+            Text(fileZize.replacingOccurrences(of: "٫", with: "."))
+                .multilineTextAlignment(.leading)
+                .font(.iransansCaption3)
+                .foregroundColor(Color.App.hint)
+        }
     }
 }
 

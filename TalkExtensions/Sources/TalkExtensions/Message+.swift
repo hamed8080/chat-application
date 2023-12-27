@@ -43,7 +43,7 @@ public extension Message {
     
     var uploadFile: UploadWithTextMessageProtocol? { self as? UploadWithTextMessageProtocol }
     var fileExtension: String? { uploadFile?.uploadFileRequest?.fileExtension ?? uploadFile?.uploadImageRequest?.fileExtension }
-    var fileName: String? { uploadFile?.uploadFileRequest?.fileName ?? uploadFile?.uploadImageRequest?.fileName }
+    var uploadFileName: String? { uploadFile?.uploadFileRequest?.fileName ?? uploadFile?.uploadImageRequest?.fileName }
     var type: ChatModels.MessageType? { messageType ?? .unknown }
     var isTextMessageType: Bool { Message.textTypes.contains(messageType ?? .unknown) || isFileType }
     func isMe(currentUserId: Int?) -> Bool { (ownerId ?? 0 == currentUserId ?? 0) || isUnsentMessage || isUploadMessage }

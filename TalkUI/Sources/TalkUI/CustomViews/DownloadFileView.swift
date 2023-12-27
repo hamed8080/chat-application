@@ -108,7 +108,7 @@ struct DownloadFileButton: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                if let fileName = message?.fileName, config.showTrailingFileName {
+                if let fileName = message?.uploadFileName, config.showTrailingFileName {
                     Text(fileName)
                         .multilineTextAlignment(.leading)
                         .font(.iransansBoldSubheadline)
@@ -143,7 +143,7 @@ struct DownloadFileStack: View {
 public struct DownloadFileName: View {
     let message: Message?
     let config: DownloadFileViewConfig
-    var fileName: String? { message?.fileName ?? message?.fileMetaData?.file?.originalName }
+    var fileName: String? { message?.uploadFileName ?? message?.fileMetaData?.file?.originalName }
 
     public var body: some View {
         if config.showFileName, let fileName {

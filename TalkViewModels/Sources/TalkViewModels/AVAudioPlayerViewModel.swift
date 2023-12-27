@@ -14,6 +14,7 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
     @Published public var currentTime: Double = 0
     public var fileURL: URL?
     public var message: Message?
+    @Published public var failed: Bool = false
 
     private var timer: Timer?
     public override init() {}
@@ -31,6 +32,7 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
             player?.delegate = self
             duration = player?.duration ?? 0
         } catch let error as NSError {
+            failed = true
 #if DEBUG
             Logger.viewModels.info("\(error.description)")
 #endif

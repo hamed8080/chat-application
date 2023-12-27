@@ -14,11 +14,17 @@ import TalkModels
 struct MessageRowAudioDownloader: View {
     let viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
+    private var uploadCompleted: Bool { message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed }
+    @EnvironmentObject var audioVM: AVAudioPlayerViewModel
 
     var body: some View {
-        if message.isAudio == true, let downloadVM = viewModel.downloadFileVM {
-            MessageRowAudioDownloaderContent(viewModel: viewModel)
+        if uploadCompleted, message.isAudio == true, let downloadVM = viewModel.downloadFileVM {
+            AudioDownloadButton()
+                .environmentObject(viewModel)
                 .environmentObject(downloadVM)
+                .onTapGesture {
+                    onTap()
+                }
                 .task {
                     if downloadVM.isInCache {
                         downloadVM.state = .completed
@@ -27,65 +33,34 @@ struct MessageRowAudioDownloader: View {
                 }
         }
     }
-}
 
-struct MessageRowAudioDownloaderContent: View {
-    let viewModel: MessageRowViewModel
-    @EnvironmentObject var downloadVM: DownloadFileViewModel
-    private var message: Message { viewModel.message }
-    var fileName: String? { message.fileName ?? viewModel.fileMetaData?.file?.originalName }
-
-    var body: some View {
-        if downloadVM.state == .completed, let fileURL = downloadVM.fileURL {
-            HStack {
-                InlineAudioPlayerView(message: message,
-                                      fileURL: fileURL,
-                                      ext: viewModel.fileMetaData?.file?.mimeType?.ext,
-                                      title: viewModel.fileMetaData?.file?.originalName ?? viewModel.fileMetaData?.name ?? "",
-                                      subtitle: viewModel.fileMetaData?.file?.originalName ?? "",
-                                      config: .normal)
-                .id(fileURL)
-                VStack(alignment: .leading, spacing: 4) {
-                    fileNameTextView
-                    AudioMessageProgress(message: message, config: .normal)
-                }
-            }
-        }
-
-        if downloadVM.state != .completed {
-            HStack(spacing: 4) {
-                AudioDownloadButton(message: viewModel.message, config: .normal)
-                    .environmentObject(downloadVM)
-                fileNameTextView
-            }
+    private func onTap() {
+        if viewModel.downloadFileVM?.state == .completed {
+            togglePlaying()
+        } else {
+            manageDownload()
         }
     }
 
-    @ViewBuilder var fileNameTextView: some View {
-        if let fileName {
-            Text("\(fileName)\(message.fileExtension ?? "")")
-                .foregroundStyle(Color.App.text)
-                .font(.iransansBoldCaption)
+    private func togglePlaying() {
+        if let fileURL = viewModel.downloadFileVM?.fileURL {
+            try? audioVM.setup(message: message,
+                               fileURL: fileURL,
+                               ext: viewModel.fileMetaData?.file?.mimeType?.ext,
+                               title: viewModel.fileMetaData?.file?.originalName ?? viewModel.fileMetaData?.name ?? "",
+                               subtitle: viewModel.fileMetaData?.file?.originalName ?? "")
+            audioVM.toggle()
         }
     }
-}
 
-fileprivate struct AudioMessageProgress: View {
-    let message: Message?
-    let config: DownloadFileViewConfig
-    @EnvironmentObject var downloadVM: DownloadFileViewModel
-    @EnvironmentObject var viewModel: AVAudioPlayerViewModel
-    var isSameFile: Bool { viewModel.fileURL?.absoluteString == downloadVM.fileURL?.absoluteString }
-
-    var body: some View {
-        if config.showFileName, message?.isAudio == true, downloadVM.state == .completed, isSameFile {
-            VStack(alignment: .leading, spacing: 4) {
-                ProgressView(value: min(viewModel.currentTime / viewModel.duration, 1.0), total: 1.0)
-                    .progressViewStyle(.linear)
-                    .tint(Color.App.text)
-                    .frame(maxWidth: 172)
-                Text("\(viewModel.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(viewModel.duration.timerString(locale: Language.preferredLocale) ?? "")")
-                    .foregroundColor(Color.App.white)
+    private func manageDownload() {
+        if let downloadVM = viewModel.downloadFileVM {
+            if downloadVM.state == .paused {
+                downloadVM.resumeDownload()
+            } else if downloadVM.state == .downloading {
+                downloadVM.pauseDownload()
+            } else {
+                downloadVM.startDownload()
             }
         }
     }
@@ -94,11 +69,19 @@ fileprivate struct AudioMessageProgress: View {
 fileprivate struct AudioDownloadButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     @EnvironmentObject var messageRowVM: MessageRowViewModel
-    let message: Message?
-    var percent: Int64 { viewModel.downloadPercent }
-    let config: DownloadFileViewConfig
-    var stateIcon: String {
-        if viewModel.state == .downloading {
+    @EnvironmentObject var audioVM: AVAudioPlayerViewModel
+    private var message: Message? { viewModel.message }
+    private var percent: Int64 { viewModel.downloadPercent }
+    private let config: DownloadFileViewConfig = .normal
+    private var isSameFile: Bool { audioVM.fileURL?.absoluteString == viewModel.fileURL?.absoluteString }
+    private var stateIcon: String {
+        if viewModel.state == .completed {
+            if audioVM.isPlaying {
+                return "pause.fill"
+            } else {
+                return "play.fill"
+            }
+        } else if viewModel.state == .downloading {
             return "pause.fill"
         } else if viewModel.state == .paused {
             return "play.fill"
@@ -108,49 +91,88 @@ fileprivate struct AudioDownloadButton: View {
     }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 8) {
             ZStack {
-                Image(systemName: stateIcon)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 12, height: 12)
-                    .foregroundStyle(config.iconColor)
-
-                Circle()
-                    .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
-                    .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                    .foregroundColor(config.progressColor)
-                    .rotationEffect(Angle(degrees: 270))
-                    .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
-                    .environment(\.layoutDirection, .leftToRight)
+                iconView
+                progress
             }
             .frame(width: config.iconWidth, height: config.iconHeight)
-            .background(config.iconCircleColor)
-            .clipShape(RoundedRectangle(cornerRadius: config.iconHeight / 2))
-            .onTapGesture {
-                if viewModel.state == .paused {
-                    viewModel.resumeDownload()
-                } else if viewModel.state == .downloading {
-                    viewModel.pauseDownload()
-                } else {
-                    viewModel.startDownload()
+            .background(Color.App.btnDownload)
+            .clipShape(RoundedRectangle(cornerRadius:(config.iconHeight / 2)))
+
+            VStack(alignment: .leading, spacing: 4) {
+                fileNameView
+                audioProgress
+                HStack {
+                    fileTypeView
+                    fileSizeView
                 }
             }
+        }
+        .padding(4)
+    }
 
-            VStack(alignment: .leading, spacing: 8) {
-                if let fileName = message?.fileName, config.showTrailingFileName {
-                    Text(fileName)
-                        .multilineTextAlignment(.leading)
-                        .font(.iransansBoldSubheadline)
-                        .foregroundColor(.white)
-                }
+    @ViewBuilder private var iconView: some View {
+        Image(systemName: stateIcon.replacingOccurrences(of: ".circle", with: ""))
+            .resizable()
+            .scaledToFit()
+            .frame(width: 16, height: 16)
+            .foregroundStyle(Color.App.bgPrimary)
+            .fontWeight(.medium)
+    }
 
-                if let fileZize = messageRowVM.fileMetaData?.file?.size, config.showFileSize {
-                    Text(String(fileZize))
-                        .multilineTextAlignment(.leading)
-                        .font(.iransansBoldCaption2)
-                        .foregroundColor(.white)
-                }
+    @ViewBuilder private var progress: some View {
+        if viewModel.state == .downloading {
+            Circle()
+                .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+                .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                .foregroundColor(Color.App.primary)
+                .rotationEffect(Angle(degrees: 270))
+                .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
+                .environment(\.layoutDirection, .leftToRight)
+                .fontWeight(.semibold)
+        }
+    }
+
+    @ViewBuilder private var fileNameView: some View {
+        if let fileName = message?.fileMetaData?.file?.name ?? message?.uploadFileName {
+            Text(fileName)
+                .foregroundStyle(Color.App.text)
+                .font(.iransansBoldCaption)
+        }
+    }
+
+    @ViewBuilder private var fileTypeView: some View {
+        let split = messageRowVM.fileMetaData?.file?.originalName?.split(separator: ".")
+        let ext = messageRowVM.fileMetaData?.file?.extension
+        let lastSplit = String(split?.last ?? "")
+        let extensionName = (ext ?? lastSplit)
+        if !extensionName.isEmpty {
+            Text(extensionName.uppercased())
+                .multilineTextAlignment(.leading)
+                .font(.iransansBoldCaption3)
+                .foregroundColor(Color.App.hint)
+        }
+    }
+
+    @ViewBuilder private var fileSizeView: some View {
+        if let fileZize = messageRowVM.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) {
+            Text(fileZize.replacingOccurrences(of: "٫", with: "."))
+                .multilineTextAlignment(.leading)
+                .font(.iransansCaption3)
+                .foregroundColor(Color.App.hint)
+        }
+    }
+
+    @ViewBuilder private var audioProgress: some View {
+        if config.showFileName, message?.isAudio == true, viewModel.state == .completed, isSameFile {
+            VStack(alignment: .leading, spacing: 4) {
+                ProgressView(value: min(audioVM.currentTime / audioVM.duration, 1.0), total: 1.0)
+                    .progressViewStyle(.linear)
+                    .tint(Color.App.text)
+                    .frame(maxWidth: 172)
+                Text("\(audioVM.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(audioVM.duration.timerString(locale: Language.preferredLocale) ?? "")")
+                    .foregroundColor(Color.App.white)
             }
         }
     }

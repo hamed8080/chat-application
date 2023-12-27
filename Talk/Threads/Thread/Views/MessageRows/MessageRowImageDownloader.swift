@@ -31,27 +31,26 @@ struct MessageRowImageDownloader: View {
             .environmentObject(downloadVM)
             .clipped()
             .onReceive(NotificationCenter.default.publisher(for: .upload)) { notification in
-                guard
-                    let event = notification.object as? UploadEventTypes,
-                    case .completed(uniqueId: _, fileMetaData: _, data: _, error: _) = event,
-                    !downloadVM.isInCache,
-                    downloadVM.thumbnailData == nil || downloadVM.fileURL == nil
-                else { return }
-                downloadBlurImageWithDelay(downloadVM)
+                onUploadEventUpload(notification)
             }
             .onReceive(downloadVM.objectWillChange) { _ in
                 viewModel.animateObjectWillChange()
             }
             .task {
-                if !downloadVM.isInCache, downloadVM.thumbnailData == nil {
-                    downloadVM.downloadBlurImage()
-                } else if downloadVM.isInCache {
-                    downloadVM.state = .completed // it will set the state to complete and then push objectWillChange to call onReceive and start scale the image on the background thread
-                    downloadVM.animateObjectWillChange()
-                    viewModel.animateObjectWillChange()
-                }
+                manageDownload()
             }
         }
+    }
+
+    private func onUploadEventUpload(_ notification: Notification) {
+        guard
+            let event = notification.object as? UploadEventTypes,
+            case .completed(uniqueId: _, fileMetaData: _, data: _, error: _) = event,
+            let downloadVM = viewModel.downloadFileVM,
+            !downloadVM.isInCache,
+            downloadVM.thumbnailData == nil || downloadVM.fileURL == nil
+        else { return }
+        downloadBlurImageWithDelay(downloadVM)
     }
 
     private func downloadBlurImageWithDelay(delay: TimeInterval = 1.0, _ downloadVM: DownloadFileViewModel) {
@@ -59,6 +58,17 @@ struct MessageRowImageDownloader: View {
         /// If we upload the image for the first time we have to wait, due to a server process to make a thumbnail.
         Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { timer in
             downloadVM.downloadBlurImage()
+        }
+    }
+
+    private func manageDownload() {
+        guard let downloadVM = viewModel.downloadFileVM else { return }
+        if !downloadVM.isInCache, downloadVM.thumbnailData == nil {
+            downloadVM.downloadBlurImage()
+        } else if downloadVM.isInCache {
+            downloadVM.state = .completed // it will set the state to complete and then push objectWillChange to call onReceive and start scale the image on the background thread
+            downloadVM.animateObjectWillChange()
+            viewModel.animateObjectWillChange()
         }
     }
 }
@@ -158,8 +168,8 @@ struct OverlayDownloadImageButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     @EnvironmentObject var messageRowVM: MessageRowViewModel
     let message: Message?
-    var percent: Int64 { viewModel.downloadPercent }
-    var stateIcon: String {
+    private var percent: Int64 { viewModel.downloadPercent }
+    private var stateIcon: String {
         if viewModel.state == .downloading {
             return "pause.fill"
         } else if viewModel.state == .paused {
@@ -173,32 +183,13 @@ struct OverlayDownloadImageButton: View {
         if viewModel.state != .completed {
             HStack {
                 ZStack {
-                    Image(systemName: stateIcon)
-                        .resizable()
-                        .scaledToFit()
-                        .font(.system(size: 8, design: .rounded).bold())
-                        .frame(width: 8, height: 8)
-                        .foregroundStyle(Color.App.text)
-
-                    Circle()
-                        .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
-                        .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                        .foregroundColor(Color.App.white)
-                        .rotationEffect(Angle(degrees: 270))
-                        .frame(width: 18, height: 18)
+                    iconView
+                    progress
                 }
                 .frame(width: 26, height: 26)
                 .background(Color.App.white.opacity(0.3))
                 .clipShape(RoundedRectangle(cornerRadius:(13)))
-
-                let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-                let realServerFileSize = messageRowVM.fileMetaData?.file?.size
-                if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
-                    Text(fileSize)
-                        .multilineTextAlignment(.leading)
-                        .font(.iransansBoldCaption2)
-                        .foregroundColor(Color.App.text)
-                }
+                sizeView
             }
             .frame(height: 30)
             .frame(minWidth: 76)
@@ -217,6 +208,40 @@ struct OverlayDownloadImageButton: View {
                 }
             }
         }
+    }
+
+    private var iconView: some View {
+        Image(systemName: stateIcon)
+            .resizable()
+            .scaledToFit()
+            .font(.system(size: 8, design: .rounded).bold())
+            .frame(width: 8, height: 8)
+            .foregroundStyle(Color.App.text)
+    }
+
+    private var progress: some View {
+        Circle()
+            .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+            .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+            .foregroundColor(Color.App.white)
+            .rotationEffect(Angle(degrees: 270))
+            .frame(width: 18, height: 18)
+    }
+
+    @ViewBuilder private var sizeView: some View {
+        if let fileSize = computedFileSize {
+            Text(fileSize)
+                .multilineTextAlignment(.leading)
+                .font(.iransansBoldCaption2)
+                .foregroundColor(Color.App.text)
+        }
+    }
+
+    private var computedFileSize: String? {
+        let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
+        let realServerFileSize = messageRowVM.fileMetaData?.file?.size
+        let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale)
+        return fileSize
     }
 }
 
