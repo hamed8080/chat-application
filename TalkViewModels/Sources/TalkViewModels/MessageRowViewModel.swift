@@ -31,15 +31,19 @@ public final class MessageReactionsViewModel: ObservableObject {
 
     func setupObservers() {
         NotificationCenter.default.publisher(for: .reactionMessageUpdated)
-            .sink { notification in
-                if notification.object as? Int == self.message?.id {
-                    Task {
-                        try? await Task.sleep(for: .seconds(0.1))
-                        await self.setReactionList()
-                    }
-                }
+            .sink { [weak self] notification in
+                self?.onReactionEvent(notification)
             }
             .store(in: &cancelableSet)
+    }
+
+    private func onReactionEvent(_ notification: Notification) {
+        if notification.object as? Int == self.message?.id {
+            Task {
+                try? await Task.sleep(for: .seconds(0.1))
+                await self.setReactionList()
+            }
+        }
     }
 
     func setReactionList() async {
@@ -80,6 +84,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var imageHeight: CGFloat = 128
     public var isReplyImage: Bool = false
     public var replyLink: String?
+    public var isPublicLink: Bool = false
     private static var formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
@@ -252,6 +257,7 @@ public final class MessageRowViewModel: ObservableObject {
         isNextMessageTheSameUser = threadVM?.thread.group == true && isSameResponse && message.participant != nil
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = message.markdownTitle
+        isPublicLink = message.isPublicLink
         if let date = message.time?.date {
             timeString = MessageRowViewModel.formatter.string(from: date)
         }

@@ -43,10 +43,7 @@ struct ReactionCountRow: View {
                         .frame(width: 20, height: 20)
                         .font(.system(size: 14))
                 }
-
-                Text(reactionCount.count?.localNumber(locale: Language.preferredLocale) ?? "")
-                    .font(.iransansBody)
-                    .foregroundStyle(Color.App.text)
+                AsyncReactionCountTextView(reactionCount: reactionCount)
             }
         }
         .animation(.easeInOut, value: reactionCount.count ?? -1)
@@ -73,6 +70,25 @@ struct ReactionCountRow: View {
 
     var isMyReaction: Bool {
         viewModel.currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue
+    }
+}
+
+struct AsyncReactionCountTextView: View {
+    let reactionCount: ReactionCount
+    @State private var countText = ""
+
+    var body: some View {
+        Text(countText)
+            .font(.iransansBody)
+            .foregroundStyle(Color.App.text)
+            .task {
+                Task {
+                    let countText = reactionCount.count?.localNumber(locale: Language.preferredLocale) ?? ""
+                    await MainActor.run {
+                        self.countText = countText
+                    }
+                }
+            }
     }
 }
 

@@ -128,17 +128,23 @@ struct MessagesLazyStack: View {
 
 struct SectionView: View {
     let section: MessageSection
+    @State private var yearText = ""
 
     var body: some View {
         HStack {
             Spacer()
-            Text(verbatim: section.date.yearCondence ?? "")
+            Text(verbatim: yearText)
                 .font(.iransansCaption)
                 .padding(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                 .background(Color.App.black.opacity(0.2))
                 .clipShape(RoundedRectangle(cornerRadius:(24)))
                 .foregroundStyle(Color.App.text)
             Spacer()
+        }
+        .task {
+            Task {
+                yearText = section.date.yearCondence ?? ""
+            }
         }
     }
 }
