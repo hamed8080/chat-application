@@ -62,6 +62,7 @@ struct ReplyInfoMessageRow: View {
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
             .buttonStyle(.borderless)
             .truncationMode(.tail)

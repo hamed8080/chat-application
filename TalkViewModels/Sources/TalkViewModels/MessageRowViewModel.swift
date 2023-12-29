@@ -80,8 +80,8 @@ public final class MessageRowViewModel: ObservableObject {
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
     public var uploadViewModel: UploadFileViewModel?
     public var paddingEdgeInset: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
-    public var imageWidth: CGFloat = 128
-    public var imageHeight: CGFloat = 128
+    public var imageWidth: CGFloat? = nil
+    public var imageHeight: CGFloat? = nil
     public var isReplyImage: Bool = false
     public var replyLink: String?
     public var isPublicLink: Bool = false
@@ -93,7 +93,14 @@ public final class MessageRowViewModel: ObservableObject {
     }()
     public var isMapType: Bool = false
     public var fileMetaData: FileMetaData?
+    public private(set) var textWidth: CGFloat = 48
     public private(set) var textHeight: CGFloat = 48
+    public static let attriutes = [NSAttributedString.Key.font: MessageRowViewModel.iransansBody]
+    private static var emptyImage = UIImage(named: "empty_image")!
+    static let iransansBody = UIFont(name: "IRANSansX", size: 14)!
+    public var image: UIImage = MessageRowViewModel.emptyImage
+    public var canShowImageView: Bool = false
+    public var imageScale: ContentMode = .fill
 
     public var avatarImageLoader: ImageLoaderViewModel? {
         let userName = message.participant?.name ?? message.participant?.username
@@ -151,7 +158,7 @@ public final class MessageRowViewModel: ObservableObject {
             .sink { [weak self] newValue in
                 self?.message.delivered = true
                 self?.message.seen = true
-                self?.updateWithAnimation()
+                self?.animateObjectWillChange()
             }
             .store(in: &cancelableSet)
 
@@ -160,7 +167,7 @@ public final class MessageRowViewModel: ObservableObject {
             .sink { [weak self] newValue in
                 if let messageId = self?.message.id, messageId == newValue {
                     self?.isHighlited = true
-                    self?.updateWithAnimation()
+                    self?.animateObjectWillChange()
                     self?.startHighlightTimer()
                 }
             }
@@ -169,7 +176,20 @@ public final class MessageRowViewModel: ObservableObject {
             /// Use if newValue != isInSelectMode to assure the newValue has arrived and all message rows will not get refreshed.
             if newValue != self?.isInSelectMode {
                 self?.isInSelectMode = newValue
-                self?.updateWithAnimation()
+                self?.animateObjectWillChange()
+            }
+        }
+        .store(in: &cancelableSet)
+
+        NotificationCenter.default.publisher(for: .upload)
+            .sink { [weak self] notification in
+                self?.onUploadEventUpload(notification)
+            }
+            .store(in: &cancelableSet)
+
+        downloadFileVM?.objectWillChange.sink { [weak self] in
+            Task { [weak self] in
+                await self?.prepareImage()
             }
         }
         .store(in: &cancelableSet)
@@ -184,7 +204,7 @@ public final class MessageRowViewModel: ObservableObject {
         highlightTimer?.invalidate()
         highlightTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { [weak self] _ in
             self?.isHighlited = false
-            self?.updateWithAnimation()
+            self?.animateObjectWillChange()
         }
     }
 
@@ -204,18 +224,18 @@ public final class MessageRowViewModel: ObservableObject {
         if case let .seen(response) = event, message.id == response.result?.messageId {
             message.delivered = true
             message.seen = true
-            updateWithAnimation()
+            animateObjectWillChange()
         }
 
         if case let .sent(response) = event, message.id == response.result?.messageId {
             message.id = response.result?.messageId
             message.time = response.result?.messageTime
-            updateWithAnimation()
+            animateObjectWillChange()
         }
 
         if case let .delivered(response) = event, message.id == response.result?.messageId {
             message.delivered = true
-            updateWithAnimation()
+            animateObjectWillChange()
         }
 
         if case let .pin(response) = event, message.id == response.result?.messageId {
@@ -231,12 +251,6 @@ public final class MessageRowViewModel: ObservableObject {
         }
     }
 
-    private func updateWithAnimation() {
-        withAnimation(.easeInOut) {
-            self.objectWillChange.send()
-        }
-    }
-
     private func recalculateWithAnimation() {
         Task {
             await performaCalculation()
@@ -249,18 +263,25 @@ public final class MessageRowViewModel: ObservableObject {
     private func performaCalculation() async {
         isCalculated = true
         fileMetaData = message.fileMetaData /// decoding data so expensive if it will happen on the main thread.
-        textHeight = await textHeight()
+        let textSize = await textSize()
+        let isAvtarHidden = isMe || threadVM?.thread.group == false
+        let paddings: CGFloat = isAvtarHidden ? 38 : MessageRowViewModel.avatarSize + 0
+        textWidth = max(128, min(textSize.width - (paddings), ThreadViewModel.maxAllowedWidth))
+        textHeight = textSize.height + (paddings) /// We use 8 pixels for a safe height to not cut the text.
         await calculateImageSize()
         await setReplyInfo()
         isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
         let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
         isNextMessageTheSameUser = threadVM?.thread.group == true && isSameResponse && message.participant != nil
         isEnglish = message.message?.naturalTextAlignment == .leading
-        markdownTitle = message.markdownTitle
+        markdownTitle = AttributedString(message.markdownTitle)
         isPublicLink = message.isPublicLink
         if let date = message.time?.date {
             timeString = MessageRowViewModel.formatter.string(from: date)
         }
+        let uploadCompleted: Bool = message.uploadFile == nil || uploadViewModel?.state == .completed
+        canShowImageView = !isMapType && message.isImage && uploadCompleted
+        await manageDownload()
     }
 
     private func calculateImageSize() async {
@@ -270,24 +291,27 @@ public final class MessageRowViewModel: ObservableObject {
             /// We use max to at least have a width, because there are times that maxWidth is nil.
             let imageWidth = CGFloat(fileMetaData?.file?.actualWidth ?? 0)
             let minWidth: CGFloat = 128
-            let maxWidth = ThreadViewModel.maxAllowedWidth - (18 + 6)
+            let maxWidth = ThreadViewModel.maxAllowedWidth
             let dynamicWidth = min(max(minWidth, imageWidth), maxWidth)
             self.imageWidth = isOnlyImage ? dynamicWidth : maxWidth
 
             /// We use max to at least have a width, because there are times that maxWidth is nil.
             let imageHeight = CGFloat(fileMetaData?.file?.actualHeight ?? 0)
             let minHeight: CGFloat = 128
-            let maxHeight: CGFloat = 320
+            let maxHeight: CGFloat = ThreadViewModel.maxAllowedWidth
             let dynamicHeight = min(max(minHeight, imageHeight), maxHeight)
             self.imageHeight = isOnlyImage ? dynamicHeight : maxHeight
+            imageScale = isOnlyImage ? .fit : .fill
         }
     }
 
-    static let iransansBody = UIFont(name: "IRANSansX", size: 14)!
-    func textHeight() async -> CGFloat {
-        let constraintRect = CGSize(width: ThreadViewModel.maxAllowedWidth - 38, height: .greatestFiniteMagnitude) /// We reduce 36 pixels for avatar and paddings.
-        let boundingBox = message.message?.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: MessageRowViewModel.iransansBody], context: nil)
-        return ceil(boundingBox?.height ?? 48) + 8 /// We use 8 pixels for a safe height to not cut the text.
+    func textSize() async -> CGSize {
+        let widthRect = CGSize(width: ThreadViewModel.maxAllowedWidth, height: .greatestFiniteMagnitude) /// We reduce 36 pixels for avatar and paddings.
+        let textHeightRect = message.message?.boundingRect(with: widthRect,
+                                                           options: .usesLineFragmentOrigin,
+                                                           attributes: MessageRowViewModel.attriutes,
+                                                           context: nil)
+        return CGSize(width: textHeightRect?.width ?? 0, height: textHeightRect?.height ?? 0)
     }
 
     private func setReplyInfo() async {
@@ -336,6 +360,73 @@ public final class MessageRowViewModel: ObservableObject {
             isSelected.toggle()
             threadVM?.selectedMessagesViewModel.animateObjectWillChange()
             animateObjectWillChange()
+        }
+    }
+
+    public var bulrRadius: CGFloat {
+        guard let downloadVM = downloadFileVM else { return 0 }
+        return downloadVM.state != .completed && downloadVM.thumbnailData != nil ? 16 : 0
+    }
+
+    private var realImage: UIImage? {
+        guard let cgImage = downloadFileVM?.fileURL?.imageScale(width: 420)?.image else { return nil }
+        return UIImage(cgImage: cgImage)
+    }
+
+    private var blurImage: UIImage? {
+        guard let data = downloadFileVM?.thumbnailData, downloadFileVM?.state == .thumbnail || downloadFileVM?.state == .downloading else { return nil }
+        return UIImage(data: data)
+    }
+
+    private func prepareImage() async {
+        if downloadFileVM?.state == .completed, let realImage = realImage {
+            image = realImage
+        } else if let blurImage = blurImage {
+            image = blurImage
+        } else {
+            image = MessageRowViewModel.emptyImage
+        }
+        animateObjectWillChange()
+        //        if downloadFileVM?.state == .completed {
+        //            self.downloadFileVM?.thumbnailData = nil
+        //            self.downloadFileVM?.data = nil
+        //        }
+    }
+
+    private func onUploadEventUpload(_ notification: Notification) {
+        guard
+            let event = notification.object as? UploadEventTypes,
+            case .completed(uniqueId: _, fileMetaData: _, data: _, error: _) = event,
+            let downloadVM = downloadFileVM,
+            !downloadVM.isInCache,
+            downloadVM.thumbnailData == nil || downloadVM.fileURL == nil
+        else { return }
+        downloadBlurImageWithDelay(downloadVM)
+    }
+
+    private func downloadBlurImageWithDelay(delay: TimeInterval = 1.0, _ downloadVM: DownloadFileViewModel) {
+        /// We wait for 2 seconds to download the thumbnail image.
+        /// If we upload the image for the first time we have to wait, due to a server process to make a thumbnail.
+        Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { timer in
+            downloadVM.downloadBlurImage()
+        }
+    }
+
+    private func manageDownload() async {
+        if downloadFileVM?.isInCache == false, downloadFileVM?.thumbnailData == nil {
+            downloadFileVM?.downloadBlurImage()
+        } else if downloadFileVM?.isInCache == true {
+            downloadFileVM?.state = .completed // it will set the state to complete and then push objectWillChange to call onReceive and start scale the image on the background thread
+            downloadFileVM?.animateObjectWillChange()
+            animateObjectWillChange()
+        }
+    }
+
+    public func onTap() {
+        if downloadFileVM?.state == .completed {
+            AppState.shared.objectsContainer.appOverlayVM.galleryMessage = message
+        } else if downloadFileVM?.state != .completed && downloadFileVM?.thumbnailData != nil {
+            downloadFileVM?.startDownload()
         }
     }
 

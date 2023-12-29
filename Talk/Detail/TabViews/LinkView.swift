@@ -76,7 +76,7 @@ struct LinkRowView: View {
                         .foregroundStyle(Color.App.grayHalf)
                 }
             VStack(alignment: .leading) {
-                Text(message.markdownTitle)
+                Text(AttributedString(message.markdownTitle))
                     .font(.iransansBody)
             }
             Spacer()

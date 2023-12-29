@@ -15,152 +15,37 @@ import Chat
 struct MessageRowImageDownloader: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
-    private var uploadCompleted: Bool { message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed }
 
     var body: some View {
-        if !viewModel.isMapType, message.isImage, uploadCompleted, let downloadVM = viewModel.downloadFileVM {
+        if viewModel.canShowImageView {
             ZStack {
-                if viewModel.downloadFileVM?.state != .completed {
-                    PlaceholderImageView(width: viewModel.imageWidth, height: viewModel.imageHeight)
-                    BlurThumbnailView(width: viewModel.imageWidth, height: viewModel.imageHeight, viewModel: downloadVM)
+                Image(uiImage: viewModel.image)
+                    .resizable()
+                    .frame(maxWidth: viewModel.imageWidth, maxHeight: viewModel.imageHeight)
+                    .aspectRatio(contentMode: viewModel.imageScale)
+                    .clipped()
+                    .zIndex(0)
+                    .background(gradient)
+                    .blur(radius: viewModel.bulrRadius, opaque: false)
+                    .clipShape(RoundedRectangle(cornerRadius:(8)))
+                if let downloadVM = viewModel.downloadFileVM, downloadVM.state != .completed {
                     OverlayDownloadImageButton(message: message)
-                } else {
-                    RealDownloadedImage(width: viewModel.imageWidth, height: viewModel.imageHeight)
+                        .environmentObject(downloadVM)
                 }
             }
-            .environmentObject(downloadVM)
-            .clipped()
-            .onReceive(NotificationCenter.default.publisher(for: .upload)) { notification in
-                onUploadEventUpload(notification)
-            }
-            .onReceive(downloadVM.objectWillChange) { _ in
-                viewModel.animateObjectWillChange()
-            }
-            .task {
-                manageDownload()
-            }
-        }
-    }
-
-    private func onUploadEventUpload(_ notification: Notification) {
-        guard
-            let event = notification.object as? UploadEventTypes,
-            case .completed(uniqueId: _, fileMetaData: _, data: _, error: _) = event,
-            let downloadVM = viewModel.downloadFileVM,
-            !downloadVM.isInCache,
-            downloadVM.thumbnailData == nil || downloadVM.fileURL == nil
-        else { return }
-        downloadBlurImageWithDelay(downloadVM)
-    }
-
-    private func downloadBlurImageWithDelay(delay: TimeInterval = 1.0, _ downloadVM: DownloadFileViewModel) {
-        /// We wait for 2 seconds to download the thumbnail image.
-        /// If we upload the image for the first time we have to wait, due to a server process to make a thumbnail.
-        Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { timer in
-            downloadVM.downloadBlurImage()
-        }
-    }
-
-    private func manageDownload() {
-        guard let downloadVM = viewModel.downloadFileVM else { return }
-        if !downloadVM.isInCache, downloadVM.thumbnailData == nil {
-            downloadVM.downloadBlurImage()
-        } else if downloadVM.isInCache {
-            downloadVM.state = .completed // it will set the state to complete and then push objectWillChange to call onReceive and start scale the image on the background thread
-            downloadVM.animateObjectWillChange()
-            viewModel.animateObjectWillChange()
-        }
-    }
-}
-
-struct PlaceholderImageView: View {
-    let width: CGFloat
-    let height: CGFloat
-    @EnvironmentObject var viewModel: DownloadFileViewModel
-    static let emptyImageGradient = LinearGradient(colors: [Color.App.bgInput, Color.App.bgInputDark], startPoint: .top, endPoint: .bottom)
-
-    var body: some View {
-        if viewModel.thumbnailData == nil, viewModel.state != .completed, let emptyImage = UIImage(named: "empty_image") {
-            Image(uiImage: emptyImage)
-                .resizable()
-                .scaledToFill()
-                .frame(width: width, height: height)
-                .clipped()
-                .zIndex(0)
-                .background(PlaceholderImageView.emptyImageGradient)
-                .clipShape(RoundedRectangle(cornerRadius:(8)))
-        }
-    }
-}
-
-struct BlurThumbnailView: View {
-    let width: CGFloat
-    let height: CGFloat
-    static let clearGradient = LinearGradient(colors: [.clear], startPoint: .top, endPoint: .bottom)
-    let viewModel: DownloadFileViewModel
-    @State var hasShown: Bool = false
-
-    var body: some View {
-        /// Never delete this line hasShown is essential here we should always show the thumbnail image, whether we are downloading or showing the thumbnail.
-        /// We use hasShown as a trick to force SwiftUI to redraw.
-        Image(uiImage: hasShown ? image : image)
-            .resizable()
-            .scaledToFill()
-            .frame(width: width, height: height)
-            .blur(radius: 16, opaque: false)
-            .clipped()
-            .zIndex(0)
-            .background(BlurThumbnailView.clearGradient)
-            .clipShape(RoundedRectangle(cornerRadius:(8)))
-            .onReceive(viewModel.objectWillChange) { newValue in
-                if hasShown == false, viewModel.state == .downloading || viewModel.state == .thumbnail, viewModel.thumbnailData != nil {
-                    self.hasShown = true
-                }
-            }
-            .contentShape(RoundedRectangle(cornerRadius: 8))
             .onTapGesture {
-                AppState.shared.objectsContainer.appOverlayVM.galleryMessage = viewModel.message
+                viewModel.onTap()
             }
-    }
-
-    var image: UIImage {
-        UIImage(data: viewModel.thumbnailData ?? Data()) ?? UIImage()
-    }
-}
-
-struct RealDownloadedImage: View {
-    let width: CGFloat
-    let height: CGFloat
-    @EnvironmentObject var viewModel: DownloadFileViewModel
-    @State var image = UIImage()
-
-    var body: some View {
-        Image(uiImage: image)
-            .resizable()
-            .scaledToFit()
-            .frame(width: viewModel.state != .completed ? 0 : width, height: viewModel.state != .completed ? 0 : height)
-            .clipShape(RoundedRectangle(cornerRadius:(8)))
             .clipped()
-            .onReceive(viewModel.objectWillChange) { _ in
-                setImageOnBackground()
-            }
-            .task {
-                setImageOnBackground()
-            }
-            .contentShape(RoundedRectangle(cornerRadius: 8))
-            .onTapGesture {
-                AppState.shared.objectsContainer.appOverlayVM.galleryMessage = viewModel.message
-            }
+        }
     }
 
-    private func setImageOnBackground() {
-        Task.detached {
-            if await viewModel.state == .completed, let cgImage = await viewModel.fileURL?.imageScale(width: 420)?.image {
-                await MainActor.run {
-                    self.image = UIImage(cgImage: cgImage)
-                }
-            }
-        }
+    private static let clearGradient = LinearGradient(colors: [.clear], startPoint: .top, endPoint: .bottom)
+    private static let emptyImageGradient = LinearGradient(colors: [Color.App.bgInput, Color.App.bgInputDark], startPoint: .top, endPoint: .bottom)
+
+    private var gradient: LinearGradient {
+        let clearState = viewModel.downloadFileVM?.state == .completed || viewModel.downloadFileVM?.state == .thumbnail
+        return clearState ? MessageRowImageDownloader.clearGradient : MessageRowImageDownloader.emptyImageGradient
     }
 }
 

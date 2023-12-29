@@ -70,7 +70,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public static var threadWidth: CGFloat = 0 {
         didSet {
             // 38 = Avatar width + tail width + leading padding + trailing padding
-            maxAllowedWidth = min(600, ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize))
+            maxAllowedWidth = min(400, ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize))
         }
     }
 

@@ -13,7 +13,7 @@ import TalkUI
 import TalkViewModels
 
 struct ForwardMessageRow: View {
-    let viewModel: MessageRowViewModel
+    @EnvironmentObject var viewModel: MessageRowViewModel
     var message: Message? { viewModel.message }
 
     var body: some View {
@@ -32,11 +32,16 @@ struct ForwardMessageRow: View {
                                 .font(.iransansBoldBody)
                                 .foregroundStyle(Color.App.primary)
                         }
-                        if let message = message?.message {
-                            Text(message)
-                                .font(.iransansBody)
-                                .foregroundStyle(Color.App.gray2)
+                        if message?.message != nil {
+                            Text(viewModel.markdownTitle)
                                 .multilineTextAlignment(.leading)
+                                .padding(.horizontal, 6)
+                                .font(.iransansBody)
+                                .foregroundColor(Color.App.text)
+                                .fixedSize(horizontal: false, vertical: true)
+//                            CustomUITextView(attributedText: viewModel.markdownTitle)
+//                                .frame(width: viewModel.textWidth, height: viewModel.textHeight)
+//                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
@@ -48,6 +53,7 @@ struct ForwardMessageRow: View {
                         .frame(maxWidth: 1.5)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
             .buttonStyle(.borderless)
             .truncationMode(.tail)

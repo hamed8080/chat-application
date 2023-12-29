@@ -24,21 +24,21 @@ public extension Message {
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
     var messageTitle: String { message ?? "" }
     var isPublicLink: Bool { message?.contains(AppRoutes.joinLink) == true }
-    var markdownTitle: AttributedString {
+    var markdownTitle: NSAttributedString {
         let option: AttributedString.MarkdownParsingOptions = .init(allowsExtendedAttributes: false,
                                                                     interpretedSyntax: .inlineOnly,
                                                                     failurePolicy: .throwError,
                                                                     languageCode: nil,
                                                                     appliesSourcePositionAttributes: false)
-        guard let attributedString = try? NSMutableAttributedString(markdown: messageTitle, options: option) else { return AttributedString() }
-        let title = attributedString.string
+        guard let mutableAttr = try? NSMutableAttributedString(markdown: messageTitle, options: option) else { return NSAttributedString() }
+        let title = mutableAttr.string
         title.matches(char: "@")?.forEach { match in
             let userName = title[Range(match.range, in: title)!]
             let sanitizedUserName = String(userName).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "@", with: "")
-            attributedString.addAttributes([NSAttributedString.Key.link: NSURL(string: "ShowUser:User?userName=\(sanitizedUserName)")!], range: match.range)
-            attributedString.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "primary") ?? .blue], range: match.range)
+            mutableAttr.addAttributes([NSAttributedString.Key.link: NSURL(string: "ShowUser:User?userName=\(sanitizedUserName)")!], range: match.range)
+            mutableAttr.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "primary") ?? .blue], range: match.range)
         }
-        return AttributedString(attributedString)
+        return mutableAttr
     }
     
     var uploadFile: UploadWithTextMessageProtocol? { self as? UploadWithTextMessageProtocol }

@@ -63,7 +63,7 @@ struct MapImageDownloader: View {
                 .frame(width: width, height: height)
                 .clipped()
                 .zIndex(0)
-                .background(PlaceholderImageView.emptyImageGradient)
+                .background(LinearGradient(colors: [Color.App.bgInput, Color.App.bgInputDark], startPoint: .top, endPoint: .bottom))
                 .clipShape(RoundedRectangle(cornerRadius:(8)))
         }
     }

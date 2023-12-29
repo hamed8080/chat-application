@@ -75,7 +75,7 @@ struct MutableMessageView: View {
         HStack {
            InnerMessage(viewModel: viewModel)
         }
-        .frame(maxWidth: ThreadViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .topTrailing : .topLeading)
+        .frame(minWidth: 128, maxWidth: viewModel.imageWidth ?? ThreadViewModel.maxAllowedWidth, alignment: viewModel.isMe ? .trailing : .leading)
         .simultaneousGesture(TapGesture().onEnded { _ in }, including: message.isVideo ? .subviews : .all)
     }
 }
@@ -94,8 +94,8 @@ struct InnerMessage: View {
             }
             LocationRowView()
             GroupParticipantNameView()
-            ReplyInfoMessageRow()
-            ForwardMessageRow(viewModel: viewModel)
+            ReplyInfoMessageRow()  
+            ForwardMessageRow()
             UploadMessageType()
             MessageTextView()
             JoinPublicLink(viewModel: viewModel)
@@ -107,8 +107,6 @@ struct InnerMessage: View {
                 MessageFooterView()
             }
         }
-        .fixedSize(horizontal: false, vertical: true)
-        .frame(minWidth: 128, alignment: viewModel.isMe ? .topTrailing : .topLeading)
         .padding(viewModel.paddingEdgeInset)
         .background(
             MessageRowBackground.instance
