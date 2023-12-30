@@ -65,7 +65,6 @@ private struct Preview: View {
                 .environmentObject(container.threadsVM)
                 .environmentObject(AppState.shared)
                 .onAppear {
-                    container.threadsVM.title = "Tab.chats"
                     container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 5))
                     if let fileURL = Bundle.main.url(forResource: "new_message", withExtension: "mp3") {
                         try? container.audioPlayerVM.setup(fileURL: fileURL, ext: "mp3", title: "Note")

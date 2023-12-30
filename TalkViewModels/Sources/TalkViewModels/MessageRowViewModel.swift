@@ -73,7 +73,6 @@ public final class MessageRowViewModel: ObservableObject {
     public var isHighlited: Bool = false
     public var highlightTimer: Timer?
     public var isSelected = false
-    public var requests: [String: Any] = [:]
     public var showReactionsOverlay = false
     public var isNextMessageTheSameUser: Bool = false
     public var canShowIconFile: Bool = false
@@ -93,11 +92,7 @@ public final class MessageRowViewModel: ObservableObject {
     }()
     public var isMapType: Bool = false
     public var fileMetaData: FileMetaData?
-    public private(set) var textWidth: CGFloat = 48
-    public private(set) var textHeight: CGFloat = 48
-    public static let attriutes = [NSAttributedString.Key.font: MessageRowViewModel.iransansBody]
     private static var emptyImage = UIImage(named: "empty_image")!
-    static let iransansBody = UIFont(name: "IRANSansX", size: 14)!
     public var image: UIImage = MessageRowViewModel.emptyImage
     public var canShowImageView: Bool = false
     public var imageScale: ContentMode = .fill
@@ -127,14 +122,6 @@ public final class MessageRowViewModel: ObservableObject {
         }
         setupObservers()
         canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.message.isEmptyOrNil == true && message.replyInfo?.deleted == false
-        let isReplyOrForward = (message.forwardInfo != nil || message.replyInfo != nil) && !message.isImage
-        let tailWidth: CGFloat = 6
-        let paddingLeading = isReplyOrForward ? (isMe ? 10 : 16) : (isMe ? 4 : 4 + tailWidth)
-        let paddingTrailing: CGFloat = isReplyOrForward ? (isMe ? 16 : 10) : (isMe ? 4 + tailWidth : 4)
-        let paddingTop: CGFloat = isReplyOrForward ? 10 : 4
-        let paddingBottom: CGFloat = 4
-        paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
-
         /// We must pre-calculate the text/image size even if the row is not displayed or appears.
         recalculateWithAnimation()
     }
@@ -251,6 +238,16 @@ public final class MessageRowViewModel: ObservableObject {
         }
     }
 
+    private func calculatePaddings() async {
+        let isReplyOrForward = (message.forwardInfo != nil || message.replyInfo != nil) && !message.isImage
+        let tailWidth: CGFloat = 6
+        let paddingLeading = isReplyOrForward ? (isMe ? 10 : 16) : (isMe ? 4 : 4 + tailWidth)
+        let paddingTrailing: CGFloat = isReplyOrForward ? (isMe ? 16 : 10) : (isMe ? 4 + tailWidth : 4)
+        let paddingTop: CGFloat = isReplyOrForward ? 10 : 4
+        let paddingBottom: CGFloat = 4
+        paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
+    }
+
     private func recalculateWithAnimation() {
         Task {
             await performaCalculation()
@@ -263,13 +260,9 @@ public final class MessageRowViewModel: ObservableObject {
     private func performaCalculation() async {
         isCalculated = true
         fileMetaData = message.fileMetaData /// decoding data so expensive if it will happen on the main thread.
-        let textSize = await textSize()
-        let isAvtarHidden = isMe || threadVM?.thread.group == false
-        let paddings: CGFloat = isAvtarHidden ? 38 : MessageRowViewModel.avatarSize + 0
-        textWidth = max(128, min(textSize.width - (paddings), ThreadViewModel.maxAllowedWidth))
-        textHeight = textSize.height + (paddings) /// We use 8 pixels for a safe height to not cut the text.
         await calculateImageSize()
         await setReplyInfo()
+        await calculatePaddings()
         isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
         let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
         isNextMessageTheSameUser = threadVM?.thread.group == true && isSameResponse && message.participant != nil
@@ -303,15 +296,6 @@ public final class MessageRowViewModel: ObservableObject {
             self.imageHeight = isOnlyImage ? dynamicHeight : maxHeight
             imageScale = isOnlyImage ? .fit : .fill
         }
-    }
-
-    func textSize() async -> CGSize {
-        let widthRect = CGSize(width: ThreadViewModel.maxAllowedWidth, height: .greatestFiniteMagnitude) /// We reduce 36 pixels for avatar and paddings.
-        let textHeightRect = message.message?.boundingRect(with: widthRect,
-                                                           options: .usesLineFragmentOrigin,
-                                                           attributes: MessageRowViewModel.attriutes,
-                                                           context: nil)
-        return CGSize(width: textHeightRect?.width ?? 0, height: textHeightRect?.height ?? 0)
     }
 
     private func setReplyInfo() async {

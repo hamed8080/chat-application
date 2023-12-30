@@ -30,7 +30,6 @@ public final class ThreadsViewModel: ObservableObject {
     public private(set) var offset = 0
     private(set) var hasNext: Bool = true
     public var selectedThraed: Conversation?
-    public var title: String = ""
     private var canLoadMore: Bool { hasNext && !isLoading }
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
     var serverSortedPinConversations: [Int] = []

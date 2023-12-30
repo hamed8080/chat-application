@@ -24,10 +24,6 @@ struct MessageTextView: View {
                 .font(.iransansBody)
                 .foregroundColor(Color.App.text)
                 .fixedSize(horizontal: false, vertical: true)
-
-//            CustomUITextView(attributedText: viewModel.markdownTitle)
-//                .frame(width: viewModel.textWidth, height: viewModel.textHeight)
-//                .fixedSize(horizontal: false, vertical: true)
         } else if let fileName = message.uploadFileName, message.isUnsentMessage == true {
             Text(fileName)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)

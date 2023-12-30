@@ -93,7 +93,6 @@ struct SplitViewContent: View {
             .onAppear {
                 AppState.shared.navViewModel = container.navVM
                 container.navVM.threadsViewModel = container.threadsVM
-                container.threadsVM.title = "Tab.chats"
                 self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
             }
     }

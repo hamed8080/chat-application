@@ -39,9 +39,6 @@ struct ForwardMessageRow: View {
                                 .font(.iransansBody)
                                 .foregroundColor(Color.App.text)
                                 .fixedSize(horizontal: false, vertical: true)
-//                            CustomUITextView(attributedText: viewModel.markdownTitle)
-//                                .frame(width: viewModel.textWidth, height: viewModel.textHeight)
-//                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
