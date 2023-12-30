@@ -52,7 +52,7 @@ struct UploadFileView: View {
         }
         .onReceive(viewModel.$state) { state in
             if state == .COMPLETED {
-                threadViewModel.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId))
+                threadViewModel.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId, typeCode: "default"))
             }
         }
         .onReceive(viewModel.$uploadPercent) { percent in

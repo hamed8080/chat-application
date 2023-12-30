@@ -176,7 +176,7 @@ extension ThreadViewModel: SendMessageThreadProtocol {
 
     func cancelUnsentMessage(_ uniqueId: String) {
         ChatManager.activeInstance?.cancelMessage(uniqueId: uniqueId) { _ in }
-        onDeleteMessage(ChatResponse(uniqueId: uniqueId))
+        onDeleteMessage(ChatResponse(uniqueId: uniqueId, typeCode: "default"))
     }
 
     func toggleSelectedMessage(_ message: Message, _ isSelected: Bool) {

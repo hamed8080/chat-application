@@ -49,6 +49,7 @@ extension Config {
             .isDebuggingLogEnabled(true)
             .build()
         let chatConfig = ChatConfigBuilder(asyncConfig)
+            .typeCodes([.init(typeCode: "default", ownerId: nil)])
             .token(token)
             .ssoHost(config.ssoHost)
             .platformHost(config.platformHost)
