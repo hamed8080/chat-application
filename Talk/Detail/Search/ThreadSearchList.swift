@@ -31,7 +31,7 @@ struct ThreadSearchList: View {
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .transition(.asymmetric(insertion: .move(edge: .top), removal: .move(edge: .bottom)))
-            .background(.ultraThickMaterial)
+            .background(Color.App.bgPrimary.ignoresSafeArea())
             .environment(\.layoutDirection, .leftToRight)
         } else if viewModel.isInSearchMode {
             ZStack {
@@ -43,7 +43,7 @@ struct ThreadSearchList: View {
                 }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-            .background(.ultraThickMaterial)
+            .background(Color.App.bgPrimary.ignoresSafeArea())
             .transition(.opacity)
         }
     }

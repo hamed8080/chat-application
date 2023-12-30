@@ -722,9 +722,7 @@
 				05F9151F2AE63984008C070B /* Toolbars */,
 				0570CB7F2AAEE98C001832E9 /* MessageRows */,
 				050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */,
-				0570CB7D2AAEE98C001832E9 /* ThreadSearchList.swift */,
 				0570CB7E2AAEE98C001832E9 /* MapPickerView.swift */,
-				0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */,
 				0570CB8E2AAEE98C001832E9 /* ThreadSheetView.swift */,
 				0570CB8F2AAEE98C001832E9 /* MentionList.swift */,
 				0570CB912AAEE98C001832E9 /* ThreadView.swift */,
@@ -832,6 +830,7 @@
 		0570CBA92AAEE98D001832E9 /* Detail */ = {
 			isa = PBXGroup;
 			children = (
+				05A6A2C82B40167700DA0363 /* Search */,
 				0570CBAA2AAEE98D001832E9 /* TabViews */,
 				0570CBB42AAEE98D001832E9 /* DetailView.swift */,
 				05745AEF2AF2626B00102193 /* UserActionMenu.swift */,
@@ -929,6 +928,15 @@
 				052F46652B21F5B400085C26 /* PhotosUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		05A6A2C82B40167700DA0363 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				0570CB7D2AAEE98C001832E9 /* ThreadSearchList.swift */,
+				0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */,
+			);
+			path = Search;
 			sourceTree = "<group>";
 		};
 		05C27F9A2AF4BC310008FE2E /* SendContainer */ = {

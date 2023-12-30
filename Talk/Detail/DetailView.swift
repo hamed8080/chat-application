@@ -56,35 +56,6 @@ struct DetailView: View {
                     }
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {                
-                if viewModel.canShowEditButton {
-                    Button {
-                        viewModel.showEditContactOrEditGroup(contactsVM: contactsVM)
-                    } label: {
-                        Image(systemName: "pencil")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 16, height: 16)
-                            .padding(8)
-                            .foregroundStyle(Color.App.primary)
-                            .fontWeight(.heavy)
-                    }
-                }
-            }
-
-            ToolbarItemGroup(placement: .principal) {
-                Text("General.info")
-                    .font(.iransansBoldBody)
-            }
-
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    viewModel.threadVM?.scrollVM.disableExcessiveLoading()
-                    AppState.shared.navViewModel?.remove(type: DetailViewModel.self)
-                }
-            }
-        }
         .animation(.easeInOut, value: viewModel.thread?.type?.isPrivate == true)
         .animation(.interactiveSpring(), value: viewModel.isInEditMode)
         .sheet(isPresented: $viewModel.showEditGroup) {
@@ -98,6 +69,47 @@ struct DetailView: View {
                 navigationViewModel.remove(type: DetailViewModel.self)
                 dismiss()
             }
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            VStack(spacing: 0) {
+                ToolbarView(searchId: "DetailView",
+                            title: "General.info",
+                            showSearchButton: false,
+                            searchPlaceholder: "General.searchHere",
+                            searchKeyboardType: .default,
+                            leadingViews: leadingViews,
+                            centerViews: EmptyView(),
+                            trailingViews: trailingViews) { searchValue in
+                    viewModel.threadVM?.searchedMessagesViewModel.searchText = searchValue
+                }
+                if let viewModel = viewModel.threadVM {
+                    ThreadSearchList(threadVM: viewModel)
+                        .environmentObject(viewModel.searchedMessagesViewModel)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder var trailingViews: some View {
+        if viewModel.canShowEditButton {
+            Button {
+                viewModel.showEditContactOrEditGroup(contactsVM: contactsVM)
+            } label: {
+                Image(systemName: "pencil")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .padding(8)
+                    .foregroundStyle(Color.App.primary)
+                    .fontWeight(.heavy)
+            }
+        }
+    }
+
+    var leadingViews: some View {
+        NavigationBackButton {
+            viewModel.threadVM?.scrollVM.disableExcessiveLoading()
+            AppState.shared.navViewModel?.remove(type: DetailViewModel.self)
         }
     }
 }
@@ -314,8 +326,7 @@ struct DetailTopButtons: View {
 
             if let threadId = viewModel.threadVM?.threadId {
                 DetailViewButton(accessibilityText: "", icon: "magnifyingglass") {
-                    viewModel.dismiss.toggle()
-                    NotificationCenter.default.post(name: .forceSearch, object: "\(threadId)")
+                    NotificationCenter.default.post(name: .forceSearch, object: "DetailView")
                 }
             }
 

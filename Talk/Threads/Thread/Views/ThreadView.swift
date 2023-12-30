@@ -36,7 +36,6 @@ struct ThreadView: View, DropDelegate {
                     ThreadMainToolbar(viewModel: viewModel)
                     ThreadPinMessage(threadVM: viewModel)
                     AudioPlayerView(threadVM: viewModel)
-                    ThreadSearchList(threadVM: viewModel)                        
                 }
             }
             .background {
