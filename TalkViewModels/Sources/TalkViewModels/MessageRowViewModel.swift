@@ -70,6 +70,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var isCalculated = false
     public var isEnglish = true
     public var markdownTitle = AttributedString()
+    public var nsMarkdownTitle = NSAttributedString()
     public var timeString: String = ""
     public static var avatarSize: CGFloat = 37
     public var reactionsVM: MessageReactionsViewModel
@@ -285,6 +286,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         self.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = AttributedString(message.markdownTitle)
+        nsMarkdownTitle = NSAttributedString(markdownTitle)
         isPublicLink = message.isPublicLink
         if let date = message.time?.date {
             timeString = MessageRowViewModel.formatter.string(from: date)

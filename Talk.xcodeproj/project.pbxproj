@@ -265,6 +265,8 @@
 		05A0CD722B19314100F13EE5 /* DeleteContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A0CD702B1930C900F13EE5 /* DeleteContactView.swift */; };
 		05A4AAA42B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */; };
 		05A4AAA52B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */; };
+		05A6A2C62B3FE2D900DA0363 /* ThreadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A6A2C52B3FE2D900DA0363 /* ThreadViewController.swift */; };
+		05A6A2C72B3FE2D900DA0363 /* ThreadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A6A2C52B3FE2D900DA0363 /* ThreadViewController.swift */; };
 		05ABE5872B1900C300255C49 /* ForwardMessagesViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */; };
 		05ABE5882B1900C300255C49 /* ForwardMessagesViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */; };
 		05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */; };
@@ -489,6 +491,7 @@
 		0594FE682B0387920031AADF /* UnsentMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsentMessageView.swift; sourceTree = "<group>"; };
 		05A0CD702B1930C900F13EE5 /* DeleteContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteContactView.swift; sourceTree = "<group>"; };
 		05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMentionsButton.swift; sourceTree = "<group>"; };
+		05A6A2C52B3FE2D900DA0363 /* ThreadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadViewController.swift; sourceTree = "<group>"; };
 		05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForwardMessagesViewPlaceholder.swift; sourceTree = "<group>"; };
 		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
 		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
@@ -719,6 +722,7 @@
 			isa = PBXGroup;
 			children = (
 				0570CB7C2AAEE98C001832E9 /* Views */,
+				05A6A2C52B3FE2D900DA0363 /* ThreadViewController.swift */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -1262,6 +1266,7 @@
 				0570CC5F2AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */,
 				0570CBF92AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				05DAA4352B29BF39007427DC /* ContactListToolbar.swift in Sources */,
+				05A6A2C62B3FE2D900DA0363 /* ThreadViewController.swift in Sources */,
 				0505D5AC2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
 				0570CC1D2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
 				0570CBE92AAEE98F001832E9 /* ThreadRowActionMenu.swift in Sources */,
@@ -1416,6 +1421,7 @@
 				0570CC602AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */,
 				0570CBFA2AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				05DAA4362B29BF39007427DC /* ContactListToolbar.swift in Sources */,
+				05A6A2C72B3FE2D900DA0363 /* ThreadViewController.swift in Sources */,
 				0505D5AD2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
 				0570CC1E2AAEE98F001832E9 /* TextMessageType.swift in Sources */,
 				0570CBEA2AAEE98F001832E9 /* ThreadRowActionMenu.swift in Sources */,
