@@ -80,7 +80,6 @@ public struct AudioPlayerView: View {
         }
         .animation(.easeInOut(duration: 0.15), value: audioPlayerVM.isPlaying)
         .animation(.easeInOut(duration: 0.15), value: audioPlayerVM.isClosed)
-        .animation(.easeInOut, value: audioPlayerVM.currentTime)
       }
 }
 

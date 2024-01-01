@@ -3,6 +3,7 @@ import Foundation
 import AVFoundation
 import OSLog
 import ChatModels
+import SwiftUI
 
 public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPlayerDelegate {
     @Published public var isPlaying: Bool = false
@@ -48,8 +49,16 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
         player?.prepareToPlay()
         player?.play()
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            self?.currentTime = self?.player?.currentTime ?? 0
-            self?.duration = self?.player?.duration ?? 0
+            let transaction = Transaction(animation: .easeInOut)
+            withTransaction(transaction) {
+                if self?.duration != self?.currentTime {
+                    self?.currentTime = self?.player?.currentTime ?? 0
+                    self?.duration = self?.player?.duration ?? 0
+                }
+            }
+        }
+        if let timer = timer {
+            RunLoop.main.add(timer, forMode: .common)
         }
     }
 
@@ -76,9 +85,16 @@ public final class AVAudioPlayerViewModel: NSObject, ObservableObject, AVAudioPl
     }
 
     public func audioPlayerDidFinishPlaying(_: AVAudioPlayer, successfully _: Bool) {
-        isPlaying = false
         currentTime = duration
-        stopTimer()
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
+            var transaction = Transaction(animation: .none)
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                self?.isPlaying = false
+                self?.currentTime = self?.duration ?? 0
+                self?.stopTimer()
+            }
+        }
     }
 
     private func stopTimer() {
