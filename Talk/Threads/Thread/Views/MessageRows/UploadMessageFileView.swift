@@ -40,7 +40,7 @@ struct UploadImageButton: View {
     var percent: Int64 { viewModel.uploadPercent }
     var stateIcon: String {
         if viewModel.state == .uploading {
-            return "pause.fill"
+            return "xmark"
         } else if viewModel.state == .paused {
             return "play.fill"
         } else {
@@ -73,7 +73,7 @@ struct UploadImageButton: View {
                     if viewModel.state == .paused {
                         viewModel.resumeUpload()
                     } else if viewModel.state == .uploading {
-                        viewModel.pauseUpload()
+                        viewModel.cancelUpload()
                     }
                 }
 
