@@ -48,18 +48,6 @@ final class MessageUITableViewCell: UITableViewCell {
     }
 }
 
-final class CallEventUITableViewCell: UITableViewCell {
-    var viewModel: MessageRowViewModel!
-
-    convenience init(viewModel: MessageRowViewModel) {
-        self.init(style: .default, reuseIdentifier: "CallEventUITableViewCell")
-        self.viewModel = viewModel
-        let label = UILabel(frame: contentView.frame)
-        label.text = "call text"
-        contentView.addSubview(label)
-    }
-}
-
 final class UnreadBubbleUITableViewCell: UITableViewCell {
 
     convenience init(viewModel: MessageRowViewModel) {
@@ -114,7 +102,9 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
         let type = message.type
         switch type {
         case .endCall, .startCall:
-            return CallEventUITableViewCell(viewModel: viewModel)
+            let cell = (cell as? CallEventUITableViewCell) ?? CallEventUITableViewCell()
+            cell.setValues(viewModel: viewModel)
+            return cell
         case .participantJoin, .participantLeft:
             return ParticipantsEventUITableViewCell(viewModel: viewModel)
         default:
@@ -167,6 +157,7 @@ extension ThreadViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = .red
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         tableView.register(MessageUITableViewCell.self, forCellReuseIdentifier: "MessageUITableViewCell")
         tableView.register(CallEventUITableViewCell.self, forCellReuseIdentifier: "CallEventUITableViewCell")
         tableView.register(ParticipantsEventUITableViewCell.self, forCellReuseIdentifier: "ParticipantsEventUITableViewCell")

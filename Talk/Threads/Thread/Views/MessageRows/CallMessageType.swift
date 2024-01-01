@@ -11,34 +11,83 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import UIKit
 
-struct CallMessageType: View {
-    var message: Message
-    @Environment(\.colorScheme) var colorScheme
+final class CallEventUITableViewCell: UITableViewCell {
+    private let stack = UIStackView()
+    private static let startCallImage = UIImage(systemName: "phone.arrow.up.right.fill")
+    private static let endCallImage = UIImage(systemName: "phone.down.fill")
+    private var statusImage = UIImageView(image: CallEventUITableViewCell.startCallImage)
+    private let dateLabel = UILabel()
+    private let typeLabel = UILabel()
 
-    var body: some View {
-        HStack(alignment: .center) {
-            if let time = message.time {
-                let date = Date(milliseconds: Int64(time))
-                HStack(spacing: 2) {
-                    Text(message.type == .endCall ? "Thread.callEnded" : "Thread.callStarted")
-                    Text("\(date.localFormattedTime ?? "")")
-                }
-                .foregroundStyle(Color.App.textPrimary)
-                .font(.iransansBody)
-                .padding(2)
-            }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        configureView()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func configureView() {
 
-            Image(systemName: message.type == .startCall ? "phone.arrow.up.right.fill" : "phone.down.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: message.type == .startCall ? 12 : 18, height: message.type == .startCall ? 12 : 18)
-                .foregroundStyle(message.type == .startCall ? Color.App.color2 : Color.App.red)
+        typeLabel.font = UIFont.uiiransansBody
+        dateLabel.font = UIFont.uiiransansBody
+
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.distribution = .fill
+        stack.spacing = 12
+
+        stack.addArrangedSubview(typeLabel)
+        stack.addArrangedSubview(dateLabel)
+        stack.addArrangedSubview(statusImage)
+        stack.backgroundColor = Color.App.uiblack?.withAlphaComponent(0.2)        
+        stack.layer.cornerRadius = 14
+        stack.layer.masksToBounds = true
+        stack.layoutMargins = .init(top: 4, left: 16, bottom: 4, right: 16)
+        stack.isLayoutMarginsRelativeArrangement = true
+
+        contentView.addSubview(stack)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            statusImage.widthAnchor.constraint(equalToConstant: 18),
+            statusImage.heightAnchor.constraint(equalToConstant: 18),
+            stack.centerXAnchor.constraint(equalTo: centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: centerYAnchor),
+        ])
+    }
+
+    public func setValues(viewModel: MessageRowViewModel) {
+        let message = viewModel.message
+        let isStarted = message.type == .startCall
+        statusImage.image = isStarted ? CallEventUITableViewCell.startCallImage : CallEventUITableViewCell.endCallImage
+        statusImage.tintColor = isStarted ? Color.App.uigreen : Color.App.uired
+        typeLabel.text = isStarted ? "Thread.callStarted".localized() : "Thread.callEnded".localized()
+        let date = Date(milliseconds: Int64(message.time ?? 0))
+        dateLabel.text = "\(date.localFormattedTime ?? "")"
+    }
+}
+
+struct CallMessageWapper: UIViewRepresentable {
+    let viewModel: MessageRowViewModel
+
+    func makeUIView(context: Context) -> some UIView {
+        return CallEventUITableViewCell()
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        
+    }
+}
+
+struct CallMessageWapper_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            let message = Message(id: 1, messageType: .startCall, time: 155600555)
+            let viewModel = MessageRowViewModel(message: message, viewModel: .init(thread: .init(id: 1)))
+            CallMessageWapper(viewModel: viewModel)
         }
-        .padding(.horizontal, 16)
-        .background(Color.App.textPrimary.opacity(0.2))
-        .clipShape(RoundedRectangle(cornerRadius:(25)))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
     }
 }
