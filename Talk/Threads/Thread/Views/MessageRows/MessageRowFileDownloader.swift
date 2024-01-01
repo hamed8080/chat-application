@@ -92,7 +92,7 @@ fileprivate struct FileDownloadButton: View {
     }
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(alignment: .top, spacing: 8) {
             ZStack {
                 iconView
                 progress

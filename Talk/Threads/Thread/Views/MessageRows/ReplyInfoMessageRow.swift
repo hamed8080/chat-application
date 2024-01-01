@@ -124,7 +124,7 @@ struct ReplyFileIcon: View {
 
     var body: some View {
         if !viewModel.isReplyImage, viewModel.canShowIconFile {
-            if let iconName = self.message.iconName {
+            if let iconName = self.message.replyIconName {
                 Image(systemName: iconName)
                     .resizable()
                     .scaledToFit()
@@ -132,7 +132,7 @@ struct ReplyFileIcon: View {
                     .foregroundColor(Color.App.blue)
                     .clipped()
             }
-            if let fileStringName = self.message.fileStringName {
+            if let fileStringName = self.message.replyFileStringName {
                 Text(fileStringName)
                     .font(.iransansCaption2)
                     .foregroundStyle(Color.App.blue)

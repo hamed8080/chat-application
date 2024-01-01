@@ -139,6 +139,14 @@ public extension Message {
         messageType?.fileStringName
     }
 
+    var replyFileStringName: String? {
+        replyInfo?.messageType?.fileStringName
+    }
+
+    var replyIconName: String? {
+        replyInfo?.messageType?.iconName ?? fileExtIcon
+    }
+
     var fileExtIcon: String {
         (fileMetaData?.file?.extension ?? fileExtension ?? "").systemImageNameForFileExtension
     }
