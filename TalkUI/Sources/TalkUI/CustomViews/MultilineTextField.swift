@@ -128,7 +128,8 @@ public struct MultilineTextField: View {
         self.mention = mention
         self._focus = focus
         self.placeholderColor = placeholderColor
-        _showingPlaceholder = State<Bool>(initialValue: (self.text.isEmpty || (self.text.first == "\u{200f}" && self.text.count == 1) ) )
+        let canShowPlaceHolder = text.wrappedValue.isEmpty || (text.wrappedValue.first == "\u{200f}" && text.wrappedValue.count == 1)
+        _showingPlaceholder = State<Bool>(initialValue: canShowPlaceHolder)
     }
 
     public var body: some View {
@@ -144,7 +145,7 @@ public struct MultilineTextField: View {
             .background(backgroundColor)
             .onChange(of: text) { newValue in
                 withAnimation {
-                    showingPlaceholder = newValue.isEmpty
+                    showingPlaceholder = newValue.isEmpty || (newValue.first == "\u{200f}" && newValue.count == 1)
                 }
             }
     }

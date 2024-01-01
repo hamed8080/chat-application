@@ -31,7 +31,11 @@ struct MentionList: View {
                 }
                 .onTapGesture {
                     let userName = (participant.username ?? "")
-                    threadVM.sendContainerViewModel.textMessage = "\(threadVM.sendContainerViewModel.textMessage)\(userName) " // To hide participants dialog
+                    var text = threadVM.sendContainerViewModel.textMessage
+                    if let lastIndex = text.lastIndex(of: "@") {
+                        text.removeSubrange(lastIndex..<text.endIndex)
+                    }
+                    threadVM.sendContainerViewModel.textMessage = "\(text)@\(userName) " // To hide participants dialog
                     threadVM.animateObjectWillChange()
                 }
                 .listRowBackground(Color.clear)

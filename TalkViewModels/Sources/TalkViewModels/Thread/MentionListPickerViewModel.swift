@@ -51,7 +51,7 @@ public final class MentionListPickerViewModel: ObservableObject {
     public func searchForParticipantInMentioning(_ text: String) {
         /// remove the hidden RTL character for forcing the UITextView to write from right to left.
         let text = text.replacingOccurrences(of: "\u{200f}", with: "")
-        if text.first == "@" && text.count == 1 {
+        if text.last == "@" {
             // Fetch some data to show if the user typed an @.
             let req = ThreadParticipantRequest(threadId: threadId, count: 5)
             RequestsManager.shared.append(prepend: "MentionParticipants", value: req)

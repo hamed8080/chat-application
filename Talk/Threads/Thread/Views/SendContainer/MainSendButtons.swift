@@ -34,7 +34,7 @@ struct MainSendButtons: View {
             .fontWeight(.light)
 
             MultilineTextField(
-                viewModel.textMessage.isEmpty == true ? "Thread.SendContainer.typeMessageHere" : "",
+                "Thread.SendContainer.typeMessageHere",
                 text: $viewModel.textMessage,
                 textColor: UIColor(named: "message_text"),
                 backgroundColor: Color.App.bgSecond,
