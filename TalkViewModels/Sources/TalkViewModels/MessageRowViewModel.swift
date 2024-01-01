@@ -291,7 +291,7 @@ public final class MessageRowViewModel: ObservableObject {
             /// We use max to at least have a width, because there are times that maxWidth is nil.
             let imageHeight = CGFloat(fileMetaData?.file?.actualHeight ?? 0)
             let minHeight: CGFloat = 128
-            let maxHeight: CGFloat = ThreadViewModel.maxAllowedWidth
+            let maxHeight: CGFloat = 2 * ThreadViewModel.maxAllowedWidth
             let dynamicHeight = min(max(minHeight, imageHeight), maxHeight)
             self.imageHeight = isOnlyImage ? dynamicHeight : maxHeight
             imageScale = isOnlyImage ? .fit : .fill
@@ -397,6 +397,7 @@ public final class MessageRowViewModel: ObservableObject {
     }
 
     private func manageDownload() async {
+        if !message.isImage { return }
         if downloadFileVM?.isInCache == false, downloadFileVM?.thumbnailData == nil {
             downloadFileVM?.downloadBlurImage()
         } else if downloadFileVM?.isInCache == true {

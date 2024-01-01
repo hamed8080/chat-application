@@ -179,7 +179,7 @@ struct DownloadedVoicePlayer: View {
 struct DownloadVoiceButtonView: View {
     @EnvironmentObject var veiwModel: DownloadFileViewModel
     var body: some View {
-        DownloadFileView(viewModel: veiwModel, config: .detail)
+        DownloadFileView(viewModel: veiwModel)
             .frame(width: 48, height: 48)
             .padding(4)
     }

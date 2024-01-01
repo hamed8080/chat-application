@@ -129,8 +129,8 @@ struct FileRowView: View {
 struct DownloadFileButtonView: View {
     @EnvironmentObject var veiwModel: DownloadFileViewModel
     var body: some View {
-        DownloadFileView(viewModel: veiwModel, config: .detail)
-            .frame(width: DownloadFileViewConfig.detail.circleProgressMaxWidth, height: DownloadFileViewConfig.detail.circleProgressMaxWidth)
+        DownloadFileView(viewModel: veiwModel)
+            .frame(width: 42, height: 42)
             .padding(4)
             .clipped()
             .cornerRadius(4) /// We round the corner of the file is an image we show a thumbnail of the file not the icon.

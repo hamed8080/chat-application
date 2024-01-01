@@ -39,7 +39,7 @@ struct MessageRowFileDownloaderContent: View {
 
     var body: some View {
         HStack {
-            FileDownloadButton(config: .normal)
+            FileDownloadButton()
         }
         .environmentObject(downloadVM)
         .sheet(isPresented: $shareDownloadedFile) {
@@ -79,7 +79,6 @@ fileprivate struct FileDownloadButton: View {
     @EnvironmentObject var messageRowVM: MessageRowViewModel
     private var message: Message? { viewModel.message }
     private var percent: Int64 { viewModel.downloadPercent }
-    let config: DownloadFileViewConfig
     private var stateIcon: String {
         if let iconName = message?.iconName, viewModel.state == .completed {
             return iconName
@@ -98,9 +97,9 @@ fileprivate struct FileDownloadButton: View {
                 iconView
                 progress
             }
-            .frame(width: config.iconWidth, height: config.iconHeight)
+            .frame(width: 46, height: 46)
             .background(Color.App.btnDownload)
-            .clipShape(RoundedRectangle(cornerRadius:(config.iconHeight / 2)))
+            .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
 
             VStack(alignment: .leading, spacing: 4) {
                 fileNameView
@@ -129,7 +128,7 @@ fileprivate struct FileDownloadButton: View {
                 .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                 .foregroundColor(Color.App.primary)
                 .rotationEffect(Angle(degrees: 270))
-                .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
+                .frame(width: 42, height: 42)
                 .environment(\.layoutDirection, .leftToRight)
                 .fontWeight(.semibold)
         }

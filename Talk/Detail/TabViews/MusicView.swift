@@ -75,6 +75,7 @@ struct MusicRowView: View {
         HStack {
             if downloadViewModel.state == .completed, let fileURL = downloadViewModel.fileURL {
                 DownloadedMusicPlayer(message: message, fileURL: fileURL)
+                    .environmentObject(AppState.shared.objectsContainer.audioPlayerVM) /// crash if removed for context menu
             } else {
                 DownloadMusicButtonView()
                     .frame(width: 48, height: 48)
@@ -180,7 +181,7 @@ struct DownloadedMusicPlayer: View {
 struct DownloadMusicButtonView: View {
     @EnvironmentObject var veiwModel: DownloadFileViewModel
     var body: some View {
-        DownloadFileView(viewModel: veiwModel, config: .detail)
+        DownloadFileView(viewModel: veiwModel)
             .frame(width: 72, height: 72)
     }
 }

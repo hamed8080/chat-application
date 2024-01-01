@@ -18,19 +18,15 @@ public struct DownloadFileView: View {
     let viewModel: DownloadFileViewModel
     var message: Message? { viewModel.message }
 
-    let config: DownloadFileViewConfig
-
-    public init(viewModel: DownloadFileViewModel, config: DownloadFileViewConfig = .normal) {
+    public init(viewModel: DownloadFileViewModel) {
         self.viewModel = viewModel
-        self.config = config
     }
 
     public var body: some View {
         HStack(alignment: .center) {
             ZStack(alignment: .center) {
-                MutableDownloadViews(config: config)
+                MutableDownloadViews()
             }
-            DownloadFileStack(message: message, config: config)
         }
         .environmentObject(viewModel)
     }
@@ -39,7 +35,6 @@ public struct DownloadFileView: View {
 struct MutableDownloadViews: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     var message: Message? { viewModel.message }
-    let config: DownloadFileViewConfig
 
     var body: some View {
         switch viewModel.state {
@@ -47,14 +42,14 @@ struct MutableDownloadViews: View {
             if let iconName = message?.iconName {
                 Image(systemName: iconName)
                     .resizable()
-                    .foregroundStyle(config.iconColor, config.iconCircleColor)
+                    .foregroundStyle(Color.App.white, Color.App.primary)
                     .scaledToFit()
-                    .frame(width: config.iconWidth, height: config.iconHeight)
+                    .frame(width: 36, height: 36)
             }
         case .downloading, .started, .undefined, .thumbnail, .paused:
             if message?.isFileType == true {
-                DownloadFileButton(message: message, config: config)
-                    .padding(.horizontal, config.showFileName ? 4 : 0)
+                DownloadFileButton(message: message)
+                    .padding(.horizontal, 4)
             }
         default:
            EmptyView()
@@ -66,7 +61,6 @@ struct DownloadFileButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     let message: Message?
     var percent: Int64 { viewModel.downloadPercent }
-    let config: DownloadFileViewConfig
     var stateIcon: String {
         if viewModel.state == .downloading {
             return "pause.fill"
@@ -84,19 +78,19 @@ struct DownloadFileButton: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
-                    .foregroundStyle(config.iconColor)
+                    .foregroundStyle(Color.App.white)
 
                 Circle()
                     .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
                     .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                    .foregroundColor(config.progressColor)
+                    .foregroundColor(Color.App.white)
                     .rotationEffect(Angle(degrees: 270))
-                    .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
+                    .frame(width: 28, height: 28)
                     .environment(\.layoutDirection, .leftToRight)
             }
-            .frame(width: config.iconWidth, height: config.iconHeight)
-            .background(config.iconCircleColor)
-            .clipShape(RoundedRectangle(cornerRadius:(config.iconHeight / 2)))
+            .frame(width: 36, height: 36)
+            .background(Color.App.primary)
+            .clipShape(RoundedRectangle(cornerRadius:(36 / 2)))
             .onTapGesture {
                 if viewModel.state == .paused {
                     viewModel.resumeDownload()
@@ -106,66 +100,6 @@ struct DownloadFileButton: View {
                     viewModel.startDownload()
                 }
             }
-
-            VStack(alignment: .leading, spacing: 8) {
-                if let fileName = message?.uploadFileName, config.showTrailingFileName {
-                    Text(fileName)
-                        .multilineTextAlignment(.leading)
-                        .font(.iransansBoldSubheadline)
-                        .foregroundColor(.white)
-                }
-
-                if let fileZize = message?.fileMetaData?.file?.size, config.showFileSize {
-                    Text(String(fileZize))
-                        .multilineTextAlignment(.leading)
-                        .font(.iransansBoldCaption2)
-                        .foregroundColor(.white)
-                }
-            }
-        }
-    }
-}
-
-struct DownloadFileStack: View {
-    let message: Message?
-    let config: DownloadFileViewConfig
-
-    var body: some View {
-        if !(message?.isImage ?? false) {
-            VStack(alignment: .leading, spacing: 8) {
-                DownloadFileName(message: message, config: config)
-                DownloadFileSize(message: message, config: config)
-            }
-        }
-    }
-}
-
-public struct DownloadFileName: View {
-    let message: Message?
-    let config: DownloadFileViewConfig
-    var fileName: String? { message?.uploadFileName ?? message?.fileMetaData?.file?.originalName }
-
-    public var body: some View {
-        if config.showFileName, let fileName {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("\(fileName)\(message?.fileExtension ?? "")")
-                    .foregroundStyle(Color.App.text)
-                    .font(.iransansBoldCaption)
-            }
-        }
-    }
-}
-
-struct DownloadFileSize: View {
-    let message: Message?
-    let config: DownloadFileViewConfig
-
-    var body: some View {
-        if config.showFileSize, let fileSize = message?.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale), message?.isAudio == false {
-            Text(fileSize)
-                .multilineTextAlignment(.leading)
-                .font(.iransansCaption3)
-                .foregroundColor(Color.App.text)
         }
     }
 }

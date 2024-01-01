@@ -72,7 +72,6 @@ fileprivate struct AudioDownloadButton: View {
     @EnvironmentObject var audioVM: AVAudioPlayerViewModel
     private var message: Message? { viewModel.message }
     private var percent: Int64 { viewModel.downloadPercent }
-    private let config: DownloadFileViewConfig = .normal
     private var isSameFile: Bool { audioVM.fileURL?.absoluteString == viewModel.fileURL?.absoluteString }
     private var stateIcon: String {
         if viewModel.state == .completed {
@@ -96,9 +95,9 @@ fileprivate struct AudioDownloadButton: View {
                 iconView
                 progress
             }
-            .frame(width: config.iconWidth, height: config.iconHeight)
+            .frame(width: 46, height: 46)
             .background(Color.App.btnDownload)
-            .clipShape(RoundedRectangle(cornerRadius:(config.iconHeight / 2)))
+            .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
 
             VStack(alignment: .leading, spacing: 4) {
                 fileNameView
@@ -128,7 +127,7 @@ fileprivate struct AudioDownloadButton: View {
                 .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                 .foregroundColor(Color.App.primary)
                 .rotationEffect(Angle(degrees: 270))
-                .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
+                .frame(width: 42, height: 42)
                 .environment(\.layoutDirection, .leftToRight)
                 .fontWeight(.semibold)
         }
@@ -165,7 +164,7 @@ fileprivate struct AudioDownloadButton: View {
     }
 
     @ViewBuilder private var audioProgress: some View {
-        if config.showFileName, message?.isAudio == true, viewModel.state == .completed, isSameFile {
+        if message?.isAudio == true, viewModel.state == .completed, isSameFile {
             VStack(alignment: .leading, spacing: 4) {
                 ProgressView(value: min(audioVM.currentTime / audioVM.duration, 1.0), total: 1.0)
                     .progressViewStyle(.linear)

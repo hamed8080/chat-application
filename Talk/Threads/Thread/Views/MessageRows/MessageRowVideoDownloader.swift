@@ -68,7 +68,6 @@ fileprivate struct VideoDownloadButton: View {
     @EnvironmentObject var messageRowVM: MessageRowViewModel
     private var message: Message? { viewModel.message }
     private var percent: Int64 { viewModel.downloadPercent }
-    private let config: DownloadFileViewConfig = .normal
     private var stateIcon: String {
         if viewModel.state == .downloading {
             return "pause.fill"
@@ -85,9 +84,9 @@ fileprivate struct VideoDownloadButton: View {
                 iconView
                 progress
             }
-            .frame(width: config.iconWidth, height: config.iconHeight)
+            .frame(width: 46, height: 46)
             .background(Color.App.btnDownload)
-            .clipShape(RoundedRectangle(cornerRadius:(config.iconHeight / 2)))
+            .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
 
             VStack(alignment: .leading, spacing: 4) {
                 fileNameView
@@ -116,7 +115,7 @@ fileprivate struct VideoDownloadButton: View {
                 .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                 .foregroundColor(Color.App.primary)
                 .rotationEffect(Angle(degrees: 270))
-                .frame(width: config.circleProgressMaxWidth, height: config.circleProgressMaxWidth)
+                .frame(width: 42, height: 42)
                 .environment(\.layoutDirection, .leftToRight)
                 .fontWeight(.semibold)
         }

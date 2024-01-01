@@ -140,7 +140,7 @@ struct DownloadVideoButtonView: View {
                 FullScreenPlayer(fileURL: fileURL, message: message)
             }
         case .downloading, .started, .paused, .undefined, .thumbnail:
-            DownloadFileView(viewModel: viewModel, config: .detail)
+            DownloadFileView(viewModel: viewModel)
                 .frame(width: 72, height: 72)
         default:
             EmptyView()
