@@ -9,6 +9,7 @@ import SwiftUI
 import TalkViewModels
 import TalkExtensions
 import TalkUI
+import TalkModels
 
 struct MainSendButtons: View {
     @EnvironmentObject var viewModel: SendContainerViewModel
@@ -43,6 +44,9 @@ struct MainSendButtons: View {
             .clipShape(RoundedRectangle(cornerRadius:(24)))
             .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
             .onChange(of: viewModel.textMessage) { newValue in
+                if Language.isRTL && newValue.first != "\u{200f}" {
+                    viewModel.textMessage = "\u{200f}\(viewModel.textMessage)"
+                }
                 threadVM.sendStartTyping(newValue)
             }
 

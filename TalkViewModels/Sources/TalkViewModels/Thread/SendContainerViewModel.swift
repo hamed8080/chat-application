@@ -11,6 +11,7 @@ import ChatCore
 import ChatModels
 import ChatDTO
 import Combine
+import TalkModels
 
 public final class SendContainerViewModel: ObservableObject {
     private let thread: Conversation
