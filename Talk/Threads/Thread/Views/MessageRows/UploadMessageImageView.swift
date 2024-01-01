@@ -45,7 +45,7 @@ public struct UploadMessageImageView: View {
             if viewModel.uploadViewModel?.state == .paused {
                 viewModel.uploadViewModel?.resumeUpload()
             } else if viewModel.uploadViewModel?.state == .uploading {
-                viewModel.uploadViewModel?.pauseUpload()
+                viewModel.uploadViewModel?.cancelUpload()
             }
         }
         .task {
@@ -61,7 +61,7 @@ struct OverladUploadImageButton: View {
     var percent: Int64 { viewModel.uploadPercent }
     var stateIcon: String {
         if viewModel.state == .uploading {
-            return "pause.fill"
+            return "xmark"
         } else if viewModel.state == .paused {
             return "play.fill"
         } else {

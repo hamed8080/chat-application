@@ -92,6 +92,11 @@ public final class UploadFileViewModel: ObservableObject {
         ChatManager.activeInstance?.file.manageUpload(uniqueId: uploadUniqueId, action: .suspend)
     }
 
+    public func cancelUpload() {
+        guard let uploadUniqueId = uploadUniqueId else { return }
+        ChatManager.activeInstance?.file.manageUpload(uniqueId: uploadUniqueId, action: .cancel)
+    }
+
     private func onPause(_ uniqueId: String) {
         if uniqueId == uploadUniqueId {
             state = .paused

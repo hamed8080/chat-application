@@ -12,6 +12,7 @@ import ChatCore
 import ChatDTO
 import TalkModels
 import Combine
+import SwiftUI
 
 public final class ThreadUploadMessagesViewModel: ObservableObject {
     let thread: Conversation
@@ -57,6 +58,19 @@ public final class ThreadUploadMessagesViewModel: ObservableObject {
         switch event {
         case .message(let messageEventTypes):
             onMessageEvent(messageEventTypes)
+        case .upload(let event):
+            onUploadEvent(event)
+        default:
+            break
+        }
+    }
+
+    public func onUploadEvent(_ event: UploadEventTypes) {
+        switch event {
+        case .canceled(uniqueId: let uniqueId):
+            withAnimation {
+                uploadMessages.removeAll(where: { $0.uniqueId == uniqueId })
+            }
         default:
             break
         }
