@@ -111,7 +111,7 @@ struct MessagesLazyStack: View {
                     }
                 }
                 UploadMessagesLoop(historyVM: viewModel)
-                UnsentMessagesLoop(historyVM: viewModel)
+//                UnsentMessagesLoop(historyVM: viewModel)
                 ListLoadingView(isLoading: $viewModel.bottomLoading)
                     .id(-2)
                     .listRowSeparator(.hidden)
