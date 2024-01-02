@@ -83,20 +83,20 @@ struct NavigationTypeView: View {
         switch type {
         case .conversation(let conversation):
             if let viewModel = container.navVM.threadViewModel(threadId: conversation.id ?? 0) {
-                UIKitThreadViewWrapper(threadVM: viewModel)
-//                ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
-//                    .id(conversation.id) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
-//                    .environmentObject(container.appOverlayVM)
-//                    .environmentObject(viewModel)
-//                    .environmentObject(container.threadsVM)
-//                    .environmentObject(viewModel.audioRecoderVM)
-//                    .environmentObject(viewModel.sendContainerViewModel)
-//                    .environmentObject(viewModel.attachmentsViewModel)
-//                    .environmentObject(viewModel.searchedMessagesViewModel)
-//                    .environmentObject(viewModel.scrollVM)
-//                    .environmentObject(viewModel.historyVM)
-//                    .environmentObject(viewModel.uploadMessagesViewModel)
-//                    .environmentObject(viewModel.unssetMessagesViewModel)
+//                UIKitThreadViewWrapper(threadVM: viewModel)
+                ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
+                    .id(conversation.id) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
+                    .environmentObject(container.appOverlayVM)
+                    .environmentObject(viewModel)
+                    .environmentObject(container.threadsVM)
+                    .environmentObject(viewModel.audioRecoderVM)
+                    .environmentObject(viewModel.sendContainerViewModel)
+                    .environmentObject(viewModel.attachmentsViewModel)
+                    .environmentObject(viewModel.searchedMessagesViewModel)
+                    .environmentObject(viewModel.scrollVM)
+                    .environmentObject(viewModel.historyVM)
+                    .environmentObject(viewModel.uploadMessagesViewModel)
+                    .environmentObject(viewModel.unssetMessagesViewModel)
             }
         case .contact(let contact):
             Text(contact.firstName ?? "")

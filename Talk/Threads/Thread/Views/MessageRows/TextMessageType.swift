@@ -104,7 +104,7 @@ struct InnerMessage: View {
                 ReactionCountView()
                     .environmentObject(viewModel.reactionsVM)
                     .environmentObject(viewModel)
-                MessageFooterView()
+                MessageFooterUITableViewCellWapper(viewModel: viewModel)
             }
         }
         .padding(viewModel.paddingEdgeInset)

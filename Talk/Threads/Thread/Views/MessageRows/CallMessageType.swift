@@ -74,7 +74,9 @@ struct CallMessageWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
     func makeUIView(context: Context) -> some UIView {
-        return CallEventUITableViewCell()
+        let view = CallEventUITableViewCell()
+        view.setValues(viewModel: viewModel)
+        return view
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
