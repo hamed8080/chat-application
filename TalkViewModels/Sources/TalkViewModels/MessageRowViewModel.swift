@@ -95,7 +95,6 @@ public final class MessageRowViewModel: ObservableObject {
     private static var emptyImage = UIImage(named: "empty_image")!
     public var image: UIImage = MessageRowViewModel.emptyImage
     public var canShowImageView: Bool = false
-    public var imageScale: ContentMode = .fill
 
     public var avatarImageLoader: ImageLoaderViewModel? {
         let userName = message.participant?.name ?? message.participant?.username
@@ -279,22 +278,25 @@ public final class MessageRowViewModel: ObservableObject {
 
     private func calculateImageSize() async {
         if message.isImage {
-            let isOnlyImage = (message.message ?? "").isEmpty == true && (message.replyInfo == nil) && (message.forwardInfo == nil)
-
             /// We use max to at least have a width, because there are times that maxWidth is nil.
             let imageWidth = CGFloat(fileMetaData?.file?.actualWidth ?? 0)
-            let minWidth: CGFloat = 128
             let maxWidth = ThreadViewModel.maxAllowedWidth
-            let dynamicWidth = min(max(minWidth, imageWidth), maxWidth)
-            self.imageWidth = isOnlyImage ? dynamicWidth : maxWidth
-
             /// We use max to at least have a width, because there are times that maxWidth is nil.
             let imageHeight = CGFloat(fileMetaData?.file?.actualHeight ?? 0)
-            let minHeight: CGFloat = 128
-            let maxHeight: CGFloat = 2 * ThreadViewModel.maxAllowedWidth
-            let dynamicHeight = min(max(minHeight, imageHeight), maxHeight)
-            self.imageHeight = isOnlyImage ? dynamicHeight : maxHeight
-            imageScale = isOnlyImage ? .fit : .fill
+            let originalWidth: CGFloat = imageWidth
+            let originalHeight: CGFloat = imageHeight
+            var designerWidth: CGFloat = maxWidth
+            var designerHeight: CGFloat = maxWidth
+            let originalRatio: CGFloat = originalWidth / originalHeight
+            let designRatio: CGFloat = designerWidth / designerHeight
+            if originalRatio > designRatio {
+                designerHeight = designerWidth / originalRatio
+            } else {
+                designerWidth = designerHeight * originalRatio
+            }
+            let isSquare = originalRatio >= 1 && originalRatio <= 1.5
+            self.imageWidth = isSquare ? designerWidth : designerWidth * 1.5
+            self.imageHeight = isSquare ? designerHeight : designerHeight * 1.5
         }
     }
 

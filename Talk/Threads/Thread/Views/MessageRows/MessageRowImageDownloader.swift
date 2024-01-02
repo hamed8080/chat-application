@@ -21,8 +21,8 @@ struct MessageRowImageDownloader: View {
             ZStack {
                 Image(uiImage: viewModel.image)
                     .resizable()
+                    .scaledToFit()
                     .frame(maxWidth: viewModel.imageWidth, maxHeight: viewModel.imageHeight)
-                    .aspectRatio(contentMode: viewModel.imageScale)
                     .clipped()
                     .zIndex(0)
                     .background(gradient)
