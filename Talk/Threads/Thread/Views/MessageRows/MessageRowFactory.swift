@@ -24,8 +24,7 @@ struct MessageRowFactory: View {
                 case .endCall, .startCall:
                     CallMessageWapper(viewModel: viewModel)
                 case .participantJoin, .participantLeft:
-                    ParticipantMessageType()
-                        .environmentObject(viewModel)
+                    ParticipantsEventUITableViewCellWapper(viewModel: viewModel)
                 default:
                     if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
                         TextMessageType(viewModel: viewModel)

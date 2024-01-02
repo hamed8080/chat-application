@@ -58,18 +58,6 @@ final class UnreadBubbleUITableViewCell: UITableViewCell {
     }
 }
 
-final class ParticipantsEventUITableViewCell: UITableViewCell {
-    var viewModel: MessageRowViewModel!
-
-    convenience init(viewModel: MessageRowViewModel) {
-        self.init(style: .default, reuseIdentifier: "ParticipantsEventUITableViewCell")
-        self.viewModel = viewModel
-        let label = UILabel(frame: contentView.frame)
-        label.attributedText = viewModel.nsMarkdownTitle
-        contentView.addSubview(label)
-    }
-}
-
 final class ThreadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var viewModel: ThreadViewModel!
     var tableView: UITableView!
@@ -106,7 +94,9 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
             cell.setValues(viewModel: viewModel)
             return cell
         case .participantJoin, .participantLeft:
-            return ParticipantsEventUITableViewCell(viewModel: viewModel)
+            let cell = (cell as? ParticipantsEventUITableViewCell) ?? ParticipantsEventUITableViewCell()
+            cell.setValues(viewModel: viewModel)
+            return cell
         default:
             if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
                 return MessageUITableViewCell(viewModel: viewModel)

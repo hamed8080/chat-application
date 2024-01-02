@@ -114,6 +114,8 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private static var emptyImage = UIImage(named: "empty_image")!
     public var image: UIImage = MessageRowViewModel.emptyImage
     public var canShowImageView: Bool = false
+    public var imageScale: ContentMode = .fill
+    public var participantEvenMarkdown = NSAttributedString()
 
     public var avatarImageLoader: ImageLoaderViewModel? {
         let userName = message.participant?.name ?? message.participant?.username
@@ -279,6 +281,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         await calculateImageSize()
         await setReplyInfo()
         await calculatePaddings()
+        await setParticipantEvent()
         isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
         let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
         let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
@@ -442,6 +445,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
+<<<<<<< HEAD
     private func calculateFileSize() -> String? {
         let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
         let realServerFileSize = fileMetaData?.file?.size
@@ -473,6 +477,11 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateLocalizeReplyFileName() -> String? {
         let hinTextMessage = message.replyInfo?.message ?? message.replyFileStringName?.localized()
         return hinTextMessage
+=======
+    private func setParticipantEvent() async {
+        let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
+        participantEvenMarkdown = try! NSAttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
+>>>>>>> d3143b9 (- Calculate the participant event types inside MessageRowViewModel)
     }
 
     deinit {
