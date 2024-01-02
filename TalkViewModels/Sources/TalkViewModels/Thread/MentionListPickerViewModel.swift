@@ -49,16 +49,17 @@ public final class MentionListPickerViewModel: ObservableObject {
     }
 
     public func searchForParticipantInMentioning(_ text: String) {
+        if thread.group == false || thread.group == nil { return }
         /// remove the hidden RTL character for forcing the UITextView to write from right to left.
         let text = text.replacingOccurrences(of: "\u{200f}", with: "")
         if text.last == "@" {
             // Fetch some data to show if the user typed an @.
-            let req = ThreadParticipantRequest(threadId: threadId, count: 5)
+            let req = ThreadParticipantRequest(threadId: threadId, count: 15)
             RequestsManager.shared.append(prepend: "MentionParticipants", value: req)
             ChatManager.activeInstance?.conversation.participant.get(req)
         } else if text.matches(char: "@")?.last != nil, text.split(separator: " ").last?.first == "@", text.last != " " {
             let rangeText = text.split(separator: " ").last?.replacingOccurrences(of: "@", with: "")
-            let req = ThreadParticipantRequest(threadId: threadId, name: rangeText)
+            let req = ThreadParticipantRequest(threadId: threadId, count: 15, name: rangeText)
             RequestsManager.shared.append(prepend: "MentionParticipants", value: req)
             ChatManager.activeInstance?.conversation.participant.get(req)
         } else {
@@ -74,6 +75,7 @@ public final class MentionListPickerViewModel: ObservableObject {
         if response.value(prepend: "MentionParticipants") != nil, !response.cache, let participants = response.result {
             self.mentionList.removeAll()
             self.mentionList = .init(participants)
+            mentionList.removeAll(where: {$0.id == AppState.shared.user?.id})
             animateObjectWillChange()
         }
     }

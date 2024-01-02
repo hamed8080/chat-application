@@ -17,7 +17,7 @@ public final class SendContainerViewModel: ObservableObject {
     private let thread: Conversation
     public weak var threadVM: ThreadViewModel?
     public var threadId: Int { thread.id ?? -1 }
-    @Published public var textMessage: String = ""
+    @Published public var textMessage: String
     private var cancelable: Set<AnyCancellable> = []
     public var canShowMute: Bool { (thread.type == .channel || thread.type == .channelGroup) && (thread.admin == false || thread.admin == nil) && !isInEditMode }
     public var disableSend: Bool { thread.disableSend && isInEditMode == false && !canShowMute }
@@ -45,10 +45,30 @@ public final class SendContainerViewModel: ObservableObject {
     }
 
     public init(thread: Conversation) {
+        textMessage = UserDefaults.standard.string(forKey: "draft-\(thread.id ?? 0)") ?? ""
         self.thread = thread
         setupNotificationObservers()
     }
 
-    private func setupNotificationObservers() {}
+    private func setupNotificationObservers() {
+        $textMessage.sink { [weak self] newValue in
+            self?.onTextMessageChanged(newValue)
+        }
+        .store(in: &cancelable)
+    }
+
+    private func onTextMessageChanged(_ newValue: String) {
+        threadVM?.mentionListPickerViewModel.text = newValue
+        let isRTLChar = newValue.count == 1 && newValue.first == "\u{200f}"
+        if !newValue.isEmpty && !isRTLChar {
+            UserDefaults.standard.setValue(newValue, forKey: "draft-\(threadId)")
+        } else {
+            UserDefaults.standard.removeObject(forKey: "draft-\(threadId)")
+        }
+    }
+
+    public func clear() {
+        textMessage = ""
+    }
 
 }

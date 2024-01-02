@@ -46,7 +46,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var isFetchedServerFirstResponse: Bool = false
     private var cancelable: Set<AnyCancellable> = []
     public weak var threadViewModel: ThreadViewModel!
-    private var thread: Conversation { threadViewModel!.thread }
+    private var thread: Conversation { threadViewModel?.thread ?? .init(id: -1) }
     private var threadId: Int { thread.id ?? -1 }
     var hasSentHistoryRequest = false
 

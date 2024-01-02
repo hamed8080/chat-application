@@ -93,11 +93,10 @@ struct MainSendButtons: View {
                 if viewModel.showSendButton {
                     threadVM.sendTextMessage(viewModel.textMessage)
                 }
-                viewModel.textMessage = ""
+                viewModel.clear()
                 threadVM.mentionListPickerViewModel.text = ""
                 threadVM.sheetType = nil
-                threadVM.animateObjectWillChange()
-                UserDefaults.standard.removeObject(forKey: "draft-\(threadVM.threadId)")
+                threadVM.animateObjectWillChange()                
             } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .resizable()

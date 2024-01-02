@@ -48,21 +48,15 @@ struct SendContainer: View {
                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                 .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: viewModel.textMessage.isEmpty)
                 .onReceive(viewModel.$editMessage) { editMessage in
-                    viewModel.textMessage = editMessage?.message ?? ""
+                    if let editMessage {
+                        viewModel.textMessage = editMessage.message ?? ""
+                    }
                 }
                 .onReceive(threadVM.$isInEditMode) { newValue in
                     if newValue != viewModel.isInEditMode {
                         withAnimation {
                             viewModel.isInEditMode = newValue
                         }
-                    }
-                }
-                .onReceive(viewModel.$textMessage) { newValue in
-                    threadVM.mentionListPickerViewModel.text = newValue
-                    if !newValue.isEmpty {
-                        UserDefaults.standard.setValue(newValue, forKey: "draft-\(viewModel.threadId)")
-                    } else {
-                        UserDefaults.standard.removeObject(forKey: "draft-\(viewModel.threadId)")
                     }
                 }
             }
@@ -84,11 +78,6 @@ struct AudioOrTextContainer: View {
                 .environment(\.layoutDirection, .leftToRight)
                 .animation(audioRecordingVM.isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: audioRecordingVM.isRecording)
                 .scaleEffect(x: viewModel.showRecordingView ? 0.001 : 1.0, y: viewModel.showRecordingView ? 0.001 : 1.0, anchor: .center)
-                .onAppear {
-                    if let draft = UserDefaults.standard.string(forKey: "draft-\(viewModel.threadId)"), !draft.isEmpty {
-                        viewModel.textMessage = draft
-                    }
-                }
         }
         .animation(.easeInOut, value: viewModel.showRecordingView)
     }
