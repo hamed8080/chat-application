@@ -19,7 +19,7 @@ struct UploadMessageType: View {
     var body: some View {
         if message.isUploadMessage {
             if message.isUnsentMessage == false, message.uploadFile?.uploadImageRequest != nil {
-                UploadMessageImageView(viewModel: viewModel)
+                UploadMessageImageViewWapper(viewModel: viewModel)
             } else if message.isUnsentMessage == false, message.uploadFile?.uploadFileRequest != nil {
                 UploadMessageFileView(viewModel: viewModel)
             }

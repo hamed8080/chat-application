@@ -29,7 +29,7 @@ struct MessageRowFactory: View {
                     if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
                         TextMessageType(viewModel: viewModel)
                     } else if message is UnreadMessageProtocol {
-                        UnreadMessagesBubble()
+                        UnreadMessagesBubbleWapper(viewModel: viewModel)
                     } else {
                         UnknownMessageType(message: message)
                     }

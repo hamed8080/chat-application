@@ -97,9 +97,14 @@ struct InnerMessage: View {
                 MessageRowAudioDownloader(viewModel: viewModel)
                 UploadMessageType()
             }
-            MessageTextView()
+            LocationRowViewWapper(viewModel: viewModel)
+            GroupParticipantNameViewWapper(viewModel: viewModel)
+            ReplyInfoMessageRowWapper(viewModel: viewModel)
+            ForwardMessageRowWapper(viewModel: viewModel)
+            UploadMessageType()
+            MessageTextViewWapper(viewModel: viewModel)
             JoinPublicLink(viewModel: viewModel)
-            UnsentMessageView()
+            UnsentMessageViewWapper(viewModel: viewModel)
             Group {
                 ReactionCountView()
                     .environmentObject(viewModel.reactionsVM)
@@ -108,12 +113,6 @@ struct InnerMessage: View {
             }
         }
         .padding(viewModel.paddingEdgeInset)
-        .background(
-            MessageRowBackground.instance
-                .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
-                .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
-        )
-        .contentShape(MessageRowBackground.instance)
         .customContextMenu(id: message.id, self: SelfContextMenu(viewModel: viewModel), menus: { ContextMenuContent(viewModel: viewModel) })
         .overlay(alignment: .center) { SelectMessageInsideClickOverlay() }
     }

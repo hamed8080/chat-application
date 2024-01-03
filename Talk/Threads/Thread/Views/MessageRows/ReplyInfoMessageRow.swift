@@ -180,7 +180,7 @@ final class ReplyInfoMessageRow: UIButton {
         deletedLabel.font = UIFont.uiiransansBoldCaption2
         deletedLabel.textColor = Color.App.uired
 
-        bar.backgroundColor = Color.App.uired
+        bar.backgroundColor = Color.App.uiprimary
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
