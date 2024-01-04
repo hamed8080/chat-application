@@ -21,7 +21,7 @@ struct UploadMessageType: View {
             if message.isUnsentMessage == false, message.uploadFile?.uploadImageRequest != nil {
                 UploadMessageImageViewWapper(viewModel: viewModel)
             } else if message.isUnsentMessage == false, message.uploadFile?.uploadFileRequest != nil {
-                UploadMessageFileView(viewModel: viewModel)
+                UploadMessageFileViewWapper(viewModel: viewModel)
             }
         }
     }

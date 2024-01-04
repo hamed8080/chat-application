@@ -49,7 +49,7 @@ struct MessageFooterView: View {
     }
 }
 
-final class MessageFooterUITableViewCell: UIView {
+final class MessageFooterUITableView: UIView {
     private let stack = UIStackView()
     private let pinImage = UIImageView(image: UIImage(systemName: "pin.fill"))
     private let timelabel = UILabel()
@@ -106,7 +106,7 @@ struct MessageFooterUITableViewCellWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
     func makeUIView(context: Context) -> some UIView {
-        let view = MessageFooterUITableViewCell()
+        let view = MessageFooterUITableView()
         view.setValues(viewModel: viewModel)
         return view
     }

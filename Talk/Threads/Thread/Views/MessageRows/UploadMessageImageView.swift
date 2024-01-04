@@ -113,9 +113,10 @@ struct OverladUploadImageButton: View {
 
 final class UploadMessageImageView: UIView {
     private let container = UIView()
+    private let stack = UIStackView()
+    private let fileSizeLabel = UILabel()
     private let uploadImage = UIImageView()
-    private let statusIcon = UIImageView()
-    private let progressView = CircleProgressView()
+    private let progressView = CircleProgressView(color: Color.App.uiwhite, iconTint: Color.App.uiwhite)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -131,32 +132,33 @@ final class UploadMessageImageView: UIView {
         backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
-        
+
         uploadImage.layer.cornerRadius = 8
         uploadImage.layer.masksToBounds = true
-        uploadImage.backgroundColor = .red
 
-        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         let blurView = UIVisualEffectView(effect: blurEffect)
         blurView.frame = uploadImage.bounds
         blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         uploadImage.addSubview(blurView)
-
-        progressView.color = Color.App.uiwhite
-        progressView.layer.backgroundColor = Color.App.uiwhite?.withAlphaComponent(0.3).cgColor
-//        progressView.layer.masksToBounds = true
-        uploadImage.addSubview(progressView)
-
-        statusIcon.contentMode = .scaleAspectFit
-        statusIcon.tintColor = Color.App.uitext
-        uploadImage.addSubview(statusIcon)
-
         container.addSubview(uploadImage)
+
+        fileSizeLabel.font = UIFont.uiiransansBoldCaption2
+        fileSizeLabel.textAlignment = .left
+        fileSizeLabel.textColor = Color.App.uitext
+
+        stack.axis = .horizontal
+        stack.spacing = 12
+        stack.addArrangedSubview(progressView)
+        stack.addArrangedSubview(fileSizeLabel)
+        stack.backgroundColor = .white.withAlphaComponent(0.2)
+        stack.layoutMargins = .init(horizontal: 6, vertical: 6)
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layer.cornerRadius = 30
+        container.addSubview(stack)
         addSubview(container)
 
-        progressView.translatesAutoresizingMaskIntoConstraints = false
-        statusIcon.translatesAutoresizingMaskIntoConstraints = false
-        uploadImage.translatesAutoresizingMaskIntoConstraints = false
+        stack.translatesAutoresizingMaskIntoConstraints = false
         container.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
@@ -168,16 +170,10 @@ final class UploadMessageImageView: UIView {
             uploadImage.heightAnchor.constraint(equalToConstant: 128),
             blurView.widthAnchor.constraint(equalTo: uploadImage.widthAnchor),
             blurView.heightAnchor.constraint(equalTo: uploadImage.heightAnchor),
-            uploadImage.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            uploadImage.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            statusIcon.centerXAnchor.constraint(equalTo: uploadImage.centerXAnchor),
-            statusIcon.centerYAnchor.constraint(equalTo: uploadImage.centerYAnchor),
-            statusIcon.widthAnchor.constraint(equalToConstant: 8),
-            statusIcon.heightAnchor.constraint(equalToConstant: 8),
-            progressView.centerXAnchor.constraint(equalTo: uploadImage.centerXAnchor),
-            progressView.centerYAnchor.constraint(equalTo: uploadImage.centerYAnchor),
-            progressView.widthAnchor.constraint(equalToConstant: 18),
-            progressView.heightAnchor.constraint(equalToConstant: 18),
+            stack.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            progressView.widthAnchor.constraint(equalToConstant: 48),
+            progressView.heightAnchor.constraint(equalToConstant: 48),
         ])
     }
 
@@ -186,10 +182,17 @@ final class UploadMessageImageView: UIView {
         if let data = message.uploadFile?.uploadImageRequest?.dataToSend, let image = UIImage(data: data) {
             uploadImage.image = image
         }
-        let font = UIFont.systemFont(ofSize: 8, weight: .bold)
-        let config = UIImage.SymbolConfiguration(font: font)
-        statusIcon.image = UIImage(systemName: stateIcon(viewModel: viewModel), withConfiguration: config)
-        uploadImage.image = UIImage(named: "global_app_icon")
+        let progress = CGFloat(viewModel.uploadViewModel?.uploadPercent ?? 0)
+        progressView.animate(to: progress, systemIconName: stateIcon(viewModel: viewModel))
+        if progress >= 1 {
+            progressView.removeProgress()
+        }
+
+        let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
+        let realServerFileSize = viewModel.fileMetaData?.file?.size
+        if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
+            fileSizeLabel.text = fileSize
+        }
     }
 
     private func stateIcon(viewModel: MessageRowViewModel) -> String {
@@ -201,11 +204,6 @@ final class UploadMessageImageView: UIView {
         } else {
             return "arrow.up"
         }
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        progressView.layer.cornerRadius = 9
     }
 }
 

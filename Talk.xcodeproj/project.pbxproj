@@ -329,8 +329,6 @@
 		05EC8A312ACBED930016361F /* ReactionCountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2D2ACBED930016361F /* ReactionCountView.swift */; };
 		05EC8A322ACBED930016361F /* ReactionMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */; };
 		05EC8A332ACBED930016361F /* ReactionMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */; };
-		05EC8A342ACBED930016361F /* OverlayEmojiViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */; };
-		05EC8A352ACBED930016361F /* OverlayEmojiViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */; };
 		05F53EEF2B1866A9003DB412 /* CloseRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */; };
 		05F53EF02B1866A9003DB412 /* CloseRecordingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */; };
 		05F70E5A2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */; };
@@ -523,7 +521,6 @@
 		05E9C08C2B1EFBCE00E782BD /* ThreadListRowBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadListRowBackground.swift; sourceTree = "<group>"; };
 		05EC8A2D2ACBED930016361F /* ReactionCountView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionCountView.swift; sourceTree = "<group>"; };
 		05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionMenuView.swift; sourceTree = "<group>"; };
-		05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayEmojiViews.swift; sourceTree = "<group>"; };
 		05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseRecordingButton.swift; sourceTree = "<group>"; };
 		05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainerOverlayView.swift; sourceTree = "<group>"; };
 		05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEmptySpaceView.swift; sourceTree = "<group>"; };
@@ -754,7 +751,6 @@
 			children = (
 				05E3CC2A2B145B59002894E1 /* UploadMessageImageView.swift */,
 				05E3CC2D2B145BC6002894E1 /* UploadMessageFileView.swift */,
-				05EC8A2F2ACBED930016361F /* OverlayEmojiViews.swift */,
 				05EC8A2D2ACBED930016361F /* ReactionCountView.swift */,
 				05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */,
 				0570CB802AAEE98C001832E9 /* CallMessageType.swift */,
@@ -1291,7 +1287,6 @@
 				05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */,
 				05EC8A322ACBED930016361F /* ReactionMenuView.swift in Sources */,
 				0570CC752AAEE98F001832E9 /* AssistantView.swift in Sources */,
-				05EC8A342ACBED930016361F /* OverlayEmojiViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1446,7 +1441,6 @@
 				0570CC3A2AAEE98F001832E9 /* TagRow.swift in Sources */,
 				05EC8A332ACBED930016361F /* ReactionMenuView.swift in Sources */,
 				0570CC762AAEE98F001832E9 /* AssistantView.swift in Sources */,
-				05EC8A352ACBED930016361F /* OverlayEmojiViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
