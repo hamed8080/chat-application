@@ -50,13 +50,15 @@ final class MessageTextView: UIView {
     private func configureView() {
         lblMessage.textColor = Color.App.uitext
         lblMessage.font = UIFont.uiiransansBody
-        lblMessage.translatesAutoresizingMaskIntoConstraints = false
         lblMessage.numberOfLines = 0
+        lblMessage.translatesAutoresizingMaskIntoConstraints = false
         addSubview(lblMessage)
 
         NSLayoutConstraint.activate([
-            lblMessage.leadingAnchor.constraint(equalTo: leadingAnchor),
+            lblMessage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            lblMessage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             lblMessage.topAnchor.constraint(equalTo: topAnchor),
+            lblMessage.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
 
@@ -85,7 +87,11 @@ struct MessageTextViewWapper: UIViewRepresentable {
 
 struct MessageTextView_Previews: PreviewProvider {
     static var previews: some View {
-        let message = Message(id: 1, messageType: .participantJoin, time: 155600555)
+        let longText = """
+This is a very long text to test how it would react to size change\n
+In this new line we are going to test if it can break the line.
+"""
+        let message = Message(id: 1, message: longText, messageType: .participantJoin, time: 155600555)
         let viewModel = MessageRowViewModel(message: message, viewModel: .init(thread: .init(id: 1)))
         MessageTextViewWapper(viewModel: viewModel)
     }

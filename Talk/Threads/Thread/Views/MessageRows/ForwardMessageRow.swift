@@ -64,7 +64,8 @@ import TalkViewModels
 
 
 final class ForwardMessageRow: UIButton {
-    private let stack = UIStackView()
+    private let hStackWithBar = UIStackView()
+    private let vStack = UIStackView()
     private let hStack = UIStackView()
     private let forwardStaticLebel = UILabel()
     private let participantLabel = UILabel()
@@ -82,6 +83,9 @@ final class ForwardMessageRow: UIButton {
     }
 
     private func configureView() {
+        hStackWithBar.translatesAutoresizingMaskIntoConstraints = false
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+
         layoutMargins = UIEdgeInsets(all: 8)
         backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
@@ -94,7 +98,6 @@ final class ForwardMessageRow: UIButton {
 
         participantLabel.font = UIFont.uiiransansBoldCaption2
         participantLabel.textColor = Color.App.uiprimary
-        participantLabel.text = "Message.replyTo".localized()
 
         forwardLabel.font = UIFont.uiiransansCaption3
         forwardLabel.numberOfLines = 0
@@ -105,34 +108,35 @@ final class ForwardMessageRow: UIButton {
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
-        stack.axis = .vertical
-        stack.spacing = 2
-        stack.alignment = .leading
-        stack.layoutMargins = UIEdgeInsets(all: 8)
-        stack.isLayoutMarginsRelativeArrangement = true
+        vStack.axis = .vertical
+        vStack.spacing = 2
+        vStack.alignment = .leading
+        vStack.layoutMargins = UIEdgeInsets(all: 8)
+        vStack.isLayoutMarginsRelativeArrangement = true
 
         hStack.axis = .horizontal
         hStack.spacing = 4
-
-        hStack.addArrangedSubview(bar)
+        
         hStack.addArrangedSubview(imageIconView)
         hStack.addArrangedSubview(forwardLabel)
 
-        stack.addArrangedSubview(forwardStaticLebel)
-        stack.addArrangedSubview(participantLabel)
-        stack.addArrangedSubview(hStack)
+        vStack.addArrangedSubview(forwardStaticLebel)
+        vStack.addArrangedSubview(participantLabel)
+        vStack.addArrangedSubview(hStack)
 
-        addSubview(stack)
-        stack.translatesAutoresizingMaskIntoConstraints = false
+        hStackWithBar.axis = .horizontal
+        hStackWithBar.spacing = 2
+        hStackWithBar.addArrangedSubview(bar)
+        hStackWithBar.addArrangedSubview(vStack)
+        addSubview(hStackWithBar)
 
         NSLayoutConstraint.activate([
             bar.widthAnchor.constraint(equalToConstant: 1.5),
             bar.heightAnchor.constraint(equalToConstant: 48),
             imageIconView.widthAnchor.constraint(equalToConstant: 28),
             imageIconView.heightAnchor.constraint(equalToConstant: 28),
-            stack.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
-            stack.trailingAnchor.constraint(greaterThanOrEqualTo: trailingAnchor),
-            stack.topAnchor.constraint(equalTo: topAnchor),
+            hStackWithBar.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
+            hStackWithBar.topAnchor.constraint(equalTo: topAnchor),
         ])
     }
 

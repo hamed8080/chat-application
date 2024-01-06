@@ -27,7 +27,7 @@ struct MessageRowFactory: View {
                     ParticipantsEventUITableViewCellWapper(viewModel: viewModel)
                 default:
                     if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                        TextMessageType(viewModel: viewModel)
+                        TextMessageTypeCellWapper(viewModel: viewModel)
                     } else if message is UnreadMessageProtocol {
                         UnreadMessagesBubbleWapper(viewModel: viewModel)
                     } else {

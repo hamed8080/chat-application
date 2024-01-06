@@ -138,7 +138,8 @@ struct ReplyFileIcon: View {
 }
 
 final class ReplyInfoMessageRow: UIButton {
-    private let stack = UIStackView()
+    private let hStackWithBar = UIStackView()
+    private let vStack = UIStackView()
     private let hStack = UIStackView()
     private let replyStaticLebel = UILabel()
     private let participantLabel = UILabel()
@@ -157,6 +158,9 @@ final class ReplyInfoMessageRow: UIButton {
     }
 
     private func configureView() {
+        hStackWithBar.translatesAutoresizingMaskIntoConstraints = false
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+
         layoutMargins = UIEdgeInsets(all: 8)
         backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
@@ -169,7 +173,6 @@ final class ReplyInfoMessageRow: UIButton {
 
         participantLabel.font = UIFont.uiiransansBoldCaption2
         participantLabel.textColor = Color.App.uiprimary
-        participantLabel.text = "Message.replyTo".localized()
 
         replyLabel.font = UIFont.uiiransansCaption3
         replyLabel.numberOfLines = 2
@@ -184,35 +187,36 @@ final class ReplyInfoMessageRow: UIButton {
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
-        stack.axis = .vertical
-        stack.spacing = 2
-        stack.alignment = .leading
-        stack.layoutMargins = UIEdgeInsets(all: 8)
-        stack.isLayoutMarginsRelativeArrangement = true
-
         hStack.axis = .horizontal
         hStack.spacing = 4
-
-        hStack.addArrangedSubview(bar)
         hStack.addArrangedSubview(imageIconView)
         hStack.addArrangedSubview(deletedLabel)
         hStack.addArrangedSubview(replyLabel)
 
-        stack.addArrangedSubview(replyStaticLebel)
-        stack.addArrangedSubview(participantLabel)
-        stack.addArrangedSubview(hStack)
+        hStackWithBar.axis = .horizontal
+        hStackWithBar.spacing = 2
 
-        addSubview(stack)
-        stack.translatesAutoresizingMaskIntoConstraints = false
+        vStack.axis = .vertical
+        vStack.spacing = 2
+        vStack.alignment = .leading
+        vStack.layoutMargins = UIEdgeInsets(horizontal: 8, vertical: 4)
+        vStack.isLayoutMarginsRelativeArrangement = true
+        vStack.addArrangedSubview(replyStaticLebel)
+        vStack.addArrangedSubview(participantLabel)
+        vStack.addArrangedSubview(hStack)
+
+        hStackWithBar.addArrangedSubview(bar)
+        hStackWithBar.addArrangedSubview(vStack)
+
+        addSubview(hStackWithBar)
 
         NSLayoutConstraint.activate([
             bar.widthAnchor.constraint(equalToConstant: 1.5),
-            bar.heightAnchor.constraint(equalToConstant: 48),
             imageIconView.widthAnchor.constraint(equalToConstant: 28),
             imageIconView.heightAnchor.constraint(equalToConstant: 28),
-            stack.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
-            stack.trailingAnchor.constraint(greaterThanOrEqualTo: trailingAnchor),
-            stack.topAnchor.constraint(equalTo: topAnchor),
+            hStackWithBar.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
+            hStackWithBar.topAnchor.constraint(equalTo: topAnchor),
+            hStackWithBar.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
 
@@ -224,6 +228,7 @@ final class ReplyInfoMessageRow: UIButton {
         replyLabel.isHidden = replyInfo?.message?.isEmpty == true
         replyLabel.textAlignment = viewModel.isEnglish || viewModel.isMe ? .right : .left
         deletedLabel.isHidden = replyInfo?.deleted == nil || replyInfo?.deleted == false
+        imageIconView.isHidden = !viewModel.isReplyImage
     }
 }
 

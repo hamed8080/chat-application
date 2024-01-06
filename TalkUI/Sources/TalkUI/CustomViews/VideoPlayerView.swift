@@ -12,51 +12,100 @@ import TalkViewModels
 import OSLog
 
 fileprivate let logger = Logger(subsystem: "TalkUI", category: "VideoPlayerView")
-public struct VideoPlayerView: View {
+//public struct VideoPlayerView: View {
+//
+//    @EnvironmentObject var videoPlayerVM: VideoPlayerViewModel
+//    @State private var showFullScreen = false
+//    public init() {}
+//
+//    public var body: some View {
+//        VStack {
+//            if let player = videoPlayerVM.player {
+//                PlayerViewRepresentable(player: player, showFullScreen: $showFullScreen)
+//                    .frame(maxWidth: 320, minHeight: 196)
+//                    .clipShape(RoundedRectangle(cornerRadius:(8)))
+//                    .disabled(true)
+//            }
+//        }
+//        .contentShape(Rectangle())
+//        .onTapGesture {
+//            withAnimation {
+//                showFullScreen = true
+//            }
+//        }
+//        .overlay(alignment: .topLeading) {
+//            Text(String(localized:.init(videoPlayerVM.timerString)))
+//                .padding(6)
+//                .background(.ultraThinMaterial)
+//                .clipShape(RoundedRectangle(cornerRadius:(8)))
+//                .offset(x: 8, y: 8)
+//                .font(.iransansCaption)
+//        }
+//        .overlay(alignment: .center) {
+//            Circle()
+//                .fill(.ultraThinMaterial)
+//                .frame(width: 42, height: 42)
+//                .overlay(alignment: .center) {
+//                    Image(systemName: videoPlayerVM.player?.timeControlStatus == .paused ? "play.fill" : "pause.fill")
+//                        .resizable()
+//                        .frame(width: 12, height: 12)
+//                }
+//                .onTapGesture {
+//                    withAnimation {
+//                        videoPlayerVM.toggle()
+//                        videoPlayerVM.animateObjectWillChange()
+//                    }
+//                }
+//        }
+//    }
+//}
 
-    @EnvironmentObject var videoPlayerVM: VideoPlayerViewModel
-    @State private var showFullScreen = false
-    public init() {}
+public final class VideoPlayerView: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureView()
+    }
 
-    public var body: some View {
-        VStack {
-            if let player = videoPlayerVM.player {
-                PlayerViewRepresentable(player: player, showFullScreen: $showFullScreen)
-                    .frame(maxWidth: 320, minHeight: 196)
-                    .clipShape(RoundedRectangle(cornerRadius:(8)))
-                    .disabled(true)
-            }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func configureView() {
+        layoutMargins = UIEdgeInsets(all: 8)
+        backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
+        layer.cornerRadius = 5
+        layer.masksToBounds = true
+        translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            widthAnchor.constraint(lessThanOrEqualToConstant: 320),
+            heightAnchor.constraint(greaterThanOrEqualToConstant: 196),
+        ])
+    }
+    
+    public func setValues(viewModel: MessageRowViewModel) {
+        guard let fileURL = viewModel.downloadFileVM?.fileURL else { return }
+        let videoVM = VideoPlayerViewModel(fileURL: fileURL,
+                             ext: viewModel.fileMetaData?.file?.mimeType?.ext,
+                             title: viewModel.fileMetaData?.name,
+                             subtitle: viewModel.fileMetaData?.file?.originalName ?? "")
+        if let player = videoVM.player {
+
         }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            withAnimation {
-                showFullScreen = true
-            }
-        }
-        .overlay(alignment: .topLeading) {
-            Text(String(localized:.init(videoPlayerVM.timerString)))
-                .padding(6)
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius:(8)))
-                .offset(x: 8, y: 8)
-                .font(.iransansCaption)
-        }
-        .overlay(alignment: .center) {
-            Circle()
-                .fill(.ultraThinMaterial)
-                .frame(width: 42, height: 42)
-                .overlay(alignment: .center) {
-                    Image(systemName: videoPlayerVM.player?.timeControlStatus == .paused ? "play.fill" : "pause.fill")
-                        .resizable()
-                        .frame(width: 12, height: 12)
-                }
-                .onTapGesture {
-                    withAnimation {
-                        videoPlayerVM.toggle()
-                        videoPlayerVM.animateObjectWillChange()
-                    }
-                }
-        }
+    }
+}
+
+public struct VideoPlayerViewWapper: UIViewRepresentable {
+    let viewModel: MessageRowViewModel
+
+    public func makeUIView(context: Context) -> some UIView {
+        let view = VideoPlayerView()
+        view.setValues(viewModel: viewModel)
+        return view
+    }
+
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+
     }
 }
 
@@ -128,8 +177,8 @@ public extension AVPlayerViewController {
 
 struct VideoPlayerView_Previews: PreviewProvider {
     static var previews: some View {
-        VideoPlayerView()
-            .environmentObject(VideoPlayerViewModel(fileURL: URL(filePath: "/Users/hamed/Desktop/Workspace/ios/Fanap/Talk/Talk/Supporting Files/webrtc_user_a.mp4"), directLink: true))
+        let viewModel = VideoPlayerViewModel(fileURL: URL(filePath: "/Users/hamed/Desktop/Workspace/ios/Fanap/Talk/Talk/Supporting Files/webrtc_user_a.mp4"), directLink: true)
+        VideoPlayerViewWapper(viewModel: .init(message: .init(), viewModel: .init(thread: .init())))
             .frame(width: 480, height: 400)
     }
 }

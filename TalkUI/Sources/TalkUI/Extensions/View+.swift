@@ -43,3 +43,12 @@ struct DialogButton: Hashable, Identifiable {
     var action: () -> Void
     var id = UUID().uuidString
 }
+
+
+public extension UIStackView {
+    func addArrangedSubviews(_ views: [UIView]) {
+        views.forEach { view in
+            addArrangedSubview(view)
+        }
+    }
+}

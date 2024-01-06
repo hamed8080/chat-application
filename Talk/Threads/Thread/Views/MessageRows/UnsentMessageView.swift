@@ -63,6 +63,10 @@ final class UnsentMessageView: UIView {
             stack.topAnchor.constraint(equalTo: topAnchor),
         ])
     }
+
+    public func setValues(viewModel: MessageRowViewModel) {
+        
+    }
 }
 
 struct UnsentMessageViewWapper: UIViewRepresentable {

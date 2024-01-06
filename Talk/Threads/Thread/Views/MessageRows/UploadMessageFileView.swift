@@ -176,26 +176,6 @@ final class UploadMessageFileView: UIView {
 struct UploadMessageFileViewWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
-<<<<<<< HEAD
-                    Circle()
-                        .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
-                        .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                        .foregroundColor(Color.App.bgPrimary)
-                        .rotationEffect(Angle(degrees: 270))
-                        .frame(width: 32, height: 32)
-                        .environment(\.layoutDirection, .leftToRight)
-                }
-                .frame(width: 42, height: 42)
-                .background(Color.App.white)
-                .clipShape(RoundedRectangle(cornerRadius:(42 / 2)))
-                .onTapGesture {
-                    if viewModel.state == .paused {
-                        viewModel.resumeUpload()
-                    } else if viewModel.state == .uploading {
-                        viewModel.cancelUpload()
-                    }
-                }
-=======
     func makeUIView(context: Context) -> some UIView {
         let view = UploadMessageFileView()
         view.setValues(viewModel: viewModel)
@@ -203,7 +183,6 @@ struct UploadMessageFileViewWapper: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
->>>>>>> 85cb740 (- Add progress view and refactor Upload file/image to UIKit)
 
     }
 }

@@ -194,7 +194,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
         downloadFileVM?.objectWillChange.sink { [weak self] in
             Task { [weak self] in
-                await self?.prepareImage()
+                await self?.onImageDownload()
             }
         }
         .store(in: &cancelableSet)
@@ -389,7 +389,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         return UIImage(data: data)
     }
 
-    private func prepareImage() async {
+    private func onImageDownload() async {
         if downloadFileVM?.state == .completed, let realImage = realImage {
             image = realImage
             blurRadius = 0
@@ -445,7 +445,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-<<<<<<< HEAD
     private func calculateFileSize() -> String? {
         let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
         let realServerFileSize = fileMetaData?.file?.size
@@ -477,11 +476,11 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateLocalizeReplyFileName() -> String? {
         let hinTextMessage = message.replyInfo?.message ?? message.replyFileStringName?.localized()
         return hinTextMessage
-=======
+    }
+
     private func setParticipantEvent() async {
         let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
         participantEvenMarkdown = try! NSAttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
->>>>>>> d3143b9 (- Calculate the participant event types inside MessageRowViewModel)
     }
 
     deinit {

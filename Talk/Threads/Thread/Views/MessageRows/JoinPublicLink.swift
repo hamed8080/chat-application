@@ -11,41 +11,40 @@ import ChatModels
 import TalkModels
 import TalkUI
 
-struct JoinPublicLink: View {
-    let viewModel: MessageRowViewModel
-    private var message: Message { viewModel.message }
-
-    var body: some View {
-        if message.message?.contains(AppRoutes.joinLink) == true {
-            Button {
-                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(JoinToPublicConversationDialog(message: message))
-            } label: {
-                Text(message.message ?? "")
-                    .foregroundStyle(Color.App.color1)
-//                HStack {
-//                    Text("Thread.join")
-//                        .foregroundStyle(Color.App.textPrimary)
-//                        .font(.iransansBoldBody)
-//                        .multilineTextAlignment(.center)
-//                }
-//                .buttonStyle(.plain)
-//                .frame(height: 52)
-//                .fixedSize(horizontal: false, vertical: true)
-//                .frame(minWidth: 196)
-//                .background(Color.App.bgSecondary)
-//                .clipShape(RoundedRectangle(cornerRadius: 8))
-//                .overlay(
-//                    RoundedRectangle(cornerRadius: 8)
-//                        .inset(by: 0.5)
-//                        .stroke(Color.App.gray8, lineWidth: 1)
-//                )
-            }
-            .buttonStyle(.plain)
-            .padding(.horizontal, 10)
-        }
-    }
-}
-
+//struct JoinPublicLink: View {
+//    let viewModel: MessageRowViewModel
+//    private var message: Message { viewModel.message }
+//
+//    var body: some View {
+//        if message.message?.contains(AppRoutes.joinLink) == true {
+//            Button {
+//                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(JoinToPublicConversationDialog(message: message))
+//            } label: {
+//                Text(message.message ?? "")
+//                    .foregroundStyle(Color.App.blue)
+////                HStack {
+////                    Text("Thread.join")
+////                        .foregroundStyle(Color.App.text)
+////                        .font(.iransansBoldBody)
+////                        .multilineTextAlignment(.center)
+////                }
+////                .buttonStyle(.plain)
+////                .frame(height: 52)
+////                .fixedSize(horizontal: false, vertical: true)
+////                .frame(minWidth: 196)
+////                .background(Color.App.bgSecond)
+////                .clipShape(RoundedRectangle(cornerRadius: 8))
+////                .overlay(
+////                    RoundedRectangle(cornerRadius: 8)
+////                        .inset(by: 0.5)
+////                        .stroke(Color.App.gray8, lineWidth: 1)
+////                )
+//            }
+//            .buttonStyle(.plain)
+//            .padding(.horizontal, 10)
+//        }
+//    }
+//}
 
 struct JoinToPublicConversationDialog: View {
     let message: Message
@@ -88,8 +87,52 @@ struct JoinToPublicConversationDialog: View {
     }
 }
 
+final class JoinPublicLink: UIView {
+    private let stack = UIStackView()
+    private let joinButton = UIButton()
+    private let editedLabel = UILabel()
+    private let statusImage = UIImageView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureView()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func configureView() {
+        joinButton.titleLabel?.font = UIFont.uiiransansCaption2
+        addSubview(joinButton)
+        joinButton.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            joinButton.leadingAnchor.constraint(equalTo: leadingAnchor),
+        ])
+    }
+
+    public func setValues(viewModel: MessageRowViewModel) {
+        joinButton.setTitle(viewModel.message.message ?? "", for: .normal)
+    }
+}
+
+struct JoinPublicLinkWapper: UIViewRepresentable {
+    let viewModel: MessageRowViewModel
+
+    func makeUIView(context: Context) -> some UIView {
+        let view = JoinPublicLink()
+        view.setValues(viewModel: viewModel)
+        return view
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+
+    }
+}
+
 struct JoinPublicLink_Previews: PreviewProvider {
     static var previews: some View {
-        JoinPublicLink(viewModel: .init(message: .init(message: "\(AppRoutes.joinLink)FAKEUNIQUENAME") , viewModel: .init(thread: .init(id: 1))))
+        JoinPublicLinkWapper(viewModel: .init(message: .init(message: "\(AppRoutes.joinLink)FAKEUNIQUENAME") , viewModel: .init(thread: .init(id: 1))))
     }
 }

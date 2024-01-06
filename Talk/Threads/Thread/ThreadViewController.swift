@@ -65,6 +65,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        ThreadViewModel.threadWidth = view.frame.width
         configureViews()
         setupObservers()
     }
@@ -79,14 +80,18 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.historyVM.sections[section].messages.count
+        return viewModel.historyVM.sections[section].vms.count
+    }
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let message = viewModel.historyVM.sections[indexPath.section].messages[indexPath.row]
+        let message = viewModel.historyVM.sections[indexPath.section].vms[indexPath.row].message
         let identifier = cellIdentifier(for: message)
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier.rawValue, for: indexPath)
-        let viewModel = viewModel.historyVM.messageViewModel(for: message)
+        guard let viewModel = viewModel.historyVM.messageViewModel(for: message) else { return UITableViewCell() }
         let type = message.type
         switch type {
         case .endCall, .startCall:
@@ -99,7 +104,9 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
             return cell
         default:
             if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                return MessageUITableViewCell(viewModel: viewModel)
+                let cell = (cell as? TextMessageTypeCell) ?? TextMessageTypeCell(viewModel: viewModel)
+                cell.setValues(viewModel: viewModel)
+                return cell
             } else if message is UnreadMessageProtocol {
                 return UnreadBubbleUITableViewCell()
             } else {
@@ -146,6 +153,7 @@ extension ThreadViewController {
         tableView.dataSource = self
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableFooterView = UIView()
+        tableView.separatorStyle = .none
         tableView.backgroundColor = .red
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         tableView.register(MessageUITableViewCell.self, forCellReuseIdentifier: "MessageUITableViewCell")

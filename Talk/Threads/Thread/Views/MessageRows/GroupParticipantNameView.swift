@@ -45,17 +45,19 @@ final class GroupParticipantNameView: UIView {
         label.font = UIFont.uiiransansBody
         label.textColor = Color.App.uipurple
         label.numberOfLines = 1
-
-        addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(label)
 
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: leadingAnchor),
+            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             label.topAnchor.constraint(equalTo: topAnchor),
+            label.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
+        label.textAlignment = viewModel.isMe ? .right : .left
         label.text = viewModel.message.participant?.name ?? ""
     }
 }
