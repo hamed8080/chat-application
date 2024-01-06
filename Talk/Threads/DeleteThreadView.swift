@@ -16,7 +16,7 @@ struct DeleteThreadView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 16) {
             Text("Thread.Delete.footer")
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansSubheadline)
                 .multilineTextAlignment(.leading)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
@@ -26,7 +26,7 @@ struct DeleteThreadView: View {
                     container.appOverlayVM.dialogView = nil
                 } label: {
                     Text("General.cancel")
-                        .foregroundStyle(Color.App.placeholder)
+                        .foregroundStyle(Color.App.textPlaceholder)
                         .font(.iransansBody)
                         .frame(minWidth: 48, minHeight: 48)
                 }

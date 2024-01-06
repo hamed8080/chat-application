@@ -23,7 +23,7 @@ struct MentionList: View {
                         .font(.iransansBoldBody)
                         .foregroundColor(.white)
                         .frame(width: 24, height: 24)
-                        .background(Color.App.blue.opacity(0.4))
+                        .background(Color.App.color1.opacity(0.4))
                         .clipShape(RoundedRectangle(cornerRadius:(22)))
                     Text(participant.contactName ?? participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")
                         .font(.iransansCaption2)

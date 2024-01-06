@@ -78,7 +78,7 @@ struct OverladUploadImageButton: View {
                         .scaledToFit()
                         .font(.system(size: 8, design: .rounded).bold())
                         .frame(width: 8, height: 8)
-                        .foregroundStyle(Color.App.text)
+                        .foregroundStyle(Color.App.textPrimary)
 
                     Circle()
                         .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
@@ -97,7 +97,7 @@ struct OverladUploadImageButton: View {
                     Text(fileSize)
                         .multilineTextAlignment(.leading)
                         .font(.iransansBoldCaption2)
-                        .foregroundColor(Color.App.text)
+                        .foregroundColor(Color.App.textPrimary)
                 }
             }
             .frame(height: 30)

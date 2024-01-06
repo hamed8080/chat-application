@@ -27,9 +27,9 @@ struct LogView: View {
             if viewModel.searchText.isEmpty == false, viewModel.filtered.count < 1 {
                 HStack {
                     Image(systemName: "doc.text.magnifyingglass")
-                        .foregroundColor(Color.App.gray1.opacity(0.8))
+                        .foregroundColor(Color.App.textSecondary.opacity(0.8))
                     Text("General.nothingFound")
-                        .foregroundColor(Color.App.gray1.opacity(0.8))
+                        .foregroundColor(Color.App.textSecondary.opacity(0.8))
                 }
             }
         }

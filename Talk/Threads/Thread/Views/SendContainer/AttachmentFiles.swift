@@ -61,13 +61,13 @@ struct SingleAttachmentFile: View {
                 if let title = attachment.title {
                     Text(verbatim: title)
                         .font(.iransansBoldBody)
-                        .foregroundStyle(Color.App.text)
+                        .foregroundStyle(Color.App.textPrimary)
                 }
 
                 if let subtitle = attachment.subtitle {
                     Text(verbatim: subtitle)
                         .font(.iransansCaption2)
-                        .foregroundStyle(Color.App.hint)
+                        .foregroundStyle(Color.App.textSecondary)
                 }
             }
             .padding(EdgeInsets(top: 6, leading: 6 + 12, bottom: 6, trailing: 6))
@@ -83,7 +83,7 @@ struct SingleAttachmentFile: View {
                     .frame(width: 12, height: 12)
                     .padding()
                     .contentShape(Rectangle())
-                    .foregroundStyle(Color.App.hint)
+                    .foregroundStyle(Color.App.textSecondary)
             }
             .frame(width: 36, height: 36)
         }
@@ -155,14 +155,14 @@ struct ExpandHeader: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 12, height: 12)
-                .foregroundStyle(Color.App.hint)
+                .foregroundStyle(Color.App.textSecondary)
                 .frame(width: 36, height: 36)
                 .padding(.horizontal, 4)
                 .contentShape(Rectangle())
         }
         .frame(height: 36)
         .padding(8)
-        .background(MixMaterialBackground(color: Color.App.bgNavigation))
+        .background(MixMaterialBackground(color: Color.App.bgPrimary))
         .contentShape(Rectangle())
         .animation(.spring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: viewModel.isExpanded)
         .onTapGesture {

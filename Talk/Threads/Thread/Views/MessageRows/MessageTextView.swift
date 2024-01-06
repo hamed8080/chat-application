@@ -22,14 +22,14 @@ struct MessageTextView: View {
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
                 .padding(.horizontal, 6)
                 .font(.iransansBody)
-                .foregroundColor(Color.App.text)
+                .foregroundColor(Color.App.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
         } else if let fileName = message.uploadFileName, message.isUnsentMessage == true {
             Text(fileName)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
                 .padding(.horizontal, 6)
                 .font(.iransansBody)
-                .foregroundColor(Color.App.text)
+                .foregroundColor(Color.App.textPrimary)
         }
     }
 }

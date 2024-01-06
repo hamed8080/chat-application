@@ -49,13 +49,13 @@ struct ContactListSearchBarFilterView: View {
                     HStack {
                         Text(String(localized: .init(viewModel.searchType.rawValue)))
                             .font(.iransansBoldCaption3)
-                            .foregroundColor(Color.App.hint)
+                            .foregroundColor(Color.App.textSecondary)
                         Image(systemName: "chevron.down")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 8, height: 12)
                             .fontWeight(.medium)
-                            .foregroundColor(Color.App.hint)
+                            .foregroundColor(Color.App.textSecondary)
                     }
                 }
             }

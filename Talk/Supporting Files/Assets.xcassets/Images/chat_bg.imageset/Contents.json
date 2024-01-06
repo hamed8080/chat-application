@@ -1,17 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "chat_bg_light.svg",
-      "idiom" : "universal"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "dark"
-        }
-      ],
-      "filename" : "chat_bg_dark.svg",
+      "filename" : "chat_bg_light.png",
       "idiom" : "universal"
     }
   ],

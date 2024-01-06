@@ -100,7 +100,7 @@ struct DetailView: View {
                     .scaledToFit()
                     .frame(width: 16, height: 16)
                     .padding(8)
-                    .foregroundStyle(Color.App.primary)
+                    .foregroundStyle(Color.App.accent)
                     .fontWeight(.heavy)
             }
         }
@@ -139,7 +139,7 @@ struct InfoView: View {
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 64, height: 64)
-                .background(Color.App.blue.opacity(0.4))
+                .background(Color.App.color1.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius:(28)))
                 .onTapGesture {
                     fullScreenImageLoader.fetch()
@@ -158,14 +158,14 @@ struct InfoView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(viewModel.title)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
 
                 let count = viewModel.participantViewModel?.thread?.participantCount
                 if viewModel.thread?.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
                     let label = String(localized: .init("Participant"))
                     Text("\(label) \(countString)")
                         .font(.iransansCaption3)
-                        .foregroundStyle(Color.App.hint)
+                        .foregroundStyle(Color.App.textSecondary)
                 }
 
                 if let notSeenString = viewModel.notSeenString {
@@ -180,7 +180,7 @@ struct InfoView: View {
         .frame(height: 56)
         .frame(minWidth: 0, maxWidth: .infinity)
         .padding(.all, 16)
-        .background(Color.App.divider)
+        .background(Color.App.dividerPrimary)
     }
 }
 
@@ -226,11 +226,11 @@ struct PublicLink: View {
                 .scaledToFit()
                 .frame(width: 20, height: 20)
                 .padding()
-                .foregroundColor(Color.App.gray3)
+                .foregroundColor(Color.App.textSecondary)
                 .contentShape(Rectangle())
         }
         .frame(width: 40, height: 40)
-        .background(Color.App.gray9)
+        .background(Color.App.textSecondary)
         .clipShape(RoundedRectangle(cornerRadius:(20)))
     }
 }
@@ -271,13 +271,13 @@ struct InfoRowItem: View {
             VStack(alignment: .leading) {
                 Text(value)
                     .font(.iransansSubtitle)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                 Text(String(localized: .init(key)))
                     .font(.iransansCaption)
-                    .foregroundStyle(Color.App.hint)
+                    .foregroundStyle(Color.App.textSecondary)
             }
             Spacer()
             button
@@ -373,7 +373,7 @@ struct DetailViewButton: View {
                 .frame(width: 16, height: 16)
                 .transition(.asymmetric(insertion: .scale.animation(.easeInOut(duration: 2)), removal: .scale.animation(.easeInOut(duration: 2))))
                 .accessibilityHint(accessibilityText)
-                .foregroundColor(Color.App.primary)
+                .foregroundColor(Color.App.accent)
         }
         .frame(width: 48, height: 48)
         .background(.ultraThickMaterial)

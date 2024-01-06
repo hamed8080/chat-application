@@ -12,7 +12,7 @@ public struct LoadingView: View {
     public var width: CGFloat = 2
     public var color: Color = .orange
 
-    public init(isAnimating: Bool = false, width: CGFloat = 2, color: Color = Color.App.primary) {
+    public init(isAnimating: Bool = false, width: CGFloat = 2, color: Color = Color.App.accent) {
         self.isAnimating = isAnimating
         self.width = width
         self.color = color
@@ -45,7 +45,7 @@ struct LoadingView_Previews: PreviewProvider {
             LoadingView(width: 3)
                 .frame(width: 36, height: 36)
         } else {
-            Color.App.primary
+            Color.App.accent
                 .ignoresSafeArea()
         }
     }

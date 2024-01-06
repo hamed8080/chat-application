@@ -98,7 +98,7 @@ public struct MultilineTextField: View {
     private var placeholder: String
     private var onDone: ((String?) -> Void)?
     var backgroundColor: Color = .white
-    var placeholderColor: Color = Color.App.placeholder
+    var placeholderColor: Color = Color.App.textPlaceholder
     var textColor: UIColor?
     @Environment(\.colorScheme) var colorScheme
     var keyboardReturnType: UIReturnKeyType = .done
@@ -113,7 +113,7 @@ public struct MultilineTextField: View {
          text: Binding<String>,
          textColor: UIColor? = nil,
          backgroundColor: Color = Color.App.white,
-         placeholderColor: Color = Color.App.placeholder,
+         placeholderColor: Color = Color.App.textPlaceholder,
          keyboardReturnType: UIReturnKeyType = .done,
          mention: Bool = false,
          focus: Binding<Bool> = .constant(false),
@@ -175,7 +175,7 @@ public struct MultilineTextField: View {
                 Text("Description:")
                 MultilineTextField("Enter some text here", text: testBinding, keyboardReturnType: .search, onDone: { _ in
                 })
-                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.App.black))
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.App.textPrimary))
                 Text("Something static here...")
                 Spacer()
             }

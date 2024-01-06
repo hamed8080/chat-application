@@ -35,7 +35,7 @@ public struct NavigationBackButton: View {
                     .font(.iransansBody)
                     .offset(y: -2)
             }
-            .foregroundColor(Color.App.primary)
+            .foregroundColor(Color.App.accent)
             .contentShape(Rectangle())
         }
         .frame(minWidth: ToolbarButtonItem.buttonWidth, minHeight: ToolbarButtonItem.buttonWidth)

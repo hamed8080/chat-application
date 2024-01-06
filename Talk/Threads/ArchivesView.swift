@@ -28,10 +28,10 @@ struct ArchivesView: View {
                     }
             }
             .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
-            .listRowSeparatorTint(Color.App.separator)
-            .listRowBackground(isSelected ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
+            .listRowSeparatorTint(Color.App.dividerSecondary)
+            .listRowBackground(isSelected ? Color.App.accent.opacity(0.5) : thread.pin == true ? Color.App.textSecondary : Color.App.accent)
         }
-        .background(Color.App.bgPrimary)
+        .background(Color.App.accent)
         .listEmptyBackgroundColor(show: viewModel.archives.isEmpty)
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $viewModel.isLoading)

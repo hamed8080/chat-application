@@ -14,7 +14,7 @@ public struct ListLoadingView: View {
     public var color: Color = .orange
     @State private var timer: Timer?
 
-    public init(isLoading: Binding<Bool>, color: Color = Color.App.primary) {
+    public init(isLoading: Binding<Bool>, color: Color = Color.App.accent) {
         self._isLoading = isLoading
         self.color = color
     }
@@ -26,7 +26,7 @@ public struct ListLoadingView: View {
                 Circle()
                     .trim(from: 0, to: $isAnimating.wrappedValue ? 1 : 0.1)
                     .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round, miterLimit: 10))
-                    .fill(AngularGradient(colors: [color, .random, .random, .teal], center: .top))
+                    .fill(AngularGradient(colors: [color, color.opacity(0.2)], center: .top))
                     .frame(width: 24, height: 24)
                     .rotationEffect(Angle(degrees: $isAnimating.wrappedValue ? 360 : 0))
                     .onAppear {

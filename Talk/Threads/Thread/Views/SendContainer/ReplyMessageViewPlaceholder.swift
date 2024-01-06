@@ -23,12 +23,12 @@ struct ReplyMessageViewPlaceholder: View {
                     if let name = replyMessage.participant?.name {
                         Text(name)
                             .font(.iransansBoldBody)
-                            .foregroundStyle(Color.App.primary)
+                            .foregroundStyle(Color.App.accent)
                             .lineLimit(2)
                     }
                     Text(message)
                         .font(.iransansCaption2)
-                        .foregroundColor(Color.App.placeholder)
+                        .foregroundColor(Color.App.textPlaceholder)
                         .lineLimit(2)
                         .onTapGesture {
                             // TODO: Go to reply message location

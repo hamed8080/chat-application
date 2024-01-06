@@ -19,12 +19,12 @@ struct MessageFooterView: View {
     var body: some View {
         HStack {
             Text(viewModel.timeString)
-                .foregroundColor(Color.App.hint)
+                .foregroundColor(Color.App.textSecondary)
                 .font(.iransansCaption2)
 
             if message.edited == true {
                 Text("Messages.Footer.edited")
-                    .foregroundColor(Color.App.hint)
+                    .foregroundColor(Color.App.textSecondary)
                     .font(.iransansCaption2)
             }
 
@@ -42,7 +42,7 @@ struct MessageFooterView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
-                    .foregroundColor(Color.App.primary)
+                    .foregroundColor(Color.App.accent)
             }
         }
         .font(.subheadline)

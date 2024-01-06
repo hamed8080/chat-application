@@ -23,7 +23,7 @@ public struct UploadMessageFileView: View {
                 .environmentObject(viewModel.uploadViewModel!)
             if let fileName = message.uploadFileName ?? viewModel.fileMetaData?.file?.originalName {
                 Text("\(fileName)")
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                     .font(.iransansBoldCaption)
             }
         }
@@ -67,7 +67,7 @@ struct UploadImageButton: View {
                         .environment(\.layoutDirection, .leftToRight)
                 }
                 .frame(width: 42, height: 42)
-                .background(Color.App.btnDownload)
+                .background(Color.App.white)
                 .clipShape(RoundedRectangle(cornerRadius:(42 / 2)))
                 .onTapGesture {
                     if viewModel.state == .paused {

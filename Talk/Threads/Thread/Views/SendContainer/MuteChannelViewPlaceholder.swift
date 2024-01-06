@@ -24,11 +24,11 @@ struct MuteChannelViewPlaceholder: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 18, height: 18)
-                    .foregroundColor(Color.App.primary)
+                    .foregroundColor(Color.App.accent)
                 Text(mute ? "Thread.unmute" : "Thread.mute")
                     .font(.iransansSubheadline)
                     .offset(x: 8)
-                    .foregroundStyle(Color.App.primary)
+                    .foregroundStyle(Color.App.accent)
                 Spacer()
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))

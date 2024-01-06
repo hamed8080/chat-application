@@ -14,13 +14,13 @@ public struct CircleProgressConfig {
                                                            fontWeight: .heavy,
                                                            forgroundColor: .indigo,
                                                            circleLineWidth: 4,
-                                                           dimPathColor: Color.App.gray1.opacity(0.5))
+                                                           dimPathColor: Color.App.white.opacity(0.5))
 
     public static let small: CircleProgressConfig = .init(progressFont: .iransansCaption3,
                                                           fontWeight: .heavy,
                                                           forgroundColor: .indigo,
                                                           circleLineWidth: 1.0,
-                                                          dimPathColor: Color.App.gray1.opacity(0.5))
+                                                          dimPathColor: Color.App.white.opacity(0.5))
     public var progressFont: Font
     public var fontWeight: Font.Weight
     public var forgroundColor: Color

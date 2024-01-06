@@ -46,7 +46,7 @@ struct MessageListVideoView: View {
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
-                            .fill(Color.App.divider)
+                            .fill(Color.App.dividerPrimary)
                             .frame(height: 0.5)
                             .padding(.leading)
                     }
@@ -91,14 +91,14 @@ struct VideoRowView: View {
             VStack(alignment: .leading) {
                 Text(message.fileMetaData?.name ?? message.messageTitle)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                 HStack {
                     Text(message.time?.date.localFormattedTime ?? "" )
-                        .foregroundColor(Color.App.hint)
+                        .foregroundColor(Color.App.textSecondary)
                         .font(.iransansCaption2)
                     Spacer()
                     Text(message.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) ?? "")
-                        .foregroundColor(Color.App.hint)
+                        .foregroundColor(Color.App.textSecondary)
                         .font(.iransansCaption3)
                 }
             }
@@ -173,10 +173,10 @@ struct FullScreenPlayer: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
             }
             .frame(width: 36, height: 36)
-            .background(Color.App.primary)
+            .background(Color.App.accent)
             .clipShape(RoundedRectangle(cornerRadius: 22))
             .contentShape(Rectangle())
         }

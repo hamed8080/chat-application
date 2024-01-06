@@ -16,19 +16,22 @@ struct MainSendButtons: View {
     @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 8) {
             Button {
                 withAnimation(animation(appear: !viewModel.showActionButtons)) {
                     viewModel.showActionButtons.toggle()
                 }
             } label: {
-                Image(systemName: "plus.circle.fill")
+                Image(systemName: viewModel.showActionButtons ? "chevron.down" : "paperclip")
                     .resizable()
+                    .scaledToFit()
+                    .frame(width: viewModel.showActionButtons ? 16 : 20, height: viewModel.showActionButtons ? 16 : 20)
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.white, viewModel.showActionButtons ? Color.App.hint.opacity(0.5) : Color.App.primary)
-                    .frame(width: 26, height: 26)
+                    .foregroundStyle(Color.App.iconSecondary)
+                    .fontWeight(.medium)
             }
             .frame(width: 48, height: 48)
+            .background(Color.App.bgIcon)
             .clipShape(RoundedRectangle(cornerRadius:(24)))
             .buttonStyle(.borderless)
             .fontWeight(.light)
@@ -37,7 +40,7 @@ struct MainSendButtons: View {
                 "Thread.SendContainer.typeMessageHere",
                 text: $viewModel.textMessage,
                 textColor: UIColor(named: "message_text"),
-                backgroundColor: Color.App.bgSecond,
+                backgroundColor: Color.App.bgSecondary,
                 mention: true,
                 focus: $viewModel.focusOnTextInput
             )
@@ -54,12 +57,12 @@ struct MainSendButtons: View {
                 threadVM.attachmentsViewModel.clear()
                 threadVM.setupRecording()
             } label: {
-                Image(systemName: "mic.fill")
+                Image(systemName: "mic")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: viewModel.showAudio ? 26 : 0, height: viewModel.showAudio ? 26 : 0)
+                    .frame(width: viewModel.showAudio ? 20 : 0, height: viewModel.showAudio ? 20 : 0)
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.hint)
+                    .foregroundStyle(Color.App.textSecondary)
             }
             .frame(width: viewModel.showAudio ? 48 : 0, height: viewModel.showAudio ? 48 : 0)
             .buttonStyle(.borderless)
@@ -77,7 +80,7 @@ struct MainSendButtons: View {
                         .scaledToFit()
                         .frame(width: 26, height: 24)
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.App.hint)
+                        .foregroundStyle(Color.App.textSecondary)
                 }
                 .frame(width: 48, height: 48)
                 .buttonStyle(.borderless)
@@ -103,7 +106,7 @@ struct MainSendButtons: View {
                     .scaledToFit()
                     .frame(width: viewModel.showSendButton ? 26 : 0, height: viewModel.showSendButton ? 26 : 0)
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.white, Color.App.primary)
+                    .foregroundStyle(Color.App.white, Color.App.accent)
             }
             .frame(width: viewModel.showSendButton ? 48 : 0, height: viewModel.showSendButton ? 48 : 0)
             .buttonStyle(.borderless)

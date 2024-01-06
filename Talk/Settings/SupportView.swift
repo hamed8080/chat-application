@@ -15,7 +15,7 @@ struct SupportView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 128, height: 128)
-                .background(scheme == .dark ? Color.App.white.opacity(0.2) : Color.App.primary)
+                .background(scheme == .dark ? Color.App.white.opacity(0.2) : Color.App.accent)
                 .clipShape(RoundedRectangle(cornerRadius:(64)))
                 .foregroundStyle(.white)
             Text("Support.aboutUsText")
@@ -32,11 +32,11 @@ struct SupportView: View {
                     Text("0903-4565089")
                 }
             }
-            .foregroundStyle(Color.App.hint)
+            .foregroundStyle(Color.App.textSecondary)
             Spacer()
             let version = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
             Text(String(format: String(localized: "Support.version"), version))
-                .foregroundStyle(Color.App.hint)
+                .foregroundStyle(Color.App.textSecondary)
         }
         .font(.iransansBody)
         .padding(EdgeInsets(top: 100, leading: 24, bottom: 30, trailing: 24))

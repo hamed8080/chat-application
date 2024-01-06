@@ -43,41 +43,41 @@ struct NormalLastMessageContainer: View {
                 Text(addOrRemoveParticipantString)
                     .font(.iransansBoldBody)
                     .lineLimit(1)
-                    .foregroundStyle(isSelected ? Color.App.white : Color.App.primary)
+                    .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
             } else if let participantName = lastMsgVO?.participant?.name, thread.group == true {
                 let localized = String(localized: .init("Thread.Row.lastMessageSender"))
                 Text(Message.textDirectionMark + String(format: localized, participantName) )
                     .font(.iransansBoldBody)
                     .lineLimit(1)
-                    .foregroundStyle(isSelected ? Color.App.white : Color.App.primary)
+                    .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
             }
 
             if lastMsgVO?.isFileType == true, let iconName = lastMsgVO?.iconName {
                 Image(systemName: iconName)
                     .resizable()
                     .frame(width: 16, height: 16)
-                    .foregroundStyle(Color.App.blue)
+                    .foregroundStyle(Color.App.color1)
             }
 
             if let message = thread.lastMessageVO?.message {
                 Text(message)
                     .font(.iransansBody)
                     .lineLimit(1)
-                    .foregroundStyle(isSelected ? Color.App.white : Color.App.hint)
+                    .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)
             }
 
             if lastMsgVO?.isFileType == true, lastMsgVO?.message.isEmptyOrNil == true, let fileStringName = lastMsgVO?.fileStringName {
                 Text(fileStringName)
                     .font(.iransansCaption2)
                     .lineLimit(thread.group == false ? 2 : 1)
-                    .foregroundStyle(isSelected ? Color.App.white : Color.App.hint)
+                    .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)
             }
 
             if thread.lastMessageVO == nil, let creator = thread.inviter?.name {
                 let localizedLabel = String(localized: .init("Thread.createdAConversation"))
                 let text = String(format: localizedLabel, creator)
                 Text(text)
-                    .foregroundStyle(isSelected ? Color.App.white : Color.App.primary)
+                    .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
                     .font(.iransansBoldCaption2)
             }
             Spacer()

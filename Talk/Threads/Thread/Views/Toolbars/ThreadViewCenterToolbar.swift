@@ -36,13 +36,13 @@ struct ThreadViewCenterToolbar: View {
                 ConnectionStatusToolbar()
             } else if let signalMessageText = viewModel.signalMessageText {
                 Text(signalMessageText)
-                    .foregroundColor(Color.App.blue)
+                    .foregroundColor(Color.App.color1)
                     .font(.iransansCaption2)
             } else if thread.group == true, let participantsCount = participantsCount?.localNumber(locale: Language.preferredLocale) {
                 let localizedLabel = String(localized: "Thread.Toolbar.participants")
                 Text("\(localizedLabel) \(participantsCount)")
                     .fixedSize()
-                    .foregroundColor(Color.App.gray1)
+                    .foregroundColor(Color.App.textSecondary)
                     .font(.iransansFootnote)
             } else if thread.group == nil || thread.group == false {
                 P2PThreadLastSeenView(thread: thread)
@@ -106,7 +106,7 @@ struct P2PThreadLastSeenView : View {
         let formatted = String(format: localized, lastSeen)
         Text(lastSeen.isEmpty ? "" : formatted)
             .fixedSize()
-            .foregroundColor(Color.App.gray1)
+            .foregroundColor(Color.App.textSecondary)
             .font(.iransansFootnote)
             .onAppear {
                 if lastSeen.isEmpty {

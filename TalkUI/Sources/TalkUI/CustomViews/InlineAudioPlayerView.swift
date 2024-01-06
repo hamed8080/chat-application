@@ -45,7 +45,7 @@ public struct InlineAudioPlayerView: View {
                 .foregroundStyle(Color.App.white)
         }
         .frame(width: 42, height: 42)
-        .background(failed ? Color.App.red : Color.App.btnDownload)
+        .background(failed ? Color.App.red : Color.App.white)
         .clipShape(RoundedRectangle(cornerRadius: 42 / 2))
         .onTapGesture {
             do {

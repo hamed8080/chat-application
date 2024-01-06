@@ -41,7 +41,17 @@ struct MessageRowImageDownloader: View {
     }
 
     private static let clearGradient = LinearGradient(colors: [.clear], startPoint: .top, endPoint: .bottom)
-    private static let emptyImageGradient = LinearGradient(colors: [Color.App.bgInput, Color.App.bgInputDark], startPoint: .top, endPoint: .bottom)
+    private static let emptyImageGradient = LinearGradient(
+        colors: [
+            Color.App.bgPrimary.opacity(0.2),
+            Color.App.bgPrimary.opacity(0.3),
+            Color.App.bgPrimary.opacity(0.4),
+            Color.App.bgPrimary.opacity(0.5),
+            Color.App.bgPrimary.opacity(0.6),
+        ],
+        startPoint: .top,
+        endPoint: .bottom
+    )
 
     private var gradient: LinearGradient {
         let clearState = viewModel.downloadFileVM?.state == .completed || viewModel.downloadFileVM?.state == .thumbnail
@@ -101,7 +111,7 @@ struct OverlayDownloadImageButton: View {
             .scaledToFit()
             .font(.system(size: 8, design: .rounded).bold())
             .frame(width: 8, height: 8)
-            .foregroundStyle(Color.App.text)
+            .foregroundStyle(Color.App.textPrimary)
     }
 
     private var progress: some View {
@@ -118,7 +128,7 @@ struct OverlayDownloadImageButton: View {
             Text(fileSize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption2)
-                .foregroundColor(Color.App.text)
+                .foregroundColor(Color.App.textPrimary)
         }
     }
 

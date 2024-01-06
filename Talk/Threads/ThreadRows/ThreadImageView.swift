@@ -19,18 +19,20 @@ struct ThreadImageView: View {
     var body: some View {
         ZStack {
             if thread.type == .selfThread {
+                let startColor = Color(red: 255/255, green: 145/255, blue: 98/255)
+                let endColor = Color(red: 255/255, green: 90/255, blue: 113/255)
                 Circle()
                     .foregroundColor(.clear)
                     .scaledToFit()
                     .frame(width: 54, height: 54)
-                    .background(Color.App.gray5)
+                    .background(LinearGradient(colors: [startColor, endColor], startPoint: .top, endPoint: .bottom))
                     .clipShape(RoundedRectangle(cornerRadius:(24)))
                     .overlay {
                         Image("bookmark")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 27, height: 27)
-                            .foregroundStyle(Color.App.text)
+                            .foregroundStyle(Color.App.textPrimary)
                     }
             } else if let image = computedImageURL {
                 ImageLoaderView(imageLoader: threadsVM.avatars(for: image, metaData: image, userName: thread.title))
@@ -38,7 +40,7 @@ struct ThreadImageView: View {
                     .font(.iransansBoldBody)
                     .foregroundColor(.white)
                     .frame(width: 54, height: 54)
-                    .background(Color.App.blue.opacity(0.4))
+                    .background(Color.App.color1.opacity(0.4))
                     .clipShape(RoundedRectangle(cornerRadius:(24)))
             } else {
                 Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
@@ -46,7 +48,7 @@ struct ThreadImageView: View {
                     .font(.iransansBoldBody)
                     .foregroundColor(.white)
                     .frame(width: 54, height: 54)
-                    .background(Color.App.blue.opacity(0.4))
+                    .background(Color.App.color1.opacity(0.4))
                     .clipShape(RoundedRectangle(cornerRadius:(24)))
             }
         }.task {

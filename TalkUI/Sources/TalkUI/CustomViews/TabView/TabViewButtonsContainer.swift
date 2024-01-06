@@ -25,19 +25,19 @@ struct TabViewButtonsContainer: View {
                                 if let icon = tab.icon {
                                     Image(systemName: icon)
                                         .frame(width: 24, height: 24)
-                                        .foregroundColor(Color.App.gray1)
+                                        .foregroundColor(Color.App.textSecondary)
                                         .fixedSize()
                                 }
                                 Text(String(localized: .init(tab.title)))
                                     .font(index == selectedTabIndex ? . iransansBoldCaption : .iransansCaption)
                                     .fixedSize()
-                                    .foregroundStyle(index == selectedTabIndex ? Color.App.text : Color.App.hint)
+                                    .foregroundStyle(index == selectedTabIndex ? Color.App.textPrimary : Color.App.textSecondary)
                             }
                             .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
 
                             if index == selectedTabIndex {
                                 Rectangle()
-                                    .fill(Color.App.primary)
+                                    .fill(Color.App.accent)
                                     .frame(height: 3)
                                     .cornerRadius(2, corners: [.topLeft, .topRight])
                                     .matchedGeometryEffect(id: "DetailTabSeparator", in: id)

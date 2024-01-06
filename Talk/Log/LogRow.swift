@@ -15,11 +15,11 @@ struct LogRow: View {
     var color: Color {
         let type = log.type
         if type == .internalLog {
-            return Color.App.primary
+            return Color.App.accent
         } else if type == .received {
             return Color.App.red
         } else {
-            return Color.App.green
+            return Color.App.color2
         }
     }
 
@@ -49,10 +49,7 @@ struct LogRow: View {
         }
         .environment(\.layoutDirection, .leftToRight)
         .overlay(alignment: .bottom) {
-            Color
-                .App
-                .gray1
-                .opacity(0.5)
+            Color.App.textSecondary.opacity(0.5)
                 .frame(height: 1)
         }
         .textSelection(.enabled)

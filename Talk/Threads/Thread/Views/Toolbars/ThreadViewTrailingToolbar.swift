@@ -32,7 +32,7 @@ struct ThreadViewTrailingToolbar: View {
             .font(.iransansBody)
             .foregroundColor(.white)
             .frame(width: 32, height: 32)
-            .background(Color.App.blue.opacity(0.4))
+            .background(Color.App.color1.opacity(0.4))
             .clipShape(RoundedRectangle(cornerRadius:(16)))
         }
         .onReceive(NotificationCenter.default.publisher(for: .thread)) { notification in

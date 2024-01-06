@@ -21,6 +21,7 @@ struct ThreadRow: View {
 
     var body: some View {
         HStack(spacing: 16) {
+            SelectedThreadBar(thread: thread, isSelected: isSelected)
             ThreadImageView(thread: thread, threadsVM: viewModel)
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
@@ -29,7 +30,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 12, height: 12)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.iconSecondary)
                     }
 
                     if thread.group == true, thread.type != .channel {
@@ -37,7 +38,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.iconSecondary)
                     }
                     Text(thread.computedTitle)
                         .lineLimit(1)
@@ -48,7 +49,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 12, height: 12)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.gray6)
+                            .foregroundColor(isSelected ? Color.App.white : Color.App.iconSecondary)
                     }
                     Spacer()
                     if thread.pin == true {
@@ -56,7 +57,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundStyle(isSelected ? Color.App.white : Color.App.gray6)
+                            .foregroundStyle(isSelected ? Color.App.white : Color.App.iconSecondary)
                     }
 
                     ThreadTimeText(thread: thread, isSelected: isSelected)
@@ -72,7 +73,7 @@ struct ThreadRow: View {
                 }
             }
         }
-        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 8))
         .animation(.easeInOut, value: thread.lastMessageVO?.message)
         .animation(.easeInOut, value: thread)
         .animation(.easeInOut, value: thread.pin)
@@ -102,10 +103,23 @@ struct ThreadMentionSign: View {
                 .padding(6)
                 .frame(height: 24)
                 .frame(minWidth: 24)
-                .foregroundStyle(Color.App.textOverlay)
-                .background(Color.App.primary)
+                .foregroundStyle(Color.App.textPrimary)
+                .background(Color.App.accent)
                 .clipShape(RoundedRectangle(cornerRadius:(12)))
         }
+    }
+}
+
+struct SelectedThreadBar: View {
+    let thread: Conversation
+    let isSelected: Bool
+
+    var body: some View {
+        Rectangle()
+            .fill(Color.App.accent)
+            .frame(width: isSelected ? 4 : 0)
+            .frame(minHeight: 0, maxHeight: .infinity)
+            .animation(.easeInOut, value: isSelected)
     }
 }
 
@@ -123,10 +137,9 @@ struct ThreadUnreadCount: View {
                     .padding(thread.isCircleUnreadCount ? 4 : 6)
                     .frame(height: 24)
                     .frame(minWidth: 24)
-                    .foregroundStyle(thread.mute == true ? Color.App.text : Color.App.textOverlay)
-                    .background(thread.mute == true ? Color.App.gray7 : isSelected ? Color.App.white : Color.App.primary)
+                    .foregroundStyle(thread.mute == true ? Color.App.white : isSelected ? Color.App.textSecondary : Color.App.textPrimary)
+                    .background(thread.mute == true ? Color.App.iconSecondary : isSelected ? Color.App.white : Color.App.accent)
                     .clipShape(RoundedRectangle(cornerRadius:(thread.isCircleUnreadCount ? 16 : 10)))
-
             }
         }
         .animation(.easeInOut, value: unreadCountString)
@@ -156,10 +169,11 @@ struct ThreadTimeText: View {
                 Text(timeString)
                     .lineLimit(1)
                     .font(.iransansCaption2)
-                    .foregroundColor(isSelected ? Color.App.white : Color.App.hint)
+                    .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
             }
         }
         .animation(.easeInOut, value: timeString)
+        .animation(.easeInOut, value: isSelected)
         .onReceive(thread.objectWillChange) { newValue in
             Task {
                 await updateTimeAsync()

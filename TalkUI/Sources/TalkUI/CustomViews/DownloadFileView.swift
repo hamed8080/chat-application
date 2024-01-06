@@ -42,7 +42,7 @@ struct MutableDownloadViews: View {
             if let iconName = message?.iconName {
                 Image(systemName: iconName)
                     .resizable()
-                    .foregroundStyle(Color.App.white, Color.App.primary)
+                    .foregroundStyle(Color.App.white, Color.App.accent)
                     .scaledToFit()
                     .frame(width: 36, height: 36)
             }
@@ -89,7 +89,7 @@ struct DownloadFileButton: View {
                     .environment(\.layoutDirection, .leftToRight)
             }
             .frame(width: 36, height: 36)
-            .background(Color.App.primary)
+            .background(Color.App.accent)
             .clipShape(RoundedRectangle(cornerRadius:(36 / 2)))
             .onTapGesture {
                 if viewModel.state == .paused {
@@ -122,7 +122,7 @@ struct DownloadFileView_Previews: PreviewProvider {
                 DownloadFileView(viewModel: viewModel)
                     .environmentObject(AppOverlayViewModel())
             }
-            .background(Color.App.purple)
+            .background(Color.App.color5)
             .onAppear {
                 viewModel.state = .paused
             }

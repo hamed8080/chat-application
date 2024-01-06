@@ -16,7 +16,7 @@ struct CloseButton: View {
     }
 
     var body: some View {
-        SendContainerButton(image: "xmark", imageColor: Color.App.gray5) {
+        SendContainerButton(image: "xmark", imageColor: Color.App.iconSecondary) {
             action?()
         }
     }

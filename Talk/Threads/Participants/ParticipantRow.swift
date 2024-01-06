@@ -25,17 +25,17 @@ struct ParticipantRow: View {
                     .font(.iransansBoldBody)
                     .foregroundColor(.white)
                     .frame(width: 48, height: 48)
-                    .background(Color.App.blue.opacity(0.4))
+                    .background(Color.App.color1.opacity(0.4))
                     .clipShape(RoundedRectangle(cornerRadius:(22)))
 
                 Circle()
-                    .fill(Color.App.green)
+                    .fill(Color.App.color2)
                     .frame(width: 13, height: 13)
                     .offset(x: -20, y: 18)
                     .blendMode(.destinationOut)
                     .overlay {
                         Circle()
-                            .fill(isOnline ? Color.App.green : Color.App.gray5)
+                            .fill(isOnline ? Color.App.color2 : Color.App.iconSecondary)
                             .frame(width: 10, height: 10)
                             .offset(x: -20, y: 18)
                     }
@@ -56,7 +56,7 @@ struct ParticipantRow: View {
                         let time = String(format: lastVisitedLabel, notSeenDuration)
                         Text(time)
                             .font(.iransansBody)
-                            .foregroundColor(Color.App.hint)
+                            .foregroundColor(Color.App.textSecondary)
                     }
                 }
 
@@ -82,15 +82,15 @@ struct ParticipantRowLables: View {
                 if viewModel.thread?.inviter?.id == participantId {
                     Text("Participant.owner")
                         .padding(EdgeInsets(top: 2, leading: 4, bottom: 2, trailing: 4))
-                        .foregroundColor(Color.App.primary)
+                        .foregroundColor(Color.App.accent)
                 } else if participant.admin == true {
                     Text("Participant.admin")
                         .padding(EdgeInsets(top: 2, leading: 3, bottom: 2, trailing: 4))
-                        .foregroundColor(Color.App.primary)
+                        .foregroundColor(Color.App.accent)
                 } else if participant.auditor == true {
                     Text("Participant.assistant")
                         .padding(EdgeInsets(top: 2, leading: 3, bottom: 2, trailing: 4))
-                        .foregroundColor(Color.App.primary)
+                        .foregroundColor(Color.App.accent)
                 }
             }
         }

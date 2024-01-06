@@ -27,11 +27,11 @@ struct SwipyView: View {
                 VSwipy(viewModel: swipyVM) { item in
                     UserConfigView(userConfig: item)
                         .frame(height: containerSize)
-                        .background(Color.App.bgSecond)
+                        .background(Color.App.bgSecondary)
                         .clipShape(RoundedRectangle(cornerRadius:(12)))
                 }
                 .frame(height: containerSize)
-                .background(Color.App.primary.opacity(0.3))
+                .background(Color.App.accent.opacity(0.3))
                 .clipShape(RoundedRectangle(cornerRadius:(12)))
             }
         }

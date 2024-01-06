@@ -82,7 +82,7 @@ struct ListSectionButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
-            .background(configuration.isPressed ? Color.App.bgSecond : Color.clear)
+            .background(configuration.isPressed ? Color.App.bgSecondary : Color.clear)
             .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
     }
 }

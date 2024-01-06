@@ -21,7 +21,7 @@ struct ThreadEventView: View {
             Text(.init(localized: .init(event?.title ?? "")))
                 .lineLimit(1)
                 .font(.iransansBoldCaption2)
-                .foregroundColor(Color.App.primary)
+                .foregroundColor(Color.App.accent)
         }
         .frame(height: 16)
         .animation(.easeInOut, value: viewModel.isShowingEvent)        

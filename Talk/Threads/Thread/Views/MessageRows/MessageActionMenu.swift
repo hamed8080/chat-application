@@ -43,7 +43,7 @@ struct MessageActionMenu: View {
                         .scaledToFill()
                         .frame(width: 8, height: 8)
                         .offset(x: Language.isRTL ? -8 : 8, y: -8)
-                        .foregroundStyle(Color.App.gray4)
+                        .foregroundStyle(Color.App.textSecondary)
                         .fontWeight(.semibold)
                 }
             }

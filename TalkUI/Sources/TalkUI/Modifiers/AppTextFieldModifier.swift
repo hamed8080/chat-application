@@ -27,7 +27,7 @@ public struct AppTextFieldModifier: ViewModifier {
                 .background(isFocused ? Color.clear : innerBGColor)
                 .overlay(alignment: .center) {
                     RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(error != nil ? Color.App.red : isFocused ? Color.App.primary : Color.clear, lineWidth: 2)
+                        .strokeBorder(error != nil ? Color.App.red : isFocused ? Color.App.accent : Color.clear, lineWidth: 2)
                         .frame(minHeight: minHeigh)
                 }
                 .clipShape(RoundedRectangle(cornerRadius:(12)))
@@ -77,6 +77,6 @@ struct AppTextFieldModifier_Previews: PreviewProvider {
         VStack {
             Preview()
         }
-        .background(Color.App.purple)
+        .background(Color.App.color5)
     }
 }

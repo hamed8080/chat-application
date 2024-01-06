@@ -26,7 +26,7 @@ struct MutualThreadRow: View {
                 .font(.iransansSubtitle)
                 .foregroundColor(.white)
                 .frame(width: 36, height: 36)
-                .background(Color.App.blue.opacity(0.4))
+                .background(Color.App.color1.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius:(18)))
             Text(thread.computedTitle)
                 .font(.iransansSubheadline)

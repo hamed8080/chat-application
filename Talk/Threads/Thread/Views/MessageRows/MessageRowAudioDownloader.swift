@@ -96,7 +96,7 @@ fileprivate struct AudioDownloadButton: View {
                 progress
             }
             .frame(width: 46, height: 46)
-            .background(Color.App.btnDownload)
+            .background(Color.App.white)
             .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
 
             VStack(alignment: .leading, spacing: 4) {
@@ -125,7 +125,7 @@ fileprivate struct AudioDownloadButton: View {
             Circle()
                 .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
                 .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                .foregroundColor(Color.App.primary)
+                .foregroundColor(Color.App.accent)
                 .rotationEffect(Angle(degrees: 270))
                 .frame(width: 42, height: 42)
                 .environment(\.layoutDirection, .leftToRight)
@@ -136,7 +136,7 @@ fileprivate struct AudioDownloadButton: View {
     @ViewBuilder private var fileNameView: some View {
         if let fileName = message?.fileMetaData?.file?.name ?? message?.uploadFileName {
             Text(fileName)
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldCaption)
         }
     }
@@ -150,7 +150,7 @@ fileprivate struct AudioDownloadButton: View {
             Text(extensionName.uppercased())
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
-                .foregroundColor(Color.App.hint)
+                .foregroundColor(Color.App.textSecondary)
         }
     }
 
@@ -159,7 +159,7 @@ fileprivate struct AudioDownloadButton: View {
             Text(fileZize.replacingOccurrences(of: "٫", with: "."))
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)
-                .foregroundColor(Color.App.hint)
+                .foregroundColor(Color.App.textSecondary)
         }
     }
 
@@ -168,7 +168,7 @@ fileprivate struct AudioDownloadButton: View {
             VStack(alignment: .leading, spacing: 4) {
                 ProgressView(value: min(audioVM.currentTime / audioVM.duration, 1.0), total: 1.0)
                     .progressViewStyle(.linear)
-                    .tint(Color.App.text)
+                    .tint(Color.App.textPrimary)
                     .frame(maxWidth: 172)
                 Text("\(audioVM.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(audioVM.duration.timerString(locale: Language.preferredLocale) ?? "")")
                     .foregroundColor(Color.App.white)

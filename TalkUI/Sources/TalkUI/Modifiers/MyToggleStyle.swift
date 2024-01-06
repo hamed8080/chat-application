@@ -37,17 +37,17 @@ public struct MyToggleStyle: ToggleStyle {
         } label: {
             HStack {
                 configuration.label
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
                     .padding([.top, .bottom], 16)
                 Spacer()
                 ZStack(alignment: configuration.isOn ? .trailing : .leading) {
                     ToggleShape()
-                        .fill(configuration.isOn ? Color.App.primary : Color.App.gray7)
+                        .fill(configuration.isOn ? Color.App.accent : Color.App.textSecondary)
                         .frame(height: 22)
                     ToggleRingShape()
-                        .stroke(configuration.isOn ? Color.App.primary : Color.App.gray7, style: .init(lineWidth: 6))
+                        .stroke(configuration.isOn ? Color.App.accent : Color.App.textSecondary, style: .init(lineWidth: 6))
                         .frame(width: 28, height: 28)
                         .background(Color.App.bgPrimary)
                         .clipShape(RoundedRectangle(cornerRadius: 28 / 2))

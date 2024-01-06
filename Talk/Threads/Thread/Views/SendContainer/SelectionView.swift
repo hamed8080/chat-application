@@ -27,12 +27,12 @@ struct SelectionView: View {
             HStack(spacing: 2) {
                 Text(selectedCount.localNumber(locale: Language.preferredLocale) ?? "")
                     .font(.iransansBoldBody)
-                    .foregroundStyle(Color.App.primary)
+                    .foregroundStyle(Color.App.accent)
                 Text("General.selected")
-                    .foregroundStyle(Color.App.hint)
+                    .foregroundStyle(Color.App.textSecondary)
                 if threadVM.forwardMessage != nil {
                     Text("Thread.SendContainer.toForward")
-                        .foregroundStyle(Color.App.hint)
+                        .foregroundStyle(Color.App.textSecondary)
                 }
             }
             .padding(.trailing)
@@ -50,7 +50,7 @@ struct SelectionView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 19, height: 18)
-                        .tint(Color.App.gray5)
+                        .tint(Color.App.iconSecondary)
                 }
                 .frame(width: 36, height: 36)
                 .buttonStyle(.borderless)

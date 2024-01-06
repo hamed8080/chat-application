@@ -20,10 +20,10 @@ struct LoginContentView: View {
             Group {
                 Text("Login.loginOrSignup")
                     .font(.iransansBoldLargeTitle)
-                    .foregroundColor(Color.App.text)
+                    .foregroundColor(Color.App.textPrimary)
                 Text("Login.subtitle")
                     .font(.iransansSubheadline)
-                    .foregroundColor(Color.App.hint)
+                    .foregroundColor(Color.App.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 48)
                     .padding(.bottom, 40)

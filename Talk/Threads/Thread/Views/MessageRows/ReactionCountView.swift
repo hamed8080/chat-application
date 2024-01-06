@@ -50,7 +50,7 @@ struct ReactionCountRow: View {
         .padding(EdgeInsets(top: reactionCount.count ?? -1 > 0 ? 6 : 0, leading: reactionCount.count ?? -1 > 0 ? 8 : 0, bottom: reactionCount.count ?? -1 > 0 ? 6 : 0, trailing: reactionCount.count ?? -1 > 0 ? 8 : 0))
         .background(
             Rectangle()
-                .fill(isMyReaction ? Color.App.blue.opacity(0.7) : Color.App.primary.opacity(0.1))
+                .fill(isMyReaction ? Color.App.color1.opacity(0.7) : Color.App.accent.opacity(0.1))
         )
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .onTapGesture {
@@ -80,7 +80,7 @@ struct AsyncReactionCountTextView: View {
     var body: some View {
         Text(countText)
             .font(.iransansBody)
-            .foregroundStyle(Color.App.text)
+            .foregroundStyle(Color.App.textPrimary)
             .task {
                 Task {
                     let countText = reactionCount.count?.localNumber(locale: Language.preferredLocale) ?? ""

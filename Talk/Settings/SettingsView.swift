@@ -117,7 +117,7 @@ struct SettingSettingSection: View {
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 }
 
@@ -136,35 +136,35 @@ struct UserInformationSection: View {
         if !phone.isEmpty {
             VStack(alignment: .leading) {
                 TextField("", text: $phone)
-                    .foregroundColor(Color.App.text)
+                    .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .disabled(true)
                 Text("Settings.phoneNumber")
-                    .foregroundColor(Color.App.hint)
+                    .foregroundColor(Color.App.textSecondary)
                     .font(.iransansCaption)
             }
             .listRowBackground(Color.App.bgPrimary)
-            .listRowSeparatorTint(Color.App.divider)
+            .listRowSeparatorTint(Color.App.dividerPrimary)
         }
 
         if !userName.isEmpty {
             VStack(alignment: .leading) {
                 TextField("", text: $userName)
-                    .foregroundColor(Color.App.text)
+                    .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .disabled(true)
                 Text("Settings.userName")
-                    .foregroundColor(Color.App.hint)
+                    .foregroundColor(Color.App.textSecondary)
                     .font(.iransansCaption)
             }
             .listRowBackground(Color.App.bgPrimary)
-            .listRowSeparatorTint(Color.App.divider)
+            .listRowSeparatorTint(Color.App.dividerPrimary)
         }
 
         if !bio.isEmpty {
             VStack(alignment: .leading) {
                 Text(bio)
-                    .foregroundColor(Color.App.text)
+                    .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .disabled(true)
                     .lineLimit(20)
@@ -172,7 +172,7 @@ struct UserInformationSection: View {
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
 
                 Text("Settings.bio")
-                    .foregroundColor(Color.App.hint)
+                    .foregroundColor(Color.App.textSecondary)
                     .font(.iransansCaption)
             }
             .listRowBackground(Color.App.bgPrimary)
@@ -269,7 +269,7 @@ struct SettingLogSection: View {
             }
             .listRowInsets(.zero)
             .listRowBackground(Color.App.bgPrimary)
-            .listRowSeparatorTint(Color.App.divider)
+            .listRowSeparatorTint(Color.App.dividerPrimary)
         }
     }
 }
@@ -278,12 +278,12 @@ struct SettingArchivesSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "archivebox.fill", title: "Tab.archives", color: Color.App.mint, showDivider: false) {
+        ListSectionButton(imageName: "archivebox.fill", title: "Tab.archives", color: Color.App.color5, showDivider: false) {
             navModel.appendArhives()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 }
 
@@ -291,18 +291,18 @@ struct SettingLanguageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "globe", title: "Settings.language", color: Color.App.indigo, showDivider: false, trailingView: selectedLanguage) {
+        ListSectionButton(imageName: "globe", title: "Settings.language", color: Color.App.red, showDivider: false, trailingView: selectedLanguage) {
             navModel.appendLanguage()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 
     var selectedLanguage: AnyView {
         let selectedLanguage = Language.languages.first(where: {$0.language == Locale.preferredLanguages[0]})?.text ?? ""
         let view = Text(selectedLanguage)
-            .foregroundStyle(Color.App.primary)
+            .foregroundStyle(Color.App.accent)
             .font(.iransansBoldBody)
         return AnyView(view)
     }
@@ -312,12 +312,12 @@ struct SavedMessageSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: Color.App.purple, showDivider: false) {
+        ListSectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: Color.App.color5, showDivider: false) {
             ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 }
 
@@ -332,7 +332,7 @@ struct BlockedMessageSection: View {
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 }
 
@@ -342,23 +342,23 @@ struct SupportSection: View {
     @EnvironmentObject var container: ObjectsContainer
 
     var body: some View {
-        ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.support", color: Color.App.green, showDivider: false) {
+        ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.support", color: Color.App.color2, showDivider: false) {
             navModel.appendSupport()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
 
         ListSectionButton(imageName: "arrow.backward.circle", title: "Settings.logout", color: Color.App.red, showDivider: false) {
             container.appOverlayVM.dialogView = AnyView(LogoutDialogView())
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
 
         if EnvironmentValues.isTalkTest {
             let secondToExpire = tokenManagerVM.secondToExpire.formatted(.number.precision(.fractionLength(0)))
-            ListSectionButton(imageName: "key.fill", title: "The token will expire in \(secondToExpire) seconds", color: Color.App.yellow, showDivider: false, shownavigationButton: false)
+            ListSectionButton(imageName: "key.fill", title: "The token will expire in \(secondToExpire) seconds", color: Color.App.color3, showDivider: false, shownavigationButton: false)
                 .listRowInsets(.zero)
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparatorTint(Color.clear)
@@ -373,12 +373,12 @@ struct SettingAssistantSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "person.fill", title: "Settings.assistants", color: Color.App.blue, showDivider: false) {
+        ListSectionButton(imageName: "person.fill", title: "Settings.assistants", color: Color.App.color1, showDivider: false) {
             navModel.appendAssistant()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 }
 
@@ -394,12 +394,12 @@ struct UserProfileView: View {
             ImageLoaderView(imageLoader: imageLoader ?? .init(config: .init(url: "")))
                 .id("\(userConfig?.user.image ?? "")\(userConfig?.user.id ?? 0)")
                 .frame(width: 64, height: 64)
-                .background(Color.App.blue.opacity(0.4))
+                .background(Color.App.color1.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius:(28)))
                 .padding(.trailing, 16)
 
             Text(verbatim: user?.name ?? "")
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansSubheadline)
             Spacer()
 
@@ -416,7 +416,7 @@ struct UserProfileView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.App.hint)
+                            .foregroundStyle(Color.App.textSecondary)
                     }
             }
             .buttonStyle(.plain)

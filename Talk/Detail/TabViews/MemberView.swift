@@ -55,9 +55,9 @@ struct ParticipantRowContainer: View {
     let isSearchRow: Bool
     var separatorColor: Color {
         if !isSearchRow {
-            return viewModel.participants.last == participant ? Color.clear : Color.App.divider
+            return viewModel.participants.last == participant ? Color.clear : Color.App.dividerPrimary
         } else {
-            return viewModel.searchedParticipants.last == participant ? Color.clear : Color.App.divider
+            return viewModel.searchedParticipants.last == participant ? Color.clear : Color.App.dividerPrimary
         }
     }
 
@@ -124,12 +124,12 @@ struct AddParticipantButton: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 24, height: 16)
-                        .foregroundStyle(Color.App.primary)
+                        .foregroundStyle(Color.App.accent)
                     Text("Thread.invite")
                         .font(.iransansBody)
                     Spacer()
                 }
-                .foregroundStyle(Color.App.primary)
+                .foregroundStyle(Color.App.accent)
                 .padding(EdgeInsets(top: 16, leading: 24, bottom: 16, trailing: 24))
             }
             .sheet(isPresented: $presentSheet) {
@@ -151,6 +151,7 @@ struct AddParticipantButton: View {
 
 struct ParticipantSearchView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
+    @State private var showPopover = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -158,7 +159,7 @@ struct ParticipantSearchView: View {
                 Image(systemName: "magnifyingglass")
                     .resizable()
                     .scaledToFit()
-                    .foregroundStyle(Color.App.hint)
+                    .foregroundStyle(Color.App.textSecondary)
                     .frame(width: 16, height: 16)
                 TextField("General.searchHere", text: $viewModel.searchText)
                     .frame(minWidth: 0, minHeight: 48)
@@ -166,33 +167,43 @@ struct ParticipantSearchView: View {
             }
             Spacer()
 
-            Menu {
-                ForEach(SearchParticipantType.allCases) { item in
-                    Button {
-                        withAnimation {
-                            viewModel.searchType = item
-                        }
-                    } label: {
-                        Text(String(localized: .init(item.rawValue)))
-                            .font(.iransansBoldCaption3)
-                    }
-                }
+            Button {
+                showPopover.toggle()
             } label: {
                 HStack {
                     Text(String(localized: .init(viewModel.searchType.rawValue)))
                         .font(.iransansBoldCaption3)
-                        .foregroundColor(Color.App.hint)
+                        .foregroundColor(Color.App.textSecondary)
                     Image(systemName: "chevron.down")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 8, height: 12)
                         .fontWeight(.medium)
-                        .foregroundColor(Color.App.hint)
+                        .foregroundColor(Color.App.textSecondary)
                 }
+            }
+            .popover(isPresented: $showPopover, arrowEdge: .bottom) {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(SearchParticipantType.allCases) { item in
+                        Button {
+                            withAnimation {
+                                viewModel.searchType = item
+                                showPopover.toggle()
+                            }
+                        } label: {
+                            Text(String(localized: .init(item.rawValue)))
+                                .font(.iransansBoldCaption3)
+                                .foregroundColor(Color.App.textSecondary)
+                        }
+                        .padding(8)
+                    }
+                }
+                .padding(8)
+                .presentationCompactAdaptation(.popover)
             }
         }
         .padding(EdgeInsets(top: 8, leading: 8, bottom: 0, trailing: 8))
-        .background(Color.App.separator)
+        .background(Color.App.dividerSecondary)
         .animation(.easeInOut, value: viewModel.searchText)
     }
 }

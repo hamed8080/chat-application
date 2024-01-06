@@ -22,7 +22,7 @@ public struct PinMessageDialog: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("PinMessageDialog.title")
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldSubheadline)
                 .multilineTextAlignment(.leading)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
@@ -34,7 +34,7 @@ public struct PinMessageDialog: View {
                     threadVM.animateObjectWillChange()
                 } label: {
                     Text("PinMessageDialog.pinAndNotify")
-                        .foregroundStyle(Color.App.orange)
+                        .foregroundStyle(Color.App.color3)
                         .font(.iransansBoldBody)
                 }
 
@@ -44,7 +44,7 @@ public struct PinMessageDialog: View {
                     threadVM.animateObjectWillChange()
                 } label: {
                     Text("PinMessageDialog.justPin")
-                        .foregroundStyle(Color.App.orange)
+                        .foregroundStyle(Color.App.color3)
                         .font(.iransansBoldBody)
                 }
 
@@ -53,7 +53,7 @@ public struct PinMessageDialog: View {
                     threadVM.animateObjectWillChange()
                 } label: {
                     Text("General.cancel")
-                        .foregroundStyle(Color.App.placeholder)
+                        .foregroundStyle(Color.App.textPlaceholder)
                         .font(.iransansBoldBody)
                 }
             }

@@ -51,7 +51,7 @@ struct ManuallyConnectionManagerView: View {
                     ChatManager.activeInstance?.dispose()
                 }
 
-                SubmitBottomButton(text: "Coneect", color: Color.App.green) {
+                SubmitBottomButton(text: "Coneect", color: Color.App.color2) {
                     ChatManager.activeInstance?.dispose()
                     ChatManager.activeInstance?.setToken(newToken: token, reCreateObject: recreate)
                 }

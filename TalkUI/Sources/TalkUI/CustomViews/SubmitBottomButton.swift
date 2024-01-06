@@ -20,7 +20,7 @@ public struct SubmitBottomButton: View {
                 enableButton: Binding<Bool> = .constant(true),
                 isLoading: Binding<Bool> = .constant(false),
                 maxInnerWidth: CGFloat = .infinity,
-                color: Color = Color.App.primary,
+                color: Color = Color.App.accent,
                 action: (()-> Void)? = nil)
     {
         self.action = action
@@ -43,7 +43,7 @@ public struct SubmitBottomButton: View {
                     Text(String(localized: .init(text)))
                         .font(.iransansBody)
                         .contentShape(Rectangle())
-                        .foregroundStyle(Color.App.text)
+                        .foregroundStyle(Color.App.textPrimary)
                     if isLoading {
                         ProgressView()
                             .progressViewStyle(.circular)

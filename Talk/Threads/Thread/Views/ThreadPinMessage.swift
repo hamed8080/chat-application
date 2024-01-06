@@ -80,7 +80,7 @@ struct ThreadPinMessage: View {
 
     private var separator: some View {
         RoundedRectangle(cornerRadius: 2)
-            .fill(Color.App.primary)
+            .fill(Color.App.accent)
             .frame(width: 3, height: 24)
     }
 
@@ -89,7 +89,7 @@ struct ThreadPinMessage: View {
             .resizable()
             .scaledToFit()
             .frame(width: 10, height: 12)
-            .foregroundColor(Color.App.primary)
+            .foregroundColor(Color.App.accent)
     }
 
     private var textView: some View {
@@ -109,7 +109,7 @@ struct ThreadPinMessage: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: 24, height: 24)
-                .foregroundStyle(Color.App.hint, .clear)
+                .foregroundStyle(Color.App.textSecondary, .clear)
         }
     }
 
@@ -123,7 +123,7 @@ struct ThreadPinMessage: View {
                 .resizable()
                 .scaledToFit()
                 .symbolRenderingMode(.palette)
-                .foregroundStyle(Color.App.gray5)
+                .foregroundStyle(Color.App.iconSecondary)
                 .frame(width: 12, height: 12)
         }
         .frame(width: 36, height: 36)

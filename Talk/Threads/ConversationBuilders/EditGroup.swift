@@ -37,7 +37,7 @@ struct EditGroup: View {
                             .font(.iransansBoldCaption2)
                             .foregroundColor(.white)
                             .frame(width: 72, height: 72)
-                            .background(Color.App.blue.opacity(0.4))
+                            .background(Color.App.color1.opacity(0.4))
                             .clipShape(RoundedRectangle(cornerRadius:(32)))
                             .overlay(alignment: .center) {
                                 /// Showing the image taht user has selected.
@@ -51,7 +51,7 @@ struct EditGroup: View {
                                         Circle()
                                             .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
                                             .stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-                                            .foregroundColor(Color.App.primary)
+                                            .foregroundColor(Color.App.accent)
                                             .rotationEffect(Angle(degrees: 270))
                                             .frame(width: 73, height: 73)
                                     }
@@ -69,7 +69,7 @@ struct EditGroup: View {
                                     .font(.system(size: 12))
                                     .frame(width: 12, height: 12)
                                     .padding(6)
-                                    .background(Color.App.hint)
+                                    .background(Color.App.textSecondary)
                                     .clipShape(RoundedRectangle(cornerRadius:(18)))
                                     .foregroundColor(.white)
                                     .fontWeight(.heavy)
@@ -128,7 +128,7 @@ struct EditGroup: View {
                     .toggleStyle(MyToggleStyle())
                     .padding(.horizontal)
                     .listRowBackground(Color.App.bgPrimary)
-                    .listRowSeparatorTint(Color.App.divider)
+                    .listRowSeparatorTint(Color.App.dividerPrimary)
                     .disabled(isPublic)
                     .opacity(isPublic ? 0.5 : 1.0)
                 }
@@ -142,7 +142,7 @@ struct EditGroup: View {
                 }
                 .padding(.horizontal, 8)
                 .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.divider)
+                .listRowSeparatorTint(Color.App.dividerPrimary)
             }
         }
         .environment(\.defaultMinListRowHeight, 8)

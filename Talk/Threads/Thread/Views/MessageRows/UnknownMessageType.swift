@@ -17,7 +17,7 @@ struct UnknownMessageType: View {
             VStack {
                 Text("something is wrong")
                 Rectangle()
-                    .fill(Color.App.green)
+                    .fill(Color.App.color2)
             }
         } else {
             EmptyView()

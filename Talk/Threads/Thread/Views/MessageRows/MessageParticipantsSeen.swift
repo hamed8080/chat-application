@@ -50,7 +50,7 @@ struct MessageParticipantsSeen: View {
             ToolbarItemGroup(placement: .principal) {
                 Text("SeenParticipants.title")
                     .font(.iransansBoldBody)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
             }
         }
         .onAppear {
@@ -70,7 +70,7 @@ struct MessageSeenParticipantRow: View {
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
-                .background(Color.App.blue.opacity(0.4))
+                .background(Color.App.color1.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius:(22)))
 
             HStack(alignment: .center, spacing: 8) {
@@ -87,7 +87,7 @@ struct MessageSeenParticipantRow: View {
                         let time = String(format: lastVisitedLabel, notSeenDuration)
                         Text(time)
                             .font(.iransansBody)
-                            .foregroundColor(Color.App.hint)
+                            .foregroundColor(Color.App.textSecondary)
                     }
                 }
                 Spacer()

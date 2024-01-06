@@ -26,7 +26,7 @@ public struct DateSelectionView: View {
             if !showEndDate {
                 VStack {
                     Text(.init(localized: .init("ExportChat.startTitle")))
-                        .foregroundColor(Color.App.blue)
+                        .foregroundColor(Color.App.color1)
                         .font(.iransansBoldTitle)
 
                     DatePicker("", selection: $startDate)
@@ -45,7 +45,7 @@ public struct DateSelectionView: View {
             } else {
                 VStack {
                     Text("ExportChat.endTitle")
-                        .foregroundColor(Color.App.blue)
+                        .foregroundColor(Color.App.color1)
                         .font(.iransansBoldTitle)
                     DatePicker("", selection: $endDate)
                         .datePickerStyle(.graphical)

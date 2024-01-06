@@ -30,7 +30,7 @@ struct ConversationPlusContextMenu: View {
         }
         .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: 38)
         .clipped()
-        .foregroundStyle(Color.App.white, Color.App.primary)
+        .foregroundStyle(Color.App.white, Color.App.accent)
 //
 //        Menu {
 //            Button {
@@ -60,7 +60,7 @@ struct ConversationPlusContextMenu: View {
 //            }
 //        } label: {
 //            ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat")
-//                .foregroundStyle(Color.App.white, Color.App.primary)
+//                .foregroundStyle(Color.App.white, Color.App.accent)
 //        }
 //        .sheet(isPresented: $showToken) {
 //            ManuallyConnectionManagerView()

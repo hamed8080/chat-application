@@ -26,13 +26,13 @@ public struct DeleteMessageDialog: View {
     public var body: some View {
         VStack(alignment: .trailing, spacing: 16) {
             Text("DeleteMessageDialog.title")
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldSubheadline)
                 .multilineTextAlignment(.leading)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
 
             Text("DeleteMessageDialog.subtitle")
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBody)
                 .multilineTextAlignment(.leading)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
@@ -45,7 +45,7 @@ public struct DeleteMessageDialog: View {
                     viewModel.animateObjectWillChange()
                 } label: {
                     Text("General.cancel")
-                        .foregroundStyle(Color.App.placeholder)
+                        .foregroundStyle(Color.App.textPlaceholder)
                         .font(.iransansBoldBody)
                         .frame(minWidth: 48, minHeight: 48)
                 }
@@ -58,7 +58,7 @@ public struct DeleteMessageDialog: View {
                         viewModel.animateObjectWillChange()
                     } label: {
                         Text("Messages.deleteForMe")
-                            .foregroundStyle(Color.App.orange)
+                            .foregroundStyle(Color.App.color3)
                             .font(.iransansBoldBody)
                             .frame(minWidth: 48, minHeight: 48)
                     }

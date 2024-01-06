@@ -18,9 +18,9 @@ struct SendContainerButton: View {
 
     init(image: String? = nil,
          text: String? = nil,
-         imageColor: Color = Color.App.primary,
+         imageColor: Color = Color.App.accent,
          fontWeight: Font.Weight = .medium,
-         textColor: Color = Color.App.hint,
+         textColor: Color = Color.App.textSecondary,
          action: (() -> Void)? = nil
     ) {
         self.image = image

@@ -83,13 +83,13 @@ struct AttchmentButtonItem: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24)
-                    .foregroundColor(colorScheme == .dark ? Color.App.white : Color.App.primary)
+                    .foregroundColor(colorScheme == .dark ? Color.App.white : Color.App.accent)
             }
             .frame(width: isPressing ? 22 : 34, height: isPressing ? 22 : 34)
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 26)
-                    .strokeBorder(Color.App.hint.opacity(0.5), lineWidth: 1, antialiased: true)
+                    .strokeBorder(Color.App.textSecondary.opacity(0.5), lineWidth: 1, antialiased: true)
             )
             .overlay(alignment: .center) {
                 if isPressing {
@@ -101,7 +101,7 @@ struct AttchmentButtonItem: View {
             }
             Text(String(localized: .init(title)))
                 .font(.iransansCaption3)
-                .foregroundStyle(Color.App.hint)
+                .foregroundStyle(Color.App.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .contentShape(Rectangle())

@@ -23,7 +23,7 @@ struct ManageTagView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.App.gray1.opacity(0.2)
+                Color.App.textSecondary.opacity(0.2)
                     .edgesIgnoringSafeArea(.all)
                 VStack(alignment: .leading, spacing: 24) {
                     HStack {
@@ -32,7 +32,7 @@ struct ManageTagView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 96, height: 96)
-                            .foregroundColor(Color.App.blue.opacity(0.7))
+                            .foregroundColor(Color.App.color1.opacity(0.7))
                         Spacer()
                     }
 
@@ -40,7 +40,7 @@ struct ManageTagView: View {
                         Spacer()
                         Text("Tags.manageFolders")
                             .font(.iransansSubtitle)
-                            .foregroundColor(Color.App.gray1)
+                            .foregroundColor(Color.App.textSecondary)
                         Spacer()
                     }
 

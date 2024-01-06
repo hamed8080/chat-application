@@ -28,7 +28,7 @@ struct MoveToBottomButton: View {
                         .scaledToFit()
                         .frame(width: 16, height: 16)
                         .padding()
-                        .foregroundStyle(Color.App.text)
+                        .foregroundStyle(Color.App.textPrimary)
                         .aspectRatio(contentMode: .fit)
                         .contentShape(Rectangle())
                 }
@@ -58,7 +58,7 @@ struct UnreadCountOverMoveToButtonView: View {
             .frame(height: hide ? 0 : 24)
             .frame(minWidth: hide ? 0 : 24)
             .scaleEffect(x: hide ? 0.0001 : 1.0, y: hide ? 0.0001 : 1.0, anchor: .center)
-            .background(Color.App.primary)
+            .background(Color.App.accent)
             .foregroundStyle(Color.App.white)
             .clipShape(RoundedRectangle(cornerRadius:(hide ? 0 : 24)))
             .offset(x: 0, y: -16)

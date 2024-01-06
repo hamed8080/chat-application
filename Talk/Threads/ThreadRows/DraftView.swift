@@ -17,6 +17,6 @@ struct DraftView: View {
             .foregroundColor(Color.App.red)
         Text(draft)
             .font(.iransansBody)
-            .foregroundColor(Color.App.hint)
+            .foregroundColor(Color.App.textSecondary)
     }
 }

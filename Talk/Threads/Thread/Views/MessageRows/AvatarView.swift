@@ -45,7 +45,7 @@ struct AvatarView: View {
                         .font(.iransansCaption)
                         .foregroundColor(.white)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-                        .background(Color.App.blue.opacity(0.4))
+                        .background(Color.App.color1.opacity(0.4))
                         .clipShape(RoundedRectangle(cornerRadius:(MessageRowViewModel.avatarSize / 2)))
                 } else {
                     Text(verbatim: String(message.participant?.name?.first ?? message.participant?.username?.first ?? " "))
@@ -53,7 +53,7 @@ struct AvatarView: View {
                         .font(.iransansCaption)
                         .foregroundColor(.white)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-                        .background(Color.App.blue.opacity(0.4))
+                        .background(Color.App.color1.opacity(0.4))
                         .clipShape(RoundedRectangle(cornerRadius:(MessageRowViewModel.avatarSize / 2)))
                 }
             }

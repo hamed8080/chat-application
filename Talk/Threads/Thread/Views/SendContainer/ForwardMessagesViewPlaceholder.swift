@@ -23,22 +23,22 @@ struct ForwardMessagesViewPlaceholder: View {
                 VStack(alignment: .leading, spacing: 0) {
                     if forwardMessage.messageIds.count == 1, let message = model.forwardMessages?.first {
                         Text("Thread.forwardTheMessage")
-                            .foregroundStyle(Color.App.primary)
+                            .foregroundStyle(Color.App.accent)
                             .font(.iransansCaption)
                         Text(message.message ?? "")
                             .font(.iransansCaption2)
-                            .foregroundColor(Color.App.placeholder)
+                            .foregroundColor(Color.App.textPlaceholder)
                             .lineLimit(2)
                     } else {
                         let localized = String(localized: .init("Thread.forwardMessages"))
                         let localNumber = (model.forwardMessages?.count ?? 0).localNumber(locale: Language.preferredLocale) ?? ""
                         Text(String(format: localized, localNumber))
-                            .foregroundStyle(Color.App.primary)
+                            .foregroundStyle(Color.App.accent)
                             .font(.iransansCaption)
                         let messages = model.forwardMessages?.prefix(4).compactMap({$0.message?.prefix(20)}).joined(separator: ", ")
                         Text(messages ?? "")
                             .font(.iransansCaption2)
-                            .foregroundColor(Color.App.placeholder)
+                            .foregroundColor(Color.App.textPlaceholder)
                             .lineLimit(2)
                     }
                 }

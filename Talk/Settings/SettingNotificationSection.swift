@@ -18,7 +18,7 @@ struct SettingNotificationSection: View {
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 }
 
@@ -30,11 +30,11 @@ struct NotificationSettings: View {
             Group {
                 Toggle("Notification.Sound", isOn: $model.notificationSettings.soundEnable)
                     .listRowBackground(Color.App.bgPrimary)
-                    .listRowSeparatorTint(Color.App.divider)
+                    .listRowSeparatorTint(Color.App.dividerPrimary)
                 if EnvironmentValues.isTalkTest {
                     Toggle("Notification.ShowDetails", isOn: $model.notificationSettings.showDetails)
                         .listRowBackground(Color.App.bgPrimary)
-                        .listRowSeparatorTint(Color.App.divider)
+                        .listRowSeparatorTint(Color.App.dividerPrimary)
                 }
                 if EnvironmentValues.isTalkTest {
                     Toggle("Notification.Vibration", isOn: $model.notificationSettings.vibration)
@@ -56,27 +56,27 @@ struct NotificationSettings: View {
                     } label: {
                         SectionNavigationLabel(imageName: "person.fill",
                                                title: "Notification.PrivateSettings",
-                                               color: Color.App.purple)
+                                               color: Color.App.color5)
                     }
                     .listRowBackground(Color.App.bgPrimary)
-                    .listRowSeparatorTint(Color.App.divider)
+                    .listRowSeparatorTint(Color.App.dividerPrimary)
 
                     NavigationLink {
                         GroupNotificationSetting()
                     } label: {
                         SectionNavigationLabel(imageName: "person.3.fill",
                                                title: "Notification.GroupSettings",
-                                               color: Color.App.green)
+                                               color: Color.App.color2)
                     }
                     .listRowBackground(Color.App.bgPrimary)
-                    .listRowSeparatorTint(Color.App.divider)
+                    .listRowSeparatorTint(Color.App.dividerPrimary)
 
                     NavigationLink {
                         ChannelNotificationSetting()
                     } label: {
                         SectionNavigationLabel(imageName: "megaphone.fill",
                                                title: "Notification.ChannelSettings",
-                                               color: Color.App.yellow)
+                                               color: Color.App.color3)
                     }
                     .listRowBackground(Color.App.bgPrimary)
                     .listSectionSeparator(.hidden)

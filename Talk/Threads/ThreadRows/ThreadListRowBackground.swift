@@ -15,7 +15,7 @@ struct ThreadListRowBackground: View {
     var isSelected: Bool { navVM.selectedThreadId == thread.id }
 
     var body: some View {
-        isSelected ? Color.App.primary.opacity(0.5) : thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary
+        isSelected ? Color.App.bgChatSelected : thread.pin == true ? Color.App.bgSecondary : Color.App.bgPrimary
     }
 }
 

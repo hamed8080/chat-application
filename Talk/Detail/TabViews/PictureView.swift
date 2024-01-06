@@ -152,7 +152,7 @@ struct DownloadPictureButtonView: View {
                     .clipped()
                     .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
                     .zIndex(0)
-                    .background(Color.App.separator)
+                    .background(Color.App.dividerSecondary)
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
                     .onAppear {
                         if viewModel.isInCache {

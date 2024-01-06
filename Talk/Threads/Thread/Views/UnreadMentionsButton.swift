@@ -25,7 +25,7 @@ struct UnreadMentionsButton: View {
                     Text("@")
                         .frame(width: 16, height: 16)
                         .padding()
-                        .foregroundStyle(Color.App.primary)
+                        .foregroundStyle(Color.App.accent)
                         .contentShape(Rectangle())
                 }
                 .frame(width: 40, height: 40)
@@ -38,7 +38,7 @@ struct UnreadMentionsButton: View {
                         .font(.iransansBoldCaption)
                         .frame(height: 24)
                         .frame(minWidth: 24)
-                        .background(Color.App.primary)
+                        .background(Color.App.accent)
                         .foregroundStyle(Color.App.white)
                         .clipShape(RoundedRectangle(cornerRadius:(24)))
                         .offset(x: 0, y: -16)

@@ -54,7 +54,7 @@ struct ConversationTopSafeAreaInset: View {
                 Text("General.cancel")
                     .padding(.leading)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.App.primary)
+                    .foregroundStyle(Color.App.accent)
             }
             .buttonStyle(.borderless)
             .frame(minWidth: 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
@@ -67,7 +67,7 @@ struct ConversationTopSafeAreaInset: View {
             }
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : 38)
             .clipped()
-            .foregroundStyle(Color.App.primary)
+            .foregroundStyle(Color.App.accent)
         }
     }
 }

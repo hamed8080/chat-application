@@ -50,7 +50,7 @@ struct MapPickerView: View {
                     .scaledToFit()
                     .frame(width: 16, height: 16)
                     .padding()
-                    .foregroundColor(Color.App.primary)
+                    .foregroundColor(Color.App.accent)
                     .aspectRatio(contentMode: .fit)
                     .contentShape(Rectangle())
             }

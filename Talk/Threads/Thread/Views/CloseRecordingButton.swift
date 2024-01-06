@@ -28,7 +28,7 @@ struct CloseRecordingButton: View {
                         .scaledToFit()
                         .frame(width: viewModel.isRecording ? 12 : 0, height: viewModel.isRecording ? 12 : 0)
                         .padding()
-                        .foregroundStyle(Color.App.text)
+                        .foregroundStyle(Color.App.textPrimary)
                         .aspectRatio(contentMode: .fit)
                         .contentShape(Rectangle())
                         .fontWeight(.semibold)

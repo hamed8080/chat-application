@@ -44,7 +44,7 @@ struct MessageListMusicView: View {
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
-                            .fill(Color.App.divider)
+                            .fill(Color.App.dividerPrimary)
                             .frame(height: 0.5)
                             .padding(.leading)
                     }
@@ -85,14 +85,14 @@ struct MusicRowView: View {
             VStack(alignment: .leading) {
                 Text(message.fileMetaData?.name ?? message.messageTitle)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                 HStack {
                     Text(message.time?.date.localFormattedTime ?? "" )
-                        .foregroundColor(Color.App.hint)
+                        .foregroundColor(Color.App.textSecondary)
                         .font(.iransansCaption2)
                     Spacer()
                     Text(message.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) ?? "")
-                        .foregroundColor(Color.App.hint)
+                        .foregroundColor(Color.App.textSecondary)
                         .font(.iransansCaption3)
                 }
             }
@@ -158,18 +158,18 @@ struct DownloadedMusicPlayer: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
 
                 Circle()
                     .trim(from: 0.0, to: isSameFile ? min(viewModel.currentTime / viewModel.duration, 1.0) : 0)
                     .stroke(style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
                     .frame(width: 28, height: 28)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                     .rotationEffect(Angle(degrees: 270))
                     .environment(\.layoutDirection, .leftToRight)
             }
             .frame(width: 36, height: 36)
-            .background(failed ? Color.App.red : Color.App.primary)
+            .background(failed ? Color.App.red : Color.App.accent)
             .clipShape(RoundedRectangle(cornerRadius: 22))
             .contentShape(Rectangle())
         }

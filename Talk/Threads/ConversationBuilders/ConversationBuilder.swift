@@ -125,7 +125,7 @@ struct EditCreatedConversationDetail: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 16, height: 16)
-                                    .foregroundStyle(Color.App.hint)
+                                    .foregroundStyle(Color.App.textSecondary)
                             }
 
                         /// Showing the image taht user has selected.
@@ -137,7 +137,7 @@ struct EditCreatedConversationDetail: View {
                                 .clipShape(RoundedRectangle(cornerRadius:(28)))
                         }
                     }
-                    .background(Color.App.bgSecond)
+                    .background(Color.App.bgSecondary)
                     .clipShape(RoundedRectangle(cornerRadius:(24)))
                 }
 
@@ -172,7 +172,7 @@ struct EditCreatedConversationDetail: View {
                 ForEach(viewModel.selectedContacts) { contact in
                     ContactRow(isInSelectionMode: .constant(false), contact: contact)
                         .listRowBackground(Color.App.bgPrimary)
-                        .listRowSeparatorTint(Color.App.divider)
+                        .listRowSeparatorTint(Color.App.dividerPrimary)
                 }
                 .onDelete(perform: viewModel.delete)
                 .padding()

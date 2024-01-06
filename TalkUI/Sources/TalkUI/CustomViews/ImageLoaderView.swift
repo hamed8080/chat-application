@@ -54,7 +54,7 @@ struct ImageLoaderView_Previews: PreviewProvider {
             .font(.system(size: 16).weight(.heavy))
             .foregroundColor(.white)
             .frame(width: 128, height: 128)
-            .background(Color.App.blue.opacity(0.4))
+            .background(Color.App.color1.opacity(0.4))
             .clipShape(RoundedRectangle(cornerRadius:(64)))
             .overlay {
                 RoundedRectangle(cornerRadius: 64)

@@ -22,7 +22,7 @@ struct NothingHasBeenSelectedView: View {
                 VStack(spacing: 16) {
                     Text("General.nothingSelectedConversation")
                         .font(.iransansSubheadline)
-                        .foregroundColor(Color.App.hint)
+                        .foregroundColor(Color.App.textSecondary)
                         .multilineTextAlignment(.center)
                         .frame(minWidth: 220)
                     Button {
@@ -39,13 +39,13 @@ struct NothingHasBeenSelectedView: View {
                     .fixedSize()
                     .font(.iransansBoldBody)
                     .padding(EdgeInsets(top: 12, leading: 24, bottom: 12, trailing: 24))
-                    .background(Color.App.bgSecond)
+                    .background(Color.App.bgSecondary)
                     .clipShape(RoundedRectangle(cornerRadius:(12)))
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .inset(by: 0.5)
-                            .stroke(Color.App.gray8, lineWidth: 1)
+                            .stroke(Color.App.textSecondary, lineWidth: 1)
                     )
                 }
             }

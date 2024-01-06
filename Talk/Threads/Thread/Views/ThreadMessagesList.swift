@@ -78,16 +78,32 @@ struct CenterLoading: View {
 struct ThreadbackgroundView: View {
     @Environment(\.colorScheme) var colorScheme
     let threadId: Int
+    private let lightColors = [
+        Color(red: 131/255, green: 161/255, blue: 191/255),
+        Color(red: 190/255, green: 185/255, blue: 181/255),
+        Color(red: 229/255, green: 182/255, blue: 143/255),
+        Color(red: 216/255, green: 125/255, blue: 78/255),
+        Color(red: 60/255, green: 58/255, blue: 75/255),
+    ]
+
+    private let darkColors = [
+        Color(red: 23/255, green: 23/255, blue: 23/255)
+    ]
 
     var body: some View {
         Image("chat_bg")
-            .resizable(resizingMode: .tile)
-            .renderingMode(.template)
+            .resizable()
+            .scaledToFill()
             .id("chat_bg_\(threadId)")
-            .opacity(colorScheme == .dark ? 0.2 : 0.25)
-            .colorInvert()
-            .colorMultiply(colorScheme == .dark ? Color.App.white : Color.App.cyan)
             .ignoresSafeArea()
+            .opacity(colorScheme == .dark ? 0.3 : 0.6)
+            .background(
+                LinearGradient(
+                    colors: colorScheme == .dark ? darkColors : lightColors,
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
     }
 }
 
@@ -136,9 +152,9 @@ struct SectionView: View {
             Text(verbatim: yearText)
                 .font(.iransansCaption)
                 .padding(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                .background(Color.App.black.opacity(0.2))
+                .background(Color.App.textPrimary.opacity(0.2))
                 .clipShape(RoundedRectangle(cornerRadius:(24)))
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
             Spacer()
         }
         .task {

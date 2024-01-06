@@ -32,17 +32,17 @@ struct SearchMessageRow: View {
                     Text(message.message ?? "")
                         .font(.iransansBody)
                         .multilineTextAlignment(.leading)
-                        .foregroundStyle(Color.App.text)
+                        .foregroundStyle(Color.App.textPrimary)
                         .lineLimit(1)
                     HStack {
                         if let timeString = message.time?.date.localFormattedTime {
                             Text(timeString)
-                                .foregroundStyle(Color.App.hint)
+                                .foregroundStyle(Color.App.textSecondary)
                         }
                         Spacer()
                         if let name = message.participant?.name {
                             Text(name)
-                                .foregroundStyle(Color.App.hint)
+                                .foregroundStyle(Color.App.textSecondary)
                                 .lineLimit(1)
                         }
                     }

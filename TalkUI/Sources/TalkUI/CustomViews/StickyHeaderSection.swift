@@ -19,15 +19,15 @@ public struct StickyHeaderSection: View {
     public var body: some View {
         HStack {
             Text(String(localized: .init(header)))
-                .foregroundColor(Color.App.hint)
+                .foregroundColor(Color.App.textSecondary)
                 .font(.iransansCaption)
             Spacer()
         }
         .frame(height: height)
         .frame(minWidth: 0, maxWidth: .infinity)
         .padding(.horizontal, 16)
-        .background(Color.App.divider)
-        .listRowBackground(Color.App.divider)
+        .background(Color.App.dividerPrimary)
+        .listRowBackground(Color.App.dividerPrimary)
     }
 }
 

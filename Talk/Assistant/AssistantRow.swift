@@ -72,11 +72,11 @@ struct SelectAssistantRadio: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.title)
                 .scaleEffect(x: isSelected ? 1 : 0.001, y: isSelected ? 1 : 0.001, anchor: .center)
-                .foregroundColor(Color.App.blue)
+                .foregroundColor(Color.App.color1)
 
             Image(systemName: "circle")
                 .font(.title)
-                .foregroundColor(Color.App.blue)
+                .foregroundColor(Color.App.color1)
         }
         .frame(width: isInSelectionMode ? 22 : 0.001, height: isInSelectionMode ? 22 : 0.001, alignment: .center)
         .padding(.trailing, isInSelectionMode ? 8 : 0.001)

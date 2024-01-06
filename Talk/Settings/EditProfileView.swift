@@ -59,7 +59,7 @@ struct EditProfileView: View {
                             .font(.iransansBoldCaption2)
                             .foregroundColor(.white)
                             .frame(width: 100, height: 100)
-                            .background(Color.App.blue.opacity(0.4))
+                            .background(Color.App.color1.opacity(0.4))
                             .clipShape(RoundedRectangle(cornerRadius:(44)))
                             .overlay(alignment: .center) {
                                 /// Showing the image taht user has selected.
@@ -83,7 +83,7 @@ struct EditProfileView: View {
                                     .font(.system(size: 12))
                                     .frame(width: 12, height: 12)
                                     .padding(6)
-                                    .background(Color.App.hint)
+                                    .background(Color.App.textSecondary)
                                     .clipShape(RoundedRectangle(cornerRadius:(18)))
                                     .foregroundColor(.white)
                                     .fontWeight(.heavy)
@@ -135,7 +135,7 @@ struct EditProfileView: View {
 
 
                 Text("Setting.EditProfile.bioHintMore")
-                    .foregroundStyle(Color.App.hint)
+                    .foregroundStyle(Color.App.textSecondary)
                     .font(.iransansSubheadline)
                     .padding(.horizontal)
                     .frame(maxWidth: 420, alignment: .leading)
@@ -144,19 +144,19 @@ struct EditProfileView: View {
                 Link(destination: URL(string: "https://panel.pod.ir/Users/Info")!) {
                     HStack {
                         Text("Setting.EditProfile.enterToPodAccount")
-                            .foregroundStyle(Color.App.text)
+                            .foregroundStyle(Color.App.textPrimary)
                             .font(.iransansBoldBody)
                             .multilineTextAlignment(.center)
                     }
                     .buttonStyle(.plain)
                     .frame(height: 52)
                     .frame(minWidth: 0, maxWidth: 420)
-                    .background(Color.App.bgSecond)
+                    .background(Color.App.bgSecondary)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
                             .inset(by: 0.5)
-                            .stroke(Color.App.gray8, lineWidth: 1)
+                            .stroke(Color.App.textSecondary, lineWidth: 1)
                     )
                 }
                 .padding(.horizontal)

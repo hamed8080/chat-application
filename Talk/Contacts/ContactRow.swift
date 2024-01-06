@@ -24,9 +24,9 @@ struct ContactRow: View {
                 ImageLoaderView(imageLoader: .init(config: config))
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
                     .font(.iransansBody)
-                    .foregroundColor(Color.App.text)
+                    .foregroundColor(Color.App.textPrimary)
                     .frame(width: 52, height: 52)
-                    .background(Color.App.blue.opacity(0.4))
+                    .background(Color.App.color1.opacity(0.4))
                     .clipShape(RoundedRectangle(cornerRadius:(22)))
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -34,14 +34,14 @@ struct ContactRow: View {
                         .padding(.leading, 16)
                         .lineLimit(1)
                         .font(.iransansBoldBody)
-                        .foregroundColor(Color.App.text)
+                        .foregroundColor(Color.App.textPrimary)
                     if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
                         let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
                         let time = String(format: lastVisitedLabel, notSeenDuration)
                         Text(time)
                             .padding(.leading, 16)
                             .font(.iransansBody)
-                            .foregroundColor(Color.App.hint)
+                            .foregroundColor(Color.App.textSecondary)
                     }
                 }
                 Spacer()

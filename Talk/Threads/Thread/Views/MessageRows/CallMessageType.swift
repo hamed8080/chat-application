@@ -24,7 +24,7 @@ struct CallMessageType: View {
                     Text(message.type == .endCall ? "Thread.callEnded" : "Thread.callStarted")
                     Text("\(date.localFormattedTime ?? "")")
                 }
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBody)
                 .padding(2)
             }
@@ -33,10 +33,10 @@ struct CallMessageType: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: message.type == .startCall ? 12 : 18, height: message.type == .startCall ? 12 : 18)
-                .foregroundStyle(message.type == .startCall ? Color.App.green : Color.App.red)
+                .foregroundStyle(message.type == .startCall ? Color.App.color2 : Color.App.red)
         }
         .padding(.horizontal, 16)
-        .background(Color.App.black.opacity(0.2))
+        .background(Color.App.textPrimary.opacity(0.2))
         .clipShape(RoundedRectangle(cornerRadius:(25)))
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)

@@ -149,7 +149,7 @@ struct ReactionParticipantRow: View {
                     .font(.iransansBoldCaption2)
                     .foregroundColor(.white)
                     .frame(width: 64, height: 64)
-                    .background(Color.App.blue.opacity(0.4))
+                    .background(Color.App.color1.opacity(0.4))
                     .clipShape(RoundedRectangle(cornerRadius:(24)))
                 Circle()
                     .fill(.red)
@@ -160,7 +160,7 @@ struct ReactionParticipantRow: View {
                         Text(verbatim: reaction.reaction?.emoji ?? "")
                             .font(.system(size: 13))
                             .frame(width: 22, height: 22)
-                            .background(Color.App.primary.opacity(0.3))
+                            .background(Color.App.accent.opacity(0.3))
                             .clipShape(RoundedRectangle(cornerRadius:(18)))
                             .offset(x: 0, y: 26)
 
@@ -178,7 +178,7 @@ struct ReactionParticipantRow: View {
                     Text(time.date.localFormattedTime ?? "")
                         .padding(.leading, 4)
                         .font(.iransansCaption3)
-                        .foregroundColor(Color.App.gray1)
+                        .foregroundColor(Color.App.textSecondary)
                 }
             }
         }

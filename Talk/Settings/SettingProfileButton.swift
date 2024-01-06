@@ -36,7 +36,7 @@ struct SettingProfileButton: View {
                     .clipShape(RoundedRectangle(cornerRadius:(12)))
                     .overlay {
                         Circle()
-                            .strokeBorder(isSelected ? Color.App.primary : Color.App.bgPrimary, lineWidth: isImageReady ? 1 : 0)
+                            .strokeBorder(isSelected ? Color.App.accent : Color.App.bgPrimary, lineWidth: isImageReady ? 1 : 0)
                             .animation(.easeInOut, value: isSelected)
                     }
             }

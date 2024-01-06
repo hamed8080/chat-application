@@ -21,10 +21,10 @@ struct JoinPublicLink: View {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(JoinToPublicConversationDialog(message: message))
             } label: {
                 Text(message.message ?? "")
-                    .foregroundStyle(Color.App.blue)
+                    .foregroundStyle(Color.App.color1)
 //                HStack {
 //                    Text("Thread.join")
-//                        .foregroundStyle(Color.App.text)
+//                        .foregroundStyle(Color.App.textPrimary)
 //                        .font(.iransansBoldBody)
 //                        .multilineTextAlignment(.center)
 //                }
@@ -32,7 +32,7 @@ struct JoinPublicLink: View {
 //                .frame(height: 52)
 //                .fixedSize(horizontal: false, vertical: true)
 //                .frame(minWidth: 196)
-//                .background(Color.App.bgSecond)
+//                .background(Color.App.bgSecondary)
 //                .clipShape(RoundedRectangle(cornerRadius: 8))
 //                .overlay(
 //                    RoundedRectangle(cornerRadius: 8)
@@ -54,7 +54,7 @@ struct JoinToPublicConversationDialog: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 16) {
             Text("Thread.Join.question")
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldSubheadline)
                 .multilineTextAlignment(.leading)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
@@ -64,7 +64,7 @@ struct JoinToPublicConversationDialog: View {
                     appOverlayVM.dialogView = nil
                 } label: {
                     Text("General.cancel")
-                        .foregroundStyle(Color.App.placeholder)
+                        .foregroundStyle(Color.App.textPlaceholder)
                         .font(.iransansBoldBody)
                         .frame(minWidth: 48, minHeight: 48)
                 }
@@ -76,7 +76,7 @@ struct JoinToPublicConversationDialog: View {
                     appOverlayVM.dialogView = nil
                 } label: {
                     Text("Thread.join")
-                        .foregroundStyle(Color.App.orange)
+                        .foregroundStyle(Color.App.color3)
                         .font(.iransansBoldBody)
                         .frame(minWidth: 48, minHeight: 48)
                 }

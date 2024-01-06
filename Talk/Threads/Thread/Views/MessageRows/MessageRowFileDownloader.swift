@@ -98,7 +98,7 @@ fileprivate struct FileDownloadButton: View {
                 progress
             }
             .frame(width: 46, height: 46)
-            .background(Color.App.btnDownload)
+            .background(Color.App.white)
             .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
 
             VStack(alignment: .leading, spacing: 4) {
@@ -126,7 +126,7 @@ fileprivate struct FileDownloadButton: View {
             Circle()
                 .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
                 .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                .foregroundColor(Color.App.primary)
+                .foregroundColor(Color.App.accent)
                 .rotationEffect(Angle(degrees: 270))
                 .frame(width: 42, height: 42)
                 .environment(\.layoutDirection, .leftToRight)
@@ -137,7 +137,7 @@ fileprivate struct FileDownloadButton: View {
     @ViewBuilder private var fileNameView: some View {
         if let fileName = message?.fileMetaData?.file?.name ?? message?.uploadFileName {
             Text(fileName)
-                .foregroundStyle(Color.App.text)
+                .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldCaption)
         }
     }
@@ -151,7 +151,7 @@ fileprivate struct FileDownloadButton: View {
             Text(extensionName.uppercased())
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
-                .foregroundColor(Color.App.hint)
+                .foregroundColor(Color.App.textSecondary)
         }
     }
 
@@ -160,7 +160,7 @@ fileprivate struct FileDownloadButton: View {
             Text(fileZize.replacingOccurrences(of: "٫", with: "."))
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)
-                .foregroundColor(Color.App.hint)
+                .foregroundColor(Color.App.textSecondary)
         }
     }
 }

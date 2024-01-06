@@ -17,7 +17,7 @@ struct SendContainerOverlayView: View {
         ZStack(alignment: .bottom) {
             if viewModel.showActionButtons {
                 Rectangle()
-                    .fill(Color.App.black.opacity(0.5))
+                    .fill(Color.App.bgSecondary.opacity(0.4))
                     .onTapGesture {
                         withAnimation(.easeOut(duration: 0.13)) {
                             viewModel.showActionButtons.toggle()

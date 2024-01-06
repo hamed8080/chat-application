@@ -28,14 +28,14 @@ struct TagRow: View {
                         Image(systemName: viewModel.selectedTag?.id == tag.id ? "checkmark.circle" : "circle")
                             .font(.title)
                             .frame(width: 22, height: 22, alignment: .center)
-                            .foregroundColor(Color.App.blue)
+                            .foregroundColor(Color.App.color1)
                             .padding(12)
 
                         Image(systemName: "folder.fill")
                             .resizable()
                             .frame(width: 32, height: 32)
                             .scaledToFit()
-                            .foregroundColor(Color.App.gray1.opacity(0.8))
+                            .foregroundColor(Color.App.textSecondary.opacity(0.8))
                         VStack(alignment: .leading) {
                             Text(tag.name)
                                 .font(.iransansBody)
@@ -51,7 +51,7 @@ struct TagRow: View {
                             Image(systemName: "chevron.forward.circle.fill")
                                 .resizable()
                                 .frame(width: 24, height: 24)
-                                .foregroundColor(Color.App.blue.opacity(0.7))
+                                .foregroundColor(Color.App.color1.opacity(0.7))
                                 .padding(8)
                         }
                     }

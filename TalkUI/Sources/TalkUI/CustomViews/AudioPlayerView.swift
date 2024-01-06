@@ -29,7 +29,7 @@ public struct AudioPlayerView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .padding(13)
-                                .foregroundStyle(Color.App.primary)
+                                .foregroundStyle(Color.App.accent)
                         }
                         .buttonStyle(.plain)
                         .frame(width: 36, height: 48)
@@ -42,7 +42,7 @@ public struct AudioPlayerView: View {
                             HStack {
                                 Text(verbatim: audioPlayerVM.title)
                                     .font(.iransansCaption)
-                                    .foregroundColor(Color.App.text)
+                                    .foregroundColor(Color.App.textPrimary)
                                 Spacer()
                             }
                         }
@@ -59,7 +59,7 @@ public struct AudioPlayerView: View {
                             Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundStyle(Color.App.hint)
+                                .foregroundStyle(Color.App.textSecondary)
                                 .padding(12)
                                 .fontWeight(.bold)
                         }
@@ -71,7 +71,7 @@ public struct AudioPlayerView: View {
                                  total: 1.0)
                         .progressViewStyle(.linear)
                         .scaleEffect(x: 1, y: 0.5, anchor: .center)
-                        .tint(Color.App.primary)
+                        .tint(Color.App.accent)
                 }
                 .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
                 .frame(minWidth: 0, maxWidth: .infinity)

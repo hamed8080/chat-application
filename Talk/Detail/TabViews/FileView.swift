@@ -46,7 +46,7 @@ struct MessageListFileView: View {
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
-                            .fill(Color.App.divider)
+                            .fill(Color.App.dividerPrimary)
                             .frame(height: 0.5)
                             .padding(.leading)
                     }
@@ -80,14 +80,14 @@ struct FileRowView: View {
             VStack(alignment: .leading) {
                 Text(message.fileMetaData?.name ?? message.messageTitle)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                 HStack {
                     Text(message.time?.date.localFormattedTime ?? "" )
-                        .foregroundColor(Color.App.hint)
+                        .foregroundColor(Color.App.textSecondary)
                         .font(.iransansCaption2)
                     Spacer()
                     Text(message.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) ?? "")
-                        .foregroundColor(Color.App.hint)
+                        .foregroundColor(Color.App.textSecondary)
                         .font(.iransansCaption3)
                 }
             }

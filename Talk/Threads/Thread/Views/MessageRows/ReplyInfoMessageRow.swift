@@ -25,12 +25,12 @@ struct ReplyInfoMessageRow: View {
                 HStack(spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Message.replyTo")
-                            .foregroundStyle(Color.App.primary)
+                            .foregroundStyle(Color.App.accent)
                             .font(.iransansCaption3)
                         if let name = message.replyInfo?.participant?.name {
                             Text("\(name)")
                                 .font(.iransansBoldCaption2)
-                                .foregroundStyle(Color.App.primary)
+                                .foregroundStyle(Color.App.accent)
                         }
 
                         HStack {
@@ -46,7 +46,7 @@ struct ReplyInfoMessageRow: View {
                                 Text(message)
                                     .font(.iransansCaption3)
                                     .clipShape(RoundedRectangle(cornerRadius:(8)))
-                                    .foregroundStyle(Color.App.gray3)
+                                    .foregroundStyle(Color.App.textPrimary.opacity(0.8))
                                     .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
                                     .lineLimit(2)
                                     .truncationMode(.tail)
@@ -57,7 +57,7 @@ struct ReplyInfoMessageRow: View {
                     .overlay(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 3)
                             .stroke(lineWidth: 1.5)
-                            .fill(Color.App.primary)
+                            .fill(Color.App.accent)
                             .frame(maxWidth: 1.5)
                     }
                 }
@@ -68,7 +68,7 @@ struct ReplyInfoMessageRow: View {
             .truncationMode(.tail)
             .contentShape(Rectangle())
             .padding(EdgeInsets(top: 6, leading: viewModel.isMe ? 6 : 0, bottom: 6, trailing: viewModel.isMe ? 0 : 6))
-            .background(Color.App.bgInput.opacity(0.5))
+            .background(viewModel.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
             .clipShape(RoundedRectangle(cornerRadius: 6))
             .environmentObject(viewModel)
         }
@@ -129,13 +129,13 @@ struct ReplyFileIcon: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
-                    .foregroundColor(Color.App.blue)
+                    .foregroundColor(Color.App.color1)
                     .clipped()
             }
             if let fileStringName = self.message.replyFileStringName {
                 Text(fileStringName)
                     .font(.iransansCaption2)
-                    .foregroundStyle(Color.App.blue)
+                    .foregroundStyle(Color.App.color1)
                     .lineLimit(1)
             }
         }

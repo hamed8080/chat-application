@@ -43,7 +43,7 @@ struct VoiceRecoderSenderView: View {
                     .scaledToFit()
                     .frame(width: 26, height: 26)
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.white, Color.App.primary)
+                    .foregroundStyle(Color.App.white, Color.App.accent)
             }
             .frame(width: 48, height: 48)
             .buttonStyle(.borderless)
@@ -53,7 +53,7 @@ struct VoiceRecoderSenderView: View {
             Spacer()
             HStack(spacing: 4) {
                 Text(viewModel.timerString)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                     .font(.iransansCaption2)
 
                 Image(uiImage: image)
@@ -70,7 +70,7 @@ struct VoiceRecoderSenderView: View {
                         .scaledToFit()
                         .frame(width: 16, height: 16)
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.App.text)
+                        .foregroundStyle(Color.App.textPrimary)
                         .fontWeight(.light)
                 }
                 .frame(width: 28, height: 28)
@@ -79,7 +79,7 @@ struct VoiceRecoderSenderView: View {
             }
             .frame(height: 28)
             .padding(.horizontal, 12)
-            .background(Color.App.primary.opacity(0.2))
+            .background(Color.App.accent.opacity(0.2))
             .clipShape(RoundedRectangle(cornerRadius: 14))
 
             Spacer()
@@ -92,7 +92,7 @@ struct VoiceRecoderSenderView: View {
                 Image(systemName: "trash")
                     .font(.system(size: 16))
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.text)
+                    .foregroundStyle(Color.App.textPrimary)
                     .fontWeight(.semibold)
             }
             .buttonStyle(.borderless)
@@ -134,7 +134,7 @@ struct InVoiceRecordingView: View {
         HStack(spacing: 0) {
             ZStack {
                 Circle()
-                    .fill(Color.App.primary.opacity(0.2))
+                    .fill(Color.App.accent.opacity(0.2))
                     .frame(width: 64, height: 64)
                     .scaleEffect(x: scale, y: scale, anchor: .center)
                     .contentShape(Rectangle())
@@ -158,17 +158,17 @@ struct InVoiceRecordingView: View {
                 } label: {
                     Image(systemName: "mic.fill")
                         .font(.system(size: 16))
-                        .foregroundStyle(Color.App.text)
+                        .foregroundStyle(Color.App.textPrimary)
                         .fontWeight(.semibold)
                         .contentShape(Rectangle())
                 }
                 .frame(width: 48, height: 48)
-                .background(Color.App.primary)
+                .background(Color.App.accent)
                 .clipShape(RoundedRectangle(cornerRadius:(24)))
             }
 
             Text("Thread.isVoiceRecording")
-                .foregroundStyle(Color.App.hint)
+                .foregroundStyle(Color.App.textSecondary)
                 .font(.iransansCaption)
                 .padding(.leading)
 

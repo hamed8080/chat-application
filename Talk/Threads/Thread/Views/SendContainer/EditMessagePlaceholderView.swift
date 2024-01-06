@@ -21,11 +21,11 @@ struct EditMessagePlaceholderView: View {
                     if let name = editMessage.participant?.name {
                         Text(name)
                             .font(.iransansBoldBody)
-                            .foregroundStyle(Color.App.primary)
+                            .foregroundStyle(Color.App.accent)
                     }
                     Text("\(editMessage.message ?? "")")
                         .font(.iransansCaption2)
-                        .foregroundColor(Color.App.placeholder)
+                        .foregroundColor(Color.App.textPlaceholder)
                         .onTapGesture {
                             // TODO: Go to reply message location
                         }

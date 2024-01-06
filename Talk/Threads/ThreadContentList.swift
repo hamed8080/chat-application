@@ -29,8 +29,8 @@ struct ThreadContentList: View {
                             }
                         }
                 }
-                .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
-                .listRowSeparatorTint(Color.App.separator)
+                .listRowInsets(.init(top: 16, leading: 0, bottom: 16, trailing: 8))
+                .listRowSeparatorTint(Color.App.dividerSecondary)
                 .listRowBackground(ThreadListRowBackground(thread: thread))
             }
         }

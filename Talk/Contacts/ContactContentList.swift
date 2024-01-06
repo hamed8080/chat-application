@@ -42,26 +42,26 @@ struct ContactContentList: View {
                 viewModel.showConversaitonBuilder.toggle()
             } label: {
                 Label("Contacts.createGroup", systemImage: "person.2")
-                    .foregroundStyle(Color.App.primary)
+                    .foregroundStyle(Color.App.accent)
             }
             .listRowBackground(Color.App.bgPrimary)
-            .listRowSeparatorTint(Color.App.divider)
+            .listRowSeparatorTint(Color.App.dividerPrimary)
 
             Button {
                 viewModel.createConversationType = .channel
                 viewModel.showConversaitonBuilder.toggle()
             } label: {
                 Label("Contacts.createChannel", systemImage: "megaphone")
-                    .foregroundStyle(Color.App.primary)
+                    .foregroundStyle(Color.App.accent)
             }
             .listRowBackground(Color.App.bgPrimary)
-            .listRowSeparatorTint(Color.App.divider)
+            .listRowSeparatorTint(Color.App.dividerPrimary)
 
             Button {
                 viewModel.showAddOrEditContactSheet.toggle()
             } label: {
                 Label("Contacts.addContact", systemImage: "person.badge.plus")
-                    .foregroundStyle(Color.App.primary)
+                    .foregroundStyle(Color.App.accent)
             }
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparator(.hidden)
@@ -111,9 +111,9 @@ struct ContactRowContainer: View {
     let isSearchRow: Bool
     var separatorColor: Color {
         if !isSearchRow {
-           return viewModel.contacts.last == contact ? Color.clear : Color.App.divider
+           return viewModel.contacts.last == contact ? Color.clear : Color.App.dividerPrimary
         } else {
-            return viewModel.searchedContacts.last == contact ? Color.clear : Color.App.divider
+            return viewModel.searchedContacts.last == contact ? Color.clear : Color.App.dividerPrimary
         }
     }
 
@@ -131,7 +131,7 @@ struct ContactRowContainer: View {
                     } label: {
                         Label("General.edit", systemImage: "pencil")
                     }
-                    .tint(Color.App.hint)
+                    .tint(Color.App.textSecondary)
 
                     let isBlocked = contact.blocked == true
                     Button {

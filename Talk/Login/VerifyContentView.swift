@@ -26,7 +26,7 @@ struct VerifyContentView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 16, height: 16)
-                        .foregroundStyle(Color.App.text)
+                        .foregroundStyle(Color.App.textPrimary)
                         .padding()
                         .fontWeight(.heavy)
                 }
@@ -36,26 +36,26 @@ struct VerifyContentView: View {
             VStack(spacing: 0) {
                 Text("Login.Verify.verifyPhoneNumber")
                     .font(.iransansBoldLargeTitle)
-                    .foregroundColor(Color.App.text)
+                    .foregroundColor(Color.App.textPrimary)
                     .padding(.bottom, 2)
 
                 HStack(spacing: 2) {
                     let localized = String(localized: "Login.Verfiy.verificationCodeSentTo")
                     let formatted = String(format: localized, viewModel.text)
                     Text(formatted)
-                        .foregroundStyle(Color.App.hint)
+                        .foregroundStyle(Color.App.textSecondary)
                         .font(.iransansBody)
                         .padding(EdgeInsets(top: 4, leading: 64, bottom: 4, trailing: 64))
                         .multilineTextAlignment(.center)
                 }
                 .font(.iransansSubheadline)
-                .foregroundColor(Color.App.text)
+                .foregroundColor(Color.App.textPrimary)
             }
             .padding(.bottom, 40)
 
             HStack {
                 Text("Login.verifyCode")
-                    .foregroundColor(Color.App.text)
+                    .foregroundColor(Color.App.textPrimary)
                     .font(.iransansBoldCaption)
                 Spacer()
             }
@@ -67,7 +67,7 @@ struct VerifyContentView: View {
                         .frame(minHeight: 56)
                         .textFieldStyle(BorderedTextFieldStyle(minHeight: 56,
                                                                cornerRadius: 12,
-                                                               bgColor: Color.App.bgSecond,
+                                                               bgColor: Color.App.bgInput,
                                                                borderColor: Color.clear,
                                                                padding: 0))
                         .keyboardType(.numberPad)
@@ -121,7 +121,7 @@ struct VerifyContentView: View {
                     let localized = String(localized: .init("Login.Verify.timer"))
                     let formatted = String(format: localized, viewModel.timerString)
                     Text(formatted)
-                        .foregroundStyle(Color.App.hint)
+                        .foregroundStyle(Color.App.textSecondary)
                         .font(.iransansCaption)
                         .padding(EdgeInsets(top: 20, leading: AppState.isInSlimMode ? 12 : 6, bottom: 0, trailing: 0))
                 } else {
@@ -137,7 +137,7 @@ struct VerifyContentView: View {
                             Text("Login.Verify.resendCode")
                         }
                     }
-                    .foregroundStyle(Color.App.blue)
+                    .foregroundStyle(Color.App.textPrimary)
                     .padding(.top, 20)
                     .font(.iransansCaption)
 

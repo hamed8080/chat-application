@@ -23,20 +23,20 @@ struct TabButtonItem: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24)
-                    .foregroundColor(isSelected ? Color.App.primary : Color.App.gray5)
+                    .foregroundColor(isSelected ? Color.App.accent : Color.App.iconSecondary)
             } else if let imageView {
                 AnyView(imageView)
                     .frame(width: 24, height: 24)
-                    .foregroundColor(isSelected ? Color.App.primary : Color.App.gray5)
+                    .foregroundColor(isSelected ? Color.App.accent : Color.App.iconSecondary)
             }
 
             Text(String(localized: .init(title)))
                 .font(.iransansBoldCaption)
-                .foregroundColor(isSelected ? Color.App.primary : Color.App.gray5)
+                .foregroundColor(isSelected ? Color.App.accent : Color.App.iconSecondary)
 
             if showSelectedDivider, isSelected {
                 Rectangle()
-                    .fill(Color.App.primary)
+                    .fill(Color.App.accent)
                     .frame(width: 72, height: 3)
                     .cornerRadius(2, corners: [.topLeft, .topRight])
             }

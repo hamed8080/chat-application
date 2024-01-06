@@ -52,8 +52,8 @@ struct AddParticipantsToThreadView: View {
                     .frame(height: 30)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
-                    .background(Color.App.separator)
-                    .foregroundStyle(Color.App.hint)
+                    .background(Color.App.dividerSecondary)
+                    .foregroundStyle(Color.App.textSecondary)
             }
             .frame(height: 78)
             .background(.ultraThinMaterial)

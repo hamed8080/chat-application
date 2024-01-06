@@ -27,10 +27,10 @@ struct StartThreadContactPickerView: View {
                     }
                 } label: {
                     Label("Contacts.createGroup", systemImage: "person.2")
-                        .foregroundStyle(Color.App.primary)
+                        .foregroundStyle(Color.App.accent)
                 }
                 .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.divider)
+                .listRowSeparatorTint(Color.App.dividerPrimary)
 
                 Button {
                     dismiss()
@@ -40,7 +40,7 @@ struct StartThreadContactPickerView: View {
                     }
                 } label: {
                     Label("Contacts.createChannel", systemImage: "megaphone")
-                        .foregroundStyle(Color.App.primary)
+                        .foregroundStyle(Color.App.accent)
                 }
                 .listRowBackground(Color.App.bgPrimary)
                 .listRowSeparator(.hidden)

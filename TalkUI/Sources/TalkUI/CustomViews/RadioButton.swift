@@ -24,7 +24,7 @@ public struct RadioButton: View {
                 .resizable()
                 .scaledToFit()
                 .font(.title)
-                .foregroundStyle(isSelected ? Color.App.white : Color.App.gray3, isSelected ? Color.App.primary : Color.App.gray3)
+                .foregroundStyle(isSelected ? Color.App.white : Color.App.textSecondary, isSelected ? Color.App.accent : Color.App.textSecondary)
                 .overlay(alignment: .center) {
                     Circle()
                         .stroke(isSelected ? Color.App.white : Color.clear, lineWidth: 1)

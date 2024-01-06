@@ -33,7 +33,7 @@ struct ReactionMenuView: View {
                             .frame(width: 38, height: 38)
                             .font(.system(size: 32))
                             .padding(4)
-                            .background(currentSelectedReaction?.reaction == sticker ? Color.App.primary.opacity(0.2) : Color.clear)
+                            .background(currentSelectedReaction?.reaction == sticker ? Color.App.accent.opacity(0.2) : Color.clear)
                             .clipShape(RoundedRectangle(cornerRadius:(currentSelectedReaction?.reaction == sticker ? 22 : 0)))
                     }
                     .buttonStyle(.plain)

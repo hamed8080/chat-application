@@ -48,8 +48,8 @@ struct ThreadSearchView: View {
                             }
                     }
                     .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
-                    .listRowSeparatorTint(Color.App.separator)
-                    .listRowBackground(thread.pin == true ? Color.App.bgTertiary : Color.App.bgPrimary)
+                    .listRowSeparatorTint(Color.App.dividerSecondary)
+                    .listRowBackground(thread.pin == true ? Color.App.textSecondary : Color.App.bgPrimary)
                 }
             }
             .listStyle(.plain)

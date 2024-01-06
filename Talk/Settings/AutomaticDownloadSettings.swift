@@ -13,12 +13,12 @@ struct AutomaticDownloadSection: View {
     @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
-        ListSectionButton(imageName: "arrow.down.square.fill", title: "Settings.download", color: Color.App.purple, showDivider: false) {
+        ListSectionButton(imageName: "arrow.down.square.fill", title: "Settings.download", color: Color.App.color5, showDivider: false) {
             navModel.appendAutomaticDownloads()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
-        .listRowSeparatorTint(Color.App.divider)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 }
 
@@ -30,10 +30,10 @@ struct AutomaticDownloadSettings: View {
             Group {
                 Toggle("Download.images", isOn: $model.automaticDownloadSettings.downloadImages)
                     .listRowBackground(Color.App.bgPrimary)
-                    .listRowSeparatorTint(Color.App.divider)
+                    .listRowSeparatorTint(Color.App.dividerPrimary)
                 Toggle("Download.files", isOn: $model.automaticDownloadSettings.downloadFiles)
                     .listRowBackground(Color.App.bgPrimary)
-                    .listRowSeparatorTint(Color.App.divider)
+                    .listRowSeparatorTint(Color.App.dividerPrimary)
             }
             .toggleStyle(MyToggleStyle())
             .listSectionSeparator(.hidden)
@@ -48,27 +48,27 @@ struct AutomaticDownloadSettings: View {
                 } label: {
                     SectionNavigationLabel(imageName: "person.fill",
                                            title: "Notification.PrivateSettings",
-                                           color: Color.App.purple)
+                                           color: Color.App.color5)
                 }
                 .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.divider)
+                .listRowSeparatorTint(Color.App.dividerPrimary)
 
                 NavigationLink {
                     GroupDownloadSetting()
                 } label: {
                     SectionNavigationLabel(imageName: "person.3.fill",
                                            title: "Notification.GroupSettings",
-                                           color: Color.App.green)
+                                           color: Color.App.color2)
                 }
                 .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.divider)
+                .listRowSeparatorTint(Color.App.dividerPrimary)
 
                 NavigationLink {
                     ChannelDownloadSetting()
                 } label: {
                     SectionNavigationLabel(imageName: "megaphone.fill",
                                            title: "Notification.ChannelSettings",
-                                           color: Color.App.yellow)
+                                           color: Color.App.red)
                 }
                 .listRowBackground(Color.App.bgPrimary)
                 .listSectionSeparator(.hidden)
