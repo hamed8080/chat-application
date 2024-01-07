@@ -19,7 +19,7 @@ struct MessageFooterView: View {
     var body: some View {
         HStack {
             Text(viewModel.timeString)
-                .foregroundColor(Color.App.textSecondary)
+                .foregroundColor(Color.App.textPrimary.opacity(0.5))
                 .font(.iransansCaption2)
 
             if message.edited == true {

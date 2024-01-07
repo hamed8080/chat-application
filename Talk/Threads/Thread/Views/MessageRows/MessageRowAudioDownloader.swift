@@ -72,6 +72,7 @@ fileprivate struct AudioDownloadButton: View {
     @EnvironmentObject var audioVM: AVAudioPlayerViewModel
     private var message: Message? { viewModel.message }
     private var percent: Int64 { viewModel.downloadPercent }
+    @Environment(\.colorScheme) var scheme
     private var isSameFile: Bool { audioVM.fileURL?.absoluteString == viewModel.fileURL?.absoluteString }
     private var stateIcon: String {
         if viewModel.state == .completed {
@@ -96,7 +97,7 @@ fileprivate struct AudioDownloadButton: View {
                 progress
             }
             .frame(width: 46, height: 46)
-            .background(Color.App.white)
+            .background(scheme == .light ? Color.App.accent : Color.App.white)
             .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
 
             VStack(alignment: .leading, spacing: 4) {
@@ -116,8 +117,9 @@ fileprivate struct AudioDownloadButton: View {
             .resizable()
             .scaledToFit()
             .frame(width: 16, height: 16)
-            .foregroundStyle(Color.App.bgPrimary)
+            .foregroundStyle(Color.black)
             .fontWeight(.medium)
+            .offset(x: !audioVM.isPlaying && viewModel.state == .completed ? 2 : 0)
     }
 
     @ViewBuilder private var progress: some View {
@@ -150,7 +152,7 @@ fileprivate struct AudioDownloadButton: View {
             Text(extensionName.uppercased())
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
-                .foregroundColor(Color.App.textSecondary)
+                .foregroundColor(Color.App.textPrimary.opacity(0.7))
         }
     }
 
@@ -159,7 +161,7 @@ fileprivate struct AudioDownloadButton: View {
             Text(fileZize.replacingOccurrences(of: "٫", with: "."))
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)
-                .foregroundColor(Color.App.textSecondary)
+                .foregroundColor(Color.App.textPrimary.opacity(0.7))
         }
     }
 
@@ -171,7 +173,7 @@ fileprivate struct AudioDownloadButton: View {
                     .tint(Color.App.textPrimary)
                     .frame(maxWidth: 172)
                 Text("\(audioVM.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(audioVM.duration.timerString(locale: Language.preferredLocale) ?? "")")
-                    .foregroundColor(Color.App.white)
+                    .foregroundColor(Color.App.textPrimary)
             }
         }
     }

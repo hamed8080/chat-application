@@ -13,11 +13,11 @@ public extension Message {
         if seen == true {
             return (Message.seenImage!, Color.App.accent)
         } else if delivered == true {
-            return (Message.seenImage!, Color.App.textSecondary)
+            return (Message.seenImage!, Color.App.textPrimary.opacity(0.6))
         } else if id != nil {
-            return (Message.sentImage!, Color.App.textSecondary)
+            return (Message.sentImage!, Color.App.textPrimary.opacity(0.6))
         } else {
-            return (Message.clockImage!, Color.App.textSecondary)
+            return (Message.clockImage!, Color.App.textPrimary.opacity(0.6))
         }
     }
 }

@@ -66,6 +66,7 @@ struct MessageRowVideoDownloaderContent: View {
 fileprivate struct VideoDownloadButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
     @EnvironmentObject var messageRowVM: MessageRowViewModel
+    @Environment(\.colorScheme) var scheme
     private var message: Message? { viewModel.message }
     private var percent: Int64 { viewModel.downloadPercent }
     private var stateIcon: String {
@@ -85,7 +86,7 @@ fileprivate struct VideoDownloadButton: View {
                 progress
             }
             .frame(width: 46, height: 46)
-            .background(Color.App.white)
+            .background(scheme == .light ? Color.App.accent : Color.App.white)
             .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
 
             VStack(alignment: .leading, spacing: 4) {
@@ -104,7 +105,7 @@ fileprivate struct VideoDownloadButton: View {
             .resizable()
             .scaledToFit()
             .frame(width: 16, height: 16)
-            .foregroundStyle(Color.App.bgPrimary)
+            .foregroundStyle(Color.black)
             .fontWeight(.medium)
     }
 
@@ -138,7 +139,7 @@ fileprivate struct VideoDownloadButton: View {
             Text(extensionName.uppercased())
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
-                .foregroundColor(Color.App.textSecondary)
+                .foregroundColor(Color.App.textPrimary.opacity(0.7))
         }
     }
 
@@ -147,7 +148,7 @@ fileprivate struct VideoDownloadButton: View {
             Text(fileZize.replacingOccurrences(of: "٫", with: "."))
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)
-                .foregroundColor(Color.App.textSecondary)
+                .foregroundColor(Color.App.textPrimary.opacity(0.7))
         }
     }
 }

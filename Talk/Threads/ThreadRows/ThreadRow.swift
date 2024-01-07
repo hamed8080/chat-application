@@ -30,7 +30,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 12, height: 12)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.iconSecondary)
+                            .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
 
                     if thread.group == true, thread.type != .channel {
@@ -38,7 +38,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.iconSecondary)
+                            .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
                     Text(thread.computedTitle)
                         .lineLimit(1)
@@ -49,7 +49,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 12, height: 12)
-                            .foregroundColor(isSelected ? Color.App.white : Color.App.iconSecondary)
+                            .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
                     Spacer()
                     if thread.pin == true {
@@ -57,7 +57,7 @@ struct ThreadRow: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
-                            .foregroundStyle(isSelected ? Color.App.white : Color.App.iconSecondary)
+                            .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
 
                     ThreadTimeText(thread: thread, isSelected: isSelected)
