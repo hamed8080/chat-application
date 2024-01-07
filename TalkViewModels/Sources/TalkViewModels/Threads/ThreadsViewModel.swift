@@ -222,6 +222,7 @@ public final class ThreadsViewModel: ObservableObject {
         threads.forEach { thread in
             if let oldThread = self.threads.first(where: { $0.id == thread.id }) {
                 oldThread.updateValues(thread)
+                oldThread.animateObjectWillChange() // To update properties such as unread count when we get threads again after disconnect.
             } else {
                 self.threads.append(thread)
             }
@@ -430,6 +431,15 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].lastMessageVO?.seen = true
             threads[index].partnerLastSeenMessageId = response.result?.messageId
             threads[index].animateObjectWillChange()
+        }
+    }
+
+    /// This method only reduce the unread count if the deleted message has sent after lastSeenMessageTime.
+    public func onMessageDeleted(_ response: ChatResponse<Message>) {
+        let thread = threads.first{ $0.id == response.subjectId }
+        if response.result?.time ?? 0 > thread?.lastSeenMessageTime ?? 0, thread?.unreadCount ?? 0 >= 1 {
+            thread?.unreadCount = (thread?.unreadCount ?? 0) - 1
+            thread?.animateObjectWillChange()
         }
     }
 }

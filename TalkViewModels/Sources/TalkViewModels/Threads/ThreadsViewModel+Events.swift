@@ -104,6 +104,8 @@ extension ThreadsViewModel {
             onClear(chatResponse)
         case .seen(let response):
             onSeen(response)
+        case .deleted(let response):
+            onMessageDeleted(response)
         default:
             break
         }
