@@ -59,6 +59,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var historyVM: ThreadHistoryViewModel
     public weak var threadsViewModel: ThreadsViewModel?
     public var participantsColorVM: ParticipantsColorViewModel = .init()
+    public var threadPinMessageViewModel: ThreadPinMessageViewModel
     public var readOnly = false
     private var cancelable: Set<AnyCancellable> = []
     private var typingTimerStarted = false
@@ -88,6 +89,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.sendContainerViewModel = .init(thread: thread)
         self.searchedMessagesViewModel = .init(threadId: thread.id ?? -1)
         self.selectedMessagesViewModel = .init()
+        self.threadPinMessageViewModel = ThreadPinMessageViewModel(thread: thread)
         self.scrollVM = .init()
         self.historyVM = .init()
         self.readOnly = readOnly

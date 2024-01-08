@@ -43,10 +43,6 @@ extension ThreadViewModel {
         switch event {
         case .new(let response):
             onNewMessage(response)
-        case .pin(let response):
-            onPinMessage(response)
-        case .unpin(let response):
-            onUNPinMessage(response)
         case .edited(let response):
             onEditedMessage(response)
         default:

@@ -13,50 +13,29 @@ import TalkUI
 import TalkViewModels
 
 struct ThreadPinMessage: View {
+    @EnvironmentObject var viewModel: ThreadPinMessageViewModel
     let threadVM: ThreadViewModel
-    @State private var message: PinMessage?
-    @State private var thumbnailData: Data?
-    @State private var requestUniqueId: String?
-    @State private var icon: String?
-    @State private var isEnglish: Bool = true
-    @State private var title: String = ""
-    private var thread: Conversation { threadVM.thread }
-    private let downloadPublisher = NotificationCenter.default.publisher(for: .download).compactMap { $0.object as? DownloadEventTypes }
-    private let messagePublisher = NotificationCenter.default.publisher(for: .message).compactMap { $0.object as? MessageEventTypes }
 
     var body: some View {
         VStack(spacing: 0) {
-            if message != nil {
+            if viewModel.hasPinMessage {
                 HStack {
-                    if isEnglish {
+                    if viewModel.isEnglish {
                         LTRDesign
                     } else {
                         RTLDesign
                     }
                 }
-                .padding(EdgeInsets(top: 0, leading: isEnglish ? 4 : 8, bottom: 0, trailing: isEnglish ? 8 : 4))
+                .padding(EdgeInsets(top: 0, leading: viewModel.isEnglish ? 4 : 8, bottom: 0, trailing: viewModel.isEnglish ? 8 : 4))
                 .frame(height: 40)
                 .background(MixMaterialBackground())
                 .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top)))
                 .onTapGesture {
-                    if let time = message?.time, let messageId = message?.messageId {
+                    if let time = viewModel.message?.time, let messageId = viewModel.message?.messageId {
                         threadVM.historyVM.moveToTime(time, messageId)
                     }
                 }
             }
-        }
-        .onReceive(downloadPublisher) { event in
-            onDownloadEvent(event)
-            setTitleIconIsEnglish()
-        }
-        .onReceive(messagePublisher) { event in
-            onMessageEvent(event)
-            setTitleIconIsEnglish()
-        }
-        .onAppear {
-            message = thread.pinMessage
-            downloadImageThumbnail()
-            setTitleIconIsEnglish()
         }
     }
 
@@ -93,18 +72,18 @@ struct ThreadPinMessage: View {
     }
 
     private var textView: some View {
-        Text(title)
+        Text(viewModel.title)
             .font(.iransansBody)
     }
 
     @ViewBuilder private var imageView: some View {
-        if let thumbnailData = thumbnailData, let image = UIImage(data: thumbnailData) {
+        if let image = viewModel.image {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 24, height: 24)
                 .clipShape(RoundedRectangle(cornerRadius:(4)))
-        } else if let icon = icon {
+        } else if let icon = viewModel.icon {
             Image(systemName: icon)
                 .resizable()
                 .scaledToFill()
@@ -116,7 +95,7 @@ struct ThreadPinMessage: View {
     var closeButton: some View {
         Button {
             withAnimation {
-                threadVM.unpinMessage(message?.messageId ?? -1)
+                viewModel.unpinMessage(viewModel.message?.messageId ?? -1)
             }
         } label: {
             Image(systemName: "xmark")
@@ -129,90 +108,6 @@ struct ThreadPinMessage: View {
         .frame(width: 36, height: 36)
         .buttonStyle(.borderless)
         .fontWeight(.light)
-    }
-
-    var fileMetadata: FileMetaData? {
-        guard let metdataData = message?.metadata?.data(using: .utf8),
-              let file = try? JSONDecoder.instance.decode(FileMetaData.self, from: metdataData)
-        else { return nil }
-        return file
-    }
-
-    /// We use a Task due to fileMetadata decoding.
-    private func downloadImageThumbnail() {
-        Task {
-            guard let file = fileMetadata,
-                  let hashCode = file.file?.hashCode,
-                  file.file?.mimeType == "image/jpeg" || file.file?.mimeType == "image/png"
-            else {
-                thumbnailData = nil
-                return
-            }
-
-            let req = ImageRequest(hashCode: hashCode, quality: 0.1, size: .SMALL, thumbnail: true)
-            requestUniqueId = req.uniqueId
-            ChatManager.activeInstance?.file.get(req)
-        }
-    }
-
-    private func onDownloadEvent(_ event: DownloadEventTypes) {
-        switch event {
-        case let .image(chatResponse, _):
-            if requestUniqueId == chatResponse.uniqueId {
-                thumbnailData = chatResponse.result
-            }
-        default:
-            break
-        }
-    }
-
-    private func onMessageEvent(_ event: MessageEventTypes) {
-        switch event {
-        case let .pin(response):
-            if threadVM.threadId == response.subjectId {
-                withAnimation(.easeInOut) {
-                    message = response.result
-                    downloadImageThumbnail()
-                }
-            }
-        case let .unpin(response):
-            if threadVM.threadId == response.subjectId {
-                withAnimation(.easeInOut) {
-                    message = nil
-                }
-            }
-        case .edited(let response):
-            if response.result?.id == message?.id, let message = response.result {
-                withAnimation(.easeInOut) {
-                    self.message = PinMessage(message: message)
-                }
-            }
-        default:
-            break
-        }
-    }
-
-    private func setTitleIconIsEnglish() {
-        Task.detached {
-            let icon = fileMetadata?.file?.mimeType?.systemImageNameForFileExtension
-            let isEnglish = message?.text?.naturalTextAlignment == .leading
-            let title = text
-            await MainActor.run {
-                self.icon = icon
-                self.isEnglish = isEnglish
-                self.title = title
-            }
-        }
-    }
-
-    private var text: String {
-        if let text = message?.text, !text.isEmpty {
-            return text.prefix(150).replacingOccurrences(of: "\n", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
-        } else if let fileName = fileMetadata?.name {
-            return fileName
-        } else {
-            return ""
-        }
     }
 }
 

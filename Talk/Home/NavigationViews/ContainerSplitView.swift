@@ -96,6 +96,7 @@ struct NavigationTypeView: View {
                     .environmentObject(viewModel.historyVM)
                     .environmentObject(viewModel.uploadMessagesViewModel)
                     .environmentObject(viewModel.unssetMessagesViewModel)
+                    .environmentObject(viewModel.threadPinMessageViewModel)
             }
         case .contact(let contact):
             Text(contact.firstName ?? "")

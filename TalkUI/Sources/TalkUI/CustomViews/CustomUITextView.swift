@@ -36,7 +36,7 @@ public struct CustomUITextView: UIViewRepresentable {
     }
 
     public func makeUIView(context: Context) -> some UIView {
-        let textView = UITextView()
+        let textView = MyCustomUITextView()
         textView.attributedText = attributedText
         textView.isEditable = isEditable
         textView.isUserInteractionEnabled = iseUserInteractionEnabled
@@ -46,14 +46,48 @@ public struct CustomUITextView: UIViewRepresentable {
         textView.isScrollEnabled = isScrollingEnabled
         textView.isSelectable = isSelectable
         textView.frame.origin.y = 0
-        //        textView.translatesAutoresizingMaskIntoConstraints = false
-        //        textView.setContentHuggingPriority(.defaultHigh, for: .vertical)
-        textView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        textView.invalidateIntrinsicContentSize()
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.setContentHuggingPriority(.required, for: .horizontal)
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        //        textView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+
+        textView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        textView.setContentCompressionResistancePriority(.required, for: .vertical)
+//        let size = textView.sizeThatFits(.init(width: 400, height: CGFloat.greatestFiniteMagnitude))
+//        textView.heightAnchor.constraint(equalToConstant: size.height + 100).isActive = true
+//        textView.widthAnchor.constraint(equalToConstant: size.width).isActive = true
+//        textView.invalidateIntrinsicContentSize()
         return textView
     }
 
     public func updateUIView(_ uiView: UIViewType, context: Context) {
+        if let textView = uiView as? UITextView {
+        }
+    }
+}
+
+public class MyCustomUITextView: UITextView {
+    override public var text: String! {
+        didSet {
+            invalidateIntrinsicContentSize()
+        }
+    }
+
+    override public var attributedText: NSAttributedString! {
+        didSet {
+            invalidateIntrinsicContentSize()
+        }
+    }
+
+    override public var contentSize: CGSize {
+        didSet {
+            invalidateIntrinsicContentSize()
+        }
+    }
+
+    override public var intrinsicContentSize: CGSize {
+        let size = CGSize(width: self.bounds.size.width, height: CGFloat.greatestFiniteMagnitude)
+        let newSize = self.sizeThatFits(size)
+        return newSize
     }
 }

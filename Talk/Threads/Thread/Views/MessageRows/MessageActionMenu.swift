@@ -118,7 +118,7 @@ struct MessageActionMenu: View {
                             .environmentObject(threadVM)
                         AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
                     } else {
-                        threadVM?.unpinMessage(message.id ?? -1)
+                        threadVM?.threadPinMessageViewModel.unpinMessage(message.id ?? -1)
                         threadVM?.animateObjectWillChange()
                     }
                 }

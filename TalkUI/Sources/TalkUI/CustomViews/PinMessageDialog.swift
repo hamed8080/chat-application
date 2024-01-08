@@ -29,7 +29,7 @@ public struct PinMessageDialog: View {
 
             VStack(alignment: .leading, spacing: 20) {
                 Button {
-                    threadVM.togglePinMessage(message, notifyAll: true)
+                    threadVM.threadPinMessageViewModel.togglePinMessage(message, notifyAll: true)
                     appOverlayVM.dialogView = nil
                     threadVM.animateObjectWillChange()
                 } label: {
@@ -39,7 +39,7 @@ public struct PinMessageDialog: View {
                 }
 
                 Button {
-                    threadVM.togglePinMessage(message, notifyAll: false)
+                    threadVM.threadPinMessageViewModel.togglePinMessage(message, notifyAll: false)
                     appOverlayVM.dialogView = nil
                     threadVM.animateObjectWillChange()
                 } label: {
