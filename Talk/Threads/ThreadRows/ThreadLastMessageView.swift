@@ -67,7 +67,7 @@ struct NormalLastMessageContainer: View {
             }
 
             if lastMsgVO?.isFileType == true, lastMsgVO?.message.isEmptyOrNil == true, let fileStringName = lastMsgVO?.fileStringName {
-                Text(fileStringName)
+                Text(fileStringName.localized())
                     .font(.iransansCaption2)
                     .lineLimit(thread.group == false ? 2 : 1)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)

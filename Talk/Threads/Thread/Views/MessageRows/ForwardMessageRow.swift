@@ -31,15 +31,7 @@ struct ForwardMessageRow: View {
                             Text(name)
                                 .font(.iransansBoldBody)
                                 .foregroundStyle(Color.App.accent)
-                        }
-                        if message?.message != nil {
-                            Text(viewModel.markdownTitle)
-                                .multilineTextAlignment(.leading)
-                                .padding(.horizontal, 6)
-                                .font(.iransansBody)
-                                .foregroundColor(Color.App.textPrimary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
+                        }                       
                     }
                 }
                 .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.isMe ? 4 : 8))

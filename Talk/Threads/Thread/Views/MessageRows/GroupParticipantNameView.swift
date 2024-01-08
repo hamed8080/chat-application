@@ -15,13 +15,14 @@ struct GroupParticipantNameView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     var canShowName: Bool {
         !viewModel.isMe && viewModel.threadVM?.thread.group == true && viewModel.threadVM?.thread.type?.isChannelType == false
+        && viewModel.isFirstMessageOfTheUser
     }
 
     var body: some View {
         if canShowName {
             HStack {
                 Text(verbatim: message.participant?.name ?? "")
-                    .foregroundStyle(Color.App.color5)
+                    .foregroundStyle(Color.App.accent)
                     .font(.iransansBody)
             }
             .padding(.horizontal, 6)

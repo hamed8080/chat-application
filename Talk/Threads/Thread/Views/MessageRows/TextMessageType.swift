@@ -86,17 +86,17 @@ struct InnerMessage: View {
 
     var body: some View {
         VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 10) {
+            GroupParticipantNameView()
+            ReplyInfoMessageRow()
+            ForwardMessageRow()
             Group {
+                LocationRowView()
                 MessageRowFileDownloader(viewModel: viewModel)
                 MessageRowImageDownloader()
                 MessageRowVideoDownloader(viewModel: viewModel)
                 MessageRowAudioDownloader(viewModel: viewModel)
+                UploadMessageType()
             }
-            LocationRowView()
-            GroupParticipantNameView()
-            ReplyInfoMessageRow()  
-            ForwardMessageRow()
-            UploadMessageType()
             MessageTextView()
             JoinPublicLink(viewModel: viewModel)
             UnsentMessageView()

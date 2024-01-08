@@ -23,43 +23,41 @@ struct ReplyInfoMessageRow: View {
                 moveToMessage()
             } label: {
                 HStack(spacing: 8) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Message.replyTo")
-                            .foregroundStyle(Color.App.accent)
-                            .font(.iransansCaption3)
-                        if let name = message.replyInfo?.participant?.name {
-                            Text("\(name)")
-                                .font(.iransansBoldCaption2)
-                                .foregroundStyle(Color.App.accent)
-                        }
-
-                        HStack {
-                            ReplyImageIcon(viewModel: viewModel)
-                            ReplyFileIcon()
-                            if message.replyInfo?.deleted == true {
-                                Text("Messages.deletedMessageReply")
+                    HStack {
+                        ReplyImageIcon(viewModel: viewModel)
+                        ReplyFileIcon()
+                        VStack(alignment: .leading, spacing: 2) {
+                            if let name = message.replyInfo?.participant?.name {
+                                Text("\(name)")
                                     .font(.iransansBoldCaption2)
-                                    .foregroundColor(Color.App.red)
+                                    .foregroundStyle(Color.App.accent)
                             }
-
-                            if let message = message.replyInfo?.message, !message.isEmpty {
-                                Text(message)
+                            let hinTextMessage = message.replyInfo?.message ?? message.replyFileStringName?.localized()
+                            if let hinTextMessage = hinTextMessage, !hinTextMessage.isEmpty {
+                                Text(hinTextMessage)
                                     .font(.iransansCaption3)
                                     .clipShape(RoundedRectangle(cornerRadius:(8)))
-                                    .foregroundStyle(Color.App.textPrimary.opacity(0.8))
+                                    .foregroundStyle(Color.App.textPrimary.opacity(0.7))
                                     .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
-                                    .lineLimit(2)
+                                    .lineLimit(1)
                                     .truncationMode(.tail)
                             }
                         }
                     }
-                    .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.isMe ? 4 : 8))
-                    .overlay(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 3)
-                            .stroke(lineWidth: 1.5)
-                            .fill(Color.App.accent)
-                            .frame(maxWidth: 1.5)
+                    HStack {
+                        if message.replyInfo?.deleted == true {
+                            Text("Messages.deletedMessageReply")
+                                .font(.iransansBoldCaption2)
+                                .foregroundColor(Color.App.red)
+                        }
                     }
+                }
+                .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.isMe ? 4 : 8))
+                .overlay(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .stroke(lineWidth: 1.5)
+                        .fill(Color.App.accent)
+                        .frame(maxWidth: 1.5)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -110,8 +108,8 @@ struct ReplyImageIcon: View {
     var body: some View {
         if viewModel.isReplyImage, let link = viewModel.replyLink {
             let config = ImageLoaderConfig(url: link, size: .SMALL, metaData: viewModel.message.replyInfo?.metadata, thumbnail: true)
-            ImageLoaderView(imageLoader: .init(config: config), contentMode: .fit)
-                .frame(width: 28, height: 28)
+            ImageLoaderView(imageLoader: .init(config: config), contentMode: .fill)
+                .frame(width: 32, height: 32)
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .clipped()
         }
@@ -127,16 +125,11 @@ struct ReplyFileIcon: View {
             if let iconName = self.message.replyIconName {
                 Image(systemName: iconName)
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(Color.App.color1)
+                    .scaledToFill()
+                    .frame(width: 32, height: 32)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .foregroundColor(Color.App.accent)
                     .clipped()
-            }
-            if let fileStringName = self.message.replyFileStringName {
-                Text(fileStringName)
-                    .font(.iransansCaption2)
-                    .foregroundStyle(Color.App.color1)
-                    .lineLimit(1)
             }
         }
     }

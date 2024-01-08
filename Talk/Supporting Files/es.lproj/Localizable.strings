@@ -363,3 +363,18 @@
 
 /* Message Seen Participants */
 "SeenParticipants.title" = "Participantes vistas";
+
+/* Message Types */
+"MessageType.text" = "Texto";
+"MessageType.voice" = "Voz";
+"MessageType.picture" = "Imagen";
+"MessageType.video" = "Video";
+"MessageType.sound" = "Sonido";
+"MessageType.file" = "Archivo";
+"MessageType.link" = "Enlace";
+"MessageType.endCall" = "Finalizar llamada";
+"MessageType.startCall" = "Iniciar llamada";
+"MessageType.sticker" = "Pegatina";
+"MessageType.location" = "Ubicación";
+"MessageType.join" = "Unirse";
+"MessageType.left" = "Abandonó";

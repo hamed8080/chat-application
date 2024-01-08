@@ -75,6 +75,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var isSelected = false
     public var showReactionsOverlay = false
     public var isNextMessageTheSameUser: Bool = false
+    public var isFirstMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
     public var uploadViewModel: UploadFileViewModel?
@@ -264,7 +265,9 @@ public final class MessageRowViewModel: ObservableObject {
         await calculatePaddings()
         isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
         let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
+        let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
         isNextMessageTheSameUser = threadVM?.thread.group == true && isSameResponse && message.participant != nil
+        self.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = AttributedString(message.markdownTitle)
         isPublicLink = message.isPublicLink

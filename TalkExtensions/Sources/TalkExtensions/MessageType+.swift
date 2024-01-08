@@ -41,39 +41,39 @@ public extension ChatModels.MessageType {
     var fileStringName: String? {
         switch self {
         case .text:
-            return "text"
+            return "MessageType.text"
         case .voice:
-            return "voice"
+            return "MessageType.voice"
         case .picture:
-            return "picture"
+            return "MessageType.picture"
         case .video:
-            return "video"
+            return "MessageType.video"
         case .sound:
-            return "sound"
+            return "MessageType.sound"
         case .file, .podSpaceFile:
-            return "doc.circle.fill"
+            return "MessageType.file"
         case .podSpacePicture:
-            return "picture"
+            return "MessageType.picture"
         case .podSpaceVideo:
-            return "video"
+            return "MessageType.video"
         case .podSpaceSound:
-            return "sound"
+            return "MessageType.sound"
         case .podSpaceVoice:
-            return "voice"
+            return "MessageType.voice"
         case .link:
-            return "link"
+            return "MessageType.link"
         case .endCall:
-            return "end_call"
+            return "MessageType.endCall"
         case .startCall:
-            return "start_call"
+            return "MessageType.startCall"
         case .sticker:
-            return "sticker"
+            return "MessageType.sticker"
         case .location:
-            return "location"
+            return "MessageType.location"
         case .participantJoin:
-            return "join"
+            return "MessageType.join"
         case .participantLeft:
-            return "left"
+            return "MessageType.left"
         case .unknown:
             return nil
         }

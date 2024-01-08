@@ -210,6 +210,18 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         return false
     }
 
+    public func isFirstMessageOfTheUser(_ message: Message) async -> Bool {
+        guard let tuples = historyVM.message(for: message.id) else { return false }
+        let sectionIndex = tuples.sectionIndex
+        let previousIndex = tuples.messageIndex - 1
+        let isPreviousIndexExist = historyVM.sections[sectionIndex].messages.indices.contains(previousIndex)
+        if isPreviousIndexExist {
+            let prevMessage = historyVM.sections[sectionIndex].messages[previousIndex]
+            return prevMessage.participant?.id != message.participant?.id
+        }
+        return true
+    }
+
     public func clearCacheFile(message: Message) {
         if let fileHashCode = message.fileMetaData?.fileHash {
             let path = message.isImage ? Routes.images.rawValue : Routes.files.rawValue
