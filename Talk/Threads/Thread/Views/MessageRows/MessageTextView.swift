@@ -20,7 +20,7 @@ struct MessageTextView: View {
         if !message.messageTitle.isEmpty, !viewModel.isPublicLink {
             Text(viewModel.markdownTitle)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
-                .padding(.horizontal, 6)
+                .padding(EdgeInsets(top: !message.isImage && message.replyInfo == nil && message.forwardInfo == nil ? 6 : 0, leading: 6, bottom: 0, trailing: 6))
                 .font(.iransansBody)
                 .foregroundColor(Color.App.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)

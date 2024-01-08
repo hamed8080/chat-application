@@ -564,6 +564,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         let scrollVM = threadViewModel.scrollVM
         if message.id == sections.first?.messages.first?.id {
             lastTopVisibleMessage = message
+        } else {
+            lastTopVisibleMessage = nil
         }
         if message.id == thread.lastMessageVO?.id, threadViewModel.scrollVM.isAtBottomOfTheList == false {
             threadViewModel.scrollVM.isAtBottomOfTheList = true
