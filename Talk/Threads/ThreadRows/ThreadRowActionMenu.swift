@@ -76,12 +76,14 @@ struct ThreadRowActionMenu: View {
 
         /// You should be admin or the thread should be a p2p thread with two people.
         if thread.admin == true || thread.group == false {
-            let deleteKey = String(localized: "Thread.delete")
+            let deleteKey = thread.group == false ? "" : String(localized: "Thread.delete")
             let key = thread.type?.isChannelType == true ? "Thread.channel" : thread.group == true ? "Thread.group" : ""
+            let groupLocalized = String(format: deleteKey, String(localized: .init(key)))
+            let p2pLocalized = String(localized: .init("Genreal.deleteConversation"))
             Button(role: .destructive) {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: thread.id))
             } label: {
-                Label(String(format: deleteKey, String(localized: .init(key))), systemImage: "trash")
+                Label(thread.group == true ? groupLocalized : p2pLocalized, systemImage: "trash")
             }
         }
     }

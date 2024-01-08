@@ -16,6 +16,7 @@
 "General.next" = "Weiter";
 "General.back" = "Zurück";
 "General.delete" = "Löschen";
+"Genreal.deleteConversation" = "Konversation löschen";
 "General.cancel" = "Abbrechen";
 "General.showMore" = "Mehr anzeigen";
 "General.showLess" = "Weniger anzeigen";

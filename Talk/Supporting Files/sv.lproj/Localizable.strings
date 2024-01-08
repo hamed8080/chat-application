@@ -16,6 +16,7 @@
 "General.next" = "Nästa";
 "General.back" = "Tillbaka";
 "General.delete" = "Radera";
+"Genreal.deleteConversation" = "Radera konversation";
 "General.cancel" = "Avbryt";
 "General.showMore" = "Visa mer";
 "General.showLess" = "Visa mindre";
