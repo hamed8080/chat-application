@@ -58,6 +58,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var scrollVM: ThreadScrollingViewModel
     public var historyVM: ThreadHistoryViewModel
     public weak var threadsViewModel: ThreadsViewModel?
+    public var participantsColorVM: ParticipantsColorViewModel = .init()
     public var readOnly = false
     private var cancelable: Set<AnyCancellable> = []
     private var typingTimerStarted = false

@@ -22,8 +22,8 @@ struct GroupParticipantNameView: View {
         if canShowName {
             HStack {
                 Text(verbatim: message.participant?.name ?? "")
-                    .foregroundStyle(Color.App.accent)
-                    .font(.iransansBody)
+                    .foregroundStyle(viewModel.participantColor ?? .clear)
+                    .font(.iransansBoldBody)
             }
             .padding(.horizontal, 6)
         }

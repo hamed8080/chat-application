@@ -85,6 +85,7 @@ public final class MessageRowViewModel: ObservableObject {
     public var isReplyImage: Bool = false
     public var replyLink: String?
     public var isPublicLink: Bool = false
+    public var participantColor: Color? = nil
     private static var formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
@@ -276,6 +277,8 @@ public final class MessageRowViewModel: ObservableObject {
         }
         let uploadCompleted: Bool = message.uploadFile == nil || uploadViewModel?.state == .completed
         canShowImageView = !isMapType && message.isImage && uploadCompleted
+        let color = await threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
+        participantColor = Color(uiColor: color ?? .clear)
         await manageDownload()
     }
 
