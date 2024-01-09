@@ -83,11 +83,11 @@ struct EditGroup: View {
                 Spacer()
             }
             .padding()
-            .listRowBackground(Color.App.bgPrimary)
+            .listRowBackground(Color.App.bgSecondary)
             .noSeparators()
             
             StickyHeaderSection(header: "", height: 2)
-                .listRowBackground(Color.App.bgPrimary)
+                .listRowBackground(Color.App.bgSecondary)
                 .listRowInsets(.zero)
                 .noSeparators()
             
@@ -95,21 +95,21 @@ struct EditGroup: View {
                 .focused($focusState, equals: .name)
                 .keyboardType(.default)
                 .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "EditGroup.groupName", isFocused: focusState == .name) {
+                .applyAppTextfieldStyle(topPlaceholder: "EditGroup.groupName", innerBGColor: Color.App.bgSendInput, isFocused: focusState == .name) {
                     focusState = .name
                 }
                 .noSeparators()
-                .listRowBackground(Color.App.bgPrimary)
+                .listRowBackground(Color.App.bgSecondary)
             
             TextField("EditGroup.groupDescription", text: $viewModel.threadDescription)
                 .focused($focusState, equals: .description)
                 .keyboardType(.default)
                 .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "EditGroup.groupDescription", minHeight: 128, isFocused: focusState == .description) {
+                .applyAppTextfieldStyle(topPlaceholder: "EditGroup.groupDescription", innerBGColor: Color.App.bgSendInput, minHeight: 128, isFocused: focusState == .description) {
                     focusState = .description
                 }
                 .noSeparators()
-                .listRowBackground(Color.App.bgPrimary)
+                .listRowBackground(Color.App.bgSecondary)
             let isChannel = viewModel.thread?.type == .channel || viewModel.thread?.type == .publicChannel
             let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
             let localizedPublic = String(localized: .init("Thread.public"))
@@ -127,7 +127,7 @@ struct EditGroup: View {
                     }
                     .toggleStyle(MyToggleStyle())
                     .padding(.horizontal)
-                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowBackground(Color.App.bgSecondary)
                     .listRowSeparatorTint(Color.App.dividerPrimary)
                     .disabled(isPublic)
                     .opacity(isPublic ? 0.5 : 1.0)
@@ -141,7 +141,7 @@ struct EditGroup: View {
                         .foregroundStyle(Color.App.red)
                 }
                 .padding(.horizontal, 8)
-                .listRowBackground(Color.App.bgPrimary)
+                .listRowBackground(Color.App.bgSecondary)
                 .listRowSeparatorTint(Color.App.dividerPrimary)
             }
         }
@@ -149,7 +149,7 @@ struct EditGroup: View {
         .animation(.easeInOut, value: focusState)
         .padding(0)
         .listStyle(.plain)
-        .background(Color.App.bgPrimary)
+        .background(Color.App.bgSecondary)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: "General.edit", enableButton: Binding(get: {!viewModel.isLoading}, set: {_ in}), isLoading: $viewModel.isLoading) {
                 viewModel.submitEditGroup()
