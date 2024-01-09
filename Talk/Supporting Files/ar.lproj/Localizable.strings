@@ -224,6 +224,8 @@
 "Thread.forwardMessages" = "أعد توجيه %@ رسائل";
 "Thread.delete" = "حذف %@";
 "Thread.leave" = "مغادرة %@";
+"Thread.leaveButton" = "المغادرة";
+"Thread.leave.footer" = "هل أنت متأكد أنك تريد مغادرة هذا الحوار؟";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";

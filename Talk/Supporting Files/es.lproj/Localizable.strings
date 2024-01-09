@@ -226,6 +226,8 @@
 "Thread.forwardMessages" = "Reenviar %@ mensajes";
 "Thread.delete" = "Eliminar %@";
 "Thread.leave" = "Salir de %@";
+"Thread.leaveButton" = "Salir";
+"Thread.leave.footer" = "¿Estás seguro de que quieres abandonar esta conversación?";
 
 /* Estado de conexión */
 "ConnectionStatus.connecting" = "conectando";

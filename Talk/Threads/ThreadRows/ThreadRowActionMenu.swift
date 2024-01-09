@@ -69,7 +69,7 @@ struct ThreadRowActionMenu: View {
             let leaveKey = String(localized: .init("Thread.leave"))
             let key = thread.type?.isChannelType == true ? "Thread.channel" : "Thread.group"
             Button(role: .destructive) {
-                viewModel.leave(thread)
+                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(LeaveThreadDialog(conversation: thread))
             } label: {
                 Label(String(format: leaveKey, String(localized: .init(key))), systemImage: "rectangle.portrait.and.arrow.right")
             }
@@ -82,7 +82,7 @@ struct ThreadRowActionMenu: View {
             let groupLocalized = String(format: deleteKey, String(localized: .init(key)))
             let p2pLocalized = String(localized: .init("Genreal.deleteConversation"))
             Button(role: .destructive) {
-                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: thread.id))
+                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: thread.id))
             } label: {
                 Label(thread.group == true ? groupLocalized : p2pLocalized, systemImage: "trash")
             }

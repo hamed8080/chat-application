@@ -135,7 +135,7 @@ struct EditGroup: View {
 
                 Button {
                     viewModel.showEditGroup.toggle()
-                    AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: viewModel.thread?.id))
+                    AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: viewModel.thread?.id))
                 } label: {
                     Label(String(format: localizedDelete, typeName), systemImage: "trash")
                         .foregroundStyle(Color.App.red)

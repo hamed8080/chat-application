@@ -1,5 +1,5 @@
 //
-//  DeleteThreadView.swift
+//  DeleteThreadDialog.swift
 //  Talk
 //
 //  Created by hamed on 11/25/23.
@@ -9,7 +9,7 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 
-struct DeleteThreadView: View {
+struct DeleteThreadDialog: View {
     let threadId: Int?
     @EnvironmentObject var container: ObjectsContainer
 
@@ -50,6 +50,6 @@ struct DeleteThreadView: View {
 
 struct DeleteThreadView_Previews: PreviewProvider {
     static var previews: some View {
-        DeleteThreadView(threadId: 1)
+        DeleteThreadDialog(threadId: 1)
     }
 }

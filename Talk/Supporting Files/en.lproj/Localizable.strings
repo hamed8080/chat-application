@@ -173,7 +173,6 @@
 "Thread.addToFolder" = "Add To Folder";
 "Thread.clearHistory" = "Clear History";
 "Thread.spam" = "Spam";
-"Thread.leave" = "Leave";
 "Thread.archive" = "Archive";
 "Thread.unarchive" = "UNArchive";
 "Thread.invite" = "Invite";
@@ -226,6 +225,8 @@
 "Thread.forwardMessages" = "Forward %@ messages";
 "Thread.delete" = "Delete %@";
 "Thread.leave" = "Leave %@";
+"Thread.leaveButton" = "Leave";
+"Thread.leave.footer" = "Are you sure you want to leave this conversation?";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";

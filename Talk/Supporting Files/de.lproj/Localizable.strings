@@ -225,6 +225,8 @@
 "Thread.forwardMessages" = "%@ Nachrichten weiterleiten";
 "Thread.delete" = "Lösche %@";
 "Thread.leave" = "Verlassen %@";
+"Thread.leaveButton" = "Verlassen";
+"Thread.leave.footer" = "Möchtest du diesen Chat wirklich verlassen?";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "verbinden";

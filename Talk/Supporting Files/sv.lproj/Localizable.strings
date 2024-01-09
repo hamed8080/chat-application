@@ -224,6 +224,8 @@
 "Thread.forwardMessages" = "Vidarebefordra %@ meddelanden";
 "Thread.delete" = "Radera %@";
 "Thread.leave" = "Lämna %@";
+"Thread.leaveButton" = "Lämna";
+"Thread.leave.footer" = "Är du säker på att du vill lämna denna konversation?";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";

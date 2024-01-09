@@ -82,7 +82,7 @@ struct ThreadRow: View {
         .animation(.easeInOut, value: viewModel.activeCallThreads.count)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
-                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadView(threadId: thread.id))                
+                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: thread.id))                
             } label: {
                 Label("General.delete", systemImage: "trash")
             }

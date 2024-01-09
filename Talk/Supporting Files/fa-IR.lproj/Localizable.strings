@@ -225,6 +225,8 @@
 "Thread.forwardMessages" = "%@ پیام را ارسال کنید";
 "Thread.delete" = "حذف %@";
 "Thread.leave" = "ترک %@";
+"Thread.leaveButton" = "ترک";
+"Thread.leave.footer" = "آیا شما مطمئن هستید که می خواهید این گفتگو را ترک کنید؟";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "در حال اتصال";
