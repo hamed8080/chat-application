@@ -25,8 +25,14 @@ struct GroupParticipantNameView: View {
                     .foregroundStyle(viewModel.participantColor ?? .clear)
                     .font(.iransansBoldBody)
             }
-            .padding(.horizontal, 6)
+            .padding(padding)
         }
+    }
+
+    private var padding: EdgeInsets {
+        let hasAlreadyPadding = viewModel.message.replyInfo != nil || viewModel.message.forwardInfo != nil
+        let padding: CGFloat = hasAlreadyPadding ? 0 : 4
+        return .init(top: padding, leading: padding, bottom: 0, trailing: padding)
     }
 }
 

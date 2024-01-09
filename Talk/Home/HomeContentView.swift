@@ -94,7 +94,11 @@ struct SplitViewContent: View {
             .onAppear {
                 AppState.shared.navViewModel = container.navVM
                 container.navVM.threadsViewModel = container.threadsVM
-                self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
+                if let appMode = AppSettingsModel.restore().isDarkModeEnabled {
+                    self.statusBarStyle.currentStyle = appMode == true ? .lightContent : .darkContent
+                } else {
+                    self.statusBarStyle.currentStyle = colorScheme == .dark ? .lightContent : .darkContent
+                }
             }
     }
 

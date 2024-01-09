@@ -58,7 +58,7 @@ public struct DeleteMessageDialog: View {
                         viewModel.animateObjectWillChange()
                     } label: {
                         Text("Messages.deleteForMe")
-                            .foregroundStyle(Color.App.color3)
+                            .foregroundStyle(Color.App.accent)
                             .font(.iransansBoldBody)
                             .frame(minWidth: 48, minHeight: 48)
                     }

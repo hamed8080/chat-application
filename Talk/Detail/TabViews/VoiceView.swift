@@ -86,6 +86,8 @@ struct VoiceRowView: View {
                 Text(message.fileMetaData?.file?.originalName ?? message.messageTitle)
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.textPrimary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
                 HStack {
                     Text(message.time?.date.localFormattedTime ?? "" )
                         .foregroundColor(Color.App.textSecondary)

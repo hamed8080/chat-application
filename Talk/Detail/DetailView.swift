@@ -332,7 +332,7 @@ struct DetailTopButtons: View {
 
             Menu {
                 if let conversation = viewModel.thread {
-                    ThreadRowActionMenu(thread: conversation)
+                    ThreadRowActionMenu(isDetailView: true, thread: conversation)
                 }
                 if let user = viewModel.user {
                     UserActionMenu(participant: user)

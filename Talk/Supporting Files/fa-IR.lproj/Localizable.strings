@@ -168,8 +168,8 @@
 "Thread.callEnded" = "تماس پایان یافت";
 "Thread.unpin" = "از سنجاق در آوردن";
 "Thread.pin" = "سنجاق کردن";
-"Thread.mute" = "بی صدا کردن";
-"Thread.unmute" = "از بی صدا در آوردن";
+"Thread.mute" = "قطع اعلانات";
+"Thread.unmute" = "برقراری اعلانات";
 "Thread.addToFolder" = "اضافه کردن به پوشه";
 "Thread.clearHistory" = "حذف تاریخچه";
 "Thread.spam" = "اعلام به عنوان مزاحم";

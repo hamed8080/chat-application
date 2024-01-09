@@ -27,10 +27,11 @@ struct ThreadListSearchBarFilterView: View {
                     .frame(minWidth: 0, maxWidth: nil, minHeight: 0, maxHeight: 38)
                     .clipped()
                     .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top).combined(with: .opacity)))
+                    .foregroundStyle(viewModel.searchText.count == 0 ? Color.App.textPrimary.opacity(0.7) : Color.App.textPrimary)
                     .background {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(.clear)
-                            .background(.thinMaterial)
+                            .background(Color.App.bgSendInput.opacity(0.8))
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
 

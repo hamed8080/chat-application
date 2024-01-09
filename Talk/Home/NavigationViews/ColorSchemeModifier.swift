@@ -9,6 +9,7 @@ import SwiftUI
 import TalkViewModels
 
 struct ColorSchemeModifier: ViewModifier {
+    @Environment(\.localStatusBarStyle) var statusBarStyle
     @State var isAppDarkModeEnabled: Bool? = AppSettingsModel.restore().isDarkModeEnabled
 
     func body(content: Content) -> some View {
@@ -21,6 +22,7 @@ struct ColorSchemeModifier: ViewModifier {
         if (notification.object as? AppSettingsModel)?.isDarkModeEnabled != isAppDarkModeEnabled {
             withAnimation {
                 self.isAppDarkModeEnabled = AppSettingsModel.restore().isDarkModeEnabled
+                statusBarStyle.currentStyle = isAppDarkModeEnabled == true ? .lightContent : .darkContent
             }
         }
     }

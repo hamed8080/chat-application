@@ -28,19 +28,19 @@ struct ParticipantRow: View {
                     .background(Color.App.color1.opacity(0.4))
                     .clipShape(RoundedRectangle(cornerRadius:(22)))
 
-                Circle()
-                    .fill(Color.App.color2)
-                    .frame(width: 13, height: 13)
-                    .offset(x: -20, y: 18)
-                    .blendMode(.destinationOut)
-                    .overlay {
-                        Circle()
-                            .fill(isOnline ? Color.App.color2 : Color.App.iconSecondary)
-                            .frame(width: 10, height: 10)
-                            .offset(x: -20, y: 18)
-                    }
+//                Circle()
+//                    .fill(Color.App.color2)
+//                    .frame(width: 13, height: 13)
+//                    .offset(x: -20, y: 18)
+//                    .blendMode(.destinationOut)
+//                    .overlay {
+//                        Circle()
+//                            .fill(isOnline ? Color.App.color2 : Color.App.iconSecondary)
+//                            .frame(width: 10, height: 10)
+//                            .offset(x: -20, y: 18)
+//                    }
             }
-            .compositingGroup()
+//            .compositingGroup()
 
             HStack(alignment: .center, spacing: 8) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -51,13 +51,13 @@ struct ParticipantRow: View {
                             .font(.iransansCaption3)
                             .foregroundColor(.primary.opacity(0.5))
                     }
-                    if  let notSeenDuration = participant.notSeenDuration?.localFormattedTime {
-                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
-                        let time = String(format: lastVisitedLabel, notSeenDuration)
-                        Text(time)
-                            .font(.iransansBody)
-                            .foregroundColor(Color.App.textSecondary)
-                    }
+//                    if  let notSeenDuration = participant.notSeenDuration?.localFormattedTime {
+//                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
+//                        let time = String(format: lastVisitedLabel, notSeenDuration)
+//                        Text(time)
+//                            .font(.iransansBody)
+//                            .foregroundColor(Color.App.textSecondary)
+//                    }
                 }
 
                 Spacer()
@@ -66,7 +66,7 @@ struct ParticipantRow: View {
         }
         .lineLimit(1)
         .contentShape(Rectangle())
-        .padding(EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12))
+        .padding(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
     }
 }
 

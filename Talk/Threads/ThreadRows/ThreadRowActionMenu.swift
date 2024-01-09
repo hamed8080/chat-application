@@ -11,6 +11,7 @@ import SwiftUI
 import TalkViewModels
 
 struct ThreadRowActionMenu: View {
+    var isDetailView: Bool = false
     var thread: Conversation
     @EnvironmentObject var viewModel: ThreadsViewModel
     var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
@@ -22,7 +23,7 @@ struct ThreadRowActionMenu: View {
             Label((thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", systemImage: "pin")
         }
 
-        if thread.type != .selfThread {
+        if thread.type != .selfThread && !isDetailView {
             Button {
                 viewModel.toggleMute(thread)
             } label: {

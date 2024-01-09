@@ -37,6 +37,7 @@ public extension Color {
         public static let bgChatCheck = Color("bg_chat_check")
         public static let bgChat = Color("bg_chat")
         public static let bgInputChatbox = Color("bg_input_chatbox")
+        public static let bgSendInput = Color("bg_send_input")
         public static let bgInput = Color("bg_input")
         public static let bgOffline = Color("bg_offline")
         public static let bgOnline = Color("bg_online")

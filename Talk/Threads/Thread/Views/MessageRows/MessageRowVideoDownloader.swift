@@ -127,6 +127,8 @@ fileprivate struct VideoDownloadButton: View {
             Text(fileName)
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldCaption)
+                .lineLimit(1)
+                .truncationMode(.middle)
         }
     }
 

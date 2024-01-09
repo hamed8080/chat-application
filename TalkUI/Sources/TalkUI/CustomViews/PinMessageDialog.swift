@@ -34,7 +34,7 @@ public struct PinMessageDialog: View {
                     threadVM.animateObjectWillChange()
                 } label: {
                     Text("PinMessageDialog.pinAndNotify")
-                        .foregroundStyle(Color.App.color3)
+                        .foregroundStyle(Color.App.accent)
                         .font(.iransansBoldBody)
                 }
 
@@ -44,7 +44,7 @@ public struct PinMessageDialog: View {
                     threadVM.animateObjectWillChange()
                 } label: {
                     Text("PinMessageDialog.justPin")
-                        .foregroundStyle(Color.App.color3)
+                        .foregroundStyle(Color.App.accent)
                         .font(.iransansBoldBody)
                 }
 

@@ -20,7 +20,7 @@ struct TabViewButtonsContainer: View {
                     Button {
                         selectedTabIndex = index ?? 0
                     } label: {
-                        VStack(spacing: 12) {
+                        VStack(spacing: 6) {
                             HStack(spacing: 8) {
                                 if let icon = tab.icon {
                                     Image(systemName: icon)

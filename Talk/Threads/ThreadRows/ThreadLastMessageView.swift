@@ -41,13 +41,13 @@ struct NormalLastMessageContainer: View {
         HStack {
             if let addOrRemoveParticipantString = lastMsgVO?.addOrRemoveParticipantString {
                 Text(addOrRemoveParticipantString)
-                    .font(.iransansBoldBody)
+                    .font(.iransansBody)
                     .lineLimit(1)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
             } else if let participantName = lastMsgVO?.participant?.name, thread.group == true {
                 let localized = String(localized: .init("Thread.Row.lastMessageSender"))
                 Text(Message.textDirectionMark + String(format: localized, participantName) )
-                    .font(.iransansBoldBody)
+                    .font(.iransansBody)
                     .lineLimit(1)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
             }
@@ -78,7 +78,7 @@ struct NormalLastMessageContainer: View {
                 let text = String(format: localizedLabel, creator)
                 Text(text)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
-                    .font(.iransansBoldCaption2)
+                    .font(.iransansCaption2)
             }
             Spacer()
         }

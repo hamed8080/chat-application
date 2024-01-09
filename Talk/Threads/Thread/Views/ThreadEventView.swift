@@ -20,7 +20,7 @@ struct ThreadEventView: View {
         HStack {
             Text(.init(localized: .init(event?.title ?? "")))
                 .lineLimit(1)
-                .font(.iransansBoldCaption2)
+                .font(.iransansCaption2)
                 .foregroundColor(Color.App.accent)
         }
         .frame(height: 16)

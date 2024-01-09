@@ -152,9 +152,9 @@ struct SectionView: View {
             Text(verbatim: yearText)
                 .font(.iransansCaption)
                 .padding(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                .background(Color.App.textPrimary.opacity(0.2))
+                .background(Color.black.opacity(0.4))
                 .clipShape(RoundedRectangle(cornerRadius:(24)))
-                .foregroundStyle(Color.App.textPrimary)
+                .foregroundStyle(Color.App.white)
             Spacer()
         }
         .task {

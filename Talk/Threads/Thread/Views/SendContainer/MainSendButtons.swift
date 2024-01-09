@@ -27,12 +27,12 @@ struct MainSendButtons: View {
                     .scaledToFit()
                     .frame(width: viewModel.showActionButtons ? 16 : 20, height: viewModel.showActionButtons ? 16 : 20)
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.iconSecondary)
+                    .foregroundStyle(Color.App.accent)
                     .fontWeight(.medium)
             }
-            .frame(width: 48, height: 48)
-            .background(Color.App.bgIcon)
-            .clipShape(RoundedRectangle(cornerRadius:(24)))
+            .frame(width: 42, height: 42)
+            .background(Color.App.bgSendInput)
+            .clipShape(RoundedRectangle(cornerRadius:(22)))
             .buttonStyle(.borderless)
             .fontWeight(.light)
 
@@ -40,7 +40,8 @@ struct MainSendButtons: View {
                 "Thread.SendContainer.typeMessageHere",
                 text: $viewModel.textMessage,
                 textColor: UIColor(named: "message_text"),
-                backgroundColor: Color.App.bgSecondary,
+                backgroundColor: Color.App.bgSendInput,
+                placeholderColor: Color.App.textPrimary.opacity(0.7),
                 mention: true,
                 focus: $viewModel.focusOnTextInput
             )

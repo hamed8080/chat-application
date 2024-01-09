@@ -38,6 +38,7 @@ public extension Message {
             mutableAttr.addAttributes([NSAttributedString.Key.link: NSURL(string: "ShowUser:User?userName=\(sanitizedUserName)")!], range: match.range)
             mutableAttr.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "accent") ?? .orange], range: match.range)
         }
+        mutableAttr.addLinkColor(messageTitle, UIColor(named: "text_secondary") ?? .gray)
         return mutableAttr
     }
     

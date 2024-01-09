@@ -20,15 +20,16 @@ struct MuteChannelViewPlaceholder: View {
         if viewModel.canShowMute {
             HStack(spacing: 0) {
                 Spacer()
-                Image(systemName: mute ? "speaker.fill" : "speaker.slash.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
-                    .foregroundColor(Color.App.accent)
+//                Image(systemName: mute ? "speaker.fill" : "speaker.slash.fill")
+//                    .resizable()
+//                    .scaledToFit()
+//                    .frame(width: 18, height: 18)
+//                    .foregroundColor(Color.App.accent)
                 Text(mute ? "Thread.unmute" : "Thread.mute")
                     .font(.iransansSubheadline)
                     .offset(x: 8)
                     .foregroundStyle(Color.App.accent)
+                    .fontWeight(.semibold)
                 Spacer()
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))

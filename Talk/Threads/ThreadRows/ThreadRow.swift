@@ -43,7 +43,7 @@ struct ThreadRow: View {
                     Text(thread.computedTitle)
                         .lineLimit(1)
                         .font(.iransansSubheadline)
-                        .fontWeight(.light)
+                        .fontWeight(.semibold)
                     if thread.mute == true {
                         Image(systemName: "speaker.slash.fill")
                             .resizable()

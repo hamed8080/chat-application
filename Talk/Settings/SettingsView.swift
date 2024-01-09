@@ -428,7 +428,8 @@ struct UserProfileView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            ImageLoaderView(imageLoader: imageLoader ?? .init(config: .init(url: "")))
+            let config = ImageLoaderConfig(url: user?.image ?? "", userName: AppState.shared.user?.name)
+            ImageLoaderView(imageLoader: imageLoader ?? .init(config: config))
                 .id("\(userConfig?.user.image ?? "")\(userConfig?.user.id ?? 0)")
                 .frame(width: 64, height: 64)
                 .background(Color.App.color1.opacity(0.4))

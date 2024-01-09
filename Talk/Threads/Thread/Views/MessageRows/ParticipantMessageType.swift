@@ -20,14 +20,13 @@ struct ParticipantMessageType: View {
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
             Text(markdownText)
-                .foregroundStyle(Color.App.textPrimary)
+                .foregroundStyle(Color.App.white)
                 .multilineTextAlignment(.center)
                 .font(.iransansBody)
                 .padding(2)
         }
-        .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-        .padding(.horizontal, 16)
-        .background(Color.App.textPrimary.opacity(0.2))
+        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+        .background(Color.black.opacity(0.2))
         .clipShape(RoundedRectangle(cornerRadius:(25)))
         .frame(maxWidth: .infinity)
         .onAppear {
