@@ -32,8 +32,8 @@ struct ReplyInfoMessageRow: View {
                                     .font(.iransansBoldCaption2)
                                     .foregroundStyle(Color.App.accent)
                             }
-                            let hinTextMessage = message.replyInfo?.message ?? message.replyFileStringName?.localized()
-                            if let hinTextMessage = hinTextMessage, !hinTextMessage.isEmpty {
+
+                            if let hinTextMessage = viewModel.localizedReplyFileName, !hinTextMessage.isEmpty {
                                 Text(hinTextMessage)
                                     .font(.iransansCaption3)
                                     .clipShape(RoundedRectangle(cornerRadius:(8)))

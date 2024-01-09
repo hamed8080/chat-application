@@ -17,11 +17,10 @@ struct MessageTextView: View {
 
     var body: some View {
         // TODO: TEXT must be alignment and image must be fit
-        if !message.messageTitle.isEmpty, !viewModel.isPublicLink {
-//            CustomUITextView(attributedText: NSAttributedString(viewModel.markdownTitle), textColor: UIColor(named: "text_primary")!)
+        if !viewModel.isPublicLink {
             Text(viewModel.markdownTitle)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
-                .padding(EdgeInsets(top: !message.isImage && message.replyInfo == nil && message.forwardInfo == nil ? 6 : 0, leading: 6, bottom: 0, trailing: 6))
+                .padding(viewModel.textViewPadding)
                 .font(.iransansBody)
                 .foregroundColor(Color.App.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)

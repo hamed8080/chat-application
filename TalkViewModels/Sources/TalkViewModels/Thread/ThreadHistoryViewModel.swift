@@ -560,7 +560,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    public func onMessageAppear(_ message: Message) {
+    public func onMessageAppear(_ message: Message) async {
         let scrollVM = threadViewModel.scrollVM
         if message.id == sections.first?.messages.first?.id {
             lastTopVisibleMessage = message
@@ -601,7 +601,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    public func onMessegeDisappear(_ message: Message) {
+    public func onMessegeDisappear(_ message: Message) async {
         if message.id == thread.lastMessageVO?.id, threadViewModel.scrollVM.isAtBottomOfTheList == true {
             threadViewModel.scrollVM.isAtBottomOfTheList = false
             threadViewModel.scrollVM.animateObjectWillChange()

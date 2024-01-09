@@ -123,7 +123,7 @@ fileprivate struct VideoDownloadButton: View {
     }
 
     @ViewBuilder private var fileNameView: some View {
-        if let fileName = message?.fileMetaData?.file?.name ?? message?.uploadFileName {
+        if let fileName = messageRowVM.fileName {
             Text(fileName)
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBoldCaption)
@@ -133,12 +133,8 @@ fileprivate struct VideoDownloadButton: View {
     }
 
     @ViewBuilder private var fileTypeView: some View {
-        let split = messageRowVM.fileMetaData?.file?.originalName?.split(separator: ".")
-        let ext = messageRowVM.fileMetaData?.file?.extension
-        let lastSplit = String(split?.last ?? "")
-        let extensionName = (ext ?? lastSplit)
-        if !extensionName.isEmpty {
-            Text(extensionName.uppercased())
+        if let extName = messageRowVM.extName {
+            Text(extName)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption3)
                 .foregroundColor(Color.App.textPrimary.opacity(0.7))
@@ -146,8 +142,8 @@ fileprivate struct VideoDownloadButton: View {
     }
 
     @ViewBuilder private var fileSizeView: some View {
-        if let fileZize = messageRowVM.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale) {
-            Text(fileZize.replacingOccurrences(of: "٫", with: "."))
+        if let fileZize = messageRowVM.computedFileSize {
+            Text(fileZize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansCaption3)
                 .foregroundColor(Color.App.textPrimary.opacity(0.7))

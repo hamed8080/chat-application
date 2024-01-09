@@ -13,30 +13,21 @@ import TalkUI
 import TalkViewModels
 
 struct ParticipantMessageType: View {
-    @State var markdownText: AttributedString = .init()
-    var message: Message
-    @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        HStack(alignment: .center, spacing: 0) {
-            Text(markdownText)
-                .foregroundStyle(Color.App.white)
-                .multilineTextAlignment(.center)
-                .font(.iransansBody)
-                .padding(2)
-        }
-        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-        .background(Color.black.opacity(0.2))
-        .clipShape(RoundedRectangle(cornerRadius:(25)))
-        .frame(maxWidth: .infinity)
-        .onAppear {
-            Task.detached {
-                let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
-                let markdownText = try! AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
-                await MainActor.run {
-                    self.markdownText = markdownText
-                }
+        if let attr = viewModel.addOrRemoveParticipantsAttr {
+            HStack(alignment: .center, spacing: 0) {
+                Text(attr)
+                    .foregroundStyle(Color.App.white)
+                    .multilineTextAlignment(.center)
+                    .font(.iransansBody)
+                    .padding(2)
             }
+            .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+            .background(Color.black.opacity(0.2))
+            .clipShape(RoundedRectangle(cornerRadius:(25)))
+            .frame(maxWidth: .infinity)
         }
     }
 }

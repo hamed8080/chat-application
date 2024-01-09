@@ -86,6 +86,13 @@ public final class MessageRowViewModel: ObservableObject {
     public var replyLink: String?
     public var isPublicLink: Bool = false
     public var participantColor: Color? = nil
+    public var computedFileSize: String? = nil
+    public var extName: String? = nil
+    public var fileName: String? = nil
+    public var blurRadius: CGFloat? = 0
+    public var addOrRemoveParticipantsAttr: AttributedString? = nil
+    public var textViewPadding: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+    public var localizedReplyFileName: String? = nil
     private static var formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
@@ -280,6 +287,12 @@ public final class MessageRowViewModel: ObservableObject {
         let color = await threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
         participantColor = Color(uiColor: color ?? .clear)
         await manageDownload()
+        computedFileSize = calculateFileSize()
+        extName = calculateFileTypeWithExt()
+        fileName = calculateFileName()
+        addOrRemoveParticipantsAttr = calculateAddOrRemoveParticipantRow()
+        textViewPadding = calculateTextViewPadding()
+        localizedReplyFileName = calculateLocalizeReplyFileName()
     }
 
     private func calculateImageSize() async {
@@ -355,11 +368,6 @@ public final class MessageRowViewModel: ObservableObject {
         }
     }
 
-    public var bulrRadius: CGFloat {
-        guard let downloadVM = downloadFileVM else { return 0 }
-        return downloadVM.state != .completed && downloadVM.thumbnailData != nil ? 16 : 0
-    }
-
     private var realImage: UIImage? {
         guard let cgImage = downloadFileVM?.fileURL?.imageScale(width: 420)?.image else { return nil }
         return UIImage(cgImage: cgImage)
@@ -373,10 +381,13 @@ public final class MessageRowViewModel: ObservableObject {
     private func prepareImage() async {
         if downloadFileVM?.state == .completed, let realImage = realImage {
             image = realImage
+            blurRadius = 0
         } else if let blurImage = blurImage {
             image = blurImage
+            blurRadius = 16
         } else {
             image = MessageRowViewModel.emptyImage
+            blurRadius = 0
         }
         animateObjectWillChange()
         //        if downloadFileVM?.state == .completed {
@@ -421,6 +432,39 @@ public final class MessageRowViewModel: ObservableObject {
         } else if downloadFileVM?.state != .completed && downloadFileVM?.thumbnailData != nil {
             downloadFileVM?.startDownload()
         }
+    }
+
+    private func calculateFileSize() -> String? {
+        let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
+        let realServerFileSize = fileMetaData?.file?.size
+        let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale)?.replacingOccurrences(of: "٫", with: ".")
+        return fileSize
+    }
+
+    private func calculateFileTypeWithExt() -> String? {
+        let split = fileMetaData?.file?.originalName?.split(separator: ".")
+        let ext = fileMetaData?.file?.extension
+        let lastSplit = String(split?.last ?? "")
+        let extensionName = (ext ?? lastSplit)
+        return extensionName.isEmpty ? nil : extensionName.uppercased()
+    }
+
+    private func calculateFileName() -> String? {
+       return fileMetaData?.file?.name ?? message.uploadFileName
+    }
+
+    private func calculateAddOrRemoveParticipantRow() -> AttributedString? {
+        let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
+        return try! AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
+    }
+
+    private func calculateTextViewPadding() -> EdgeInsets {
+      return EdgeInsets(top: !message.isImage && message.replyInfo == nil && message.forwardInfo == nil ? 6 : 0, leading: 6, bottom: 0, trailing: 6)
+    }
+
+    private func calculateLocalizeReplyFileName() -> String? {
+        let hinTextMessage = message.replyInfo?.message ?? message.replyFileStringName?.localized()
+        return hinTextMessage
     }
 
     deinit {

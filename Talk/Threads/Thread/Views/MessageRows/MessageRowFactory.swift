@@ -24,7 +24,8 @@ struct MessageRowFactory: View {
                 case .endCall, .startCall:
                     CallMessageType(message: message)
                 case .participantJoin, .participantLeft:
-                    ParticipantMessageType(message: message)
+                    ParticipantMessageType()
+                        .environmentObject(viewModel)
                 default:
                     if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
                         TextMessageType(viewModel: viewModel)

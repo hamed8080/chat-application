@@ -26,7 +26,7 @@ struct MessageRowImageDownloader: View {
                     .clipped()
                     .zIndex(0)
                     .background(gradient)
-                    .blur(radius: viewModel.bulrRadius, opaque: false)
+                    .blur(radius: viewModel.blurRadius ?? 0, opaque: false)
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
                 if let downloadVM = viewModel.downloadFileVM, downloadVM.state != .completed {
                     OverlayDownloadImageButton(message: message)
@@ -124,19 +124,12 @@ struct OverlayDownloadImageButton: View {
     }
 
     @ViewBuilder private var sizeView: some View {
-        if let fileSize = computedFileSize {
+        if let fileSize = messageRowVM.computedFileSize {
             Text(fileSize)
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption2)
                 .foregroundColor(Color.App.textPrimary)
         }
-    }
-
-    private var computedFileSize: String? {
-        let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-        let realServerFileSize = messageRowVM.fileMetaData?.file?.size
-        let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale)
-        return fileSize
     }
 }
 

@@ -177,10 +177,14 @@ struct MessageList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .onAppear {
-                    viewModel.onMessageAppear(message)
+                    Task {
+                        await viewModel.onMessageAppear(message)
+                    }
                 }
                 .onDisappear {
-                    viewModel.onMessegeDisappear(message)
+                    Task {
+                        await viewModel.onMessegeDisappear(message)
+                    }
                 }
         }
     }
