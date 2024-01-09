@@ -308,6 +308,7 @@
 "Setting.EditProfile.bioHint" = "Ingresa tu biografía aquí...";
 "Setting.EditProfile.bioHintMore" = "Ingresa un poco sobre ti mismo...";
 "Setting.EditProfile.enterToPodAccount" = "Ingresa a tu cuenta POD";
+"Settings.darkModeEnabled" = "Modo oscuro";
 
 /* Support */
 "Support.version" = "Versión: %@";

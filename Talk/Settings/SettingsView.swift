@@ -35,6 +35,7 @@ struct SettingsView: View {
                     .listRowInsets(.zero)
                     .listRowSeparator(.hidden)
                 SavedMessageSection()
+                DarkModeSection()
                 SettingLanguageSection()
                 SettingLogSection()
                 if EnvironmentValues.isTalkTest {
@@ -318,6 +319,42 @@ struct SavedMessageSection: View {
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
         .listRowSeparatorTint(Color.App.dividerPrimary)
+    }
+}
+struct DarkModeSection: View {
+    @Environment(\.colorScheme) var currentSystemScheme
+    @State var isDarkModeEnabled = AppSettingsModel.restore().isDarkModeEnabled ?? false
+
+    var body: some View {
+        HStack {
+            HStack {
+                Image(systemName: "circle.righthalf.filled")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(.white)
+            }
+            .frame(width: 28, height: 28)
+            .background(Color.App.color1)
+            .clipShape(RoundedRectangle(cornerRadius:(8)))
+            Toggle("Settings.darkModeEnabled", isOn: $isDarkModeEnabled)
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparatorTint(Color.App.dividerPrimary)
+        }
+        .padding(.horizontal)
+        .toggleStyle(MyToggleStyle())
+        .listSectionSeparator(.hidden)
+        .listRowInsets(.zero)
+        .listRowBackground(Color.App.bgPrimary)
+        .listRowSeparatorTint(Color.App.dividerPrimary)
+        .onChange(of: isDarkModeEnabled) { value in
+            var model = AppSettingsModel.restore()
+            model.isDarkModeEnabled = value
+            model.save()
+        }
+        .onAppear {
+            isDarkModeEnabled = currentSystemScheme == .dark
+        }
     }
 }
 

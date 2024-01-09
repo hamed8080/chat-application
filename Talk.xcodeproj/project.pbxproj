@@ -55,6 +55,8 @@
 		0560C3612AB77B0B009F6A58 /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */; };
 		0560C3622AB77B0B009F6A58 /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */; };
 		0560C3632AB77B0B009F6A58 /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */; };
+		0564D5952B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0564D5942B4D16C6003B4322 /* ColorSchemeModifier.swift */; };
+		0564D5962B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0564D5942B4D16C6003B4322 /* ColorSchemeModifier.swift */; };
 		056A1E7B2AB564DA00B51359 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 056A1E7A2AB564DA00B51359 /* Swipy */; };
 		056ACA4D2B28485800C7E9FF /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 056ACA4C2B28485800C7E9FF /* DSWaveformImage */; };
 		056ACA4F2B286F6000C7E9FF /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 056ACA4E2B286F6000C7E9FF /* DSWaveformImage */; };
@@ -369,6 +371,7 @@
 		0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerView.swift; sourceTree = "<group>"; };
 		0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
+		0564D5942B4D16C6003B4322 /* ColorSchemeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSchemeModifier.swift; sourceTree = "<group>"; };
 		056A1E792AB564BE00B51359 /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		0570CB172AAEE02A001832E9 /* Talk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Talk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0570CB332AAEE04B001832E9 /* Talk-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Talk-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -569,6 +572,7 @@
 				05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */,
 				0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */,
 				05C099C22AD1135D007AAC6C /* ToastView.swift */,
+				0564D5942B4D16C6003B4322 /* ColorSchemeModifier.swift */,
 			);
 			path = NavigationViews;
 			sourceTree = "<group>";
@@ -1147,6 +1151,7 @@
 				0570CC6D2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
 				0570CBE52AAEE98F001832E9 /* CreateDirectThreadView.swift in Sources */,
 				05DE92472B03E8E100C7A006 /* MessageRowFileDownloader.swift in Sources */,
+				0564D5952B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */,
 				0570CC712AAEE98F001832E9 /* AssistantRow.swift in Sources */,
 				05ABE5882B1900C300255C49 /* ForwardMessagesViewPlaceholder.swift in Sources */,
 				0570CC332AAEE98F001832E9 /* SendContainer.swift in Sources */,
@@ -1299,6 +1304,7 @@
 				0570CC6E2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
 				0570CBE62AAEE98F001832E9 /* CreateDirectThreadView.swift in Sources */,
 				05DE92462B03E8E100C7A006 /* MessageRowFileDownloader.swift in Sources */,
+				0564D5962B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */,
 				0570CC722AAEE98F001832E9 /* AssistantRow.swift in Sources */,
 				05ABE5872B1900C300255C49 /* ForwardMessagesViewPlaceholder.swift in Sources */,
 				0570CC342AAEE98F001832E9 /* SendContainer.swift in Sources */,

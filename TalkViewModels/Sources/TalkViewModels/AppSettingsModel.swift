@@ -20,12 +20,13 @@ public struct AppSettingsModel: Codable, Hashable {
 
     static let key = "AppSettingsKey"
     public var isSyncOn: Bool = false
+    public var isDarkModeEnabled: Bool? = nil
     public var notificationSettings: NotificationSettingModel = .init()
     public var automaticDownloadSettings: AutomaticDownloadSettingModel = .init()
 
     public func save() {
         UserDefaults.standard.setValue(codable: self, forKey: AppSettingsModel.key)
-        NotificationCenter.default.post(name: .appSettingsModel, object: nil)
+        NotificationCenter.default.post(name: .appSettingsModel, object: self)
     }
 
     public static func restore() -> AppSettingsModel {

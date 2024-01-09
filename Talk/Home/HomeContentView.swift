@@ -39,6 +39,7 @@ struct HomeContentView: View {
                 .environmentObject(container.audioPlayerVM)
                 .environmentObject(container.reactions)
         }
+        .modifier(ColorSchemeModifier())
         .contextMenuContainer()
     }
 }

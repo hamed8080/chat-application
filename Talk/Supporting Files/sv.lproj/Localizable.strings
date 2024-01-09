@@ -306,6 +306,7 @@
 "Setting.EditProfile.bioHint" = "Skriv din biografi här...";
 "Setting.EditProfile.bioHintMore" = "Skriv lite om dig själv...";
 "Setting.EditProfile.enterToPodAccount" = "Logga in på ditt POD-konto";
+"Settings.darkModeEnabled" = "Mörkt läge";
 
 /* Support */
 "Support.version" = "Version: %@";
