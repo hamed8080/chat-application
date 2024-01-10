@@ -126,6 +126,14 @@
 "Call.started" = "شروع شده";
 "Call.ended" = "پایان یافته";
 "Call.leave" = "ترک کرد";
+"CallStatus.requested" = "درخواست تماس";
+"CallStatus.canceled" = "تماس لغو شد";
+"CallStatus.miss" = "تماس از دست رفته";
+"CallStatus.declined" = "رد تماس";
+"CallStatus.accepted" = "درخواست تماس تایید شد";
+"CallStatus.started" = "تماس شروع شد";
+"CallStatus.ended" = "تماس پایان یافت";
+"CallStatus.leave" = "تماس را ترک کرد";
 
 /* Invitee */
 "Invitee.ssoId" = "آیدی SSO";

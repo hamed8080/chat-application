@@ -125,6 +125,14 @@
 "Call.started" = "Startad";
 "Call.ended" = "Avslutad";
 "Call.leave" = "Lämnade";
+"CallStatus.requested" = "Begärd";
+"CallStatus.canceled" = "Avbruten";
+"CallStatus.miss" = "Missad";
+"CallStatus.declined" = "Avvisad";
+"CallStatus.accepted" = "Accepterad";
+"CallStatus.started" = "Startad";
+"CallStatus.ended" = "Avslutad";
+"CallStatus.leave" = "Lämnad";
 
 /* Invitee */
 "Invitee.ssoId" = "SSO ID";

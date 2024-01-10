@@ -62,7 +62,8 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var avatarSplitedCharaters = ""
 
     public var localizedReplyFileName: String? = nil
-    public var callText: String?
+    public var callDateText: String = ""
+    public var callTypeKey = ""
     private static var formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
@@ -169,6 +170,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         rowType.isAudio = message.isAudio
         rowType.isForward = message.forwardInfo != nil
         rowType.isUnSent = message.isUnsentMessage
+        callTypeKey = message.callHistory?.status?.key?.localized() ?? ""
         async let color = threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
         participantColor = await Color(uiColor: color ?? .clear)
         await downloadFileVM?.setup()
@@ -344,7 +346,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateCallTexts() {
         if ![.endCall, .startCall].contains(message.type) { return }
         let date = Date(milliseconds: Int64(message.time ?? 0))
-        callText = date.localFormattedTime
+        callDateText = date.localFormattedTime ?? ""
     }
 
     private func setAvatarViewModel() {

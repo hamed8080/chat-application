@@ -10,6 +10,7 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkExtensions
 
 struct ConversationCallMessageType: View {
     var message: Message
@@ -20,9 +21,11 @@ struct ConversationCallMessageType: View {
             if let time = message.time {
                 let date = Date(milliseconds: Int64(time))
                 HStack(spacing: 2) {
-                    Text(message.type == .endCall ? "Thread.callEnded" : "Thread.callStarted")
-                    Text("\(date.localFormattedTime ?? "")")
-                        .fontWeight(.bold)
+                    if let key = message.callHistory?.status?.key {
+                        Text(.init(localized: .init(key)))
+                        Text("\(date.localFormattedTime ?? "")")
+                            .fontWeight(.bold)
+                    }
                 }
                 .font(.iransansFootnote)
                 .foregroundColor(color == .dark ? .white.opacity(0.7) : .black.opacity(0.7))

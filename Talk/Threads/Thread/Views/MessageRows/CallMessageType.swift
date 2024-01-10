@@ -18,16 +18,13 @@ struct CallMessageType: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            if let callText = viewModel.callText {
-                HStack(spacing: 2) {
-                    Text(message.type == .endCall ? "Thread.callEnded" : "Thread.callStarted")
-                    Text(callText)
-                }
-                .foregroundStyle(Color.App.textPrimary)
-                .font(.iransansBody)
-                .padding(2)
+            HStack(spacing: 2) {
+                Text(viewModel.callDateText)
+                Text(viewModel.callTypeKey)
             }
-
+            .foregroundStyle(Color.App.white)
+            .font(.iransansBody)
+            .padding(2)
             Image(systemName: message.type == .startCall ? "phone.arrow.up.right.fill" : "phone.down.fill")
                 .interpolation(.none)
                 .resizable()

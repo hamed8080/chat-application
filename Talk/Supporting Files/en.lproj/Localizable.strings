@@ -125,6 +125,14 @@
 "Call.started" = "Started";
 "Call.ended" = "Ended";
 "Call.leave" = "Left";
+"CallStatus.requested" = "Reuqested";
+"CallStatus.canceled" = "Canceled";
+"CallStatus.miss" = "Missed";
+"CallStatus.declined" = "Declined";
+"CallStatus.accepted" = "Accepted";
+"CallStatus.started" = "Started";
+"CallStatus.ended" = "Ended";
+"CallStatus.leave" = "Left";
 
 /* Invitee */
 "Invitee.ssoId" = "SSO ID";
