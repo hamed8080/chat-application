@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
+import ChatModels
 
 struct MoveToBottomButton: View {
     @EnvironmentObject var viewModel: ThreadScrollingViewModel
@@ -48,12 +49,12 @@ struct MoveToBottomButton: View {
 }
 
 struct UnreadCountOverMoveToButtonView: View {
+    @State private var hide = true
+    @State private var unreadCountString = ""
     @EnvironmentObject var viewModel: ThreadViewModel
 
     var body: some View {
-        let unreadCount = viewModel.thread.unreadCount ?? 0
-        let hide = unreadCount == 0
-        Text(verbatim: unreadCount == 0 ? "" : "\(viewModel.thread.unreadCountString ?? "")")
+        Text(verbatim: hide ? "" : "\(unreadCountString)")
             .font(.iransansBoldCaption)
             .frame(height: hide ? 0 : 24)
             .frame(minWidth: hide ? 0 : 24)
@@ -62,7 +63,21 @@ struct UnreadCountOverMoveToButtonView: View {
             .foregroundStyle(Color.App.white)
             .clipShape(RoundedRectangle(cornerRadius:(hide ? 0 : 24)))
             .offset(x: 0, y: -16)
-            .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCount)
+            .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCountString)
+            .onReceive(viewModel.thread.objectWillChange) { _ in
+                setUnreadCount()
+            }
+            .onReceive(viewModel.objectWillChange) { _ in
+                setUnreadCount()
+            }
+            .onAppear {
+                setUnreadCount()
+            }
+    }
+
+    private func setUnreadCount() {
+        hide = viewModel.thread.unreadCount == 0
+        unreadCountString = viewModel.thread.unreadCountString ?? ""
     }
 }
 
