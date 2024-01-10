@@ -19,13 +19,19 @@ public final class SendContainerViewModel: ObservableObject {
     public var threadId: Int { thread.id ?? -1 }
     @Published public var textMessage: String
     private var cancelable: Set<AnyCancellable> = []
-    public var canShowMute: Bool { (thread.type == .channel || thread.type == .channelGroup) && (thread.admin == false || thread.admin == nil) && !isInEditMode }
+    public var canShowMute: Bool {
+        (thread.type == .channel || thread.type == .channelGroup) &&
+        (thread.admin == false || thread.admin == nil) &&
+        !isInEditMode
+    }
     public var disableSend: Bool { thread.disableSend && isInEditMode == false && !canShowMute }
     public var showSendButton: Bool {
-        !textMessage.isEmpty || threadVM?.attachmentsViewModel.attachments.count ?? 0 > 0 || AppState.shared.appStateNavigationModel.forwardMessageRequest != nil
+        !isTextEmpty(text: textMessage) ||
+        threadVM?.attachmentsViewModel.attachments.count ?? 0 > 0 ||
+        AppState.shared.appStateNavigationModel.forwardMessageRequest != nil
     }
-    public var showCamera: Bool { textMessage.isEmpty && isVideoRecordingSelected }
-    public var showAudio: Bool { textMessage.isEmpty && !isVideoRecordingSelected && isVoice }
+    public var showCamera: Bool { isTextEmpty(text: textMessage) && isVideoRecordingSelected }
+    public var showAudio: Bool { isTextEmpty(text: textMessage) && !isVideoRecordingSelected && isVoice }
     public var isVoice: Bool { threadVM?.attachmentsViewModel.attachments.count == 0 }
     public var showRecordingView: Bool { threadVM?.audioRecoderVM.isRecording == true || threadVM?.audioRecoderVM.recordingOutputPath != nil }
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
@@ -60,7 +66,7 @@ public final class SendContainerViewModel: ObservableObject {
     private func onTextMessageChanged(_ newValue: String) {
         threadVM?.mentionListPickerViewModel.text = newValue
         let isRTLChar = newValue.count == 1 && newValue.first == "\u{200f}"
-        if !newValue.isEmpty && !isRTLChar {
+        if !isTextEmpty(text: newValue) && !isRTLChar {
             UserDefaults.standard.setValue(newValue, forKey: "draft-\(threadId)")
         } else {
             UserDefaults.standard.removeObject(forKey: "draft-\(threadId)")
@@ -71,4 +77,8 @@ public final class SendContainerViewModel: ObservableObject {
         textMessage = ""
     }
 
+    private func isTextEmpty(text: String) -> Bool {
+        let sanitizedText = text.replacingOccurrences(of: "\u{200f}", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        return sanitizedText.isEmpty
+    }
 }

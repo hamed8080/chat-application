@@ -71,7 +71,7 @@ struct MainSendButtons: View {
             //            .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
             .highPriorityGesture(switchRecordingGesture)
             .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
-            
+
             if viewModel.showCamera {
                 Button {
                     threadVM.setupRecording()
@@ -93,26 +93,28 @@ struct MainSendButtons: View {
                 .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
             }
 
-            Button {
-                if viewModel.showSendButton {
-                    threadVM.sendTextMessage(viewModel.textMessage)
+            if viewModel.showSendButton {
+                Button {
+                    if viewModel.showSendButton {
+                        threadVM.sendTextMessage(viewModel.textMessage)
+                    }
+                    viewModel.clear()
+                    threadVM.mentionListPickerViewModel.text = ""
+                    threadVM.sheetType = nil
+                    threadVM.animateObjectWillChange()
+                } label: {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: viewModel.showSendButton ? 26 : 0, height: viewModel.showSendButton ? 26 : 0)
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.App.white, Color.App.accent)
                 }
-                viewModel.clear()
-                threadVM.mentionListPickerViewModel.text = ""
-                threadVM.sheetType = nil
-                threadVM.animateObjectWillChange()                
-            } label: {
-                Image(systemName: "arrow.up.circle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: viewModel.showSendButton ? 26 : 0, height: viewModel.showSendButton ? 26 : 0)
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.white, Color.App.accent)
+                .frame(width: viewModel.showSendButton ? 48 : 0, height: viewModel.showSendButton ? 48 : 0)
+                .buttonStyle(.borderless)
+                .fontWeight(.light)
+                //            .keyboardShortcut(.return, modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
             }
-            .frame(width: viewModel.showSendButton ? 48 : 0, height: viewModel.showSendButton ? 48 : 0)
-            .buttonStyle(.borderless)
-            .fontWeight(.light)
-            //            .keyboardShortcut(.return, modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.3), value: viewModel.isVideoRecordingSelected)
     }

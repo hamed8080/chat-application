@@ -28,7 +28,7 @@ struct MoveToBottomButton: View {
                         .scaledToFit()
                         .frame(width: 16, height: 16)
                         .padding()
-                        .foregroundStyle(Color.App.textPrimary)
+                        .foregroundStyle(Color.App.accent)
                         .aspectRatio(contentMode: .fit)
                         .contentShape(Rectangle())
                 }
