@@ -57,7 +57,16 @@ public final class MessageReactionsViewModel: ObservableObject {
     }
 }
 
-public final class MessageRowViewModel: ObservableObject {
+public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable {
+    public static func == (lhs: MessageRowViewModel, rhs: MessageRowViewModel) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    public var id: Int { message.id ?? -1 }
     public var isCalculated = false
     public var isEnglish = true
     public var markdownTitle = AttributedString()
@@ -334,7 +343,6 @@ public final class MessageRowViewModel: ObservableObject {
         if state == .completed {
             threadVM?.uploadMessagesViewModel.cancel(message.uniqueId)
             threadVM?.unssetMessagesViewModel.cancel(message.uniqueId)
-            threadVM?.historyVM.messageViewModels.removeAll(where: {$0.message.uniqueId == message.uniqueId})
             threadVM?.historyVM.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId, subjectId: threadVM?.threadId))
             threadVM?.animateObjectWillChange()
             Logger.viewModels.info("Upload Message with uniqueId removed:\(self.message.uniqueId ?? "")")

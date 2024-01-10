@@ -18,13 +18,13 @@ import SwiftUI
 import OSLog
 
 public struct MessageSection: Identifiable, Hashable, Equatable {
-    public var id: Date { date }
+    public var id: Int64 { date.millisecondsSince1970 }
     public let date: Date
-    public var messages: ContiguousArray<Message>
+    public var vms: ContiguousArray<MessageRowViewModel>
 
-    public init(date: Date, messages: ContiguousArray<Message>) {
+    public init(date: Date, vms: ContiguousArray<MessageRowViewModel>) {
         self.date = date
-        self.messages = messages
+        self.vms = vms
     }
 }
 
@@ -148,9 +148,11 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
-            historyVM.appendMessagesAndSort([message])
-            historyVM.animateObjectWillChange()
-            scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
+            Task {
+                historyVM.appendMessagesAndSort([message])
+                historyVM.animateObjectWillChange()
+                await scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
+            }
         }
     }
 
@@ -205,10 +207,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         let sectionIndex = tuples.sectionIndex
         let currentMessage = tuples.message
         let nextMessageInedex = tuples.messageIndex + 1
-        let isNextIndexExist = historyVM.sections[sectionIndex].messages.indices.contains(nextMessageInedex)
+        let isNextIndexExist = historyVM.sections[sectionIndex].vms.indices.contains(nextMessageInedex)
         if isNextIndexExist == true {
-            let nextMessage = historyVM.sections[sectionIndex].messages[nextMessageInedex]
-            return currentMessage.participant?.id ?? 0 == nextMessage.participant?.id ?? -1
+            let nextMessage = historyVM.sections[sectionIndex].vms[nextMessageInedex]
+            return currentMessage.participant?.id ?? 0 == nextMessage.message.participant?.id ?? -1
         }
         return false
     }
@@ -217,10 +219,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         guard let tuples = historyVM.message(for: message.id) else { return false }
         let sectionIndex = tuples.sectionIndex
         let previousIndex = tuples.messageIndex - 1
-        let isPreviousIndexExist = historyVM.sections[sectionIndex].messages.indices.contains(previousIndex)
+        let isPreviousIndexExist = historyVM.sections[sectionIndex].vms.indices.contains(previousIndex)
         if isPreviousIndexExist {
-            let prevMessage = historyVM.sections[sectionIndex].messages[previousIndex]
-            return prevMessage.participant?.id != message.participant?.id
+            let prevMessage = historyVM.sections[sectionIndex].vms[previousIndex]
+            return prevMessage.message.participant?.id != message.participant?.id
         }
         return true
     }

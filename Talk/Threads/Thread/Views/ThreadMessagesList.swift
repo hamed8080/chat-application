@@ -58,7 +58,7 @@ struct ThreadMessagesList: View {
             NotificationCenter.default.post(name: .cancelSearch, object: true)
         }
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        viewModel.historyVM.messageViewModels.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
+        viewModel.historyVM.sections.flatMap{$0.vms}.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
             rowViewModel.showReactionsOverlay = false
             rowViewModel.animateObjectWillChange()
         }
@@ -121,7 +121,7 @@ struct MessagesLazyStack: View {
                     .padding([.top, .bottom])
                 ForEach(viewModel.sections) { section in
                     Section {
-                        MessageList(messages: section.messages, viewModel: viewModel)
+                        MessageList(vms: section.vms, viewModel: viewModel)
                     } header: {
                         SectionView(section: section)
                     }
@@ -166,24 +166,24 @@ struct SectionView: View {
 }
 
 struct MessageList: View {
-    let messages: ContiguousArray<Message>
+    let vms: ContiguousArray<MessageRowViewModel>
     let viewModel: ThreadHistoryViewModel
 
     var body: some View {
-        ForEach(messages) { message in
-            MessageRowFactory(viewModel: viewModel.messageViewModel(for: message))
-                .id(message.uniqueId)
+        ForEach(vms) { vm in
+            MessageRowFactory(viewModel: vm)
+                .id(vm.message.uniqueId)
                 .listRowSeparator(.hidden)
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .onAppear {
                     Task {
-                        await viewModel.onMessageAppear(message)
+                        await viewModel.onMessageAppear(vm.message)
                     }
                 }
                 .onDisappear {
                     Task {
-                        await viewModel.onMessegeDisappear(message)
+                        await viewModel.onMessegeDisappear(vm.message)
                     }
                 }
         }
@@ -272,7 +272,7 @@ struct ThreadMessagesList_Previews: PreviewProvider {
                                   conversation: .init(id: 1))
 
             let viewModel = ThreadViewModel(thread: Conversation(id: 1), threadsViewModel: .init())
-            viewModel.historyVM.sections.append(MessageSection(date: .init(), messages: [message]))
+            viewModel.historyVM.sections.append(MessageSection(date: .init(), vms: [.init(message: message, viewModel: viewModel)]))
             viewModel.animateObjectWillChange()
             self._viewModel = StateObject(wrappedValue: viewModel)
         }

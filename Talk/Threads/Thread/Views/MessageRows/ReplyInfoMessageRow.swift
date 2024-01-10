@@ -90,14 +90,16 @@ struct ReplyInfoMessageRow: View {
     }
 
     private func moveToMessage() {
-        threadVM?.scrollVM.disableExcessiveLoading()
-        if !isReplyPrivately, let tuple = replayTimeId {
-            threadVM?.historyVM.moveToTime(tuple.time, tuple.id)
-        } else if let replyPrivatelyInfo = message.replyInfo?.replyPrivatelyInfo {
-            AppState.shared.openThreadAndMoveToMessage(conversationId: replyPrivatelyInfo.threadId ?? -1,
-                                                       messageId: message.replyInfo?.repliedToMessageId ?? -1,
-                                                       messageTime: message.replyInfo?.repliedToMessageTime ?? 0
-            )
+        Task {
+            threadVM?.scrollVM.disableExcessiveLoading()
+            if !isReplyPrivately, let tuple = replayTimeId {
+                threadVM?.historyVM.moveToTime(tuple.time, tuple.id)
+            } else if let replyPrivatelyInfo = message.replyInfo?.replyPrivatelyInfo {
+                AppState.shared.openThreadAndMoveToMessage(conversationId: replyPrivatelyInfo.threadId ?? -1,
+                                                           messageId: message.replyInfo?.repliedToMessageId ?? -1,
+                                                           messageTime: message.replyInfo?.repliedToMessageTime ?? 0
+                )
+            }
         }
     }
 }

@@ -20,4 +20,12 @@ public extension ObservableObject where Self.ObjectWillChangePublisher == Observ
             }
         }
     }
+
+    func asyncAnimateObjectWillChange() async {
+        await MainActor.run { [weak self] in
+            withAnimation {
+                self?.objectWillChange.send()
+            }
+        }
+    }
 }

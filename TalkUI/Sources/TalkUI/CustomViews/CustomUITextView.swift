@@ -60,10 +60,7 @@ public struct CustomUITextView: UIViewRepresentable {
         return textView
     }
 
-    public func updateUIView(_ uiView: UIViewType, context: Context) {
-        if let textView = uiView as? UITextView {
-        }
-    }
+    public func updateUIView(_ uiView: UIViewType, context: Context) {}
 }
 
 public class MyCustomUITextView: UITextView {
