@@ -120,7 +120,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         else { return }
         Task {
             /// 3- Append and sort the array but not call to update the view.
-            appendMessagesAndSort(messages)
+            await appendMessagesAndSort(messages)
             /// 4- Disable excessive loading on the top part.
             threadViewModel.scrollVM.disableExcessiveLoading()
             /// 5- Set whether it has more messages at the top or not.
@@ -151,7 +151,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         else { return }
         Task {
             /// 3- Append and sort the array but not call to update the view.
-            appendMessagesAndSort(messages)
+            await appendMessagesAndSort(messages)
             /// 4- Disable excessive loading on the top part.
             threadViewModel.scrollVM.disableExcessiveLoading()
             /// 7- Set whether it has more messages at the bottom or not.
@@ -191,12 +191,15 @@ public final class ThreadHistoryViewModel: ObservableObject {
               !response.cache
         else { return }
         Task {
-            /// 2- Append and sort the array but not call to update the view.
-            appendMessagesAndSort(messages)
+            /// 2- Append and sort  and calculate the array but not call to update the view.
+            await appendMessagesAndSort(messages)
             /// 3- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
             appenedUnreadMessagesBannerIfNeeed()
             /// 4- Disable excessive loading on the top part.
             threadViewModel.scrollVM.disableExcessiveLoading()
+            /// 5- To update isLoading fields to hide the loading at the top.
+            await asyncAnimateObjectWillChange()
+
             /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
             let lastSeenMessage = message(for: thread.lastSeenMessageId)?.message
             if let uniqueId = lastSeenMessage?.uniqueId, let lastSeenMessageId = lastSeenMessage?.id {
@@ -208,8 +211,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
             }
             /// 7- Set whether it has more messages at the top or not.
             setHasMoreTop(response)
-            /// 8- To update isLoading fields to hide the loading at the top.
-            await asyncAnimateObjectWillChange()
         }
     }
 
@@ -220,7 +221,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         else { return }
         Task {
             /// 10- Append messages to the bottom part of the view and if the user scrolls down can see new messages.
-            appendMessagesAndSort(messages)
+            await appendMessagesAndSort(messages)
             /// 11-  Set whether it has more messages at the bottom or not.
             setHasMoreBottom(response)
             /// 12- Update all the views to draw new messages for the bottom part and hide loading at the bottom.
@@ -252,18 +253,18 @@ public final class ThreadHistoryViewModel: ObservableObject {
         else { return }
         Task {
             if response.result?.count ?? 0 > 0 {
-                /// 2- Append and sort the array but not call to update the view.
-                appendMessagesAndSort(messages)
+                /// 2- Append and sort the array but not call to update the view and do calculaiton.
+                await appendMessagesAndSort(messages)
                 /// 4- Disable excessive loading on the top part.
                 threadViewModel.scrollVM.disableExcessiveLoading()
             }
+            /// 5- To update isLoading fields to hide the loading at the top and prepare the ui for scrolling to.
+            await asyncAnimateObjectWillChange()
             if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
                 await threadViewModel.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
             }
-            /// 5- Set whether it has more messages at the top or not.
+            /// 6- Set whether it has more messages at the top or not.
             setHasMoreTop(response)
-            /// 6- To update isLoading fields to hide the loading at the top.
-            await asyncAnimateObjectWillChange()
         }
     }
 
@@ -294,8 +295,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
             if response.result?.count ?? 0 > 0 {
                 appenedUnreadMessagesBannerIfNeeed()
-                /// 3- Append and sort the array but not call to update the view.
-                appendMessagesAndSort(messages)
+                /// 3- Append and sort and calculate the array but not call to update the view.
+                await appendMessagesAndSort(messages)
             }
             /// 4- Set whether it has more messages at the bottom or not.
             setHasMoreBottom(response)
@@ -324,7 +325,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         else { return }
         Task {
             /// 3- Append and sort the array but not call to update the view.
-            appendMessagesAndSort(messages)
+            await appendMessagesAndSort(messages)
             threadViewModel.centerLoading = false
             await threadViewModel.asyncAnimateObjectWillChange()
             /// We set this property to true because in the seven scenario there is no way to set this property to true.
@@ -352,7 +353,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         Task {
             let sortedMessages = messages.sorted(by: {$0.time ?? 0 < $1.time ?? 0})
             /// 8- Append and sort the array but not call to update the view.
-            appendMessagesAndSort(sortedMessages)
+            await appendMessagesAndSort(sortedMessages)
             setHasMoreBottom(response)
             /// 9- Update all the views to draw for the bottom part.
             await asyncAnimateObjectWillChange()
@@ -399,7 +400,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         else { return }
         Task {
             let sortedMessages = messages.sorted(by: {$0.time ?? 0 < $1.time ?? 0})
-            appendMessagesAndSort(sortedMessages)
+            await appendMessagesAndSort(sortedMessages)
             await asyncAnimateObjectWillChange()
             await threadViewModel.scrollVM.showHighlighted(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
         }
@@ -511,41 +512,45 @@ public final class ThreadHistoryViewModel: ObservableObject {
         logger.debug("End of the Sort function: \(Date().millisecondsSince1970)")
     }
 
-    public func appendMessagesAndSort(_ messages: [Message], isToTime: Bool = false) {
+    public func appendMessagesAndSort(_ messages: [Message], isToTime: Bool = false) async {
         let logger = Logger.viewModels
         logger.debug("Start of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
         guard messages.count > 0 else { return }
+        var viewModels: [MessageRowViewModel?] = []
         for message in messages {
-            insertOrUpdate(message)
+            let vm = insertOrUpdate(message)
+            viewModels.append(vm)
         }
         sort()
+        for viewModel in viewModels {
+            await viewModel?.performaCalculation()
+        }
         let flatMap = sections.flatMap{$0.vms}
         topSliceId = flatMap.prefix(thresholdToLoad).compactMap{$0.id}.last ?? 0
         bottomSliceId = flatMap.suffix(thresholdToLoad).compactMap{$0.id}.first ?? 0
         logger.debug("End of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
     }
 
-    func insertOrUpdate(_ message: Message) {
+    func insertOrUpdate(_ message: Message) -> MessageRowViewModel? {
         let indices = findIncicesBy(uniqueId: message.uniqueId ?? "", message.id ?? -1)
         if let indices = indices {
-            sections[indices.sectionIndex].vms[indices.messageIndex].message.updateMessage(message: message)
-        } else if message.threadId == threadId || message.conversation?.id == threadId {
+            let vm = sections[indices.sectionIndex].vms[indices.messageIndex]
+            vm.message.updateMessage(message: message)
+            return vm
+        }
+        
+        if message.threadId == threadId || message.conversation?.id == threadId {
+            let viewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
             if let sectionIndex = sectionIndexByDate(message.time?.date ?? Date()) {
-                let viewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
                 sections[sectionIndex].vms.append(viewModel)
+                return viewModel
             } else {
-                let viewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
                 sections.append(.init(date: message.time?.date ?? Date(), vms: [viewModel]))
+                return viewModel
             }
         }
+        return nil
     }
-
-//    func createMessageViewModels(messages: [Message]) {
-//        /// Create if there is no viewModel inside messageViewModels array. It is essential for highlighting and more
-//        for message in messages {
-//            messageViewModel(for: message)
-//        }
-//    }
 
     func sectionIndexByUniqueId(_ message: Message) -> Array<MessageSection>.Index? {
         sectionIndexByUniqueId(message.uniqueId ?? "")

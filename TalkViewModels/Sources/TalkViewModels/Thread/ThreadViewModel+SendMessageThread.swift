@@ -183,8 +183,10 @@ extension ThreadViewModel {
                                              messageType: .text)
             let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
             let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().millisecondsSince1970), uniqueId: req.uniqueId, conversation: thread)
-            historyVM.appendMessagesAndSort([message])
-            ChatManager.activeInstance?.message.send(req)
+            Task {
+                await self.historyVM.appendMessagesAndSort([message])
+                ChatManager.activeInstance?.message.send(req)
+            }
         }
     }
 
@@ -358,8 +360,10 @@ extension ThreadViewModel {
 
     public func onUnSentEditCompletionResult(_ response: ChatResponse<Message>) {
         if let message = response.result, threadId == message.conversation?.id {
-            historyVM.onDeleteMessage(response)
-            historyVM.appendMessagesAndSort([message])
+            Task {
+                historyVM.onDeleteMessage(response)
+                await historyVM.appendMessagesAndSort([message])
+            }
         }
     }
 

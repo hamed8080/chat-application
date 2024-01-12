@@ -149,8 +149,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
             Task {
-                historyVM.appendMessagesAndSort([message])
-                historyVM.animateObjectWillChange()
+                await historyVM.appendMessagesAndSort([message])
+                await historyVM.asyncAnimateObjectWillChange()
                 await scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
             }
         }

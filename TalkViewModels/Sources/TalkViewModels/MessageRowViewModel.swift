@@ -139,8 +139,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
         setupObservers()
         canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.message.isEmptyOrNil == true && message.replyInfo?.deleted == false
-        /// We must pre-calculate the text/image size even if the row is not displayed or appears.
-        recalculateWithAnimation()
     }
 
     func setupObservers() {
@@ -274,7 +272,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-    private func performaCalculation() async {
+    public func performaCalculation() async {
         isCalculated = true
         fileMetaData = message.fileMetaData /// decoding data so expensive if it will happen on the main thread.
         await calculateImageSize()
