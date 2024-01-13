@@ -78,12 +78,12 @@ struct ParticipantRowContainer: View {
                 }
             }
             .onTapGesture {
-                if participant.id != AppState.shared.user?.id {
+                if !isMe {
                     AppState.shared.openThread(participant: participant)
                 }
             }
             .contextMenu {
-                if viewModel.thread?.admin == true, (participant.admin ?? false) == false {
+                if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == false {
                     Button {
                         viewModel.makeAdmin(participant)
                     } label: {
@@ -91,7 +91,7 @@ struct ParticipantRowContainer: View {
                     }
                 }
 
-                if viewModel.thread?.admin == true, (participant.admin ?? false) == true {
+                if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == true {
                     Button {
                         viewModel.removeAdminRole(participant)
                     } label: {
@@ -99,7 +99,7 @@ struct ParticipantRowContainer: View {
                     }
                 }
 
-                if viewModel.thread?.admin == true {
+                if !isMe, viewModel.thread?.admin == true {
                     Button(role: .destructive) {
                         viewModel.removePartitipant(participant)
                     } label: {
@@ -107,6 +107,10 @@ struct ParticipantRowContainer: View {
                     }
                 }
             }
+    }
+
+    private var isMe: Bool {
+       participant.id == AppState.shared.user?.id
     }
 }
 

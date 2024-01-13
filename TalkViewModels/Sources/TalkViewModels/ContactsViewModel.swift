@@ -485,7 +485,7 @@ public final class ContactsViewModel: ObservableObject {
     public var titleIsValid: Bool {
         if conversationTitle.isEmpty { return false }
         if !isPublic { return true }
-        let regex = try! Regex("^[a-zA-Z0-9]\\S*$")
+        guard let regex = try? Regex("^[a-zA-Z0-9]\\S*$") else { return false }
         return conversationTitle.contains(regex)
     }
 }

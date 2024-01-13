@@ -112,7 +112,7 @@ struct ThreadHistoryVStack: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if viewModel.isFetchedServerFirstResponse == false && viewModel.threadViewModel?.isSimulatedThared == false {
+            if viewModel.isFetchedServerFirstResponse == false && viewModel.threadViewModel?.isSimulatedThared == false && viewModel.sections.count == 0 {
                 ThreadLoadingOnAppear()
             } else if viewModel.isEmptyThread {
                 EmptyThreadView()

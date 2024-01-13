@@ -142,10 +142,10 @@ struct HomePreview: View {
     @State var container = ObjectsContainer(delegate: ChatDelegateImplementation.sharedInstance)
     var body: some View {
         HomeContentView()
-            .onAppear {
+            .task {
                 AppState.shared.connectionStatus = .connected
                 TokenManager.shared.setIsLoggedIn(isLoggedIn: true)
-                container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 10))
+                await container.threadsVM.appendThreads(threads: MockData.generateThreads(count: 10))
                 container.animateObjectWillChange()
             }
     }

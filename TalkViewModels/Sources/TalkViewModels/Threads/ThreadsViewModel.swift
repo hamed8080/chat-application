@@ -32,7 +32,7 @@ public final class ThreadsViewModel: ObservableObject {
     public var selectedThraed: Conversation?
     private var canLoadMore: Bool { hasNext && !isLoading }
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
-    var serverSortedPinConversations: [Int] = []
+    public var serverSortedPinConversations: [Int] = []
 
     public init() {
         AppState.shared.$connectionStatus
@@ -59,7 +59,10 @@ public final class ThreadsViewModel: ObservableObject {
     func onCreate(_ response: ChatResponse<Conversation>) {
         isLoading = false
         if let thread = response.result {
-            appendThreads(threads: [thread])
+            Task {
+                await appendThreads(threads: [thread])
+                await asyncAnimateObjectWillChange()
+            }
         }
     }
 
@@ -129,7 +132,10 @@ public final class ThreadsViewModel: ObservableObject {
             if let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}) {
                 serverSortedPinConversations.append(contentsOf: serverSortedPinConversationIds)
             }
-            appendThreads(threads: threads)
+            Task {
+                await appendThreads(threads: threads)
+                await asyncAnimateObjectWillChange()
+            }
         }
 
         if response.result?.count ?? 0 > 0 {
@@ -142,7 +148,10 @@ public final class ThreadsViewModel: ObservableObject {
     public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) {
         if response.value(prepend: "GET-NOT-ACTIVE-THREADS") == nil { return }
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
-            appendThreads(threads: threads)
+            Task {
+                await appendThreads(threads: threads)
+                await asyncAnimateObjectWillChange()
+            }
         }
     }
 
@@ -192,12 +201,14 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onAddPrticipant(_ response: ChatResponse<Conversation>) {
-        if response.result?.participants?.first(where: {$0.id == AppState.shared.user?.id}) != nil, let newConversation = response.result {
-            /// It means an admin added a user to the conversation, and if the added user is in the app at the moment, should see this new conversation in its conversation list.
-            appendThreads(threads: [newConversation])
+        Task {
+            if response.result?.participants?.first(where: {$0.id == AppState.shared.user?.id}) != nil, let newConversation = response.result {
+                /// It means an admin added a user to the conversation, and if the added user is in the app at the moment, should see this new conversation in its conversation list.
+                await appendThreads(threads: [newConversation])
+            }
+            isLoading = false
+            await asyncAnimateObjectWillChange()
         }
-        isLoading = false
-        animateObjectWillChange()
     }
 
     func onDeletePrticipant(_ response: ChatResponse<[Participant]>) {
@@ -218,7 +229,7 @@ public final class ThreadsViewModel: ObservableObject {
         offset = count + offset
     }
 
-    public func appendThreads(threads: [Conversation]) {
+    public func appendThreads(threads: [Conversation]) async {
         threads.forEach { thread in
             if let oldThread = self.threads.first(where: { $0.id == thread.id }) {
                 oldThread.updateValues(thread)
@@ -228,7 +239,6 @@ public final class ThreadsViewModel: ObservableObject {
             }
         }
         sort()
-        animateObjectWillChange()
     }
 
     public func sort() {

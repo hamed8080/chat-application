@@ -17,10 +17,12 @@ struct ThreadRowActionMenu: View {
     var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
 
     var body: some View {
-        Button {
-            viewModel.togglePin(thread)
-        } label: {
-            Label((thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", systemImage: "pin")
+        if thread.pin == true || viewModel.serverSortedPinConversations.count < 5 {
+            Button {
+                viewModel.togglePin(thread)
+            } label: {
+                Label((thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", systemImage: "pin")
+            }
         }
 
         if thread.type != .selfThread && !isDetailView {

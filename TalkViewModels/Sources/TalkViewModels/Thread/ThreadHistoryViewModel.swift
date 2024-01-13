@@ -81,13 +81,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if status == .connected, isFetchedServerFirstResponse == true, threadViewModel?.isActiveThread == true {
+        let isSimulated = threadViewModel?.isSimulatedThared == true
+        if !isSimulated, status == .connected, isFetchedServerFirstResponse == true, threadViewModel?.isActiveThread == true {
             // After connecting again get latest messages.
             tryFifthScenario(status: status)
         }
 
         /// Fetch the history for the first time if the internet connection is not available.
-        if status == .connected, hasSentHistoryRequest == true, sections.isEmpty {
+        if !isSimulated, status == .connected, hasSentHistoryRequest == true, sections.isEmpty {
             startFetchingHistory()
         }
     }
@@ -96,9 +97,10 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public func startFetchingHistory() {
         /// We check this to prevent recalling these methods when the view reappears again.
         /// If centerLoading is true it is mean theat the array has gotten clear for Scenario 6 to move to a time.
+        let isSimulatedThread = threadViewModel?.isSimulatedThared == true
         let hasAnythingToLoadOnOpen = AppState.shared.appStateNavigationModel.moveToMessageId != nil
         moveToMessageTimeOnOpenConversation()
-        if sections.count > 0 || threadViewModel?.centerLoading == true || hasAnythingToLoadOnOpen { return }
+        if sections.count > 0 || threadViewModel?.centerLoading == true || hasAnythingToLoadOnOpen || isSimulatedThread { return }
         hasSentHistoryRequest = true
         tryFirstScenario()
         trySecondScenario()

@@ -145,7 +145,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if status == .connected {
+        if status == .connected && !isSimulatedThared {
             unreadMentionsViewModel.fetchAllUnreadMentions()
         }
     }
