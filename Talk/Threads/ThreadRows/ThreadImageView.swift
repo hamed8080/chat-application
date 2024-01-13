@@ -35,7 +35,7 @@ struct ThreadImageView: View {
                             .foregroundStyle(Color.App.textPrimary)
                     }
             } else if let image = computedImageURL {
-                ImageLoaderView(imageLoader: threadsVM.avatars(for: image, metaData: image, userName: thread.title))
+                ImageLoaderView(imageLoader: threadsVM.avatars(for: image, metaData: thread.metadata, userName: thread.title))
                     .id("\(computedImageURL ?? "")\(thread.id ?? 0)")
                     .font(.iransansBoldBody)
                     .foregroundColor(.white)
