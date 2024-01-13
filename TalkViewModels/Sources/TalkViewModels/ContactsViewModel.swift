@@ -40,6 +40,8 @@ public final class ContactsViewModel: ObservableObject {
     @Published public var showAddOrEditContactSheet = false
     /// When the user initiates a create group/channel with the plus button in the Conversation List.
     @Published public var closeConversationContextMenu: Bool = false
+    public var createdConversation: Conversation?
+    @Published public var isCreateLoading = false
     @Published public var isInSelectionMode = false {
         didSet {
             selectedContacts = []
@@ -391,7 +393,7 @@ public final class ContactsViewModel: ObservableObject {
             return
         }
         guard let type = createConversationType else { return }
-        isLoading = true
+        isCreateLoading = true
         let invitees = selectedContacts.map { Invitee(id: "\($0.id ?? 0)", idType: .contactId) }
         let req = CreateThreadRequest(description: threadDescription,
                                       invitees: invitees,
@@ -405,17 +407,17 @@ public final class ContactsViewModel: ObservableObject {
 
     public func onCreateGroup(_ response: ChatResponse<Conversation>) {
         if response.value(prepend: "ConversationBuilder") != nil {
-            isLoading = false
+            isCreateLoading = false
             if let conversation = response.result {
-                editGroup(createdConversation: conversation)
-                AppState.shared.showThread(thread: conversation)
+                self.createdConversation = conversation
+                editGroup()
             }
         }
     }
 
-    public func editGroup(createdConversation: Conversation) {
-        isLoading = true
-        guard let threadId = createdConversation.id else { return }
+    public func editGroup() {
+        isCreateLoading = true
+        guard let createdConversation = createdConversation, let threadId = createdConversation.id else { return }
         var imageRequest: UploadImageRequest?
         if let image = image {
             let width = Int(image.size.width)
@@ -440,12 +442,20 @@ public final class ContactsViewModel: ObservableObject {
         if response.value(prepend: "EditConversation") != nil {
             closeConversationContextMenu = true
             closeBuilder()
-            isLoading = false
+            isCreateLoading = false
             showCreateConversationDetail = false
             image = nil
             assetResources = []
             createConversationType = nil
             conversationTitle = ""
+            if let conversation = createdConversation {
+                /// It will fix a bug in small devices where they can not click on the buttons in the toolbar after the thread has been created.
+                /// This bug is because a sheet prevents the view from being calculated correctly.
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
+                    AppState.shared.showThread(thread: conversation)
+                    self?.createdConversation = nil
+                }
+            }
         }
     }
 

@@ -42,7 +42,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
         // MARK: Registering Launch Handlers for Tasks
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "ir.pod.talk.refreshToken", using: nil) { task in
             // Downcast the parameter to an app refresh task as this identifier is used for a refresh request.
-            self.handleTaskRefreshToken(task as! BGAppRefreshTask)
+            if let task = task as? BGAppRefreshTask {
+                self.handleTaskRefreshToken(task)
+            }
         }
     }
 

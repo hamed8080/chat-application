@@ -368,16 +368,12 @@ extension ThreadViewModel {
     }
 
     public func send(completion: @escaping ()-> Void) {
-        if isEmptyThared {
+        if isSimulatedThared {
             self.createThreadCompletion = completion
             createP2PThread()
         } else {
             completion()
         }
-    }
-
-    public var isEmptyThared: Bool {
-        AppState.shared.userToCreateThread != nil && thread.id == LocalId.emptyThread.rawValue
     }
 
     public func createP2PThread() {

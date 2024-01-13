@@ -227,6 +227,7 @@
 "Thread.leave" = "ترک %@";
 "Thread.leaveButton" = "ترک";
 "Thread.leave.footer" = "آیا شما مطمئن هستید که می خواهید این گفتگو را ترک کنید؟";
+"Thread.noMessage" = "هیچ پیامی برای نمایش وجود ندارد.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "در حال اتصال";

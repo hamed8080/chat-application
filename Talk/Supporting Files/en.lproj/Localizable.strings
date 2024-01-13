@@ -227,6 +227,7 @@
 "Thread.leave" = "Leave %@";
 "Thread.leaveButton" = "Leave";
 "Thread.leave.footer" = "Are you sure you want to leave this conversation?";
+"Thread.noMessage" = "There is no message to be shown.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";

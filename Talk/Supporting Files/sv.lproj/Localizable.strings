@@ -226,6 +226,7 @@
 "Thread.leave" = "Lämna %@";
 "Thread.leaveButton" = "Lämna";
 "Thread.leave.footer" = "Är du säker på att du vill lämna denna konversation?";
+"Thread.noMessage" = "Det finns inget meddelande att visa.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";

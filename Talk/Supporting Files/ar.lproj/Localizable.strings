@@ -226,6 +226,7 @@
 "Thread.leave" = "مغادرة %@";
 "Thread.leaveButton" = "المغادرة";
 "Thread.leave.footer" = "هل أنت متأكد أنك تريد مغادرة هذا الحوار؟";
+"Thread.noMessage" = "لا توجد رسالة ليتم إظهارها.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";

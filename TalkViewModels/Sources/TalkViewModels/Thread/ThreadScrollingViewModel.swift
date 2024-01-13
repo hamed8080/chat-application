@@ -23,8 +23,8 @@ public final class ThreadScrollingViewModel: ObservableObject {
     public var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false
-    public weak var threadVM: ThreadViewModel!
-    private var thread: Conversation { threadVM!.thread }
+    public weak var threadVM: ThreadViewModel?
+    private var thread: Conversation { threadVM?.thread ?? .init(id: -1)}
     public var isAtBottomOfTheList: Bool = false
 
     init() {}

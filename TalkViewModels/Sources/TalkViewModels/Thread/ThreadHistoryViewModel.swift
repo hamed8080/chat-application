@@ -44,10 +44,16 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var lastTopVisibleMessage: Message?
     public var isFetchedServerFirstResponse: Bool = false
     private var cancelable: Set<AnyCancellable> = []
-    public weak var threadViewModel: ThreadViewModel!
+    public weak var threadViewModel: ThreadViewModel?
     private var thread: Conversation { threadViewModel?.thread ?? .init(id: -1) }
     private var threadId: Int { thread.id ?? -1 }
     var hasSentHistoryRequest = false
+
+    public var isEmptyThread: Bool {
+        let noMessage = isFetchedServerFirstResponse == true && sections.count == 0
+        let emptyThread = threadViewModel?.isSimulatedThared == true
+        return emptyThread || noMessage
+    }
 
     public init() {
         setupNotificationObservers()
@@ -75,7 +81,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if status == .connected, isFetchedServerFirstResponse == true, threadViewModel.isActiveThread {
+        if status == .connected, isFetchedServerFirstResponse == true, threadViewModel?.isActiveThread == true {
             // After connecting again get latest messages.
             tryFifthScenario(status: status)
         }
@@ -92,19 +98,20 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// If centerLoading is true it is mean theat the array has gotten clear for Scenario 6 to move to a time.
         let hasAnythingToLoadOnOpen = AppState.shared.appStateNavigationModel.moveToMessageId != nil
         moveToMessageTimeOnOpenConversation()
-        if sections.count > 0 || threadViewModel.centerLoading || hasAnythingToLoadOnOpen { return }
+        if sections.count > 0 || threadViewModel?.centerLoading == true || hasAnythingToLoadOnOpen { return }
         hasSentHistoryRequest = true
         tryFirstScenario()
         trySecondScenario()
         trySeventhScenario()
         tryEightScenario()
+        tryNinthScenario()
     }
 
     public func moreTop(prepend: String = "MORE-TOP", delay: TimeInterval = 0.5, _ toTime: UInt?) {
         if !canLoadMoreTop { return }
         topLoading = true
         animateObjectWillChange()
-        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: threadViewModel.readOnly)
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: toTime, readOnly: threadViewModel?.readOnly == true)
         RequestsManager.shared.append(prepend: prepend, value: req)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
             if self != nil {
@@ -122,14 +129,15 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 3- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(messages)
             /// 4- Disable excessive loading on the top part.
-            threadViewModel.scrollVM.disableExcessiveLoading()
+            threadViewModel?.scrollVM.disableExcessiveLoading()
             /// 5- Set whether it has more messages at the top or not.
             setHasMoreTop(response)
+            isFetchedServerFirstResponse = true
             /// 6- To update isLoading fields to hide the loading at the top.
             await asyncAnimateObjectWillChange()
 
             if let uniqueId = lastTopVisibleMessage?.uniqueId, let id = lastTopVisibleMessage?.id {
-                await threadViewModel.scrollVM.showHighlighted(uniqueId, id, highlight: false, anchor: .top)
+                await threadViewModel?.scrollVM.showHighlighted(uniqueId, id, highlight: false, anchor: .top)
                 lastTopVisibleMessage = nil
             }
         }
@@ -139,7 +147,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         if !hasNextBottom || bottomLoading { return }
         bottomLoading = true
         animateObjectWillChange()
-        let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: threadViewModel.readOnly)
+        let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
         RequestsManager.shared.append(prepend: prepend, value: req)
         ChatManager.activeInstance?.message.history(req)
     }
@@ -153,9 +161,10 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 3- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(messages)
             /// 4- Disable excessive loading on the top part.
-            threadViewModel.scrollVM.disableExcessiveLoading()
+            threadViewModel?.scrollVM.disableExcessiveLoading()
             /// 7- Set whether it has more messages at the bottom or not.
             setHasMoreBottom(response)
+            isFetchedServerFirstResponse = true
             /// 8- To update isLoading fields to hide the loading at the bottom.
             await asyncAnimateObjectWillChange()
         }
@@ -196,14 +205,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 3- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
             appenedUnreadMessagesBannerIfNeeed()
             /// 4- Disable excessive loading on the top part.
-            threadViewModel.scrollVM.disableExcessiveLoading()
+            threadViewModel?.scrollVM.disableExcessiveLoading()
             /// 5- To update isLoading fields to hide the loading at the top.
             await asyncAnimateObjectWillChange()
 
             /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
             let lastSeenMessage = message(for: thread.lastSeenMessageId)?.message
             if let uniqueId = lastSeenMessage?.uniqueId, let lastSeenMessageId = lastSeenMessage?.id {
-                await threadViewModel.scrollVM.showHighlighted(uniqueId, lastSeenMessageId, highlight: false)
+                await threadViewModel?.scrollVM.showHighlighted(uniqueId, lastSeenMessageId, highlight: false)
                 /// 9- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
                 if let fromTime = lastSeenMessage?.time {
                     moreBottom(prepend: "MORE-BOTTOM-FIRST-SCENARIO", fromTime.advanced(by: -1))
@@ -231,7 +240,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     func appenedUnreadMessagesBannerIfNeeed() {
         guard
-            let tuples = message(for: sections.last?.vms.last?.id)
+            let tuples = message(for: sections.last?.vms.last?.id),
+            let threadViewModel = threadViewModel
         else { return }
         let time = (tuples.message.time ?? 0) + 1
         let unreadMessage = UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: time)
@@ -256,12 +266,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 /// 2- Append and sort the array but not call to update the view and do calculaiton.
                 await appendMessagesAndSort(messages)
                 /// 4- Disable excessive loading on the top part.
-                threadViewModel.scrollVM.disableExcessiveLoading()
+                threadViewModel?.scrollVM.disableExcessiveLoading()
             }
+            isFetchedServerFirstResponse = true
             /// 5- To update isLoading fields to hide the loading at the top and prepare the ui for scrolling to.
             await asyncAnimateObjectWillChange()
             if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
-                await threadViewModel.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
+                await threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
             }
             /// 6- Set whether it has more messages at the top or not.
             setHasMoreTop(response)
@@ -275,12 +286,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// 1- Get the bottom part of the list of what is inside the memory.
         if status == .connected,
            isFetchedServerFirstResponse == true,
-           threadViewModel.isActiveThread,
+           threadViewModel?.isActiveThread == true,
            let lastMessageInListTime = sections.last?.vms.last?.message.time {
             bottomLoading = true
             animateObjectWillChange()
             let fromTime = lastMessageInListTime.advanced(by: 1)
-            let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: threadViewModel.readOnly)
+            let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
             RequestsManager.shared.append(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", value: req)
             ChatManager.activeInstance?.message.history(req)
         }
@@ -310,10 +321,10 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// 1- Move to a message locally if it exists.
         if moveToMessageLocally(messageId, highlight: highlight) { return }
         sections.removeAll()
-        threadViewModel.centerLoading = true
-        threadViewModel.animateObjectWillChange()
+        threadViewModel?.centerLoading = true
+        threadViewModel?.animateObjectWillChange()
         /// 2- Fetch the top part of the message with the message itself.
-        let toTimeReq = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: time.advanced(by: 1), readOnly: threadViewModel.readOnly)
+        let toTimeReq = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: time.advanced(by: 1), readOnly: threadViewModel?.readOnly == true)
         let timeReqManager = OnMoveTime(messageId: messageId, request: toTimeReq, highlight: highlight)
         RequestsManager.shared.append(prepend: "TO-TIME", value: timeReqManager)
         ChatManager.activeInstance?.message.history(toTimeReq)
@@ -326,19 +337,19 @@ public final class ThreadHistoryViewModel: ObservableObject {
         Task {
             /// 3- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(messages)
-            threadViewModel.centerLoading = false
-            await threadViewModel.asyncAnimateObjectWillChange()
+            threadViewModel?.centerLoading = false
+            await threadViewModel?.asyncAnimateObjectWillChange()
             /// We set this property to true because in the seven scenario there is no way to set this property to true.
             /// 4- Disable excessive loading on the top part.
-            threadViewModel.scrollVM.disableExcessiveLoading()
+            threadViewModel?.scrollVM.disableExcessiveLoading()
             isFetchedServerFirstResponse = true
             /// 5- Update all the views to draw for the top part.
             await asyncAnimateObjectWillChange()
             /// 6- Scroll to the message with its uniqueId.
             guard let uniqueId = message(for: request.messageId)?.message.uniqueId else { return }
-            await threadViewModel.scrollVM.showHighlighted(uniqueId, request.messageId, highlight: request.highlight)
+            await threadViewModel?.scrollVM.showHighlighted(uniqueId, request.messageId, highlight: request.highlight)
             /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
-            let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "asc", readOnly: threadViewModel.readOnly)
+            let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
             let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)
             RequestsManager.shared.append(prepend: "FROM-TIME", value: fromReqManager)
             ChatManager.activeInstance?.message.history(fromTimeReq)
@@ -362,7 +373,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     func moreBottomMoveTo(_ message: Message) {
         /// 12- Fetch the next part of the bottom when the user scrolls to the bottom part of move to.
-        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: message.time, offset: 0, order: "asc", readOnly: threadViewModel.readOnly)
+        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: message.time, offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
         let fromReqManager = OnMoveTime(messageId: message.id ?? 0, request: fromTimeReq, highlight: false)
         RequestsManager.shared.append(prepend: "FROM-TIME", value: fromReqManager)
         ChatManager.activeInstance?.message.history(fromTimeReq)
@@ -373,7 +384,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     func moveToMessageLocally(_ messageId: Int, highlight: Bool) -> Bool {
         if let uniqueId = message(for: messageId)?.message.uniqueId {
             Task {
-                await threadViewModel.scrollVM.showHighlighted(uniqueId, messageId, highlight: highlight)
+                await threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: highlight)
             }
             return true
         }
@@ -383,12 +394,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
     /// Scenario 7 = When lastMessgeSeenId is bigger than thread.lastMessageVO.id as a result of server chat bug.
     func trySeventhScenario() {
         if thread.lastMessageVO?.id ?? 0 < thread.lastSeenMessageId ?? 0 {
-            requestBottoPartByCountAndOffset()
+            requestBottomPartByCountAndOffset()
         }
     }
 
-    func requestBottoPartByCountAndOffset() {
-        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, readOnly: threadViewModel.readOnly)
+    func requestBottomPartByCountAndOffset() {
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, readOnly: threadViewModel?.readOnly == true)
         RequestsManager.shared.append(prepend: "FETCH-BY-OFFSET", value: req)
         ChatManager.activeInstance?.message.history(req)
     }
@@ -401,8 +412,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
         Task {
             let sortedMessages = messages.sorted(by: {$0.time ?? 0 < $1.time ?? 0})
             await appendMessagesAndSort(sortedMessages)
+            isFetchedServerFirstResponse = true
             await asyncAnimateObjectWillChange()
-            await threadViewModel.scrollVM.showHighlighted(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
+            await threadViewModel?.scrollVM.showHighlighted(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
         }
     }
 
@@ -410,6 +422,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
     func tryEightScenario() {
         if thread.lastSeenMessageId == 0, thread.lastSeenMessageTime == nil, let lastMSGId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
             moveToTime(time, lastMSGId, highlight: false)
+        }
+    }
+
+    /// When a new thread has been built and there is no message inside the thread yet.
+    func tryNinthScenario() {
+        if (thread.lastSeenMessageId == 0 || thread.lastSeenMessageId == nil) && thread.lastMessageVO == nil {
+            requestBottomPartByCountAndOffset()
         }
     }
 
@@ -476,7 +495,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public func deleteMessages(_ messages: [Message], forAll: Bool = false) {
         let messagedIds = messages.compactMap(\.id)
         ChatManager.activeInstance?.message.delete(.init(threadId: threadId, messageIds: messagedIds, deleteForAll: forAll))
-        threadViewModel.selectedMessagesViewModel.clearSelection()
+        threadViewModel?.selectedMessagesViewModel.clearSelection()
     }
 
     /// Delete a message with an Id is needed for when the message has persisted before.
@@ -539,7 +558,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             return vm
         }
         
-        if message.threadId == threadId || message.conversation?.id == threadId {
+        if message.threadId == threadId || message.conversation?.id == threadId, let threadViewModel = threadViewModel {
             let viewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
             if let sectionIndex = sectionIndexByDate(message.time?.date ?? Date()) {
                 sections[sectionIndex].vms.append(viewModel)
@@ -565,12 +584,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     @discardableResult
-    public func messageViewModel(for message: Message) -> MessageRowViewModel {
+    public func messageViewModel(for message: Message) -> MessageRowViewModel? {
         /// For unsent messages, uniqueId has value but message.id is always nil, so we have to check both to make sure we get the right viewModel, unless it will lead to an overwrite on a message and it will break down all the things.
         let messageViewModels = sections.flatMap{$0.vms}
         if let viewModel = messageViewModels.first(where: {  $0.message.uniqueId == message.uniqueId && $0.message.id == message.id }){
             return viewModel
-        } else {
+        } else if let threadViewModel = threadViewModel {
             let newViewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
             if let lastIndex = sections.indices.last {
                 sections[lastIndex].vms.append(newViewModel)
@@ -578,6 +597,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 sections.append(.init(date: Date(), vms: [.init(message: message, viewModel: threadViewModel)]))
             }
             return newViewModel
+        } else {
+            return nil
         }
     }
 
@@ -597,6 +618,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMessageAppear(_ message: Message) async {
+        guard let threadViewModel = threadViewModel else { return }
         let scrollVM = threadViewModel.scrollVM
         if message.id == sections.first?.vms.first?.id {
             lastTopVisibleMessage = message
@@ -638,9 +660,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMessegeDisappear(_ message: Message) async {
-        if message.id == thread.lastMessageVO?.id, threadViewModel.scrollVM.isAtBottomOfTheList == true {
-            threadViewModel.scrollVM.isAtBottomOfTheList = false
-            threadViewModel.scrollVM.animateObjectWillChange()
+        if message.id == thread.lastMessageVO?.id, threadViewModel?.scrollVM.isAtBottomOfTheList == true {
+            threadViewModel?.scrollVM.isAtBottomOfTheList = false
+            threadViewModel?.scrollVM.animateObjectWillChange()
         }
     }
 
@@ -657,7 +679,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     func replaceUploadMessage(_ response: ChatResponse<MessageResponse>) -> Bool {
         let lasSectionIndex = sections.firstIndex(where: {$0.id == sections.last?.id})
-        if let lasSectionIndex,
+        if  let threadViewModel = threadViewModel,
+            let lasSectionIndex,
            sections.indices.contains(lasSectionIndex),
            let oldUploadFileIndex = sections[lasSectionIndex].vms.firstIndex(where: { $0.message.isUploadMessage && $0.message.uniqueId == response.uniqueId }) {
             sections[lasSectionIndex].vms.remove(at: oldUploadFileIndex) /// Remove because it was of type UploadWithTextMessageProtocol
@@ -732,7 +755,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 /// For the sixth scenario.
                 onMoveToTime(response)
                 onMoveFromTime(response)
-                if let messageIds = response.result?.filter({$0.reactionableType}).compactMap({$0.id}), !threadViewModel.searchedMessagesViewModel.isInSearchMode {
+                if let messageIds = response.result?.filter({$0.reactionableType}).compactMap({$0.id}), threadViewModel?.searchedMessagesViewModel.isInSearchMode == false {
                     ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
                 }
                 logger.debug("End on history:\(Date().millisecondsSince1970)")

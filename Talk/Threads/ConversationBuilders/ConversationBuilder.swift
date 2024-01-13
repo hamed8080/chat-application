@@ -44,7 +44,7 @@ struct ConversationBuilder: View {
         .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
-        .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut, value: viewModel.isCreateLoading)
         .listStyle(.plain)
         .safeAreaInset(edge: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
@@ -61,13 +61,13 @@ struct ConversationBuilder: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: "General.next",
                                enableButton: .constant(enabeleButton),
-                               isLoading: $viewModel.isLoading)
+                               isLoading: $viewModel.isCreateLoading)
             {
                 viewModel.moveToNextPage()
             }
         }
         .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $viewModel.isLoading)
+            ListLoadingView(isLoading: $viewModel.isCreateLoading)
         }
         .sheet(isPresented: $viewModel.showCreateConversationDetail) {
             viewModel.showTitleError = false
@@ -184,13 +184,13 @@ struct EditCreatedConversationDetail: View {
         .environment(\.defaultMinListRowHeight, 8)
         .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: viewModel.contacts)
-        .animation(.easeInOut, value: viewModel.isLoading)
+        .animation(.easeInOut, value: viewModel.isCreateLoading)
         .animation(.easeInOut, value: viewModel.conversationTitle)
         .listStyle(.plain)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",
-                               enableButton: .constant(!viewModel.isLoading),
-                               isLoading: $viewModel.isLoading)
+                               enableButton: .constant(!viewModel.isCreateLoading),
+                               isLoading: $viewModel.isCreateLoading)
             {
                 viewModel.createGroupWithSelectedContacts()
             }

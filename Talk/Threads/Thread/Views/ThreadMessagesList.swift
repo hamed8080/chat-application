@@ -17,22 +17,22 @@ struct ThreadMessagesList: View {
 
     var body: some View {
         ScrollViewReader { scrollProxy in
-            MessagesLazyStack()
-            .background(ThreadbackgroundView(threadId: viewModel.threadId))
-            .overlay(alignment: .bottom) {
-                VStack {
-                    MoveToBottomButton()
-                    SendContainerOverButtons()
+            ThreadHistoryVStack()
+                .background(ThreadbackgroundView(threadId: viewModel.threadId))
+                .overlay(alignment: .bottom) {
+                    VStack {
+                        MoveToBottomButton()
+                        SendContainerOverButtons()
+                    }
                 }
-            }
-            .onAppear {
-                viewModel.scrollVM.scrollProxy = scrollProxy
-                UICollectionViewCell.appearance().backgroundView = UIView()
-                UITableViewHeaderFooterView.appearance().backgroundView = UIView()
-            }
-            .overlay(alignment: .center) {
-                CenterLoading()
-            }
+                .onAppear {
+                    viewModel.scrollVM.scrollProxy = scrollProxy
+                    UICollectionViewCell.appearance().backgroundView = UIView()
+                    UITableViewHeaderFooterView.appearance().backgroundView = UIView()
+                }
+                .overlay(alignment: .center) {
+                    CenterLoading()
+                }
         }
         .simultaneousGesture(tap.simultaneously(with: drag))
     }
@@ -107,38 +107,101 @@ struct ThreadbackgroundView: View {
     }
 }
 
-struct MessagesLazyStack: View {
+struct ThreadHistoryVStack: View {
     @EnvironmentObject var viewModel: ThreadHistoryViewModel
 
     var body: some View {
         VStack(spacing: 0) {
-            List {
-                ListLoadingView(isLoading: $viewModel.topLoading)
-                    .id(-1)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(.zero)
-                    .listRowBackground(Color.clear)
-                    .padding([.top, .bottom])
-                ForEach(viewModel.sections) { section in
-                    Section {
-                        MessageList(vms: section.vms, viewModel: viewModel)
-                    } header: {
-                        SectionView(section: section)
-                    }
-                }
-                UploadMessagesLoop(historyVM: viewModel)
-//                UnsentMessagesLoop(historyVM: viewModel)
-                ListLoadingView(isLoading: $viewModel.bottomLoading)
-                    .id(-2)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(.zero)
-                    .listRowBackground(Color.clear)
-                    .padding([.top, .bottom])
+            if viewModel.isFetchedServerFirstResponse == false && viewModel.threadViewModel?.isSimulatedThared == false {
+                ThreadLoadingOnAppear()
+            } else if viewModel.isEmptyThread {
+                EmptyThreadView()
+            } else {
+                ThreadHistoryList()
             }
-            .listStyle(.plain)
-            KeyboardHeightView()
         }
         .environment(\.layoutDirection, .leftToRight)
+    }
+}
+
+struct ThreadHistoryList: View {
+    @EnvironmentObject var viewModel: ThreadHistoryViewModel
+
+    var body: some View {
+        List {
+            ListLoadingView(isLoading: $viewModel.topLoading)
+                .id(-1)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
+                .padding([.top, .bottom])
+            ForEach(viewModel.sections) { section in
+                Section {
+                    MessageList(vms: section.vms, viewModel: viewModel)
+                } header: {
+                    SectionView(section: section)
+                }
+            }
+            UploadMessagesLoop(historyVM: viewModel)
+            //                UnsentMessagesLoop(historyVM: viewModel)
+            ListLoadingView(isLoading: $viewModel.bottomLoading)
+                .id(-2)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
+                .padding([.top, .bottom])
+        }
+        .listStyle(.plain)
+        KeyboardHeightView()
+    }
+}
+
+struct ThreadLoadingOnAppear: View {
+    @EnvironmentObject var viewModel: ThreadHistoryViewModel
+
+    var body: some View {
+        Spacer()
+        HStack {
+            Spacer()
+            ListLoadingView(isLoading: .constant(true))
+                .id(-1)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
+                .padding([.top, .bottom])
+            Spacer()
+        }
+        Spacer()
+    }
+}
+
+struct EmptyThreadView: View {
+    @EnvironmentObject var viewModel: ThreadHistoryViewModel
+    @Environment(\.colorScheme) var colorScheme
+
+    var body: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                VStack {
+                    Text("Thread.noMessage")
+                        .font(.iransansSubtitle)
+                        .foregroundStyle(Color.App.textPrimary)
+                        .fontWeight(.regular)
+                    Image(systemName: "text.bubble")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 36, height: 36)
+                        .foregroundStyle(Color.App.accent)
+                }
+                .padding(48)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                Spacer()
+            }
+            Spacer()
+        }
     }
 }
 
@@ -197,8 +260,10 @@ struct UploadMessagesLoop: View {
     var body: some View {
         /// We must use uniqueId with messageId to force swiftUI to delete the row and make a new one after uploading successfully.
         ForEach(viewModel.uploadMessages, id: \.uniqueId) { uploadFileMessage in
-            MessageRowFactory(viewModel: historyVM.messageViewModel(for: uploadFileMessage))
-                .id("\(uploadFileMessage.uniqueId ?? "")\(uploadFileMessage.id ?? 0)")
+            if let messageRowVM = historyVM.messageViewModel(for: uploadFileMessage) {
+                MessageRowFactory(viewModel: messageRowVM)
+                    .id("\(uploadFileMessage.uniqueId ?? "")\(uploadFileMessage.id ?? 0)")
+            }
         }
         .animation(.easeInOut, value: viewModel.uploadMessages.count)
     }
@@ -211,8 +276,10 @@ struct UnsentMessagesLoop: View {
     var body: some View {
         /// We have to use \.uniqueId to force the ForLoop to use uniqueId instead of default \.id because id is nil when a message is unsent.
         ForEach(viewModel.unsentMessages, id: \.uniqueId) { unsentMessage in
-            MessageRowFactory(viewModel: historyVM.messageViewModel(for: unsentMessage))
-                .id(unsentMessage.uniqueId)
+            if let messageRowVM = historyVM.messageViewModel(for: unsentMessage) {
+                MessageRowFactory(viewModel: messageRowVM)
+                    .id(unsentMessage.uniqueId)
+            }
         }
         .animation(.easeInOut, value: viewModel.unsentMessages.count)
     }
@@ -242,7 +309,7 @@ struct KeyboardHeightView: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: .message)) { notif in
                 if let event = notif.object as? MessageEventTypes {
-                    if case .new(let response) = event, response.result?.conversation?.id == viewModel.threadVM.threadId, viewModel.isAtBottomOfTheList {
+                    if case .new(let response) = event, response.result?.conversation?.id == viewModel.threadVM?.threadId, viewModel.isAtBottomOfTheList {
                         updateHeight(0)
                     }
                 }
@@ -253,7 +320,7 @@ struct KeyboardHeightView: View {
         // We have to wait until all the animations for clicking on TextField are finished and then start our animation.
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
             withAnimation(.easeInOut(duration: 0.4)) {
-                viewModel.scrollProxy?.scrollTo(viewModel.threadVM.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
+                viewModel.scrollProxy?.scrollTo(viewModel.threadVM?.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
                 isInAnimating = false
             }
         }

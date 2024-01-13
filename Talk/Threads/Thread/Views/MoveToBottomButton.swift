@@ -12,6 +12,7 @@ import ChatModels
 
 struct MoveToBottomButton: View {
     @EnvironmentObject var viewModel: ThreadScrollingViewModel
+    @EnvironmentObject var historyVM: ThreadHistoryViewModel
 
     var body: some View {
         if viewModel.isAtBottomOfTheList == false {
@@ -33,7 +34,7 @@ struct MoveToBottomButton: View {
                         .aspectRatio(contentMode: .fit)
                         .contentShape(Rectangle())
                 }
-                .frame(width: 40, height: 40)
+                .frame(width: historyVM.isEmptyThread ? 0 : 40, height: historyVM.isEmptyThread ? 0 : 40)
                 .background(.ultraThinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius:(20)))
                 .shadow(color: .gray.opacity(0.4), radius: 2)
@@ -76,7 +77,7 @@ struct UnreadCountOverMoveToButtonView: View {
     }
 
     private func setUnreadCount() {
-        hide = viewModel.thread.unreadCount == 0
+        hide = viewModel.thread.unreadCount == 0 || viewModel.thread.unreadCount == nil
         unreadCountString = viewModel.thread.unreadCountString ?? ""
     }
 }

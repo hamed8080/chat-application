@@ -76,6 +76,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
+    public var isSimulatedThared: Bool {
+        AppState.shared.userToCreateThread != nil && thread.id == LocalId.emptyThread.rawValue
+    }
+
     public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize)
     var model: AppSettingsModel = .init()
     public var canDownloadImages: Bool = false

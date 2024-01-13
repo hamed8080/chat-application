@@ -228,6 +228,7 @@
 "Thread.leave" = "Salir de %@";
 "Thread.leaveButton" = "Salir";
 "Thread.leave.footer" = "¿Estás seguro de que quieres abandonar esta conversación?";
+"Thread.noMessage" = "No hay ningún mensaje para mostrar.";
 
 /* Estado de conexión */
 "ConnectionStatus.connecting" = "conectando";

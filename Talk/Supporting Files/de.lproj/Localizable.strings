@@ -227,6 +227,7 @@
 "Thread.leave" = "Verlassen %@";
 "Thread.leaveButton" = "Verlassen";
 "Thread.leave.footer" = "Möchtest du diesen Chat wirklich verlassen?";
+"Thread.noMessage" = "Es kann keine Meldung angezeigt werden.";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "verbinden";

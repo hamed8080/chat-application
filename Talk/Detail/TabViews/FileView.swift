@@ -61,7 +61,7 @@ struct MessageListFileView: View {
     }
     
     private func downloadMV(_ message: Message) -> DownloadFileViewModel {
-        detailViewModel.threadVM?.historyVM.messageViewModel(for: message).downloadFileVM ?? DownloadFileViewModel(message: message)
+        detailViewModel.threadVM?.historyVM.messageViewModel(for: message)?.downloadFileVM ?? DownloadFileViewModel(message: message)
     }
 }
 
