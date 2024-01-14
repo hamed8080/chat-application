@@ -66,6 +66,7 @@
 "General.moveToSettings" = "انتقل إلى الإعدادات";
 "General.imageSaved" = "تم حفظ الصورة.";
 "General.copied" = "تم النسخ إلى الحافظة.";
+"General.ban" = "قام الخادم بحظرك لمدة %@ ثانية.";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";
@@ -227,6 +228,7 @@
 "Thread.leaveButton" = "المغادرة";
 "Thread.leave.footer" = "هل أنت متأكد أنك تريد مغادرة هذا الحوار؟";
 "Thread.noMessage" = "لا توجد رسالة ليتم إظهارها.";
+"Thread.onlyAdminError" = "أنت المسؤول الوحيد في المجموعة، لا يمكنك مغادرة المجموعة أو حذفها!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";

@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkExtensions
 
 struct AppOverlayFactory: View {
     @EnvironmentObject var viewModel: AppOverlayViewModel
@@ -35,8 +36,12 @@ struct AppOverlayFactory: View {
                 leadingView
             }
         case .error(let error):
-            let title = String(format: String(localized: "Errors.occuredTitle"), "\(error?.code ?? 0)")
-            ToastView(title: title, message: error?.message ?? "") {}
+            if let localizedError = error?.localizedError {
+                ToastView(title: "", message: localizedError) {}
+            } else {
+                let title = String(format: String(localized: "Errors.occuredTitle"), "\(error?.code ?? 0)")
+                ToastView(title: title, message: error?.message ?? "") {}
+            }
         case .none:
             EmptyView()
                 .frame(width: 0, height: 0)

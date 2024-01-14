@@ -285,7 +285,7 @@ public final class ThreadsViewModel: ObservableObject {
         if isGroup {
             ChatManager.activeInstance?.conversation.delete(.init(subjectId: threadId))
         } else {
-            ChatManager.activeInstance?.conversation.leave(.init(threadId: threadId))
+            ChatManager.activeInstance?.conversation.leave(.init(threadId: threadId, clearHistory: true))
         }
         sheetType = nil
     }

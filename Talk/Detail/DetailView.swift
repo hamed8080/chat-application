@@ -210,29 +210,29 @@ struct PublicLink: View {
                     .foregroundStyle(Color.App.white)
                 AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, text: "General.copied")
             } label: {
-                InfoRowItem(key: "Thread.inviteLink", value: shortJoinLink, button: AnyView(qrButton))
+                InfoRowItem(key: "Thread.inviteLink", value: shortJoinLink, button: AnyView(EmptyView()))
             }
         }
     }
 
-    var qrButton: some View {
-        Button {
-            withAnimation {
-                UIPasteboard.general.string = joinLink
-            }
-        } label: {
-            Image(systemName: "qrcode")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 20, height: 20)
-                .padding()
-                .foregroundColor(Color.App.textSecondary)
-                .contentShape(Rectangle())
-        }
-        .frame(width: 40, height: 40)
-        .background(Color.App.textSecondary)
-        .clipShape(RoundedRectangle(cornerRadius:(20)))
-    }
+//    var qrButton: some View {
+//        Button {
+//            withAnimation {
+//                UIPasteboard.general.string = joinLink
+//            }
+//        } label: {
+//            Image(systemName: "qrcode")
+//                .resizable()
+//                .scaledToFit()
+//                .frame(width: 20, height: 20)
+//                .padding()
+//                .foregroundColor(Color.App.white)
+//                .contentShape(Rectangle())
+//        }
+//        .frame(width: 40, height: 40)
+//        .background(Color.App.textSecondary)
+//        .clipShape(RoundedRectangle(cornerRadius:(20)))
+//    }
 }
 
 struct UserName: View {

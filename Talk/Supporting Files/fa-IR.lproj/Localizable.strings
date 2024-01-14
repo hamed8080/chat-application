@@ -67,6 +67,7 @@
 "General.moveToSettings" = "رفتن به صفحه تنظیمات";
 "General.imageSaved" = "تصویر ذخیره شد.";
 "General.copied" = "کپی شد در کلیپبورد.";
+"General.ban" = "شما توسط سرور به مدت %@ ثانیه بن شدید.";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";
@@ -228,6 +229,7 @@
 "Thread.leaveButton" = "ترک";
 "Thread.leave.footer" = "آیا شما مطمئن هستید که می خواهید این گفتگو را ترک کنید؟";
 "Thread.noMessage" = "هیچ پیامی برای نمایش وجود ندارد.";
+"Thread.onlyAdminError" = "شما تنها مدیر این گروه هستید، برای ترک گروه ابتدا یک مدیر انتخاب کنید!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "در حال اتصال";

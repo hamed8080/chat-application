@@ -68,6 +68,7 @@
 "General.imageSaved" = "Imagen guardada.";
 "General.copied" = "Copiado al portapapeles";
 "General.copied" = "Kopierat till urklipp.";
+"General.ban" = "The server has banned you for %@ seconds.";
 
 /* Pestañas */
 "Tab.chats" = "Chats";
@@ -229,6 +230,7 @@
 "Thread.leaveButton" = "Salir";
 "Thread.leave.footer" = "¿Estás seguro de que quieres abandonar esta conversación?";
 "Thread.noMessage" = "No hay ningún mensaje para mostrar.";
+"Thread.onlyAdminError" = "Eres el único administrador del grupo, ¡no puedes abandonar ni eliminar el grupo!";
 
 /* Estado de conexión */
 "ConnectionStatus.connecting" = "conectando";

@@ -45,7 +45,7 @@ public struct ToastView<ContentView: View>: View {
                         leadingView()
                         Text(String(localized: .init(message)))
                             .font(messageFont)
-                            .fontWeight(.semibold)
+                            .fontWeight(.light)
                             .foregroundStyle(messageColor)
                         Spacer()
                     }

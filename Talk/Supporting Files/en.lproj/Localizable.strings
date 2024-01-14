@@ -66,7 +66,7 @@
 "General.moveToSettings" = "Move to settings";
 "General.imageSaved" = "Image saved.";
 "General.copied" = "Copied to clipboard.";
-
+"General.ban" = "The server has banned you for %@ seconds.";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -228,6 +228,7 @@
 "Thread.leaveButton" = "Leave";
 "Thread.leave.footer" = "Are you sure you want to leave this conversation?";
 "Thread.noMessage" = "There is no message to be shown.";
+"Thread.onlyAdminError" = "You are the only admin in the group, you can not leave or delete the group!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";
