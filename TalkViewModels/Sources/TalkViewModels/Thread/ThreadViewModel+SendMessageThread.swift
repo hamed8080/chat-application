@@ -21,7 +21,7 @@ extension ThreadViewModel {
         if AppState.shared.appStateNavigationModel.forwardMessageRequest?.threadId == threadId {
             sendForwardMessages()
         } else if AppState.shared.appStateNavigationModel.replyPrivately != nil {
-            sendReplyPrivaetlyMessage(textMessage)
+            sendReplyPrivatelyMessage(textMessage)
         } else if let replyMessage = replyMessage, let replyMessageId = replyMessage.id {
             sendReplyMessage(replyMessageId, textMessage)
         } else if sendContainerViewModel.editMessage != nil {
@@ -104,7 +104,7 @@ extension ThreadViewModel {
         }
     }
 
-    public func sendReplyPrivaetlyMessage(_ textMessage: String) {
+    public func sendReplyPrivatelyMessage(_ textMessage: String) {
         guard
             let replyMessage = AppState.shared.appStateNavigationModel.replyPrivately,
             let replyMessageId = replyMessage.id,

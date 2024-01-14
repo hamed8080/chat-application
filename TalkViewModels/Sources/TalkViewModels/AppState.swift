@@ -132,8 +132,9 @@ public final class AppState: ObservableObject {
     }
 
     public func openThread(contact: Contact) {
-        userToCreateThread = .init(id: contact.user?.coreUserId, image: contact.image ?? contact.user?.image, name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
-        searchForP2PThread(coreUserId: contact.user?.coreUserId ?? -1)
+        let userId = contact.user?.id ?? contact.user?.coreUserId ?? -1
+        userToCreateThread = .init(id: userId, image: contact.image, name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
+        searchForP2PThread(coreUserId: userId)
     }
 
     public func openThread(participant: Participant) {
@@ -156,7 +157,7 @@ public final class AppState: ObservableObject {
     /// If the conversation is nil it try to use contact. Firstly it opens a conversation using the given contact core user id then send messages to the conversation.
     public func openThread(from: Int, conversation: Conversation?, contact: Contact?, messages: [Message]) {
         self.appStateNavigationModel.forwardMessages = messages
-        let messageIds = messages.compactMap{$0.id}
+        let messageIds = messages.sorted{$0.time ?? 0 < $1.time ?? 0}.compactMap{$0.id}
         if let conversation = conversation , let destinationConversationId = conversation.id {
             navViewModel?.append(thread: conversation)
             appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
