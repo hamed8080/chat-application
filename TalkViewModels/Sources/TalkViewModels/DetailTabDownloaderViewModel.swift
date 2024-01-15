@@ -17,13 +17,13 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     public private(set) var messages: ContiguousArray<Message> = []
     private var conversation: Conversation
     private var offset = 0
-    private var requests: [String: GetHistoryRequest] = [:]
     private var cancelable = Set<AnyCancellable>()
     public private(set) var isLoading = false
     public private(set) var hasNext = true
     private let messageType: MessageType
     private let count = 25
     public var itemCount = 3
+    private var downloadVMS: [DownloadFileViewModel] = []
 
     public init(conversation: Conversation, messageType: MessageType) {
         self.conversation = conversation
@@ -39,9 +39,8 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     private func onMessageEvent(_ event: MessageEventTypes) {
         switch event {
         case let .history(response):
-            if !response.cache,
-               let uniqueId = response.uniqueId,
-               requests[uniqueId] != nil,
+            if response.value(prepend: "DetailViewHistory") != nil,
+               !response.cache,
                response.subjectId == conversation.id,
                let messages = response.result {
                 messages.forEach { message in
@@ -50,7 +49,6 @@ public class DetailTabDownloaderViewModel: ObservableObject {
                     }
                 }
                 self.messages.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
-                requests.removeValue(forKey: uniqueId)
                 isLoading = false
                 hasNext = response.hasNext
                 animateObjectWillChange()
@@ -72,8 +70,8 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     public func loadMore() {
         guard let conversationId = conversation.id, !isLoading, hasNext else { return }
         let req: GetHistoryRequest = .init(threadId: conversationId, count: count, messageType: messageType.rawValue, offset: offset)
+        RequestsManager.shared.append(prepend: "DetailViewHistory", value: req)
         offset += count
-        requests[req.uniqueId] = req
         isLoading = true
         animateObjectWillChange()
         ChatManager.activeInstance?.message.history(req)
@@ -92,6 +90,16 @@ public class DetailTabDownloaderViewModel: ObservableObject {
         } else {
             itemCount = 7
             return readerWidth / 7
+        }
+    }
+
+    public func downloadVM(message: Message) -> DownloadFileViewModel {
+        if let localVM = downloadVMS.first(where: {$0.message?.id == message.id}) {
+            return localVM
+        } else {
+            let newDownloadVM = DownloadFileViewModel(message: message)
+            downloadVMS.append(newDownloadVM)
+            return newDownloadVM
         }
     }
 }

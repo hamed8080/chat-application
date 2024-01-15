@@ -42,7 +42,7 @@ struct MessageListFileView: View {
     var body: some View {
         ForEach(viewModel.messages) { message in
             FileRowView(message: message)
-                .environmentObject(downloadMV(message))
+                .environmentObject(viewModel.downloadVM(message: message))
                 .overlay(alignment: .bottom) {
                     if message != viewModel.messages.last {
                         Rectangle()
@@ -58,10 +58,6 @@ struct MessageListFileView: View {
                 }
         }
         DetailLoading()
-    }
-    
-    private func downloadMV(_ message: Message) -> DownloadFileViewModel {
-        detailViewModel.threadVM?.historyVM.messageViewModel(for: message)?.downloadFileVM ?? DownloadFileViewModel(message: message)
     }
 }
 

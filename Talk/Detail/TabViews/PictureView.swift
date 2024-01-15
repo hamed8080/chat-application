@@ -73,7 +73,7 @@ struct MessageListPictureView: View {
     var body: some View {
         ForEach(viewModel.messages) { message in
             PictureRowView(message: message, itemWidth: itemWidth)
-                .environmentObject(downloadMV(message))
+                .environmentObject(viewModel.downloadVM(message: message))
                 .id(message.id)
                 .frame(width: itemWidth, height: itemWidth)
                 .onAppear {
@@ -83,10 +83,6 @@ struct MessageListPictureView: View {
                 }
         }
         DetailLoading()
-    }
-
-    private func downloadMV(_ message: Message) -> DownloadFileViewModel {
-        detailViewModel.threadVM?.historyVM.messageViewModel(for: message)?.downloadFileVM ?? DownloadFileViewModel(message: message)
     }
 }
 

@@ -320,16 +320,18 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     /// Scenario 6
     public func moveToTime(_ time: UInt, _ messageId: Int, highlight: Bool = true) {
-        /// 1- Move to a message locally if it exists.
-        if moveToMessageLocally(messageId, highlight: highlight) { return }
-        sections.removeAll()
-        threadViewModel?.centerLoading = true
-        threadViewModel?.animateObjectWillChange()
-        /// 2- Fetch the top part of the message with the message itself.
-        let toTimeReq = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: time.advanced(by: 1), readOnly: threadViewModel?.readOnly == true)
-        let timeReqManager = OnMoveTime(messageId: messageId, request: toTimeReq, highlight: highlight)
-        RequestsManager.shared.append(prepend: "TO-TIME", value: timeReqManager)
-        ChatManager.activeInstance?.message.history(toTimeReq)
+        Task {
+            /// 1- Move to a message locally if it exists.
+            if await moveToMessageLocally(messageId, highlight: highlight) { return }
+            sections.removeAll()
+            threadViewModel?.centerLoading = true
+            threadViewModel?.animateObjectWillChange()
+            /// 2- Fetch the top part of the message with the message itself.
+            let toTimeReq = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: time.advanced(by: 1), readOnly: threadViewModel?.readOnly == true)
+            let timeReqManager = OnMoveTime(messageId: messageId, request: toTimeReq, highlight: highlight)
+            RequestsManager.shared.append(prepend: "TO-TIME", value: timeReqManager)
+            ChatManager.activeInstance?.message.history(toTimeReq)
+        }
     }
 
     func onMoveToTime(_ response: ChatResponse<[Message]>) {
@@ -383,11 +385,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     /// Search for a message with an id in the messages array, and if it can find the message, it will redirect to that message locally, and there is no request sent to the server.
     /// - Returns: Indicate that it moved loclally or not.
-    func moveToMessageLocally(_ messageId: Int, highlight: Bool) -> Bool {
+    func moveToMessageLocally(_ messageId: Int, highlight: Bool) async -> Bool {
         if let uniqueId = message(for: messageId)?.message.uniqueId {
-            Task {
-                await threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: highlight)
-            }
+            await threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: highlight)
             return true
         }
         return false
