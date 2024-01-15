@@ -207,8 +207,8 @@ struct PublicLink: View {
                 UIPasteboard.general.string = joinLink
                 let icon = Image(systemName: "doc.on.doc")
                     .fontWeight(.semibold)
-                    .foregroundStyle(Color.App.white)
-                AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, text: "General.copied")
+                    .foregroundStyle(Color.App.textPrimary)
+                AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, message: "General.copied", messageColor: Color.App.textPrimary)
             } label: {
                 InfoRowItem(key: "Thread.inviteLink", value: shortJoinLink, button: AnyView(EmptyView()))
             }

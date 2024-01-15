@@ -11,6 +11,7 @@ import TalkUI
 
 public struct ToastView<ContentView: View>: View {
     let title: String?
+    let titleColor: Color
     let message: String
     let titleFont: Font
     let messageFont: Font
@@ -18,6 +19,7 @@ public struct ToastView<ContentView: View>: View {
     let leadingView: () -> ContentView
 
     public init(title: String? = nil,
+                titleColor: Color = Color.App.textPrimary,
                 message: String,
                 messageColor: Color = Color.App.red,
                 titleFont: Font = .iransansBoldBody,
@@ -25,6 +27,7 @@ public struct ToastView<ContentView: View>: View {
                 @ViewBuilder leadingView: @escaping () -> ContentView)
     {
         self.title = title
+        self.titleColor = titleColor
         self.message = message
         self.leadingView = leadingView
         self.titleFont = titleFont
@@ -40,6 +43,7 @@ public struct ToastView<ContentView: View>: View {
                     if let title = title {
                         Text(title)
                             .font(titleFont)
+                            .foregroundStyle(titleColor)
                     }
                     HStack(spacing: 8) {
                         leadingView()

@@ -31,8 +31,8 @@ struct AppOverlayFactory: View {
                     .background(.ultraThickMaterial)
                     .ignoresSafeArea(.all)
             }
-        case .toast(let leadingView, let text):
-            ToastView(message: text, messageColor: Color.App.white){
+        case .toast(let leadingView, let message, let messageColor):
+            ToastView(message: message, messageColor: messageColor) {
                 leadingView
             }
         case .error(let error):

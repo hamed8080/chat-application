@@ -31,7 +31,7 @@ public enum AppOverlayTypes {
     case gallery(message: Message)
     case galleryImageView(uiimage: UIImage)
     case error(error: ChatError?)
-    case toast(leadingView: AnyView?, text: String)
+    case toast(leadingView: AnyView?, message: String, messageColor: Color)
     case dialog
     case none
 }
@@ -122,8 +122,8 @@ public class AppOverlayViewModel: ObservableObject {
         }
     }
 
-    public func toast<T: View>(leadingView: T, text: String, duration: ToastDuration = .fast) {
-        type = .toast(leadingView: AnyView(leadingView), text: text)
+    public func toast<T: View>(leadingView: T, message: String, messageColor: Color, duration: ToastDuration = .fast) {
+        type = .toast(leadingView: AnyView(leadingView), message: message, messageColor: messageColor)
         isToast = true
         isPresented = true
         animateObjectWillChange()

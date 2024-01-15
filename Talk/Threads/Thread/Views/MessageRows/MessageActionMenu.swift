@@ -89,7 +89,7 @@ struct MessageActionMenu: View {
                             let icon = Image(systemName: "externaldrive.badge.checkmark")
                                 .fontWeight(.semibold)
                                 .foregroundStyle(Color.App.white)
-                            AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, text: "General.imageSaved")
+                            AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, message: "General.imageSaved", messageColor: Color.App.textPrimary)
                         }
                     }
                 }

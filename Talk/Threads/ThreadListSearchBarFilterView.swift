@@ -38,38 +38,38 @@ struct ThreadListSearchBarFilterView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
 
-                Button {
-                    showPopover.toggle()
-                } label: {
-                    HStack {
-                        Text(String(localized: .init(viewModel.searchType.rawValue)))
-                            .font(.iransansBoldCaption3)
-                            .foregroundColor(Color.App.textSecondary)
-                        Image(systemName: "chevron.down")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 8, height: 12)
-                            .fontWeight(.medium)
-                            .foregroundColor(Color.App.textSecondary)
-                    }
-                }
-                .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(SearchParticipantType.allCases.filter({ $0 != .admin })) { item in
-                            ContextMenuButton(title: String(localized: .init(item.rawValue)), image: "") {
-                                withAnimation {
-                                    showPopover.toggle()
-                                    viewModel.searchType = item
-                                }
-                            }
-                        }
-                    }
-                    .foregroundColor(.primary)
-                    .frame(width: 196)
-                    .background(MixMaterialBackground())
-                    .clipShape(RoundedRectangle(cornerRadius:((12))))
-                    .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
-                }
+//                Button {
+//                    showPopover.toggle()
+//                } label: {
+//                    HStack {
+//                        Text(String(localized: .init(viewModel.searchType.rawValue)))
+//                            .font(.iransansBoldCaption3)
+//                            .foregroundColor(Color.App.textSecondary)
+//                        Image(systemName: "chevron.down")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .frame(width: 8, height: 12)
+//                            .fontWeight(.medium)
+//                            .foregroundColor(Color.App.textSecondary)
+//                    }
+//                }
+//                .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
+//                    VStack(alignment: .leading, spacing: 0) {
+//                        ForEach(SearchParticipantType.allCases.filter({ $0 != .admin })) { item in
+//                            ContextMenuButton(title: String(localized: .init(item.rawValue)), image: "") {
+//                                withAnimation {
+//                                    showPopover.toggle()
+//                                    viewModel.searchType = item
+//                                }
+//                            }
+//                        }
+//                    }
+//                    .foregroundColor(.primary)
+//                    .frame(width: 196)
+//                    .background(MixMaterialBackground())
+//                    .clipShape(RoundedRectangle(cornerRadius:((12))))
+//                    .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
+//                }
             }
         }
         .animation(.easeInOut.speed(2), value: isInSearchMode)
