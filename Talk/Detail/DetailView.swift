@@ -349,7 +349,7 @@ struct DetailTopButtons: View {
             .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 0) {
                     if let conversation = viewModel.thread {
-                        ThreadRowActionMenu(isDetailView: true, thread: conversation)
+                        ThreadRowActionMenu(showPopover: $showPopover, isDetailView: true, thread: conversation)
                             .environmentObject(AppState.shared.objectsContainer.threadsVM)
                     }
                     if let user = viewModel.user {

@@ -20,9 +20,11 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     var id: Int?
     @State var itemWidth: CGFloat = 0
     @State var globalFrame: CGRect = .zero
+    let onTap: (() -> Void)?
 
-    init(id: Int?, root: any View, @ViewBuilder menus: @escaping () -> V) {
+    init(id: Int?, root: any View, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) {
         self.id = id
+        self.onTap = onTap
         self.root = root
         self.menus = menus
     }
@@ -48,7 +50,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     var tapgesture: some Gesture {
         TapGesture(count: 1)
             .onEnded { _ in
-                log("on tapped")
+                onTap?()
             }
     }
 
@@ -129,7 +131,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
 }
 
 public extension View {
-    func customContextMenu<V: View>(id: Int?, self: any View, @ViewBuilder menus: @escaping () -> V) -> some View {
-        modifier(ContextMenuModifire(id: id, root: self, menus: menus))
+    func customContextMenu<V: View>(id: Int?, self: any View, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) -> some View {
+        modifier(ContextMenuModifire(id: id, root: self, onTap: onTap, menus: menus))
     }
 }

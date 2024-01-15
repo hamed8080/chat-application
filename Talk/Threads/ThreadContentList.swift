@@ -19,19 +19,17 @@ struct ThreadContentList: View {
     var body: some View {
         List {
             ForEach(threadsVM.threads) { thread in
-                Button {
+                ThreadRow(thread: thread) {
                     AppState.shared.objectsContainer.navVM.switchFromThreadList(thread: thread)
-                } label: {
-                    ThreadRow(thread: thread)
-                        .onAppear {
-                            if self.threadsVM.threads.last == thread {
-                                threadsVM.loadMore()
-                            }
-                        }
                 }
                 .listRowInsets(.init(top: 16, leading: 0, bottom: 16, trailing: 8))
                 .listRowSeparatorTint(Color.App.dividerSecondary)
                 .listRowBackground(ThreadListRowBackground(thread: thread))
+                .onAppear {
+                    if self.threadsVM.threads.last == thread {
+                        threadsVM.loadMore()
+                    }
+                }
             }
         }
         .listStyle(.plain)

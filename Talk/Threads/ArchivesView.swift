@@ -17,19 +17,17 @@ struct ArchivesView: View {
     var body: some View {
         List(viewModel.archives) { thread in
             let isSelected = container.navVM.selectedThreadId == thread.id
-            Button {
+            ThreadRow(thread: thread) {
                 navVM.append(thread: thread)
-            } label: {
-                ThreadRow(thread: thread)
-                    .onAppear {
-                        if self.viewModel.archives.last == thread {
-                            viewModel.loadMore()
-                        }
-                    }
             }
             .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
             .listRowSeparatorTint(Color.App.dividerSecondary)
             .listRowBackground(isSelected ? Color.App.accent.opacity(0.5) : thread.pin == true ? Color.App.textSecondary : Color.App.accent)
+            .onAppear {
+                if self.viewModel.archives.last == thread {
+                    viewModel.loadMore()
+                }
+            }
         }
         .background(Color.App.accent)
         .listEmptyBackgroundColor(show: viewModel.archives.isEmpty)

@@ -18,7 +18,7 @@ struct ThreadRow: View {
     var isSelected: Bool { forceSelected ?? (navVM.selectedThreadId == thread.id) }
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
-    @State private var showPopover = false
+    let onTap: (() -> Void)?
 
     var body: some View {
         HStack(spacing: 16) {
@@ -73,6 +73,7 @@ struct ThreadRow: View {
                         .environmentObject(thread)
                 }
             }
+            .contentShape(Rectangle())
         }
         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 8))
         .animation(.easeInOut, value: thread.lastMessageVO?.message)
@@ -83,54 +84,38 @@ struct ThreadRow: View {
         .animation(.easeInOut, value: viewModel.activeCallThreads.count)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
-                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: thread.id))                
+                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: thread.id))
             } label: {
                 Label("General.delete", systemImage: "trash")
             }
         }
-        .contextMenu {
-            ThreadRowActionMenu(thread: thread)
-                .environmentObject(viewModel)
+        .customContextMenu(id: thread.id, self: ThreadRowSelfContextMenu(thread: thread).environmentObject(viewModel)) {
+            onTap?()
+        } menus: {
+            VStack(alignment: .leading, spacing: 0) {
+                ThreadRowActionMenu(showPopover: .constant(true), thread: thread)
+                    .environmentObject(viewModel)
+            }
+            .foregroundColor(.primary)
+            .frame(width: 196)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius:((12))))
+            .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
         }
-//        .onLongPressGesture {
-//            showPopover.toggle()
-//        }
-//        .popover(isPresented: $showPopover) {
-//            VStack(alignment: .leading, spacing: 0) {
-//                ThreadRowActionMenu(thread: thread)
-//                    .environmentObject(viewModel)
-//            }
-//            .foregroundColor(.primary)
-//            .frame(width: 196)
-//            .background(MixMaterialBackground())
-//            .clipShape(RoundedRectangle(cornerRadius:((12))))
-//            .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
-//        }
-//        .customContextMenu(id: thread.id, self: SelfThreadRowContextMenu(thread: thread, navVM: navVM)) {
-//            VStack(alignment: .leading, spacing: 0) {
-//                ThreadRowActionMenu(thread: thread)
-//                    .environmentObject(viewModel)
-//            }
-//            .foregroundColor(.primary)
-//            .frame(width: 196)
-//            .background(MixMaterialBackground())
-//            .clipShape(RoundedRectangle(cornerRadius:((12))))
-//            .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
-//        }
     }
 }
 
-struct SelfThreadRowContextMenu: View {
+struct ThreadRowSelfContextMenu: View {
     let thread: Conversation
-    let navVM: NavigationModel
+    @EnvironmentObject var viewModel: ThreadsViewModel
 
     var body: some View {
-        ThreadRow(thread: thread)
-            .background(Color.App.bgPrimary)
-            .frame(maxHeight: 72)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .environmentObject(AppState.shared.objectsContainer.threadsVM)
-            .environmentObject(navVM)
+        ThreadRow(thread: thread, onTap: nil)
+            .frame(height: 72)
+            .background(Color.App.bgSecondary)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .environmentObject(AppState.shared.objectsContainer.navVM)
+            .environmentObject(viewModel)
     }
 }
 
@@ -243,7 +228,8 @@ struct ThreadRow_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadRow(thread: thread)
-            .environmentObject(ThreadsViewModel())
+        ThreadRow(thread: thread) {
+
+        }.environmentObject(ThreadsViewModel())
     }
 }

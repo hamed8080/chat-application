@@ -63,12 +63,11 @@ struct SelectConversationTab: View {
     var body: some View {
         List {
             ForEach(conversations) { conversation in
-                ThreadRow(forceSelected: false, thread: conversation)
-                    .listRowBackground(Color.App.bgPrimary)
-                    .onTapGesture {
-                        onSelect(conversation, nil)
-                        dismiss()
-                    }
+                ThreadRow(forceSelected: false, thread: conversation) {
+                    onSelect(conversation, nil)
+                    dismiss()
+                }
+                .listRowBackground(Color.App.bgPrimary)
             }
         }
         .listStyle(.plain)

@@ -37,19 +37,17 @@ struct ThreadSearchView: View {
                 }
 
                 ForEach(viewModel.searchedConversations) { thread in
-                    Button {
+                    ThreadRow(thread: thread) {
                         AppState.shared.objectsContainer.navVM.append(thread: thread)
-                    } label: {
-                        ThreadRow(thread: thread)
-                            .onAppear {
-                                if self.viewModel.searchedConversations.last == thread {
-                                    viewModel.loadMore()
-                                }
-                            }
                     }
                     .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
                     .listRowSeparatorTint(Color.App.dividerSecondary)
                     .listRowBackground(thread.pin == true ? Color.App.textSecondary : Color.App.bgPrimary)
+                    .onAppear {
+                        if self.viewModel.searchedConversations.last == thread {
+                            viewModel.loadMore()
+                        }
+                    }
                 }
             }
             .listStyle(.plain)

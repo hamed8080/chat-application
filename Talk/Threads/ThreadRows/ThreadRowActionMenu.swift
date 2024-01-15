@@ -12,6 +12,7 @@ import TalkViewModels
 import ActionableContextMenu
 
 struct ThreadRowActionMenu: View {
+    @Binding var showPopover: Bool
     var isDetailView: Bool = false
     var thread: Conversation
     @EnvironmentObject var viewModel: ThreadsViewModel
@@ -21,35 +22,42 @@ struct ThreadRowActionMenu: View {
         if thread.pin == true || viewModel.serverSortedPinConversations.count < 5 {
             ContextMenuButton(title: (thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", image: "pin") {
                 viewModel.togglePin(thread)
+                showPopover.toggle()
             }
         }
 
         if thread.type != .selfThread && !isDetailView {
             ContextMenuButton(title: (thread.mute ?? false) ? "Thread.unmute" : "Thread.mute", image: "speaker.slash") {
                 viewModel.toggleMute(thread)
+                showPopover.toggle()
             }
         }
 
         if EnvironmentValues.isTalkTest {
             ContextMenuButton(title: "Thread.clearHistory", image: "clock") {
                 viewModel.clearHistory(thread)
+                showPopover.toggle()
             }
             
             ContextMenuButton(title: "Thread.addToFolder", image: "folder.badge.plus") {
                 viewModel.showAddThreadToTag(thread)
+                showPopover.toggle()
             }
             
             ContextMenuButton(title: "Thread.spam", image: "ladybug") {
                 viewModel.spamPV(thread)
+                showPopover.toggle()
             }
 
             ContextMenuButton(title: thread.isArchive == true ? "Thread.unarchive" : "Thread.archive", image: thread.isArchive == true ?  "tray.and.arrow.up" : "tray.and.arrow.down") {
                 AppState.shared.objectsContainer.archivesVM.toggleArchive(thread)
+                showPopover.toggle()
             }
             
             if canAddParticipant {
                 ContextMenuButton(title: "Thread.invite", image: "person.crop.circle.badge.plus") {
                     viewModel.showAddParticipants(thread)
+                    showPopover.toggle()
                 }
             }
         }
@@ -59,6 +67,7 @@ struct ThreadRowActionMenu: View {
             let key = thread.type?.isChannelType == true ? "Thread.channel" : "Thread.group"
             ContextMenuButton(title: String(format: leaveKey, String(localized: .init(key))), image: "rectangle.portrait.and.arrow.right") {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(LeaveThreadDialog(conversation: thread))
+                showPopover.toggle()
             }
             .foregroundStyle(Color.App.red)
         }
@@ -71,6 +80,7 @@ struct ThreadRowActionMenu: View {
             let p2pLocalized = String(localized: .init("Genreal.deleteConversation"))
             ContextMenuButton(title: thread.group == true ? groupLocalized : p2pLocalized, image: "trash") {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: thread.id))
+                showPopover.toggle()
             }
             .foregroundStyle(Color.App.red)
         }
