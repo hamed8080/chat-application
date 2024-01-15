@@ -9,9 +9,10 @@ import SwiftUI
 import TalkViewModels
 
 struct UnreadMentionsButton: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    @EnvironmentObject var viewModel: ThreadUnreadMentionsViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
     @State private var timerToUpdate: Timer?
-    var hasMention: Bool { viewModel.thread.mentioned ?? false }
+    var hasMention: Bool { threadVM.thread.mentioned ?? false }
 
     var body: some View {
         if hasMention {
@@ -19,7 +20,7 @@ struct UnreadMentionsButton: View {
                 Spacer()
                 Button {
                     withAnimation {
-                        viewModel.moveToFirstUnreadMessage()
+                        threadVM.moveToFirstUnreadMessage()
                     }
                 } label: {
                     Text("@")
@@ -33,7 +34,7 @@ struct UnreadMentionsButton: View {
                 .clipShape(RoundedRectangle(cornerRadius:(20)))
                 .shadow(color: .gray.opacity(0.4), radius: 2)
                 .overlay(alignment: .top) {
-                    let unreadCount = viewModel.unreadMentionsViewModel.unreadMentions.count
+                    let unreadCount = viewModel.unreadMentions.count
                     Text(verbatim: "\(unreadCount)")
                         .font(.iransansBoldCaption)
                         .frame(height: 24)
