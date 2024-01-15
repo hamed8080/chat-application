@@ -141,7 +141,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         Task {
             fileMetadata = config.metaData
             if isSDKImage {
-                getFromSDK(forceToDownloadFromServer: config.forceToDownloadFromServer, thumbnail: config.thumbnail)
+                await getFromSDK(forceToDownloadFromServer: config.forceToDownloadFromServer, thumbnail: config.thumbnail)
             } else if let fileURL = fileURL {
                 setImage(fileURL: fileURL)
             } else {
@@ -150,6 +150,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         }
     }
 
+    @MainActor
     private func getFromSDK(forceToDownloadFromServer: Bool = false, thumbnail: Bool) {
         let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: config.forceToDownloadFromServer, size: config.size, thumbnail: config.thumbnail)
         uniqueId = req.uniqueId

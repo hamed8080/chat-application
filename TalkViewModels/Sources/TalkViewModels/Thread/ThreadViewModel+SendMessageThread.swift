@@ -18,6 +18,7 @@ import OSLog
 extension ThreadViewModel {
     /// It triggers when send button tapped
     public func sendTextMessage(_ textMessage: String) {
+        let textMessage = textMessage.replacingOccurrences(of: "\u{200f}", with: "")
         if AppState.shared.appStateNavigationModel.forwardMessageRequest?.threadId == threadId {
             sendForwardMessages()
         } else if AppState.shared.appStateNavigationModel.replyPrivately != nil {

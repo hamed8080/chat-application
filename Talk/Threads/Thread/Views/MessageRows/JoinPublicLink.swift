@@ -70,7 +70,7 @@ struct JoinToPublicConversationDialog: View {
                 }
 
                 Button {
-                    if let publicName = message.message?.replacingOccurrences(of: AppRoutes.joinLink, with: "")  {
+                    if let publicName = message.message?.replacingOccurrences(of: AppRoutes.joinLink, with: "").replacingOccurrences(of: "\u{200f}", with: "")  {
                         AppState.shared.objectsContainer.threadsVM.joinPublicGroup(publicName)
                     }
                     appOverlayVM.dialogView = nil
