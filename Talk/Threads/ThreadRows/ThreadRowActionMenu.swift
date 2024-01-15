@@ -9,6 +9,7 @@ import ChatModels
 import Foundation
 import SwiftUI
 import TalkViewModels
+import ActionableContextMenu
 
 struct ThreadRowActionMenu: View {
     var isDetailView: Bool = false
@@ -18,51 +19,37 @@ struct ThreadRowActionMenu: View {
 
     var body: some View {
         if thread.pin == true || viewModel.serverSortedPinConversations.count < 5 {
-            Button {
+            ContextMenuButton(title: (thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", image: "pin") {
                 viewModel.togglePin(thread)
-            } label: {
-                Label((thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", systemImage: "pin")
             }
         }
 
         if thread.type != .selfThread && !isDetailView {
-            Button {
+            ContextMenuButton(title: (thread.mute ?? false) ? "Thread.unmute" : "Thread.mute", image: "speaker.slash") {
                 viewModel.toggleMute(thread)
-            } label: {
-                Label((thread.mute ?? false) ? "Thread.unmute" : "Thread.mute", systemImage: "speaker.slash")
             }
         }
 
         if EnvironmentValues.isTalkTest {
-            Button {
+            ContextMenuButton(title: "Thread.clearHistory", image: "clock") {
                 viewModel.clearHistory(thread)
-            } label: {
-                Label("Thread.clearHistory", systemImage: "clock")
             }
             
-            Button {
+            ContextMenuButton(title: "Thread.addToFolder", image: "folder.badge.plus") {
                 viewModel.showAddThreadToTag(thread)
-            } label: {
-                Label("Thread.addToFolder", systemImage: "folder.badge.plus")
             }
             
-            Button {
+            ContextMenuButton(title: "Thread.spam", image: "ladybug") {
                 viewModel.spamPV(thread)
-            } label: {
-                Label("Thread.spam", systemImage: "ladybug")
             }
 
-            Button {
+            ContextMenuButton(title: thread.isArchive == true ? "Thread.unarchive" : "Thread.archive", image: thread.isArchive == true ?  "tray.and.arrow.up" : "tray.and.arrow.down") {
                 AppState.shared.objectsContainer.archivesVM.toggleArchive(thread)
-            } label: {
-                Label(thread.isArchive == true ? "Thread.unarchive" : "Thread.archive" , systemImage: thread.isArchive == true ?  "tray.and.arrow.up" : "tray.and.arrow.down")
             }
             
             if canAddParticipant {
-                Button {
+                ContextMenuButton(title: "Thread.invite", image: "person.crop.circle.badge.plus") {
                     viewModel.showAddParticipants(thread)
-                } label: {
-                    Label("Thread.invite", systemImage: "person.crop.circle.badge.plus")
                 }
             }
         }
@@ -70,11 +57,10 @@ struct ThreadRowActionMenu: View {
         if thread.group == true {
             let leaveKey = String(localized: .init("Thread.leave"))
             let key = thread.type?.isChannelType == true ? "Thread.channel" : "Thread.group"
-            Button(role: .destructive) {
+            ContextMenuButton(title: String(format: leaveKey, String(localized: .init(key))), image: "rectangle.portrait.and.arrow.right") {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(LeaveThreadDialog(conversation: thread))
-            } label: {
-                Label(String(format: leaveKey, String(localized: .init(key))), systemImage: "rectangle.portrait.and.arrow.right")
             }
+            .foregroundStyle(Color.App.red)
         }
 
         /// You should be admin or the thread should be a p2p thread with two people.
@@ -83,11 +69,10 @@ struct ThreadRowActionMenu: View {
             let key = thread.type?.isChannelType == true ? "Thread.channel" : thread.group == true ? "Thread.group" : ""
             let groupLocalized = String(format: deleteKey, String(localized: .init(key)))
             let p2pLocalized = String(localized: .init("Genreal.deleteConversation"))
-            Button(role: .destructive) {
+            ContextMenuButton(title: thread.group == true ? groupLocalized : p2pLocalized, image: "trash") {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: thread.id))
-            } label: {
-                Label(thread.group == true ? groupLocalized : p2pLocalized, systemImage: "trash")
             }
+            .foregroundStyle(Color.App.red)
         }
     }
 }

@@ -12,6 +12,7 @@ import TalkUI
 import TalkViewModels
 import ChatModels
 import ChatDTO
+import ActionableContextMenu
 
 struct MemberView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
@@ -50,6 +51,7 @@ struct MemberView: View {
 }
 
 struct ParticipantRowContainer: View {
+    @State private var showPopover = false
     @EnvironmentObject var viewModel: ParticipantsViewModel
     let participant: Participant
     let isSearchRow: Bool
@@ -82,30 +84,37 @@ struct ParticipantRowContainer: View {
                     AppState.shared.openThread(participant: participant)
                 }
             }
-            .contextMenu {
-                if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == false {
-                    Button {
-                        viewModel.makeAdmin(participant)
-                    } label: {
-                        Label("Participant.addAdminAccess", systemImage: "person.badge.key.fill")
-                    }
+            .onLongPressGesture {
+                if !isMe {
+                    showPopover.toggle()
                 }
+            }
+            .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
+                VStack(alignment: .leading, spacing: 0) {
+                    if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == false {
+                        ContextMenuButton(title: "Participant.addAdminAccess", image: "person.crop.circle.badge.minus") {
+                            viewModel.makeAdmin(participant)
+                        }
+                    }
 
-                if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == true {
-                    Button {
-                        viewModel.removeAdminRole(participant)
-                    } label: {
-                        Label("Participant.removeAdminAccess", systemImage: "person.crop.circle.badge.minus")
+                    if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == true {
+                        ContextMenuButton(title: "Participant.removeAdminAccess", image: "person.badge.key.fill") {
+                            viewModel.removeAdminRole(participant)
+                        }
                     }
-                }
 
-                if !isMe, viewModel.thread?.admin == true {
-                    Button(role: .destructive) {
-                        viewModel.removePartitipant(participant)
-                    } label: {
-                        Label("General.delete", systemImage: "trash")
+                    if !isMe, viewModel.thread?.admin == true {
+                        ContextMenuButton(title: "General.delete", image: "trash") {
+                            viewModel.removePartitipant(participant)
+                        }
+                        .foregroundStyle(Color.App.red)
                     }
                 }
+                .foregroundColor(.primary)
+                .frame(width: 196)
+                .background(MixMaterialBackground())
+                .clipShape(RoundedRectangle(cornerRadius:((12))))
+                .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
             }
     }
 

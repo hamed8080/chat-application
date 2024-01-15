@@ -30,11 +30,13 @@ public struct ContextMenuButton: View {
             viewModel.isPresented = false
         } label: {
             HStack {
-                Image(systemName: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
-                    .foregroundStyle(scheme == .dark ? Color(red: 0.6, green: 0.62, blue: 0.68) : Color(red: 0.36, green: 0.4, blue: 0.47))
+                if !image.isEmpty {
+                    Image(systemName: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                        .foregroundStyle(scheme == .dark ? Color(red: 0.6, green: 0.62, blue: 0.68) : Color(red: 0.36, green: 0.4, blue: 0.47))
+                }
                 Text(String(localized: .init(title)))
                     .padding(.leading, 12)
                 Spacer()

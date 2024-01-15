@@ -8,8 +8,11 @@
 import SwiftUI
 import TalkViewModels
 import TalkModels
+import ActionableContextMenu
+import TalkUI
 
 struct ThreadListSearchBarFilterView: View {
+    @State private var showPopover = false
     @Binding var isInSearchMode: Bool
     @EnvironmentObject var viewModel: ThreadsSearchViewModel
     enum Field: Hashable {
@@ -35,17 +38,8 @@ struct ThreadListSearchBarFilterView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
 
-                Menu {
-                    ForEach(SearchParticipantType.allCases.filter({ $0 != .admin })) { item in
-                        Button {
-                            withAnimation {
-                                viewModel.searchType = item
-                            }
-                        } label: {
-                            Text(String(localized: .init(item.rawValue)))
-                                .font(.iransansBoldCaption3)
-                        }
-                    }
+                Button {
+                    showPopover.toggle()
                 } label: {
                     HStack {
                         Text(String(localized: .init(viewModel.searchType.rawValue)))
@@ -58,6 +52,23 @@ struct ThreadListSearchBarFilterView: View {
                             .fontWeight(.medium)
                             .foregroundColor(Color.App.textSecondary)
                     }
+                }
+                .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(SearchParticipantType.allCases.filter({ $0 != .admin })) { item in
+                            ContextMenuButton(title: String(localized: .init(item.rawValue)), image: "") {
+                                withAnimation {
+                                    showPopover.toggle()
+                                    viewModel.searchType = item
+                                }
+                            }
+                        }
+                    }
+                    .foregroundColor(.primary)
+                    .frame(width: 196)
+                    .background(MixMaterialBackground())
+                    .clipShape(RoundedRectangle(cornerRadius:((12))))
+                    .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
                 }
             }
         }

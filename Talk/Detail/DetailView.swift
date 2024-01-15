@@ -288,6 +288,7 @@ struct InfoRowItem: View {
 
 struct DetailTopButtons: View {
     @EnvironmentObject var viewModel: DetailViewModel
+    @State private var showPopover = false
 
     var body: some View {
         HStack(spacing: 16) {
@@ -324,21 +325,42 @@ struct DetailTopButtons: View {
 //                }
 //            }
 
-            if let threadId = viewModel.threadVM?.threadId {
+            if viewModel.threadVM?.threadId != nil {
                 DetailViewButton(accessibilityText: "", icon: "magnifyingglass") {
                     NotificationCenter.default.post(name: .forceSearch, object: "DetailView")
                 }
             }
 
-            Menu {
-                if let conversation = viewModel.thread {
-                    ThreadRowActionMenu(isDetailView: true, thread: conversation)
+//            Menu {
+//                if let conversation = viewModel.thread {
+//                    ThreadRowActionMenu(isDetailView: true, thread: conversation)
+//                        .environmentObject(AppState.shared.objectsContainer.threadsVM)
+//                }
+//                if let user = viewModel.user {
+//                    UserActionMenu(participant: user)
+//                }
+//            } label: {
+//                DetailViewButton(accessibilityText: "", icon: "ellipsis"){}
+//            }
+
+            DetailViewButton(accessibilityText: "", icon: "ellipsis") {
+                showPopover.toggle()
+            }
+            .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
+                VStack(alignment: .leading, spacing: 0) {
+                    if let conversation = viewModel.thread {
+                        ThreadRowActionMenu(isDetailView: true, thread: conversation)
+                            .environmentObject(AppState.shared.objectsContainer.threadsVM)
+                    }
+                    if let user = viewModel.user {
+                        UserActionMenu(participant: user)
+                    }
                 }
-                if let user = viewModel.user {
-                    UserActionMenu(participant: user)
-                }
-            } label: {
-                DetailViewButton(accessibilityText: "", icon: "ellipsis"){}
+                .foregroundColor(.primary)
+                .frame(width: 196)
+                .background(MixMaterialBackground())
+                .clipShape(RoundedRectangle(cornerRadius:((12))))
+                .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
             }
             Spacer()
         }
@@ -374,6 +396,7 @@ struct DetailViewButton: View {
                 .transition(.asymmetric(insertion: .scale.animation(.easeInOut(duration: 2)), removal: .scale.animation(.easeInOut(duration: 2))))
                 .accessibilityHint(accessibilityText)
                 .foregroundColor(Color.App.accent)
+                .contentShape(Rectangle())
         }
         .frame(width: 48, height: 48)
         .background(.ultraThickMaterial)

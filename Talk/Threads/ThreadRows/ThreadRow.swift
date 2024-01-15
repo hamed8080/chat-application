@@ -18,6 +18,7 @@ struct ThreadRow: View {
     var isSelected: Bool { forceSelected ?? (navVM.selectedThreadId == thread.id) }
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
+    @State private var showPopover = false
 
     var body: some View {
         HStack(spacing: 16) {
@@ -89,7 +90,47 @@ struct ThreadRow: View {
         }
         .contextMenu {
             ThreadRowActionMenu(thread: thread)
+                .environmentObject(viewModel)
         }
+//        .onLongPressGesture {
+//            showPopover.toggle()
+//        }
+//        .popover(isPresented: $showPopover) {
+//            VStack(alignment: .leading, spacing: 0) {
+//                ThreadRowActionMenu(thread: thread)
+//                    .environmentObject(viewModel)
+//            }
+//            .foregroundColor(.primary)
+//            .frame(width: 196)
+//            .background(MixMaterialBackground())
+//            .clipShape(RoundedRectangle(cornerRadius:((12))))
+//            .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
+//        }
+//        .customContextMenu(id: thread.id, self: SelfThreadRowContextMenu(thread: thread, navVM: navVM)) {
+//            VStack(alignment: .leading, spacing: 0) {
+//                ThreadRowActionMenu(thread: thread)
+//                    .environmentObject(viewModel)
+//            }
+//            .foregroundColor(.primary)
+//            .frame(width: 196)
+//            .background(MixMaterialBackground())
+//            .clipShape(RoundedRectangle(cornerRadius:((12))))
+//            .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
+//        }
+    }
+}
+
+struct SelfThreadRowContextMenu: View {
+    let thread: Conversation
+    let navVM: NavigationModel
+
+    var body: some View {
+        ThreadRow(thread: thread)
+            .background(Color.App.bgPrimary)
+            .frame(maxHeight: 72)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .environmentObject(AppState.shared.objectsContainer.threadsVM)
+            .environmentObject(navVM)
     }
 }
 
