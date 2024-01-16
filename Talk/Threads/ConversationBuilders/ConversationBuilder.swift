@@ -135,6 +135,16 @@ struct EditCreatedConversationDetail: View {
                                 .scaledToFill()
                                 .frame(width: 64, height: 64)
                                 .clipShape(RoundedRectangle(cornerRadius:(28)))
+                                .overlay(alignment: .center) {
+                                    if let percent = viewModel.uploadProfileProgress {
+                                        RoundedRectangle(cornerRadius: 28)
+                                            .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+                                            .stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                                            .foregroundColor(Color.App.accent)
+                                            .rotationEffect(Angle(degrees: 270))
+                                            .frame(width: 61, height: 61)
+                                    }
+                                }
                         }
                     }
                     .background(Color.App.bgSecondary)

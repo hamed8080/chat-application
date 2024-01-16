@@ -15,6 +15,7 @@ import ChatDTO
 import SwiftUI
 import Photos
 import TalkExtensions
+import ChatTransceiver
 
 public final class ContactsViewModel: ObservableObject {
     private var count = 15
@@ -61,6 +62,9 @@ public final class ContactsViewModel: ObservableObject {
     @Published public var successAdded: Bool = false
     @Published public var userNotFound: Bool = false
 
+    public var uploadProfileUniqueId: String?
+    public var uploadProfileProgress: Int64?
+
     public init() {
         getContacts()
         setupPublishers()
@@ -103,6 +107,12 @@ public final class ContactsViewModel: ObservableObject {
             .compactMap { $0.object as? ThreadEventTypes }
             .sink{ [weak self] event in
                 self?.onConversationEvent(event)
+            }
+            .store(in: &canceableSet)
+        NotificationCenter.upload.publisher(for: .upload)
+            .compactMap { $0.object as? UploadEventTypes }
+            .sink { [weak self] value in
+                self?.onUploadEvent(value)
             }
             .store(in: &canceableSet)
         $conversationTitle
@@ -432,6 +442,7 @@ public final class ContactsViewModel: ObservableObject {
                                               hC: height,
                                               wC: width
             )
+            uploadProfileUniqueId = imageRequest?.uniqueId
         }
         let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: conversationTitle)
         RequestsManager.shared.append(prepend: "EditConversation", value: req, autoCancel: false)
@@ -488,4 +499,21 @@ public final class ContactsViewModel: ObservableObject {
         guard let regex = try? Regex("^[a-zA-Z0-9]\\S*$") else { return false }
         return conversationTitle.contains(regex)
     }
+
+    private func onUploadEvent(_ event: UploadEventTypes) {
+        switch event {
+        case .progress(let uniqueId, let progress):
+            onUploadConversationProfile(uniqueId, progress)
+        default:
+            break
+        }
+    }
+
+    private func onUploadConversationProfile(_ uniqueId: String, _ progress: UploadFileProgress?) {
+        if uniqueId == uploadProfileUniqueId {
+            uploadProfileProgress = progress?.percent ?? 0
+            animateObjectWillChange()
+        }
+    }
+
 }
