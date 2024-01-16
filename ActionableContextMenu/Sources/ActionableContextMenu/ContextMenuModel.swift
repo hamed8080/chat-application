@@ -25,12 +25,13 @@ public final class ContextMenuModel: ObservableObject {
     var mainView: AnyView?
     var menus: AnyView?
     @Published public var itemWidth: CGFloat = 0.0
-    var containerSize: CGSize = .zero
+    public var containerSize: CGSize = .zero
     @Published var menusAndTopViewSize: CGSize = .zero
     @Published var scale = 1.0
     @Published var safeAreaInsets: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
     var stackSize: CGSize = .zero
     var presentedId: Int?
+    public var addedX: CGFloat = 14
 
     public init() {}
 
@@ -68,7 +69,7 @@ public final class ContextMenuModel: ObservableObject {
 
     var x: CGFloat {
         let originalX: CGFloat = (itemWidth / 2) + ((globalPosition?.x ?? 0) - (localPosition?.x ?? 0))
-        let minX = (itemWidth / 2) + 48
+        let minX = (itemWidth / 2) + addedX
         let x = max(minX, originalX)
         logger.info("the item width: \(self.itemWidth)")
 #if DEBUG
@@ -99,7 +100,7 @@ public final class ContextMenuModel: ObservableObject {
 
     func animateOnAppear() {
         withAnimation(.interpolatingSpring(mass: 1.0, stiffness: 0.3, damping: 0.5, initialVelocity: 0).speed(25)) {
-            scale = 1.1
+            scale = 1.02
         }
     }
 

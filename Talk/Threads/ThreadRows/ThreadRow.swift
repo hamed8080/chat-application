@@ -10,6 +10,8 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import TalkModels
+import ActionableContextMenu
 
 struct ThreadRow: View {
     /// It is essential in the case of forwarding. We don't want to highlight the row in forwarding mode.
@@ -89,7 +91,11 @@ struct ThreadRow: View {
                 Label("General.delete", systemImage: "trash")
             }
         }
-        .customContextMenu(id: thread.id, self: ThreadRowSelfContextMenu(thread: thread).environmentObject(viewModel)) {
+        .customContextMenu(
+            id: thread.id,
+            self: ThreadRowSelfContextMenu(thread: thread, viewModel: viewModel),
+            addedX: 8
+        ) {
             onTap?()
         } menus: {
             VStack(alignment: .leading, spacing: 0) {
@@ -107,15 +113,19 @@ struct ThreadRow: View {
 
 struct ThreadRowSelfContextMenu: View {
     let thread: Conversation
-    @EnvironmentObject var viewModel: ThreadsViewModel
+    let viewModel: ThreadsViewModel
+    @Environment(\.layoutDirection) var direction
+    @EnvironmentObject var ctxVM: ContextMenuModel
 
     var body: some View {
         ThreadRow(thread: thread, onTap: nil)
             .frame(height: 72)
+            .frame(maxWidth: min(400, ctxVM.containerSize.width - 18)) /// 400 for ipad side bar
             .background(Color.App.bgSecondary)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .environmentObject(AppState.shared.objectsContainer.navVM)
             .environmentObject(viewModel)
+            .environment(\.layoutDirection, direction == .leftToRight && Language.isRTL ? .rightToLeft : .leftToRight)
     }
 }
 

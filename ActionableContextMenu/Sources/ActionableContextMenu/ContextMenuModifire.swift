@@ -13,6 +13,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     private let logger = Logger(subsystem: "ActionableContextMenu", category: "ContextMenuModifire")
     @EnvironmentObject var viewModel: ContextMenuModel
     @State var scale: CGFloat = 1.0
+    let addedX: CGFloat
     @GestureState var isTouched: Bool = false
     @GestureState var isTouchedLocalPosition: Bool = false
     let menus: () -> V
@@ -22,11 +23,12 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     @State var globalFrame: CGRect = .zero
     let onTap: (() -> Void)?
 
-    init(id: Int?, root: any View, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) {
+    init(id: Int?, root: any View, addedX: CGFloat = 48, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) {
         self.id = id
         self.onTap = onTap
         self.root = root
         self.menus = menus
+        self.addedX = addedX
     }
 
     func body(content: Content) -> some View {
@@ -63,9 +65,10 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                     withAnimation(.easeInOut) {
                         viewModel.menus = AnyView(menus().environmentObject(viewModel))
-                        scale = 1.2
+                        scale = 1.05
                         viewModel.presentedId = id
                         viewModel.globalFrame = globalFrame
+                        viewModel.addedX = addedX
                         viewModel.mainView = AnyView(root)
                         viewModel.isPresented.toggle()
                         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
@@ -131,7 +134,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
 }
 
 public extension View {
-    func customContextMenu<V: View>(id: Int?, self: any View, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) -> some View {
-        modifier(ContextMenuModifire(id: id, root: self, onTap: onTap, menus: menus))
+    func customContextMenu<V: View>(id: Int?, self: any View, addedX: CGFloat = 48, onTap: (() -> Void)? = nil, @ViewBuilder menus: @escaping () -> V) -> some View {
+        modifier(ContextMenuModifire(id: id, root: self, addedX: addedX, onTap: onTap, menus: menus))
     }
 }
