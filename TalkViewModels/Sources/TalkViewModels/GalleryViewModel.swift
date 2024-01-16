@@ -27,23 +27,20 @@ public final class GalleryViewModel: ObservableObject {
     public init(message: Message) {
         self.starter = message
         getPictureMessages()
-        NotificationCenter.default.publisher(for: .chatEvents)
-            .compactMap { $0.object as? ChatEventType }
+
+        NotificationCenter.message.publisher(for: .message)
+            .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] value in
-                self?.onChatEvent(value)
+                self?.onMessageEvent(value)
             }
             .store(in: &cancelable)
-    }
 
-    private func onChatEvent(_ event: ChatEventType) {
-        switch event {
-        case .message(let messageEventTypes):
-            onMessageEvent(messageEventTypes)
-        case .download(let downloadEventTypes):
-            onDownloadEvent(downloadEventTypes)
-        default:
-            break
-        }
+        NotificationCenter.download.publisher(for: .download)
+            .compactMap { $0.object as? DownloadEventTypes }
+            .sink { [weak self] value in
+                self?.onDownloadEvent(value)
+            }
+            .store(in: &cancelable)
     }
 
     private func onMessageEvent(_ event: MessageEventTypes){
@@ -79,7 +76,7 @@ public final class GalleryViewModel: ObservableObject {
             state = .completed
             downloadedImages[request.hashCode] = data
             /// Send a notification to update the original.
-            NotificationCenter.default.post(name: .galleryDownload, object: (request, data))
+            NotificationCenter.galleryDownload.post(name: .galleryDownload, object: (request, data))
             RequestsManager.shared.remove(key: request.uniqueId)
         }
 

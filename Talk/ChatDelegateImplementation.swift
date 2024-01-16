@@ -33,7 +33,7 @@ final class ChatDelegateImplementation: ChatDelegate {
     func chatState(state: ChatState, currentUser: User?, error _: ChatError?) {
         Task.detached(priority: .userInitiated) {
             await MainActor.run {
-                NotificationCenter.default.post(name: .connect, object: state)
+                NotificationCenter.connect.post(name: .connect, object: state)
                 switch state {
                 case .connecting:
                     self.log("🔄 chat connecting")
@@ -97,14 +97,14 @@ final class ChatDelegateImplementation: ChatDelegate {
     private func onError(_ response: ChatResponse<Any>) {
         Task.detached(priority: .userInitiated) {
             await MainActor.run {
-                NotificationCenter.default.post(name: .error, object: response)
+                NotificationCenter.error.post(name: .error, object: response)
             }
         }
         guard let error = response.error else { return }
         if error.code == 21 {
             Task {
                 let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in onError with error 21", level: .error, type: .sent, userInfo: nil)
-                NotificationCenter.default.post(name: .logs, object: log)
+                NotificationCenter.logs.post(name: .logs, object: log)
                 await TokenManager.shared.getNewTokenWithRefreshToken()
             }
             AppState.shared.connectionStatus = .unauthorized
@@ -126,7 +126,7 @@ final class ChatDelegateImplementation: ChatDelegate {
     }
 
     func onLog(log: Log) {
-        NotificationCenter.default.post(name: .logs, object: log)
+        NotificationCenter.logs.post(name: .logs, object: log)
 #if DEBUG
         logger.debug("\(log.message ?? "")")
 #endif

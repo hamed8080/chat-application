@@ -33,10 +33,17 @@ public final class ThreadUploadMessagesViewModel: ObservableObject {
     }
 
     private func setupNotificationObservers() {
-        NotificationCenter.default.publisher(for: .chatEvents)
-            .compactMap { $0.object as? ChatEventType }
+        NotificationCenter.message.publisher(for: .message)
+            .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] event in
-                self?.onChatEvent(event)
+                self?.onMessageEvent(event)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.upload.publisher(for: .upload)
+            .compactMap { $0.object as? UploadEventTypes }
+            .sink { [weak self] event in
+                self?.onUploadEvent(event)
             }
             .store(in: &cancelable)
     }
@@ -52,17 +59,6 @@ public final class ThreadUploadMessagesViewModel: ObservableObject {
     public func cancel(_ uniqueId: String?) {
         ChatManager.activeInstance?.message.cancel(uniqueId: uniqueId ?? "")
         uploadMessages.removeAll(where: {$0.uniqueId == uniqueId})
-    }
-    
-    public func onChatEvent(_ event: ChatEventType) {
-        switch event {
-        case .message(let messageEventTypes):
-            onMessageEvent(messageEventTypes)
-        case .upload(let event):
-            onUploadEvent(event)
-        default:
-            break
-        }
     }
 
     public func onUploadEvent(_ event: UploadEventTypes) {

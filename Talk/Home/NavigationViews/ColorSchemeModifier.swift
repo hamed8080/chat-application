@@ -15,7 +15,7 @@ struct ColorSchemeModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .preferredColorScheme(isAppDarkModeEnabled == nil ? nil : isAppDarkModeEnabled == true ? .dark : .light)
-            .onReceive(NotificationCenter.default.publisher(for: .appSettingsModel), perform: { onSettingNotif($0)} )
+            .onReceive(NotificationCenter.appSettingsModel.publisher(for: .appSettingsModel), perform: { onSettingNotif($0)} )
     }
 
     private func onSettingNotif(_ notification: Notification) {

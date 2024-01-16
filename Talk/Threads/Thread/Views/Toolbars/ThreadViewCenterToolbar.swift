@@ -18,7 +18,8 @@ struct ThreadViewCenterToolbar: View {
     var viewModel: ThreadViewModel
     @State private var title: String = ""
     @State private var participantsCount: Int?
-    private let publisher = NotificationCenter.default.publisher(for: .chatEvents).compactMap { $0.object as? ChatEventType }
+    private let threadPublisher = NotificationCenter.thread.publisher(for: .thread).compactMap { $0.object as? ThreadEventTypes }
+    private let participantPublisher = NotificationCenter.participant.publisher(for: .participant).compactMap { $0.object as? ParticipantEventTypes }
     private var thread: Conversation { viewModel.thread }
     private var partner: Participant? { thread.participants?.first(where: {$0.id == thread.partner }) }
 
@@ -54,23 +55,15 @@ struct ThreadViewCenterToolbar: View {
         .onReceive(viewModel.objectWillChange) { newValue in
             participantsCount = viewModel.thread.participantCount ?? 0
         }
-        .onReceive(publisher) { event in
-            onChatEvent(event)
+        .onReceive(threadPublisher) { event in
+            onThreadEvent(event)
+        }
+        .onReceive(participantPublisher) { event in
+            onParticipantEvent(event)
         }
         .onAppear {
             participantsCount = viewModel.thread.participantCount
             title = viewModel.thread.computedTitle
-        }
-    }
-
-    private func onChatEvent(_ event: ChatEventType) {
-        switch event {
-        case .thread(let threadEventTypes):
-            onThreadEvent(threadEventTypes)
-        case .participant(let participantEventTypes):
-            onParticipantEvent(participantEventTypes)
-        default:
-            break
         }
     }
 
@@ -113,7 +106,7 @@ struct P2PThreadLastSeenView : View {
                     ChatManager.activeInstance?.conversation.participant.get(.init(threadId: thread.id ?? -1))
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .participant)) { notif in
+            .onReceive(NotificationCenter.participant.publisher(for: .participant)) { notif in
                 guard
                     let event = notif.object as? ParticipantEventTypes,
                     case let .participants(response) = event,

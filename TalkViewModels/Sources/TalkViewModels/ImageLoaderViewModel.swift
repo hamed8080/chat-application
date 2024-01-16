@@ -80,7 +80,7 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     public init(config: ImageLoaderConfig) {
         self.config = config
-        NotificationCenter.default.publisher(for: .download)
+        NotificationCenter.download.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
             .sink{ [weak self] event in
                 DispatchQueue.global().async {

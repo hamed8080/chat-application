@@ -36,7 +36,7 @@ struct ManuallyConnectionManagerView: View {
                 SubmitBottomButton(text: "Refresh Token", color: Color.App.red) {
                     Task {
                         let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in ManuallyConnectionManagerView method", level: .error, type: .sent, userInfo: nil)
-                        NotificationCenter.default.post(name: .logs, object: log)
+                        NotificationCenter.logs.post(name: .logs, object: log)
                         await TokenManager.shared.getNewTokenWithRefreshToken()
                     }
                 }

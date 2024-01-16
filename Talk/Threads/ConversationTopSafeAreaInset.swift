@@ -37,7 +37,7 @@ struct ConversationTopSafeAreaInset: View {
                 NothingHasBeenSelectedView(contactsVM: container.contactsVM)
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .cancelSearch)) { newValue in
+        .onReceive(NotificationCenter.cancelSearch.publisher(for: .cancelSearch)) { newValue in
             if let cancelSearch = newValue.object as? Bool, cancelSearch == true, cancelSearch && isInSearchMode {
                 isInSearchMode.toggle()
             }

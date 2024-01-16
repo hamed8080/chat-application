@@ -55,7 +55,7 @@ struct ThreadMessagesList: View {
 
     private func hideKeyboardOnTapOrDrag() {
         if viewModel.searchedMessagesViewModel.searchText.isEmpty {
-            NotificationCenter.default.post(name: .cancelSearch, object: true)
+            NotificationCenter.cancelSearch.post(name: .cancelSearch, object: true)
         }
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         viewModel.historyVM.sections.flatMap{$0.vms}.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
@@ -307,7 +307,7 @@ struct KeyboardHeightView: View {
                     }
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .message)) { notif in
+            .onReceive(NotificationCenter.message.publisher(for: .message)) { notif in
                 if let event = notif.object as? MessageEventTypes {
                     if case .new(let response) = event, response.result?.conversation?.id == viewModel.threadVM?.threadId, viewModel.isAtBottomOfTheList {
                         updateHeight(0)

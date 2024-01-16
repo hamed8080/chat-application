@@ -29,21 +29,21 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public init(thread: Conversation? = nil) {
         self.thread = thread
-        NotificationCenter.default.publisher(for: .participant)
+        NotificationCenter.participant.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
             .sink { [weak self] event in
                 self?.onParticipantEvent(event)
             }
             .store(in: &cancelable)
 
-        NotificationCenter.default.publisher(for: .user)
+        NotificationCenter.user.publisher(for: .user)
             .compactMap { $0.object as? UserEventTypes }
             .sink { [weak self] event in
                 self?.onUserEvent(event)
             }
             .store(in: &cancelable)
 
-        NotificationCenter.default.publisher(for: .error)
+        NotificationCenter.error.publisher(for: .error)
             .compactMap { $0.object as? ChatResponse<Any> }
             .sink { [weak self] event in
                 self?.onError(event)

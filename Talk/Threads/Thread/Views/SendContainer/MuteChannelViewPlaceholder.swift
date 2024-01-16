@@ -36,7 +36,7 @@ struct MuteChannelViewPlaceholder: View {
             .onTapGesture {
                 threadVM.threadsViewModel?.toggleMute(threadVM.thread)
             }
-            .onReceive(NotificationCenter.default.publisher(for: .thread)) { newValue in
+            .onReceive(NotificationCenter.thread.publisher(for: .thread)) { newValue in
                 if let event = newValue.object as? ThreadEventTypes {
                     if case let .mute(response) = event, response.subjectId == threadVM.threadId {
                         mute = true

@@ -27,7 +27,7 @@ public final class TagsViewModel: ObservableObject {
                 self?.onConnectionStatusChanged(status)
             }
             .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: .tag)
+        NotificationCenter.tag.publisher(for: .tag)
             .compactMap { $0.object as? TagEventTypes }
             .sink { [weak self] value in
                 self?.onTagEvent(value)

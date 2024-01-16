@@ -112,7 +112,7 @@ struct ParticiapntsPageSticker: View {
                 )
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .reaction)) { newValue in
+        .onReceive(NotificationCenter.reaction.publisher(for: .reaction)) { newValue in
             guard let event = newValue.object as? ReactionEventTypes,
                   case let .list(resposne) = event,
                   resposne.result?.messageId == messageId,

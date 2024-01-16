@@ -19,7 +19,7 @@ public final class LogViewModel: ObservableObject {
     public private(set) var cancellableSet: Set<AnyCancellable> = []
 
     public init() {
-        NotificationCenter.default.publisher(for: .logs)
+        NotificationCenter.logs.publisher(for: .logs)
             .compactMap { $0.object as? Log }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] log in

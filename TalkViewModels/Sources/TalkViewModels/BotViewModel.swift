@@ -26,7 +26,7 @@ public final class BotViewModel: ObservableObject {
                 self?.onConnectionStatusChanged(event)
             }
             .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: .bot)
+        NotificationCenter.bot.publisher(for: .bot)
             .compactMap { $0.object as? BotEventTypes }
             .sink { [weak self] value in
                 self?.onBotEvent(value)

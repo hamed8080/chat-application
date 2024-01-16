@@ -9,15 +9,21 @@ import Foundation
 import Chat
 
 extension ThreadViewModel {
-    public func onChatEvent(_ event: ChatEventType) {
-        switch event {
-        case .message(let messageEventTypes):
-            onMessageEvent(messageEventTypes)
-        case .thread(let threadEventTypes):
-            onThreadEvent(threadEventTypes)
-        default:
-            break
-        }
+
+    func registerNotifications() {
+        NotificationCenter.message.publisher(for: .message)
+            .compactMap { $0.object as? MessageEventTypes }
+            .sink { [weak self] event in
+                self?.onMessageEvent(event)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.thread.publisher(for: .thread)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink { [weak self] event in
+                self?.onThreadEvent(event)
+            }
+            .store(in: &cancelable)
     }
 
     public func onThreadEvent(_ event: ThreadEventTypes?) {

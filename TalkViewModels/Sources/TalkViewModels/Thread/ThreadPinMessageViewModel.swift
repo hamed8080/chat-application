@@ -38,13 +38,13 @@ public final class ThreadPinMessageViewModel: ObservableObject {
     }
 
     private func setupObservers() {
-        NotificationCenter.default.publisher(for: .download)
+        NotificationCenter.download.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
             .sink { [weak self] event in
                 self?.onDownloadEvent(event)
             }
             .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: .message)
+        NotificationCenter.message.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] event in
                 self?.onMessageEvent(event)

@@ -149,7 +149,7 @@ struct InfoView: View {
                         appOverlayVM.galleryImageView = newValue
                     }
                 }
-                .onReceive(NotificationCenter.default.publisher(for: .thread)) { notification in
+                .onReceive(NotificationCenter.thread.publisher(for: .thread)) { notification in
                     if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(_) = threadEvent {
                         defaultLoader.fetch()
                     }
@@ -327,7 +327,7 @@ struct DetailTopButtons: View {
 
             if viewModel.threadVM?.threadId != nil {
                 DetailViewButton(accessibilityText: "", icon: "magnifyingglass") {
-                    NotificationCenter.default.post(name: .forceSearch, object: "DetailView")
+                    NotificationCenter.forceSearch.post(name: .forceSearch, object: "DetailView")
                 }
             }
 

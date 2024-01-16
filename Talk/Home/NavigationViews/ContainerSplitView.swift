@@ -48,7 +48,7 @@ struct iPadStackContentView<Content: View>: View {
                     }
             }
             .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: showSideBar)
-            .onReceive(NotificationCenter.default.publisher(for: .closeSideBar)) { newVlaue in
+            .onReceive(NotificationCenter.closeSideBar.publisher(for: .closeSideBar)) { newVlaue in
                 showSideBar.toggle()
             }
             .onReceive(navVM.$paths) { newValue in

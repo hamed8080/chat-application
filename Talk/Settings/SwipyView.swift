@@ -94,7 +94,7 @@ struct UserConfigView: View {
                 .overlay {
                     UploadImageProfileView()
                 }
-                .onReceive(NotificationCenter.default.publisher(for: .connect)) { notification in
+                .onReceive(NotificationCenter.connect.publisher(for: .connect)) { notification in
                     /// We use this to fetch the user profile image once the active instance is initialized.
                     if let status = notification.object as? ChatState, status == .connected, !imageLoader.isImageReady {
                         imageLoader.fetch()

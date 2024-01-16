@@ -30,7 +30,7 @@ public final class MessageReactionsViewModel: ObservableObject {
     }
 
     func setupObservers() {
-        NotificationCenter.default.publisher(for: .reactionMessageUpdated)
+        NotificationCenter.reactionMessageUpdated.publisher(for: .reactionMessageUpdated)
             .sink { [weak self] notification in
                 self?.onReactionEvent(notification)
             }
@@ -142,13 +142,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     func setupObservers() {
-        NotificationCenter.default.publisher(for: .windowMode)
+        NotificationCenter.windowMode.publisher(for: .windowMode)
             .sink { [weak self] newValue in
                 self?.recalculateWithAnimation()
             }
             .store(in: &cancelableSet)
 
-        NotificationCenter.default.publisher(for: .message)
+        NotificationCenter.message.publisher(for: .message)
             .compactMap{ $0.object as? MessageEventTypes }
             .sink { [weak self] event in
                 self?.onMessageEvent(event)
@@ -183,7 +183,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
         .store(in: &cancelableSet)
 
-        NotificationCenter.default.publisher(for: .upload)
+        NotificationCenter.upload.publisher(for: .upload)
             .sink { [weak self] notification in
                 self?.onUploadEventUpload(notification)
             }

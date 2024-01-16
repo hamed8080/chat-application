@@ -40,7 +40,7 @@ struct SettingProfileButton: View {
                             .animation(.easeInOut, value: isSelected)
                     }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .user)) { notification in
+            .onReceive(NotificationCenter.user.publisher(for: .user)) { notification in
                 let event = notification.object as? UserEventTypes
                 if imageLoader.isImageReady == false, case let .user(response) = event, response.result != nil {
                     imageLoader.fetch()
@@ -49,7 +49,7 @@ struct SettingProfileButton: View {
             .task {
                 imageLoader.fetch()
             }
-            .onReceive(NotificationCenter.default.publisher(for: .selectTab)) { notification in
+            .onReceive(NotificationCenter.selectTab.publisher(for: .selectTab)) { notification in
                 if let selectedTab = notification.object as? String, selectedTab == "Tab.settings" {
                     isSelected = true
                 } else {

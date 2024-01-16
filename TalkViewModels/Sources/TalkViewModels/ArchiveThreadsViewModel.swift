@@ -27,7 +27,7 @@ public final class ArchiveThreadsViewModel: ObservableObject {
     private var threadsVM: ThreadsViewModel { AppState.shared.objectsContainer.threadsVM }
 
     public init() {
-        NotificationCenter.default.publisher(for: .thread)
+        NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink{ [weak self] event in
                 self?.onThreadEvent(event)

@@ -11,22 +11,36 @@ import Chat
 import ChatModels
 
 extension ThreadsViewModel {
-    func onChatEvent(_ event: ChatEventType) {
-        switch event {
-        case .message(let messageEventTypes):
-            onMessageEvent(messageEventTypes)
-        case .thread(let threadEventTypes):
-            onThreadEvent(threadEventTypes)
-        case .call(let callEventTypes):
-            onCallEvent(callEventTypes)
-        case .participant(let participantEventTypes):
-            onParticipantEvent(participantEventTypes)
-        default:
-            break
-        }
+
+    func registerNotifications() {
+        NotificationCenter.thread.publisher(for: .thread)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink{ [weak self] event in
+                self?.onThreadEvent(event)
+            }
+            .store(in: &cancelable)
+        NotificationCenter.message.publisher(for: .message)
+            .compactMap { $0.object as? MessageEventTypes }
+            .sink{ [weak self] event in
+                self?.onMessageEvent(event)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.call.publisher(for: .call)
+            .compactMap { $0.object as? CallEventTypes }
+            .sink{ [weak self] event in
+                self?.onCallEvent(event)
+            }
+            .store(in: &cancelable)
+        NotificationCenter.participant.publisher(for: .participant)
+            .compactMap { $0.object as? ParticipantEventTypes }
+            .sink{ [weak self] event in
+                self?.onParticipantEvent(event)
+            }
+            .store(in: &cancelable)
     }
 
-    private func onParticipantEvent(_ event: ParticipantEventTypes) {
+    func onParticipantEvent(_ event: ParticipantEventTypes) {
         switch event {
         case .add(let chatResponse):
             onAddPrticipant(chatResponse)
@@ -37,7 +51,7 @@ extension ThreadsViewModel {
         }
     }
 
-    public func onThreadEvent(_ event: ThreadEventTypes?) {
+    func onThreadEvent(_ event: ThreadEventTypes?) {
         switch event {
         case .threads(let response):
             if !response.cache {
@@ -83,7 +97,7 @@ extension ThreadsViewModel {
         }
     }
 
-    private func onCallEvent(_ event: CallEventTypes) {
+    func onCallEvent(_ event: CallEventTypes) {
         switch event {
         case let .callEnded(response):
             activeCallThreads.removeAll(where: { $0.callId == response?.result })
@@ -96,7 +110,7 @@ extension ThreadsViewModel {
         }
     }
 
-    private func onMessageEvent(_ event: MessageEventTypes) {
+    func onMessageEvent(_ event: MessageEventTypes) {
         switch event {
         case .new(let chatResponse):
             onNewMessage(chatResponse)

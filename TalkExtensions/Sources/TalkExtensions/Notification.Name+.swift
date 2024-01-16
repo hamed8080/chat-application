@@ -9,7 +9,6 @@ import Foundation
 import Chat
 
 public extension Notification.Name {
-    static let chatEvents = Notification.Name("chatEvents")
     static let download = Notification.Name("download")
     static let upload = Notification.Name("upload")
     static let assistant = Notification.Name("assistant")
@@ -39,40 +38,65 @@ public extension Notification.Name {
     static let error = Notification.Name("error")
 }
 
-
 public extension NotificationCenter {
-    class func post(event: ChatEventType) {
-        Self.default.post(name: .chatEvents, object: event)
+    static let download = NotificationCenter()
+    static let upload = NotificationCenter()
+    static let assistant = NotificationCenter()
+    static let file = NotificationCenter()
+    static let bot = NotificationCenter()
+    static let participant = NotificationCenter()
+    static let tag = NotificationCenter()
+    static let map = NotificationCenter()
+    static let reaction = NotificationCenter()
+    static let user = NotificationCenter()
+    static let connect = NotificationCenter()
+    static let message = NotificationCenter()
+    static let system = NotificationCenter()
+    static let thread = NotificationCenter()
+    static let contact = NotificationCenter()
+    static let call = NotificationCenter()
+    static let login = NotificationCenter()
+    static let logs = NotificationCenter()
+    static let windowMode = NotificationCenter()
+    static let closeSideBar = NotificationCenter()
+    static let reactionMessageUpdated = NotificationCenter()
+    static let galleryDownload = NotificationCenter()
+    static let selectTab = NotificationCenter()
+    static let appSettingsModel = NotificationCenter()
+    static let cancelSearch = NotificationCenter()
+    static let forceSearch = NotificationCenter()
+    static let error = NotificationCenter()
 
+    class func post(event: ChatEventType) {
         switch event {
         case let .bot(botEventTypes):
-            Self.default.post(name: .bot, object: botEventTypes)
+            Self.bot.post(name: .bot, object: botEventTypes)
         case let .contact(contactEventTypes):
-            Self.default.post(name: .contact, object: contactEventTypes)
+            Self.connect.post(name: .contact, object: contactEventTypes)
         case let .download(downloadEventTypes):
-            Self.default.post(name: .download, object: downloadEventTypes)
+            Self.download.post(name: .download, object: downloadEventTypes)
         case let .upload(uploadEventTypes):
-            Self.default.post(name: .upload, object: uploadEventTypes)
+            Self.upload.post(name: .upload, object: uploadEventTypes)
         case let .system(systemEventTypes):
-            Self.default.post(name: .system, object: systemEventTypes)
+            Self.system.post(name: .system, object: systemEventTypes)
         case let .message(messageEventTypes):
-            Self.default.post(name: .message, object: messageEventTypes)
+            Self.message.post(name: .message, object: messageEventTypes)
         case let .thread(threadEventTypes):
-            Self.default.post(name: .thread, object: threadEventTypes)
+            Self.thread.post(name: .thread, object: threadEventTypes)
         case let .user(userEventTypes):
-            Self.default.post(name: .user, object: userEventTypes)
+            Self.user.post(name: .user, object: userEventTypes)
         case let .assistant(assistantEventTypes):
-            Self.default.post(name: .assistant, object: assistantEventTypes)
+            Self.assistant.post(name: .assistant, object: assistantEventTypes)
         case let .tag(tagEventTypes):
-            Self.default.post(name: .tag, object: tagEventTypes)
+            Self.tag.post(name: .tag, object: tagEventTypes)
         case let .call(callEventTypes):
-            Self.default.post(name: .call, object: callEventTypes)
+            Self.call.post(name: .call, object: callEventTypes)
         case let .participant(participantEventTypes):
-            Self.default.post(name: .participant, object: participantEventTypes)
+            Self.participant.post(name: .participant, object: participantEventTypes)
         case let .map(mapEventTypes):
-            Self.default.post(name: .map, object: mapEventTypes)
+            Self.map.post(name: .map, object: mapEventTypes)
         case let .reaction(reactionEventTypes):
-            Self.default.post(name: .reaction, object: reactionEventTypes)
+            Self.reaction.post(name: .reaction, object: reactionEventTypes)
         }
     }
 }

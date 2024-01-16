@@ -53,7 +53,7 @@ struct JoinToPublicThreadView: View {
             }
         }
         .animation(.easeInOut, value: isThreadExist)
-        .onReceive(NotificationCenter.default.publisher(for: .thread)) { event in
+        .onReceive(NotificationCenter.thread.publisher(for: .thread)) { event in
             switch event.object as? ThreadEventTypes {
             case let .isNameAvailable(response):
                 isThreadExist = response.result == nil
@@ -61,7 +61,7 @@ struct JoinToPublicThreadView: View {
                 break
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .system)) { event in
+        .onReceive(NotificationCenter.system.publisher(for: .system)) { event in
             switch event.object as? SystemEventTypes {
             case let .error(response):
                 if response.error?.code == 130 {

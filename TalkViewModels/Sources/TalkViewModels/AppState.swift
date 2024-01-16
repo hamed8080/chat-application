@@ -69,7 +69,7 @@ public final class AppState: ObservableObject {
     }
 
     private init() {
-        NotificationCenter.default.publisher(for: .thread)
+        NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] value in
                 self?.onThreadEvent(value)
@@ -88,7 +88,7 @@ public final class AppState: ObservableObject {
             AppState.isInSlimMode = UIApplication.shared.windowMode().isInSlimMode
         }
 
-        NotificationCenter.default.post(name: .windowMode, object: windowMode)
+        NotificationCenter.windowMode.post(name: .windowMode, object: windowMode)
     }
 
     private func onThreadEvent(_ event: ThreadEventTypes) {

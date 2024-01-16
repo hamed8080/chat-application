@@ -31,10 +31,10 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     }
 
     private func setupNotificationObservers() {
-        NotificationCenter.default.publisher(for: .chatEvents)
-            .compactMap { $0.object as? ChatEventType }
+        NotificationCenter.message.publisher(for: .message)
+            .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] event in
-                self?.onChatEvent(event)
+                self?.onMessageEvent(event)
             }
             .store(in: &cancelable)
     }
@@ -55,15 +55,6 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
             self.unreadMentions.removeAll()
             self.unreadMentions.append(contentsOf: unreadMentions)
             self.unreadMentions.sort(by: {$0.time ?? 0 < $1.time ?? 1})
-        }
-    }
-
-    public func onChatEvent(_ event: ChatEventType) {
-        switch event {
-        case .message(let messageEventTypes):
-            onMessageEvent(messageEventTypes)
-        default:
-            break
         }
     }
 

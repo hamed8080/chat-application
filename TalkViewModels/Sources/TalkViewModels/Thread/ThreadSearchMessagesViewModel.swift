@@ -43,10 +43,10 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     }
 
     private func setupNotificationObservers() {
-        NotificationCenter.default.publisher(for: .chatEvents)
-            .compactMap { $0.object as? ChatEventType }
+        NotificationCenter.message.publisher(for: .message)
+            .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] event in
-                self?.onChatEvent(event)
+                self?.onMessageEvent(event)
             }
             .store(in: &cancelable)
 
@@ -97,15 +97,6 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
             animateObjectWillChange()
         }
     }
-    
-    public func onChatEvent(_ event: ChatEventType) {
-        switch event {
-        case .message(let messageEventTypes):
-            onMessageEvent(messageEventTypes)
-        default:
-            break
-        }
-    }
 
     public func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
@@ -115,7 +106,6 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
             break
         }
     }
-
 
     private func onCancelTimer(key: String) {
         if isLoading {

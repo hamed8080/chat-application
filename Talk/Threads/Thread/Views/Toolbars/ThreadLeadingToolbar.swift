@@ -18,7 +18,7 @@ struct ThreadLeadingToolbar: View {
         if UIDevice.current.userInterfaceIdiom == .pad && sizeClass != .compact {
             ToolbarButtonItem(imageName: "sidebar.leading") {
                 AppState.isInSlimMode = UIApplication.shared.windowMode().isInSlimMode
-                NotificationCenter.default.post(name: Notification.Name.closeSideBar, object: nil)
+                NotificationCenter.closeSideBar.post(name: Notification.Name.closeSideBar, object: nil)
             }
             .offset(y: -1.5)
         }

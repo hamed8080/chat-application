@@ -35,7 +35,7 @@ struct ThreadViewTrailingToolbar: View {
             .background(Color.App.color1.opacity(0.4))
             .clipShape(RoundedRectangle(cornerRadius:(16)))
         }
-        .onReceive(NotificationCenter.default.publisher(for: .thread)) { notification in
+        .onReceive(NotificationCenter.thread.publisher(for: .thread)) { notification in
             if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(let resposne) = threadEvent, resposne.result?.id == thread.id {
                 imageViewModel = .init(config: .init(url: thread.computedImageURL ?? "", userName: thread.title))
             }

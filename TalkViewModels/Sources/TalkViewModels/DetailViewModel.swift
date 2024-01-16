@@ -75,26 +75,26 @@ public final class DetailViewModel: ObservableObject, Hashable {
         editTitle = title
         threadDescription = thread?.description ?? ""
         fetchMutualThreads()
-        NotificationCenter.default.publisher(for: .thread)
+        NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] value in
                 self?.onThreadEvent(value)
             }
             .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: .participant)
+        NotificationCenter.participant.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
             .sink { [weak self] value in
                 self?.onParticipantEvent(value)
             }
             .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: .contact)
+        NotificationCenter.connect.publisher(for: .contact)
             .compactMap { $0.object as? ContactEventTypes }
             .sink { [weak self] value in
                 self?.onContactEvent(value)
             }
             .store(in: &cancelable)
 
-        NotificationCenter.default.publisher(for: .upload)
+        NotificationCenter.upload.publisher(for: .upload)
             .compactMap { $0.object as? UploadEventTypes }
             .sink { [weak self] value in
                 self?.onUploadEvent(value)

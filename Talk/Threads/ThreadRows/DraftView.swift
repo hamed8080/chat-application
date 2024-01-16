@@ -16,6 +16,7 @@ struct DraftView: View {
             .font(.iransansBody)
             .foregroundColor(Color.App.red)
         Text(draft)
+            .lineLimit(1)
             .font(.iransansBody)
             .foregroundColor(Color.App.textSecondary)
     }

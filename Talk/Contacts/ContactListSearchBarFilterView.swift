@@ -62,7 +62,7 @@ struct ContactListSearchBarFilterView: View {
         }
         .animation(.easeInOut.speed(2), value: isInSearchMode)
         .padding(EdgeInsets(top: isInSearchMode ? 4 : 0, leading: 4, bottom: isInSearchMode ? 6 : 0, trailing: 4))        
-        .onReceive(NotificationCenter.default.publisher(for: .forceSearch)) { newValue in
+        .onReceive(NotificationCenter.forceSearch.publisher(for: .forceSearch)) { newValue in
             if newValue.object as? String == "Tab.contacts" {
                 Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
                     isInSearchMode.toggle()

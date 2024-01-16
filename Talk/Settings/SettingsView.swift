@@ -188,7 +188,7 @@ struct UserInformationSection: View {
                 userName = user?.username ?? ""
                 bio = user?.chatProfileVO?.bio ?? ""
             }
-            .onReceive(NotificationCenter.default.publisher(for: .connect)) { notification in
+            .onReceive(NotificationCenter.connect.publisher(for: .connect)) { notification in
                 /// We use this to fetch the user profile image once the active instance is initialized.
                 if let status = notification.object as? ChatState, status == .connected {
                     let user = AppState.shared.user
@@ -461,7 +461,7 @@ struct UserProfileView: View {
         }
         .listRowInsets(.init(top: 16, leading: 16, bottom: 16, trailing: 16))
         .frame(height: 70)
-        .onReceive(NotificationCenter.default.publisher(for: .user)) { notification in
+        .onReceive(NotificationCenter.user.publisher(for: .user)) { notification in
             let event = notification.object as? UserEventTypes
             if imageLoader?.isImageReady == false, case let .user(response) = event, let user = response.result {
                 let config = ImageLoaderConfig(url: user.image ?? "", size: .LARG, userName: user.name)

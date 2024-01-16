@@ -24,7 +24,7 @@ struct TabButtonsContainer: View {
                               showSelectedDivider: tab.showSelectedDivider
                 ) {
                     selectedId = tab.title
-                    NotificationCenter.default.post(name: .selectTab, object: tab.title)
+                    NotificationCenter.selectTab.post(name: .selectTab, object: tab.title)
                 }
                 Spacer()
             }

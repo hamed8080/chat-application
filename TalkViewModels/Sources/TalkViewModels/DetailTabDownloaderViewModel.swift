@@ -28,7 +28,7 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     public init(conversation: Conversation, messageType: MessageType) {
         self.conversation = conversation
         self.messageType = messageType
-        NotificationCenter.default.publisher(for: .message)
+        NotificationCenter.message.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] event in
                 self?.onMessageEvent(event)

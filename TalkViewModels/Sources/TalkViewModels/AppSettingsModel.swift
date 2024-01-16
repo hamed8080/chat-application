@@ -26,7 +26,7 @@ public struct AppSettingsModel: Codable, Hashable {
 
     public func save() {
         UserDefaults.standard.setValue(codable: self, forKey: AppSettingsModel.key)
-        NotificationCenter.default.post(name: .appSettingsModel, object: self)
+        NotificationCenter.appSettingsModel.post(name: .appSettingsModel, object: self)
     }
 
     public static func restore() -> AppSettingsModel {

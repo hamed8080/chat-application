@@ -78,7 +78,7 @@ struct ThreadListSearchBarFilterView: View {
             AppState.shared.objectsContainer.contactsVM.searchContactString = newValue
             viewModel.searchText = newValue
         }
-        .onReceive(NotificationCenter.default.publisher(for: .forceSearch)) { newValue in
+        .onReceive(NotificationCenter.forceSearch.publisher(for: .forceSearch)) { newValue in
             if newValue.object as? String == "Tab.chats" {
                 Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
                     isInSearchMode.toggle()

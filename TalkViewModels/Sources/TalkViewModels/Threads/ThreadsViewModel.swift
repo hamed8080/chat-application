@@ -24,7 +24,7 @@ public final class ThreadsViewModel: ObservableObject {
     @Published private(set) var tagViewModel = TagsViewModel()
     @Published public var activeCallThreads: [CallToJoin] = []
     @Published public var sheetType: ThreadsSheetType?
-    public private(set) var cancelable: Set<AnyCancellable> = []
+    public var cancelable: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
     public private(set) var count = 15
     public private(set) var offset = 0
@@ -40,12 +40,7 @@ public final class ThreadsViewModel: ObservableObject {
                 self?.onConnectionStatusChanged(event)
             }
             .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: .chatEvents)
-            .compactMap { $0.object as? ChatEventType }
-            .sink{ [weak self] event in
-                self?.onChatEvent(event)
-            }
-            .store(in: &cancelable)
+        registerNotifications()
         getThreads()
         RequestsManager.shared.$cancelRequest
             .sink { [weak self] newValue in

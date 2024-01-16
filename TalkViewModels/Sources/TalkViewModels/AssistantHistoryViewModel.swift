@@ -31,7 +31,7 @@ public final class AssistantHistoryViewModel: ObservableObject {
             }
         }
         .store(in: &canceableSet)
-        NotificationCenter.default.publisher(for: .assistant)
+        NotificationCenter.assistant.publisher(for: .assistant)
             .compactMap { $0.object as? AssistantEventTypes }
             .sink { [weak self] event   in
                 self?.onAssistantEvent(event)

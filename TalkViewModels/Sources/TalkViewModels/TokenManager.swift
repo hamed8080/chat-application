@@ -41,7 +41,7 @@ public final class TokenManager: ObservableObject {
             urlReq.allHTTPHeaderFields = ["keyId": keyId]
             let resp = try await session.data(for: urlReq)
             let log = Logger.makeLog(prefix: "TALK_APP_REFRESH_TOKEN:", request: urlReq, response: resp)
-            NotificationCenter.default.post(name: .logs, object: log)
+            NotificationCenter.logs.post(name: .logs, object: log)
             let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
             await MainActor.run {
                 var ssoToken = ssoToken
@@ -51,16 +51,16 @@ public final class TokenManager: ObservableObject {
                 if AppState.shared.connectionStatus != .connected {
                     AppState.shared.connectionStatus = .connected
                     let log = Log(prefix: "TALK_APP", time: .now, message: "App State was not connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
-                    NotificationCenter.default.post(name: .logs, object: log)
+                    NotificationCenter.logs.post(name: .logs, object: log)
                 } else {
                     let log = Log(prefix: "TALK_APP", time: .now, message: "App State was connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
-                    NotificationCenter.default.post(name: .logs, object: log)
+                    NotificationCenter.logs.post(name: .logs, object: log)
                 }
             }
         } catch {
 #if DEBUG
             let log = Log(prefix: "TALK_APP", time: .now, message: error.localizedDescription, level: .error, type: .sent, userInfo: nil)
-            NotificationCenter.default.post(name: .logs, object: log)
+            NotificationCenter.logs.post(name: .logs, object: log)
             Logger.viewModels.info("error on getNewTokenWithRefreshToken:\(error.localizedDescription, privacy: .sensitive)")
 #endif
         }

@@ -59,14 +59,14 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
 
     public func setObservers() {
-        NotificationCenter.default.publisher(for: .download)
+        NotificationCenter.download.publisher(for: .download)
             .compactMap { $0.object as? DownloadEventTypes }
             .sink { [weak self] value in
                 self?.onDownloadEvent(value)
             }
             .store(in: &cancellableSet)
 
-        NotificationCenter.default.publisher(for: .galleryDownload)
+        NotificationCenter.galleryDownload.publisher(for: .galleryDownload)
             .compactMap { $0.object as? (request: ImageRequest, data: Data) }
             .sink { [weak self] result in
                 self?.onGalleryDownload(result)

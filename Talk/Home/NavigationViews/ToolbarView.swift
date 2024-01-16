@@ -76,12 +76,12 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                     .clipped()
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .cancelSearch)) { newValue in
+        .onReceive(NotificationCenter.cancelSearch.publisher(for: .cancelSearch)) { newValue in
             if let cancelSearch = newValue.object as? Bool, cancelSearch == true, cancelSearch && isInSearchMode {
                 cancelSaerch()
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .forceSearch)) { newValue in
+        .onReceive(NotificationCenter.forceSearch.publisher(for: .forceSearch)) { newValue in
             if (newValue.object as? String) == searchId {
                 Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
                     isInSearchMode.toggle()

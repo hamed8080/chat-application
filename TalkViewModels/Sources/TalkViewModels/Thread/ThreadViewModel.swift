@@ -61,7 +61,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var participantsColorVM: ParticipantsColorViewModel = .init()
     public var threadPinMessageViewModel: ThreadPinMessageViewModel
     public var readOnly = false
-    private var cancelable: Set<AnyCancellable> = []
+    public var cancelable: Set<AnyCancellable> = []
     private var typingTimerStarted = false
     public var threadId: Int { thread.id ?? 0 }
     public var signalMessageText: String?
@@ -114,12 +114,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                 self?.onConnectionStatusChanged(status)
             }
             .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: .chatEvents)
-            .compactMap { $0.object as? ChatEventType }
-            .sink { [weak self] event in
-                self?.onChatEvent(event)
-            }
-            .store(in: &cancelable)
+        registerNotifications()
         seenPublisher
             .filter{ [weak self] in $0.id ?? -1 >= self?.thread.lastSeenMessageId ?? 0 }
             .debounce(for: 0.5, scheduler: RunLoop.main)
@@ -129,7 +124,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             }
             .store(in: &cancelable)
 
-        NotificationCenter.default.publisher(for: .appSettingsModel)
+        NotificationCenter.appSettingsModel.publisher(for: .appSettingsModel)
             .sink { [weak self] _ in
                 self?.setAppSettingsModel()
             }
@@ -236,7 +231,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             let path = message.isImage ? Routes.images.rawValue : Routes.files.rawValue
             let url = "\(ChatManager.activeInstance?.config.fileServer ?? "")\(path)/\(fileHashCode)"
             ChatManager.activeInstance?.file.deleteCacheFile(URL(string: url)!)
-            NotificationCenter.default.post(.init(name: .message, object: message))
+            NotificationCenter.message.post(.init(name: .message, object: message))
         }
     }
 

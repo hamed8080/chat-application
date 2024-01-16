@@ -27,7 +27,7 @@ public final class ExportMessagesViewModel: ObservableObject, ExportMessagesView
     private var cancelable: Set<AnyCancellable> = []
 
     public init() {
-        NotificationCenter.default.publisher(for: .message)
+        NotificationCenter.message.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] value in
                 if case let .export(response) = value {

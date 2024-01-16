@@ -92,14 +92,14 @@ public final class ContactsViewModel: ObservableObject {
                 self?.searchContacts(searchText)
             }
             .store(in: &canceableSet)
-        NotificationCenter.default.publisher(for: .contact)
+        NotificationCenter.connect.publisher(for: .contact)
             .compactMap { $0.object as? ContactEventTypes }
             .sink{ [weak self] event in
                 self?.onContactEvent(event)
             }
             .store(in: &canceableSet)
 
-        NotificationCenter.default.publisher(for: .thread)
+        NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink{ [weak self] event in
                 self?.onConversationEvent(event)

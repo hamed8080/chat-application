@@ -24,7 +24,7 @@ public final class ObjectsContainer: ObservableObject {
 
     public init(delegate: ChatDelegate) {
         loginVM = LoginViewModel(delegate: delegate)
-        NotificationCenter.default.publisher(for: .message)
+        NotificationCenter.message.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] event in
                 self?.onMessageEvent(event)

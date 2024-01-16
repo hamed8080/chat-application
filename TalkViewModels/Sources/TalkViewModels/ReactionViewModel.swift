@@ -18,7 +18,7 @@ public final class ReactionViewModel: ObservableObject {
     var inMemoryReactions: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
     
     private init() {
-        NotificationCenter.default.publisher(for: .reaction)
+        NotificationCenter.reaction.publisher(for: .reaction)
             .compactMap { $0.object as? ReactionEventTypes }
             .sink { [weak self] event in
                 self?.onReaction(event)
@@ -47,7 +47,7 @@ public final class ReactionViewModel: ObservableObject {
     public func onReaction(_ event: ReactionEventTypes) {
         switch event {
         case .inMemoryUpdate(let messageId):
-            NotificationCenter.default.post(name: .reactionMessageUpdated, object: messageId)
+            NotificationCenter.reactionMessageUpdated.post(name: .reactionMessageUpdated, object: messageId)
         default:
             break
         }
@@ -59,7 +59,7 @@ public final class ReactionViewModel: ObservableObject {
 
     public func onCount(_ response: ChatResponse<[ReactionCountList]>) {
         response.result?.forEach{ item in
-            NotificationCenter.default.post(name: .reactionMessageUpdated, object: item.messageId)
+            NotificationCenter.reactionMessageUpdated.post(name: .reactionMessageUpdated, object: item.messageId)
         }
     }
 

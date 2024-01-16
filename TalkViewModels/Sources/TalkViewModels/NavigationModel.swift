@@ -47,14 +47,14 @@ public final class NavigationModel: ObservableObject {
     private var cancelable: Set<AnyCancellable> = []
 
     public init() {
-        NotificationCenter.default.publisher(for: .thread)
+        NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] event in
                 self?.onThreadEvents(event)
             }
             .store(in: &cancelable)
 
-        NotificationCenter.default.publisher(for: .participant)
+        NotificationCenter.participant.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
             .sink { [weak self] event in
                 self?.onParticipantsEvents(event)

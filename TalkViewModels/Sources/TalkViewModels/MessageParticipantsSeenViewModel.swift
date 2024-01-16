@@ -23,7 +23,7 @@ public class MessageParticipantsSeenViewModel: ObservableObject {
 
     public init(message: Message) {
         self.message = message
-        NotificationCenter.default.publisher(for: .message)
+        NotificationCenter.message.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] event in
                 if case .seenByParticipants(let response) = event {

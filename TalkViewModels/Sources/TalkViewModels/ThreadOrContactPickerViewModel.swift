@@ -44,7 +44,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
             }
             .store(in: &cancellableSet)
 
-        NotificationCenter.default.publisher(for: .thread)
+        NotificationCenter.thread.publisher(for: .thread)
             .map({$0.object as? ThreadEventTypes})
             .sink { [weak self] event in
                 if case let .threads(response) = event {
@@ -53,7 +53,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
             }
             .store(in: &cancellableSet)
 
-        NotificationCenter.default.publisher(for: .contact)
+        NotificationCenter.contact.publisher(for: .contact)
             .map({$0.object as? ContactEventTypes})
             .sink { [weak self] event in
                 if case let .contacts(response) = event {

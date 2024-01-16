@@ -65,7 +65,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 self?.onConnectionStatusChanged(status)
             }
             .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: .message)
+        NotificationCenter.message.publisher(for: .message)
             .compactMap { $0.object as? MessageEventTypes }
             .sink { [weak self] event in
                 self?.onMessageEvent(event)

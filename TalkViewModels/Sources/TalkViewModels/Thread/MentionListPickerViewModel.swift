@@ -40,7 +40,7 @@ public final class MentionListPickerViewModel: ObservableObject {
         }
         .store(in: &cancelable)
 
-        NotificationCenter.default.publisher(for: .participant)
+        NotificationCenter.participant.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
             .sink { [weak self] event in
                 self?.onParticipantsEvent(event)
