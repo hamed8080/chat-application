@@ -133,7 +133,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 4- Disable excessive loading on the top part.
             threadViewModel?.scrollVM.disableExcessiveLoading()
             /// 5- Set whether it has more messages at the top or not.
-            setHasMoreTop(response)
+            await setHasMoreTop(response)
             isFetchedServerFirstResponse = true
             /// 6- To update isLoading fields to hide the loading at the top.
             await asyncAnimateObjectWillChange()
@@ -165,14 +165,15 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 4- Disable excessive loading on the top part.
             threadViewModel?.scrollVM.disableExcessiveLoading()
             /// 7- Set whether it has more messages at the bottom or not.
-            setHasMoreBottom(response)
+            await setHasMoreBottom(response)
             isFetchedServerFirstResponse = true
             /// 8- To update isLoading fields to hide the loading at the bottom.
             await asyncAnimateObjectWillChange()
         }
     }
 
-    func setHasMoreTop(_ response: ChatResponse<[Message]>) {
+    @MainActor
+    func setHasMoreTop(_ response: ChatResponse<[Message]>) async {
         if !response.cache {
             hasNextTop = response.hasNext
             isFetchedServerFirstResponse = true
@@ -180,7 +181,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    func setHasMoreBottom(_ response: ChatResponse<[Message]>) {
+    @MainActor
+    func setHasMoreBottom(_ response: ChatResponse<[Message]>) async {
         if !response.cache {
             hasNextBottom = response.hasNext
             isFetchedServerFirstResponse = true
@@ -221,7 +223,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 }
             }
             /// 7- Set whether it has more messages at the top or not.
-            setHasMoreTop(response)
+            await setHasMoreTop(response)
         }
     }
 
@@ -234,7 +236,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 10- Append messages to the bottom part of the view and if the user scrolls down can see new messages.
             await appendMessagesAndSort(messages)
             /// 11-  Set whether it has more messages at the bottom or not.
-            setHasMoreBottom(response)
+            await setHasMoreBottom(response)
             /// 12- Update all the views to draw new messages for the bottom part and hide loading at the bottom.
             await asyncAnimateObjectWillChange()
         }
@@ -277,7 +279,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 await threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
             }
             /// 6- Set whether it has more messages at the top or not.
-            setHasMoreTop(response)
+            await setHasMoreTop(response)
         }
     }
 
@@ -312,7 +314,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 await appendMessagesAndSort(messages)
             }
             /// 4- Set whether it has more messages at the bottom or not.
-            setHasMoreBottom(response)
+            await setHasMoreBottom(response)
             /// 5- To update isLoading fields to hide the loading at the bottom.
             await asyncAnimateObjectWillChange()
         }
@@ -369,7 +371,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             let sortedMessages = messages.sorted(by: {$0.time ?? 0 < $1.time ?? 0})
             /// 8- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(sortedMessages)
-            setHasMoreBottom(response)
+            await setHasMoreBottom(response)
             /// 9- Update all the views to draw for the bottom part.
             await asyncAnimateObjectWillChange()
         }
@@ -539,7 +541,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         guard messages.count > 0 else { return }
         var viewModels: [MessageRowViewModel?] = []
         for message in messages {
-            let vm = insertOrUpdate(message)
+            let vm = await insertOrUpdate(message)
             viewModels.append(vm)
         }
         sort()
@@ -552,7 +554,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         logger.debug("End of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
     }
 
-    func insertOrUpdate(_ message: Message) -> MessageRowViewModel? {
+    func insertOrUpdate(_ message: Message) async -> MessageRowViewModel? {
         let indices = findIncicesBy(uniqueId: message.uniqueId ?? "", message.id ?? -1)
         if let indices = indices {
             let vm = sections[indices.sectionIndex].vms[indices.messageIndex]
@@ -619,6 +621,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
+    @MainActor
     public func onMessageAppear(_ message: Message) async {
         guard let threadViewModel = threadViewModel else { return }
         let scrollVM = threadViewModel.scrollVM
@@ -627,37 +630,39 @@ public final class ThreadHistoryViewModel: ObservableObject {
         } else {
             lastTopVisibleMessage = nil
         }
-        if message.id == thread.lastMessageVO?.id, threadViewModel.scrollVM.isAtBottomOfTheList == false {
-            threadViewModel.scrollVM.isAtBottomOfTheList = true
-            threadViewModel.scrollVM.animateObjectWillChange()
-        }
-        /// We get next item in the list because when we are scrolling up the message is beneth NavigationView so we should get the next item to ensure we are in right position
-        guard
-            let sectionIndex = sectionIndexByMessageId(message),
-            let messageIndex = messageIndex(message.id ?? -1, in: sectionIndex)
-        else { return }
-        let section = sections[sectionIndex]
-        if scrollVM.scrollingUP == true, section.vms.indices.contains(messageIndex + 1) == true {
-            let message = section.vms[messageIndex + 1].message
-            log("Scrolling Up with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
-        } else if scrollVM.scrollingUP == false, section.vms.indices.contains(messageIndex - 1), section.vms.last?.id != message.id {
-            let message = section.vms[messageIndex - 1].message
-            log("Scroling Down with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
-            threadViewModel.reduceUnreadCountLocaly(message)
-            threadViewModel.seenPublisher.send(message)
-        } else {
-            // Last Item
-            log("Last Item with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
-            threadViewModel.reduceUnreadCountLocaly(message)
-            threadViewModel.seenPublisher.send(message)
-        }
+        Task {
+            if message.id == thread.lastMessageVO?.id, threadViewModel.scrollVM.isAtBottomOfTheList == false {
+                threadViewModel.scrollVM.isAtBottomOfTheList = true
+                threadViewModel.scrollVM.animateObjectWillChange()
+            }
+            /// We get next item in the list because when we are scrolling up the message is beneth NavigationView so we should get the next item to ensure we are in right position
+            guard
+                let sectionIndex = sectionIndexByMessageId(message),
+                let messageIndex = messageIndex(message.id ?? -1, in: sectionIndex)
+            else { return }
+            let section = sections[sectionIndex]
+            if scrollVM.scrollingUP == true, section.vms.indices.contains(messageIndex + 1) == true {
+                let message = section.vms[messageIndex + 1].message
+                log("Scrolling Up with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
+            } else if scrollVM.scrollingUP == false, section.vms.indices.contains(messageIndex - 1), section.vms.last?.id != message.id {
+                let message = section.vms[messageIndex - 1].message
+                log("Scroling Down with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
+                threadViewModel.reduceUnreadCountLocaly(message)
+                threadViewModel.seenPublisher.send(message)
+            } else {
+                // Last Item
+                log("Last Item with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
+                threadViewModel.reduceUnreadCountLocaly(message)
+                threadViewModel.seenPublisher.send(message)
+            }
 
-        if scrollVM.scrollingUP == true, scrollVM.isProgramaticallyScroll == false, isInTopSlice(message) {
-            moreTop(sections.first?.vms.first?.message.time)
-        }
+            if scrollVM.scrollingUP == true, scrollVM.isProgramaticallyScroll == false, isInTopSlice(message) {
+                moreTop(sections.first?.vms.first?.message.time)
+            }
 
-        if scrollVM.scrollingUP == false, scrollVM.isProgramaticallyScroll == false, isInBottomSlice(message) {
-            moreBottom(sections.last?.vms.last?.message.time?.advanced(by: 1))
+            if scrollVM.scrollingUP == false, scrollVM.isProgramaticallyScroll == false, isInBottomSlice(message) {
+                moreBottom(sections.last?.vms.last?.message.time?.advanced(by: 1))
+            }
         }
     }
 

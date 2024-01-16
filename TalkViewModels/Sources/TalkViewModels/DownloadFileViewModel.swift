@@ -50,9 +50,11 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             isInCache = chat?.file.isFileExist(url) ?? false || chat?.file.isFileExistInGroup(url) ?? false
         }
         if isInCache {
-            state = .completed
-            thumbnailData = nil
-            animateObjectWillChange()
+            await MainActor.run {
+                state = .completed
+                thumbnailData = nil
+                animateObjectWillChange()
+            }
         }
     }
 

@@ -40,7 +40,7 @@ public final class MessageReactionsViewModel: ObservableObject {
     private func onReactionEvent(_ notification: Notification) {
         if notification.object as? Int == self.message?.id {
             Task {
-                try? await Task.sleep(for: .seconds(0.1))
+                try? await Task.sleep(for: .seconds(0.3))
                 await self.setReactionList()
             }
         }

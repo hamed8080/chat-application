@@ -34,6 +34,7 @@ struct ReactionCountView: View {
 struct ReactionCountRow: View {
     @EnvironmentObject var viewModel: MessageReactionsViewModel
     let reactionCount: ReactionCount
+    @State var isMyReaction: Bool = false
 
     var body: some View {
         HStack {
@@ -66,10 +67,9 @@ struct ReactionCountRow: View {
                     .clipShape(RoundedRectangle(cornerRadius:(12)))
             }
         }
-    }
-
-    var isMyReaction: Bool {
-        viewModel.currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue
+        .task {
+          isMyReaction = viewModel.currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue
+        }
     }
 }
 

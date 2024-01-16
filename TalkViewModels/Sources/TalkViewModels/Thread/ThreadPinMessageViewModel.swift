@@ -96,11 +96,17 @@ public final class ThreadPinMessageViewModel: ObservableObject {
     }
 
     private func calculate() async {
-        hasPinMessage = message != nil
-        icon = fileMetadata?.file?.mimeType?.systemImageNameForFileExtension
-        isEnglish = message?.text?.naturalTextAlignment == .leading
-        title = messageText
-        animateObjectWillChange()
+        let hasPinMessage = message != nil
+        let icon = fileMetadata?.file?.mimeType?.systemImageNameForFileExtension
+        let isEnglish = message?.text?.naturalTextAlignment == .leading
+        let title = messageText
+        await MainActor.run {
+            self.hasPinMessage = hasPinMessage
+            self.icon = icon
+            self.isEnglish = isEnglish
+            self.title = title
+            animateObjectWillChange()
+        }
     }
 
     private var messageText: String {
