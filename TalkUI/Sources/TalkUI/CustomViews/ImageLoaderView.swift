@@ -11,6 +11,7 @@ import SwiftUI
 import TalkModels
 import TalkViewModels
 import ChatDTO
+import Combine
 
 public struct ImageLoaderView: View {
     @StateObject var imageLoader: ImageLoaderViewModel
@@ -47,18 +48,82 @@ public struct ImageLoaderView: View {
     }
 }
 
+public final class ImageLoaderUIView: UIView {
+    private var imageLoaderVM: ImageLoaderViewModel?
+    private let participantLabel = UILabel()
+    private let imageIconView = UIImageView()
+    private var cancelable: AnyCancellable?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureView()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func configureView() {
+        participantLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        imageIconView.translatesAutoresizingMaskIntoConstraints = false
+        imageIconView.contentMode = .scaleAspectFill
+
+        addSubview(participantLabel)
+        addSubview(imageIconView)
+
+        NSLayoutConstraint.activate([
+            participantLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            participantLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            imageIconView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            imageIconView.centerYAnchor.constraint(equalTo: centerYAnchor),
+        ])
+    }
+
+    public func setValues(config: ImageLoaderConfig) {
+        if imageLoaderVM == nil {
+            imageLoaderVM = .init(.init(config: config))
+            setupObserver()
+            imageLoaderVM?.fetch()
+        }
+        participantLabel.text = String(imageLoaderVM?.config.userName?.first ?? " ")
+    }
+
+    private func setupObserver() {
+        cancelable = imageLoaderVM?.$image.sink { [weak self] _ in
+            self?.setImage()
+        }
+    }
+
+    private func setImage() {
+        imageIconView.image = imageLoaderVM?.image
+        participantLabel.isHidden = imageLoaderVM?.isImageReady == true    
+    }
+}
+
+
+struct ImageLoaderUIViewWapper: UIViewRepresentable {
+    let config: ImageLoaderConfig
+
+    func makeUIView(context: Context) -> some UIView {
+        let view = ImageLoaderUIView()
+        return view
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+
+    }
+}
+
 struct ImageLoaderView_Previews: PreviewProvider {
+    struct Preview: View {
+        let config = ImageLoaderConfig(url: "https://media.gcflearnfree.org/ctassets/topics/246/share_size_large.jpg", userName: "Hamed")
+        var body: some View {
+            ImageLoaderUIViewWapper(config: config)
+        }
+    }
+
     static var previews: some View {
-        let config = ImageLoaderConfig(url: "https://podspace.podland.ir/api/images/FQW4R5QUPE4XNDUV", userName: "Hamed")
-        ImageLoaderView(imageLoader: ImageLoaderViewModel(config: config))
-            .font(.system(size: 16).weight(.heavy))
-            .foregroundColor(.white)
-            .frame(width: 128, height: 128)
-            .background(Color.App.color1.opacity(0.4))
-            .clipShape(RoundedRectangle(cornerRadius:(64)))
-            .overlay {
-                RoundedRectangle(cornerRadius: 64)
-                    .stroke(.mint, lineWidth: 2)
-            }
+        Preview()
     }
 }

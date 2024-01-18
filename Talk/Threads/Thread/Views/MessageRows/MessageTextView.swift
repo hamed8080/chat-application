@@ -48,7 +48,7 @@ final class MessageTextView: UIView {
     }
 
     private func configureView() {
-        lblMessage.textColor = Color.App.uitext
+        lblMessage.textColor = Color.App.textPrimaryUIColor
         lblMessage.font = UIFont.uiiransansBody
         lblMessage.numberOfLines = 0
         lblMessage.translatesAutoresizingMaskIntoConstraints = false
@@ -65,7 +65,7 @@ final class MessageTextView: UIView {
     public func setValues(viewModel: MessageRowViewModel) {
         let message = viewModel.message
         lblMessage.textAlignment = viewModel.isEnglish ? .left : .right
-        if !message.messageTitle.isEmpty, message.forwardInfo == nil, !viewModel.isPublicLink {
+        if !message.messageTitle.isEmpty, !viewModel.isPublicLink {
             lblMessage.attributedText = viewModel.nsMarkdownTitle
         }
     }
@@ -86,13 +86,24 @@ struct MessageTextViewWapper: UIViewRepresentable {
 }
 
 struct MessageTextView_Previews: PreviewProvider {
+
+    struct Preview: View {
+        @StateObject var viewModel: MessageRowViewModel
+
+        init(viewModel: MessageRowViewModel) {
+            self._viewModel = StateObject(wrappedValue: viewModel)
+            Task {
+                await viewModel.performaCalculation()
+                await viewModel.asyncAnimateObjectWillChange()
+            }
+        }
+
+        var body: some View {
+            MessageTextViewWapper(viewModel: viewModel)
+        }
+    }
+
     static var previews: some View {
-        let longText = """
-This is a very long text to test how it would react to size change\n
-In this new line we are going to test if it can break the line.
-"""
-        let message = Message(id: 1, message: longText, messageType: .participantJoin, time: 155600555)
-        let viewModel = MessageRowViewModel(message: message, viewModel: .init(thread: .init(id: 1)))
-        MessageTextViewWapper(viewModel: viewModel)
+        Preview(viewModel: MockAppConfiguration.viewModels.first!)
     }
 }

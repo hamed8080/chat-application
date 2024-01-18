@@ -43,7 +43,7 @@ final class GroupParticipantNameView: UIView {
 
     private func configureView() {
         label.font = UIFont.uiiransansBody
-        label.textColor = Color.App.uipurple
+        label.textColor = UIColor.purple
         label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
         addSubview(label)

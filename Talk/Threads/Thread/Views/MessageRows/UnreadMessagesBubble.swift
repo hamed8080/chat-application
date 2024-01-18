@@ -38,10 +38,10 @@ final class UnreadMessagesBubble: UIView {
 
     private func configureView() {
         label.font = UIFont.uiiransansCaption
-        label.textColor = Color.App.uiprimary
+        label.textColor = Color.App.textPrimaryUIColor
         label.textAlignment = .center
         label.text = "Messages.unreadMessages".localized()
-        label.backgroundColor = Color.App.uidivider
+        label.backgroundColor = Color.App.dividerPrimaryUIColor
 
         label.translatesAutoresizingMaskIntoConstraints = false
         addSubview(label)

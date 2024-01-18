@@ -105,13 +105,13 @@ final class AvatarView: UIView {
 
     private func configureView() {
         label.font = UIFont.uiiransansCaption
-        label.textColor = Color.App.uiwhite
+        label.textColor = Color.App.whiteUIColor
         label.textAlignment = .center
-        label.backgroundColor = Color.App.uiblue?.withAlphaComponent(0.4)
+        label.backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
         label.layer.cornerRadius = MessageRowViewModel.avatarSize / 2
         label.layer.masksToBounds = true
 
-        image.backgroundColor = Color.App.uiblue?.withAlphaComponent(0.4)
+        image.backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
         image.layer.cornerRadius = MessageRowViewModel.avatarSize / 2
         image.layer.masksToBounds = true
 

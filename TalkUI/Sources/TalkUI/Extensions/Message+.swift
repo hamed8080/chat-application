@@ -23,13 +23,13 @@ public extension Message {
 
     var uiFooterStatus: (image: UIImage, fgColor: UIColor) {
         if seen == true {
-            return (Message.seenImage!, Color.App.uiprimary!)
+            return (Message.seenImage!, Color.App.textPrimaryUIColor!)
         } else if delivered == true {
-            return (Message.seenImage!, Color.App.uihint!)
+            return (Message.seenImage!, Color.App.textSecondaryUIColor!)
         } else if id != nil {
-            return (Message.sentImage!, Color.App.uihint!)
+            return (Message.sentImage!, Color.App.textSecondaryUIColor!)
         } else {
-            return (Message.clockImage!, Color.App.uihint!)
+            return (Message.clockImage!, Color.App.textSecondaryUIColor!)
         }
     }
 }

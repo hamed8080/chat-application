@@ -27,10 +27,10 @@ final class ParticipantsEventUITableViewCell: UITableViewCell {
 
     private func configureView() {
         label.font = UIFont.uiiransansBody
-        label.textColor = Color.App.uitext
+        label.textColor = Color.App.textPrimaryUIColor
         label.textAlignment = .center
         label.numberOfLines = 0
-        container.backgroundColor = Color.App.uiblack?.withAlphaComponent(0.2)
+        container.backgroundColor = UIColor.black.withAlphaComponent(0.2)
         container.layer.cornerRadius = 15
         container.layer.masksToBounds = true
 

@@ -72,7 +72,7 @@ public final class VideoPlayerView: UIView {
 
     private func configureView() {
         layoutMargins = UIEdgeInsets(all: 8)
-        backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
+        backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
         translatesAutoresizingMaskIntoConstraints = false

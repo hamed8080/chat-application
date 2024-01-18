@@ -135,7 +135,7 @@ final class MessageRowImageDownloader: UIView {
     private let stack = UIStackView()
     private let fileSizeLabel = UILabel()
     private let imageView = UIImageView()
-    private let progressView = CircleProgressView(color: Color.App.uiwhite, iconTint: Color.App.uiwhite)
+    private let progressView = CircleProgressView(color: Color.App.whiteUIColor, iconTint: Color.App.whiteUIColor)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -152,7 +152,7 @@ final class MessageRowImageDownloader: UIView {
         container.translatesAutoresizingMaskIntoConstraints = false
         
         layoutMargins = UIEdgeInsets(all: 8)
-        backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
+        backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
 
@@ -168,7 +168,7 @@ final class MessageRowImageDownloader: UIView {
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
-        fileSizeLabel.textColor = Color.App.uitext
+        fileSizeLabel.textColor = Color.App.textPrimaryUIColor
 
         stack.axis = .horizontal
         stack.spacing = 12

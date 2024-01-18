@@ -172,7 +172,7 @@ final class MessageRowFileDownloader: UIView {
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
     private let iconImageView = UIImageView()
-    private let progressView = CircleProgressView(color: Color.App.uiprimary, iconTint: Color.App.uibgPrimary)
+    private let progressView = CircleProgressView(color: Color.App.textPrimaryUIColor, iconTint: Color.App.bgPrimaryUIColor)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -185,21 +185,21 @@ final class MessageRowFileDownloader: UIView {
 
     private func configureView() {
         layoutMargins = UIEdgeInsets(all: 8)
-        backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
+        backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
-        fileSizeLabel.textColor = Color.App.uitext
+        fileSizeLabel.textColor = Color.App.textPrimaryUIColor
 
         fileNameLabel.font = UIFont.uiiransansBoldCaption2
         fileNameLabel.textAlignment = .left
-        fileNameLabel.textColor = Color.App.uitext
+        fileNameLabel.textColor = Color.App.textPrimaryUIColor
 
         fileTypeLabel.font = UIFont.uiiransansBoldCaption2
         fileTypeLabel.textAlignment = .left
-        fileTypeLabel.textColor = Color.App.uihint
+        fileTypeLabel.textColor = Color.App.textSecondaryUIColor
 
         let innerhStack = UIStackView()
         innerhStack.axis = .horizontal
@@ -217,7 +217,7 @@ final class MessageRowFileDownloader: UIView {
         addSubview(container)
 
         iconImageView.contentMode = .scaleAspectFit
-        iconImageView.tintColor = Color.App.uibgPrimary
+        iconImageView.tintColor = Color.App.bgPrimaryUIColor
 
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         hStack.translatesAutoresizingMaskIntoConstraints = false

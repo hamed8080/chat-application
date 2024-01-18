@@ -69,8 +69,6 @@ final class ForwardMessageRow: UIButton {
     private let hStack = UIStackView()
     private let forwardStaticLebel = UILabel()
     private let participantLabel = UILabel()
-    private let imageIconView = UIImageView()
-    private let forwardLabel = UILabel()
     private let bar = UIView()
 
     override init(frame: CGRect) {
@@ -87,24 +85,20 @@ final class ForwardMessageRow: UIButton {
         vStack.translatesAutoresizingMaskIntoConstraints = false
 
         layoutMargins = UIEdgeInsets(all: 8)
-        backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
+        backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
         configuration = .borderless()
 
         forwardStaticLebel.font = UIFont.uiiransansCaption3
-        forwardStaticLebel.textColor = Color.App.uiprimary
+        forwardStaticLebel.textColor = Color.App.textPrimaryUIColor
         forwardStaticLebel.text = "Message.forwardedFrom".localized()
 
         participantLabel.font = UIFont.uiiransansBoldCaption2
-        participantLabel.textColor = Color.App.uiprimary
+        participantLabel.textColor = Color.App.textPrimaryUIColor
+        participantLabel.numberOfLines = 1
 
-        forwardLabel.font = UIFont.uiiransansCaption3
-        forwardLabel.numberOfLines = 0
-        forwardLabel.textColor = Color.App.uitext
-        forwardLabel.lineBreakMode = .byTruncatingTail
-
-        bar.backgroundColor = Color.App.uiprimary
+        bar.backgroundColor = Color.App.accentUIColor
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
@@ -116,9 +110,6 @@ final class ForwardMessageRow: UIButton {
 
         hStack.axis = .horizontal
         hStack.spacing = 4
-        
-        hStack.addArrangedSubview(imageIconView)
-        hStack.addArrangedSubview(forwardLabel)
 
         vStack.addArrangedSubview(forwardStaticLebel)
         vStack.addArrangedSubview(participantLabel)
@@ -131,22 +122,17 @@ final class ForwardMessageRow: UIButton {
         addSubview(hStackWithBar)
 
         NSLayoutConstraint.activate([
+            bar.heightAnchor.constraint(equalTo: hStackWithBar.heightAnchor),
             bar.widthAnchor.constraint(equalToConstant: 1.5),
-            bar.heightAnchor.constraint(equalToConstant: 48),
-            imageIconView.widthAnchor.constraint(equalToConstant: 28),
-            imageIconView.heightAnchor.constraint(equalToConstant: 28),
             hStackWithBar.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
             hStackWithBar.topAnchor.constraint(equalTo: topAnchor),
+            hStackWithBar.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
-        let replyInfo = viewModel.message.replyInfo
-        participantLabel.text = viewModel.message.replyInfo?.participant?.name
-        participantLabel.isHidden = viewModel.message.replyInfo?.participant?.name == nil
-        forwardLabel.attributedText = viewModel.nsMarkdownTitle
-        forwardLabel.isHidden = replyInfo?.message?.isEmpty == true
-        forwardLabel.textAlignment = viewModel.isEnglish || viewModel.isMe ? .right : .left
+        participantLabel.text = viewModel.message.forwardInfo?.participant?.name
+        participantLabel.isHidden = viewModel.message.forwardInfo?.participant?.name == nil
     }
 }
 
@@ -165,9 +151,25 @@ struct ForwardMessageRowWapper: UIViewRepresentable {
 }
 
 struct ForwardMessageRow_Previews: PreviewProvider {
+    struct Preview: View {
+        @StateObject var viewModel: MessageRowViewModel
+
+        init(viewModel: MessageRowViewModel) {
+            ThreadViewModel.maxAllowedWidth = 340
+            self._viewModel = StateObject(wrappedValue: viewModel)
+            Task {
+                await viewModel.performaCalculation()
+                await viewModel.asyncAnimateObjectWillChange()
+            }
+        }
+
+        var body: some View {
+            ForwardMessageRowWapper(viewModel: viewModel)
+        }
+    }
+
     static var previews: some View {
-        let message = Message(id: 1, messageType: .participantJoin, time: 155600555)
-        let viewModel = MessageRowViewModel(message: message, viewModel: .init(thread: .init(id: 1)))
-        ForwardMessageRowWapper(viewModel: viewModel)
+        Preview(viewModel: MockAppConfiguration.viewModels.first(where: {$0.message.forwardInfo != nil })!)
+            .previewDisplayName("Forward")
     }
 }

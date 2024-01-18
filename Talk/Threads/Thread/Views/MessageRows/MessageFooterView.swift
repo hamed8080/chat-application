@@ -67,10 +67,10 @@ final class MessageFooterUITableView: UIView {
     
     private func configureView() {
         timelabel.font = UIFont.uiiransansCaption2
-        timelabel.textColor = Color.App.uihint
+        timelabel.textColor = Color.App.textSecondaryUIColor
         editedLabel.font = UIFont.uiiransansCaption2
-        editedLabel.textColor = Color.App.uihint
-        pinImage.tintColor = Color.App.uiprimary
+        editedLabel.textColor = Color.App.textSecondaryUIColor
+        pinImage.tintColor = Color.App.textPrimaryUIColor
 
         stack.spacing = 2
         stack.addArrangedSubview(timelabel)

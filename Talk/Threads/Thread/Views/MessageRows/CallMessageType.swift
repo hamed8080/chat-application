@@ -43,7 +43,7 @@ final class CallEventUITableViewCell: UITableViewCell {
         stack.addArrangedSubview(typeLabel)
         stack.addArrangedSubview(dateLabel)
         stack.addArrangedSubview(statusImage)
-        stack.backgroundColor = Color.App.uiblack?.withAlphaComponent(0.2)        
+        stack.backgroundColor = UIColor.black.withAlphaComponent(0.2)
         stack.layer.cornerRadius = 14
         stack.layer.masksToBounds = true
         stack.layoutMargins = .init(top: 4, left: 16, bottom: 4, right: 16)
@@ -63,7 +63,7 @@ final class CallEventUITableViewCell: UITableViewCell {
         let message = viewModel.message
         let isStarted = message.type == .startCall
         statusImage.image = isStarted ? CallEventUITableViewCell.startCallImage : CallEventUITableViewCell.endCallImage
-        statusImage.tintColor = isStarted ? Color.App.uigreen : Color.App.uired
+        statusImage.tintColor = isStarted ? UIColor.green : Color.App.redUIColor
         typeLabel.text = isStarted ? "Thread.callStarted".localized() : "Thread.callEnded".localized()
         let date = Date(milliseconds: Int64(message.time ?? 0))
         dateLabel.text = "\(date.localFormattedTime ?? "")"

@@ -87,7 +87,7 @@ final class LocationRowView: UIView {
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         gradient.cornerRadius = 8
-        gradient.colors = [Color.App.uibgInput!.cgColor, Color.App.uibgInputDark?.cgColor ?? UIColor.black.cgColor]
+        gradient.colors = [Color.App.bgPrimaryUIColor!.cgColor, Color.App.bgPrimaryUIColor?.cgColor ?? UIColor.black.cgColor]
         gradient.startPoint = CGPoint(x: 0.0, y: 1.0)
         gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
 

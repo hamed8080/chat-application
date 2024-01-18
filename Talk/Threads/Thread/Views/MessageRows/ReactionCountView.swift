@@ -148,7 +148,7 @@ final class ReactionCountRow: UIView {
         reactionLabel.font = .systemFont(ofSize: 14)
 
         reactionCountLabel.font = UIFont.uiiransansBody
-        reactionCountLabel.textColor = Color.App.uitext
+        reactionCountLabel.textColor = Color.App.textPrimaryUIColor
 
         stack.axis = .horizontal
         stack.addArrangedSubview(reactionLabel)

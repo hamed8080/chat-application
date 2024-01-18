@@ -95,7 +95,7 @@ final class UploadMessageFileView: UIView {
     private let stack = UIStackView()
     private let fileNameLabel = UILabel()
     private let fileSizeLabel = UILabel()
-    private let progressView = CircleProgressView(color: Color.App.uibgPrimary, iconTint: Color.App.uibgPrimary)
+    private let progressView = CircleProgressView(color: Color.App.bgPrimaryUIColor, iconTint: Color.App.bgPrimaryUIColor)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -108,17 +108,17 @@ final class UploadMessageFileView: UIView {
 
     private func configureView() {
         layoutMargins = UIEdgeInsets(all: 8)
-        backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
+        backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
-        fileSizeLabel.textColor = Color.App.uitext 
+        fileSizeLabel.textColor = Color.App.textPrimaryUIColor 
 
         fileNameLabel.font = UIFont.uiiransansBoldCaption2
         fileNameLabel.textAlignment = .left
-        fileNameLabel.textColor = Color.App.uitext
+        fileNameLabel.textColor = Color.App.textPrimaryUIColor
 
         stack.axis = .horizontal
         stack.spacing = 12

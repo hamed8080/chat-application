@@ -14,6 +14,8 @@ import TalkViewModels
 import Combine
 import TalkModels
 import TalkExtensions
+import ChatCore
+import Logger
 
 //struct TextMessageType: View {
 //    private var message: Message { viewModel.message }
@@ -133,7 +135,7 @@ final class TextMessageTypeCell: UITableViewCell {
                 radio.leadingAnchor.constraint(equalTo: messageContainer.leadingAnchor, constant: 8),
                 vStack.leadingAnchor.constraint(equalTo: radio.trailingAnchor, constant: 8)
             ])
-        } else if !viewModel.message.messageTitle.isEmpty, viewModel.message.forwardInfo == nil, !viewModel.isPublicLink {
+        } else if !viewModel.message.messageTitle.isEmpty, !viewModel.isPublicLink {
             messageTextView.leadingAnchor.constraint(equalTo: messageContainer.leadingAnchor, constant: 8).isActive = true
         }
 
@@ -220,7 +222,7 @@ final class TextMessageTypeCell: UITableViewCell {
 
     private var showTextMessageRow: Bool {
         let message = viewModel.message
-        return !message.messageTitle.isEmpty && message.forwardInfo == nil && !viewModel.isPublicLink
+        return !message.messageTitle.isEmpty && !viewModel.isPublicLink
     }
 
     private var showAvatar: Bool {
@@ -291,7 +293,7 @@ public final class SelectMessageRadio: UIView {
     public func setValues(viewModel: MessageRowViewModel) {
         let isSelected = viewModel.isSelected
         imageView.image = UIImage(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-        imageView.tintColor = isSelected ? Color.App.uiwhite : Color.App.uigray3
+        imageView.tintColor = isSelected ? Color.App.whiteUIColor : UIColor.gray
     }
 }
 
@@ -376,35 +378,108 @@ struct SelfContextMenu: View {
 
 struct TextMessageType_Previews: PreviewProvider {
     struct Preview: View {
+        @StateObject var viewModel: MessageRowViewModel
 
-        static let replyMessage = ReplyInfo(repliedToMessageId: 1, message: "TEST", messageType: .text, repliedToMessageTime: 155600555)
-        static let longText = """
-This is a very long text to test how it would react to size change\n
-In this new line we are going to test if it can break the line.
-"""
-        @StateObject var viewModel: MessageRowViewModel = .init(
-            message: .init(
-                id: 1,
-                message: Preview.longText,
-                messageType: .podSpacePicture,
-                ownerId: 1,
-                seen: true,
-                time: UInt(Date().millisecondsSince1970),
-                participant: Participant(id: 0, name: "John Doe"),
-                replyInfo: replyMessage
-            ),
-            viewModel: .init(thread: Conversation(id: 1))
-        )
+        init(viewModel: MessageRowViewModel) {
+            ThreadViewModel.maxAllowedWidth = 340
+            self._viewModel = StateObject(wrappedValue: viewModel)
+            Task {
+                await viewModel.performaCalculation()
+                await viewModel.asyncAnimateObjectWillChange()
+            }
+        }
 
         var body: some View {
-            ThreadViewModel.maxAllowedWidth = 340
-            return VStack {
-                TextMessageTypeCellWapper(viewModel: viewModel)
-            }
+            TextMessageTypeCellWapper(viewModel: viewModel)
         }
     }
 
     static var previews: some View {
-        Preview()
+        Preview(viewModel: MockAppConfiguration.viewModels.first(where: {$0.message.replyInfo != nil })!)
+            .previewDisplayName("Reply")
+        Preview(viewModel: MockAppConfiguration.viewModels.first(where: {$0.message.forwardInfo != nil })!)
+            .previewDisplayName("Forward")
+    }
+}
+
+class MockAppConfiguration: ChatDelegate {
+
+    static let imageMetaData = FileMetaData(file:
+            .init(fileExtension: "jpg",
+                  link: "https://media.gcflearnfree.org/ctassets/topics/246/share_size_large.jpg",
+                  mimeType: "image/jpeg",
+                  name: "Image",
+                  originalName: "image",
+                  size: 2044,
+                  actualHeight: 500, actualWidth: 500)
+    )
+    static let forwardInfo = ForwardInfo(
+        conversation: .init(id: 2, title: "Forwarded thread title"),
+        participant: .init(name: "Apple Seed")
+    )
+    static let replyInfo = ReplyInfo(
+        repliedToMessageId: 1,
+        message: "TEST Reply ",
+        messageType: .podSpacePicture,
+        metadata: try? JSONEncoder().encode(imageMetaData).utf8String,
+        repliedToMessageTime: 155600555
+    )
+    static let longText = """
+This is a very long text to test how it would react to size change\n
+In this new line we are going to test if it can break the line.
+"""
+
+    static let messages: [Message] = [
+        .init(
+            id: 1,
+            message: longText,
+            messageType: .text,
+            ownerId: 1,
+            seen: true,
+            time: UInt(Date().millisecondsSince1970),
+            participant: Participant(id: 0, name: "John Doe"),
+            replyInfo: replyInfo
+        ),
+        .init(
+            id: 1,
+            message: longText,
+            messageType: .text,
+            ownerId: 1,
+            seen: true,
+            time: UInt(Date().millisecondsSince1970),
+            forwardInfo: forwardInfo,
+            participant: Participant(id: 0, name: "John Doe")
+        )
+    ]
+
+    static var viewModels: [MessageRowViewModel] = {
+        _ = MockAppConfiguration.shared
+        let conversation = Conversation(id: 1)
+        let conversationVM = ThreadViewModel(thread: conversation)
+        var vms: [MessageRowViewModel] = []
+        messages.forEach { message in
+            let viewModel = MessageRowViewModel(message: message, viewModel: conversationVM)
+            vms.append(viewModel)
+        }
+        return vms
+    }()
+
+    static var shared: ChatDelegate = MockAppConfiguration()
+
+    private init () {
+        AppState.shared.objectsContainer = .init(delegate: self)
+        AppState.shared.objectsContainer.audioPlayerVM = .init()
+    }
+
+    func chatState(state: ChatCore.ChatState, currentUser: ChatModels.User?, error: ChatCore.ChatError?) {
+
+    }
+
+    func chatEvent(event: ChatEventType) {
+
+    }
+
+    func onLog(log: Log) {
+
     }
 }

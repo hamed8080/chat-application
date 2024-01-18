@@ -154,7 +154,7 @@ extension ThreadViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
-        tableView.backgroundColor = .red
+        tableView.backgroundColor = .clear
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         tableView.register(MessageUITableViewCell.self, forCellReuseIdentifier: "MessageUITableViewCell")
         tableView.register(CallEventUITableViewCell.self, forCellReuseIdentifier: "CallEventUITableViewCell")

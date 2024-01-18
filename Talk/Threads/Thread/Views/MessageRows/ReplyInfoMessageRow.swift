@@ -11,6 +11,7 @@ import ChatModels
 import SwiftUI
 import TalkUI
 import TalkViewModels
+import Additive
 
 //struct ReplyInfoMessageRow: View {
 //    private var message: Message { viewModel.message }
@@ -143,7 +144,7 @@ final class ReplyInfoMessageRow: UIButton {
     private let hStack = UIStackView()
     private let replyStaticLebel = UILabel()
     private let participantLabel = UILabel()
-    private let imageIconView = UIImageView()
+    private let imageIconView = ImageLoaderUIView()
     private let deletedLabel = UILabel()
     private let replyLabel = UILabel()
     private let bar = UIView()
@@ -162,28 +163,28 @@ final class ReplyInfoMessageRow: UIButton {
         vStack.translatesAutoresizingMaskIntoConstraints = false
 
         layoutMargins = UIEdgeInsets(all: 8)
-        backgroundColor = Color.App.uibgInput?.withAlphaComponent(0.5)
+        backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
         configuration = .borderless()
 
         replyStaticLebel.font = UIFont.uiiransansCaption3
-        replyStaticLebel.textColor = Color.App.uiprimary
+        replyStaticLebel.textColor = Color.App.textPrimaryUIColor
         replyStaticLebel.text = "Message.replyTo".localized()
 
         participantLabel.font = UIFont.uiiransansBoldCaption2
-        participantLabel.textColor = Color.App.uiprimary
+        participantLabel.textColor = Color.App.textPrimaryUIColor
 
         replyLabel.font = UIFont.uiiransansCaption3
         replyLabel.numberOfLines = 2
-        replyLabel.textColor = Color.App.uigray3
+        replyLabel.textColor = UIColor.gray
         replyLabel.lineBreakMode = .byTruncatingTail
 
         deletedLabel.text = "Messages.deletedMessageReply".localized()
         deletedLabel.font = UIFont.uiiransansBoldCaption2
-        deletedLabel.textColor = Color.App.uired
+        deletedLabel.textColor = Color.App.redUIColor
 
-        bar.backgroundColor = Color.App.uiprimary
+        bar.backgroundColor = Color.App.accentUIColor
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
@@ -229,6 +230,9 @@ final class ReplyInfoMessageRow: UIButton {
         replyLabel.textAlignment = viewModel.isEnglish || viewModel.isMe ? .right : .left
         deletedLabel.isHidden = replyInfo?.deleted == nil || replyInfo?.deleted == false
         imageIconView.isHidden = !viewModel.isReplyImage
+        if viewModel.isReplyImage, let url = viewModel.replyLink {
+            imageIconView.setValues(config: .init(url: url, metaData: viewModel.message.replyInfo?.metadata))
+        }
     }
 }
 
@@ -247,12 +251,24 @@ struct ReplyInfoMessageRowWapper: UIViewRepresentable {
 }
 
 struct ReplyInfoMessageRow_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            let replyMessage = ReplyInfo(repliedToMessageId: 1, message: "TEST", messageType: .text, repliedToMessageTime: 155600555)
-            let message = Message(id: 1, messageType: .participantJoin, time: 155600555, replyInfo: replyMessage)
-            let viewModel = MessageRowViewModel(message: message, viewModel: .init(thread: .init(id: 1)))
+    struct Preview: View {
+        @StateObject var viewModel: MessageRowViewModel
+
+        init(viewModel: MessageRowViewModel) {
+            ThreadViewModel.maxAllowedWidth = 340
+            self._viewModel = StateObject(wrappedValue: viewModel)
+            Task {
+                await viewModel.performaCalculation()
+                await viewModel.asyncAnimateObjectWillChange()
+            }
+        }
+
+        var body: some View {
             ReplyInfoMessageRowWapper(viewModel: viewModel)
         }
+    }
+
+    static var previews: some View {
+        Preview(viewModel: MockAppConfiguration.viewModels.first(where: {$0.message.replyInfo != nil })!)
     }
 }
