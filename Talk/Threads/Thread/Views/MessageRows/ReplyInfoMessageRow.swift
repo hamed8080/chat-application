@@ -233,7 +233,20 @@ final class ReplyInfoMessageRow: UIButton {
         if viewModel.isReplyImage, let url = viewModel.replyLink {
             imageIconView.setValues(config: .init(url: url, metaData: viewModel.message.replyInfo?.metadata))
         }
+        registerGestures(viewModel)
     }
+
+    private func registerGestures(_ viewModel: MessageRowViewModel) {
+        isUserInteractionEnabled = true
+        let tap = MessageTapGestureRecognizer(target: self, action: #selector(onReplyTapped(_:)))
+        tap.viewModel = viewModel
+        addGestureRecognizer(tap)
+    }
+
+    @objc func onReplyTapped(_ sender: MessageTapGestureRecognizer) {
+        print("on reply tapped")
+    }
+
 }
 
 struct ReplyInfoMessageRowWapper: UIViewRepresentable {
@@ -269,6 +282,6 @@ struct ReplyInfoMessageRow_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        Preview(viewModel: MockAppConfiguration.viewModels.first(where: {$0.message.replyInfo != nil })!)
+        Preview(viewModel: MockAppConfiguration.shared.viewModels.first(where: {$0.message.replyInfo != nil })!)
     }
 }

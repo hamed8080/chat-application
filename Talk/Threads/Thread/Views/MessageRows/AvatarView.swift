@@ -131,6 +131,7 @@ final class AvatarView: UIView {
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
         let showImage = avatarVM?.image != nil
+
         label.isHidden = showImage
         image.isHidden = !showImage
         if showImage {

@@ -89,19 +89,18 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
     public var uploadViewModel: UploadFileViewModel?
-    public var paddingEdgeInset: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+    public var paddingEdgeInset: UIEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)
     public var imageWidth: CGFloat? = nil
     public var imageHeight: CGFloat? = nil
     public var isReplyImage: Bool = false
     public var replyLink: String?
     public var isPublicLink: Bool = false
-    public var participantColor: Color? = nil
+    public var participantColor: UIColor? = nil
     public var computedFileSize: String? = nil
     public var extName: String? = nil
     public var fileName: String? = nil
     public var blurRadius: CGFloat? = 0
     public var addOrRemoveParticipantsAttr: AttributedString? = nil
-    public var textViewPadding: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
     public var localizedReplyFileName: String? = nil
     private static var formatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -263,7 +262,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let paddingTrailing: CGFloat = isReplyOrForward ? (isMe ? 16 : 10) : (isMe ? 4 + tailWidth : 4)
         let paddingTop: CGFloat = isReplyOrForward ? 10 : 4
         let paddingBottom: CGFloat = 4
-        paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
+        paddingEdgeInset = .init(top: paddingTop, left: paddingLeading, bottom: paddingBottom, right: paddingTrailing)
     }
 
     private func recalculateWithAnimation() {
@@ -297,13 +296,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let uploadCompleted: Bool = message.uploadFile == nil || uploadViewModel?.state == .completed
         canShowImageView = !isMapType && message.isImage && uploadCompleted
         let color = await threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
-        participantColor = Color(uiColor: color ?? .clear)
+        participantColor = color ?? .clear
         await manageDownload()
         computedFileSize = calculateFileSize()
         extName = calculateFileTypeWithExt()
         fileName = calculateFileName()
         addOrRemoveParticipantsAttr = calculateAddOrRemoveParticipantRow()
-        textViewPadding = calculateTextViewPadding()
         localizedReplyFileName = calculateLocalizeReplyFileName()
     }
 
@@ -468,11 +466,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
         return try? AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
     }
-
-    private func calculateTextViewPadding() -> EdgeInsets {
-      return EdgeInsets(top: !message.isImage && message.replyInfo == nil && message.forwardInfo == nil ? 6 : 0, leading: 6, bottom: 0, trailing: 6)
-    }
-
+    
     private func calculateLocalizeReplyFileName() -> String? {
         let hinTextMessage = message.replyInfo?.message ?? message.replyFileStringName?.localized()
         return hinTextMessage

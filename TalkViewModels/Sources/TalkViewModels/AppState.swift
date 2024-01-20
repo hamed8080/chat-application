@@ -48,7 +48,8 @@ public struct AppStateNavigationModel {
 public final class AppState: ObservableObject {
     public static let shared = AppState()
     public var cachedUser = UserConfigManagerVM.instance.currentUserConfig?.user
-    public var user: User? { cachedUser ?? ChatManager.activeInstance?.userInfo }
+    public var mockUser: User?
+    public var user: User? { cachedUser ?? ChatManager.activeInstance?.userInfo ?? mockUser }
     public var navViewModel: NavigationModel?
     @Published public var error: ChatError?
     @Published public var isLoading: Bool = false

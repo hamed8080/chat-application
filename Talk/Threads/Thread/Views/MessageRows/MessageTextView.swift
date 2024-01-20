@@ -9,34 +9,10 @@ import SwiftUI
 import TalkUI
 import ChatModels
 import TalkViewModels
-
-//struct MessageTextView: View {
-//    @EnvironmentObject var viewModel: MessageRowViewModel
-//    private var message: Message { viewModel.message }
-//    private var threadVM: ThreadViewModel? { viewModel.threadVM }
-//
-//    var body: some View {
-//        // TODO: TEXT must be alignment and image must be fit
-//        if !message.messageTitle.isEmpty, message.forwardInfo == nil, !viewModel.isPublicLink {
-//            Text(viewModel.markdownTitle)
-//                .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
-//                .padding(.horizontal, 6)
-//                .font(.iransansBody)
-//                .foregroundColor(Color.App.text)
-//                .fixedSize(horizontal: false, vertical: true)
-//        } else if let fileName = message.uploadFileName, message.isUnsentMessage == true {
-//            Text(fileName)
-//                .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
-//                .padding(.horizontal, 6)
-//                .font(.iransansBody)
-//                .foregroundColor(Color.App.text)
-//        }
-//    }
-//}
-
+import TalkModels
 
 final class MessageTextView: UIView {
-    private let lblMessage = UILabel()
+    private let textView = UITextView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,26 +24,39 @@ final class MessageTextView: UIView {
     }
 
     private func configureView() {
-        lblMessage.textColor = Color.App.textPrimaryUIColor
-        lblMessage.font = UIFont.uiiransansBody
-        lblMessage.numberOfLines = 0
-        lblMessage.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(lblMessage)
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.isScrollEnabled = false
+        textView.isEditable = false
+        textView.isSelectable = false /// Only is going to be enable when we are in context menu
+        addSubview(textView)
 
         NSLayoutConstraint.activate([
-            lblMessage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            lblMessage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
-            lblMessage.topAnchor.constraint(equalTo: topAnchor),
-            lblMessage.bottomAnchor.constraint(equalTo: bottomAnchor),
+            textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            textView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
+            textView.topAnchor.constraint(equalTo: topAnchor),
+            textView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
         let message = viewModel.message
-        lblMessage.textAlignment = viewModel.isEnglish ? .left : .right
-        if !message.messageTitle.isEmpty, !viewModel.isPublicLink {
-            lblMessage.attributedText = viewModel.nsMarkdownTitle
+        textView.textAlignment = viewModel.isEnglish ? .left : .right
+        if !message.messageTitle.isEmpty {
+            textView.attributedText = viewModel.nsMarkdownTitle
         }
+        textView.textColor = Color.App.textPrimaryUIColor
+        textView.backgroundColor = .clear
+        textView.font = UIFont.uiiransansBody
+
+        if message.message?.contains(AppRoutes.joinLink) == true {
+            let tap = MessageTapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
+            tap.viewModel = viewModel
+            textView.addGestureRecognizer(tap)
+        }
+    }
+
+    @objc func onTapJoinGroup(_ sender: MessageTapGestureRecognizer) {
+        print("tap on group link")
     }
 }
 
@@ -104,6 +93,6 @@ struct MessageTextView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        Preview(viewModel: MockAppConfiguration.viewModels.first!)
+        Preview(viewModel: MockAppConfiguration.shared.viewModels.first!)
     }
 }

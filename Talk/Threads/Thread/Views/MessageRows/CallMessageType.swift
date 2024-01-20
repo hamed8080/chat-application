@@ -32,6 +32,8 @@ final class CallEventUITableViewCell: UITableViewCell {
     
     private func configureView() {
 
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
         typeLabel.font = UIFont.uiiransansBody
         dateLabel.font = UIFont.uiiransansBody
 
@@ -48,14 +50,14 @@ final class CallEventUITableViewCell: UITableViewCell {
         stack.layer.masksToBounds = true
         stack.layoutMargins = .init(top: 4, left: 16, bottom: 4, right: 16)
         stack.isLayoutMarginsRelativeArrangement = true
-
+        contentView.backgroundColor = .yellow
         contentView.addSubview(stack)
-        stack.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
             statusImage.widthAnchor.constraint(equalToConstant: 18),
             statusImage.heightAnchor.constraint(equalToConstant: 18),
-            stack.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stack.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stack.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
         ])
     }
 

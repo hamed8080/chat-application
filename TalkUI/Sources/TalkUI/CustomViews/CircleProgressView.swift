@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 public final class CircleProgressView: UIView {
     public var color: UIColor?
@@ -16,7 +17,7 @@ public final class CircleProgressView: UIView {
     private var iconTint: UIColor?
     private var animation = CABasicAnimation(keyPath: "strokeEnd")
 
-    public init(color: UIColor? = .darkText, iconTint: UIColor? = UIColor.black, bgColor: UIColor? = .white.withAlphaComponent(0.3)) {
+    public init(color: UIColor? = .darkText, iconTint: UIColor? = Color.App.textPrimaryUIColor, bgColor: UIColor? = .white.withAlphaComponent(0.3)) {
         super.init(frame: .zero)
         self.bgColor = bgColor
         self.color = color
@@ -37,8 +38,8 @@ public final class CircleProgressView: UIView {
         NSLayoutConstraint.activate([
             imgCenter.centerXAnchor.constraint(equalTo: centerXAnchor),
             imgCenter.centerYAnchor.constraint(equalTo: centerYAnchor),
-            imgCenter.widthAnchor.constraint(equalToConstant: 14),
-            imgCenter.heightAnchor.constraint(equalToConstant: 14),
+            imgCenter.widthAnchor.constraint(equalToConstant: 16),
+            imgCenter.heightAnchor.constraint(equalToConstant: 16),
         ])
     }
 

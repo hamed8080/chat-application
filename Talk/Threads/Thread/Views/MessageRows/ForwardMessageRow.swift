@@ -133,6 +133,18 @@ final class ForwardMessageRow: UIButton {
     public func setValues(viewModel: MessageRowViewModel) {
         participantLabel.text = viewModel.message.forwardInfo?.participant?.name
         participantLabel.isHidden = viewModel.message.forwardInfo?.participant?.name == nil
+        registerGestures(viewModel: viewModel)
+    }
+
+    private func registerGestures(viewModel: MessageRowViewModel) {
+        isUserInteractionEnabled = true
+        let tap = MessageTapGestureRecognizer(target: self, action: #selector(onForwardTapped))
+        tap.viewModel = viewModel
+        addGestureRecognizer(tap)
+    }
+
+    @IBAction func onForwardTapped(_ sender: MessageTapGestureRecognizer) {
+        print("on forward tapped")
     }
 }
 
@@ -169,7 +181,7 @@ struct ForwardMessageRow_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        Preview(viewModel: MockAppConfiguration.viewModels.first(where: {$0.message.forwardInfo != nil })!)
+        Preview(viewModel: MockAppConfiguration.shared.viewModels.first(where: {$0.message.forwardInfo != nil })!)
             .previewDisplayName("Forward")
     }
 }

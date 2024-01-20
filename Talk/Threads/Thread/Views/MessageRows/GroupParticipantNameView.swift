@@ -43,20 +43,20 @@ final class GroupParticipantNameView: UIView {
 
     private func configureView() {
         label.font = UIFont.uiiransansBody
-        label.textColor = UIColor.purple
         label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
         addSubview(label)
 
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
             label.topAnchor.constraint(equalTo: topAnchor),
             label.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
+        label.textColor = viewModel.participantColor
         label.textAlignment = viewModel.isMe ? .right : .left
         label.text = viewModel.message.participant?.name ?? ""
     }
@@ -83,9 +83,24 @@ struct GroupParticipantNameViewWapper: UIViewRepresentable {
 }
 
 struct GroupParticipantNameView_Previews: PreviewProvider {
+    struct Preview: View {
+        @StateObject var viewModel: MessageRowViewModel
+
+        init(viewModel: MessageRowViewModel) {
+            ThreadViewModel.maxAllowedWidth = 340
+            self._viewModel = StateObject(wrappedValue: viewModel)
+            Task {
+                await viewModel.performaCalculation()
+                await viewModel.asyncAnimateObjectWillChange()
+            }
+        }
+
+        var body: some View {
+            GroupParticipantNameViewWapper(viewModel: viewModel)
+        }
+    }
+
     static var previews: some View {
-        let message = Message(id: 1, messageType: .participantJoin, time: 155600555)
-        let viewModel = MessageRowViewModel(message: message, viewModel: .init(thread: .init(id: 1)))
-        GroupParticipantNameViewWapper(viewModel: viewModel)
+        Preview(viewModel: MockAppConfiguration.shared.groupParticipantNameVM)
     }
 }

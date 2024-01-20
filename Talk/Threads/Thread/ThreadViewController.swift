@@ -27,29 +27,7 @@ struct UIKitThreadViewWrapper: UIViewControllerRepresentable {
     }
 }
 
-final class MessageUITableViewCell: UITableViewCell {
-    let textView = UITextView()
-    var viewModel: MessageRowViewModel!
-
-    convenience init(viewModel: MessageRowViewModel) {
-        self.init(style: .default, reuseIdentifier: "MessageUITableViewCell")
-        self.viewModel = viewModel
-        textView.attributedText = viewModel.nsMarkdownTitle
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(textView)
-//        textView.setContentHuggingPriority(.required, for: .vertical)
-        textView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        NSLayoutConstraint.activate([
-            textView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            textView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            textView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            textView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-        ])
-    }
-}
-
 final class UnreadBubbleUITableViewCell: UITableViewCell {
-
     convenience init(viewModel: MessageRowViewModel) {
         self.init(style: .default, reuseIdentifier: "UnreadBubbleUITableViewCell")
         let label = UILabel(frame: contentView.frame)
@@ -103,9 +81,8 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
             cell.setValues(viewModel: viewModel)
             return cell
         default:
-            if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                let cell = (cell as? TextMessageTypeCell) ?? TextMessageTypeCell(viewModel: viewModel)
-                cell.setValues(viewModel: viewModel)
+            if let cell = cell as? TextMessageTypeCell, message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
+                cell.viewModel = viewModel
                 return cell
             } else if message is UnreadMessageProtocol {
                 return UnreadBubbleUITableViewCell()
@@ -117,7 +94,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
 
     enum CellTypes: String {
         case call = "CallEventUITableViewCell"
-        case message = "MessageUITableViewCell"
+        case message = "TextMessageTypeCell"
         case participants = "ParticipantsEventUITableViewCell"
         case bubble = "UnreadBubbleUITableViewCell"
         case unknown
@@ -156,7 +133,7 @@ extension ThreadViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        tableView.register(MessageUITableViewCell.self, forCellReuseIdentifier: "MessageUITableViewCell")
+        tableView.register(TextMessageTypeCell.self, forCellReuseIdentifier: "TextMessageTypeCell")
         tableView.register(CallEventUITableViewCell.self, forCellReuseIdentifier: "CallEventUITableViewCell")
         tableView.register(ParticipantsEventUITableViewCell.self, forCellReuseIdentifier: "ParticipantsEventUITableViewCell")
         tableView.register(UnreadBubbleUITableViewCell.self, forCellReuseIdentifier: "UnreadBubbleUITableViewCell")

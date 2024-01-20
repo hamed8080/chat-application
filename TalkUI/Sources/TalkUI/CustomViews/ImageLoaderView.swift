@@ -49,7 +49,7 @@ public struct ImageLoaderView: View {
 }
 
 public final class ImageLoaderUIView: UIView {
-    private var imageLoaderVM: ImageLoaderViewModel?
+    public var imageLoaderVM: ImageLoaderViewModel?
     private let participantLabel = UILabel()
     private let imageIconView = UIImageView()
     private var cancelable: AnyCancellable?
