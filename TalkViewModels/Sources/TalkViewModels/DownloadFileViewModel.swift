@@ -39,7 +39,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public init(message: Message) {
         self.message = message
         setObservers()
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             await setup()
         }
     }
@@ -112,7 +113,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     /// We use a Task to decode fileMetaData and hashCode inside the fileHashCode.
     private func downloadFile() {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             state = .downloading
             let req = FileRequest(hashCode: fileHashCode)
             uniqueId = req.uniqueId
@@ -124,7 +126,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     /// We use a Task to decode fileMetaData and hashCode inside the fileHashCode.
     private func downloadImage() {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             state = .downloading
             let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
             uniqueId = req.uniqueId
@@ -136,7 +139,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     /// We use a Task to decode fileMetaData and hashCode inside the fileHashCode.
     public func downloadBlurImage(quality: Float = 0.02, size: ImageSize = .SMALL) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             state = .thumbnailDownloaing
             let req = ImageRequest(hashCode: fileHashCode, quality: quality, size: size, thumbnail: true)
             uniqueId = req.uniqueId

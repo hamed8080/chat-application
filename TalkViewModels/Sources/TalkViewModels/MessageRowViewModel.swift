@@ -39,9 +39,9 @@ public final class MessageReactionsViewModel: ObservableObject {
 
     private func onReactionEvent(_ notification: Notification) {
         if notification.object as? Int == self.message?.id {
-            Task {
+            Task { [weak self] in
                 try? await Task.sleep(for: .seconds(0.3))
-                await self.setReactionList()
+                await self?.setReactionList()
             }
         }
     }
@@ -264,7 +264,8 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func recalculateWithAnimation() {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             await performaCalculation()
             await MainActor.run {
                 self.animateObjectWillChange()

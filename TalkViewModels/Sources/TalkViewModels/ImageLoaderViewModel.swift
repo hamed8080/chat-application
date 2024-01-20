@@ -138,7 +138,8 @@ public final class ImageLoaderViewModel: ObservableObject {
 
     /// The hashCode decode FileMetaData so it needs to be done on the background thread.
     public func fetch() {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             fileMetadata = config.metaData
             if isSDKImage {
                 await getFromSDK(forceToDownloadFromServer: config.forceToDownloadFromServer, thumbnail: config.thumbnail)

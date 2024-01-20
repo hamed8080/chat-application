@@ -144,7 +144,8 @@ public final class LoginViewModel: ObservableObject {
     }
 
     public func showError(_ state: LoginState) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             await MainActor.run {
                 self.state = state
             }
@@ -152,7 +153,8 @@ public final class LoginViewModel: ObservableObject {
     }
 
     public func showLoading(_ show: Bool) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             await MainActor.run {
                 isLoading = show
             }
@@ -161,7 +163,8 @@ public final class LoginViewModel: ObservableObject {
 
     public func resend() {
         if let keyId = keyId {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 await requestOTP(identity: text, keyId: keyId, resend: true)
                 await startTimer()
             }

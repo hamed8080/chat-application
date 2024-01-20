@@ -54,7 +54,8 @@ public final class ThreadsViewModel: ObservableObject {
     func onCreate(_ response: ChatResponse<Conversation>) {
         isLoading = false
         if let thread = response.result {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 await appendThreads(threads: [thread])
                 await asyncAnimateObjectWillChange()
             }
@@ -122,7 +123,8 @@ public final class ThreadsViewModel: ObservableObject {
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
         if response.pop(prepend: "GET-THREADS") == nil { return }
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
                 if let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}), serverSortedPinConversations.isEmpty {
                     serverSortedPinConversations.removeAll()
@@ -143,7 +145,8 @@ public final class ThreadsViewModel: ObservableObject {
     public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) {
         if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") == nil { return }
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 await appendThreads(threads: threads)
                 await asyncAnimateObjectWillChange()
             }
@@ -196,7 +199,8 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onAddPrticipant(_ response: ChatResponse<Conversation>) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             if response.result?.participants?.first(where: {$0.id == AppState.shared.user?.id}) != nil, let newConversation = response.result {
                 /// It means an admin added a user to the conversation, and if the added user is in the app at the moment, should see this new conversation in its conversation list.
                 await appendThreads(threads: [newConversation])

@@ -31,7 +31,8 @@ public final class ThreadPinMessageViewModel: ObservableObject {
         self.thread = thread
         message = thread.pinMessage
         setupObservers()
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             downloadImageThumbnail()
             await calculate()
         }
@@ -71,7 +72,8 @@ public final class ThreadPinMessageViewModel: ObservableObject {
                 thread.pinMessage = response.result
                 message = response.result
                 downloadImageThumbnail()
-                Task {
+                Task { [weak self] in
+                    guard let self = self else { return }
                     await calculate()
                 }
             }
@@ -79,14 +81,16 @@ public final class ThreadPinMessageViewModel: ObservableObject {
             if threadId == response.subjectId {
                 thread.pinMessage = nil
                 message = nil
-                Task {
+                Task { [weak self] in
+                    guard let self = self else { return }
                     await calculate()
                 }
             }
         case .edited(let response):
             if response.result?.id == message?.id, let message = response.result {
                 self.message = PinMessage(message: message)
-                Task {
+                Task { [weak self] in
+                    guard let self = self else { return }
                     await calculate()
                 }
             }
@@ -128,7 +132,8 @@ public final class ThreadPinMessageViewModel: ObservableObject {
 
     /// We use a Task due to fileMetadata decoding.
     private func downloadImageThumbnail() {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             guard let file = fileMetadata,
                   let hashCode = file.file?.hashCode,
                   file.file?.mimeType == "image/jpeg" || file.file?.mimeType == "image/png"

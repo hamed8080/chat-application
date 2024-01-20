@@ -112,7 +112,8 @@ public final class TokenManager: ObservableObject {
     }
 
     public func setIsLoggedIn(isLoggedIn: Bool) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             await MainActor.run {
                 self.isLoggedIn = isLoggedIn
             }

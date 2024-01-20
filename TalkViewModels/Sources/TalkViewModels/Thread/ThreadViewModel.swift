@@ -132,7 +132,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     private func setAppSettingsModel() {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             model = AppSettingsModel.restore()
             canDownloadImages = canDownloadImagesInConversation()
             canDownloadFiles = canDownloadFilesInConversation()
@@ -147,7 +148,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 await historyVM.appendMessagesAndSort([message])
                 await historyVM.asyncAnimateObjectWillChange()
                 await scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)

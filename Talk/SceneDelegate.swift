@@ -106,7 +106,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
     }
 
     private func handleTaskRefreshToken(_ task: BGAppRefreshTask) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in handleTaskRefreshToken method", level: .error, type: .sent, userInfo: nil)
             NotificationCenter.logs.post(name: .logs, object: log)
             await TokenManager.shared.getNewTokenWithRefreshToken()

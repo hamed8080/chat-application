@@ -127,7 +127,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
               let messages = response.result,
               !response.cache
         else { return }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             /// 3- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(messages)
             /// 4- Disable excessive loading on the top part.
@@ -159,7 +160,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
               let messages = response.result,
               !response.cache
         else { return }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             /// 3- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(messages)
             /// 4- Disable excessive loading on the top part.
@@ -203,7 +205,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
               let messages = response.result,
               !response.cache
         else { return }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             /// 2- Append and sort  and calculate the array but not call to update the view.
             await appendMessagesAndSort(messages)
             /// 3- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
@@ -232,7 +235,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
               let messages = response.result,
               !response.cache
         else { return }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             /// 10- Append messages to the bottom part of the view and if the user scrolls down can see new messages.
             await appendMessagesAndSort(messages)
             /// 11-  Set whether it has more messages at the bottom or not.
@@ -265,7 +269,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
               let messages = response.result,
               !response.cache
         else { return }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             if response.result?.count ?? 0 > 0 {
                 /// 2- Append and sort the array but not call to update the view and do calculaiton.
                 await appendMessagesAndSort(messages)
@@ -306,7 +311,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
               let messages = response.result,
               !response.cache
         else { return }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
             if response.result?.count ?? 0 > 0 {
                 appenedUnreadMessagesBannerIfNeeed()
@@ -322,7 +328,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     /// Scenario 6
     public func moveToTime(_ time: UInt, _ messageId: Int, highlight: Bool = true) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             /// 1- Move to a message locally if it exists.
             if await moveToMessageLocally(messageId, highlight: highlight) { return }
             sections.removeAll()
@@ -340,7 +347,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         guard let request = response.pop(prepend: "TO-TIME") as? OnMoveTime,
               let messages = response.result
         else { return }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             /// 3- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(messages)
             threadViewModel?.centerLoading = false
@@ -367,7 +375,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
             response.pop(prepend: "FROM-TIME") != nil,
             let messages = response.result
         else { return }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             let sortedMessages = messages.sorted(by: {$0.time ?? 0 < $1.time ?? 0})
             /// 8- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(sortedMessages)
@@ -413,7 +422,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
             response.pop(prepend: "FETCH-BY-OFFSET") != nil,
             let messages = response.result
         else { return }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             let sortedMessages = messages.sorted(by: {$0.time ?? 0 < $1.time ?? 0})
             await appendMessagesAndSort(sortedMessages)
             isFetchedServerFirstResponse = true
@@ -630,7 +640,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         } else {
             lastTopVisibleMessage = nil
         }
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             if message.id == thread.lastMessageVO?.id, threadViewModel.scrollVM.isAtBottomOfTheList == false {
                 threadViewModel.scrollVM.isAtBottomOfTheList = true
                 threadViewModel.scrollVM.animateObjectWillChange()

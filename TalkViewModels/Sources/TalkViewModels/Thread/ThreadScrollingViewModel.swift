@@ -69,7 +69,8 @@ public final class ThreadScrollingViewModel: ObservableObject {
     }
 
     public func disableExcessiveLoading() {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             await MainActor.run {
                 isProgramaticallyScroll = true
             }

@@ -184,7 +184,8 @@ extension ThreadViewModel {
                                              messageType: .text)
             let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
             let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().millisecondsSince1970), uniqueId: req.uniqueId, conversation: thread)
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 await self.historyVM.appendMessagesAndSort([message])
                 ChatManager.activeInstance?.message.send(req)
             }
@@ -361,7 +362,8 @@ extension ThreadViewModel {
 
     public func onUnSentEditCompletionResult(_ response: ChatResponse<Message>) {
         if let message = response.result, threadId == message.conversation?.id {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 historyVM.onDeleteMessage(response)
                 await historyVM.appendMessagesAndSort([message])
             }
