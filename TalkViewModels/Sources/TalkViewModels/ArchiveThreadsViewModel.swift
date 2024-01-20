@@ -33,10 +33,10 @@ public final class ArchiveThreadsViewModel: ObservableObject {
                 self?.onThreadEvent(event)
             }
             .store(in: &cancelable)
-        RequestsManager.shared.$cancelRequest
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
             .sink { [weak self] newValue in
-                if let newValue {
-                    self?.onCancelTimer(key: newValue)
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
                 }
             }
             .store(in: &cancelable)

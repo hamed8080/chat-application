@@ -318,6 +318,7 @@
 /* Support */
 "Support.version" = "Versión: %@";
 "Support.aboutUsText" = "Talk nació en 2016. Este mensajero fue producido y desarrollado con el objetivo de crear una comunicación profunda y constructiva y comprender las necesidades organizacionales y no organizacionales. Se espera que, de acuerdo con las condiciones actuales, Tak dé cada día un paso más fuerte en el camino del desarrollo sostenible y la creación de una plataforma segura y rápida.";
+"Support.number" = "021-91033000 interna 9";
 
 /* NotificationSettings */
 "Notification.Sound" = "Sonido";

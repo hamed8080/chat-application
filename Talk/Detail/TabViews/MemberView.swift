@@ -111,7 +111,7 @@ struct ParticipantRowContainer: View {
                     }
                 }
                 .foregroundColor(.primary)
-                .frame(width: 196)
+                .frame(width: 246)
                 .background(MixMaterialBackground())
                 .clipShape(RoundedRectangle(cornerRadius:((12))))
                 .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
@@ -197,7 +197,7 @@ struct ParticipantSearchView: View {
             }
             .popover(isPresented: $showPopover, arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 8) {
-                    ForEach(SearchParticipantType.allCases) { item in
+                    ForEach(SearchParticipantType.allCases.filter({$0 != .admin })) { item in
                         Button {
                             withAnimation {
                                 viewModel.searchType = item

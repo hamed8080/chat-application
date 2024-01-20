@@ -158,7 +158,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onContacts(_ response: ChatResponse<[Contact]>) {
-        if !response.cache, response.value(prepend: "GET-CONTACTS") != nil {
+        if !response.cache, response.pop(prepend: "GET-CONTACTS") != nil {
             if let contacts = response.result {
                 firstSuccessResponse = !response.cache
                 appendOrUpdateContact(contacts)
@@ -310,7 +310,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onSearchContacts(_ response: ChatResponse<[Contact]>) {
-        if response.value(prepend: "SEARCH-CONTACTS") != nil {
+        if response.pop(prepend: "SEARCH-CONTACTS") != nil {
             isLoading = false
             searchedContacts = .init(response.result ?? [])
         }
@@ -416,7 +416,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onCreateGroup(_ response: ChatResponse<Conversation>) {
-        if response.value(prepend: "ConversationBuilder") != nil {
+        if response.pop(prepend: "ConversationBuilder") != nil {
             isCreateLoading = false
             if let conversation = response.result {
                 self.createdConversation = conversation
@@ -450,7 +450,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onEditGroup(_ response: ChatResponse<Conversation>) {
-        if response.value(prepend: "EditConversation") != nil {
+        if response.pop(prepend: "EditConversation") != nil {
             closeConversationContextMenu = true
             closeBuilder()
             isCreateLoading = false

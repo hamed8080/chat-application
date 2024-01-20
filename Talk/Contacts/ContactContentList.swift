@@ -38,6 +38,7 @@ struct ContactContentList: View {
             }
 
             Button {
+                viewModel.searchContactString = ""
                 viewModel.createConversationType = .normal
                 viewModel.showConversaitonBuilder.toggle()
             } label: {
@@ -48,6 +49,7 @@ struct ContactContentList: View {
             .listRowSeparatorTint(Color.App.dividerPrimary)
 
             Button {
+                viewModel.searchContactString = ""
                 viewModel.createConversationType = .channel
                 viewModel.showConversaitonBuilder.toggle()
             } label: {

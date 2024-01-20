@@ -19,7 +19,7 @@ struct FileView: View {
     @State var viewModel: DetailTabDownloaderViewModel
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType)
+        viewModel = .init(conversation: conversation, messageType: messageType, tabName: "File")
     }
 
     var body: some View {

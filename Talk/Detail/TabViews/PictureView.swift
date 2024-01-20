@@ -20,7 +20,7 @@ struct PictureView: View {
     @State var viewWidth: CGFloat = 0
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType)
+        viewModel = .init(conversation: conversation, messageType: messageType, tabName: "Picture")
     }
 
     var body: some View {

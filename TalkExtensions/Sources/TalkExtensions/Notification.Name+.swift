@@ -9,6 +9,7 @@ import Foundation
 import Chat
 
 public extension Notification.Name {
+    static let onRequestTimer = Notification.Name("onRequestTimer")
     static let download = Notification.Name("download")
     static let upload = Notification.Name("upload")
     static let assistant = Notification.Name("assistant")
@@ -39,6 +40,7 @@ public extension Notification.Name {
 }
 
 public extension NotificationCenter {
+    static let onRequestTimer = NotificationCenter()
     static let download = NotificationCenter()
     static let upload = NotificationCenter()
     static let assistant = NotificationCenter()

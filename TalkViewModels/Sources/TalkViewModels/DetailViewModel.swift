@@ -275,7 +275,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     private func onChangeThreadType(_ response: ChatResponse<Conversation>) {
         self.thread?.type = response.result?.type
         isPublic = thread?.type?.isPrivate == false
-        if let req = response.value(prepend: "CHANGE-TO-PUBLIC") as? ChangeThreadTypeRequest {
+        if let req = response.pop(prepend: "CHANGE-TO-PUBLIC") as? ChangeThreadTypeRequest {
             thread?.uniqueName = req.uniqueName
         }
         animateObjectWillChange()
@@ -332,7 +332,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     public func onEditGroup(_ response: ChatResponse<Conversation>) {
-        if response.value(prepend: "EditGroup") != nil {
+        if response.pop(prepend: "EditGroup") != nil {
             image = nil
             isLoading = false
             showEditGroup = false
@@ -357,14 +357,14 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     private func getUserData() {
-        guard let threadId = thread?.id else { return }
+        guard let threadId = thread?.id, threadId != LocalId.emptyThread.rawValue else { return }
         let req = ThreadParticipantRequest(threadId: threadId)
         RequestsManager.shared.append(prepend: "GET-P2P-DETAIL", value: req)
         ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
     private func onP2PParticipant(_ response: ChatResponse<[Participant]>) {
-        if response.value(prepend: "GET-P2P-DETAIL") != nil, let partner = response.result?.first(where: {$0.id == thread?.partner}) {
+        if response.pop(prepend: "GET-P2P-DETAIL") != nil, let partner = response.result?.first(where: {$0.id == thread?.partner}) {
             self.partner = partner
             animateObjectWillChange()
             let req = ContactsRequest(id: partner.contactId)
@@ -374,7 +374,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     private func onP2PContact(_ response: ChatResponse<[Contact]>) {
-        if response.value(prepend: "GET-P2P-CONTACT-DETAIL") != nil, let partnerContact = response.result?.first(where: {$0.id == partner?.contactId}) {
+        if response.pop(prepend: "GET-P2P-CONTACT-DETAIL") != nil, let partnerContact = response.result?.first(where: {$0.id == partner?.contactId}) {
             self.partnerContact = partnerContact
             animateObjectWillChange()
         }

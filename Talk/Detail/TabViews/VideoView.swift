@@ -19,7 +19,7 @@ struct VideoView: View {
     @State var viewModel: DetailTabDownloaderViewModel
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType)
+        viewModel = .init(conversation: conversation, messageType: messageType, tabName: "Video")
     }
 
     var body: some View {

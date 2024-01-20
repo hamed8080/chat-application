@@ -57,5 +57,10 @@ struct ThreadImageView: View {
                 computedImageURL = thread.computedImageURL
             }
         }
+        .onReceive(thread.objectWillChange) { _ in /// update an image of a thread by another device
+            if computedImageURL != self.thread.computedImageURL {
+                self.computedImageURL = thread.computedImageURL
+            }
+        }
     }
 }

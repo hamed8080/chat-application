@@ -72,7 +72,7 @@ public final class MentionListPickerViewModel: ObservableObject {
     }
 
     func onParticipants(_ response: ChatResponse<[Participant]>) {
-        if response.value(prepend: "MentionParticipants") != nil, !response.cache, let participants = response.result {
+        if response.pop(prepend: "MentionParticipants") != nil, !response.cache, let participants = response.result {
             self.mentionList.removeAll()
             self.mentionList = .init(participants)
             mentionList.removeAll(where: {$0.id == AppState.shared.user?.id})

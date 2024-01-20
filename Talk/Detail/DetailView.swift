@@ -353,11 +353,12 @@ struct DetailTopButtons: View {
                             .environmentObject(AppState.shared.objectsContainer.threadsVM)
                     }
                     if let user = viewModel.user {
+                        StickyHeaderSection(header: "", height: 4)
                         UserActionMenu(participant: user)
                     }
                 }
                 .foregroundColor(.primary)
-                .frame(width: 196)
+                .frame(width: 246)
                 .background(MixMaterialBackground())
                 .clipShape(RoundedRectangle(cornerRadius:((12))))
                 .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)

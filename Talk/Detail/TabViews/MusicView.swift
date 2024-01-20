@@ -17,7 +17,7 @@ struct MusicView: View {
     @State var viewModel: DetailTabDownloaderViewModel
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType)
+        viewModel = .init(conversation: conversation, messageType: messageType, tabName: "Music")
     }
 
     var body: some View {

@@ -31,14 +31,8 @@ public extension Message {
                                                                     languageCode: nil,
                                                                     appliesSourcePositionAttributes: false)
         guard let mutableAttr = try? NSMutableAttributedString(markdown: messageTitle, options: option) else { return NSAttributedString() }
-        let title = mutableAttr.string
-        title.matches(char: "@")?.forEach { match in
-            let userName = title[Range(match.range, in: title)!]
-            let sanitizedUserName = String(userName).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "@", with: "")
-            mutableAttr.addAttributes([NSAttributedString.Key.link: NSURL(string: "ShowUser:User?userName=\(sanitizedUserName)")!], range: match.range)
-            mutableAttr.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "accent") ?? .orange], range: match.range)
-        }
-        mutableAttr.addLinkColor(messageTitle, UIColor(named: "text_secondary") ?? .gray)
+        mutableAttr.addUserColor(UIColor(named: "accent") ?? .orange)
+        mutableAttr.addLinkColor(UIColor(named: "text_secondary") ?? .gray)
         return mutableAttr
     }
     

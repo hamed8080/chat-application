@@ -145,7 +145,7 @@ public final class ParticipantsViewModel: ObservableObject {
         // FIXME: This bug should be fixed in the caching system as described in the text below.
         /// If we remove this line due to a bug in the Cache, we will get an incorrect participants list.
         /// For example, after a user leaves a thread, if the user updates their getHistory, the left participant will be shown in the list, which is incorrect.
-        if !response.cache, let participants = response.result {
+        if !response.cache, let participants = response.result, response.subjectId == thread?.id {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
             hasNext = response.hasNext
@@ -227,7 +227,7 @@ public final class ParticipantsViewModel: ObservableObject {
         }
 
 //        /// If an admin makes another participant admin the setter will not get a list of roles in the response.
-        if response.value(prepend: "REQUEST-TO-ADMIN-PARTICIPANT") != nil, response.error == nil {
+        if response.pop(prepend: "REQUEST-TO-ADMIN-PARTICIPANT") != nil, response.error == nil {
             response.result?.forEach{ userRole in
                 if let index = participants.firstIndex(where: {$0.id == userRole.id}) {
                     participants[index].admin = true

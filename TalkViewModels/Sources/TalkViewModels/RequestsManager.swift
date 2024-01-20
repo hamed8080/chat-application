@@ -9,11 +9,9 @@ import Foundation
 import ChatDTO
 import ChatCore
 
-class RequestsManager: ObservableObject {
+class RequestsManager {
     public static let shared = RequestsManager()
-    @Published
     public var requests: [String: ChatDTO.UniqueIdProtocol] = [:]
-    @Published var cancelRequest: String?
     private var queue = DispatchQueue(label: "RequestQueue")
 
     private init(){}
@@ -59,18 +57,25 @@ class RequestsManager: ObservableObject {
         return requests[prependedKey]
     }
 
+    func pop(prepend: String, for key: String?) -> ChatDTO.UniqueIdProtocol? {
+        guard let key = key else { return nil }
+        let prependedKey = "\(prepend)-\(key)"
+        if !requests.keys.contains(prependedKey) { return nil }
+        requests.removeValue(forKey: prependedKey)
+        return requests[prependedKey]
+    }
+
     func value(for key: String?) -> ChatDTO.UniqueIdProtocol? {
         guard let key = key, requests.keys.contains(key) else { return nil }
         return requests[key]
     }
 
-    /// Automatically cancel a request if there is no response come back from the chat server after 5 seconds.
+    /// Automatically cancel a request if there is no response come back from the chat server after 25 seconds.
     func addCancelTimer(key: String) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 25) { [weak self] in
             if ((self?.requests.keys.contains(where: { $0 == key})) != nil) {
                 self?.remove(key: key)
-                self?.cancelRequest = key
-                self?.objectWillChange.send()
+                NotificationCenter.onRequestTimer.post(name: .onRequestTimer, object: key)
             }
         }
     }
@@ -85,6 +90,12 @@ public extension ChatResponse {
 
     @discardableResult
     func value(prepend: String) -> ChatDTO.UniqueIdProtocol? {
+        guard let uniqueId = uniqueId else { return nil }
+        return RequestsManager.shared.value(prepend: prepend, for: uniqueId)
+    }
+
+    @discardableResult
+    func pop(prepend: String) -> ChatDTO.UniqueIdProtocol? {
         guard let uniqueId = uniqueId else { return nil }
         return RequestsManager.shared.value(prepend: prepend, for: uniqueId)
     }

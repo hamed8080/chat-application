@@ -59,10 +59,10 @@ public final class ThreadsSearchViewModel: ObservableObject {
                 }
             }
             .store(in: &cancelable)
-        RequestsManager.shared.$cancelRequest
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
             .sink { [weak self] newValue in
-                if let newValue {
-                    self?.onCancelTimer(key: newValue)
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
                 }
             }
             .store(in: &cancelable)
@@ -112,14 +112,14 @@ public final class ThreadsSearchViewModel: ObservableObject {
 
     func onSearch(_ response: ChatResponse<[Conversation]>) {
         isLoading = false
-        if !response.cache, let threads = response.result, response.value(prepend: "SEARCH") != nil {
+        if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH") != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
 
     func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) {
         isLoading = false
-        if !response.cache, let threads = response.result, response.value(prepend: "SEARCH-PUBLIC-THREAD") != nil {
+        if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH-PUBLIC-THREAD") != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }

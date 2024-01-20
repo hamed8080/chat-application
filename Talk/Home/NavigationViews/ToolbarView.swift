@@ -158,6 +158,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
 
     private func cancelSaerch() {
         withAnimation {
+            NotificationCenter.cancelSearch.post(name: .cancelSearch, object: nil)
             if isInSearchMode {
                 hideKeyboard()
             }

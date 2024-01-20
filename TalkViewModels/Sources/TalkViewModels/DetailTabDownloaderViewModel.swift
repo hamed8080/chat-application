@@ -12,6 +12,7 @@ import ChatModels
 import Combine
 import SwiftUI
 import TalkExtensions
+import TalkModels
 
 public class DetailTabDownloaderViewModel: ObservableObject {
     public private(set) var messages: ContiguousArray<Message> = []
@@ -24,8 +25,10 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     private let count = 25
     public var itemCount = 3
     private var downloadVMS: [DownloadFileViewModel] = []
+    private let tabName: String
 
-    public init(conversation: Conversation, messageType: MessageType) {
+    public init(conversation: Conversation, messageType: MessageType, tabName: String) {
+        self.tabName = tabName
         self.conversation = conversation
         self.messageType = messageType
         NotificationCenter.message.publisher(for: .message)
@@ -39,7 +42,7 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     private func onMessageEvent(_ event: MessageEventTypes) {
         switch event {
         case let .history(response):
-            if response.value(prepend: "DetailViewHistory") != nil,
+            if response.pop(prepend: "DetailViewHistory-\(tabName)") != nil,
                !response.cache,
                response.subjectId == conversation.id,
                let messages = response.result {
@@ -68,9 +71,9 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     }
 
     public func loadMore() {
-        guard let conversationId = conversation.id, !isLoading, hasNext else { return }
+        guard let conversationId = conversation.id, conversationId != LocalId.emptyThread.rawValue, !isLoading, hasNext else { return }
         let req: GetHistoryRequest = .init(threadId: conversationId, count: count, messageType: messageType.rawValue, offset: offset)
-        RequestsManager.shared.append(prepend: "DetailViewHistory", value: req)
+        RequestsManager.shared.append(prepend: "DetailViewHistory-\(tabName)", value: req)
         offset += count
         isLoading = true
         animateObjectWillChange()

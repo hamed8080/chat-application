@@ -71,10 +71,10 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 self?.onMessageEvent(event)
             }
             .store(in: &cancelable)
-        RequestsManager.shared.$cancelRequest
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
             .sink { [weak self] newValue in
-                if let newValue {
-                    self?.onCancelTimer(key: newValue)
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
                 }
             }
             .store(in: &cancelable)
@@ -123,7 +123,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreTop(_ response: ChatResponse<[Message]>) {
-        guard response.value(prepend: "MORE-TOP") != nil,
+        guard response.pop(prepend: "MORE-TOP") != nil,
               let messages = response.result,
               !response.cache
         else { return }
@@ -155,7 +155,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreBottom(_ response: ChatResponse<[Message]>) {
-        guard response.value(prepend: "MORE-BOTTOM") != nil,
+        guard response.pop(prepend: "MORE-BOTTOM") != nil,
               let messages = response.result,
               !response.cache
         else { return }
@@ -199,7 +199,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreTopFirstScenario(_ response: ChatResponse<[Message]>) {
-        guard response.value(prepend: "MORE-TOP-FIRST-SCENARIO") != nil,
+        guard response.pop(prepend: "MORE-TOP-FIRST-SCENARIO") != nil,
               let messages = response.result,
               !response.cache
         else { return }
@@ -228,7 +228,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreBottomFirstScenario(_ response: ChatResponse<[Message]>) {
-        guard response.value(prepend: "MORE-BOTTOM-FIRST-SCENARIO") != nil,
+        guard response.pop(prepend: "MORE-BOTTOM-FIRST-SCENARIO") != nil,
               let messages = response.result,
               !response.cache
         else { return }
@@ -261,7 +261,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreTopSecondScenario(_ response: ChatResponse<[Message]>) {
-        guard response.value(prepend: "MORE-TOP-SECOND-SCENARIO") != nil,
+        guard response.pop(prepend: "MORE-TOP-SECOND-SCENARIO") != nil,
               let messages = response.result,
               !response.cache
         else { return }
@@ -302,7 +302,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreBottomFifthScenario(_ response: ChatResponse<[Message]>) {
-        guard response.value(prepend: "MORE-BOTTOM-FIFTH-SCENARIO") != nil,
+        guard response.pop(prepend: "MORE-BOTTOM-FIFTH-SCENARIO") != nil,
               let messages = response.result,
               !response.cache
         else { return }
@@ -337,7 +337,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     func onMoveToTime(_ response: ChatResponse<[Message]>) {
-        guard let request = response.value(prepend: "TO-TIME") as? OnMoveTime,
+        guard let request = response.pop(prepend: "TO-TIME") as? OnMoveTime,
               let messages = response.result
         else { return }
         Task {
@@ -364,7 +364,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     func onMoveFromTime(_ response: ChatResponse<[Message]>) {
         guard
-            response.value(prepend: "FROM-TIME") != nil,
+            response.pop(prepend: "FROM-TIME") != nil,
             let messages = response.result
         else { return }
         Task {
@@ -410,7 +410,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     func onFetchByOffset(_ response: ChatResponse<[Message]>) {
         guard
-            response.value(prepend: "FETCH-BY-OFFSET") != nil,
+            response.pop(prepend: "FETCH-BY-OFFSET") != nil,
             let messages = response.result
         else { return }
         Task {

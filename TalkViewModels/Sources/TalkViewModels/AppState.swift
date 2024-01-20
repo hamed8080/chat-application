@@ -115,11 +115,11 @@ public final class AppState: ObservableObject {
             showThread(thread: thraed)
         }
 
-        if (response.value(prepend: "SEARCH-P2P") as? ThreadsRequest) != nil, !response.cache {
+        if (response.pop(prepend: "SEARCH-P2P") as? ThreadsRequest) != nil, !response.cache {
             onSearchP2PThreads(thread: response.result?.first)
         }
 
-        if (response.value(prepend: "SEARCH-GROUP-THREAD") as? ThreadsRequest) != nil, !response.cache {
+        if (response.pop(prepend: "SEARCH-GROUP-THREAD") as? ThreadsRequest) != nil, !response.cache {
             onSearchGroupThreads(thread: response.result?.first)
         }
     }

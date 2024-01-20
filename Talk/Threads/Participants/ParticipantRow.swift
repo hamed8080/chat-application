@@ -80,7 +80,7 @@ struct ParticipantRowLables: View {
         HStack {
             if let participant = paritcipant {
                 if viewModel.thread?.inviter?.id == participantId {
-                    Text("Participant.owner")
+                    Text("Participant.admin")
                         .padding(EdgeInsets(top: 2, leading: 4, bottom: 2, trailing: 4))
                         .foregroundColor(Color.App.accent)
                 } else if participant.admin == true {

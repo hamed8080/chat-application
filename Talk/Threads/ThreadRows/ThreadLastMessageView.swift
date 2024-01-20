@@ -59,8 +59,8 @@ struct NormalLastMessageContainer: View {
                     .foregroundStyle(Color.App.color1)
             }
 
-            if let message = thread.lastMessageVO?.message {
-                Text(message)
+            if let message = thread.lastMessageVO?.message?.replacingOccurrences(of: "\n", with: " ").prefix(50) {
+                Text(String(message))
                     .font(.iransansBody)
                     .lineLimit(1)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)

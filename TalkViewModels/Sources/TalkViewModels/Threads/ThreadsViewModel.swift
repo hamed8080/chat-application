@@ -42,10 +42,10 @@ public final class ThreadsViewModel: ObservableObject {
             .store(in: &cancelable)
         registerNotifications()
         getThreads()
-        RequestsManager.shared.$cancelRequest
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
             .sink { [weak self] newValue in
-                if let newValue {
-                    self?.onCancelTimer(key: newValue)
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
                 }
             }
             .store(in: &cancelable)
@@ -120,7 +120,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
-        if response.value(prepend: "GET-THREADS") == nil { return }
+        if response.pop(prepend: "GET-THREADS") == nil { return }
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
             Task {
                 /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
@@ -141,7 +141,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) {
-        if response.value(prepend: "GET-NOT-ACTIVE-THREADS") == nil { return }
+        if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") == nil { return }
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
             Task {
                 await appendThreads(threads: threads)
@@ -337,6 +337,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func updateThreadInfo(_ thread: Conversation) {
         if let index = firstIndex(thread.id) {
             threads[index].updateValues(thread)
+            threads[index].animateObjectWillChange()
             animateObjectWillChange()
         }
     }

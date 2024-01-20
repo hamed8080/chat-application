@@ -103,7 +103,7 @@ struct ThreadRow: View {
                     .environmentObject(viewModel)
             }
             .foregroundColor(.primary)
-            .frame(width: 196)
+            .frame(width: 246)
             .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius:((12))))
             .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
