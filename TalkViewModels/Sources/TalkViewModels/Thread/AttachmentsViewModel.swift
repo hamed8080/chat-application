@@ -61,8 +61,8 @@ public struct AttachmentFile: Identifiable {
         } else if type == .file {
             let item = request as? URL
             var size = 0
-            if let url = item, let data = try? Data(contentsOf: url) {
-                size = data.count
+            if let fileSize = try? item?.resourceValues(forKeys: [.fileSizeKey]).fileSize {
+                size = fileSize
             }
             return "\(size.toSizeString(locale: Language.preferredLocale) ?? "") - \((request as? URL)?.fileExtension.uppercased() ?? "")"
         } else if type == .drop {

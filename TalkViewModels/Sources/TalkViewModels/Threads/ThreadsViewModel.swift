@@ -83,12 +83,7 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].animateObjectWillChange()
             animateObjectWillChange()
         }
-
-        if let conversationId = response.result?.conversation?.id, !threads.contains(where: {$0.id == conversationId })  {
-            let req = ThreadsRequest(threadIds: [conversationId])
-            RequestsManager.shared.append(prepend: "GET-NOT-ACTIVE-THREADS", value: req)
-            ChatManager.activeInstance?.conversation.get(req)
-        }
+        getNotActiveThreads(response.result?.conversation)
     }
 
     func onChangedType(_ response: ChatResponse<Conversation>) {
@@ -127,10 +122,12 @@ public final class ThreadsViewModel: ObservableObject {
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
         if response.value(prepend: "GET-THREADS") == nil { return }
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
-            if let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}) {
-                serverSortedPinConversations.append(contentsOf: serverSortedPinConversationIds)
-            }
             Task {
+                /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
+                if let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}), serverSortedPinConversations.isEmpty {
+                    serverSortedPinConversations.removeAll()
+                    serverSortedPinConversations.append(contentsOf: serverSortedPinConversationIds)
+                }
                 await appendThreads(threads: threads)
                 await asyncAnimateObjectWillChange()
             }
@@ -448,6 +445,14 @@ public final class ThreadsViewModel: ObservableObject {
         if response.result?.time ?? 0 > thread?.lastSeenMessageTime ?? 0, thread?.unreadCount ?? 0 >= 1 {
             thread?.unreadCount = (thread?.unreadCount ?? 0) - 1
             thread?.animateObjectWillChange()
+        }
+    }
+
+    public func getNotActiveThreads(_ conversation: Conversation?) {
+        if let conversationId = conversation?.id, !threads.contains(where: {$0.id == conversationId }) {
+            let req = ThreadsRequest(threadIds: [conversationId])
+            RequestsManager.shared.append(prepend: "GET-NOT-ACTIVE-THREADS", value: req)
+            ChatManager.activeInstance?.conversation.get(req)
         }
     }
 }
