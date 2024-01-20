@@ -53,8 +53,8 @@ public final class SettingViewModel: ObservableObject {
 
     public func showLoading(_ show: Bool) {
         Task { [weak self] in
-            guard let self = self else { return }
-            await MainActor.run {
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 isLoading = show
             }
         }
