@@ -12,13 +12,12 @@ import TalkUI
 struct ArchivesView: View {
     let container: ObjectsContainer
     @EnvironmentObject var viewModel: ArchiveThreadsViewModel
-    @EnvironmentObject var navVM: NavigationModel
 
     var body: some View {
         List(viewModel.archives) { thread in
             let isSelected = container.navVM.selectedThreadId == thread.id
             ThreadRow(thread: thread) {
-                navVM.append(thread: thread)
+                AppState.shared.objectsContainer.navVM.append(thread: thread)
             }
             .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
             .listRowSeparatorTint(Color.App.dividerSecondary)

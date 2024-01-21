@@ -13,7 +13,6 @@ import TalkUI
 import TalkViewModels
 
 struct AvatarView: View {
-    @EnvironmentObject var navVM: NavigationModel
     var message: Message
     @StateObject var viewModel: MessageRowViewModel
     var threadVM: ThreadViewModel? { viewModel.threadVM }
@@ -61,7 +60,7 @@ struct AvatarView: View {
             .padding(.trailing, 2)
             .onTapGesture {
                 if let participant = message.participant {
-                    navVM.append(participantDetail: participant)
+                    AppState.shared.objectsContainer.navVM.append(participantDetail: participant)
                 }
             }
         } else if isSameUser {

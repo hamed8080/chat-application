@@ -17,7 +17,6 @@ struct MessageActionMenu: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
-    @EnvironmentObject var navVM: NavigationModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

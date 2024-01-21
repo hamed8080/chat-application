@@ -14,12 +14,11 @@ import Chat
 struct ThreadViewTrailingToolbar: View {
     private var thread: Conversation { viewModel.thread }
     let viewModel: ThreadViewModel
-    @EnvironmentObject var navVM: NavigationModel
     @State var imageViewModel: ImageLoaderViewModel?
 
     var body: some View {
         Button {
-            navVM.append(threadViewModel: viewModel)
+            AppState.shared.objectsContainer.navVM.append(threadViewModel: viewModel)
         } label: {
             ZStack {
                 if let imageLoader = imageLoader() {

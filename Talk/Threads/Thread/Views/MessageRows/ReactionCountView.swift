@@ -20,11 +20,10 @@ struct ReactionCountView: View {
         ScrollView(.horizontal) {
             HStack {
                 ForEach(viewModel.reactionCountList) { reactionCount in
-                    ReactionCountRow(reactionCount: reactionCount)
+                    ReactionCountRow(viewModel: viewModel, reactionCount: reactionCount)
                 }
             }
         }
-//        .frame(maxWidth: MessageRowViewModel.maxAllowedWidth)
         .fixedSize(horizontal: true, vertical: false)
         .animation(.easeInOut, value: viewModel.reactionCountList.count)
         .padding(.horizontal, 6)
@@ -32,7 +31,7 @@ struct ReactionCountView: View {
 }
 
 struct ReactionCountRow: View {
-    @EnvironmentObject var viewModel: MessageReactionsViewModel
+    let viewModel: MessageReactionsViewModel
     let reactionCount: ReactionCount
     @State var isMyReaction: Bool = false
 
@@ -68,7 +67,9 @@ struct ReactionCountRow: View {
             }
         }
         .task {
-          isMyReaction = viewModel.currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue
+            if viewModel.currentUserReaction?.reaction?.rawValue == reactionCount.sticker?.rawValue {
+                isMyReaction = true
+            }
         }
     }
 }

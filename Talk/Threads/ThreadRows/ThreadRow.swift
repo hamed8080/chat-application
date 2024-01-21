@@ -16,8 +16,7 @@ import ActionableContextMenu
 struct ThreadRow: View {
     /// It is essential in the case of forwarding. We don't want to highlight the row in forwarding mode.
     var forceSelected: Bool?
-    @EnvironmentObject var navVM: NavigationModel
-    var isSelected: Bool { forceSelected ?? (navVM.selectedThreadId == thread.id) }
+    @State private var isSelected: Bool = false
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
     let onTap: (() -> Void)?
@@ -107,6 +106,19 @@ struct ThreadRow: View {
             .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius:((12))))
             .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
+        }
+        .onReceive(AppState.shared.objectsContainer.navVM.objectWillChange) { _ in
+            setSelection()
+        }.onAppear {
+            setSelection()
+        }
+    }
+
+    private func setSelection() {
+        if AppState.shared.objectsContainer.navVM.selectedThreadId == thread.id {
+            isSelected = forceSelected ?? (AppState.shared.objectsContainer.navVM.selectedThreadId == thread.id)
+        } else if isSelected == true {
+            isSelected = false
         }
     }
 }
