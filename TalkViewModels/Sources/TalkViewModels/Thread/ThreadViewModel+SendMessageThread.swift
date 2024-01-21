@@ -387,7 +387,7 @@ extension ThreadViewModel {
     }
 
     public func onCreateP2PThread(_ response: ChatResponse<Conversation>) {
-        guard response.value(prepend: "CREATE-P2P") != nil, let thread = response.result else { return }
+        guard response.pop(prepend: "CREATE-P2P") != nil, let thread = response.result else { return }
         self.thread = thread
         AppState.shared.userToCreateThread = nil
         animateObjectWillChange()

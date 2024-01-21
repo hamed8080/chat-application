@@ -135,7 +135,7 @@ struct MessageActionMenu: View {
 
             let delete = MessageRowViewModel.isDeletable(isMe: viewModel.isMe, message: viewModel.message, thread: viewModel.threadVM?.thread)
             if delete.forMe || delete.ForOthers {
-                ContextMenuButton(title: "General.delete", image: "trash", showSeparator: false) {
+                ContextMenuButton(title: "General.delete", image: "trash", iconColor: Color.App.red, showSeparator: false) {
                     withAnimation(animation(appear: true)) {
                         if let threadVM {
                             threadVM.historyVM.sections.flatMap{$0.vms}.first(where: {$0.message.id == message.id})?.isSelected = true

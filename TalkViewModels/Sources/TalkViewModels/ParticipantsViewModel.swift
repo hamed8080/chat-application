@@ -154,7 +154,7 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func onSearchedParticipants(_ response: ChatResponse<[Participant]>) {
-        if response.value(prepend: "SearchParticipants") != nil, let participants = response.result {
+        if response.pop(prepend: "SearchParticipants") != nil, let participants = response.result {
             searchedParticipants.removeAll()
             searchedParticipants.append(contentsOf: participants)
         }
@@ -260,7 +260,7 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func onError(_ response: ChatResponse<Any>) {
-        if response.error != nil, response.value(prepend: "SearchParticipants") != nil {
+        if response.error != nil, response.pop(prepend: "SearchParticipants") != nil {
             searchedParticipants.removeAll()
         }
     }

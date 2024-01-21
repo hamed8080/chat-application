@@ -38,16 +38,19 @@ class RequestsManager {
         }
     }
 
-    @discardableResult
-    func remove(prepend: String, for key: String) -> Bool {
-        remove(key: "\(prepend)-\(key)")
+    func remove(prepend: String, for key: String) {
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            remove(key: "\(prepend)-\(key)")
+        }
     }
 
-    @discardableResult
-    func remove(key: String) -> Bool {
-        if !requests.keys.contains(key) { return false }
-        requests.removeValue(forKey: key)
-        return true
+    func remove(key: String) {
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            if !requests.keys.contains(key) { return }
+            requests.removeValue(forKey: key)
+        }
     }
 
     func value(prepend: String, for key: String?) -> ChatDTO.UniqueIdProtocol? {
@@ -60,8 +63,7 @@ class RequestsManager {
     func pop(prepend: String, for key: String?) -> ChatDTO.UniqueIdProtocol? {
         guard let key = key else { return nil }
         let prependedKey = "\(prepend)-\(key)"
-        if !requests.keys.contains(prependedKey) { return nil }
-        requests.removeValue(forKey: prependedKey)
+        remove(key: prependedKey)
         return requests[prependedKey]
     }
 
@@ -86,12 +88,6 @@ public extension ChatResponse {
     var value: ChatDTO.UniqueIdProtocol? {
         guard let uniqueId = uniqueId else { return nil }
         return RequestsManager.shared.value(for: uniqueId)
-    }
-
-    @discardableResult
-    func value(prepend: String) -> ChatDTO.UniqueIdProtocol? {
-        guard let uniqueId = uniqueId else { return nil }
-        return RequestsManager.shared.value(prepend: prepend, for: uniqueId)
     }
 
     @discardableResult

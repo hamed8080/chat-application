@@ -96,7 +96,7 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     }
 
     func onSearch(_ response: ChatResponse<[Message]>) {
-        if !response.cache, response.value(prepend: "SEARCH") != nil {
+        if !response.cache, response.pop(prepend: "SEARCH") != nil {
             isLoading = false
             response.result?.forEach { message in
                 if !(searchedMessages.contains(where: { $0.id == message.id })) {

@@ -51,7 +51,7 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     }
 
     func onUnreadMentions(_ response: ChatResponse<[Message]>) {
-        if response.value(prepend: "UnreadMentions") != nil, !response.cache, let unreadMentions = response.result {
+        if response.pop(prepend: "UnreadMentions") != nil, !response.cache, let unreadMentions = response.result {
             self.unreadMentions.removeAll()
             self.unreadMentions.append(contentsOf: unreadMentions)
             self.unreadMentions.sort(by: {$0.time ?? 0 < $1.time ?? 1})

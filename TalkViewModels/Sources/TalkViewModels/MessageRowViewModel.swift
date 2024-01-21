@@ -102,6 +102,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var addOrRemoveParticipantsAttr: AttributedString? = nil
     public var textViewPadding: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
     public var localizedReplyFileName: String? = nil
+    public var callText: String?
     private static var formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
@@ -279,6 +280,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         await calculateImageSize()
         await setReplyInfo()
         await calculatePaddings()
+        await calculateCallTexts()
         isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
         let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
         let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
@@ -461,6 +463,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func calculateAddOrRemoveParticipantRow() -> AttributedString? {
+        if ![.participantJoin, .participantLeft].contains(message.type) { return nil }
         let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
         return try? AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
     }
@@ -472,6 +475,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateLocalizeReplyFileName() -> String? {
         let hinTextMessage = message.replyInfo?.message ?? message.replyFileStringName?.localized()
         return hinTextMessage
+    }
+
+    private func calculateCallTexts() async {
+        if ![.endCall, .startCall].contains(message.type) { return }
+        let date = Date(milliseconds: Int64(message.time ?? 0))
+        callText = date.localFormattedTime
     }
 
     deinit {

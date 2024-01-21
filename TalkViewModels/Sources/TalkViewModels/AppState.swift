@@ -178,7 +178,7 @@ public final class AppState: ObservableObject {
     }
 
     private func onForwardCreateConversation(_ response: ChatResponse<Conversation>) {
-        guard let request = (response.value(prepend: "FORWARD-CREATE-CONVERSATION") as? ForwardCreateConversationRequest),
+        guard let request = (response.pop(prepend: "FORWARD-CREATE-CONVERSATION") as? ForwardCreateConversationRequest),
               !response.cache,
               let conversation = response.result,
               let destinationConversationId = conversation.id

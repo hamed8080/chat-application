@@ -22,7 +22,8 @@ struct MessageRowFactory: View {
             if let type = message.type {
                 switch type {
                 case .endCall, .startCall:
-                    CallMessageType(message: message)
+                    CallMessageType()
+                        .environmentObject(viewModel)
                 case .participantJoin, .participantLeft:
                     ParticipantMessageType()
                         .environmentObject(viewModel)

@@ -86,7 +86,7 @@ public final class ArchiveThreadsViewModel: ObservableObject {
     }
 
     public func onArchives(_ response: ChatResponse<[Conversation]>) {
-        if !response.cache, let archives = response.result, response.value(prepend: "GET-ARCHIVES") != nil {
+        if !response.cache, let archives = response.result, response.pop(prepend: "GET-ARCHIVES") != nil {
             self.archives.append(contentsOf: archives.filter({$0.isArchive == true}))
         }
         isLoading = false

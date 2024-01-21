@@ -13,16 +13,16 @@ import TalkUI
 import TalkViewModels
 
 struct CallMessageType: View {
-    var message: Message
+    @EnvironmentObject var viewModel: MessageRowViewModel
+    var message: Message { viewModel.message }
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         HStack(alignment: .center) {
-            if let time = message.time {
-                let date = Date(milliseconds: Int64(time))
+            if let callText = viewModel.callText {
                 HStack(spacing: 2) {
                     Text(message.type == .endCall ? "Thread.callEnded" : "Thread.callStarted")
-                    Text("\(date.localFormattedTime ?? "")")
+                    Text(callText)
                 }
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBody)
