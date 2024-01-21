@@ -58,6 +58,8 @@ struct MessageListLinkView: View {
 
 struct LinkRowView: View {
     let message: Message
+    @State var smallText: String? = nil
+    @State var links: [String] = []
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: DetailViewModel
     @Environment(\.dismiss) var dismiss
@@ -75,9 +77,18 @@ struct LinkRowView: View {
                         .frame(width: 16, height: 16)
                         .foregroundStyle(Color.App.textPrimary)
                 }
-            VStack(alignment: .leading) {
-                Text(AttributedString(message.markdownTitle))
-                    .font(.iransansBody)
+            VStack(alignment: .leading, spacing: 2) {
+                if let smallText = smallText {
+                    Text(smallText)
+                        .font(.iransansBody)
+                        .foregroundStyle(Color.App.textPrimary)
+                        .lineLimit(1)
+                }
+                ForEach(links, id: \.self) { link in
+                    Text(verbatim: link)
+                        .font(.iransansBody)
+                        .foregroundStyle(Color.App.accent)
+                }
             }
             Spacer()
         }
@@ -86,6 +97,21 @@ struct LinkRowView: View {
         .onTapGesture {
             threadVM?.historyVM.moveToTime(message.time ?? 0, message.id ?? -1, highlight: true)
             viewModel.dismiss = true
+        }.task {
+            smallText = String(message.message?.replacingOccurrences(of: "\n", with: " ").prefix(500) ?? "")
+            let string = message.message ?? ""
+            if let linkRegex = NSRegularExpression.urlRegEx {
+                let allRange = NSRange(string.startIndex..., in: string)
+                linkRegex.enumerateMatches(in: string, range: allRange) { (result, flag, _) in
+                    if let range = result?.range, let linkRange = Range(range, in: string) {
+                        let link = string[linkRange]
+                        if link == message.message ?? "" {
+                            smallText = nil
+                        }
+                        links.append(String(link))
+                    }
+                }
+            }
         }
     }
 }

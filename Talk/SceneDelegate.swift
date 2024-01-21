@@ -54,6 +54,9 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
             let threadIdString = url.absoluteString.replacingOccurrences(of: "Widget://link-", with: "")
             let threadId = Int(threadIdString) ?? 0
             AppState.shared.showThread(thread: .init(id: threadId))
+        } else if url.absoluteString.contains("ShowUser") {
+            let userName = url.absoluteString.replacingOccurrences(of: "ShowUser:User?userName=", with: "")
+            AppState.shared.openThreadWith(userName: userName)
         }
     }
 

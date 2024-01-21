@@ -147,6 +147,11 @@ public final class AppState: ObservableObject {
         searchForP2PThread(coreUserId: user.coreUserId ?? -1)
     }
 
+    public func openThreadWith(userName: String) {
+        userToCreateThread = .init(username: userName)
+        searchForP2PThread(coreUserId: nil, userName: userName)
+    }
+
     public func openThreadAndMoveToMessage(conversationId: Int, messageId: Int, messageTime: UInt) {
         self.appStateNavigationModel.moveToMessageId = messageId
         self.appStateNavigationModel.moveToMessageTime = messageTime
@@ -190,12 +195,12 @@ public final class AppState: ObservableObject {
         }
     }
 
-    public func searchForP2PThread(coreUserId: Int) {
-        if let thread = checkForP2POffline(coreUserId: coreUserId) {
+    public func searchForP2PThread(coreUserId: Int?, userName: String? = nil) {
+        if let thread = checkForP2POffline(coreUserId: coreUserId ?? -1) {
             onSearchP2PThreads(thread: thread)
             return
         }
-        let req = ThreadsRequest(type: .normal, partnerCoreUserId: coreUserId)
+        let req = ThreadsRequest(type: .normal, partnerCoreUserId: coreUserId, userName: userName)
         RequestsManager.shared.append(prepend: "SEARCH-P2P", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
