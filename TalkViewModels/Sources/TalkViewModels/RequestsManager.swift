@@ -8,6 +8,7 @@
 import Foundation
 import ChatDTO
 import ChatCore
+import Additive
 
 class RequestsManager {
     public static let shared = RequestsManager()
@@ -74,10 +75,13 @@ class RequestsManager {
 
     /// Automatically cancel a request if there is no response come back from the chat server after 25 seconds.
     func addCancelTimer(key: String) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 25) { [weak self] in
+        let timer = SourceTimer()
+        timer.start(duration: 25) { [weak self] in
             if ((self?.requests.keys.contains(where: { $0 == key})) != nil) {
                 self?.remove(key: key)
-                NotificationCenter.onRequestTimer.post(name: .onRequestTimer, object: key)
+                DispatchQueue.main.async {
+                    NotificationCenter.onRequestTimer.post(name: .onRequestTimer, object: key)
+                }
             }
         }
     }
