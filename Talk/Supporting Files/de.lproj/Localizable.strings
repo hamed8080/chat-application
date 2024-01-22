@@ -318,6 +318,7 @@
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk wurde 2016 geboren. Dieser Messenger wurde mit dem Ziel produziert und entwickelt, eine tiefe und konstruktive Kommunikation zu schaffen und organisatorische und nicht-organisatorische Bedürfnisse zu verstehen. Es besteht die Hoffnung, dass Tak unter den aktuellen Bedingungen jeden Tag einen größeren Schritt auf dem Weg der nachhaltigen Entwicklung und der Schaffung einer sicheren und schnellen Plattform machen wird.";
 "Support.number" = "021-91033000 intern 9";
+"Support.callDetail" = "Um den Support von Talk zu kontaktieren, können Sie die folgenden Nummern verwenden, um mit den entsprechenden Experten zu kommunizieren";
 
 /* NotificationSettings */
 "Notification.Sound" = "Ton";

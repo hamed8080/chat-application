@@ -317,6 +317,7 @@
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk föddes 2016. Denna budbärare producerades och utvecklades med syftet att skapa djup och konstruktiv kommunikation och förstå organisatoriska och icke-organisatoriska behov. Förhoppningen är att Tak, enligt rådande förutsättningar, varje dag tar ett starkare steg på vägen mot hållbar utveckling och att skapa en säker och snabb plattform.";
 "Support.number" = "021-91033000 intern 9";
+"Support.callDetail" = "För att kontakta Talks supportenhet kan du använda följande nummer för att kommunicera med relevanta experter";
 
 /* NotificationSettings */
 "Notification.Sound" = "Ljud";

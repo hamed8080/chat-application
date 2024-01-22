@@ -262,7 +262,6 @@ public final class NavigationModel: ObservableObject {
         if threadId != nil {
             presentedThreadViewModel?.cancelAllObservers()
         }
-        presentedThreadViewModel?.cancelAllObservers()
         if pathsTracking.count > 0 {
             pathsTracking.removeLast()
             if pathsTracking.count == 0, paths.count > 0 {

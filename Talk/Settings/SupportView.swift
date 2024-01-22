@@ -25,7 +25,7 @@ struct SupportView: View {
                 .multilineTextAlignment(.center)
             let isIpad = UIDevice.current.userInterfaceIdiom  == .pad
 
-            Text("برای تماس با واحد پشتیبانی تاک میتوانید از شماره های زیر جهت برقراری ارتباط با کارشناسان مربوطه استفاده نمایید")
+            Text("Support.callDetail")
                 .foregroundStyle(Color.App.textPrimary)
             HStack(spacing: 8) {
                 Link(destination: URL(string: "\(isIpad ? "facetime" : "tel"):021-91033000")!) {
