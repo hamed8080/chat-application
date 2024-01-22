@@ -47,7 +47,7 @@ public final class ImageLoaderViewModel: ObservableObject {
     @Published public private(set) var image: UIImage = .init()
     private(set) var fileMetadata: String?
     public private(set) var cancelable: Set<AnyCancellable> = []
-    var uniqueId: String = ""
+    var uniqueId: String?
     public let config: ImageLoaderConfig
     private var URLObject: URL? { URL(string: config.url) }
     private var isSDKImage: Bool { hashCode != "" }
@@ -146,22 +146,22 @@ public final class ImageLoaderViewModel: ObservableObject {
             } else if let fileURL = fileURL {
                 setImage(fileURL: fileURL)
             } else {
-                downloadFromAnyURL(thumbnail: config.thumbnail)
+                await downloadFromAnyURL(thumbnail: config.thumbnail)
             }
         }
     }
 
-    @MainActor
-    private func getFromSDK(forceToDownloadFromServer: Bool = false, thumbnail: Bool) {
+    private func getFromSDK(forceToDownloadFromServer: Bool = false, thumbnail: Bool) async {
         let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: config.forceToDownloadFromServer, size: config.size, thumbnail: config.thumbnail)
         uniqueId = req.uniqueId
-        RequestsManager.shared.append(value: req)
+        RequestsManager.shared.append(prepend: "ImageLoader", value: req)
         ChatManager.activeInstance?.file.get(req)
     }
 
     private func onGetImage(_ response: ChatResponse<Data>, _ url: URL?) {
-        guard response.uniqueId == uniqueId, RequestsManager.shared.value(for: uniqueId) != nil else { return }
-        if response.uniqueId == uniqueId, response.cache == false, let data = response.result {
+        guard response.uniqueId == uniqueId else { return }
+        if response.uniqueId == uniqueId, !response.cache, let data = response.result {
+            response.pop(prepend: "ImageLoader")
             update(data: data)
             storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
         } else {
@@ -170,11 +170,12 @@ public final class ImageLoaderViewModel: ObservableObject {
         }
     }
 
-    private func downloadFromAnyURL(thumbnail: Bool) {
+    private func downloadFromAnyURL(thumbnail: Bool) async {
         guard let req = reqWithHeader else { return }
         let task = URLSession.shared.dataTask(with: req) { [weak self] data, _, _ in
             self?.update(data: data)
             if !thumbnail {
+                self?.uniqueId = nil
                 self?.storeInCache(data: data)
             }
         }

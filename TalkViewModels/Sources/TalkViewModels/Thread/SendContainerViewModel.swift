@@ -81,4 +81,10 @@ public final class SendContainerViewModel: ObservableObject {
         let sanitizedText = text.replacingOccurrences(of: "\u{200f}", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         return sanitizedText.isEmpty
     }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
 }

@@ -51,4 +51,10 @@ public final class ExportMessagesViewModel: ObservableObject, ExportMessagesView
         guard let url = filePath else { return }
         try? FileManager.default.removeItem(at: url)
     }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
 }

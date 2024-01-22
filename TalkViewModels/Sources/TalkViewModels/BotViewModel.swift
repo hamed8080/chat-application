@@ -79,7 +79,7 @@ public final class BotViewModel: ObservableObject {
     }
 
     public func onCreate(_ response: ChatResponse<BotInfo>) {
-        if response.value != nil {
+        if response.pop() != nil {
             appendBots(bots: [.init(name: response.result?.name, botUserId: response.result?.botUserId)])
         }
         isLoading = false

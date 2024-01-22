@@ -47,9 +47,12 @@ struct ThreadView: View, DropDelegate {
                     }
                 }
             }
-            .onAppear {
-                viewModel.historyVM.startFetchingHistory()
-                threadsVM.clearAvatarsOnSelectAnotherThread()
+            .task {
+                /// After deleting a thread it will again tries to call histroy we should prevent it from calling it to not get any error.
+                if viewModel.historyVM.isFetchedServerFirstResponse == false {
+                    viewModel.historyVM.startFetchingHistory()
+                    threadsVM.clearAvatarsOnSelectAnotherThread()
+                }
             }
             .onReceive(viewModel.$dismiss) { newValue in
                 if newValue {

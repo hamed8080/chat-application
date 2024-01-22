@@ -264,4 +264,10 @@ public final class ParticipantsViewModel: ObservableObject {
             searchedParticipants.removeAll()
         }
     }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
 }

@@ -146,7 +146,7 @@ public final class TagsViewModel: ObservableObject {
     }
 
     private func onRemoveTagParticipant(_ response: ChatResponse<[TagParticipant]>) {
-        if let tagParticipants = response.result, let request = response.value as? RemoveTagParticipantsRequest {
+        if !response.cache, let tagParticipants = response.result, let request = response.pop() as? RemoveTagParticipantsRequest {
             removeParticipants(request.tagId, tagParticipants)
         }
         isLoading = false

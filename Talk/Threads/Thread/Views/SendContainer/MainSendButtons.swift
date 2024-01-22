@@ -39,7 +39,7 @@ struct MainSendButtons: View {
             MultilineTextField(
                 "Thread.SendContainer.typeMessageHere",
                 text: $viewModel.textMessage,
-                textColor: UIColor(named: "message_text"),
+                textColor: UIColor(named: "text_primary"),
                 backgroundColor: Color.App.bgSendInput,
                 placeholderColor: Color.App.textPrimary.opacity(0.7),
                 mention: true,

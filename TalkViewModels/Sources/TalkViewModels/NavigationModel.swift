@@ -225,6 +225,7 @@ public final class NavigationModel: ObservableObject {
     }
 
     public func switchFromThreadList(thread: Conversation) {
+        presentedThreadViewModel?.cancelAllObservers()
         if paths.count > 0 {
             for _ in 0...paths.count - 1 {
                 paths.removeLast()
@@ -258,6 +259,10 @@ public final class NavigationModel: ObservableObject {
     }
 
     public func remove<T>(type: T.Type, threadId: Int? = nil) {
+        if threadId != nil {
+            presentedThreadViewModel?.cancelAllObservers()
+        }
+        presentedThreadViewModel?.cancelAllObservers()
         if pathsTracking.count > 0 {
             pathsTracking.removeLast()
             if pathsTracking.count == 0, paths.count > 0 {

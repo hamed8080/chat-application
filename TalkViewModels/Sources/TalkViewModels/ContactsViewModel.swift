@@ -164,9 +164,7 @@ public final class ContactsViewModel: ObservableObject {
                 appendOrUpdateContact(contacts)
                 setMaxContactsCountInServer(count: response.contentCount ?? 0)
             }
-            if !response.cache {
-                hasNext = response.hasNext
-            }
+            hasNext = response.hasNext
             isLoading = false
         }
     }

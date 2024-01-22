@@ -77,7 +77,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public var isSimulatedThared: Bool {
-        AppState.shared.userToCreateThread != nil && thread.id == LocalId.emptyThread.rawValue
+        AppState.shared.appStateNavigationModel.userToCreateThread != nil && thread.id == LocalId.emptyThread.rawValue
     }
 
     public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize)
@@ -351,6 +351,22 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                 animateObjectWillChange()
             }
         }
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+        (exportMessagesVM as? ExportMessagesViewModel)?.cancelAllObservers()
+        unssetMessagesViewModel.cancelAllObservers()
+        uploadMessagesViewModel.cancelAllObservers()
+        searchedMessagesViewModel.cancelAllObservers()
+        unreadMentionsViewModel.cancelAllObservers()
+        participantsViewModel.cancelAllObservers()
+        mentionListPickerViewModel.cancelAllObservers()
+        sendContainerViewModel.cancelAllObservers()
+        historyVM.cancelAllObservers()
+        threadPinMessageViewModel.cancelAllObservers()
     }
 
     func log(_ string: String) {

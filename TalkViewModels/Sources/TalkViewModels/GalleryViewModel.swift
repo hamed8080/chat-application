@@ -72,12 +72,11 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func onImage(_ response: ChatResponse<Data>, _ fileURL: URL?) {
-        if let data = response.result, let request = response.value as? ImageRequest {
+        if let data = response.result, let request = response.pop() as? ImageRequest {
             state = .completed
             downloadedImages[request.hashCode] = data
             /// Send a notification to update the original.
             NotificationCenter.galleryDownload.post(name: .galleryDownload, object: (request, data))
-            RequestsManager.shared.remove(key: request.uniqueId)
         }
 
         isLoading = false
@@ -85,7 +84,7 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
-        if let progress = progress, RequestsManager.shared.value(for: uniqueId) != nil {
+        if let progress = progress, RequestsManager.shared.pop(for: uniqueId) != nil {
             state = .downloading
             percent = progress.percent
             animateObjectWillChange()

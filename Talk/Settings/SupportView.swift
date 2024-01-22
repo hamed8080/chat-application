@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import TalkViewModels
 
 struct SupportView: View {
     @Environment(\.colorScheme) var scheme
+
     var body: some View {
         VStack(alignment: .center, spacing: 24) {
             Image("support_icon")
@@ -40,6 +42,14 @@ struct SupportView: View {
         .padding(EdgeInsets(top: 100, leading: 24, bottom: 30, trailing: 24))
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
         .background(Color.App.bgPrimary)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                NavigationBackButton {
+                    AppState.shared.navViewModel?.remove(type: SupportNavigationValue.self)
+                }
+            }
+        }
     }
 }
 

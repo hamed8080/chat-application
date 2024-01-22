@@ -123,10 +123,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreTop(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-TOP") != nil,
-              let messages = response.result,
-              !response.cache
-        else { return }
+        guard response.pop(prepend: "MORE-TOP") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 3- Append and sort the array but not call to update the view.
@@ -156,10 +153,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreBottom(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-BOTTOM") != nil,
-              let messages = response.result,
-              !response.cache
-        else { return }
+        guard response.pop(prepend: "MORE-BOTTOM") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 3- Append and sort the array but not call to update the view.
@@ -201,10 +195,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreTopFirstScenario(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-TOP-FIRST-SCENARIO") != nil,
-              let messages = response.result,
-              !response.cache
-        else { return }
+        guard response.pop(prepend: "MORE-TOP-FIRST-SCENARIO") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 2- Append and sort  and calculate the array but not call to update the view.
@@ -231,10 +222,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreBottomFirstScenario(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-BOTTOM-FIRST-SCENARIO") != nil,
-              let messages = response.result,
-              !response.cache
-        else { return }
+        guard response.pop(prepend: "MORE-BOTTOM-FIRST-SCENARIO") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 10- Append messages to the bottom part of the view and if the user scrolls down can see new messages.
@@ -265,10 +253,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreTopSecondScenario(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-TOP-SECOND-SCENARIO") != nil,
-              let messages = response.result,
-              !response.cache
-        else { return }
+        guard response.pop(prepend: "MORE-TOP-SECOND-SCENARIO") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             if response.result?.count ?? 0 > 0 {
@@ -307,10 +292,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMoreBottomFifthScenario(_ response: ChatResponse<[Message]>) {
-        guard response.pop(prepend: "MORE-BOTTOM-FIFTH-SCENARIO") != nil,
-              let messages = response.result,
-              !response.cache
-        else { return }
+        guard response.pop(prepend: "MORE-BOTTOM-FIFTH-SCENARIO") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
             /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
@@ -749,7 +731,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         switch event {
         case .history(let response):
             let logger = Logger.viewModels
-            if !response.cache {
+            if !response.cache, response.subjectId == threadId {
                 logger.debug("Start on history:\(Date().millisecondsSince1970)")
                 /// For the first scenario.
                 onMoreTopFirstScenario(response)
@@ -810,6 +792,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
     func onUNPinMessage(_ response: ChatResponse<PinMessage>) {
         if let indices = message(for: response.result?.id) {
             sections[indices.sectionIndex].vms[indices.messageIndex].message.pinned = false
+        }
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
         }
     }
 

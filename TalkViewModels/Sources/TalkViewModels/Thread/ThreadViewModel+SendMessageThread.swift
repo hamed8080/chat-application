@@ -380,7 +380,7 @@ extension ThreadViewModel {
     }
 
     public func createP2PThread() {
-        guard let coreuserId = AppState.shared.userToCreateThread?.id else { return }
+        guard let coreuserId = AppState.shared.appStateNavigationModel.userToCreateThread?.id else { return }
         let req = CreateThreadRequest(invitees: [.init(id: "\(coreuserId)", idType: .coreUserId)], title: "")
         RequestsManager.shared.append(prepend: "CREATE-P2P", value: req)
         ChatManager.activeInstance?.conversation.create(req)
@@ -389,7 +389,7 @@ extension ThreadViewModel {
     public func onCreateP2PThread(_ response: ChatResponse<Conversation>) {
         guard response.pop(prepend: "CREATE-P2P") != nil, let thread = response.result else { return }
         self.thread = thread
-        AppState.shared.userToCreateThread = nil
+        AppState.shared.appStateNavigationModel.userToCreateThread = nil
         animateObjectWillChange()
         createThreadCompletion?()
         createThreadCompletion = nil

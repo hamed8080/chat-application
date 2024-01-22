@@ -94,18 +94,21 @@ struct ParticipantRowContainer: View {
                     if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == false {
                         ContextMenuButton(title: "Participant.addAdminAccess", image: "person.crop.circle.badge.minus") {
                             viewModel.makeAdmin(participant)
+                            showPopover.toggle()
                         }
                     }
 
                     if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == true {
                         ContextMenuButton(title: "Participant.removeAdminAccess", image: "person.badge.key.fill") {
                             viewModel.removeAdminRole(participant)
+                            showPopover.toggle()
                         }
                     }
 
                     if !isMe, viewModel.thread?.admin == true {
                         ContextMenuButton(title: "General.delete", image: "trash") {
                             viewModel.removePartitipant(participant)
+                            showPopover.toggle()
                         }
                         .foregroundStyle(Color.App.red)
                     }

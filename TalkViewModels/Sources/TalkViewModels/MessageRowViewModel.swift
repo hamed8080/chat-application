@@ -115,15 +115,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var image: UIImage = MessageRowViewModel.emptyImage
     public var canShowImageView: Bool = false
 
-    public var avatarImageLoader: ImageLoaderViewModel? {
-        let userName = message.participant?.name ?? message.participant?.username
-        if let image = message.participant?.image,
-           let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: userName) {
-            return imageLoaderVM
-        } else {
-            return nil
-        }
-    }
+    public var avatarImageLoader: ImageLoaderViewModel?
 
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
@@ -281,6 +273,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         await setReplyInfo()
         await calculatePaddings()
         await calculateCallTexts()
+        await setAvatarViewModel()
         isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
         let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
         let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
@@ -387,6 +380,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         return UIImage(data: data)
     }
 
+    @MainActor
     private func prepareImage() async {
         if downloadFileVM?.state == .completed, let realImage = realImage {
             image = realImage
@@ -398,7 +392,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             image = MessageRowViewModel.emptyImage
             blurRadius = 0
         }
-        animateObjectWillChange()
+        await asyncAnimateObjectWillChange()
         //        if downloadFileVM?.state == .completed {
         //            self.downloadFileVM?.thumbnailData = nil
         //            self.downloadFileVM?.data = nil
@@ -481,6 +475,14 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         if ![.endCall, .startCall].contains(message.type) { return }
         let date = Date(milliseconds: Int64(message.time ?? 0))
         callText = date.localFormattedTime
+    }
+
+    @MainActor
+    private func setAvatarViewModel() async {
+        let userName = message.participant?.name ?? message.participant?.username
+        if let image = message.participant?.image {
+            avatarImageLoader = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: userName)
+        }
     }
 
     deinit {

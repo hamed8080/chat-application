@@ -164,4 +164,10 @@ public final class ThreadPinMessageViewModel: ObservableObject {
     public func unpinMessage(_ messageId: Int) {
         ChatManager.activeInstance?.message.unpin(.init(messageId: messageId))
     }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
 }

@@ -78,4 +78,10 @@ public final class ThreadUploadMessagesViewModel: ObservableObject {
             break
         }
     }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
 }

@@ -37,12 +37,22 @@ struct ForwardCreateConversationRequest: ChatDTO.UniqueIdProtocol {
 
 /// Properties that can transfer between each navigation page and stay alive unless manually destroyed.
 public struct AppStateNavigationModel {
+    public var userToCreateThread: User?
     public var replyPrivately: Message?
     public var forwardMessages: [Message]?
     public var forwardMessageRequest: ForwardMessageRequest?
     public var moveToMessageId: Int?
     public var moveToMessageTime: UInt?
     public init() {}
+
+    public var participantToCreate: Participant? {
+        return Participant(firstName: userToCreateThread?.firstName,
+                           id: userToCreateThread?.coreUserId,
+                           image: userToCreateThread?.image,
+                           lastName: userToCreateThread?.lastName,
+                           name: userToCreateThread?.name,
+                           username: userToCreateThread?.username)
+    }
 }
 
 public final class AppState: ObservableObject {
@@ -57,7 +67,6 @@ public final class AppState: ObservableObject {
     private var cancelable: Set<AnyCancellable> = []
     public var windowMode: WindowMode = .iPhone
     public static var isInSlimMode = AppState.shared.windowMode.isInSlimMode
-    public var userToCreateThread: User?
     public var lifeCycleState: AppLifeCycleState?
     public var objectsContainer: ObjectsContainer!
     public var appStateNavigationModel: AppStateNavigationModel = .init()
@@ -111,15 +120,15 @@ public final class AppState: ObservableObject {
     }
 
     func onGetThreads(_ response: ChatResponse<[Conversation]>) {
-        if response.value != nil, let thraed = response.result?.first {
+        if RequestsManager.shared.contains(key: response.uniqueId ?? ""), let thraed = response.result?.first {
             showThread(thread: thraed)
         }
 
-        if (response.pop(prepend: "SEARCH-P2P") as? ThreadsRequest) != nil, !response.cache {
+        if !response.cache, (response.pop(prepend: "SEARCH-P2P") as? ThreadsRequest) != nil {
             onSearchP2PThreads(thread: response.result?.first)
         }
 
-        if (response.pop(prepend: "SEARCH-GROUP-THREAD") as? ThreadsRequest) != nil, !response.cache {
+        if !response.cache, (response.pop(prepend: "SEARCH-GROUP-THREAD") as? ThreadsRequest) != nil {
             onSearchGroupThreads(thread: response.result?.first)
         }
     }
@@ -133,22 +142,22 @@ public final class AppState: ObservableObject {
 
     public func openThread(contact: Contact) {
         let userId = contact.user?.id ?? contact.user?.coreUserId ?? -1
-        userToCreateThread = .init(id: userId, image: contact.image, name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
+        appStateNavigationModel.userToCreateThread = .init(id: userId, image: contact.image, name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
         searchForP2PThread(coreUserId: userId)
     }
 
     public func openThread(participant: Participant) {
-        userToCreateThread = .init(id: participant.coreUserId, image: participant.image, name: participant.name)
+        appStateNavigationModel.userToCreateThread = .init(id: participant.coreUserId,
+                                   image: participant.image,
+                                   name: participant.name,
+                                   username: participant.username,
+                                   firstName: participant.firstName,
+                                   lastName: participant.lastName)
         searchForP2PThread(coreUserId: participant.coreUserId ?? -1)
     }
 
-    public func openThread(user: User) {
-        userToCreateThread = .init(id: user.coreUserId, image: user.image, name: user.name)
-        searchForP2PThread(coreUserId: user.coreUserId ?? -1)
-    }
-
     public func openThreadWith(userName: String) {
-        userToCreateThread = .init(username: userName)
+        appStateNavigationModel.userToCreateThread = .init(username: userName)
         searchForP2PThread(coreUserId: nil, userName: userName)
     }
 
@@ -183,8 +192,8 @@ public final class AppState: ObservableObject {
     }
 
     private func onForwardCreateConversation(_ response: ChatResponse<Conversation>) {
-        guard let request = (response.pop(prepend: "FORWARD-CREATE-CONVERSATION") as? ForwardCreateConversationRequest),
-              !response.cache,
+        guard !response.cache,
+              let request = (response.pop(prepend: "FORWARD-CREATE-CONVERSATION") as? ForwardCreateConversationRequest),
               let conversation = response.result,
               let destinationConversationId = conversation.id
         else { return }
@@ -243,7 +252,7 @@ public final class AppState: ObservableObject {
     }
 
     public func showEmptyThread() {
-        guard let userToCreateThread else { return }
+        guard let userToCreateThread = appStateNavigationModel.userToCreateThread else { return }
         withAnimation {
             let particpants = [Participant(coreUserId: userToCreateThread.id)]
             let conversation = Conversation(id: LocalId.emptyThread.rawValue,

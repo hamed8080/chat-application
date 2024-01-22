@@ -134,4 +134,10 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
         offset = 0
         searchedMessages.removeAll()
     }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
 }

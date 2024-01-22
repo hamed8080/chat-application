@@ -24,17 +24,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
         // Create the SwiftUI view that provides the window contents.
         let contentView = HomeContentView()
             .font(.iransansBody)
-
-        if #available(iOS 15.0, *) {
-            let appearance = UITabBarAppearance()
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-        }
         TokenManager.shared.initSetIsLogin()
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = CustomUIHostinViewController(rootView: contentView) // CustomUIHosting Needed for change status bar color per page
+            window.rootViewController = CustomUIHostinViewController(rootView: contentView) // CustomUIHosting is Needed for change status bar color per page
             self.window = window
             window.makeKeyAndVisible()
         }

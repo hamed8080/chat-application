@@ -83,4 +83,10 @@ public final class ThreadUnsentMessagesViewModel: ObservableObject {
             break
         }
     }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
 }

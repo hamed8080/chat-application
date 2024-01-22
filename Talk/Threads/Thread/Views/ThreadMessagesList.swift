@@ -27,6 +27,11 @@ struct ThreadMessagesList: View {
                 }
                 .onAppear {
                     viewModel.scrollVM.scrollProxy = scrollProxy
+                    /// It will lead to a memory leak and so many other crashes like:
+                    /// 1- In context menus almost every place we will see crashes.
+                    /// 2- If we remove this section, the background won't work.
+                    /// 3- Don't use the group list style it will prevent the background from being shown.
+                    /// 4- On iPadOS if we switch between threads threadViewModel will stay in the memory even if we press the back button or select another thread. However, by canceling observers we won't have any conflict, and after two more switch threads the app will release the object.
                     UICollectionViewCell.appearance().backgroundView = UIView()
                     UITableViewHeaderFooterView.appearance().backgroundView = UIView()
                 }

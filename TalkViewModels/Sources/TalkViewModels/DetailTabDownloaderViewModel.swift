@@ -42,9 +42,9 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     private func onMessageEvent(_ event: MessageEventTypes) {
         switch event {
         case let .history(response):
-            if response.pop(prepend: "DetailViewHistory-\(tabName)") != nil,
-               !response.cache,
+            if !response.cache,
                response.subjectId == conversation.id,
+               response.pop(prepend: "DetailViewHistory-\(tabName)") != nil,
                let messages = response.result {
                 messages.forEach { message in
                     if !self.messages.contains(where: { $0.id == message.id }) {
