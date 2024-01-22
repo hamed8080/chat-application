@@ -100,6 +100,7 @@ struct ContactContentList: View {
                 .environmentObject(viewModel)
         }
         .sheet(isPresented: $viewModel.showConversaitonBuilder) {
+            viewModel.searchContactString = ""
             viewModel.showConversaitonBuilder = false
         } content: {
             ConversationBuilder()

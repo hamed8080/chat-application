@@ -66,6 +66,9 @@ struct ConversationPlusContextMenu: View {
 //            ManuallyConnectionManagerView()
 //        }
         .sheet(isPresented: $showCreateConversationSheet) {
+            AppState.shared.objectsContainer.searchVM.searchText = ""
+            AppState.shared.objectsContainer.contactsVM.searchContactString = ""
+        } content: {
             StartThreadContactPickerView()
         }
         .onReceive(contactsVM.objectWillChange) {
