@@ -60,6 +60,6 @@ public extension ThreadTypes {
     }
 
     var isChannelType: Bool {
-        self == .channel || self == .channelGroup
+        self == .channel || self == .channelGroup || self == .publicChannel
     }
 }
