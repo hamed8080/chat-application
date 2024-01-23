@@ -335,12 +335,13 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     public func onEditGroup(_ response: ChatResponse<Conversation>) {
-        if response.pop(prepend: "EditGroup") != nil {
+        if response.contains(prepend: "EditGroup") {
             image = nil
             isLoading = false
             showEditGroup = false
             uploadProfileUniqueId = nil
             uploadProfileProgress = nil
+            threadVM?.animateObjectWillChange()
         }
     }
 

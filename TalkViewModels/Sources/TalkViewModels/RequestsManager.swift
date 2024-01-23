@@ -109,4 +109,10 @@ public extension ChatResponse {
         guard let uniqueId = uniqueId else { return nil }
         return RequestsManager.shared.pop(prepend: prepend, for: uniqueId)
     }
+
+    @discardableResult
+    func contains(prepend: String) -> Bool {
+        guard let uniqueId = uniqueId else { return false }
+        return RequestsManager.shared.contains(key: "\(prepend)-\(uniqueId)")
+    }
 }

@@ -14,14 +14,14 @@ import Chat
 struct ThreadViewTrailingToolbar: View {
     private var thread: Conversation { viewModel.thread }
     let viewModel: ThreadViewModel
-    @State var imageViewModel: ImageLoaderViewModel?
+    @State var imageLoader: ImageLoaderViewModel?
 
     var body: some View {
         Button {
             AppState.shared.objectsContainer.navVM.append(threadViewModel: viewModel)
         } label: {
             ZStack {
-                if let imageLoader = imageLoader() {
+                if let imageLoader = imageLoader {
                     ImageLoaderView(imageLoader: imageLoader)
                 } else {
                     Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
@@ -36,16 +36,17 @@ struct ThreadViewTrailingToolbar: View {
         }
         .onReceive(NotificationCenter.thread.publisher(for: .thread)) { notification in
             if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(let resposne) = threadEvent, resposne.result?.id == thread.id {
-                imageViewModel = .init(config: .init(url: thread.computedImageURL ?? "", userName: thread.title))
+                setImageLoader()
             }
+        }
+        .task {
+            setImageLoader()
         }
     }
 
-    private func imageLoader() -> ImageLoaderViewModel? {
-        if let image = thread.computedImageURL, let avatarVM = viewModel.threadsViewModel?.avatars(for: image, metaData: nil, userName: thread.title){
-            return avatarVM
-        } else {
-            return nil
+    private func setImageLoader() {
+        if let image = thread.computedImageURL, let avatarVM = viewModel.threadsViewModel?.avatars(for: image, metaData: nil, userName: thread.title) {
+            imageLoader = avatarVM
         }
     }
 }

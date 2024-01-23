@@ -188,10 +188,8 @@ struct BioDescription: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if EnvironmentValues.isTalkTest {
-            if let description = viewModel.partner?.chatProfileVO?.bio ?? viewModel.thread?.description.validateString {
-                InfoRowItem(key: "General.description", value: description)
-            }
+        if let description = viewModel.thread?.description.validateString {
+            InfoRowItem(key: "General.description", value: description)
         }
     }
 }
