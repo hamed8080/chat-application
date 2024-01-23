@@ -43,10 +43,10 @@ struct ThreadSheetView: View {
                 closeSheet()
             }
         case .exportMessagesFile:
-            if let exportFileUrl = viewModel.exportMessagesVM?.filePath {
+            if let exportFileUrl = viewModel.exportMessagesViewModel.filePath {
                 ActivityViewControllerWrapper(activityItems: [exportFileUrl])
                     .onDisappear {
-                        viewModel.exportMessagesVM = nil
+                        viewModel.exportMessagesViewModel.deleteFile()
                         closeSheet()
                     }
             } else {

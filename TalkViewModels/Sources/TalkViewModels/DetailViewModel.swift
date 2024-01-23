@@ -65,6 +65,9 @@ public final class DetailViewModel: ObservableObject, Hashable {
     public var partnerContact: Contact?
     public var uploadProfileUniqueId: String?
     public var uploadProfileProgress: Int64?
+    public var canShowUserActions: Bool {
+        (thread?.group == nil || thread?.group == false) && thread?.type != .selfThread
+    }
 
     public init(thread: Conversation? = nil, threadVM: ThreadViewModel? = nil, contact: Contact? = nil, user: Participant? = nil) {
         self.user = user

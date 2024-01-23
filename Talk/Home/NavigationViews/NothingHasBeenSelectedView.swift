@@ -11,6 +11,7 @@ import TalkUI
 
 struct NothingHasBeenSelectedView: View {
     let contactsVM: ContactsViewModel
+    @State private var showBuilder = false
 
     var body: some View {
         ZStack {
@@ -26,7 +27,7 @@ struct NothingHasBeenSelectedView: View {
                         .multilineTextAlignment(.center)
                         .frame(minWidth: 220)
                     Button {
-                        contactsVM.showConversaitonBuilder.toggle()
+                        showBuilder.toggle()
                     } label: {
                         HStack(spacing: 16) {
                             Image(systemName: "plus")
@@ -52,6 +53,9 @@ struct NothingHasBeenSelectedView: View {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             .padding(EdgeInsets(top: 96, leading: 96, bottom: 96, trailing: 96))
             .background(MixMaterialBackground().ignoresSafeArea())
+        }
+        .sheet(isPresented: $showBuilder) {
+            StartThreadContactPickerView()
         }
     }
 }

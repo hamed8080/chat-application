@@ -44,7 +44,7 @@ struct DetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $viewModel.showAddToContactSheet) {
-            if let user = viewModel.user {
+            if let user = viewModel.user ?? AppState.shared.appStateNavigationModel.participantToCreate {
                 let editContact = Contact(firstName: user.firstName ?? "",
                                           lastName: user.lastName ?? "",
                                           user: .init(username: user.username ?? ""))
@@ -352,9 +352,9 @@ struct DetailTopButtons: View {
                         ThreadRowActionMenu(showPopover: $showPopover, isDetailView: true, thread: conversation)
                             .environmentObject(AppState.shared.objectsContainer.threadsVM)
                     }
-                    if let user = viewModel.user {
+                    if viewModel.canShowUserActions, let user = viewModel.user ?? AppState.shared.appStateNavigationModel.participantToCreate {
                         StickyHeaderSection(header: "", height: 4)
-                        UserActionMenu(participant: user)
+                        UserActionMenu(showPopover: $showPopover, participant: user)
                     }
                 }
                 .foregroundColor(.primary)

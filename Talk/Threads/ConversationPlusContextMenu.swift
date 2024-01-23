@@ -13,7 +13,6 @@ import Chat
 
 struct ConversationPlusContextMenu: View {
     @EnvironmentObject var threadsVM: ThreadsViewModel
-    @EnvironmentObject var contactsVM: ContactsViewModel
     @State var showCreateConversationSheet = false
     @State var showFastMessageSheet = false
     @State var showJoinSheet = false
@@ -66,19 +65,7 @@ struct ConversationPlusContextMenu: View {
 //            ManuallyConnectionManagerView()
 //        }
         .sheet(isPresented: $showCreateConversationSheet) {
-            AppState.shared.objectsContainer.searchVM.searchText = ""
-            AppState.shared.objectsContainer.contactsVM.searchContactString = ""
-        } content: {
             StartThreadContactPickerView()
-        }
-        .onReceive(contactsVM.objectWillChange) {
-            /// To remove view if successfully create a conversation group/channel.
-            if contactsVM.closeConversationContextMenu == true {
-                withAnimation {
-                    showCreateConversationSheet = false
-                    contactsVM.closeConversationContextMenu = false
-                }
-            }
         }
 //        .sheet(isPresented: $showFastMessageSheet) {
 //            CreateDirectThreadView { invitee, message in

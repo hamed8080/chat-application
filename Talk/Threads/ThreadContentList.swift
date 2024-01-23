@@ -44,9 +44,6 @@ struct ThreadContentList: View {
             ListLoadingView(isLoading: $threadsVM.isLoading)
         }
         .sheet(isPresented: sheetBinding) {
-            threadsVM.sheetType = nil
-            container.contactsVM.closeBuilder()
-        } content: {
             ThreadsSheetFactoryView()
         }
     }

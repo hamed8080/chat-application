@@ -38,37 +38,35 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public var thread: Conversation
-    public var centerLoading = false    
+    public var centerLoading = false
     public var replyMessage: Message?
     @Published public var isInEditMode: Bool = false
     @Published public var dismiss = false
     public var sheetType: ThreadSheetType?
-    public var selectedLocation: MKCoordinateRegion = .init()    
-    public var exportMessagesVM: ExportMessagesViewModelProtocol?
+    public var exportMessagesViewModel: ExportMessagesViewModel = .init()
     public var unssetMessagesViewModel: ThreadUnsentMessagesViewModel
     public var uploadMessagesViewModel: ThreadUploadMessagesViewModel
     public var searchedMessagesViewModel: ThreadSearchMessagesViewModel
-    public var selectedMessagesViewModel: ThreadSelectedMessagesViewModel
+    public var selectedMessagesViewModel: ThreadSelectedMessagesViewModel = .init()
     public var unreadMentionsViewModel: ThreadUnreadMentionsViewModel
     public var participantsViewModel: ParticipantsViewModel
     public var attachmentsViewModel: AttachmentsViewModel = .init()
     public var mentionListPickerViewModel: MentionListPickerViewModel
     public var sendContainerViewModel: SendContainerViewModel
     public var audioRecoderVM: AudioRecordingViewModel = .init()
-    public var scrollVM: ThreadScrollingViewModel
-    public var historyVM: ThreadHistoryViewModel
+    public var scrollVM: ThreadScrollingViewModel = .init()
+    public var historyVM: ThreadHistoryViewModel = .init()
     public weak var threadsViewModel: ThreadsViewModel?
     public var participantsColorVM: ParticipantsColorViewModel = .init()
     public var threadPinMessageViewModel: ThreadPinMessageViewModel
     public var readOnly = false
     public var cancelable: Set<AnyCancellable> = []
-    private var typingTimerStarted = false
     public var threadId: Int { thread.id ?? 0 }
     public var signalMessageText: String?
-    public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }    
+    public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
     public weak var forwardMessage: Message?
     public var seenPublisher = PassthroughSubject<Message, Never>()
-    var createThreadCompletion: (()-> Void)?    
+    var createThreadCompletion: (()-> Void)?
     public static var threadWidth: CGFloat = 0 {
         didSet {
             // 38 = Avatar width + tail width + leading padding + trailing padding
@@ -92,10 +90,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.mentionListPickerViewModel = .init(thread: thread)
         self.sendContainerViewModel = .init(thread: thread)
         self.searchedMessagesViewModel = .init(threadId: thread.id ?? -1)
-        self.selectedMessagesViewModel = .init()
         self.threadPinMessageViewModel = ThreadPinMessageViewModel(thread: thread)
-        self.scrollVM = .init()
-        self.historyVM = .init()
         self.readOnly = readOnly
         self.thread = thread
         self.threadsViewModel = threadsViewModel
@@ -106,6 +101,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         setAppSettingsModel()
         selectedMessagesViewModel.threadVM = self
         sendContainerViewModel.threadVM = self
+        exportMessagesViewModel.thread = thread
     }
 
     private func setupNotificationObservers() {
@@ -266,17 +262,13 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public func setupExportMessage(startDate: Date, endDate: Date) {
-        if exportMessagesVM == nil {
-            exportMessagesVM = ExportMessagesViewModel()
-            exportMessagesVM?.thread = thread
-            (exportMessagesVM as? ExportMessagesViewModel)?.objectWillChange
-                .sink { [weak self] in
-                    self?.sheetType = .exportMessagesFile
-                    self?.animateObjectWillChange()
-                }
-                .store(in: &cancelable)
-        }
-        exportMessagesVM?.exportChats(startDate: startDate, endDate: endDate)
+        exportMessagesViewModel.objectWillChange
+            .sink { [weak self] in
+                self?.sheetType = .exportMessagesFile
+                self?.animateObjectWillChange()
+            }
+            .store(in: &cancelable)
+        exportMessagesViewModel.exportChats(startDate: startDate, endDate: endDate)
         animateObjectWillChange()
     }
 
@@ -286,25 +278,19 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         let messageId = message?.id ?? -1
         let beforeUnreadCount = thread.unreadCount ?? -1
         if beforeUnreadCount > 0, messageId > thread.lastSeenMessageId ?? 0 {
-            log("Reduced unread count before is: \(beforeUnreadCount) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
             let newUnreadCount = beforeUnreadCount - 1
             thread.unreadCount = newUnreadCount
-            log("Reduced unread count after in thread object is: \(thread.unreadCount ?? 0) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
             if let index = threadsViewModel?.threads.firstIndex(where: {$0.id == threadId}) {
-                log("Reduced unread count before in threadsViewModel object is: \(threadsViewModel?.threads[index].unreadCount ?? 0) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
                 threadsViewModel?.threads[index].unreadCount = newUnreadCount
-                log("Reduced unread count after in threadsViewModel object is: \(threadsViewModel?.threads[index].unreadCount ?? 0) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
             }
             threadsViewModel?.animateObjectWillChange()
             animateObjectWillChange()
-            log("Reduced unread count is: \(newUnreadCount) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
         }
 
         /// We do this to remove number 1 as fast as the user scrolls to the last Message in the thread
         /// If we remove these lines it will work, however, we should wait for the server's response to remove the number 1 unread count when the user scrolls fast.
         if thread.unreadCount == 1, messageId == thread.lastMessageVO?.id {
             if let index = threadsViewModel?.threads.firstIndex(where: {$0.id == threadId}) {
-                log("Reduced unread count before in threadsViewModel object is: \(threadsViewModel?.threads[index].unreadCount ?? 0) locally with id:\(messageId) uniqueId:\(message?.uniqueId ?? "") text:\(message?.message ?? "")")
                 threadsViewModel?.threads[index].unreadCount = 0
                 threadsViewModel?.animateObjectWillChange()
             }
@@ -334,14 +320,14 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             animateObjectWillChange()
         }
     }
-    
+
     func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
         if response.result == threadId {
             dismiss = true
         }
     }
 
-   public func moveToFirstUnreadMessage() {
+    public func moveToFirstUnreadMessage() {
         if let unreadMessage = unreadMentionsViewModel.unreadMentions.first, let time = unreadMessage.time {
             historyVM.moveToTime(time, unreadMessage.id ?? -1, highlight: true)
             unreadMentionsViewModel.setAsRead(id: unreadMessage.id)
@@ -357,7 +343,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         cancelable.forEach { cancelable in
             cancelable.cancel()
         }
-        (exportMessagesVM as? ExportMessagesViewModel)?.cancelAllObservers()
+        exportMessagesViewModel.cancelAllObservers()
         unssetMessagesViewModel.cancelAllObservers()
         uploadMessagesViewModel.cancelAllObservers()
         searchedMessagesViewModel.cancelAllObservers()

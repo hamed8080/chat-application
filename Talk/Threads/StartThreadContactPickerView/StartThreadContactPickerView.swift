@@ -14,69 +14,78 @@ import TalkViewModels
 
 struct StartThreadContactPickerView: View {
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var viewModel: ContactsViewModel
+    @StateObject private var viewModel = ConversationBuilderViewModel()
 
     var body: some View {
-        List {
-            if viewModel.searchedContacts.count == 0 {
-                Button {
-                    dismiss()
-                    Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { _ in
-                        viewModel.createConversationType = .normal
-                        viewModel.showConversaitonBuilder.toggle()
-                    }
-                } label: {
-                    Label("Contacts.createGroup", systemImage: "person.2")
-                        .foregroundStyle(Color.App.accent)
-                }
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparatorTint(Color.App.dividerPrimary)
+        NavigationStack {
+            List {
+                if viewModel.searchedContacts.count == 0 {
+                    NavigationLink {
+                        ConversationBuilder()
+                            .navigationBarBackButtonHidden(true)
+                            .onAppear {
+                                viewModel.show(type: .normal)
+                            }
 
-                Button {
-                    dismiss()
-                    Timer.scheduledTimer(withTimeInterval: 0.7, repeats: false) { _ in
-                        viewModel.createConversationType = .channel
-                        viewModel.showConversaitonBuilder.toggle()
+                    } label: {
+                        Label("Contacts.createGroup", systemImage: "person.2")
+                            .foregroundStyle(Color.App.accent)
                     }
-                } label: {
-                    Label("Contacts.createChannel", systemImage: "megaphone")
-                        .foregroundStyle(Color.App.accent)
-                }
-                .listRowBackground(Color.App.bgPrimary)
-                .listRowSeparator(.hidden)
-            }
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowSeparatorTint(Color.App.dividerPrimary)
 
-            if viewModel.searchedContacts.count > 0 {
-                StickyHeaderSection(header: "Contacts.searched")
+                    NavigationLink {
+                        ConversationBuilder()
+                            .navigationBarBackButtonHidden(true)
+                            .onAppear {
+                                viewModel.show(type: .channel)
+                            }
+                    } label: {
+                        Label("Contacts.createChannel", systemImage: "megaphone")
+                            .foregroundStyle(Color.App.accent)
+                    }
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowSeparator(.hidden)
+                }
+
+                if viewModel.searchedContacts.count > 0 {
+                    StickyHeaderSection(header: "Contacts.searched")
+                        .listRowInsets(.zero)
+                    ForEach(viewModel.searchedContacts) { contact in
+                        BuilderContactRowContainer(contact: contact, isSearchRow: true)
+                    }
+                }
+
+                StickyHeaderSection(header: "Contacts.sortLabel")
                     .listRowInsets(.zero)
-                ForEach(viewModel.searchedContacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: true)
+                ForEach(viewModel.contacts) { contact in
+                    BuilderContactRowContainer(contact: contact, isSearchRow: false)
                 }
             }
-
-            StickyHeaderSection(header: "Contacts.sortLabel")
-                .listRowInsets(.zero)
-            ForEach(viewModel.contacts) { contact in
-                ContactRowContainer(contact: contact, isSearchRow: false)
+            .listStyle(.plain)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
+                    TextField("General.searchHere", text: $viewModel.searchContactString)
+                        .frame(height: 48)
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                }
+                .frame(height: 48)
+                .background(.ultraThinMaterial)
+            }
+            .overlay(alignment: .bottom) {
+                ListLoadingView(isLoading: $viewModel.isLoading)
             }
         }
+        .environmentObject(viewModel)
         .environment(\.defaultMinListRowHeight, 24)
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
-        .listStyle(.plain)
-        .safeAreaInset(edge: .top, spacing: 0) {
-            VStack(alignment: .leading, spacing: 0) {
-                TextField("General.searchHere", text: $viewModel.searchContactString)
-                    .frame(height: 48)
-                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
+        .onReceive(viewModel.$dismiss) { newValue in
+            if newValue == true {
+                dismiss()
             }
-            .frame(height: 48)
-            .background(.ultraThinMaterial)
-        }
-        .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $viewModel.isLoading)
         }
     }
 }

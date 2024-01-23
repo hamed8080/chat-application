@@ -14,6 +14,8 @@ import ChatModels
 
 struct ContactContentList: View {
     @EnvironmentObject var viewModel: ContactsViewModel
+    @State private var type: ThreadTypes = .normal
+    @State private var showBuilder = false
 
     var body: some View {
         List {
@@ -38,9 +40,8 @@ struct ContactContentList: View {
             }
 
             Button {
-                viewModel.searchContactString = ""
-                viewModel.createConversationType = .normal
-                viewModel.showConversaitonBuilder.toggle()
+                type = .normal
+                showBuilder.toggle()
             } label: {
                 Label("Contacts.createGroup", systemImage: "person.2")
                     .foregroundStyle(Color.App.accent)
@@ -49,9 +50,8 @@ struct ContactContentList: View {
             .listRowSeparatorTint(Color.App.dividerPrimary)
 
             Button {
-                viewModel.searchContactString = ""
-                viewModel.createConversationType = .channel
-                viewModel.showConversaitonBuilder.toggle()
+                type = .channel
+                showBuilder.toggle()
             } label: {
                 Label("Contacts.createChannel", systemImage: "megaphone")
                     .foregroundStyle(Color.App.accent)
@@ -99,11 +99,13 @@ struct ContactContentList: View {
             AddOrEditContactView()
                 .environmentObject(viewModel)
         }
-        .sheet(isPresented: $viewModel.showConversaitonBuilder) {
-            viewModel.searchContactString = ""
-            viewModel.showConversaitonBuilder = false
-        } content: {
+        .sheet(isPresented: $showBuilder){
+            let viewModel = ConversationBuilderViewModel()
             ConversationBuilder()
+                .environmentObject(viewModel)
+                .onAppear {
+                    viewModel.show(type: type)
+                }
         }
     }
 }
@@ -172,8 +174,6 @@ struct ContactRowContainer: View {
                 if viewModel.isInSelectionMode {
                     viewModel.toggleSelectedContact(contact: contact)
                 } else {
-                    viewModel.closeConversationContextMenu = true
-                    viewModel.closeBuilder()
                     AppState.shared.openThread(contact: contact)
                 }
             }
