@@ -36,46 +36,47 @@ struct AddOrEditContactView: View {
     var isInEditMode: Bool { addContact == nil && editContact != nil }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            if !isLargeSize{
-                Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text(isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title")
+                    .font(.iransansBoldSubtitle)
+                    .padding()
+                    .offset(y: 24)
+                TextField("General.firstName", text: $firstName)
+                    .focused($focusState, equals: .firstName)
+                    .textContentType(.name)
+                    .padding()
+                    .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
+                        focusState = .firstName
+                    }
+                TextField(optioanlAPpend(text: "General.lastName"), text: $lastName)
+                    .focused($focusState, equals: .lastName)
+                    .textContentType(.familyName)
+                    .padding()
+                    .applyAppTextfieldStyle(topPlaceholder: "General.lastName", isFocused: focusState == .lastName) {
+                        focusState = .lastName
+                    }
+                TextField("Contacts.Add.phoneOrUserName", text: $contactValue)
+                    .focused($focusState, equals: .contactValue)
+                    .keyboardType(.default)
+                    .padding()
+                    .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", error: viewModel.userNotFound ? "Contctas.notFound" : nil, isFocused: focusState == .contactValue) {
+                        focusState = .contactValue
+                    }
+                    .disabled(isInEditMode)
+                    .opacity(isInEditMode ? 0.3 : 1)
+                if !isLargeSize {
+                    Spacer()
+                }
             }
-            Text(isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title")
-                .font(.iransansBoldSubtitle)
-                .padding()
-                .offset(y: 24)
-            TextField("General.firstName", text: $firstName)
-                .focused($focusState, equals: .firstName)
-                .textContentType(.name)
-                .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
-                    focusState = .firstName
-                }
-            TextField(optioanlAPpend(text: "General.lastName"), text: $lastName)
-                .focused($focusState, equals: .lastName)
-                .textContentType(.familyName)
-                .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "General.lastName", isFocused: focusState == .lastName) {
-                    focusState = .lastName
-                }
-            TextField("Contacts.Add.phoneOrUserName", text: $contactValue)
-                .focused($focusState, equals: .contactValue)
-                .keyboardType(.default)
-                .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", error: viewModel.userNotFound ? "Contctas.notFound" : nil, isFocused: focusState == .contactValue) {
-                    focusState = .contactValue
-                }
-                .disabled(isInEditMode)
-                .opacity(isInEditMode ? 0.3 : 1)
-            if isLargeSize {
-                Spacer()
-            }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             let title = isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title"
             SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: $viewModel.isLoading) {
                 submit()
             }
         }
-        .presentationDetents([.fraction((isLargeSize ? 100 : 60) / 100)])
+        .presentationDetents([.fraction((isLargeSize ? 100 : 70) / 100)])
         .presentationBackground(.ultraThinMaterial)
         .presentationDragIndicator(.visible)
         .animation(.easeInOut, value: enableButton)

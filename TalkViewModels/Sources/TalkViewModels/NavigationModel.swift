@@ -212,7 +212,7 @@ public final class NavigationModel: ObservableObject {
     }
 
     public func append(participantDetail: Participant) {
-        let detailViewModel = DetailViewModel(user: participantDetail)
+        let detailViewModel = DetailViewModel(participant: participantDetail)
         paths.append(NavigationType.detail(detailViewModel))
         pathsTracking.append(detailViewModel)
     }

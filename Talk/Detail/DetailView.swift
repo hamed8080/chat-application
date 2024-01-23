@@ -19,7 +19,6 @@ import TalkModels
 struct DetailView: View {
     @EnvironmentObject var viewModel: DetailViewModel
     @EnvironmentObject var contactsVM: ContactsViewModel
-    @EnvironmentObject var navigationViewModel: NavigationModel
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -44,7 +43,7 @@ struct DetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $viewModel.showAddToContactSheet) {
-            if let user = viewModel.user ?? AppState.shared.appStateNavigationModel.participantToCreate {
+            if let user = viewModel.participant ?? AppState.shared.appStateNavigationModel.participantToCreate {
                 let editContact = Contact(firstName: user.firstName ?? "",
                                           lastName: user.lastName ?? "",
                                           user: .init(username: user.username ?? ""))
@@ -66,7 +65,7 @@ struct DetailView: View {
         }
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue {
-                navigationViewModel.remove(type: DetailViewModel.self)
+                AppState.shared.objectsContainer.navVM.remove(type: DetailViewModel.self)
                 dismiss()
             }
         }
@@ -160,7 +159,7 @@ struct InfoView: View {
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.textPrimary)
 
-                let count = viewModel.participantViewModel?.thread?.participantCount
+                let count = viewModel.threadVM?.participantsViewModel.thread?.participantCount
                 if viewModel.thread?.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
                     let label = String(localized: .init("Participant"))
                     Text("\(label) \(countString)")
@@ -237,7 +236,7 @@ struct UserName: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if let participantName = viewModel.partner?.username ?? viewModel.user?.name.validateString {
+        if let participantName = viewModel.participant?.username.validateString {
             InfoRowItem(key: "Settings.userName", value: participantName)
         }
     }
@@ -247,7 +246,7 @@ struct CellPhoneNumber: View {
     @EnvironmentObject var viewModel: DetailViewModel
 
     var body: some View {
-        if let cellPhoneNumber = viewModel.partnerContact?.cellphoneNumber ?? viewModel.cellPhoneNumber.validateString {
+        if let cellPhoneNumber = viewModel.cellPhoneNumber.validateString {
             InfoRowItem(key: "Participant.Search.Type.cellphoneNumber", value: cellPhoneNumber)
         }
     }
@@ -350,7 +349,7 @@ struct DetailTopButtons: View {
                         ThreadRowActionMenu(showPopover: $showPopover, isDetailView: true, thread: conversation)
                             .environmentObject(AppState.shared.objectsContainer.threadsVM)
                     }
-                    if viewModel.canShowUserActions, let user = viewModel.user ?? AppState.shared.appStateNavigationModel.participantToCreate {
+                    if viewModel.canShowUserActions, let user = viewModel.participant ?? AppState.shared.appStateNavigationModel.participantToCreate {
                         StickyHeaderSection(header: "", height: 4)
                         UserActionMenu(showPopover: $showPopover, participant: user)
                     }
@@ -372,7 +371,7 @@ struct TabDetail: View {
     let viewModel: DetailViewModel
 
     var body: some View {
-        if let thread = viewModel.thread, let participantViewModel = viewModel.participantViewModel {
+        if let thread = viewModel.thread, let participantViewModel = viewModel.threadVM?.participantsViewModel {
             ConversationDetailTabViews(thread: thread)
                 .environmentObject(participantViewModel)
         }
@@ -436,16 +435,16 @@ struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationSplitView {} content: {} detail: {
             DetailView()
-                .environmentObject(DetailViewModel(thread: MockData.thread, contact: contact, user: nil))
+                .environmentObject(DetailViewModel(thread: MockData.thread))
         }
         .previewDisplayName("Detail With Thread in Ipad")
 
         DetailView()
-            .environmentObject(DetailViewModel(thread: MockData.thread, contact: contact, user: nil))
+            .environmentObject(DetailViewModel(thread: MockData.thread))
             .previewDisplayName("Detail With Thread in iPhone")
 
         DetailView()
-            .environmentObject(DetailViewModel(thread: nil, contact: contact, user: nil))
+            .environmentObject(DetailViewModel(thread: MockData.thread))
             .previewDisplayName("Detail With Contant")
     }
 }

@@ -19,32 +19,28 @@ import ChatTransceiver
 
 public final class DetailViewModel: ObservableObject, Hashable {
     public static func == (lhs: DetailViewModel, rhs: DetailViewModel) -> Bool {
-        lhs.user?.id == rhs.user?.id || lhs.thread?.id == rhs.thread?.id || lhs.contact?.id == rhs.contact?.id
+        lhs.participant?.id == rhs.participant?.id || lhs.thread?.id == rhs.thread?.id
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(contact?.id)
         hasher.combine(thread?.id)
-        hasher.combine(user?.id)
+        hasher.combine(participant?.id)
     }
 
     private(set) var cancelable: Set<AnyCancellable> = []
-    public var user: Participant?
-    public var contact: Contact?
+    public var participant: Participant?
     public var thread: Conversation?
-    public var isInMyContact: Bool { (user?.contactId != nil || contact != nil) && thread == nil }
+    public var isInMyContact: Bool { participant?.contactId != nil }
     public var canBlock: Bool { thread == nil }
-    public var title: String { thread?.title ?? user?.name ?? contact?.user?.name ?? "\(contact?.firstName ?? "") \(contact?.lastName ?? "")" }
-    public var notSeenString: String? { user?.notSeenDuration?.localFormattedTime ?? contact?.notSeenDuration?.localFormattedTime }
-    public var cellPhoneNumber: String? { contact?.cellphoneNumber ?? user?.cellphoneNumber }
-    public var isBlock: Bool { contact?.blocked == true || user?.blocked == true }
-    public var bio: String? { contact?.user?.chatProfileVO?.bio ?? user?.chatProfileVO?.bio }
+    public var title: String { thread?.title ?? participant?.name ?? "" }
+    public var notSeenString: String? { participant?.notSeenDuration?.localFormattedTime }
+    public var cellPhoneNumber: String? { participant?.cellphoneNumber }
+    public var isBlock: Bool { participant?.blocked == true }
+    public var bio: String? { participant?.chatProfileVO?.bio }
     public var showInfoGroupBox: Bool { bio != nil || cellPhoneNumber != nil || canBlock == true }
-    public var url: String? { thread?.computedImageURL ?? user?.image ?? contact?.image }
-    public var participantViewModel: ParticipantsViewModel? { threadVM?.participantsViewModel }
+    public var url: String? { thread?.computedImageURL ?? participant?.image }
     public var mutualThreads: ContiguousArray<Conversation> = []
     public weak var threadVM: ThreadViewModel?
-    public var p2pPartnerContact: Contact?
     @Published public var isPublic = false
 
     @Published public var editTitle: String = ""
@@ -59,21 +55,38 @@ public final class DetailViewModel: ObservableObject, Hashable {
     @Published public var showEditGroup = false
     @Published public var showContactEditSheet: Bool = false
     public var isGroup: Bool { thread?.group == true }
-    public var canEditContact: Bool { !isGroup && p2pPartnerContact != nil }
-    public var canShowEditButton: Bool {(thread?.canEditInfo == true || user?.contactId != nil || canEditContact) && thread?.type != .selfThread }
-    public var partner: Participant?
-    public var partnerContact: Contact?
+    public var canEditContact: Bool { !isGroup && participant != nil }
+    public var canShowEditButton: Bool {
+        if thread?.type == .selfThread { return false }
+        if thread?.group == true && thread?.admin == true {
+            return true
+        } else if participant?.contactId != nil && (thread?.group == false || thread?.group == nil) {
+            return true
+        } else {
+            return false
+        }
+    }
     public var uploadProfileUniqueId: String?
     public var uploadProfileProgress: Int64?
     public var canShowUserActions: Bool {
         (thread?.group == nil || thread?.group == false) && thread?.type != .selfThread
     }
 
-    public init(thread: Conversation? = nil, threadVM: ThreadViewModel? = nil, contact: Contact? = nil, user: Participant? = nil) {
-        self.user = user
+    public init(participant: Participant) {
+        self.participant = participant
+        setup()
+    }
+
+    public init(thread: Conversation, threadVM: ThreadViewModel? = nil) {
         self.thread = thread
-        self.contact = contact
         self.threadVM = threadVM
+        if thread.group == false || thread.group == nil {
+            participant = self.threadVM?.participantsViewModel.participants.first(where: {$0.id != AppState.shared.user?.id && $0.auditor == false })
+        }
+        setup()
+    }
+
+    public func setup() {
         isPublic = thread?.type?.isPrivate == false
         editTitle = title
         threadDescription = thread?.description ?? ""
@@ -82,12 +95,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] value in
                 self?.onThreadEvent(value)
-            }
-            .store(in: &cancelable)
-        NotificationCenter.participant.publisher(for: .participant)
-            .compactMap { $0.object as? ParticipantEventTypes }
-            .sink { [weak self] value in
-                self?.onParticipantEvent(value)
             }
             .store(in: &cancelable)
         NotificationCenter.connect.publisher(for: .contact)
@@ -103,14 +110,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
                 self?.onUploadEvent(value)
             }
             .store(in: &cancelable)
-        participantViewModel?.objectWillChange.sink { [weak self] _ in
-            self?.user = self?.participantViewModel?.participants.first(where: { $0.id == thread?.partner})
-            self?.animateObjectWillChange()
-        }
-        .store(in: &cancelable)
-        if thread?.group == false || thread?.group == nil {
-            getUserData()
-        }
     }
 
     private func onUploadEvent(_ event: UploadEventTypes) {
@@ -126,15 +125,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
         if uniqueId == uploadProfileUniqueId {
             uploadProfileProgress = progress?.percent ?? 0
             animateObjectWillChange()
-        }
-    }
-
-    private func onParticipantEvent(_ event: ParticipantEventTypes) {
-        switch event {
-        case .participants(let response):
-            onP2PParticipant(response)
-        default:
-            break
         }
     }
 
@@ -161,8 +151,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
 
     private func onContactEvent(_ event: ContactEventTypes) {
         switch event {
-        case .contacts(let response):
-            onP2PContact(response)
         case .blocked(let chatResponse):
             onBlock(chatResponse)
         case .unblocked(let chatResponse):
@@ -177,9 +165,9 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     public func createThread() {
-        if let contact = contact {
-            AppState.shared.openThread(contact: contact)
-        } else if let user = user {
+        if let contactId = participant?.contactId {
+            AppState.shared.openThread(contact: .init(id: contactId))
+        } else if let user = participant {
             AppState.shared.openThread(participant: user)
         }
     }
@@ -190,29 +178,27 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     public func blockUnBlock() {
-        if contact?.blocked == true {
-            let req = UnBlockRequest(userId: contact?.userId ?? user?.coreUserId)
-            RequestsManager.shared.append(value: req)
-            ChatManager.activeInstance?.contact.unBlock(req)
+        let unblcokReq = UnBlockRequest(contactId: participant?.contactId, userId: participant?.coreUserId)
+        let blockReq = BlockRequest(contactId: participant?.contactId, userId: participant?.coreUserId)
+        if participant?.blocked == true {
+            RequestsManager.shared.append(value: unblcokReq)
+            ChatManager.activeInstance?.contact.unBlock(unblcokReq)
         } else {
-            let req = BlockRequest(userId: contact?.userId ?? user?.coreUserId)
-            RequestsManager.shared.append(value: req)
-            ChatManager.activeInstance?.contact.block(req)
+            RequestsManager.shared.append(value: blockReq)
+            ChatManager.activeInstance?.contact.block(blockReq)
         }
     }
 
     private func onBlock(_ response: ChatResponse<BlockedContactResponse>) {
         if response.result != nil {
-            self.contact?.blocked = true
-            user?.blocked = true
+            participant?.blocked = true
             animateObjectWillChange()
         }
     }
 
     private func onUNBlock(_ response: ChatResponse<BlockedContactResponse>) {
         if response.result != nil {
-            self.contact?.blocked = false
-            user?.blocked = false
+            participant?.blocked = false
             animateObjectWillChange()
         }
     }
@@ -253,7 +239,7 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     public func fetchMutualThreads() {
-        guard let userId = (thread?.partner ?? contact?.userId ?? user?.id) else { return }
+        guard let userId = (thread?.partner ?? participant?.id) else { return }
         let invitee = Invitee(id: "\(userId)", idType: .userId)
         let req = MutualGroupsRequest(toBeUser: invitee)
         RequestsManager.shared.append(value: req)
@@ -286,8 +272,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
 
     private func onAddContact(_ response: ChatResponse<[Contact]>) {
         response.result?.forEach{ contact in
-            if contact.user?.username == user?.username {
-                user?.contactId = contact.id
+            if contact.user?.username == participant?.username {
+                participant?.contactId = contact.id
             }
         }
         animateObjectWillChange()
@@ -346,8 +332,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
     }
 
     public func showEditContactOrEditGroup(contactsVM: ContactsViewModel) {
-        if user?.contactId != nil || p2pPartnerContact != nil {
-            contactsVM.editContact = p2pPartnerContact ?? user?.toContact
+        if participant?.contactId != nil {
+            contactsVM.editContact = participant?.toContact
             showContactEditSheet.toggle()
         } else if thread?.canEditInfo == true {
             showEditGroup.toggle()
@@ -360,30 +346,6 @@ public final class DetailViewModel: ObservableObject, Hashable {
         }
     }
 
-    private func getUserData() {
-        guard let threadId = thread?.id, threadId != LocalId.emptyThread.rawValue else { return }
-        let req = ThreadParticipantRequest(threadId: threadId)
-        RequestsManager.shared.append(prepend: "GET-P2P-DETAIL", value: req)
-        ChatManager.activeInstance?.conversation.participant.get(req)
-    }
-
-    private func onP2PParticipant(_ response: ChatResponse<[Participant]>) {
-        if response.pop(prepend: "GET-P2P-DETAIL") != nil, let partner = response.result?.first(where: {$0.id == thread?.partner}) {
-            self.partner = partner
-            animateObjectWillChange()
-            let req = ContactsRequest(id: partner.contactId)
-            RequestsManager.shared.append(prepend: "GET-P2P-CONTACT-DETAIL", value: req)
-            ChatManager.activeInstance?.contact.get(req)
-        }
-    }
-
-    private func onP2PContact(_ response: ChatResponse<[Contact]>) {
-        if response.pop(prepend: "GET-P2P-CONTACT-DETAIL") != nil, let partnerContact = response.result?.first(where: {$0.id == partner?.contactId}) {
-            self.partnerContact = partnerContact
-            animateObjectWillChange()
-        }
-    }
-
     func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
         if response.result == thread?.id {
             dismiss = true
@@ -392,10 +354,8 @@ public final class DetailViewModel: ObservableObject, Hashable {
 
     private func onDeletedContact(_ response: ChatResponse<[Contact]>, _ deleted: Bool) {
         if deleted {
-            if response.result?.first?.id == (partner?.contactId ?? user?.contactId) {
-                partner?.contactId = nil
-                user?.contactId = nil
-                partnerContact = nil
+            if response.result?.first?.id == participant?.contactId {
+                participant?.contactId = nil
                 animateObjectWillChange()
             }
         }
