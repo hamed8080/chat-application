@@ -131,7 +131,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             isMe = true
         }
         setupObservers()
-        canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.message.isEmptyOrNil == true && message.replyInfo?.deleted == false
+        canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
     }
 
     func setupObservers() {
@@ -467,8 +467,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func calculateLocalizeReplyFileName() -> String? {
-        let hinTextMessage = message.replyInfo?.message ?? message.replyFileStringName?.localized()
-        return hinTextMessage
+        if let message = message.replyInfo?.message, !message.isEmpty {
+            return message
+        } else if let fileHint = message.replyFileStringName?.localized(), !fileHint.isEmpty {
+            return fileHint
+        } else {
+            return nil
+        }
     }
 
     private func calculateCallTexts() async {

@@ -20,7 +20,7 @@ extension ThreadViewModel {
     public func sendTextMessage(_ textMessage: String) {
         let textMessage = textMessage.replacingOccurrences(of: "\u{200f}", with: "")
         if AppState.shared.appStateNavigationModel.forwardMessageRequest?.threadId == threadId {
-            sendForwardMessages()
+            sendForwardMessages(textMessage)
         } else if AppState.shared.appStateNavigationModel.replyPrivately != nil {
             sendReplyPrivatelyMessage(textMessage)
         } else if let replyMessage = replyMessage, let replyMessageId = replyMessage.id {
@@ -201,9 +201,8 @@ extension ThreadViewModel {
         selectedMessagesViewModel.clearSelection()
     }
 
-    public func sendForwardMessages() {
+    public func sendForwardMessages(_ textMessage: String) {
         if let req = AppState.shared.appStateNavigationModel.forwardMessageRequest {
-            let textMessage = sendContainerViewModel.textMessage
             if !textMessage.isEmpty {
                 let messageReq = SendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .text)
                 ChatManager.activeInstance?.message.send(messageReq)
@@ -273,7 +272,6 @@ extension ThreadViewModel {
                                                       mimeType: url.mimeType,
                                                       originalName: "\(url.fileName).\(url.fileExtension)",
                                                       userGroupHash: self.thread.userGroupHash)
-                let textMessage = self.sendContainerViewModel.textMessage
                 let isMusic = url.isMusicMimetype
                 let newMessageType = isMusic ? ChatModels.MessageType.podSpaceSound : messageType
                 var textRequest: SendTextMessageRequest? = nil
@@ -299,7 +297,6 @@ extension ThreadViewModel {
                                                       fileName: "\(item.name ?? "").\(item.ext ?? "")", // it should have file name and extension
                                                       mimeType: nil,
                                                       userGroupHash: self.thread.userGroupHash)
-                let textMessage = self.sendContainerViewModel.textMessage
                 let textRequest = textMessage.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .podSpaceFile)
                 let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
                 request.id = -index
