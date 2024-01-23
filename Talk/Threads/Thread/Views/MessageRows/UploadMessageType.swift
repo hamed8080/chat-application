@@ -22,6 +22,8 @@ struct UploadMessageType: View {
                 UploadMessageImageView(viewModel: viewModel)
             } else if message.isUnsentMessage == false, message.uploadFile?.uploadFileRequest != nil {
                 UploadMessageFileView(viewModel: viewModel)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
             }
         }
     }

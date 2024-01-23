@@ -94,13 +94,9 @@ fileprivate struct FileDownloadButton: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            ZStack {
-                iconView
-                progress
+            if !messageRowVM.isMe {
+                downloadButton
             }
-            .frame(width: 46, height: 46)
-            .background(scheme == .light ? Color.App.accent : Color.App.white)
-            .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
 
             VStack(alignment: .leading, spacing: 4) {
                 fileNameView
@@ -109,8 +105,21 @@ fileprivate struct FileDownloadButton: View {
                     fileSizeView
                 }
             }
+            if messageRowVM.isMe {
+                downloadButton
+            }
         }
         .padding(4)
+    }
+
+    @ViewBuilder private var downloadButton: some View {
+        ZStack {
+            iconView
+            progress
+        }
+        .frame(width: 46, height: 46)
+        .background(scheme == .light ? Color.App.accent : Color.App.white)
+        .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
     }
 
     @ViewBuilder private var iconView: some View {

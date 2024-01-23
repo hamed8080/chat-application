@@ -19,13 +19,13 @@ public struct UploadMessageFileView: View {
 
     public var body: some View {
         HStack(spacing: 4) {
-            UploadImageButton(messageRowVM: viewModel)
-                .environmentObject(viewModel.uploadViewModel!)
             if let fileName = message.uploadFileName ?? viewModel.fileMetaData?.file?.originalName {
                 Text("\(fileName)")
                     .foregroundStyle(Color.App.textPrimary)
                     .font(.iransansBoldCaption)
             }
+            UploadImageButton(messageRowVM: viewModel)
+                .environmentObject(viewModel.uploadViewModel!)
         }
         .task {
             viewModel.uploadViewModel?.startUploadFile()
