@@ -33,6 +33,7 @@ extension ThreadViewModel {
             sendNormalMessage(textMessage)
         }
         isInEditMode = false // close edit mode in ui
+        sendSeenForAllUnreadMessages()
     }
 
     public func sendAttachmentsMessage(_ textMessage: String = "") {
@@ -390,5 +391,15 @@ extension ThreadViewModel {
         animateObjectWillChange()
         createThreadCompletion?()
         createThreadCompletion = nil
+    }
+
+    private func sendSeenForAllUnreadMessages() {
+        if let message = thread.lastMessageVO,
+           message.seen == nil || message.seen == false,
+           message.participant?.id != AppState.shared.user?.id,
+           thread.unreadCount ?? 0 > 0
+        {
+            sendSeen(for: message)
+        }
     }
 }

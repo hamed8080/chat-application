@@ -149,6 +149,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
                 await historyVM.appendMessagesAndSort([message])
                 await historyVM.asyncAnimateObjectWillChange()
                 await scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
+                historyVM.setSeenForAllOlderMessages(newMessage: message)
             }
         }
     }

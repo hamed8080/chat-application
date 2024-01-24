@@ -801,6 +801,19 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
+    /// When you have sent messages for example 5 messages and your partner didn't read messages and send a message directly it will send you only one seen.
+    /// So you have to set seen to true for older unread messages you have sent, because the partner has read all messages and after you back to the list of thread the server will respond with seen == true for those messages.
+    public func setSeenForAllOlderMessages(newMessage: Message) {
+        let unseenMessages = sections.last?.vms.filter({($0.message.seen == false || $0.message.seen == nil) && $0.message.isMe(currentUserId: AppState.shared.user?.id)})
+        let isNotMe = !newMessage.isMe(currentUserId: AppState.shared.user?.id)
+        if isNotMe, unseenMessages?.count ?? 0 > 0 {
+            unseenMessages?.forEach { vm in
+                vm.message.seen = true
+                vm.animateObjectWillChange()
+            }
+        }
+    }
+
     func log(_ string: String) {
 #if DEBUG
         Logger.viewModels.info("\(string, privacy: .sensitive)")
