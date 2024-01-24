@@ -258,7 +258,7 @@ struct BuilderContactRowContainer: View {
                 if viewModel.isInSelectionMode {
                     viewModel.toggleSelectedContact(contact: contact)
                 } else {
-                    viewModel.closeBuilder()
+                    viewModel.clear()
                     AppState.shared.openThread(contact: contact)
                 }
             }

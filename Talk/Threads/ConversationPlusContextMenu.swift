@@ -17,6 +17,7 @@ struct ConversationPlusContextMenu: View {
     @State var showFastMessageSheet = false
     @State var showJoinSheet = false
     @State var showToken: Bool = false
+    @EnvironmentObject var builderVM: ConversationBuilderViewModel
 
     var body: some View {
         ToolbarButtonItem(imageName: "plus.circle.fill", hint: "ThreadList.Toolbar.startNewChat", padding: 8) {
@@ -64,7 +65,7 @@ struct ConversationPlusContextMenu: View {
 //        .sheet(isPresented: $showToken) {
 //            ManuallyConnectionManagerView()
 //        }
-        .sheet(isPresented: $showCreateConversationSheet) {
+        .sheet(isPresented: $showCreateConversationSheet, onDismiss: onDismissBuilder) {
             StartThreadContactPickerView()
         }
 //        .sheet(isPresented: $showFastMessageSheet) {
@@ -86,6 +87,10 @@ struct ConversationPlusContextMenu: View {
         } else {
             return false
         }
+    }
+
+    private func onDismissBuilder() {
+        builderVM.clear()
     }
 }
 

@@ -20,8 +20,6 @@ import ChatTransceiver
 public final class ConversationBuilderViewModel: ContactsViewModel {
     public var uploadProfileUniqueId: String?
     public var uploadProfileProgress: Int64?
-    /// When the user initiates a create group/channel with the plus button in the Conversation List.
-    @Published public var closeConversationContextMenu: Bool = false
     public var createdConversation: Conversation?
     @Published public var isUploading: Bool = false
     private var uploadedImageFileMetaData: FileMetaData?
@@ -66,6 +64,9 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
     }
 
     public func show(type: ThreadTypes) {
+        if contacts.isEmpty {
+            getContacts()
+        }
         show = true
         createConversationType = type
     }
@@ -110,17 +111,47 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
 
     public func onCreateGroup(_ response: ChatResponse<Conversation>) {
         if response.pop(prepend: "ConversationBuilder") != nil {
-            closeBuilder()
+            clear()
+
             if let conversation = response.result {
-                AppState.shared.showThread(thread: conversation)
+                if #available(iOS 17, *) {
+                    AppState.shared.showThread(thread: conversation)
+                } else {
+                    /// It will prevent a bug on small deveice can not click on the back button after creation.
+                    Timer.scheduledTimer(withTimeInterval: 0.8, repeats: false) { _ in
+                        AppState.shared.showThread(thread: conversation)
+                    }
+                }
             }
         }
     }
 
-    public func closeBuilder() {
+    public override func clear() {
+        super.clear()
+        dimissAnResetDismiss()
+        uploadProfileUniqueId = nil
+        uploadProfileProgress = nil
+        createdConversation = nil
+        isUploading = false
+        uploadedImageFileMetaData = nil
+        isCreateLoading = false
+        createConversationType = nil
+        imageUploadingFailed = false
+        /// Check public thread name.
+        isPublic = false
+        isPublicNameAvailable = false
+        isCehckingName = false
+        conversationTitle = ""
+        threadDescription = ""
+        assetResources = []
+        image = nil
+        showTitleError = false
+    }
+
+    func dimissAnResetDismiss() {
         dismiss = true
-        canceableSet.forEach { cancellable in
-            cancellable.cancel()
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
+            self?.dismiss = false
         }
     }
 

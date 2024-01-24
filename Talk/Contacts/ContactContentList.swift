@@ -16,6 +16,7 @@ struct ContactContentList: View {
     @EnvironmentObject var viewModel: ContactsViewModel
     @State private var type: ThreadTypes = .normal
     @State private var showBuilder = false
+    @EnvironmentObject var builderVM: ConversationBuilderViewModel
 
     var body: some View {
         List {
@@ -99,14 +100,22 @@ struct ContactContentList: View {
             AddOrEditContactView()
                 .environmentObject(viewModel)
         }
-        .sheet(isPresented: $showBuilder){
-            let viewModel = ConversationBuilderViewModel()
+        .onReceive(builderVM.$dismiss) { newValue in
+            if newValue == true {
+                showBuilder = false
+            }
+        }
+        .sheet(isPresented: $showBuilder, onDismiss: onDismissBuilder){
             ConversationBuilder()
-                .environmentObject(viewModel)
+                .environmentObject(builderVM)
                 .onAppear {
-                    viewModel.show(type: type)
+                    builderVM.show(type: type)
                 }
         }
+    }
+
+    private func onDismissBuilder() {
+        builderVM.clear()
     }
 }
 

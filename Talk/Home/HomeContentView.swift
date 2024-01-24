@@ -38,6 +38,7 @@ struct HomeContentView: View {
                 .environmentObject(container.logVM)
                 .environmentObject(container.audioPlayerVM)
                 .environmentObject(container.reactions)
+                .environmentObject(container.conversationBuilderVM)
         }
         .modifier(ColorSchemeModifier())
         .contextMenuContainer()

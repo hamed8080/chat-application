@@ -14,7 +14,7 @@ import TalkViewModels
 
 struct StartThreadContactPickerView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject private var viewModel = ConversationBuilderViewModel()
+    @EnvironmentObject var viewModel: ConversationBuilderViewModel
 
     var body: some View {
         NavigationStack {
@@ -85,6 +85,12 @@ struct StartThreadContactPickerView: View {
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue == true {
                 dismiss()
+            }
+        }
+        .onAppear {
+            viewModel.dismiss = false
+            if viewModel.contacts.isEmpty {
+                viewModel.getContacts()
             }
         }
     }

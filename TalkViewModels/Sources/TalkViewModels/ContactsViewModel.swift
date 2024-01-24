@@ -162,10 +162,19 @@ public class ContactsViewModel: ObservableObject {
     }
 
     public func clear() {
+        searchContactString = ""
+        firstSuccessResponse = false
         hasNext = true
         offset = 0
         count = 15
+        showAddOrEditContactSheet = false
+        isInSelectionMode = false
+        addContact = nil
+        editContact = nil
+        successAdded = false
+        userNotFound = false
         contacts = []
+        blockedContacts = []
         selectedContacts = []
         searchedContacts = []
         maxContactsCountInServer = 0
