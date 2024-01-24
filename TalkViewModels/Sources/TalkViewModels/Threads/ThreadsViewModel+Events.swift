@@ -38,6 +38,13 @@ extension ThreadsViewModel {
                 self?.onParticipantEvent(event)
             }
             .store(in: &cancelable)
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
+            .sink { [weak self] newValue in
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
+                }
+            }
+            .store(in: &cancelable)
     }
 
     func onParticipantEvent(_ event: ParticipantEventTypes) {

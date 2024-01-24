@@ -42,13 +42,6 @@ public final class ThreadsViewModel: ObservableObject {
             .store(in: &cancelable)
         registerNotifications()
         getThreads()
-        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
-            .sink { [weak self] newValue in
-                if let key = newValue.object as? String {
-                    self?.onCancelTimer(key: key)
-                }
-            }
-            .store(in: &cancelable)
     }
 
     func onCreate(_ response: ChatResponse<Conversation>) {
@@ -294,7 +287,9 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func leave(_ thread: Conversation) {
         guard let threadId = thread.id else { return }
-        ChatManager.activeInstance?.conversation.leave(.init(threadId: threadId, clearHistory: true))
+        let req = LeaveThreadRequest(threadId: threadId, clearHistory: true)
+        RequestsManager.shared.append(prepend: "Leave", value: req)
+        ChatManager.activeInstance?.conversation.leave(req)
     }
 
     public func clearHistory(_ thread: Conversation) {

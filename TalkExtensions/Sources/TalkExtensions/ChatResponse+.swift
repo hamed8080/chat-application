@@ -10,11 +10,11 @@ import Additive
 import Foundation
 
 extension ChatError {
+    public static var presentableErrors: [ServerErrorType] = ServerErrorType.allCases.filter{ !customPresentable.contains($0) }
+    public static var customPresentable: [ServerErrorType] = [.noOtherOwnership]
     public var localizedError: String? {
         guard let code = code, let chatCode = ServerErrorType(rawValue: code) else { return nil }
         switch chatCode {
-        case .noOtherOwnership:
-            return "Thread.onlyAdminError"
         case .temporaryBan:
             guard
                 let data = message?.data(using: .utf8),
@@ -27,10 +27,10 @@ extension ChatError {
             return nil
         }
     }
+
+    public var isPresentable: Bool { ChatError.presentableErrors.contains(where: { $0.rawValue == code ?? 0}) }
 }
 
-fileprivate var presentableErrors: [ServerErrorType] = ServerErrorType.allCases
-
 public extension ChatResponse {
-    var isPresentable: Bool { presentableErrors.contains(where: { $0.rawValue == error?.code ?? 0}) }
+    var isPresentable: Bool { ChatError.presentableErrors.contains(where: { $0.rawValue == error?.code ?? 0}) }
 }

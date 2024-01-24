@@ -230,7 +230,8 @@
 "Thread.leaveButton" = "Salir";
 "Thread.leave.footer" = "¿Estás seguro de que quieres abandonar esta conversación?";
 "Thread.noMessage" = "No hay ningún mensaje para mostrar.";
-"Thread.onlyAdminError" = "Eres el único administrador del grupo, ¡no puedes abandonar ni eliminar el grupo!";
+"Thread.onlyGroupAdminError" = "Eres el único administrador del grupo, ¡no puedes abandonar ni eliminar el grupo!";
+"Thread.onlyChannelAdminError" = "Eres el único administrador del canal, ¡no puedes abandonar ni eliminar el canal!";
 
 /* Estado de conexión */
 "ConnectionStatus.connecting" = "conectando";

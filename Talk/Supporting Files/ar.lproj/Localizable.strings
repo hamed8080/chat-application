@@ -228,7 +228,8 @@
 "Thread.leaveButton" = "المغادرة";
 "Thread.leave.footer" = "هل أنت متأكد أنك تريد مغادرة هذا الحوار؟";
 "Thread.noMessage" = "لا توجد رسالة ليتم إظهارها.";
-"Thread.onlyAdminError" = "أنت المسؤول الوحيد في المجموعة، لا يمكنك مغادرة المجموعة أو حذفها!";
+"Thread.onlyGroupAdminError" = "أنت المسؤول الوحيد في المجموعة، لا يمكنك مغادرة المجموعة أو حذفها!";
+"Thread.onlyChannelAdminError" = "أنت المسؤول الوحيد في القناة، لا يمكنك مغادرة القناة أو حذفها!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";

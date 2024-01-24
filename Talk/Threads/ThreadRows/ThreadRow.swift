@@ -27,7 +27,7 @@ struct ThreadRow: View {
             ThreadImageView(thread: thread, threadsVM: viewModel)
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    if thread.type == .channel {
+                    if thread.type?.isChannelType == true {
                         Image(systemName: "megaphone.fill")
                             .resizable()
                             .scaledToFit()
@@ -35,7 +35,7 @@ struct ThreadRow: View {
                             .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
 
-                    if thread.group == true, thread.type != .channel {
+                    if thread.group == true, thread.type?.isChannelType == false {
                         Image(systemName: "person.2.fill")
                             .resizable()
                             .scaledToFit()

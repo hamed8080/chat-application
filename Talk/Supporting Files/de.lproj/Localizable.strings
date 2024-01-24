@@ -229,7 +229,8 @@
 "Thread.leaveButton" = "Verlassen";
 "Thread.leave.footer" = "Möchtest du diesen Chat wirklich verlassen?";
 "Thread.noMessage" = "Es kann keine Meldung angezeigt werden.";
-"Thread.onlyAdminError" = "Du bist der einzige Admin in der Gruppe, du kannst die Gruppe nicht verlassen oder löschen!";
+"Thread.onlyGroupAdminError" = "Du bist der einzige Admin in der Gruppe, du kannst die Gruppe nicht verlassen oder löschen!";
+"Thread.onlyChannelAdminError" = "Du bist der einzige Admin im Kanal, du kannst den Kanal nicht verlassen oder löschen!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "verbinden";

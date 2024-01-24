@@ -44,7 +44,7 @@ struct AppOverlayFactory: View {
             } else if !isUnknown {
                 if let localizedError = error?.localizedError {
                     ToastView(title: "", message: localizedError) {}
-                } else {
+                } else if error?.isPresentable == true {
                     let title = String(format: String(localized: "Errors.occuredTitle"), "\(error?.code ?? 0)")
                     ToastView(title: title, message: error?.message ?? "") {}
                 }

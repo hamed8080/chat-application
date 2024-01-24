@@ -229,7 +229,8 @@
 "Thread.leaveButton" = "ترک";
 "Thread.leave.footer" = "آیا شما مطمئن هستید که می خواهید این گفتگو را ترک کنید؟";
 "Thread.noMessage" = "هیچ پیامی برای نمایش وجود ندارد.";
-"Thread.onlyAdminError" = "شما تنها مدیر این گروه هستید، برای ترک گروه ابتدا یک مدیر انتخاب کنید!";
+"Thread.onlyGroupAdminError" = "شما تنها مدیر این گروه هستید، برای ترک گروه ابتدا یک مدیر انتخاب کنید!";
+"Thread.onlyChannelAdminError" = "شما تنها مدیر این کانال هستید، برای ترک کانال ابتدا یک مدیر انتخاب کنید!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "در حال اتصال";

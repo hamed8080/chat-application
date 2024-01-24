@@ -80,6 +80,9 @@ public extension NotificationCenter {
         case let .upload(uploadEventTypes):
             Self.upload.post(name: .upload, object: uploadEventTypes)
         case let .system(systemEventTypes):
+            if case .error(let chatResponse) = systemEventTypes {
+                Self.error.post(name: .error, object: chatResponse)
+            }
             Self.system.post(name: .system, object: systemEventTypes)
         case let .message(messageEventTypes):
             Self.message.post(name: .message, object: messageEventTypes)

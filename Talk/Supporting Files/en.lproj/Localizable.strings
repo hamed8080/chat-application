@@ -228,7 +228,8 @@
 "Thread.leaveButton" = "Leave";
 "Thread.leave.footer" = "Are you sure you want to leave this conversation?";
 "Thread.noMessage" = "There is no message to be shown.";
-"Thread.onlyAdminError" = "You are the only admin in the group, you can not leave or delete the group!";
+"Thread.onlyGroupAdminError" = "You are the only admin in the group, you can not leave or delete the group!";
+"Thread.onlyChannelAdminError" = "You are the only admin in the channel, you can not leave or delete the channel!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";

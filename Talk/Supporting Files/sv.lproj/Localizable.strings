@@ -228,7 +228,8 @@
 "Thread.leaveButton" = "Lämna";
 "Thread.leave.footer" = "Är du säker på att du vill lämna denna konversation?";
 "Thread.noMessage" = "Det finns inget meddelande att visa.";
-"Thread.onlyAdminError" = "Du är den enda administratören i gruppen, du kan inte lämna eller ta bort gruppen!";
+"Thread.onlyGroupAdminError" = "Du är den enda administratören i gruppen, du kan inte lämna eller ta bort gruppen!";
+"Thread.onlyChannelAdminError" = "Du är den enda administratören i kanalen, du kan inte lämna eller ta bort kanalen!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";
