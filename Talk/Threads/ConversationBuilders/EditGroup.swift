@@ -11,8 +11,9 @@ import TalkViewModels
 import AdditiveUI
 
 struct EditGroup: View {
-    @EnvironmentObject var viewModel: DetailViewModel
-    
+    @EnvironmentObject var viewModel: EditConversationViewModel
+    @Environment(\.dismiss) var dismiss
+
     enum EditGroupFocusFields: Hashable {
         case name
         case description
@@ -30,33 +31,32 @@ struct EditGroup: View {
                     showImagePicker = true
                 } label: {
                     ZStack(alignment: .leading) {
-                        let config = ImageLoaderConfig(url: viewModel.thread?.computedImageURL ?? "", userName: viewModel.thread?.computedTitle)
-                        ImageLoaderView(imageLoader: .init(config: config))
-                            .scaledToFit()
-                            .id(viewModel.thread?.id)
-                            .font(.iransansBoldCaption2)
-                            .foregroundColor(.white)
-                            .frame(width: 72, height: 72)
-                            .background(Color.App.color1.opacity(0.4))
-                            .clipShape(RoundedRectangle(cornerRadius:(32)))
-                            .overlay(alignment: .center) {
-                                /// Showing the image taht user has selected.
-                                if let image = viewModel.image {
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 72, height: 72)
-                                        .clipShape(RoundedRectangle(cornerRadius:(32)))
-                                    if let percent = viewModel.uploadProfileProgress {
-                                        Circle()
-                                            .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
-                                            .stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-                                            .foregroundColor(Color.App.accent)
-                                            .rotationEffect(Angle(degrees: 270))
-                                            .frame(width: 73, height: 73)
-                                    }
-                                }
+                        /// Showing the image that user has selected.
+                        if let image = viewModel.image {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 72, height: 72)
+                                .clipShape(RoundedRectangle(cornerRadius:(32)))
+                            if let percent = viewModel.uploadProfileProgress {
+                                Circle()
+                                    .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+                                    .stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                                    .foregroundColor(Color.App.accent)
+                                    .rotationEffect(Angle(degrees: 270))
+                                    .frame(width: 73, height: 73)
                             }
+                        } else {
+                            let config = ImageLoaderConfig(url: viewModel.thread.computedImageURL ?? "", userName: viewModel.thread.computedTitle)
+                            ImageLoaderView(imageLoader: .init(config: config))
+                                .scaledToFit()
+                                .id(viewModel.thread.id)
+                                .font(.iransansBoldCaption2)
+                                .foregroundColor(.white)
+                                .frame(width: 72, height: 72)
+                                .background(Color.App.color1.opacity(0.4))
+                                .clipShape(RoundedRectangle(cornerRadius:(32)))
+                        }
                         Circle()
                             .fill(.red)
                             .frame(width: 28, height: 28)
@@ -110,11 +110,11 @@ struct EditGroup: View {
                 }
                 .noSeparators()
                 .listRowBackground(Color.App.bgSecondary)
-            let isChannel = viewModel.thread?.type == .channel || viewModel.thread?.type == .publicChannel
+            let isChannel = viewModel.thread.type?.isChannelType == true
             let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
             let localizedPublic = String(localized: .init("Thread.public"))
             let localizedDelete = String(localized: .init("Thread.delete"))
-            let isPublic = viewModel.thread?.type?.isPrivate == false
+            let isPublic = viewModel.thread.type?.isPrivate == false
             Group {
                 StickyHeaderSection(header: "", height: 2)
                     .listRowBackground(Color.App.bgPrimary)
@@ -134,8 +134,7 @@ struct EditGroup: View {
                 }
 
                 Button {
-                    viewModel.showEditGroup.toggle()
-                    AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: viewModel.thread?.id))
+                    AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: viewModel.thread.id))
                 } label: {
                     Label(String(format: localizedDelete, typeName), systemImage: "trash")
                         .foregroundStyle(Color.App.red)
@@ -163,12 +162,17 @@ struct EditGroup: View {
                 self.viewModel.animateObjectWillChange()
             }
         }
+        .onReceive(viewModel.$dismiss) { newValue in
+            if newValue == true {
+                dismiss()
+            }
+        }
     }
 }
 
 struct EditGroup_Previews: PreviewProvider {
     static var previews: some View {
         EditGroup()
-            .environmentObject(DetailViewModel(thread: .init(id: 1)))
+            .environmentObject(ThreadDetailViewModel(thread: .init(id: 1)))
     }
 }

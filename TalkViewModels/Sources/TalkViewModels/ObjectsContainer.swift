@@ -75,7 +75,7 @@ public final class ObjectsContainer: ObservableObject {
             playMessageSound(sent: false)
         } else if conversation.group == true, notificationSettings.group.sound {
             playMessageSound(sent: false)
-        } else if conversation.type == .channel || conversation.type == .channelGroup, notificationSettings.channel.sound {
+        } else if conversation.type?.isChannelType == true, notificationSettings.channel.sound {
             playMessageSound(sent: false)
         }
 

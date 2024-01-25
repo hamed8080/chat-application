@@ -46,8 +46,8 @@ public struct SendTextViewWithButtons: View {
             }
                 .ignoresSafeArea()
         )
-        .opacity(viewModel.thread.type == .channel && viewModel.thread.admin == false ? 0.3 : 1.0)
-        .disabled(viewModel.thread.type == .channel && viewModel.thread.admin == false)
+        .opacity(viewModel.thread.type?.isChannelType == true && viewModel.thread.admin == false ? 0.3 : 1.0)
+        .disabled(viewModel.thread.type?.isChannelType == true && viewModel.thread.admin == false)
         .onReceive(viewModel.sendContainerViewModel.$editMessage) { editMessage in
             if let editMessage = editMessage {
                 text = editMessage.message ?? ""

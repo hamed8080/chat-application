@@ -61,7 +61,7 @@ struct LinkRowView: View {
     @State var smallText: String? = nil
     @State var links: [String] = []
     var threadVM: ThreadViewModel? { viewModel.threadVM }
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @Environment(\.dismiss) var dismiss
 
     var body: some View {

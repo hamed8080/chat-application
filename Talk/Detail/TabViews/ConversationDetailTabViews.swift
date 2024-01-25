@@ -31,7 +31,7 @@ struct ConversationDetailTabViews: View {
         if thread.group == false || thread.group == nil {
             tabs.removeAll(where: {$0.title == "Thread.Tabs.members"})
         }
-        if thread.group == true, thread.type == .channel || thread.type == .channelGroup, (thread.admin == false || thread.admin == nil) {
+        if thread.group == true, thread.type?.isChannelType == true, (thread.admin == false || thread.admin == nil) {
             tabs.removeAll(where: {$0.title == "Thread.Tabs.members"})
         }
 //        if thread.group == true || thread.type == .selfThread || !EnvironmentValues.isTalkTest {
@@ -51,7 +51,7 @@ struct TabViewsContainer_Previews: PreviewProvider {
         let viewModel = ParticipantsViewModel(thread: conversation)
         ConversationDetailTabViews(thread: conversation)
             .environmentObject(viewModel)
-            .environmentObject(DetailViewModel(thread: conversation))
+            .environmentObject(ThreadDetailViewModel(thread: conversation))
             .onAppear {
                 viewModel.appendParticipants(participants: MockData.generateParticipants())
             }

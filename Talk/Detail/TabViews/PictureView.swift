@@ -15,7 +15,7 @@ import TalkExtensions
 import ActionableContextMenu
 
 struct PictureView: View {
-    @EnvironmentObject var detailViewModel: DetailViewModel
+    @EnvironmentObject var detailViewModel: ThreadDetailViewModel
     let viewModel: DetailTabDownloaderViewModel
     @State var viewWidth: CGFloat = 0
 
@@ -68,8 +68,8 @@ struct PictureView: View {
 struct MessageListPictureView: View {
     let itemWidth: CGFloat
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-    @EnvironmentObject var detailViewModel: DetailViewModel
-    
+    @EnvironmentObject var detailViewModel: ThreadDetailViewModel
+
     var body: some View {
         ForEach(viewModel.messages) { message in
             PictureRowView(message: message, itemWidth: itemWidth)
@@ -91,7 +91,7 @@ struct PictureRowView: View {
     @EnvironmentObject var downloadVM: DownloadFileViewModel
     @EnvironmentObject var appOverlayViewModel: AppOverlayViewModel
     var threadVM: ThreadViewModel? { viewModel.threadVM }
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     let itemWidth: CGFloat
 
     init(message: Message, itemWidth: CGFloat) {

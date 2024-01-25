@@ -20,7 +20,7 @@ public final class SendContainerViewModel: ObservableObject {
     @Published public var textMessage: String
     private var cancelable: Set<AnyCancellable> = []
     public var canShowMute: Bool {
-        (thread.type == .channel || thread.type == .channelGroup) &&
+        (thread.type?.isChannelType == true) &&
         (thread.admin == false || thread.admin == nil) &&
         !isInEditMode
     }

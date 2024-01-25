@@ -8,7 +8,8 @@ import ChatCore
 public enum NavigationType: Hashable {
     case conversation(Conversation)
     case contact(Contact)
-    case detail(DetailViewModel)
+    case threadDetil(ThreadDetailViewModel)
+    case participantDetail(ParticipantDetailViewModel)
     case preference(PreferenceNavigationValue)
     case assistant(AssistantNavigationValue)
     case log(LogNavigationValue)
@@ -110,7 +111,7 @@ public final class NavigationModel: ObservableObject {
 
             /// If I am in the detail view and press leave thread I should remove first DetailViewModel -> ThreadViewModel
             /// That is the reason why we call paths.removeLast() twice.
-            if let index = pathsTracking.firstIndex(where: { ($0 as? DetailViewModel)?.thread?.id == response.subjectId }) {
+            if let index = pathsTracking.firstIndex(where: { ($0 as? ThreadDetailViewModel)?.thread.id == response.subjectId }) {
                 pathsTracking.remove(at: index)
                 paths.removeLast()
                 paths.removeLast()
@@ -212,14 +213,14 @@ public final class NavigationModel: ObservableObject {
     }
 
     public func append(participantDetail: Participant) {
-        let detailViewModel = DetailViewModel(participant: participantDetail)
-        paths.append(NavigationType.detail(detailViewModel))
+        let detailViewModel = ParticipantDetailViewModel(participant: participantDetail)
+        paths.append(NavigationType.participantDetail(detailViewModel))
         pathsTracking.append(detailViewModel)
     }
 
-    public func append(threadViewModel: ThreadViewModel) {
-        let detailViewModel = DetailViewModel(thread: threadViewModel.thread, threadVM: threadViewModel)
-        paths.append(NavigationType.detail(detailViewModel))
+    public func appendThreadDetail(threadViewModel: ThreadViewModel) {
+        let detailViewModel = ThreadDetailViewModel(thread: threadViewModel.thread, threadVM: threadViewModel)
+        paths.append(NavigationType.threadDetil(detailViewModel))
         pathsTracking.append(detailViewModel)
         selectedThreadId = threadViewModel.threadId
     }
@@ -300,8 +301,10 @@ public final class NavigationModel: ObservableObject {
             return "Settings.title"
         } else if previousItem is BlockedContactsNavigationValue {
             return "Contacts.blockedList"
-        } else if let detail = previousItem as? DetailViewModel {
-            return detail.title
+        } else if let detail = previousItem as? ThreadDetailViewModel {
+            return detail.thread.title ?? ""
+        } else if let detail = previousItem as? ParticipantDetailViewModel {
+            return detail.participant.name ?? ""
         } else if previousItem is LogNavigationValue {
             return "Logs.title"
         } else if previousItem is AssistantNavigationValue {

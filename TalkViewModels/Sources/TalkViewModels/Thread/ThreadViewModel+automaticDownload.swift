@@ -25,7 +25,7 @@ extension ThreadViewModel {
     func canDownloadFilesInConversation() -> Bool {
         let type = thread.type
         let globalDownload = model.automaticDownloadSettings.downloadFiles
-        if type == .channel || type == .channelGroup, globalDownload && model.automaticDownloadSettings.channel.downloadFiles {
+        if type?.isChannelType == true, globalDownload && model.automaticDownloadSettings.channel.downloadFiles {
             return true
         } else if (type == .ownerGroup || type == .publicGroup) && thread.group == true, globalDownload && model.automaticDownloadSettings.group.downloadImages {
             return true

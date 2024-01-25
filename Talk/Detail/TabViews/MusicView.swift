@@ -35,7 +35,7 @@ struct MusicView: View {
 
 struct MessageListMusicView: View {
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-    @EnvironmentObject var detailViewModel: DetailViewModel
+    @EnvironmentObject var detailViewModel: ThreadDetailViewModel
 
     var body: some View {
         ForEach(viewModel.messages) { message in
@@ -64,7 +64,7 @@ struct MusicRowView: View {
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var downloadVM: DownloadFileViewModel
     @EnvironmentObject var downloadViewModel: DownloadFileViewModel
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @Environment(\.dismiss) var dismiss
 
     var body: some View {

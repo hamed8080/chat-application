@@ -8,7 +8,6 @@
 import AdditiveUI
 import Chat
 import ChatModels
-import Photos
 import SwiftUI
 import TalkUI
 import TalkViewModels
@@ -16,21 +15,18 @@ import TalkExtensions
 import Additive
 import TalkModels
 
-struct DetailView: View {
-    @EnvironmentObject var viewModel: DetailViewModel
-    @EnvironmentObject var contactsVM: ContactsViewModel
+struct ThreadDetailView: View {
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 0) {
-                InfoView(viewModel: viewModel)
-                UserName()
-                CellPhoneNumber()
+                ThreadInfoView(viewModel: viewModel)
                 PublicLink()
-                BioDescription()
+                ThreadDescription()
                 StickyHeaderSection(header: "", height: 10)
-                DetailTopButtons()
+                ThreadDetailTopButtons()
                     .padding([.top, .bottom])
                 StickyHeaderSection(header: "", height: 10)              
                 StickyHeaderSection(header: "", height: 10)
@@ -42,30 +38,10 @@ struct DetailView: View {
         .environmentObject(viewModel)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-        .sheet(isPresented: $viewModel.showAddToContactSheet) {
-            if let user = viewModel.participant ?? AppState.shared.appStateNavigationModel.participantToCreate {
-                let editContact = Contact(firstName: user.firstName ?? "",
-                                          lastName: user.lastName ?? "",
-                                          user: .init(username: user.username ?? ""))
-                let contactsVM = ContactsViewModel()
-                AddOrEditContactView()
-                    .environmentObject(contactsVM)
-                    .onAppear {
-                        contactsVM.editContact = editContact
-                    }
-            }
-        }
-        .animation(.easeInOut, value: viewModel.thread?.type?.isPrivate == true)
         .animation(.interactiveSpring(), value: viewModel.isInEditMode)
-        .sheet(isPresented: $viewModel.showEditGroup) {
-            EditGroup()
-        }
-        .sheet(isPresented: $viewModel.showContactEditSheet) {
-            AddOrEditContactView()
-        }
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue {
-                AppState.shared.objectsContainer.navVM.remove(type: DetailViewModel.self)
+                AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
                 dismiss()
             }
         }
@@ -78,7 +54,7 @@ struct DetailView: View {
                             searchKeyboardType: .default,
                             leadingViews: leadingViews,
                             centerViews: EmptyView(),
-                            trailingViews: trailingViews) { searchValue in
+                            trailingViews: TarilingEditConversation()) { searchValue in
                     viewModel.threadVM?.searchedMessagesViewModel.searchText = searchValue
                 }
                 if let viewModel = viewModel.threadVM {
@@ -89,10 +65,40 @@ struct DetailView: View {
         }
     }
 
-    @ViewBuilder var trailingViews: some View {
-        if viewModel.canShowEditButton {
-            Button {
-                viewModel.showEditContactOrEditGroup(contactsVM: contactsVM)
+    var leadingViews: some View {
+        NavigationBackButton {
+            viewModel.threadVM?.scrollVM.disableExcessiveLoading()
+            AppState.shared.objectsContainer.contactsVM.editContact = nil
+            AppState.shared.navViewModel?.remove(type: ThreadDetailViewModel.self)
+        }
+    }
+}
+
+struct TarilingEditConversation: View {
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        if viewModel.participantDetailViewModel != nil || viewModel.canShowEditConversationButton == true {
+            NavigationLink {
+                if viewModel.canShowEditConversationButton, let viewModel = viewModel.threadVM {
+                    EditGroup()
+                        .environmentObject(EditConversationViewModel(threadVM: viewModel))
+                        .navigationBarBackButtonHidden(true)
+                        .safeAreaInset(edge: .top, spacing: 0) {
+                            toolbarView
+                        }
+                } else if viewModel.participantDetailViewModel != nil {
+                    AddOrEditContactView()
+                        .background(Color.App.bgSecondary)
+                        .navigationBarBackButtonHidden(true)
+                        .safeAreaInset(edge: .top, spacing: 0) {
+                            toolbarView
+                        }
+                        .onDisappear {
+                            AppState.shared.objectsContainer.contactsVM.editContact = viewModel.participantDetailViewModel?.partnerContact
+                        }
+                }
             } label: {
                 Image(systemName: "pencil")
                     .resizable()
@@ -105,36 +111,45 @@ struct DetailView: View {
         }
     }
 
-    var leadingViews: some View {
+    var toolbarView: some View {
+        VStack(spacing: 0) {
+            ToolbarView(title: "General.info",
+                        showSearchButton: false,
+                        leadingViews: leadingTralingView,
+                        centerViews: EmptyView(),
+                        trailingViews: EmptyView()) {_ in }
+        }
+    }
+
+    var leadingTralingView: some View {
         NavigationBackButton {
-            viewModel.threadVM?.scrollVM.disableExcessiveLoading()
-            AppState.shared.navViewModel?.remove(type: DetailViewModel.self)
+            dismiss()
         }
     }
 }
 
-struct InfoView: View {
+struct ThreadInfoView: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @StateObject private var fullScreenImageLoader: ImageLoaderViewModel
 
-    init(viewModel: DetailViewModel) {
-        let config = ImageLoaderConfig(url: viewModel.url ?? "",
+    init(viewModel: ThreadDetailViewModel) {
+        let config = ImageLoaderConfig(url: viewModel.thread.computedImageURL ?? "",
                                        size: .ACTUAL,
-                                       metaData: viewModel.thread?.metadata,
-                                       userName: viewModel.title,
+                                       metaData: viewModel.thread.metadata,
+                                       userName: viewModel.thread.title ?? "",
                                        forceToDownloadFromServer: true)
         self._fullScreenImageLoader = .init(wrappedValue: .init(config: config))
     }
 
     var body: some View {
         HStack(spacing: 16) {
-            let image = viewModel.url
-            let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image ?? "", metaData: nil, userName: nil)
-            let config = ImageLoaderConfig(url: viewModel.url ?? "", metaData: viewModel.thread?.metadata, userName: viewModel.title)
+            let image = viewModel.thread.computedImageURL ?? ""
+            let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image, metaData: viewModel.thread.metadata, userName: viewModel.thread.title)
+            let config = ImageLoaderConfig(url: image, metaData: viewModel.thread.metadata, userName: viewModel.thread.title)
             let defaultLoader = ImageLoaderViewModel(config: config)
             ImageLoaderView(imageLoader: avatarVM ?? defaultLoader)
-                .id("\(viewModel.url ?? "")\(viewModel.thread?.id ?? 0)")
+                .id("\(image)\(viewModel.thread.id ?? 0)")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 64, height: 64)
@@ -155,23 +170,16 @@ struct InfoView: View {
                 }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(viewModel.title)
+                Text(viewModel.thread.title ?? "")
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.textPrimary)
 
                 let count = viewModel.threadVM?.participantsViewModel.thread?.participantCount
-                if viewModel.thread?.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
+                if viewModel.thread.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
                     let label = String(localized: .init("Participant"))
                     Text("\(label) \(countString)")
                         .font(.iransansCaption3)
                         .foregroundStyle(Color.App.textSecondary)
-                }
-
-                if let notSeenString = viewModel.notSeenString {
-                    let localized = String(localized: .init("Contacts.lastVisited"))
-                    let formatted = String(format: localized, notSeenString)
-                    Text(formatted)
-                        .font(.iransansCaption3)
                 }
             }
             Spacer()
@@ -183,23 +191,23 @@ struct InfoView: View {
     }
 }
 
-struct BioDescription: View {
-    @EnvironmentObject var viewModel: DetailViewModel
+struct ThreadDescription: View {
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
 
     var body: some View {
-        if let description = viewModel.thread?.description.validateString {
+        if let description = viewModel.thread.description.validateString {
             InfoRowItem(key: "General.description", value: description)
         }
     }
 }
 
 struct PublicLink: View {
-    @EnvironmentObject var viewModel: DetailViewModel
-    private var shortJoinLink: String { "talk/\(viewModel.thread?.uniqueName ?? "")" }
-    private var joinLink: String { "\(AppRoutes.joinLink)\(viewModel.thread?.uniqueName ?? "")" }
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
+    private var shortJoinLink: String { "talk/\(viewModel.thread.uniqueName ?? "")" }
+    private var joinLink: String { "\(AppRoutes.joinLink)\(viewModel.thread.uniqueName ?? "")" }
 
     var body: some View {
-        if viewModel.thread?.uniqueName != nil {
+        if viewModel.thread.uniqueName != nil {
             Button {
                 UIPasteboard.general.string = joinLink
                 let icon = Image(systemName: "doc.on.doc")
@@ -230,26 +238,6 @@ struct PublicLink: View {
 //        .background(Color.App.textSecondary)
 //        .clipShape(RoundedRectangle(cornerRadius:(20)))
 //    }
-}
-
-struct UserName: View {
-    @EnvironmentObject var viewModel: DetailViewModel
-
-    var body: some View {
-        if let participantName = viewModel.participant?.username.validateString {
-            InfoRowItem(key: "Settings.userName", value: participantName)
-        }
-    }
-}
-
-struct CellPhoneNumber: View {
-    @EnvironmentObject var viewModel: DetailViewModel
-
-    var body: some View {
-        if let cellPhoneNumber = viewModel.cellPhoneNumber.validateString {
-            InfoRowItem(key: "Participant.Search.Type.cellphoneNumber", value: cellPhoneNumber)
-        }
-    }
 }
 
 struct InfoRowItem: View {
@@ -283,21 +271,15 @@ struct InfoRowItem: View {
     }
 }
 
-struct DetailTopButtons: View {
-    @EnvironmentObject var viewModel: DetailViewModel
+struct ThreadDetailTopButtons: View {
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @State private var showPopover = false
 
     var body: some View {
         HStack(spacing: 16) {
             Spacer()
-            if viewModel.thread == nil {
-                DetailViewButton(accessibilityText: "", icon: "message.fill") {
-                    viewModel.createThread()
-                }
-            }
-
-            if viewModel.thread?.type != .selfThread {
-                DetailViewButton(accessibilityText: "", icon: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill") {
+            if viewModel.thread.type != .selfThread {
+                DetailViewButton(accessibilityText: "", icon: viewModel.thread.mute ?? false ? "bell.slash.fill" : "bell.fill") {
                     viewModel.toggleMute()
                 }
 
@@ -345,13 +327,11 @@ struct DetailTopButtons: View {
             }
             .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 0) {
-                    if let conversation = viewModel.thread {
-                        ThreadRowActionMenu(showPopover: $showPopover, isDetailView: true, thread: conversation)
-                            .environmentObject(AppState.shared.objectsContainer.threadsVM)
-                    }
-                    if viewModel.canShowUserActions, let user = viewModel.participant ?? AppState.shared.appStateNavigationModel.participantToCreate {
-                        StickyHeaderSection(header: "", height: 4)
-                        UserActionMenu(showPopover: $showPopover, participant: user)
+                    ThreadRowActionMenu(showPopover: $showPopover, isDetailView: true, thread: viewModel.thread)
+                        .environmentObject(AppState.shared.objectsContainer.threadsVM)
+                    if let viewModel = viewModel.participantDetailViewModel {
+                        UserActionMenu(showPopover: $showPopover, participant: viewModel.participant)
+                            .environmentObject(viewModel)
                     }
                 }
                 .foregroundColor(.primary)
@@ -368,11 +348,11 @@ struct DetailTopButtons: View {
 }
 
 struct TabDetail: View {
-    let viewModel: DetailViewModel
+    let viewModel: ThreadDetailViewModel
 
     var body: some View {
-        if let thread = viewModel.thread, let participantViewModel = viewModel.threadVM?.participantsViewModel {
-            ConversationDetailTabViews(thread: thread)
+        if let participantViewModel = viewModel.threadVM?.participantsViewModel {
+            ConversationDetailTabViews(thread: viewModel.thread)
                 .environmentObject(participantViewModel)
         }
     }
@@ -434,17 +414,13 @@ struct DetailView_Previews: PreviewProvider {
 
     static var previews: some View {
         NavigationSplitView {} content: {} detail: {
-            DetailView()
-                .environmentObject(DetailViewModel(thread: MockData.thread))
+            ThreadDetailView()
+                .environmentObject(ThreadDetailViewModel(thread: MockData.thread))
         }
         .previewDisplayName("Detail With Thread in Ipad")
 
-        DetailView()
-            .environmentObject(DetailViewModel(thread: MockData.thread))
+        ThreadDetailView()
+            .environmentObject(ThreadDetailViewModel(thread: MockData.thread))
             .previewDisplayName("Detail With Thread in iPhone")
-
-        DetailView()
-            .environmentObject(DetailViewModel(thread: MockData.thread))
-            .previewDisplayName("Detail With Contant")
     }
 }

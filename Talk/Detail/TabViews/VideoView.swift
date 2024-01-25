@@ -37,8 +37,8 @@ struct VideoView: View {
 
 struct MessageListVideoView: View {
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-    @EnvironmentObject var detailViewModel: DetailViewModel
-    
+    @EnvironmentObject var detailViewModel: ThreadDetailViewModel
+
     var body: some View {
         ForEach(viewModel.messages) { message in
             VideoRowView(message: message)
@@ -65,7 +65,7 @@ struct VideoRowView: View {
     let message: Message
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var downloadVM: DownloadFileViewModel
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @Environment(\.dismiss) var dismiss
     @State var width: CGFloat? = 48
     @State var height: CGFloat? = 48

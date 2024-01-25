@@ -13,7 +13,6 @@ import ActionableContextMenu
 struct UserActionMenu: View {
     @Binding var showPopover: Bool
     let participant: Participant
-    @EnvironmentObject var viewModel: DetailViewModel
     @EnvironmentObject var contactViewModel: ContactsViewModel
 
     var body: some View {

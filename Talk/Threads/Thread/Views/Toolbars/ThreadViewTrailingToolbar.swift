@@ -18,7 +18,7 @@ struct ThreadViewTrailingToolbar: View {
 
     var body: some View {
         Button {
-            AppState.shared.objectsContainer.navVM.append(threadViewModel: viewModel)
+            AppState.shared.objectsContainer.navVM.appendThreadDetail(threadViewModel: viewModel)
         } label: {
             ZStack {
                 if let imageLoader = imageLoader {

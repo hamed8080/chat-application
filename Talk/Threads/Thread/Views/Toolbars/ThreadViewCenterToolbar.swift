@@ -26,7 +26,7 @@ struct ThreadViewCenterToolbar: View {
     var body: some View {
         VStack(alignment: .center) {
             Button {
-                appState.objectsContainer.navVM.append(threadViewModel: viewModel)
+                appState.objectsContainer.navVM.appendThreadDetail(threadViewModel: viewModel)
             } label: {
                 Text(title)
                     .font(.iransansBoldBody)

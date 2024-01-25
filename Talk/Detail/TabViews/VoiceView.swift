@@ -35,7 +35,7 @@ struct VoiceView: View {
 
 struct MessageListVoiceView: View {
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-    @EnvironmentObject var detailViewModel: DetailViewModel
+    @EnvironmentObject var detailViewModel: ThreadDetailViewModel
 
     var body: some View {
         ForEach(viewModel.messages) { message in
@@ -63,7 +63,7 @@ struct VoiceRowView: View {
     let message: Message
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var downloadVM: DownloadFileViewModel
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @Environment(\.dismiss) var dismiss
     @State var shareDownloadedFile = false
     @EnvironmentObject var downloadViewModel: DownloadFileViewModel

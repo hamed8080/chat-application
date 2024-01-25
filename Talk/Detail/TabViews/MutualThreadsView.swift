@@ -10,7 +10,7 @@ import TalkViewModels
 import TalkUI
 
 struct MutualThreadsView: View {
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ParticipantDetailViewModel
 
     var body: some View {
         StickyHeaderSection(header: "", height:  4)
