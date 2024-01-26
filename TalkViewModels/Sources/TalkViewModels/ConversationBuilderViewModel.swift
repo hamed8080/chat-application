@@ -112,7 +112,6 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
     public func onCreateGroup(_ response: ChatResponse<Conversation>) {
         if response.pop(prepend: "ConversationBuilder") != nil {
             clear()
-
             if let conversation = response.result {
                 if #available(iOS 17, *) {
                     AppState.shared.showThread(thread: conversation)
@@ -156,7 +155,8 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
     }
 
     private func onUploadCompleted(_ uniqueId: String, _ fileMetaData: FileMetaData?, _ data: Data?, _ error: Error?) {
-        if data != nil, error == nil {
+        /// We have to check the unique id due to if the user update the image in EditConversation the updaload lead to set uploadedImageFileMetaData.
+        if data != nil, error == nil, uniqueId == uploadProfileUniqueId {
             isUploading = false
             uploadProfileProgress = nil
             self.uploadedImageFileMetaData = fileMetaData

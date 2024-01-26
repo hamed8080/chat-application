@@ -162,10 +162,29 @@ struct EditGroup: View {
                 self.viewModel.animateObjectWillChange()
             }
         }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            toolbarView
+        }
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue == true {
                 dismiss()
             }
+        }
+    }
+
+    var toolbarView: some View {
+        VStack(spacing: 0) {
+            ToolbarView(title: "General.edit",
+                        showSearchButton: false,
+                        leadingViews: leadingTralingView,
+                        centerViews: EmptyView(),
+                        trailingViews: EmptyView()) {_ in }
+        }
+    }
+
+    var leadingTralingView: some View {
+        NavigationBackButton {
+            dismiss()
         }
     }
 }

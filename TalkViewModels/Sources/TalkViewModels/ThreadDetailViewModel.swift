@@ -34,6 +34,10 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     public var isGroup: Bool { thread.group == true }
     public var canShowEditConversationButton: Bool { thread.group == true && thread.admin == true && thread.type != .selfThread }
     public var participantDetailViewModel: ParticipantDetailViewModel?
+    public lazy var editConversationViewModel: EditConversationViewModel? = {
+        let vm = EditConversationViewModel(threadVM: threadVM)
+        return vm
+    }()
 
     public init(thread: Conversation, threadVM: ThreadViewModel? = nil) {
         self.thread = thread
@@ -65,8 +69,8 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
             onDeleteThread(response)
         case .userRemoveFormThread(let response):
             onUserRemovedByAdmin(response)
-        case .updatedInfo(_):
-            animateObjectWillChange()
+        case .updatedInfo(let response):
+            onUpdateThreadInfo(response)
         default:
             break
         }
@@ -126,6 +130,17 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     private func setParticipantDetailViewModel() {
         guard let partnerParticipant = partnerParticipnt else { return }
         self.participantDetailViewModel = ParticipantDetailViewModel(participant: partnerParticipant)
+    }
+
+    private func onUpdateThreadInfo(_ response: ChatResponse<Conversation>) {
+        if let updated = response.result {
+            /// In the update thread info, the image property is nil and the metadata link is been filled by the server.
+            /// So to update the UI properly we have to set it to link.
+            if updated.image == nil, let metadatImagelink = updated.metaData?.file?.link {
+                thread.image = metadatImagelink
+            }
+            animateObjectWillChange()
+        }
     }
 
     deinit{

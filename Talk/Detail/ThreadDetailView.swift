@@ -54,7 +54,7 @@ struct ThreadDetailView: View {
                             searchKeyboardType: .default,
                             leadingViews: leadingViews,
                             centerViews: EmptyView(),
-                            trailingViews: TarilingEditConversation()) { searchValue in
+                            trailingViews: TarilingEditConversation(viewModel: viewModel)) { searchValue in
                     viewModel.threadVM?.searchedMessagesViewModel.searchText = searchValue
                 }
                 if let viewModel = viewModel.threadVM {
@@ -75,26 +75,19 @@ struct ThreadDetailView: View {
 }
 
 struct TarilingEditConversation: View {
-    @EnvironmentObject var viewModel: ThreadDetailViewModel
-    @Environment(\.dismiss) var dismiss
+    let viewModel: ThreadDetailViewModel
 
     var body: some View {
         if viewModel.participantDetailViewModel != nil || viewModel.canShowEditConversationButton == true {
             NavigationLink {
-                if viewModel.canShowEditConversationButton, let viewModel = viewModel.threadVM {
+                if viewModel.canShowEditConversationButton, let viewModel = viewModel.editConversationViewModel {
                     EditGroup()
-                        .environmentObject(EditConversationViewModel(threadVM: viewModel))
+                        .environmentObject(viewModel)
                         .navigationBarBackButtonHidden(true)
-                        .safeAreaInset(edge: .top, spacing: 0) {
-                            toolbarView
-                        }
                 } else if viewModel.participantDetailViewModel != nil {
-                    AddOrEditContactView()
+                    AddOrEditContactView(showToolbar: true)
                         .background(Color.App.bgSecondary)
                         .navigationBarBackButtonHidden(true)
-                        .safeAreaInset(edge: .top, spacing: 0) {
-                            toolbarView
-                        }
                         .onDisappear {
                             AppState.shared.objectsContainer.contactsVM.editContact = viewModel.participantDetailViewModel?.partnerContact
                         }
@@ -108,22 +101,6 @@ struct TarilingEditConversation: View {
                     .foregroundStyle(Color.App.accent)
                     .fontWeight(.heavy)
             }
-        }
-    }
-
-    var toolbarView: some View {
-        VStack(spacing: 0) {
-            ToolbarView(title: "General.info",
-                        showSearchButton: false,
-                        leadingViews: leadingTralingView,
-                        centerViews: EmptyView(),
-                        trailingViews: EmptyView()) {_ in }
-        }
-    }
-
-    var leadingTralingView: some View {
-        NavigationBackButton {
-            dismiss()
         }
     }
 }

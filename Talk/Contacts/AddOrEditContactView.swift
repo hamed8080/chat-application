@@ -28,6 +28,7 @@ struct AddOrEditContactView: View {
     @State var contactValue: String = ""
     @State var firstName: String = ""
     @State var lastName: String = ""
+    var showToolbar: Bool = false
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var viewModel: ContactsViewModel
     var addContact: Contact? { viewModel.addContact }
@@ -68,6 +69,11 @@ struct AddOrEditContactView: View {
                 if !isLargeSize {
                     Spacer()
                 }
+            }
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if showToolbar {
+                toolbarView
             }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -142,6 +148,22 @@ struct AddOrEditContactView: View {
 
     func optioanlAPpend(text: String) -> String {
         "\(String(localized: .init(text))) \(String(localized: "General.optional"))"
+    }
+
+    var toolbarView: some View {
+        VStack(spacing: 0) {
+            ToolbarView(title: "General.edit",
+                        showSearchButton: false,
+                        leadingViews: leadingTralingView,
+                        centerViews: EmptyView(),
+                        trailingViews: EmptyView()) {_ in }
+        }
+    }
+
+    var leadingTralingView: some View {
+        NavigationBackButton {
+            dismiss()
+        }
     }
 }
 

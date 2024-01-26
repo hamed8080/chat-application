@@ -97,15 +97,7 @@ struct ThreadRow: View {
         ) {
             onTap?()
         } menus: {
-            VStack(alignment: .leading, spacing: 0) {
-                ThreadRowActionMenu(showPopover: .constant(true), thread: thread)
-                    .environmentObject(viewModel)
-            }
-            .foregroundColor(.primary)
-            .frame(width: 246)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius:((12))))
-            .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
+            ThreadRowContextMenu(thread: thread, viewModel: viewModel)
         }
         .onReceive(AppState.shared.objectsContainer.navVM.objectWillChange) { _ in
             setSelection()
@@ -138,6 +130,22 @@ struct ThreadRowSelfContextMenu: View {
             .environmentObject(AppState.shared.objectsContainer.navVM)
             .environmentObject(viewModel)
             .environment(\.layoutDirection, direction == .leftToRight && Language.isRTL ? .rightToLeft : .leftToRight)
+    }
+}
+
+struct ThreadRowContextMenu: View {
+    let thread: Conversation
+    let viewModel: ThreadsViewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ThreadRowActionMenu(showPopover: .constant(true), thread: thread)
+                .environmentObject(viewModel)
+        }
+        .foregroundColor(.primary)
+        .frame(width: 246)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius:((12))))
     }
 }
 

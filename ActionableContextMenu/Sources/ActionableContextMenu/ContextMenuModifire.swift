@@ -36,7 +36,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
             .background(frameReader)
             .scaleEffect(x: scale, y: scale, anchor: .center)
             .gesture(tapgesture)
-            .gesture(longGesture.simultaneously(with: postionGesture).simultaneously(with: localPostionGesture))
+            .gesture(postionGesture.simultaneously(with: localPostionGesture))
             .onChange(of: viewModel.isPresented) { newValue in
                 var transaction = Transaction()
                 transaction.animation = .easeInOut(duration: 0.2)
@@ -56,25 +56,15 @@ struct ContextMenuModifire<V: View>: ViewModifier {
             }
     }
 
-    var longGesture: some Gesture {
-        LongPressGesture(minimumDuration: 0.2, maximumDistance: 10)
-            .onEnded { finished in
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    scale = 0.9
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    withAnimation(.easeInOut) {
-                        viewModel.menus = AnyView(menus().environmentObject(viewModel))
-                        scale = 1.05
-                        viewModel.presentedId = id
-                        viewModel.globalFrame = globalFrame
-                        viewModel.addedX = addedX
-                        viewModel.mainView = AnyView(root)
-                        viewModel.isPresented.toggle()
-                        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-                    }
-                }
-            }
+    private func showMenu() {
+        viewModel.menus = AnyView(menus().environmentObject(viewModel))
+        scale = 1.05
+        viewModel.presentedId = id
+        viewModel.globalFrame = globalFrame
+        viewModel.addedX = addedX
+        viewModel.mainView = AnyView(root)
+        viewModel.isPresented.toggle()
+        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
     }
 
     var postionGesture: some Gesture {
@@ -94,12 +84,27 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                 state = true
             }
             .onChanged { value in
-                /// We check this to prevent rapidally update the UI.
-                let beofreX = viewModel.localPosition?.x ?? 0
-                let beofreY = viewModel.localPosition?.y ?? 0
-                if isPastTheMargin(first: beofreX, newValue: value.location.x) || isPastTheMargin(first: beofreY, newValue: value.location.y) {
-                    viewModel.localPosition = value.location
-                    log("local touched value location x: \(value.location.x) y:\(value.location.y)")
+
+                /// We check translation to make sure user is not dragging
+                if !viewModel.isPresented && value.translation.width > -2 && value.translation.width < 2 {
+                    /// We check this to prevent rapidally update the UI.
+                    let beofreX = viewModel.localPosition?.x ?? 0
+                    let beofreY = viewModel.localPosition?.y ?? 0
+                    if isPastTheMargin(first: beofreX, newValue: value.location.x) || isPastTheMargin(first: beofreY, newValue: value.location.y) {
+                        viewModel.localPosition = value.location
+                        log("local touched value location x: \(value.location.x) y:\(value.location.y)")
+                    }
+                    
+                    var transaction = Transaction()
+                    transaction.animation = Animation.easeInOut(duration: 0.2)
+                    withTransaction(transaction) {
+                        scale = 0.9
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            withAnimation {
+                                showMenu()
+                            }
+                        }
+                    }
                 }
             }
     }
