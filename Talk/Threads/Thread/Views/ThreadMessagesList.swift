@@ -11,6 +11,7 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import Chat
+import TalkModels
 
 struct ThreadMessagesList: View {
     let viewModel: ThreadViewModel
@@ -48,6 +49,10 @@ struct ThreadMessagesList: View {
                 viewModel.scrollVM.isProgramaticallyScroll = false
                 viewModel.scrollVM.scrollingUP = newValue.translation.height > 10
                 viewModel.scrollVM.animateObjectWillChange()
+                let isSwipeEdge = Language.isRTL ? (newValue.startLocation.x > ThreadViewModel.threadWidth - 20) : newValue.startLocation.x < 20
+                if isSwipeEdge, abs(newValue.translation.width) > 48 && newValue.translation.height < 12 {
+                    AppState.shared.objectsContainer.navVM.remove(type: ThreadViewModel.self, threadId: viewModel.threadId)
+                }
             }
     }
 
