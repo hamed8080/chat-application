@@ -187,7 +187,9 @@ struct EditCreatedConversationDetail: View {
 
     var imagePickerButton: some View {
         Button {
-            showImagePicker.toggle()
+            if !viewModel.isUploading {
+                showImagePicker.toggle()
+            }
         } label: {
             imagePickerButtonView
         }
@@ -214,7 +216,16 @@ struct EditCreatedConversationDetail: View {
                     .scaledToFill()
                     .frame(width: 64, height: 64)
                     .clipShape(RoundedRectangle(cornerRadius:(28)))
+                    .blur(radius: viewModel.isUploading ? 1.5 : 0.0)
                     .overlay(alignment: .center) {
+                        if viewModel.isUploading {
+                            Image(systemName: "xmark.circle.fill")
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(Color.App.textSecondary)
+                                .onTapGesture {
+                                    viewModel.cancelUploadImage()
+                                }
+                        }
                         if let percent = viewModel.uploadProfileProgress {
                             RoundedRectangle(cornerRadius: 28)
                                 .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
@@ -226,6 +237,7 @@ struct EditCreatedConversationDetail: View {
                     }
             }
         }
+        .frame(width: 64, height: 64)
         .background(Color.App.bgSecondary)
         .clipShape(RoundedRectangle(cornerRadius:(24)))
     }

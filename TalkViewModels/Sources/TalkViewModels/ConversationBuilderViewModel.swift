@@ -90,6 +90,13 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
         }
     }
 
+    public func cancelUploadImage() {
+        guard let uploadProfileUniqueId = uploadProfileUniqueId else { return }
+        resetImageUploading()
+        animateObjectWillChange()
+        ChatManager.activeInstance?.file.manageUpload(uniqueId: uploadProfileUniqueId, action: .cancel)
+    }
+
     public func createGroup() {
         if conversationTitle.count < 2 {
             showTitleError = true
@@ -128,23 +135,27 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
     public override func clear() {
         super.clear()
         dimissAnResetDismiss()
-        uploadProfileUniqueId = nil
-        uploadProfileProgress = nil
+        resetImageUploading()
         createdConversation = nil
-        isUploading = false
-        uploadedImageFileMetaData = nil
         isCreateLoading = false
         createConversationType = nil
-        imageUploadingFailed = false
         /// Check public thread name.
         isPublic = false
         isPublicNameAvailable = false
         isCehckingName = false
         conversationTitle = ""
         threadDescription = ""
-        assetResources = []
-        image = nil
         showTitleError = false
+    }
+
+    public func resetImageUploading() {
+        uploadedImageFileMetaData = nil
+        uploadProfileUniqueId = nil
+        uploadProfileProgress = nil
+        image = nil
+        isUploading = false
+        imageUploadingFailed = false
+        assetResources = []
     }
 
     func dimissAnResetDismiss() {

@@ -85,16 +85,16 @@ struct ContextMenuModifire<V: View>: ViewModifier {
             }
             .onChanged { value in
 
+                /// We check this to prevent rapidally update the UI.
+                let beofreX = viewModel.localPosition?.x ?? 0
+                let beofreY = viewModel.localPosition?.y ?? 0
+                if isPastTheMargin(first: beofreX, newValue: value.location.x) || isPastTheMargin(first: beofreY, newValue: value.location.y) {
+                    viewModel.localPosition = value.location
+                    log("local touched value location x: \(value.location.x) y:\(value.location.y)")
+                }
+
                 /// We check translation to make sure user is not dragging
                 if !viewModel.isPresented && value.translation.width > -2 && value.translation.width < 2 {
-                    /// We check this to prevent rapidally update the UI.
-                    let beofreX = viewModel.localPosition?.x ?? 0
-                    let beofreY = viewModel.localPosition?.y ?? 0
-                    if isPastTheMargin(first: beofreX, newValue: value.location.x) || isPastTheMargin(first: beofreY, newValue: value.location.y) {
-                        viewModel.localPosition = value.location
-                        log("local touched value location x: \(value.location.x) y:\(value.location.y)")
-                    }
-                    
                     var transaction = Transaction()
                     transaction.animation = Animation.easeInOut(duration: 0.2)
                     withTransaction(transaction) {
