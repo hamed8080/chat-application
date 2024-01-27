@@ -92,22 +92,24 @@ struct ThreadPinMessage: View {
         }
     }
 
-    var closeButton: some View {
-        Button {
-            withAnimation {
-                viewModel.unpinMessage(viewModel.message?.messageId ?? -1)
+   @ViewBuilder var closeButton: some View {
+       if threadVM.thread.admin == true {
+            Button {
+                withAnimation {
+                    viewModel.unpinMessage(viewModel.message?.messageId ?? -1)
+                }
+            } label: {
+                Image(systemName: "xmark")
+                    .resizable()
+                    .scaledToFit()
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.App.iconSecondary)
+                    .frame(width: 12, height: 12)
             }
-        } label: {
-            Image(systemName: "xmark")
-                .resizable()
-                .scaledToFit()
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(Color.App.iconSecondary)
-                .frame(width: 12, height: 12)
+            .frame(width: 36, height: 36)
+            .buttonStyle(.borderless)
+            .fontWeight(.light)
         }
-        .frame(width: 36, height: 36)
-        .buttonStyle(.borderless)
-        .fontWeight(.light)
     }
 }
 

@@ -97,6 +97,9 @@ struct TarilingEditConversation: View {
                         .environmentObject(contactsVM)
                         .background(Color.App.bgSecondary)
                         .navigationBarBackButtonHidden(true)
+                        .onAppear {
+                            contactsVM.isLoading = false
+                        }
                 }
             } label: {
                 Image(systemName: "pencil")

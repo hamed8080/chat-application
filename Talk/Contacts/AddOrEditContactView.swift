@@ -39,10 +39,12 @@ struct AddOrEditContactView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Text(isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title")
-                    .font(.iransansBoldSubtitle)
-                    .padding()
-                    .offset(y: 24)
+                if !showToolbar {
+                    Text(isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title")
+                        .font(.iransansBoldSubtitle)
+                        .padding()
+                        .offset(y: 24)
+                }
                 TextField("General.firstName", text: $firstName)
                     .focused($focusState, equals: .firstName)
                     .textContentType(.name)
@@ -145,7 +147,7 @@ struct AddOrEditContactView: View {
 
     var toolbarView: some View {
         VStack(spacing: 0) {
-            ToolbarView(title: "General.edit",
+            ToolbarView(title: isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title",
                         showSearchButton: false,
                         leadingViews: leadingTralingView,
                         centerViews: EmptyView(),
