@@ -263,6 +263,8 @@
 /* DeleteMessageDialog */
 "DeleteMessageDialog.title" = "Delete selected messages";
 "DeleteMessageDialog.subtitle" = "Are you sure you want to delete all selected messages?";
+"DeleteMessageDialog.singleDeleteIsPinMessage" = "The deleted message is a pinned message, therefore you can not delete it for others.";
+"DeleteMessageDialog.multipleDeleteContainsPinMessage" = "Selected messages contain a pin message, therefore you can not delete them for others.";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "How would you like to pin this message?";

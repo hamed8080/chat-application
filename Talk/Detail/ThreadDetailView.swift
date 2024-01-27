@@ -23,6 +23,12 @@ struct ThreadDetailView: View {
         ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: 0) {
                 ThreadInfoView(viewModel: viewModel)
+                if let participantViewModel = viewModel.participantDetailViewModel {
+                    UserName()
+                        .environmentObject(participantViewModel)
+                    CellPhoneNumber()
+                        .environmentObject(participantViewModel)
+                }
                 PublicLink()
                 ThreadDescription()
                 StickyHeaderSection(header: "", height: 10)
@@ -30,7 +36,9 @@ struct ThreadDetailView: View {
                     .padding([.top, .bottom])
                 StickyHeaderSection(header: "", height: 10)              
                 StickyHeaderSection(header: "", height: 10)
-                TabDetail(viewModel: viewModel)
+                if viewModel.thread?.id != nil, viewModel.thread?.id != LocalId.emptyThread.rawValue {
+                    TabDetail(viewModel: viewModel)
+                }
             }
             .frame(minWidth: 0, maxWidth: .infinity)
         }
@@ -54,7 +62,7 @@ struct ThreadDetailView: View {
                             searchKeyboardType: .default,
                             leadingViews: leadingViews,
                             centerViews: EmptyView(),
-                            trailingViews: TarilingEditConversation(viewModel: viewModel)) { searchValue in
+                            trailingViews: TarilingEditConversation()) { searchValue in
                     viewModel.threadVM?.searchedMessagesViewModel.searchText = searchValue
                 }
                 if let viewModel = viewModel.threadVM {
@@ -75,10 +83,10 @@ struct ThreadDetailView: View {
 }
 
 struct TarilingEditConversation: View {
-    let viewModel: ThreadDetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
 
     var body: some View {
-        if viewModel.participantDetailViewModel != nil || viewModel.canShowEditConversationButton == true {
+        if (viewModel.participantDetailViewModel?.partnerContact?.id != nil && viewModel.participantDetailViewModel != nil) || viewModel.canShowEditConversationButton == true {
             NavigationLink {
                 if viewModel.canShowEditConversationButton, let viewModel = viewModel.editConversationViewModel {
                     EditGroup()
@@ -111,22 +119,26 @@ struct ThreadInfoView: View {
     @StateObject private var fullScreenImageLoader: ImageLoaderViewModel
 
     init(viewModel: ThreadDetailViewModel) {
-        let config = ImageLoaderConfig(url: viewModel.thread.computedImageURL ?? "",
+        let config = ImageLoaderConfig(url: viewModel.thread?.computedImageURL ?? "",
                                        size: .ACTUAL,
-                                       metaData: viewModel.thread.metadata,
-                                       userName: viewModel.thread.title ?? "",
+                                       metaData: viewModel.thread?.metadata,
+                                       userName: viewModel.thread?.title ?? "",
                                        forceToDownloadFromServer: true)
         self._fullScreenImageLoader = .init(wrappedValue: .init(config: config))
     }
 
     var body: some View {
         HStack(spacing: 16) {
-            let image = viewModel.thread.computedImageURL ?? ""
-            let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image, metaData: viewModel.thread.metadata, userName: viewModel.thread.title)
-            let config = ImageLoaderConfig(url: image, metaData: viewModel.thread.metadata, userName: viewModel.thread.title)
+            let image = viewModel.thread?.computedImageURL ?? viewModel.participantDetailViewModel?.participant.image ?? ""
+            let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image,
+                                                                                   metaData: viewModel.thread?.metadata,
+                                                                                   userName: viewModel.thread?.title)
+            let config = ImageLoaderConfig(url: image,
+                                           metaData: viewModel.thread?.metadata,
+                                           userName: viewModel.thread?.title ?? viewModel.participantDetailViewModel?.participant.name)
             let defaultLoader = ImageLoaderViewModel(config: config)
             ImageLoaderView(imageLoader: avatarVM ?? defaultLoader)
-                .id("\(image)\(viewModel.thread.id ?? 0)")
+                .id("\(image)\(viewModel.thread?.id ?? 0)")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 64, height: 64)
@@ -147,16 +159,23 @@ struct ThreadInfoView: View {
                 }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(viewModel.thread.title ?? "")
+                Text(viewModel.thread?.title ?? "")
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.textPrimary)
 
                 let count = viewModel.threadVM?.participantsViewModel.thread?.participantCount
-                if viewModel.thread.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
+                if viewModel.thread?.group == true, let countString = count?.localNumber(locale: Language.preferredLocale) {
                     let label = String(localized: .init("Participant"))
                     Text("\(label) \(countString)")
                         .font(.iransansCaption3)
                         .foregroundStyle(Color.App.textSecondary)
+                }
+
+                if let notSeenString = viewModel.participantDetailViewModel?.notSeenString {
+                    let localized = String(localized: .init("Contacts.lastVisited"))
+                    let formatted = String(format: localized, notSeenString)
+                    Text(formatted)
+                        .font(.iransansCaption3)
                 }
             }
             Spacer()
@@ -172,7 +191,7 @@ struct ThreadDescription: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
 
     var body: some View {
-        if let description = viewModel.thread.description.validateString {
+        if let description = viewModel.thread?.description.validateString {
             InfoRowItem(key: "General.description", value: description)
         }
     }
@@ -180,11 +199,11 @@ struct ThreadDescription: View {
 
 struct PublicLink: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
-    private var shortJoinLink: String { "talk/\(viewModel.thread.uniqueName ?? "")" }
-    private var joinLink: String { "\(AppRoutes.joinLink)\(viewModel.thread.uniqueName ?? "")" }
+    private var shortJoinLink: String { "talk/\(viewModel.thread?.uniqueName ?? "")" }
+    private var joinLink: String { "\(AppRoutes.joinLink)\(viewModel.thread?.uniqueName ?? "")" }
 
     var body: some View {
-        if viewModel.thread.uniqueName != nil {
+        if viewModel.thread?.uniqueName != nil {
             Button {
                 UIPasteboard.general.string = joinLink
                 let icon = Image(systemName: "doc.on.doc")
@@ -255,8 +274,8 @@ struct ThreadDetailTopButtons: View {
     var body: some View {
         HStack(spacing: 16) {
             Spacer()
-            if viewModel.thread.type != .selfThread {
-                DetailViewButton(accessibilityText: "", icon: viewModel.thread.mute ?? false ? "bell.slash.fill" : "bell.fill") {
+            if viewModel.thread?.type != .selfThread {
+                DetailViewButton(accessibilityText: "", icon: viewModel.thread?.mute ?? false ? "bell.slash.fill" : "bell.fill") {
                     viewModel.toggleMute()
                 }
 
@@ -304,11 +323,12 @@ struct ThreadDetailTopButtons: View {
             }
             .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 0) {
-                    ThreadRowActionMenu(showPopover: $showPopover, isDetailView: true, thread: viewModel.thread)
-                        .environmentObject(AppState.shared.objectsContainer.threadsVM)
-                    if let viewModel = viewModel.participantDetailViewModel {
-                        UserActionMenu(showPopover: $showPopover, participant: viewModel.participant)
-                            .environmentObject(viewModel)
+                    if let thread = viewModel.thread {
+                        ThreadRowActionMenu(showPopover: $showPopover, isDetailView: true, thread: thread)
+                            .environmentObject(AppState.shared.objectsContainer.threadsVM)
+                    }
+                    if let participant = viewModel.partnerParticipnt ?? viewModel.participantDetailViewModel?.participant {
+                        UserActionMenu(showPopover: $showPopover, participant: participant)
                     }
                 }
                 .foregroundColor(.primary)
@@ -328,8 +348,8 @@ struct TabDetail: View {
     let viewModel: ThreadDetailViewModel
 
     var body: some View {
-        if let participantViewModel = viewModel.threadVM?.participantsViewModel {
-            ConversationDetailTabViews(thread: viewModel.thread)
+        if let participantViewModel = viewModel.threadVM?.participantsViewModel, let thread = viewModel.thread {
+            ConversationDetailTabViews(thread: thread)
                 .environmentObject(participantViewModel)
         }
     }
@@ -375,6 +395,26 @@ struct SectionItem: View {
         .padding([.top, .bottom], 2)
         .buttonStyle(.bordered)
         .clipShape(RoundedRectangle(cornerRadius:(12)))
+    }
+}
+
+struct UserName: View {
+    @EnvironmentObject var viewModel: ParticipantDetailViewModel
+
+    var body: some View {
+        if let participantName = viewModel.participant.username.validateString {
+            InfoRowItem(key: "Settings.userName", value: participantName)
+        }
+    }
+}
+
+struct CellPhoneNumber: View {
+    @EnvironmentObject var viewModel: ParticipantDetailViewModel
+
+    var body: some View {
+        if let cellPhoneNumber = viewModel.cellPhoneNumber.validateString {
+            InfoRowItem(key: "Participant.Search.Type.cellphoneNumber", value: cellPhoneNumber)
+        }
     }
 }
 

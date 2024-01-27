@@ -263,6 +263,8 @@
 /* DeleteMessageDialog */
 "DeleteMessageDialog.title" = "Radera markerade meddelanden";
 "DeleteMessageDialog.subtitle" = "Är du säker på att du vill radera alla markerade meddelanden?";
+"DeleteMessageDialog.singleDeleteIsPinMessage" = "Det raderade meddelandet är ett fäst meddelande, därför kan du inte radera det för andra.";
+"DeleteMessageDialog.multipleDeleteContainsPinMessage" = "Valda meddelanden innehåller ett pinmeddelande, därför kan du inte radera dem för andra.";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "Hur vill du sätta fast detta meddelande?";

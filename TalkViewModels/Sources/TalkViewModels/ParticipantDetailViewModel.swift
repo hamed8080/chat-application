@@ -95,7 +95,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
 
     public func createThread() {
         if let contactId = participant.contactId {
-            AppState.shared.openThread(contact: .init(id: contactId))
+            AppState.shared.openThread(contact: .init(id: contactId, user: .init(User(coreUserId: participant.coreUserId))))
         } else {
             AppState.shared.openThread(participant: participant)
         }
@@ -152,6 +152,8 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
             if contact.user?.username == participant.username {
                 participant.contactId = contact.id
             }
+            partnerContact = response.result?.first
+            AppState.shared.objectsContainer.contactsVM.editContact = partnerContact
         }
         animateObjectWillChange()
     }
@@ -195,14 +197,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
         }
     }
 
-    private func onAddedContact(_ response: ChatResponse<[Contact]>) {
-        if partnerContactId == response.result?.first?.id {
-            partnerContact = response.result?.first
-            animateObjectWillChange()
-        }
-    }
-
-    deinit{
+    deinit {
         print("deinit ParticipantDetailViewModel")
     }
 }

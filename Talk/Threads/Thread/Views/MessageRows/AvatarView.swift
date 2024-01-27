@@ -60,7 +60,7 @@ struct AvatarView: View {
             .padding(.trailing, 2)
             .onTapGesture {
                 if let participant = message.participant {
-                    AppState.shared.objectsContainer.navVM.append(participantDetail: participant)
+                    AppState.shared.openThread(participant: participant)
                 }
             }
         } else if isSameUser {

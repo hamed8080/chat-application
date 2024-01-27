@@ -159,6 +159,9 @@ struct EditCreatedConversationDetail: View {
         .animation(.easeInOut, value: isLoading)
         .animation(.easeInOut, value: viewModel.conversationTitle)
         .listStyle(.plain)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            NormalNavigationBackButton()
+        }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",
                                enableButton: .constant(!isLoading),

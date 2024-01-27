@@ -43,8 +43,6 @@
 		05466B0B2AEEA3F7005CC176 /* ArchivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05466B092AEEA3F7005CC176 /* ArchivesView.swift */; };
 		054EBA6E2B1E0613008F248D /* JoinPublicLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */; };
 		054EBA6F2B1E0613008F248D /* JoinPublicLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */; };
-		054EE5F32B623E06000B1C02 /* ParticipantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054EE5F22B623E06000B1C02 /* ParticipantDetailView.swift */; };
-		054EE5F42B623E06000B1C02 /* ParticipantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054EE5F22B623E06000B1C02 /* ParticipantDetailView.swift */; };
 		05551C262AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
 		05551C272AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
 		05551C292AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */; };
@@ -369,7 +367,6 @@
 		053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteThreadDialog.swift; sourceTree = "<group>"; };
 		05466B092AEEA3F7005CC176 /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
 		054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinPublicLink.swift; sourceTree = "<group>"; };
-		054EE5F22B623E06000B1C02 /* ParticipantDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantDetailView.swift; sourceTree = "<group>"; };
 		05551C252AF4C631000F98B6 /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
 		05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainerButton.swift; sourceTree = "<group>"; };
 		05593BA42AFF560A00316E39 /* ThreadSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSearchView.swift; sourceTree = "<group>"; };
@@ -845,7 +842,6 @@
 				0570CBAA2AAEE98D001832E9 /* TabViews */,
 				0570CBB42AAEE98D001832E9 /* ThreadDetailView.swift */,
 				05745AEF2AF2626B00102193 /* UserActionMenu.swift */,
-				054EE5F22B623E06000B1C02 /* ParticipantDetailView.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -1215,7 +1211,6 @@
 				0570CBFD2AAEE98F001832E9 /* AddParticipantsToThreadView.swift in Sources */,
 				0570CC052AAEE98F001832E9 /* MapPickerView.swift in Sources */,
 				05593BA52AFF560A00316E39 /* ThreadSearchView.swift in Sources */,
-				054EE5F32B623E06000B1C02 /* ParticipantDetailView.swift in Sources */,
 				0570CC532AAEE98F001832E9 /* PictureView.swift in Sources */,
 				0570CC192AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */,
 				05466B0A2AEEA3F7005CC176 /* ArchivesView.swift in Sources */,
@@ -1370,7 +1365,6 @@
 				0570CBFE2AAEE98F001832E9 /* AddParticipantsToThreadView.swift in Sources */,
 				0570CC062AAEE98F001832E9 /* MapPickerView.swift in Sources */,
 				05593BA62AFF560A00316E39 /* ThreadSearchView.swift in Sources */,
-				054EE5F42B623E06000B1C02 /* ParticipantDetailView.swift in Sources */,
 				0570CC542AAEE98F001832E9 /* PictureView.swift in Sources */,
 				0570CC1A2AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */,
 				05466B0B2AEEA3F7005CC176 /* ArchivesView.swift in Sources */,

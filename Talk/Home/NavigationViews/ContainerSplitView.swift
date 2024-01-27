@@ -106,11 +106,6 @@ struct NavigationTypeView: View {
                 .environmentObject(container.appOverlayVM)
                 .environmentObject(detailViewModel)
                 .environmentObject(container.threadsVM)
-        case .participantDetail(let detailViewModel):
-            ParticipantDetailView()
-                .environmentObject(container.appOverlayVM)
-                .environmentObject(detailViewModel)
-                .environmentObject(container.threadsVM)
         case .preference(_):
             PreferenceView()
                 .environmentObject(container.appOverlayVM)

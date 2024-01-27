@@ -16,6 +16,7 @@ public struct DeleteMessageDialog: View {
     private var messages: [Message] { viewModel.selectedMessages.compactMap({$0.message}) }
     private let deleteForMe: Bool
     private let deleteForOthers: Bool
+    private var hasPinnedMessage: Bool { messages.contains(where: {$0.id == threadVM.thread.pinMessage?.id })}
 
     public init(deleteForMe: Bool, deleteForOthers: Bool, viewModel: ThreadViewModel) {
         self.deleteForMe = deleteForMe
@@ -36,6 +37,15 @@ public struct DeleteMessageDialog: View {
                 .font(.iransansBody)
                 .multilineTextAlignment(.leading)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+
+            let isSingle = messages.count == 1
+            if hasPinnedMessage {
+                Text(isSingle ? "DeleteMessageDialog.singleDeleteIsPinMessage" : "DeleteMessageDialog.multipleDeleteContainsPinMessage")
+                    .foregroundStyle(Color.App.textSecondary)
+                    .font(.iransansCaption2)
+                    .multilineTextAlignment(.leading)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+            }
 
             HStack(spacing: 16) {
                 Button {
@@ -64,7 +74,7 @@ public struct DeleteMessageDialog: View {
                     }
                 }
 
-                if deleteForOthers {
+                if deleteForOthers, !hasPinnedMessage {
                     Button {
                         threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
                         threadVM.isInEditMode = false

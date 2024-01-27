@@ -42,6 +42,34 @@ public struct NavigationBackButton: View {
     }
 }
 
+public struct NormalNavigationBackButton: View {
+    @Environment(\.dismiss) var dismiss
+
+    public init() {}
+
+    public var body: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.backward")
+                        .resizable()
+                        .scaledToFit()
+                        .fontWeight(.medium)
+                        .frame(maxWidth: 16, maxHeight: 16)
+                    Text("General.back")
+                        .font(.iransansBody)
+                }
+            }
+            Spacer()
+        }
+        .padding(16)
+        .background(.ultraThinMaterial)
+        .foregroundStyle(Color.App.accent)
+    }
+}
+
 struct NavigationBackButton_Previews: PreviewProvider {
     static var previews: some View {
         NavigationBackButton {

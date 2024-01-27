@@ -263,6 +263,8 @@
 /* DeleteMessageDialog */
 "DeleteMessageDialog.title" = "حذف الرسائل المحددة";
 "DeleteMessageDialog.subtitle" = "هل أنت متأكد من رغبتك في حذف جميع الرسائل المحددة؟";
+"DeleteMessageDialog.singleDeleteIsPinMessage" = "الرسالة المحذوفة هي رسالة مثبتة، لذلك لا يمكنك حذفها للآخرين.";
+"DeleteMessageDialog.multipleDeleteContainsPinMessage" = "تحتوي الرسائل المحددة على رسالة دبوس، وبالتالي لا يمكنك حذفها للآخرين.";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "كيف ترغب في تثبيت هذه الرسالة؟";

@@ -85,7 +85,7 @@ struct ParticipantRowContainer: View {
                 }
             }
             .onLongPressGesture {
-                if !isMe {
+                if !isMe, viewModel.thread?.admin == true {
                     showPopover.toggle()
                 }
             }

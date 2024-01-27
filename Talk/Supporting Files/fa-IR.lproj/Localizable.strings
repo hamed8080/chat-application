@@ -264,6 +264,8 @@
 /* DeleteMessageDialog */
 "DeleteMessageDialog.title" = "حذف پیام های انتخاب شده";
 "DeleteMessageDialog.subtitle" = "آیا شما مطمئن هستید می خواهید پیام های انتخاب شده را پاک کنید؟";
+"DeleteMessageDialog.singleDeleteIsPinMessage" = "پیام انتخابی شما پین شده است. شما قادر به حذف این پیام برای دیگران نمی باشید.";
+"DeleteMessageDialog.multipleDeleteContainsPinMessage" = "یکی از پیام های انتخابی شما پین شده است. شما قادر به حذف پیام ها برای دیگران نمی باشید.";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "چسباندن پیام به چه نحوی باشد؟";

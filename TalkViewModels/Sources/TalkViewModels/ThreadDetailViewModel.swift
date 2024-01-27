@@ -17,31 +17,38 @@ import TalkExtensions
 
 public final class ThreadDetailViewModel: ObservableObject, Hashable {
     public static func == (lhs: ThreadDetailViewModel, rhs: ThreadDetailViewModel) -> Bool {
-        lhs.thread.id == rhs.thread.id
+        lhs.thread?.id == rhs.thread?.id
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(thread.id)
+        hasher.combine(thread?.id)
     }
 
     private(set) var cancelable: Set<AnyCancellable> = []
-    public var thread: Conversation
+    public var thread: Conversation?
     public weak var threadVM: ThreadViewModel?
     public var searchText: String = ""
     @Published public var isInEditMode = false
     @Published public var dismiss = false
     @Published public var isLoading = false
-    public var isGroup: Bool { thread.group == true }
-    public var canShowEditConversationButton: Bool { thread.group == true && thread.admin == true && thread.type != .selfThread }
+    public var isGroup: Bool { thread?.group == true }
+    public var canShowEditConversationButton: Bool { thread?.group == true && thread?.admin == true && thread?.type != .selfThread }
     public var participantDetailViewModel: ParticipantDetailViewModel?
     public lazy var editConversationViewModel: EditConversationViewModel? = {
         let vm = EditConversationViewModel(threadVM: threadVM)
         return vm
     }()
+    public var partnerParticipnt: Participant?
 
-    public init(thread: Conversation, threadVM: ThreadViewModel? = nil) {
+    public init(thread: Conversation?, threadVM: ThreadViewModel? = nil) {
         self.thread = thread
         self.threadVM = threadVM
+        partnerParticipnt = threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id}) ?? AppState.shared.appStateNavigationModel.participantToCreate
+        setup()
+    }
+
+    public init(participant: Participant) {
+        partnerParticipnt = participant
         setup()
     }
 
@@ -77,8 +84,8 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     }
 
     public func toggleMute() {
-        guard let threadId = thread.id else { return }
-        if thread.mute ?? false == false {
+        guard let threadId = thread?.id else { return }
+        if thread?.mute ?? false == false {
             mute(threadId)
         } else {
             unmute(threadId)
@@ -99,32 +106,28 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
 
     public func onMuteChanged(_ response: ChatResponse<Int>) {
         if response.result != nil, response.error == nil {
-            thread.mute = true
+            thread?.mute = true
             animateObjectWillChange()
         }
     }
 
     public func onUnMuteChanged(_ response: ChatResponse<Int>) {
         if response.result != nil, response.error == nil {
-            thread.mute = false
+            thread?.mute = false
             animateObjectWillChange()
         }
     }
 
     private func onDeleteThread(_ response: ChatResponse<Participant>) {
-        if response.subjectId == thread.id {
+        if response.subjectId == thread?.id {
             dismiss = true
         }
     }
 
     func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
-        if response.result == thread.id {
+        if response.result == thread?.id {
             dismiss = true
         }
-    }
-
-    public var partnerParticipnt: Participant? {
-        threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id})
     }
 
     private func setParticipantDetailViewModel() {
@@ -137,7 +140,7 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
             /// In the update thread info, the image property is nil and the metadata link is been filled by the server.
             /// So to update the UI properly we have to set it to link.
             if updated.image == nil, let metadatImagelink = updated.metaData?.file?.link {
-                thread.image = metadatImagelink
+                thread?.image = metadatImagelink
             }
             animateObjectWillChange()
         }
