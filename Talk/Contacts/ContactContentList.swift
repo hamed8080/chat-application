@@ -99,6 +99,13 @@ struct ContactContentList: View {
         .sheet(isPresented: $viewModel.showAddOrEditContactSheet) {
             AddOrEditContactView()
                 .environmentObject(viewModel)
+                .onDisappear {
+                    /// Clearing the view for when the user cancels the sheet by dropping it down.
+                    viewModel.successAdded = false
+                    viewModel.showAddOrEditContactSheet = false
+                    viewModel.addContact = nil
+                    viewModel.editContact = nil
+                }
         }
         .onReceive(builderVM.$dismiss) { newValue in
             if newValue == true {

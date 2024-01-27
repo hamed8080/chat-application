@@ -36,7 +36,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
     public var url: String? {  participant.image }
     public var mutualThreads: ContiguousArray<Conversation> = []
     public var partnerContact: Contact?
-
+    public var contactsVM = ContactsViewModel()
     public var searchText: String = ""
     @Published public var isInEditMode = false
     @Published public var dismiss = false
@@ -153,7 +153,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
                 participant.contactId = contact.id
             }
             partnerContact = response.result?.first
-            AppState.shared.objectsContainer.contactsVM.editContact = partnerContact
+            contactsVM.editContact = partnerContact
         }
         animateObjectWillChange()
     }
@@ -162,6 +162,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
         if deleted {
             if response.result?.first?.id == participant.contactId {
                 participant.contactId = nil
+                partnerContact = nil
                 animateObjectWillChange()
             }
         }
@@ -174,7 +175,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
     private func setPartnerContact() {
         if let localContact = AppState.shared.objectsContainer.contactsVM.contacts.first(where:({$0.id == partnerContactId})) {
             partnerContact = localContact
-            AppState.shared.objectsContainer.contactsVM.editContact = partnerContact
+            contactsVM.editContact = localContact
             animateObjectWillChange()
         } else {
             fetchPartnerContact()
@@ -182,17 +183,24 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
     }
 
     private func fetchPartnerContact() {
+        var req: ContactsRequest?
         if let contactId = partnerContactId {
-            let req = ContactsRequest(id: contactId)
-            RequestsManager.shared.append(prepend: "P2P-Partner-Contact", value: req)
-            ChatManager.activeInstance?.contact.get(req)
+            req = ContactsRequest(id: contactId)
+        } else if let coreUserId = participant.coreUserId {
+            req = ContactsRequest(coreUserId: coreUserId)
+        } else if let userName = participant.username {
+            req = ContactsRequest(userName: userName)
         }
+        guard let req = req else { return }
+        RequestsManager.shared.append(prepend: "P2P-Partner-Contact", value: req)
+        ChatManager.activeInstance?.contact.get(req)
     }
 
     private func onP2PConatct(_ response: ChatResponse<[Contact]>) {
         if !response.cache, response.pop(prepend: "P2P-Partner-Contact") != nil, let contact = response.result?.first {
             self.partnerContact = contact
-            AppState.shared.objectsContainer.contactsVM.editContact = contact
+            participant.contactId = contact.id
+            contactsVM.editContact = contact
             animateObjectWillChange()
         }
     }

@@ -38,22 +38,21 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         let vm = EditConversationViewModel(threadVM: threadVM)
         return vm
     }()
-    public var partnerParticipnt: Participant?
 
-    public init(thread: Conversation?, threadVM: ThreadViewModel? = nil) {
+    public init(thread: Conversation? = nil, threadVM: ThreadViewModel? = nil, participant: Participant? = nil) {
         self.thread = thread
         self.threadVM = threadVM
-        partnerParticipnt = threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id}) ?? AppState.shared.appStateNavigationModel.participantToCreate
-        setup()
-    }
-
-    public init(participant: Participant) {
-        partnerParticipnt = participant
+        let threadP2PParticipant = AppState.shared.appStateNavigationModel.participantToCreate
+        if let participant = participant ?? threadP2PParticipant {
+            self.participantDetailViewModel = ParticipantDetailViewModel(participant: participant)
+        }
+        if thread?.group == false, let partner = threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id}) {
+            self.participantDetailViewModel = ParticipantDetailViewModel(participant: partner)
+        }
         setup()
     }
 
     public func setup() {
-        setParticipantDetailViewModel()
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] value in
@@ -128,11 +127,6 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         if response.result == thread?.id {
             dismiss = true
         }
-    }
-
-    private func setParticipantDetailViewModel() {
-        guard let partnerParticipant = partnerParticipnt else { return }
-        self.participantDetailViewModel = ParticipantDetailViewModel(participant: partnerParticipant)
     }
 
     private func onUpdateThreadInfo(_ response: ChatResponse<Conversation>) {

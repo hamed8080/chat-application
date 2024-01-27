@@ -119,13 +119,6 @@ struct AddOrEditContactView: View {
             focusState = .firstName
             viewModel.successAdded = false
         }
-        .onDisappear {
-            /// Clearing the view for when the user cancels the sheet by dropping it down.
-            viewModel.successAdded = false
-            viewModel.showAddOrEditContactSheet = false
-            viewModel.addContact = nil
-            viewModel.editContact = nil
-        }
     }
 
     private var isLargeSize: Bool {

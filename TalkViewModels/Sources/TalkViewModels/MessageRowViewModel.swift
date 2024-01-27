@@ -114,6 +114,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private static var emptyImage = UIImage(named: "empty_image")!
     public var image: UIImage = MessageRowViewModel.emptyImage
     public var canShowImageView: Bool = false
+    public var groupMessageParticipantName: String?
 
     public var avatarImageLoader: ImageLoaderViewModel?
 
@@ -296,6 +297,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         addOrRemoveParticipantsAttr = calculateAddOrRemoveParticipantRow()
         textViewPadding = calculateTextViewPadding()
         localizedReplyFileName = calculateLocalizeReplyFileName()
+        await calculateGroupParticipantName()
     }
 
     private func calculateImageSize() async {
@@ -487,6 +489,14 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let userName = message.participant?.name ?? message.participant?.username
         if let image = message.participant?.image {
             avatarImageLoader = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: userName)
+        }
+    }
+
+    private func calculateGroupParticipantName() async {
+        let canShowGroupName = !isMe && threadVM?.thread.group == true && threadVM?.thread.type?.isChannelType == false
+        && isFirstMessageOfTheUser
+        if canShowGroupName {
+            groupMessageParticipantName = message.participant?.contactName ?? message.participant?.name
         }
     }
 

@@ -13,15 +13,11 @@ import ChatModels
 struct GroupParticipantNameView: View {
     private var message: Message { viewModel.message }
     @EnvironmentObject var viewModel: MessageRowViewModel
-    var canShowName: Bool {
-        !viewModel.isMe && viewModel.threadVM?.thread.group == true && viewModel.threadVM?.thread.type?.isChannelType == false
-        && viewModel.isFirstMessageOfTheUser
-    }
 
     var body: some View {
-        if canShowName {
+        if let groupMessageParticipantName = viewModel.groupMessageParticipantName {
             HStack {
-                Text(verbatim: message.participant?.name ?? "")
+                Text(verbatim: groupMessageParticipantName)
                     .foregroundStyle(viewModel.participantColor ?? .clear)
                     .font(.iransansBoldBody)
             }

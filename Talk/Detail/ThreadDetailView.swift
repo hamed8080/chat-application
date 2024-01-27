@@ -86,19 +86,17 @@ struct TarilingEditConversation: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
 
     var body: some View {
-        if (viewModel.participantDetailViewModel?.partnerContact?.id != nil && viewModel.participantDetailViewModel != nil) || viewModel.canShowEditConversationButton == true {
+        if viewModel.participantDetailViewModel?.partnerContact != nil || viewModel.participantDetailViewModel?.participant.contactId != nil || viewModel.canShowEditConversationButton == true {
             NavigationLink {
                 if viewModel.canShowEditConversationButton, let viewModel = viewModel.editConversationViewModel {
                     EditGroup()
                         .environmentObject(viewModel)
                         .navigationBarBackButtonHidden(true)
-                } else if viewModel.participantDetailViewModel != nil {
+                } else if let contactsVM = viewModel.participantDetailViewModel?.contactsVM {
                     AddOrEditContactView(showToolbar: true)
+                        .environmentObject(contactsVM)
                         .background(Color.App.bgSecondary)
                         .navigationBarBackButtonHidden(true)
-                        .onDisappear {
-                            AppState.shared.objectsContainer.contactsVM.editContact = viewModel.participantDetailViewModel?.partnerContact
-                        }
                 }
             } label: {
                 Image(systemName: "pencil")
@@ -327,7 +325,7 @@ struct ThreadDetailTopButtons: View {
                         ThreadRowActionMenu(showPopover: $showPopover, isDetailView: true, thread: thread)
                             .environmentObject(AppState.shared.objectsContainer.threadsVM)
                     }
-                    if let participant = viewModel.partnerParticipnt ?? viewModel.participantDetailViewModel?.participant {
+                    if let participant = viewModel.participantDetailViewModel?.participant {
                         UserActionMenu(showPopover: $showPopover, participant: participant)
                     }
                 }

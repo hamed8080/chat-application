@@ -46,12 +46,13 @@ public struct AppStateNavigationModel {
     public init() {}
 
     public var participantToCreate: Participant? {
-        return Participant(firstName: userToCreateThread?.firstName,
-                           id: userToCreateThread?.coreUserId,
-                           image: userToCreateThread?.image,
-                           lastName: userToCreateThread?.lastName,
-                           name: userToCreateThread?.name,
-                           username: userToCreateThread?.username)
+        guard let userToCreateThread = userToCreateThread else { return nil }
+        return Participant(firstName: userToCreateThread.firstName,
+                           id: userToCreateThread.coreUserId,
+                           image: userToCreateThread.image,
+                           lastName: userToCreateThread.lastName,
+                           name: userToCreateThread.name,
+                           username: userToCreateThread.username)
     }
 }
 
