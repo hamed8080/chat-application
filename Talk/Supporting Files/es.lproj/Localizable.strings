@@ -267,6 +267,7 @@
 "DeleteMessageDialog.subtitle" = "¿Estás seguro de que deseas eliminar todos los mensajes seleccionados?";
 "DeleteMessageDialog.singleDeleteIsPinMessage" = "El mensaje eliminado es un mensaje fijado, por lo tanto, no puede eliminarlo para otros.";
 "DeleteMessageDialog.multipleDeleteContainsPinMessage" = "Los mensajes seleccionados contienen un mensaje pin, por lo que no puede eliminarlos para otros.";
+"DeleteMessageDialog.deleteForMeAllOtherIfPossible" = "Eliminar para mí y para otros cuando sea posible";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "¿Cómo te gustaría fijar este mensaje?";

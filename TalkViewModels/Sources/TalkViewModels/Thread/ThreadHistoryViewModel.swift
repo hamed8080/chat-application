@@ -33,8 +33,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var sections: ContiguousArray<MessageSection> = .init()
     public var hasNextTop = true
     public var hasNextBottom = true
-    public let count: Int = 50
-    private let thresholdToLoad = 40
+    public let count: Int = 25
+    private let thresholdToLoad = 20
     public var topLoading = false
     public var bottomLoading = false
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading }

@@ -266,6 +266,7 @@
 "DeleteMessageDialog.subtitle" = "Sind Sie sicher, dass Sie alle ausgewählten Nachrichten löschen möchten?";
 "DeleteMessageDialog.singleDeleteIsPinMessage" = "Die gelöschte Nachricht ist eine angeheftete Nachricht, daher können Sie sie nicht für andere löschen.";
 "DeleteMessageDialog.multipleDeleteContainsPinMessage" = "Ausgewählte Nachrichten enthalten eine Pin-Nachricht, daher können Sie sie nicht für andere löschen.";
+"DeleteMessageDialog.deleteForMeAllOtherIfPossible" = "Löschen Sie für mich und andere, wo es möglich ist";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "Wie möchtest du diese Nachricht anheften?";
