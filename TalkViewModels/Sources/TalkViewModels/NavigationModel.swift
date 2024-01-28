@@ -212,11 +212,11 @@ public final class NavigationModel: ObservableObject {
     }
 
     public func appendThreadDetail(threadViewModel: ThreadViewModel? = nil, paricipant: Participant? = nil) {
-        var detailViewModel: ThreadDetailViewModel
+        let detailViewModel = AppState.shared.objectsContainer.threadDetailVM
         if let participant = paricipant {
-            detailViewModel = ThreadDetailViewModel(participant: participant)
+            detailViewModel.setup(participant: participant)
         } else {
-            detailViewModel = ThreadDetailViewModel(thread: threadViewModel?.thread, threadVM: threadViewModel)
+            detailViewModel.setup(thread: threadViewModel?.thread, threadVM: threadViewModel)
         }
         paths.append(NavigationType.threadDetil(detailViewModel))
         pathsTracking.append(detailViewModel)

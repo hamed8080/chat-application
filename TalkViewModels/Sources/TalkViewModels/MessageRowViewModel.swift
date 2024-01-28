@@ -384,6 +384,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     @MainActor
     private func prepareImage() async {
+        if downloadFileVM?.thumbnailData != nil && downloadFileVM?.state == .downloading { return }
         if downloadFileVM?.state == .completed, let realImage = realImage {
             image = realImage
             blurRadius = 0

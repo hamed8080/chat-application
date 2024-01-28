@@ -19,6 +19,7 @@ struct SearchMessageRow: View {
     var body: some View {
         Button {
             if let time = message.time, let messageId = message.id {
+                AppState.shared.objectsContainer.threadDetailVM.clear()
                 AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
                 AppState.shared.objectsContainer.navVM.paths.removeLast() /// For click on item search                
                 threadVM?.historyVM.moveToTime(time, messageId)

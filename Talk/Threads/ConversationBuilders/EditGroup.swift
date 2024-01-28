@@ -192,6 +192,6 @@ struct EditGroup: View {
 struct EditGroup_Previews: PreviewProvider {
     static var previews: some View {
         EditGroup()
-            .environmentObject(ThreadDetailViewModel(thread: .init(id: 1)))
+            .environmentObject(ThreadDetailViewModel())
     }
 }

@@ -36,11 +36,11 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
     public var url: String? {  participant.image }
     public var mutualThreads: ContiguousArray<Conversation> = []
     public var partnerContact: Contact?
-    public var contactsVM = ContactsViewModel()
     public var searchText: String = ""
     @Published public var isInEditMode = false
     @Published public var dismiss = false
     @Published public var isLoading = false
+    @Published public var successEdited: Bool = false
     public var canShowEditButton: Bool {
         participant.contactId != nil
     }
@@ -153,7 +153,9 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
                 participant.contactId = contact.id
             }
             partnerContact = response.result?.first
-            contactsVM.editContact = partnerContact
+        }
+        if response.pop(prepend: "ParticipantEditContact") != nil {
+            successEdited = true
         }
         animateObjectWillChange()
     }
@@ -175,7 +177,6 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
     private func setPartnerContact() {
         if let localContact = AppState.shared.objectsContainer.contactsVM.contacts.first(where:({$0.id == partnerContactId})) {
             partnerContact = localContact
-            contactsVM.editContact = localContact
             animateObjectWillChange()
         } else {
             fetchPartnerContact()
@@ -200,8 +201,22 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
         if !response.cache, response.pop(prepend: "P2P-Partner-Contact") != nil, let contact = response.result?.first {
             self.partnerContact = contact
             participant.contactId = contact.id
-            contactsVM.editContact = contact
             animateObjectWillChange()
+        }
+    }
+
+    public func editContact(contactValue: String, firstName: String, lastName: String) {
+        let isNumber = ContactsViewModel.isNumber(value: contactValue)
+        let req: AddContactRequest = isNumber ?
+            .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
+            .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
+        RequestsManager.shared.append(prepend: "ParticipantEditContact", value: req)
+        ChatManager.activeInstance?.contact.add(req)
+    }
+
+    public func cancelObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
         }
     }
 

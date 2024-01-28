@@ -25,7 +25,7 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     }
 
     private(set) var cancelable: Set<AnyCancellable> = []
-    public var thread: Conversation?
+    public weak var thread: Conversation?
     public weak var threadVM: ThreadViewModel?
     public var searchText: String = ""
     @Published public var isInEditMode = false
@@ -39,20 +39,18 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         return vm
     }()
 
-    public init(thread: Conversation? = nil, threadVM: ThreadViewModel? = nil, participant: Participant? = nil) {
+    public init() {}
+
+    public func setup(thread: Conversation? = nil, threadVM: ThreadViewModel? = nil, participant: Participant? = nil) {
+        clear()
         self.thread = thread
         self.threadVM = threadVM
         let threadP2PParticipant = AppState.shared.appStateNavigationModel.participantToCreate
         if let participant = participant ?? threadP2PParticipant {
             self.participantDetailViewModel = ParticipantDetailViewModel(participant: participant)
-        }
-        if thread?.group == false, let partner = threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id}) {
+        } else if thread?.group == false, let partner = threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id}) {
             self.participantDetailViewModel = ParticipantDetailViewModel(participant: partner)
         }
-        setup()
-    }
-
-    public func setup() {
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] value in
@@ -140,7 +138,26 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         }
     }
 
-    deinit{
+    public func clear() {
+        cancelObservers()
+        thread = nil
+        threadVM = nil
+        searchText = ""
+        isInEditMode = false
+        dismiss = false
+        isLoading = false
+        participantDetailViewModel = nil
+        editConversationViewModel = nil
+    }
+
+    public func cancelObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+        participantDetailViewModel?.cancelObservers()
+    }
+
+    deinit {
         print("deinit ThreadDetailViewModel")
     }
 }

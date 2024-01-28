@@ -34,22 +34,19 @@ struct ThreadDetailView: View {
                 StickyHeaderSection(header: "", height: 10)
                 ThreadDetailTopButtons()
                     .padding([.top, .bottom])
-                StickyHeaderSection(header: "", height: 10)              
                 StickyHeaderSection(header: "", height: 10)
-                if viewModel.thread?.id != nil, viewModel.thread?.id != LocalId.emptyThread.rawValue {
-                    TabDetail(viewModel: viewModel)
-                }
+                StickyHeaderSection(header: "", height: 10)
+                TabDetail(viewModel: viewModel)
             }
-            .frame(minWidth: 0, maxWidth: .infinity)
         }
         .background(Color.App.bgPrimary)
         .environmentObject(viewModel)
-        .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .animation(.interactiveSpring(), value: viewModel.isInEditMode)
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue {
                 AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
+                AppState.shared.objectsContainer.threadDetailVM.clear()
                 dismiss()
             }
         }
@@ -77,7 +74,8 @@ struct ThreadDetailView: View {
         NavigationBackButton {
             viewModel.threadVM?.scrollVM.disableExcessiveLoading()
             AppState.shared.objectsContainer.contactsVM.editContact = nil
-            AppState.shared.navViewModel?.remove(type: ThreadDetailViewModel.self)
+            AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
+            AppState.shared.objectsContainer.threadDetailVM.clear()
         }
     }
 }
@@ -86,20 +84,12 @@ struct TarilingEditConversation: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
 
     var body: some View {
-        if viewModel.participantDetailViewModel?.partnerContact != nil || viewModel.participantDetailViewModel?.participant.contactId != nil || viewModel.canShowEditConversationButton == true {
+        if viewModel.canShowEditConversationButton == true {
             NavigationLink {
                 if viewModel.canShowEditConversationButton, let viewModel = viewModel.editConversationViewModel {
                     EditGroup()
                         .environmentObject(viewModel)
                         .navigationBarBackButtonHidden(true)
-                } else if let contactsVM = viewModel.participantDetailViewModel?.contactsVM {
-                    AddOrEditContactView(showToolbar: true)
-                        .environmentObject(contactsVM)
-                        .background(Color.App.bgSecondary)
-                        .navigationBarBackButtonHidden(true)
-                        .onAppear {
-                            contactsVM.isLoading = false
-                        }
                 }
             } label: {
                 Image(systemName: "pencil")
@@ -110,6 +100,142 @@ struct TarilingEditConversation: View {
                     .foregroundStyle(Color.App.accent)
                     .fontWeight(.heavy)
             }
+        } else if let viewModel = viewModel.participantDetailViewModel {
+            EditContactTrailingButton()
+                .environmentObject(viewModel)
+        }
+    }
+}
+
+struct EditContactTrailingButton: View {
+    @EnvironmentObject var viewModel: ParticipantDetailViewModel
+
+    var body: some View {
+        if viewModel.partnerContact != nil {
+            NavigationLink {
+                EditContactInParticipantDetailView()
+                    .environmentObject(viewModel)
+                    .background(Color.App.bgSecondary)
+                    .navigationBarBackButtonHidden(true)
+            } label: {
+                Image(systemName: "pencil")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .padding(8)
+                    .foregroundStyle(Color.App.accent)
+                    .fontWeight(.heavy)
+            }
+        }
+    }
+}
+
+struct EditContactInParticipantDetailView: View {
+    @EnvironmentObject var viewModel: ParticipantDetailViewModel
+    @State var contactValue: String = ""
+    @State var firstName: String = ""
+    @State var lastName: String = ""
+    @Environment(\.dismiss) var dismiss
+    var editContact: Contact? { viewModel.partnerContact }
+    @FocusState var focusState: ContactFocusFileds?
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                TextField("General.firstName", text: $firstName)
+                    .focused($focusState, equals: .firstName)
+                    .textContentType(.name)
+                    .padding()
+                    .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
+                        focusState = .firstName
+                    }
+                TextField(optioanlAPpend(text: "General.lastName"), text: $lastName)
+                    .focused($focusState, equals: .lastName)
+                    .textContentType(.familyName)
+                    .padding()
+                    .applyAppTextfieldStyle(topPlaceholder: "General.lastName", isFocused: focusState == .lastName) {
+                        focusState = .lastName
+                    }
+                TextField("Contacts.Add.phoneOrUserName", text: $contactValue)
+                    .focused($focusState, equals: .contactValue)
+                    .keyboardType(.default)
+                    .padding()
+                    .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", error: nil, isFocused: focusState == .contactValue) {
+                        focusState = .contactValue
+                    }
+                    .disabled(true)
+                    .opacity(0.3)
+                if !isLargeSize {
+                    Spacer()
+                }
+            }
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            toolbarView
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            let title = "Contacts.Edit.title"
+            SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: $viewModel.isLoading) {
+                submit()
+            }
+        }
+        .animation(.easeInOut, value: enableButton)
+        .animation(.easeInOut, value: focusState)
+        .font(.iransansBody)
+        .onReceive(viewModel.$successEdited) { newValue in
+            if newValue == true {
+                withAnimation {
+                    dismiss()
+                }
+            }
+        }
+        .onTapGesture {
+            hideKeyboard()
+        }
+        .onAppear {
+            firstName = editContact?.firstName ?? ""
+            lastName = editContact?.lastName ?? ""
+            contactValue = editContact?.computedUserIdentifire ?? ""
+            focusState = .firstName
+            viewModel.successEdited = false
+        }
+    }
+
+    private var isLargeSize: Bool {
+        let mode = UIApplication.shared.windowMode()
+        if mode == .ipadFullScreen || mode == .ipadHalfSplitView || mode == .ipadTwoThirdSplitView {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    private var enableButton: Bool {
+        !firstName.isEmpty && !contactValue.isEmpty && !viewModel.isLoading
+    }
+
+    func submit() {
+        /// Add or edit use same method.
+        viewModel.editContact(contactValue: contactValue, firstName: firstName, lastName: lastName)
+    }
+
+    func optioanlAPpend(text: String) -> String {
+        "\(String(localized: .init(text))) \(String(localized: "General.optional"))"
+    }
+
+    var toolbarView: some View {
+        VStack(spacing: 0) {
+            ToolbarView(title: "Contacts.Edit.title",
+                        showSearchButton: false,
+                        leadingViews: leadingViews,
+                        centerViews: EmptyView(),
+                        trailingViews: EmptyView()) {_ in }
+        }
+    }
+
+    var leadingViews: some View {
+        NavigationBackButton {
+            
         }
     }
 }
@@ -349,7 +475,8 @@ struct TabDetail: View {
     let viewModel: ThreadDetailViewModel
 
     var body: some View {
-        if let participantViewModel = viewModel.threadVM?.participantsViewModel, let thread = viewModel.thread {
+        let isEmptyThread = viewModel.thread?.id == LocalId.emptyThread.rawValue
+        if !isEmptyThread, let participantViewModel = viewModel.threadVM?.participantsViewModel, let thread = viewModel.thread {
             ConversationDetailTabViews(thread: thread)
                 .environmentObject(participantViewModel)
         }
@@ -433,12 +560,12 @@ struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationSplitView {} content: {} detail: {
             ThreadDetailView()
-                .environmentObject(ThreadDetailViewModel(thread: MockData.thread))
+                .environmentObject(ThreadDetailViewModel())
         }
         .previewDisplayName("Detail With Thread in Ipad")
 
         ThreadDetailView()
-            .environmentObject(ThreadDetailViewModel(thread: MockData.thread))
+            .environmentObject(ThreadDetailViewModel())
             .previewDisplayName("Detail With Thread in iPhone")
     }
 }

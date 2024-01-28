@@ -51,7 +51,7 @@ struct TabViewsContainer_Previews: PreviewProvider {
         let viewModel = ParticipantsViewModel(thread: conversation)
         ConversationDetailTabViews(thread: conversation)
             .environmentObject(viewModel)
-            .environmentObject(ThreadDetailViewModel(thread: conversation))
+            .environmentObject(ThreadDetailViewModel())
             .onAppear {
                 viewModel.appendParticipants(participants: MockData.generateParticipants())
             }

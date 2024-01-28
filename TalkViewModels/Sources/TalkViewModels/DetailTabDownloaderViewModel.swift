@@ -91,8 +91,8 @@ public class DetailTabDownloaderViewModel: ObservableObject {
             itemCount = 4
             return readerWidth / 4
         } else {
-            itemCount = 7
-            return readerWidth / 7
+            itemCount = 5
+            return readerWidth / 5
         }
     }
 
@@ -104,5 +104,9 @@ public class DetailTabDownloaderViewModel: ObservableObject {
             downloadVMS.append(newDownloadVM)
             return newDownloadVM
         }
+    }
+
+    deinit {
+        print("deinit DetailTabDownloaderViewModel for\(tabName)")
     }
 }

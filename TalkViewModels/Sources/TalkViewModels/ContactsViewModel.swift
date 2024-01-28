@@ -267,7 +267,7 @@ public class ContactsViewModel: ObservableObject {
 
     public func addContact(contactValue: String, firstName: String?, lastName: String?) {
         isLoading = true
-        let isNumber = isNumber(value: contactValue)
+        let isNumber = ContactsViewModel.isNumber(value: contactValue)
         if isNumber && contactValue.count < 10 {
             userNotFound = true
             isLoading = false
@@ -283,7 +283,7 @@ public class ContactsViewModel: ObservableObject {
         contacts.first { $0.id == contact.id }
     }
 
-    public func isNumber(value: String) -> Bool {
+    public static func isNumber(value: String) -> Bool {
         let phoneRegex = "^[0-9]*$"
         let phoneTest = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
         let result = phoneTest.evaluate(with: value)
