@@ -115,8 +115,8 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var image: UIImage = MessageRowViewModel.emptyImage
     public var canShowImageView: Bool = false
     public var groupMessageParticipantName: String?
-
     public var avatarImageLoader: ImageLoaderViewModel?
+    public var replyContainerWidth: CGFloat?
 
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
@@ -298,6 +298,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         textViewPadding = calculateTextViewPadding()
         localizedReplyFileName = calculateLocalizeReplyFileName()
         await calculateGroupParticipantName()
+        replyContainerWidth = await calculateReplyContainerWidth()
     }
 
     private func calculateImageSize() async {
@@ -470,7 +471,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func calculateLocalizeReplyFileName() -> String? {
-        if let message = message.replyInfo?.message, !message.isEmpty {
+        if let message = message.replyInfo?.message?.prefix(150).replacingOccurrences(of: "\n", with: " "), !message.isEmpty {
             return message
         } else if let fileHint = message.replyFileStringName?.localized(), !fileHint.isEmpty {
             return fileHint
@@ -499,6 +500,65 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         if canShowGroupName {
             groupMessageParticipantName = message.participant?.contactName ?? message.participant?.name
         }
+    }
+
+    private func calculateReplyContainerWidth() async -> CGFloat? {
+        guard let replyInfo = message.replyInfo else { return nil }
+        let messageFileText = textForContianerCalculation()
+        let textWidth = messageContainerTextWidth()
+
+        let senderNameWithIconOrImageInReply = replySenderWidthWithIconOrImage(replyInfo: replyInfo)
+        let maxWidthWithSender = max(textWidth, senderNameWithIconOrImageInReply)
+
+        if !message.isImage, messageFileText.count < 60 {
+            return max(senderNameWithIconOrImageInReply, maxWidthWithSender)
+        } else if !message.isImage, replyInfo.message?.count ?? 0 < messageFileText.count {
+            let maxAllowedWidth = min(maxWidthWithSender, ThreadViewModel.maxAllowedWidth)
+            return maxAllowedWidth
+        } else {
+            return nil
+        }
+    }
+
+    private func replyPrimaryMessageFileIconWidth() -> CGFloat {
+        if fileName == nil || fileName?.isEmpty == true { return 0 }
+        return 32
+    }
+
+    private func messageContainerTextWidth() -> CGFloat {
+        let text = textForContianerCalculation()
+        let font = UIFont(name: "IRANSansX", size: 14) ?? .systemFont(ofSize: 14)
+        let textWidth = text.widthOfString(usingFont: font) + replyPrimaryMessageFileIconWidth()
+        let minimumWidth: CGFloat = 128
+        let maxOriginal = max(minimumWidth, textWidth + paddingEdgeInset.leading + paddingEdgeInset.trailing)
+        return maxOriginal
+    }
+
+    private func textForContianerCalculation() -> String {
+        let fileNameText = fileName ?? ""
+        let messageText = message.message?.prefix(150).replacingOccurrences(of: "\n", with: " ") ?? ""
+        let messageFileText = messageText.count > fileNameText.count ? messageText : fileNameText
+        return messageFileText
+    }
+
+    private func replyIconOrImageWidth() -> CGFloat {
+        let isReplyImageOrIcon = isReplyImage || canShowIconFile
+        return isReplyImageOrIcon ? 32 : 0
+    }
+
+    private func replySenderWidthCalculation(replyInfo: ReplyInfo) -> CGFloat {
+        let senderNameText = replyInfo.participant?.contactName ?? replyInfo.participant?.name ?? ""
+        let senderFont = UIFont(name: "IRANSansX-Bold", size: 12) ?? .systemFont(ofSize: 12)
+        let senderNameWidth = senderNameText.widthOfString(usingFont: senderFont)
+        return senderNameWidth
+    }
+
+    private func replySenderWidthWithIconOrImage(replyInfo: ReplyInfo) -> CGFloat {
+        let iconWidth = replyIconOrImageWidth()
+        let senderNameWidth = replySenderWidthCalculation(replyInfo: replyInfo)
+        let space: CGFloat = 1.5 + 32 /// 1.5 bar + 8 for padding + 8 for space between image and leading bar + 8 between image and sender name + 16 for padding
+        let senderNameWithImageSize = senderNameWidth + space + iconWidth
+        return senderNameWithImageSize
     }
 
     deinit {

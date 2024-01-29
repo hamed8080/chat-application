@@ -19,57 +19,67 @@ struct ReplyInfoMessageRow: View {
 
     var body: some View {
         if hasReplyInfo {
-            Button {
-                moveToMessage()
-            } label: {
-                HStack(spacing: 8) {
-                    HStack {
-                        ReplyImageIcon(viewModel: viewModel)
-                        ReplyFileIcon()
-                        VStack(alignment: .leading, spacing: 2) {
-                            if let name = message.replyInfo?.participant?.name {
-                                Text("\(name)")
-                                    .font(.iransansBoldCaption2)
-                                    .foregroundStyle(Color.App.accent)
-                            }
+            replyContent()
+                .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
+                .padding(EdgeInsets(top: 6, leading: viewModel.isMe ? 6 : 0, bottom: 6, trailing: viewModel.isMe ? 0 : 6))
+                .frame(maxWidth: viewModel.replyContainerWidth, maxHeight: 52, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(viewModel.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
+                )
+        }
+    }
 
-                            if let hinTextMessage = viewModel.localizedReplyFileName, !hinTextMessage.isEmpty {
-                                Text(hinTextMessage)
-                                    .font(.iransansCaption3)
-                                    .clipShape(RoundedRectangle(cornerRadius:(8)))
-                                    .foregroundStyle(Color.App.textPrimary.opacity(0.7))
-                                    .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                            }
-                        }
-                    }
-                    HStack {
-                        if message.replyInfo?.deleted == true {
-                            Text("Messages.deletedMessageReply")
-                                .font(.iransansBoldCaption2)
-                                .foregroundColor(Color.App.red)
-                        }
-                    }
-                }
-                .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: viewModel.isMe ? 4 : 8))
-                .overlay(alignment: .leading) {
+    @ViewBuilder private func replyContent() -> some View {
+        Button {
+            moveToMessage()
+        } label: {
+            if message.replyInfo?.deleted == true {
+                HStack(spacing: 4) {
                     RoundedRectangle(cornerRadius: 3)
                         .stroke(lineWidth: 1.5)
                         .fill(Color.App.accent)
                         .frame(maxWidth: 1.5)
+                    Text("Messages.deletedMessageReply")
+                        .font(.iransansBoldCaption2)
+                        .foregroundColor(Color.App.red)
+                    Spacer()
                 }
+                .contentShape(Rectangle())
+            } else {
+                HStack(spacing: 8) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .stroke(lineWidth: 1.5)
+                        .fill(Color.App.accent)
+                        .frame(maxWidth: 1.5)
+                    ReplyImageIcon(viewModel: viewModel)
+                    ReplyFileIcon()
+                    VStack(alignment: .leading, spacing: 2) {
+                        if let name = message.replyInfo?.participant?.name {
+                            Text("\(name)")
+                                .font(.iransansBoldCaption2)
+                                .foregroundStyle(Color.App.accent)
+                        }
+
+                        if let hinTextMessage = viewModel.localizedReplyFileName, !hinTextMessage.isEmpty {
+                            Text(hinTextMessage)
+                                .font(.iransansCaption3)
+                                .clipShape(RoundedRectangle(cornerRadius:(8)))
+                                .foregroundStyle(Color.App.textPrimary.opacity(0.7))
+                                .multilineTextAlignment(viewModel.isEnglish || viewModel.isMe ? .leading : .trailing)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                        }
+                    }
+                    Spacer()
+                }
+                .contentShape(Rectangle())
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
-            .buttonStyle(.borderless)
-            .truncationMode(.tail)
-            .contentShape(Rectangle())
-            .padding(EdgeInsets(top: 6, leading: viewModel.isMe ? 6 : 0, bottom: 6, trailing: viewModel.isMe ? 0 : 6))
-            .background(viewModel.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-            .environmentObject(viewModel)
         }
+        .buttonStyle(.borderless)
+        .truncationMode(.tail)
+        .contentShape(Rectangle())
+        .environmentObject(viewModel)
     }
 
     private var hasReplyInfo: Bool {
