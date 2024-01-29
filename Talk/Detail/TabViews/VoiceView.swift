@@ -21,15 +21,17 @@ struct VoiceView: View {
     }
 
     var body: some View {
-        StickyHeaderSection(header: "", height:  4)
-            .onAppear {
-                if viewModel.messages.count == 0 {
-                    viewModel.loadMore()
+        LazyVStack {
+            ThreadTabDetailStickyHeaderSection(header: "", height:  4)
+                .onAppear {
+                    if viewModel.messages.count == 0 {
+                        viewModel.loadMore()
+                    }
                 }
-            }
-        MessageListVoiceView()
-            .padding(.top, 8)
-            .environmentObject(viewModel)
+            MessageListVoiceView()
+                .padding(.top, 8)
+                .environmentObject(viewModel)
+        }
     }
 }
 

@@ -37,23 +37,13 @@ struct ForwardCreateConversationRequest: ChatDTO.UniqueIdProtocol {
 
 /// Properties that can transfer between each navigation page and stay alive unless manually destroyed.
 public struct AppStateNavigationModel {
-    public var userToCreateThread: User?
+    public var userToCreateThread: Participant?
     public var replyPrivately: Message?
     public var forwardMessages: [Message]?
     public var forwardMessageRequest: ForwardMessageRequest?
     public var moveToMessageId: Int?
     public var moveToMessageTime: UInt?
     public init() {}
-
-    public var participantToCreate: Participant? {
-        guard let userToCreateThread = userToCreateThread else { return nil }
-        return Participant(firstName: userToCreateThread.firstName,
-                           id: userToCreateThread.coreUserId,
-                           image: userToCreateThread.image,
-                           lastName: userToCreateThread.lastName,
-                           name: userToCreateThread.name,
-                           username: userToCreateThread.username)
-    }
 }
 
 public final class AppState: ObservableObject {
@@ -143,17 +133,15 @@ public final class AppState: ObservableObject {
 
     public func openThread(contact: Contact) {
         let userId = contact.user?.id ?? contact.user?.coreUserId ?? -1
-        appStateNavigationModel.userToCreateThread = .init(id: userId, image: contact.image, name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
+        appStateNavigationModel.userToCreateThread = .init(contactId: contact.id,
+                                                           id: userId,
+                                                           image: contact.image,
+                                                           name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
         searchForP2PThread(coreUserId: userId)
     }
 
     public func openThread(participant: Participant) {
-        appStateNavigationModel.userToCreateThread = .init(id: participant.coreUserId,
-                                   image: participant.image,
-                                   name: participant.name,
-                                   username: participant.username,
-                                   firstName: participant.firstName,
-                                   lastName: participant.lastName)
+        appStateNavigationModel.userToCreateThread = participant
         searchForP2PThread(coreUserId: participant.coreUserId ?? -1)
     }
 
@@ -253,12 +241,12 @@ public final class AppState: ObservableObject {
     }
 
     public func showEmptyThread() {
-        guard let userToCreateThread = appStateNavigationModel.userToCreateThread else { return }
+        guard let participant = appStateNavigationModel.userToCreateThread else { return }
         withAnimation {
-            let particpants = [Participant(coreUserId: userToCreateThread.id)]
+            let particpants = [participant]
             let conversation = Conversation(id: LocalId.emptyThread.rawValue,
-                                            image: userToCreateThread.image,
-                                            title: userToCreateThread.name,
+                                            image: participant.image,
+                                            title: participant.name,
                                             participants: particpants)
             navViewModel?.append(thread: conversation)
             isLoading = false

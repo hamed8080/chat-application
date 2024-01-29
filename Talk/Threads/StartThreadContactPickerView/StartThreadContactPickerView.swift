@@ -82,7 +82,7 @@ struct StartThreadContactPickerView: View {
         .animation(.easeInOut, value: viewModel.contacts)
         .animation(.easeInOut, value: viewModel.searchedContacts)
         .animation(.easeInOut, value: viewModel.isLoading)
-        .onReceive(viewModel.$dismiss) { newValue in
+        .onChange(of: viewModel.dismiss) { newValue in
             if newValue == true {
                 dismiss()
             }

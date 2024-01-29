@@ -42,7 +42,6 @@ struct ThreadDetailView: View {
         .background(Color.App.bgPrimary)
         .environmentObject(viewModel)
         .navigationBarBackButtonHidden(true)
-        .animation(.interactiveSpring(), value: viewModel.isInEditMode)
         .onReceive(viewModel.$dismiss) { newValue in
             if newValue {
                 AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
@@ -51,21 +50,25 @@ struct ThreadDetailView: View {
             }
         }
         .safeAreaInset(edge: .top, spacing: 0) {
-            VStack(spacing: 0) {
-                ToolbarView(searchId: "DetailView",
-                            title: "General.info",
-                            showSearchButton: false,
-                            searchPlaceholder: "General.searchHere",
-                            searchKeyboardType: .default,
-                            leadingViews: leadingViews,
-                            centerViews: EmptyView(),
-                            trailingViews: TarilingEditConversation()) { searchValue in
-                    viewModel.threadVM?.searchedMessagesViewModel.searchText = searchValue
-                }
-                if let viewModel = viewModel.threadVM {
-                    ThreadSearchList(threadVM: viewModel)
-                        .environmentObject(viewModel.searchedMessagesViewModel)
-                }
+            toolbarView
+        }
+    }
+
+    private var toolbarView: some View {
+        VStack(spacing: 0) {
+            ToolbarView(searchId: "DetailView",
+                        title: "General.info",
+                        showSearchButton: false,
+                        searchPlaceholder: "General.searchHere",
+                        searchKeyboardType: .default,
+                        leadingViews: leadingViews,
+                        centerViews: EmptyView(),
+                        trailingViews: TarilingEditConversation()) { searchValue in
+                viewModel.threadVM?.searchedMessagesViewModel.searchText = searchValue
+            }
+            if let viewModel = viewModel.threadVM {
+                ThreadSearchList(threadVM: viewModel)
+                    .environmentObject(viewModel.searchedMessagesViewModel)
             }
         }
     }
@@ -286,7 +289,8 @@ struct ThreadInfoView: View {
                 }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(viewModel.thread?.title ?? "")
+                let threadName = viewModel.participantDetailViewModel?.participant.contactName ?? viewModel.thread?.title ?? ""
+                Text(threadName)
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.textPrimary)
 

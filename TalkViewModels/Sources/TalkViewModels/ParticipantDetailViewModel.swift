@@ -26,14 +26,13 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
 
     private(set) var cancelable: Set<AnyCancellable> = []
     public var participant: Participant
-    public var isInMyContact: Bool { participant.contactId != nil }
     public var title: String { participant.name ?? "" }
     public var notSeenString: String? { participant.notSeenDuration?.localFormattedTime }
     public var cellPhoneNumber: String? { participant.cellphoneNumber }
     public var isBlock: Bool { participant.blocked == true }
     public var bio: String? { participant.chatProfileVO?.bio }
     public var showInfoGroupBox: Bool { bio != nil || cellPhoneNumber != nil }
-    public var url: String? {  participant.image }
+    public var url: String? { participant.image }
     public var mutualThreads: ContiguousArray<Conversation> = []
     public var partnerContact: Contact?
     public var searchText: String = ""
@@ -132,12 +131,13 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
         }
     }
 
+    /// Disable for now as a result of a error in server chat.
     public func fetchMutualThreads() {
-        guard let userId = participant.id else { return }
-        let invitee = Invitee(id: "\(userId)", idType: .userId)
-        let req = MutualGroupsRequest(toBeUser: invitee)
-        RequestsManager.shared.append(value: req)
-        ChatManager.activeInstance?.conversation.mutual(req)
+//        guard AppState.shared.objectsContainer.navVM.selectedThreadId != LocalId.emptyThread.rawValue, let userId = participant.id else { return }
+//        let invitee = Invitee(id: "\(userId)", idType: .coreUserId)
+//        let req = MutualGroupsRequest(toBeUser: invitee)
+//        RequestsManager.shared.append(value: req)
+//        ChatManager.activeInstance?.conversation.mutual(req)
     }
 
     private func onMutual(_ response: ChatResponse<[Conversation]>) {
@@ -151,6 +151,9 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
         response.result?.forEach{ contact in
             if contact.user?.username == participant.username {
                 participant.contactId = contact.id
+                if let firstName = contact.firstName, let lastName = contact.lastName {
+                    participant.contactName = "\(firstName) \(lastName)"
+                }
             }
             partnerContact = response.result?.first
         }

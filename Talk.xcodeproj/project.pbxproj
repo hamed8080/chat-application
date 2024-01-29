@@ -43,6 +43,8 @@
 		05466B0B2AEEA3F7005CC176 /* ArchivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05466B092AEEA3F7005CC176 /* ArchivesView.swift */; };
 		054EBA6E2B1E0613008F248D /* JoinPublicLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */; };
 		054EBA6F2B1E0613008F248D /* JoinPublicLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */; };
+		055444532B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */; };
+		055444542B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */; };
 		05551C262AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
 		05551C272AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
 		05551C292AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */; };
@@ -367,6 +369,7 @@
 		053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteThreadDialog.swift; sourceTree = "<group>"; };
 		05466B092AEEA3F7005CC176 /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
 		054EBA6D2B1E0613008F248D /* JoinPublicLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinPublicLink.swift; sourceTree = "<group>"; };
+		055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadTabDetailStickyHeaderSection.swift; sourceTree = "<group>"; };
 		05551C252AF4C631000F98B6 /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
 		05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainerButton.swift; sourceTree = "<group>"; };
 		05593BA42AFF560A00316E39 /* ThreadSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSearchView.swift; sourceTree = "<group>"; };
@@ -860,6 +863,7 @@
 				0570CBB32AAEE98D001832E9 /* ConversationDetailTabViews.swift */,
 				05E869C52AEF883000F6B200 /* DetailLoading.swift */,
 				052191552B2F262300CC99D1 /* MutualThreadRow.swift */,
+				055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */,
 			);
 			path = TabViews;
 			sourceTree = "<group>";
@@ -1226,6 +1230,7 @@
 				0594FE602B0386580031AADF /* GroupParticipantNameView.swift in Sources */,
 				0570CC572AAEE98F001832E9 /* MusicView.swift in Sources */,
 				05A0CD712B19314100F13EE5 /* DeleteContactView.swift in Sources */,
+				055444532B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */,
 				050B291A2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CBFF2AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
 				05C27F9C2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */,
@@ -1380,6 +1385,7 @@
 				0594FE612B0386580031AADF /* GroupParticipantNameView.swift in Sources */,
 				0570CC582AAEE98F001832E9 /* MusicView.swift in Sources */,
 				05A0CD722B19314100F13EE5 /* DeleteContactView.swift in Sources */,
+				055444542B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */,
 				050B291B2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CC002AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
 				05C27F9D2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */,

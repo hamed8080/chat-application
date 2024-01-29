@@ -18,12 +18,13 @@ struct MemberView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
-        ParticipantSearchView()
-        AddParticipantButton(conversation: viewModel.thread)
-            .listRowSeparatorTint(.gray.opacity(0.2))
-            .listRowBackground(Color.App.bgPrimary)
-        StickyHeaderSection(header: "", height: 10)
         LazyVStack(spacing: 0) {
+            ParticipantSearchView()
+            AddParticipantButton(conversation: viewModel.thread)
+                .listRowSeparatorTint(.gray.opacity(0.2))
+                .listRowBackground(Color.App.bgPrimary)
+            StickyHeaderSection(header: "", height: 10)
+
             if viewModel.searchedParticipants.count > 0 || !viewModel.searchText.isEmpty {
                 StickyHeaderSection(header: "Memebers.searchedMembers")
                 ForEach(viewModel.searchedParticipants) { participant in
@@ -35,7 +36,6 @@ struct MemberView: View {
                 }
             }
         }
-        .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.participants.count)
         .animation(.easeInOut, value: viewModel.searchedParticipants.count)
         .animation(.easeInOut, value: viewModel.searchText)

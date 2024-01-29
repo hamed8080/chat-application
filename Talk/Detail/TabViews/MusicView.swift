@@ -21,15 +21,17 @@ struct MusicView: View {
     }
 
     var body: some View {
-        StickyHeaderSection(header: "", height:  4)
-            .onAppear {
-                if viewModel.messages.count == 0 {
-                    viewModel.loadMore()
+        VStack {
+            ThreadTabDetailStickyHeaderSection(header: "", height:  4)
+                .onAppear {
+                    if viewModel.messages.count == 0 {
+                        viewModel.loadMore()
+                    }
                 }
-            }
-        MessageListMusicView()
-            .padding(.top, 8)
-            .environmentObject(viewModel)
+            MessageListMusicView()
+                .padding(.top, 8)
+                .environmentObject(viewModel)
+        }
     }
 }
 

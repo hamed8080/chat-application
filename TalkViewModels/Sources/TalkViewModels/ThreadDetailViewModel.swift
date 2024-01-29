@@ -28,7 +28,6 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     public weak var thread: Conversation?
     public weak var threadVM: ThreadViewModel?
     public var searchText: String = ""
-    @Published public var isInEditMode = false
     @Published public var dismiss = false
     @Published public var isLoading = false
     public var isGroup: Bool { thread?.group == true }
@@ -45,7 +44,7 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         clear()
         self.thread = thread
         self.threadVM = threadVM
-        let threadP2PParticipant = AppState.shared.appStateNavigationModel.participantToCreate
+        let threadP2PParticipant = AppState.shared.appStateNavigationModel.userToCreateThread
         if let participant = participant ?? threadP2PParticipant {
             self.participantDetailViewModel = ParticipantDetailViewModel(participant: participant)
         } else if thread?.group == false, let partner = threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id}) {
@@ -58,6 +57,8 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
             }
             .store(in: &cancelable)
         participantDetailViewModel?.objectWillChange.sink { [weak self] _ in
+            self?.updateThreadTitle()
+            /// We have to update the ui all the time and keep it in sync with the ParticipantDetailViewModel.
             self?.animateObjectWillChange()
         }
         .store(in: &cancelable)
@@ -77,6 +78,14 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
             onUpdateThreadInfo(response)
         default:
             break
+        }
+    }
+
+    private func updateThreadTitle() {
+        /// Update thread title inside the thread if we don't have any messages with the partner yet or it's p2p thread so the title of the thread is equal to contactName
+        if thread?.group == false || thread?.id ?? 0 == LocalId.emptyThread.rawValue, let contactName = participantDetailViewModel?.participant.contactName {
+            thread?.title = contactName
+            threadVM?.animateObjectWillChange()
         }
     }
 
@@ -143,7 +152,6 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         thread = nil
         threadVM = nil
         searchText = ""
-        isInEditMode = false
         dismiss = false
         isLoading = false
         participantDetailViewModel = nil

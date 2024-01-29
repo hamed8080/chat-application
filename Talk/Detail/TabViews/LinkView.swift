@@ -20,15 +20,17 @@ struct LinkView: View {
     }
 
     var body: some View {
-        StickyHeaderSection(header: "", height:  4)
-            .onAppear {
-                if viewModel.messages.count == 0 {
-                    viewModel.loadMore()
+        LazyVStack {
+            ThreadTabDetailStickyHeaderSection(header: "", height:  4)
+                .onAppear {
+                    if viewModel.messages.count == 0 {
+                        viewModel.loadMore()
+                    }
                 }
-            }
-        MessageListLinkView()
-            .padding(.top, 8)
-            .environmentObject(viewModel)
+            MessageListLinkView()
+                .padding(.top, 8)
+                .environmentObject(viewModel)
+        }
     }
 }
 

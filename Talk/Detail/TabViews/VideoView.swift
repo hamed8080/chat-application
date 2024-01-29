@@ -23,15 +23,17 @@ struct VideoView: View {
     }
 
     var body: some View {
-        StickyHeaderSection(header: "", height:  4)
-            .onAppear {
-                if viewModel.messages.count == 0 {
-                    viewModel.loadMore()
+        LazyVStack {
+            ThreadTabDetailStickyHeaderSection(header: "", height:  4)
+                .onAppear {
+                    if viewModel.messages.count == 0 {
+                        viewModel.loadMore()
+                    }
                 }
-            }
-        MessageListVideoView()
-            .padding(.top, 8)
-            .environmentObject(viewModel)
+            MessageListVideoView()
+                .padding(.top, 8)
+                .environmentObject(viewModel)
+        }
     }
 }
 

@@ -13,11 +13,13 @@ struct MutualThreadsView: View {
     @EnvironmentObject var viewModel: ParticipantDetailViewModel
 
     var body: some View {
-        StickyHeaderSection(header: "", height:  4)
-        if !viewModel.mutualThreads.isEmpty {
-            ForEach(viewModel.mutualThreads) { thread in
-                MutualThreadRow(thread: thread)
-                    .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 0))
+        LazyVStack {
+            ThreadTabDetailStickyHeaderSection(header: "", height:  4)
+            if !viewModel.mutualThreads.isEmpty {
+                ForEach(viewModel.mutualThreads) { thread in
+                    MutualThreadRow(thread: thread)
+                        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 0))
+                }
             }
         }
     }
