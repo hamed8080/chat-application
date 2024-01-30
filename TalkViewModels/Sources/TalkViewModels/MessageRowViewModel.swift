@@ -457,7 +457,11 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func calculateFileName() -> String? {
-       return fileMetaData?.file?.name ?? message.uploadFileName
+        let fileName = fileMetaData?.file?.name
+        if fileName == "" || fileName == "blob", let originalName = fileMetaData?.file?.originalName {
+            return originalName
+        }
+        return fileName ?? message.uploadFileName
     }
 
     private func calculateAddOrRemoveParticipantRow() -> AttributedString? {
