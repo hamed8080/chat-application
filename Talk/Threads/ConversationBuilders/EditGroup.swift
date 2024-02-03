@@ -165,8 +165,10 @@ struct EditGroup: View {
         .safeAreaInset(edge: .top, spacing: 0) {
             toolbarView
         }
-        .onReceive(viewModel.$dismiss) { newValue in
+        .onChange(of: viewModel.dismiss) { newValue in
             if newValue == true {
+                /// Removing this line lead to after user clicks on the submit edit and then in edit thread we click again on the pencil button it will dismiss again.
+                viewModel.dismiss = false
                 dismiss()
             }
         }

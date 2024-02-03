@@ -35,7 +35,7 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
     @Published public var isPublic = false
     @Published public var editTitle: String = ""
     @Published public var threadDescription: String = ""
-    @Published public var dismiss: Bool = false
+    public var dismiss: Bool = false
     public var thread: Conversation { threadVM?.thread ?? .init() }
 
     public init(threadVM: ThreadViewModel?) {

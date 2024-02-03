@@ -33,10 +33,7 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     public var isGroup: Bool { thread?.group == true }
     public var canShowEditConversationButton: Bool { thread?.group == true && thread?.admin == true && thread?.type != .selfThread }
     public var participantDetailViewModel: ParticipantDetailViewModel?
-    public lazy var editConversationViewModel: EditConversationViewModel? = {
-        let vm = EditConversationViewModel(threadVM: threadVM)
-        return vm
-    }()
+    public var editConversationViewModel: EditConversationViewModel?
 
     public init() {}
 
@@ -49,6 +46,9 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
             self.participantDetailViewModel = ParticipantDetailViewModel(participant: participant)
         } else if thread?.group == false, let partner = threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id}) {
             self.participantDetailViewModel = ParticipantDetailViewModel(participant: partner)
+        }
+        if let threadVM = threadVM {
+            editConversationViewModel = EditConversationViewModel(threadVM: threadVM)
         }
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
