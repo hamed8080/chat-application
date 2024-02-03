@@ -644,7 +644,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return sections.flatMap{$0.vms}.first(where: { $0.message.uniqueId == uniqueId })
     }
 
-    func moveToMessageTimeOnOpenConversation() {
+    public func moveToMessageTimeOnOpenConversation() {
         if let moveToMessageId = AppState.shared.appStateNavigationModel.moveToMessageId, let moveToMessageTime = AppState.shared.appStateNavigationModel.moveToMessageTime {
             moveToTime(moveToMessageTime, moveToMessageId, highlight: true)
             AppState.shared.appStateNavigationModel = .init()
