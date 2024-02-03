@@ -13,7 +13,6 @@ import TalkViewModels
 struct MessageTextView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
-    private var threadVM: ThreadViewModel? { viewModel.threadVM }
 
     var body: some View {
         // TODO: TEXT must be alignment and image must be fit

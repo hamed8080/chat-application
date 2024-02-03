@@ -38,8 +38,9 @@ public struct ConnectionStatusToolbar: View {
                         }
                     }
                 ThreeDotAnimation()
-                    .frame(width: 26)
+                    .frame(width: 26, height: 12)
             }
+            .transition(.opacity)
         } else {
             EmptyView()
                 .hidden()
@@ -47,6 +48,7 @@ public struct ConnectionStatusToolbar: View {
                 .onReceive(appstate.$connectionStatus) { newSate in
                     self.connectionStatus = newSate
                 }
+                .transition(.opacity)
         }
     }
 }

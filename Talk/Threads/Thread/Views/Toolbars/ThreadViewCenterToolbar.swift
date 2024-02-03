@@ -24,7 +24,7 @@ struct ThreadViewCenterToolbar: View {
     private var partner: Participant? { thread.participants?.first(where: {$0.id == thread.partner }) }
 
     var body: some View {
-        VStack(alignment: .center) {
+        VStack(alignment: .center, spacing: appState.connectionStatus == .connected ? 4 : 0) {
             Button {
                 appState.objectsContainer.navVM.appendThreadDetail(threadViewModel: viewModel)
             } label: {
@@ -49,6 +49,9 @@ struct ThreadViewCenterToolbar: View {
                 P2PThreadLastSeenView(thread: thread)
             }
         }
+        .animation(.easeInOut, value: appState.connectionStatus == .connected)
+        .animation(.easeInOut, value: title)
+        .animation(.easeInOut, value: viewModel.signalMessageText != nil)
         .onChange(of: viewModel.thread.computedTitle) { newValue in
             title = newValue
         }
