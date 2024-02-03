@@ -57,7 +57,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
                 self?.onThreadEvent(value)
             }
             .store(in: &cancelable)
-        NotificationCenter.connect.publisher(for: .contact)
+        NotificationCenter.contact.publisher(for: .contact)
             .compactMap { $0.object as? ContactEventTypes }
             .sink { [weak self] value in
                 self?.onContactEvent(value)

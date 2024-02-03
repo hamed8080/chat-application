@@ -71,7 +71,7 @@ public class ContactsViewModel: ObservableObject {
                 self?.searchContacts(searchText)
             }
             .store(in: &canceableSet)
-        NotificationCenter.connect.publisher(for: .contact)
+        NotificationCenter.contact.publisher(for: .contact)
             .compactMap { $0.object as? ContactEventTypes }
             .sink{ [weak self] event in
                 self?.onContactEvent(event)
@@ -259,7 +259,7 @@ public class ContactsViewModel: ObservableObject {
     }
 
     public func onSearchContacts(_ response: ChatResponse<[Contact]>) {
-        if response.pop(prepend: "SEARCH-CONTACTS\(isBuilder ? "-Builder" : "")") != nil {
+        if !response.cache, response.pop(prepend: "SEARCH-CONTACTS\(isBuilder ? "-Builder" : "")") != nil {
             isLoading = false
             searchedContacts = .init(response.result ?? [])
         }

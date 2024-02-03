@@ -11,18 +11,17 @@ import TalkUI
 
 struct ThreadSearchView: View {
     @EnvironmentObject var viewModel: ThreadsSearchViewModel
-    @EnvironmentObject var contactsVM: ContactsViewModel
 
     var body: some View {
         if viewModel.searchText.count > 0 {
             List {
-                if contactsVM.searchedContacts.count > 0 {
+                if viewModel.searchedContacts.count > 0 {
                     StickyHeaderSection(header: "Contacts.searched", height: 4)
                         .listRowBackground(Color.clear)
                         .listRowInsets(.zero)
                 }
 
-                ForEach(contactsVM.searchedContacts.prefix(5)) { contact in
+                ForEach(viewModel.searchedContacts.prefix(5)) { contact in
                     ContactRow(isInSelectionMode: .constant(false), contact: contact)
                         .listRowBackground(Color.App.bgPrimary)
                         .onTapGesture {
@@ -53,7 +52,8 @@ struct ThreadSearchView: View {
             .listStyle(.plain)
             .background(MixMaterialBackground())
             .environment(\.defaultMinListRowHeight, 24)
-            .animation(.easeInOut, value: AppState.shared.objectsContainer.contactsVM.searchedContacts.count)           
+            .animation(.easeInOut, value: viewModel.searchedContacts.count)
+            .animation(.easeInOut, value: viewModel.searchedConversations.count)
         }
     }
 }

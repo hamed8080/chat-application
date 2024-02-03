@@ -74,7 +74,7 @@ public extension NotificationCenter {
         case let .bot(botEventTypes):
             Self.bot.post(name: .bot, object: botEventTypes)
         case let .contact(contactEventTypes):
-            Self.connect.post(name: .contact, object: contactEventTypes)
+            Self.contact.post(name: .contact, object: contactEventTypes)
         case let .download(downloadEventTypes):
             Self.download.post(name: .download, object: downloadEventTypes)
         case let .upload(uploadEventTypes):
