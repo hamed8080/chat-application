@@ -275,8 +275,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
             let threadViewModel = threadViewModel
         else { return }
         let time = (tuples.message.time ?? 0) + 1
-        let unreadMessage = UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: time)
+        let unreadMessage = UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: time, uniqueId: "\(LocalId.unreadMessageBanner.rawValue)")
         sections[tuples.sectionIndex].vms.append(.init(message: unreadMessage, viewModel: threadViewModel))
+    }
+
+    public func removeOldBanner() {
+        if let indices = indicesByMessageUniqueId("\(LocalId.unreadMessageBanner.rawValue)") {
+            sections[indices.sectionIndex].vms.remove(at: indices.messageIndex)
+        }
     }
 
     /// Scenario 2
@@ -332,6 +338,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             guard let self = self else { return }
             /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
             if response.result?.count ?? 0 > 0 {
+                removeOldBanner()
                 appenedUnreadMessagesBannerIfNeeed()
                 /// 3- Append and sort and calculate the array but not call to update the view.
                 await appendMessagesAndSort(messages)
