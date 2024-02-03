@@ -185,7 +185,7 @@ struct EditContactInParticipantDetailView: View {
         .animation(.easeInOut, value: enableButton)
         .animation(.easeInOut, value: focusState)
         .font(.iransansBody)
-        .onReceive(viewModel.$successEdited) { newValue in
+        .onChange(of: viewModel.successEdited) { newValue in
             if newValue == true {
                 withAnimation {
                     dismiss()
