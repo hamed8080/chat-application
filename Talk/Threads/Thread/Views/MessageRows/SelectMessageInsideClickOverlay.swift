@@ -13,7 +13,7 @@ struct SelectMessageInsideClickOverlay: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if viewModel.threadVM?.isInEditMode == true {
+        if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true {
             Rectangle()
                 .fill(Color.clear)
                 .contentShape(Rectangle())

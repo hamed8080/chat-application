@@ -22,7 +22,7 @@ struct SendContainer: View {
         ZStack(alignment: .bottom) {           
             VStack(spacing: 0) {
                 VStack(spacing: 0) {
-                    if viewModel.isInEditMode {
+                    if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true {
                         SelectionView(threadVM: threadVM)
                             .environmentObject(threadVM.selectedMessagesViewModel)
                     } else if viewModel.canShowMute {
@@ -50,13 +50,6 @@ struct SendContainer: View {
                 .onReceive(viewModel.$editMessage) { editMessage in
                     if let editMessage {
                         viewModel.textMessage = editMessage.message ?? ""
-                    }
-                }
-                .onReceive(threadVM.$isInEditMode) { newValue in
-                    if newValue != viewModel.isInEditMode {
-                        withAnimation {
-                            viewModel.isInEditMode = newValue
-                        }
                     }
                 }
             }

@@ -86,7 +86,6 @@ struct ThreadView_Previews: PreviewProvider {
                 //                vm.toggleRecording()
                 //                vm.setReplyMessage(MockData.message)
                 //                vm.setForwardMessage(MockData.message)
-                vm.isInEditMode = false
             }
     }
 }

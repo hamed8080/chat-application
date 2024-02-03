@@ -13,6 +13,7 @@ import ChatDTO
 import TalkModels
 
 public final class ThreadSelectedMessagesViewModel: ObservableObject {
+    @Published public var isInSelectMode: Bool = false
     public weak var threadVM: ThreadViewModel?
     public var selectedMessages: [MessageRowViewModel] { threadVM?.historyVM.sections.flatMap{$0.vms}.filter({$0.isSelected}) ?? []}
 
@@ -25,6 +26,12 @@ public final class ThreadSelectedMessagesViewModel: ObservableObject {
             viewModel.isSelected = false
             viewModel.animateObjectWillChange()
         }
+        setInSelectionMode(isInSelectionMode: false)
         animateObjectWillChange()
+    }
+
+    public func setInSelectionMode(isInSelectionMode: Bool) {
+        isInSelectMode = isInSelectionMode
+        threadVM?.sendContainerViewModel.animateObjectWillChange()
     }
 }

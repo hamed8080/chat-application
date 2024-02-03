@@ -40,7 +40,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var thread: Conversation
     public var centerLoading = false
     public var replyMessage: Message?
-    @Published public var isInEditMode: Bool = false
     @Published public var dismiss = false
     public var sheetType: ThreadSheetType?
     public var exportMessagesViewModel: ExportMessagesViewModel = .init()
@@ -101,7 +100,9 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         setAppSettingsModel()
         selectedMessagesViewModel.threadVM = self
         sendContainerViewModel.threadVM = self
+        uploadMessagesViewModel.threadVM = self
         exportMessagesViewModel.thread = thread
+        historyVM.setupNotificationObservers()
     }
 
     private func setupNotificationObservers() {
@@ -139,18 +140,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
         if status == .connected && !isSimulatedThared {
             unreadMentionsViewModel.fetchAllUnreadMentions()
-        }
-    }
-
-    public func onNewMessage(_ response: ChatResponse<Message>) {
-        if threadId == response.subjectId, let message = response.result {
-            Task { [weak self] in
-                guard let self = self else { return }
-                await historyVM.appendMessagesAndSort([message])
-                await historyVM.asyncAnimateObjectWillChange()
-                await scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
-                historyVM.setSeenForAllOlderMessages(newMessage: message)
-            }
         }
     }
 

@@ -196,6 +196,7 @@ struct EditCreatedConversationDetail: View {
         } label: {
             imagePickerButtonView
         }
+        .buttonStyle(.borderless)
     }
 
     private var imagePickerButtonView: some View {

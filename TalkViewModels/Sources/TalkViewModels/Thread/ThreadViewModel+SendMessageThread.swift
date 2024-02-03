@@ -32,7 +32,10 @@ extension ThreadViewModel {
         } else {
             sendNormalMessage(textMessage)
         }
-        isInEditMode = false // close edit mode in ui
+
+        if sendContainerViewModel.isInEditMode {
+            sendContainerViewModel.isInEditMode = false // close edit mode in ui
+        }
         sendSeenForAllUnreadMessages()
     }
 
@@ -194,7 +197,7 @@ extension ThreadViewModel {
     }
 
     public func openDestinationConversationToForward(_ destinationConversation: Conversation?, _ contact: Contact?) {
-        isInEditMode = false /// Close edit mode in ui
+        sendContainerViewModel.isInEditMode = false /// Close edit mode in ui
         sheetType = nil
         animateObjectWillChange()
         let messages = selectedMessagesViewModel.selectedMessages.compactMap{$0.message}
@@ -314,7 +317,7 @@ extension ThreadViewModel {
                                      messageId: messageId,
                                      textMessage: textMessage)
         sendContainerViewModel.editMessage = nil
-        isInEditMode = false
+        sendContainerViewModel.isInEditMode = false
         ChatManager.activeInstance?.message.edit(req)
     }
 

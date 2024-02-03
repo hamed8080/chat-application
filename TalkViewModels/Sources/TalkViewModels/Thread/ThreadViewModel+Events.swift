@@ -47,8 +47,6 @@ extension ThreadViewModel {
 
     public func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
-        case .new(let response):
-            onNewMessage(response)
         case .edited(let response):
             onEditedMessage(response)
         default:

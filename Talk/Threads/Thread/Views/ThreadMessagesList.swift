@@ -152,7 +152,6 @@ struct ThreadHistoryList: View {
                     SectionView(section: section)
                 }
             }
-            UploadMessagesLoop(historyVM: viewModel)
             //                UnsentMessagesLoop(historyVM: viewModel)
             ListLoadingView(isLoading: $viewModel.bottomLoading)
                 .id(-2)
@@ -260,22 +259,6 @@ struct MessageList: View {
                     }
                 }
         }
-    }
-}
-
-struct UploadMessagesLoop: View {
-    let historyVM: ThreadHistoryViewModel
-    @EnvironmentObject var viewModel: ThreadUploadMessagesViewModel
-
-    var body: some View {
-        /// We must use uniqueId with messageId to force swiftUI to delete the row and make a new one after uploading successfully.
-        ForEach(viewModel.uploadMessages, id: \.uniqueId) { uploadFileMessage in
-            if let messageRowVM = historyVM.messageViewModel(for: uploadFileMessage) {
-                MessageRowFactory(viewModel: messageRowVM)
-                    .id("\(uploadFileMessage.uniqueId ?? "")\(uploadFileMessage.id ?? 0)")
-            }
-        }
-        .animation(.easeInOut, value: viewModel.uploadMessages.count)
     }
 }
 

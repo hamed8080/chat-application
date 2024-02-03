@@ -39,14 +39,10 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public init(message: Message) {
         self.message = message
         setObservers()
-        Task { [weak self] in
-            guard let self = self else { return }
-            await setup()
-        }
     }
 
     /// It should be on the background thread because it decodes metadata in message.url.
-    private func setup() async {
+    public func setup() async {
         if let url = url {
             isInCache = chat?.file.isFileExist(url) ?? false || chat?.file.isFileExistInGroup(url) ?? false
         }

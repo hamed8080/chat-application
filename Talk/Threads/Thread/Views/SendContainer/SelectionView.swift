@@ -14,7 +14,6 @@ import TalkModels
 struct SelectionView: View {
     @EnvironmentObject var selectedMessagesViewModel: ThreadSelectedMessagesViewModel
     let threadVM: ThreadViewModel
-    var viewModel: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     private var selectedCount: Int { selectedMessagesViewModel.selectedMessages.count }
 
@@ -59,10 +58,8 @@ struct SelectionView: View {
 
             CloseButton {
                 selectedMessagesViewModel.clearSelection()
-                threadVM.isInEditMode = false
-                viewModel.clearSelection()
-                viewModel.animateObjectWillChange()
-            }            
+                selectedMessagesViewModel.animateObjectWillChange()
+            }
         }
     }
 }

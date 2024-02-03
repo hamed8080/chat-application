@@ -94,7 +94,6 @@ struct NavigationTypeView: View {
                     .environmentObject(viewModel.searchedMessagesViewModel)
                     .environmentObject(viewModel.scrollVM)
                     .environmentObject(viewModel.historyVM)
-                    .environmentObject(viewModel.uploadMessagesViewModel)
                     .environmentObject(viewModel.unssetMessagesViewModel)
                     .environmentObject(viewModel.threadPinMessageViewModel)
             }

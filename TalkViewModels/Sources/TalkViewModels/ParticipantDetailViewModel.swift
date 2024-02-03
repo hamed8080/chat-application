@@ -36,7 +36,6 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
     public var mutualThreads: ContiguousArray<Conversation> = []
     public var partnerContact: Contact?
     public var searchText: String = ""
-    @Published public var isInEditMode = false
     @Published public var dismiss = false
     @Published public var isLoading = false
     @Published public var successEdited: Bool = false

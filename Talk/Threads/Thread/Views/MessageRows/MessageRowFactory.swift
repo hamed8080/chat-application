@@ -53,7 +53,7 @@ struct TextMessageSelectedBackground: View {
         color
             .contentShape(Rectangle())
             .onTapGesture {
-                if viewModel.threadVM?.isInEditMode == true {
+                if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true {
                     viewModel.isSelected.toggle()
                     viewModel.threadVM?.selectedMessagesViewModel.animateObjectWillChange()
                     viewModel.animateObjectWillChange()

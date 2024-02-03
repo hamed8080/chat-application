@@ -71,7 +71,7 @@ public struct DeleteMessageDialog: View {
         if deleteForMe {
             Button {
                 threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
-                threadVM.isInEditMode = false
+                threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
                 appOverlayVM.dialogView = nil
                 viewModel.animateObjectWillChange()
             } label: {
@@ -84,7 +84,7 @@ public struct DeleteMessageDialog: View {
         if deleteForOthers, !hasPinnedMessage, pastDeleteTimeForOthers.isEmpty {
             Button {
                 threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
-                threadVM.isInEditMode = false
+                threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
                 appOverlayVM.dialogView = nil
                 viewModel.animateObjectWillChange()
             } label: {
@@ -101,7 +101,7 @@ public struct DeleteMessageDialog: View {
                 if notPastDeleteTime.count > 0 {
                     threadVM.historyVM.deleteMessages(notPastDeleteTime, forAll: true)
                 }
-                threadVM.isInEditMode = false
+                threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
                 appOverlayVM.dialogView = nil
                 viewModel.animateObjectWillChange()
             } label: {
@@ -114,7 +114,7 @@ public struct DeleteMessageDialog: View {
 
         Button {
             viewModel.clearSelection()
-            threadVM.isInEditMode = false
+            threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
             appOverlayVM.dialogView = nil
             viewModel.animateObjectWillChange()
         } label: {

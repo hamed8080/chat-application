@@ -41,6 +41,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.vms.last?.id != thread.lastMessageVO?.id && hasNextBottom }
     private var topSliceId: Int = 0
     private var bottomSliceId: Int = 0
+    @MainActor
     public var lastTopVisibleMessage: Message?
     public var isFetchedServerFirstResponse: Bool = false
     private var cancelable: Set<AnyCancellable> = []
@@ -55,11 +56,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return emptyThread || noMessage
     }
 
-    public init() {
-        setupNotificationObservers()
-    }
+    public init() {}
 
-    private func setupNotificationObservers() {
+    public func setupNotificationObservers() {
         AppState.shared.$connectionStatus
             .sink { [weak self] status in
                 self?.onConnectionStatusChanged(status)
@@ -76,6 +75,40 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 if let key = newValue.object as? String {
                     self?.onCancelTimer(key: key)
                 }
+            }
+            .store(in: &cancelable)
+        NotificationCenter.windowMode.publisher(for: .windowMode)
+            .sink { [weak self] newValue in
+                self?.updateAllRows()
+            }
+            .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"))
+            .compactMap {$0.object as? MessageResponse}
+            .sink { [weak self] newValue in
+                self?.updateOlderSeensLocally()
+            }
+            .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: Notification.Name("HIGHLIGHT"))
+            .compactMap {$0.object as? Int}
+            .sink { [weak self] newValue in
+                self?.setHighlight(messageId: newValue)
+            }
+            .store(in: &cancelable)
+        threadViewModel?.selectedMessagesViewModel.$isInSelectMode
+            .sink { [weak self] newValue in
+                self?.setRowsIsInSelectMode(newValue: newValue)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.upload.publisher(for: .upload)
+            .sink { [weak self] notification in
+                self?.onUploadEvents(notification)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.reactionMessageUpdated.publisher(for: .reactionMessageUpdated)
+            .sink { [weak self] notification in
+                self?.onReactionEvent(notification)
             }
             .store(in: &cancelable)
     }
@@ -136,9 +169,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 6- To update isLoading fields to hide the loading at the top.
             await asyncAnimateObjectWillChange()
 
-            if let uniqueId = lastTopVisibleMessage?.uniqueId, let id = lastTopVisibleMessage?.id {
+            if let uniqueId = await lastTopVisibleMessage?.uniqueId, let id = await lastTopVisibleMessage?.id {
                 await threadViewModel?.scrollVM.showHighlighted(uniqueId, id, highlight: false, anchor: .top)
-                lastTopVisibleMessage = nil
+                await MainActor.run { [weak self] in
+                    self?.lastTopVisibleMessage = nil
+                }
             }
         }
     }
@@ -533,7 +568,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         guard messages.count > 0 else { return }
         var viewModels: [MessageRowViewModel?] = []
         for message in messages {
-            let vm = await insertOrUpdate(message)
+            let vm = insertOrUpdate(message)
             viewModels.append(vm)
         }
         sort()
@@ -544,9 +579,10 @@ public final class ThreadHistoryViewModel: ObservableObject {
         topSliceId = flatMap.prefix(thresholdToLoad).compactMap{$0.id}.last ?? 0
         bottomSliceId = flatMap.suffix(thresholdToLoad).compactMap{$0.id}.first ?? 0
         logger.debug("End of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
+        fetchReactions(messages: messages)
     }
 
-    func insertOrUpdate(_ message: Message) async -> MessageRowViewModel? {
+    func insertOrUpdate(_ message: Message) -> MessageRowViewModel? {
         let indices = findIncicesBy(uniqueId: message.uniqueId ?? "", message.id ?? -1)
         if let indices = indices {
             let vm = sections[indices.sectionIndex].vms[indices.messageIndex]
@@ -596,6 +632,16 @@ public final class ThreadHistoryViewModel: ObservableObject {
         } else {
             return nil
         }
+    }
+
+    @discardableResult
+    public func messageViewModel(for messageId: Int) -> MessageRowViewModel? {
+        return sections.flatMap{$0.vms}.first(where: { $0.message.id == messageId })
+    }
+
+    @discardableResult
+    public func messageViewModel(for uniqueId: String) -> MessageRowViewModel? {
+        return sections.flatMap{$0.vms}.first(where: { $0.message.uniqueId == uniqueId })
     }
 
     func moveToMessageTimeOnOpenConversation() {
@@ -667,13 +713,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onSent(_ response: ChatResponse<MessageResponse>) {
-        guard
-            threadId == response.result?.threadId,
-            let indices = indicesByMessageUniqueId(response.uniqueId ?? "")
-        else { return }
-        if !replaceUploadMessage(response) {
-            sections[indices.sectionIndex].vms[indices.messageIndex].message.id = response.result?.messageId
-            sections[indices.sectionIndex].vms[indices.messageIndex].message.time = response.result?.messageTime
+        guard threadId == response.result?.threadId else { return }
+        if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
+            vm.setSent(messageTime: response.result?.messageTime)
         }
     }
 
@@ -693,19 +735,17 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onDeliver(_ response: ChatResponse<MessageResponse>) {
-        guard threadId == response.result?.threadId,
-              let indices = findIncicesBy(uniqueId: response.uniqueId ?? "", response.result?.messageId ?? 0)
-        else { return }
-        sections[indices.sectionIndex].vms[indices.messageIndex].message.delivered = true
+        guard threadId == response.result?.threadId else { return }
+        if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
+            vm.setDelivered()
+        }
     }
 
     public func onSeen(_ response: ChatResponse<MessageResponse>) {
-        guard threadId == response.result?.threadId,
-              let indices = findIncicesBy(uniqueId: response.uniqueId ?? "", response.result?.messageId ?? 0),
-              sections[indices.sectionIndex].vms[indices.messageIndex].message.seen == nil
-        else { return }
-        sections[indices.sectionIndex].vms[indices.messageIndex].message.delivered = true
-        sections[indices.sectionIndex].vms[indices.messageIndex].message.seen = true
+        guard threadId == response.result?.threadId, let messageId = response.result?.messageId else { return }
+        if let vm = messageViewModel(for: messageId) {
+            vm.setSeen()
+        }
         setSeenForOlderMessages(messageId: response.result?.messageId)
     }
 
@@ -755,9 +795,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 /// For the sixth scenario.
                 onMoveToTime(response)
                 onMoveFromTime(response)
-                if let messageIds = response.result?.filter({$0.reactionableType}).compactMap({$0.id}), threadViewModel?.searchedMessagesViewModel.isInSearchMode == false {
-                    ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
-                }
                 logger.debug("End on history:\(Date().millisecondsSince1970)")
             }
             //            if response.cache == true {
@@ -766,6 +803,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
             //                animateObjectWillChange()
             //            }
             break
+        case .new(let response):
+            onNewMessage(response)
         case .delivered(let response):
             onDeliver(response)
         case .seen(let response):
@@ -778,26 +817,40 @@ public final class ThreadHistoryViewModel: ObservableObject {
             onPinMessage(response)
         case .unpin(let response):
             onUNPinMessage(response)
+        case .edited(let response):
+            onEdited(response)
         default:
             break
         }
     }
 
+    public func onNewMessage(_ response: ChatResponse<Message>) {
+        if threadId == response.subjectId, let message = response.result {
+            Task { [weak self] in                
+                guard let self = self else { return }
+                await appendMessagesAndSort([message])
+                await asyncAnimateObjectWillChange()
+                await threadViewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
+                setSeenForAllOlderMessages(newMessage: message)
+            }
+        }
+    }
+
+    private func onEdited(_ response: ChatResponse<Message>) {
+        if let message = response.result, let vm = messageViewModel(for: message.id ?? -1) {
+            vm.setEdited(message)
+        }
+    }
+
     func onPinMessage(_ response: ChatResponse<PinMessage>) {
-        if let indices = message(for: response.result?.id) {
-            sections[indices.sectionIndex].vms[indices.messageIndex].message.pinned = true
+        if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
+            vm.pinMessage(time: response.result?.time)
         }
     }
 
     func onUNPinMessage(_ response: ChatResponse<PinMessage>) {
-        if let indices = message(for: response.result?.id) {
-            sections[indices.sectionIndex].vms[indices.messageIndex].message.pinned = false
-        }
-    }
-
-    public func cancelAllObservers() {
-        cancelable.forEach { cancelable in
-            cancelable.cancel()
+        if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
+            vm.unpinMessage()
         }
     }
 
@@ -811,6 +864,88 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 vm.message.seen = true
                 vm.animateObjectWillChange()
             }
+        }
+    }
+
+    public func updateAllRows() {
+        sections.forEach { section in
+            section.vms.forEach { vm in
+                Task {
+                    await vm.recalculateWithAnimation()
+                }
+            }
+        }
+    }
+
+    public func updateOlderSeensLocally() {
+        sections.forEach { section in
+            section.vms.forEach { vm in
+                if vm.message.seen == false || vm.message.seen == nil {
+                    vm.message.delivered = true
+                    vm.message.seen = true
+                    vm.animateObjectWillChange()
+                }
+            }
+        }
+    }
+
+    public func setHighlight(messageId: Int) {
+        if let vm = messageViewModel(for: messageId) {
+            vm.setHighlight()
+        }
+    }
+
+    public func setRowsIsInSelectMode(newValue: Bool) {
+        sections.forEach { section in
+            section.vms.forEach { vm in
+                if newValue != vm.isInSelectMode {
+                    vm.isInSelectMode = newValue
+                    vm.animateObjectWillChange()
+                }
+            }
+        }
+    }
+
+    private func onReactionEvent(_ notification: Notification) {
+        if let messageId = notification.object as? Int, let vm = messageViewModel(for: messageId) {
+            vm.reactionsVM.updateWithDelay()
+        }
+    }
+
+    private func onUploadEvents(_ notification: Notification) {
+        guard let event = notification.object as? UploadEventTypes else { return }
+        switch event {
+        case .canceled(let uniqueId):
+            onUploadCanceled(uniqueId)
+        case .completed(let uniqueId, let fileMetaData, let data, let error):
+            onUploadCompleted(uniqueId, fileMetaData, data, error)
+        default:
+            break
+        }
+    }
+
+    private func onUploadCompleted(_ uniqueId: String?, _ fileMetaData: FileMetaData?, _ data: Data?, _ error: Error?) {
+        if let uniqueId = uniqueId, let vm = messageViewModel(for: uniqueId) {
+            vm.uploadCompleted(uniqueId, fileMetaData, data, error)
+        }
+    }
+
+    private func onUploadCanceled(_ uniqueId: String?) {
+        if let uniqueId = uniqueId {
+            removeByUniqueId(uniqueId)
+        }
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
+
+    private func fetchReactions(messages: [Message]) {
+        if threadViewModel?.searchedMessagesViewModel.isInSearchMode == false {
+            let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
+            ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
         }
     }
 
