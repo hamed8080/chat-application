@@ -20,20 +20,26 @@ struct MessageParticipantsSeen: View {
     var body: some View {
         ScrollView(.vertical) {
             VStack {
-                let me = AppState.shared.user?.id
-                ForEach(viewModel.participants.filter({$0.id != me})) { participant in
-                    MessageSeenParticipantRow(participant: participant)
-                        .onAppear {
-                            if participant == viewModel.participants.last {
-                                viewModel.loadMore()
+                if viewModel.isEmpty {
+                    Text("SeenParticipants.noOneSeenTheMssage")
+                        .font(.iransansBoldSubheadline)
+                        .foregroundColor(Color.App.textPrimary)
+                        .frame(minWidth: 0, maxWidth: .infinity)
+                } else {
+                    ForEach(viewModel.participants) { participant in
+                        MessageSeenParticipantRow(participant: participant)
+                            .onAppear {
+                                if participant == viewModel.participants.last {
+                                    viewModel.loadMore()
+                                }
                             }
-                        }
+                    }
                 }
             }
         }
         .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: viewModel.participants.count)
-        .padding(.horizontal, 6)
+        .padding(.horizontal, viewModel.isEmpty ? 0 : 6)
         .navigationBarBackButtonHidden(true)
         .navigationTitle("SeenParticipants.title")
         .overlay(alignment: .bottom) {

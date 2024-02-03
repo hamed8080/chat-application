@@ -35,14 +35,14 @@ struct ContactRow: View {
                         .lineLimit(1)
                         .font(.iransansBoldBody)
                         .foregroundColor(Color.App.textPrimary)
-                    if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
-                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
-                        let time = String(format: lastVisitedLabel, notSeenDuration)
-                        Text(time)
-                            .padding(.leading, 16)
-                            .font(.iransansBody)
-                            .foregroundColor(Color.App.textSecondary)
-                    }
+//                    if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
+//                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
+//                        let time = String(format: lastVisitedLabel, notSeenDuration)
+//                        Text(time)
+//                            .padding(.leading, 16)
+//                            .font(.iransansBody)
+//                            .foregroundColor(Color.App.textSecondary)
+//                    }
                 }
                 Spacer()
                 if contact.blocked == true {

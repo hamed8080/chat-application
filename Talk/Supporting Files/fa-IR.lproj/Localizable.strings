@@ -375,6 +375,7 @@
 
 /* Message Seen Participants */
 "SeenParticipants.title" = "لیست خواننده ها";
+"SeenParticipants.noOneSeenTheMssage" = "کسی این پیام را نخوانده است.";
 
 /* Message Types */
 "MessageType.text" = "متن";
