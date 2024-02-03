@@ -69,6 +69,7 @@
 "General.copied" = "Copiado al portapapeles";
 "General.copied" = "Kopierat till urklipp.";
 "General.ban" = "The server has banned you for %@ seconds.";
+"General.addText" = "Añadir texto";
 
 /* Pestañas */
 "Tab.chats" = "Chats";

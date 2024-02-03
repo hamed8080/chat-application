@@ -68,6 +68,7 @@
 "General.imageSaved" = "Bild gespeichert.";
 "General.copied" = "In die Zwischenablage kopiert.";
 "General.ban" = "Der Server hat Sie für %@ Sekunden gesperrt.";
+"General.addText" = "Text hinzufügen";
 
 /* Tabs */
 "Tab.chats" = "Chats";

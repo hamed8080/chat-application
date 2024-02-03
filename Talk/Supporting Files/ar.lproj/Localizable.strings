@@ -67,6 +67,7 @@
 "General.imageSaved" = "تم حفظ الصورة.";
 "General.copied" = "تم النسخ إلى الحافظة.";
 "General.ban" = "قام الخادم بحظرك لمدة %@ ثانية.";
+"General.addText" = "أضف نصًا";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";

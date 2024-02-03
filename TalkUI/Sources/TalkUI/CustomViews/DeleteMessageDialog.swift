@@ -58,6 +58,7 @@ public struct DeleteMessageDialog: View {
                     VStack(alignment: .leading, spacing: 12) {
                         buttons
                     }
+                    .padding(.bottom, 4)
                 }
                 Spacer()
             }
@@ -65,18 +66,25 @@ public struct DeleteMessageDialog: View {
         .frame(maxWidth: 320)
         .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
         .background(MixMaterialBackground())
+        .onDisappear {
+            viewModel.clearSelection()
+            threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+            appOverlayVM.dialogView = nil
+            viewModel.animateObjectWillChange()
+        }
     }
 
     @ViewBuilder var buttons: some View {
         if deleteForMe {
+            let isSelfThread = threadVM.thread.type == .selfThread
             Button {
                 threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
                 threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
                 appOverlayVM.dialogView = nil
                 viewModel.animateObjectWillChange()
             } label: {
-                Text("Messages.deleteForMe")
-                    .foregroundStyle(Color.App.accent)
+                Text(isSelfThread ? "General.delete" : "Messages.deleteForMe")
+                    .foregroundStyle(isSelfThread ? Color.App.red : Color.App.accent)
                     .font(.iransansBoldCaption)
             }
         }
@@ -110,17 +118,6 @@ public struct DeleteMessageDialog: View {
                     .multilineTextAlignment(.leading)
                     .font(.iransansBoldCaption)
             }
-        }
-
-        Button {
-            viewModel.clearSelection()
-            threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
-            appOverlayVM.dialogView = nil
-            viewModel.animateObjectWillChange()
-        } label: {
-            Text("General.cancel")
-                .foregroundStyle(Color.App.textPlaceholder)
-                .font(.iransansBoldCaption)
         }
     }
 }

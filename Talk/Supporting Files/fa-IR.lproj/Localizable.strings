@@ -68,6 +68,7 @@
 "General.imageSaved" = "تصویر ذخیره شد.";
 "General.copied" = "کپی شد در کلیپبورد.";
 "General.ban" = "شما توسط سرور به مدت %@ ثانیه بن شدید.";
+"General.addText" = "افزودن متن";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";

@@ -67,6 +67,7 @@
 "General.imageSaved" = "Image saved.";
 "General.copied" = "Copied to clipboard.";
 "General.ban" = "The server has banned you for %@ seconds.";
+"General.addText" = "Add text";
 
 /* Tabs */
 "Tab.chats" = "Chats";

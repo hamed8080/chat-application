@@ -67,6 +67,7 @@
 "General.moveToSettings" = "Gå till inställningar";
 "General.imageSaved" = "Bild sparad.";
 "General.ban" = "Servern har blockerat dig i %@ sekunder.";
+"General.addText" = "Lägg till text";
 
 /* Tabs */
 "Tab.chats" = "Chattar";

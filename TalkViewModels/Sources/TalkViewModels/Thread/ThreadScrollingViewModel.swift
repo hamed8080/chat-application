@@ -71,7 +71,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
     }
 
-    func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) {
+    public func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) {
        task = Task {
             if Task.isCancelled { return }
             await MainActor.run {

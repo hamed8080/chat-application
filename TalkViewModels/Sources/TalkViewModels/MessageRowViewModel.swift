@@ -200,7 +200,10 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let isChannel = thread?.type?.isChannelType == true
         let isGroup = thread?.group == true
         let isAdmin = thread?.admin == true
-        if isMe {
+        let isSelfThread = thread?.type == .selfThread
+        if isSelfThread {
+            return (true, false)
+        } else if isMe {
             return (true, true)
         } else if !isMe && !isGroup {
             return (true, false)

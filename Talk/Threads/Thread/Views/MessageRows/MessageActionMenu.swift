@@ -57,7 +57,8 @@ struct MessageActionMenu: View {
             }
 
             if viewModel.canEdit {
-                ContextMenuButton(title: "General.edit", image: "pencil.circle") {
+                let emptyText = message.message == nil || message.message == ""
+                ContextMenuButton(title: emptyText ? "General.addText" : "General.edit", image: "pencil.circle") {
                     withAnimation(animation(appear: threadVM?.sendContainerViewModel.editMessage != nil)) {
                         threadVM?.sendContainerViewModel.editMessage = message
                         threadVM?.objectWillChange.send()
