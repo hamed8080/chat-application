@@ -135,7 +135,7 @@ public final class AppState: ObservableObject {
         let userId = contact.user?.id ?? contact.user?.coreUserId ?? -1
         appStateNavigationModel.userToCreateThread = .init(contactId: contact.id,
                                                            id: userId,
-                                                           image: contact.image,
+                                                           image: contact.image ?? contact.user?.image,
                                                            name: "\(contact.firstName ?? "") \(contact.lastName ?? "")")
         searchForP2PThread(coreUserId: userId)
     }
