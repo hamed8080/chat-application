@@ -46,6 +46,7 @@ struct ThreadMessagesList: View {
     private var drag: some Gesture {
         DragGesture(minimumDistance: 10, coordinateSpace: .global)
             .onChanged { newValue in
+                viewModel.scrollVM.cancelTask()
                 viewModel.scrollVM.isProgramaticallyScroll = false
                 viewModel.scrollVM.scrollingUP = newValue.translation.height > 10
                 viewModel.scrollVM.animateObjectWillChange()
@@ -152,6 +153,11 @@ struct ThreadHistoryList: View {
                     SectionView(section: section)
                 }
             }
+            SpaceForAttachment()
+                .id(-3)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
             //                UnsentMessagesLoop(historyVM: viewModel)
             ListLoadingView(isLoading: $viewModel.bottomLoading)
                 .id(-2)
@@ -316,6 +322,19 @@ struct KeyboardHeightView: View {
                 viewModel.scrollProxy?.scrollTo(viewModel.threadVM?.thread.lastMessageVO?.uniqueId ?? "", anchor: .bottom)
                 isInAnimating = false
             }
+        }
+    }
+}
+
+/// Pull the view up when there is an attachment over history and prevents it to show the last message.
+struct SpaceForAttachment: View {
+    @EnvironmentObject var viewModel: AttachmentsViewModel
+
+    var body: some View {
+        if viewModel.attachments.count > 0 {
+            Rectangle()
+                .fill(Color.clear)
+                .frame(height: 72)
         }
     }
 }

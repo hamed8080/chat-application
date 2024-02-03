@@ -65,6 +65,7 @@ struct ThreadSheetView: View {
                 viewModel.attachmentsViewModel.addSelectedFile()
                 viewModel.sheetType = nil
                 viewModel.animateObjectWillChange()
+                viewModel.scrollVM.scrollToEmptySpace()
             }
             .onDisappear {
                 closeSheet()
@@ -73,6 +74,7 @@ struct ThreadSheetView: View {
             MapPickerView()
                 .environmentObject(viewModel)
                 .onDisappear {
+                    viewModel.scrollVM.scrollToEmptySpace()
                     closeSheet()
                 }
         case .galleryPicker:
@@ -110,6 +112,7 @@ struct ThreadSheetView: View {
                         }
                     }
                 }
+                viewModel.scrollVM.scrollToEmptySpace()
             }
             .onDisappear {
                 closeSheet()

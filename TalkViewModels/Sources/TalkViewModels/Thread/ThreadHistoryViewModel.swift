@@ -170,7 +170,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             await asyncAnimateObjectWillChange()
 
             if let uniqueId = await lastTopVisibleMessage?.uniqueId, let id = await lastTopVisibleMessage?.id {
-                await threadViewModel?.scrollVM.showHighlighted(uniqueId, id, highlight: false, anchor: .top)
+                threadViewModel?.scrollVM.showHighlighted(uniqueId, id, highlight: false, anchor: .top)
                 await MainActor.run { [weak self] in
                     self?.lastTopVisibleMessage = nil
                 }
@@ -245,7 +245,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
             let lastSeenMessage = message(for: thread.lastSeenMessageId)?.message
             if let uniqueId = lastSeenMessage?.uniqueId, let lastSeenMessageId = lastSeenMessage?.id {
-                await threadViewModel?.scrollVM.showHighlighted(uniqueId, lastSeenMessageId, highlight: false)
+                threadViewModel?.scrollVM.showHighlighted(uniqueId, lastSeenMessageId, highlight: false)
                 /// 9- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
                 if let fromTime = lastSeenMessage?.time {
                     moreBottom(prepend: "MORE-BOTTOM-FIRST-SCENARIO", fromTime.advanced(by: -1))
@@ -301,7 +301,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 5- To update isLoading fields to hide the loading at the top and prepare the ui for scrolling to.
             await asyncAnimateObjectWillChange()
             if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
-                await threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
+                threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
             }
             /// 6- Set whether it has more messages at the top or not.
             await setHasMoreTop(response)
@@ -378,7 +378,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             await asyncAnimateObjectWillChange()
             /// 6- Scroll to the message with its uniqueId.
             guard let uniqueId = message(for: request.messageId)?.message.uniqueId else { return }
-            await threadViewModel?.scrollVM.showHighlighted(uniqueId, request.messageId, highlight: request.highlight)
+            threadViewModel?.scrollVM.showHighlighted(uniqueId, request.messageId, highlight: request.highlight)
             /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
             let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
             let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)
@@ -415,7 +415,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     /// - Returns: Indicate that it moved loclally or not.
     func moveToMessageLocally(_ messageId: Int, highlight: Bool) async -> Bool {
         if let uniqueId = message(for: messageId)?.message.uniqueId {
-            await threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: highlight)
+            threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: highlight)
             return true
         }
         return false
@@ -445,7 +445,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             await appendMessagesAndSort(sortedMessages)
             isFetchedServerFirstResponse = true
             await asyncAnimateObjectWillChange()
-            await threadViewModel?.scrollVM.showHighlighted(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
+            threadViewModel?.scrollVM.showHighlighted(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
         }
     }
 
