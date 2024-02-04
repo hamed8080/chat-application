@@ -19,7 +19,8 @@ struct ForwardMessageRow: View {
     var body: some View {
         if let forwardInfo = message?.forwardInfo, let forwardThread = forwardInfo.conversation {
             Button {
-                AppState.shared.objectsContainer.navVM.append(thread: forwardThread)
+                /// Disabled until they fix the server side.
+//                AppState.shared.objectsContainer.navVM.append(thread: forwardThread)
             } label: {
                 HStack(spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {

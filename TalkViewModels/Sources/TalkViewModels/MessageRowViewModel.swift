@@ -307,7 +307,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateAddOrRemoveParticipantRow() -> AttributedString? {
         if ![.participantJoin, .participantLeft].contains(message.type) { return nil }
         let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
-        return try? AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
+        return try? AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") \(date)")
     }
 
     private func calculateTextViewPadding() -> EdgeInsets {

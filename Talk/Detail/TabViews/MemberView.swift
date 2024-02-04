@@ -92,14 +92,14 @@ struct ParticipantRowContainer: View {
             .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 0) {
                     if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == false {
-                        ContextMenuButton(title: "Participant.addAdminAccess", image: "person.crop.circle.badge.minus") {
+                        ContextMenuButton(title: "Participant.addAdminAccess", image: "person.crop.circle.badge.plus") {
                             viewModel.makeAdmin(participant)
                             showPopover.toggle()
                         }
                     }
 
                     if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == true {
-                        ContextMenuButton(title: "Participant.removeAdminAccess", image: "person.badge.key.fill") {
+                        ContextMenuButton(title: "Participant.removeAdminAccess", image: "person.crop.circle.badge.minus") {
                             viewModel.removeAdminRole(participant)
                             showPopover.toggle()
                         }
