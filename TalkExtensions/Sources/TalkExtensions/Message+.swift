@@ -176,8 +176,9 @@ public extension Message {
 
     static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
 
-    var addOrRemoveParticipantString: String? {
+    func addOrRemoveParticipantString(meId: Int?) -> String? {
         guard let requestType = addRemoveParticipant?.requestTypeEnum else { return nil }
+        let isMe = participant?.id == meId
         let effectedName = addRemoveParticipant?.participnats?.first?.name ?? ""
         let participantName = participant?.name ?? ""
         let effectedParticipantsName = addRemoveParticipant?.participnats?.compactMap{$0.name}.joined(separator: ", ") ?? ""
@@ -187,9 +188,17 @@ public extension Message {
         case .joinThread:
             return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.joined", comment: ""), participantName)
         case .removedFromThread:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
+            if isMe {
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removedByMe" , comment: ""), effectedName)
+            } else {
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
+            }
         case .addParticipant:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedParticipantsName)
+            if isMe {
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.addedByMe", comment: ""), effectedParticipantsName)
+            } else {
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedParticipantsName)
+            }
         default:
             return nil
         }

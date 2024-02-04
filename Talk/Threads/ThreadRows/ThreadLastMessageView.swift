@@ -39,7 +39,7 @@ struct NormalLastMessageContainer: View {
 
     var body: some View {
         HStack {
-            if let addOrRemoveParticipantString = lastMsgVO?.addOrRemoveParticipantString {
+            if let addOrRemoveParticipantString = lastMsgVO?.addOrRemoveParticipantString(meId: AppState.shared.user?.id) {
                 Text(addOrRemoveParticipantString)
                     .font(.iransansBody)
                     .lineLimit(1)

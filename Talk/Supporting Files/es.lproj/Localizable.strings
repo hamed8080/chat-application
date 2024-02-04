@@ -142,8 +142,10 @@
 /* Mensaje */
 "Message.Participant.left" = "%@ ha abandonado el grupo.";
 "Message.Participant.removed" = "%@ eliminó a %@ del grupo.";
+"Message.Participant.removedByMe" = "Eliminaste a %@ del grupo.";
 "Message.Participant.joined" = "%@ se ha unido al grupo.";
 "Message.Participant.added" = "%@ agregó a %@ al grupo.";
+"Message.Participant.addedByMe" = "Agregaste a %@ al grupo.";
 "Message.forwardedFrom" = "Reenviado desde";
 "Message.replyTo" = "Responder a";
 

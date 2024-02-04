@@ -140,8 +140,10 @@
 /* Message */
 "Message.Participant.left" = "غادر %@ المجموعة.";
 "Message.Participant.removed" = "قام %@ بإزالة %@ من المجموعة.";
+"Message.Participant.removedByMe" = "لقد قمت بإزالة %@ من المجموعة.";
 "Message.Participant.joined" = "انضم %@ إلى المجموعة.";
 "Message.Participant.added" = "وأضاف %@ %@ إلى المجموعة.";
+"Message.Participant.addedByMe" = "لقد أضفت %@ إلى المجموعة.";
 "Message.forwardedFrom" = "مُعاد توجيهه من";
 "Message.replyTo" = "الرد على";
 

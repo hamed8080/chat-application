@@ -140,8 +140,10 @@
 /* Message */
 "Message.Participant.left" = "%@ has left the group.";
 "Message.Participant.removed" = "%@ remvoed %@ from the group.";
+"Message.Participant.removedByMe" = "You removed %@ from the group.";
 "Message.Participant.joined" = "%@ has joind the group.";
 "Message.Participant.added" = "%@ added %@.";
+"Message.Participant.addedByMe" = "You added %@ to the group.";
 "Message.forwardedFrom" = "Forwarded from";
 "Message.replyTo" = "Reply to";
 

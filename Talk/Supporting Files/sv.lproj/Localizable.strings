@@ -140,8 +140,10 @@
 /* Message */
 "Message.Participant.left" = "%@ har lämnat gruppen.";
 "Message.Participant.removed" = "%@ tog bort %@ från gruppen.";
+"Message.Participant.removedByMe" = "Du tog bort %@ från gruppen.";
 "Message.Participant.joined" = "%@ har gått med i gruppen.";
 "Message.Participant.added" = "%@ lade till %@ i gruppen.";
+"Message.Participant.addedByMe" = "Du lade till %@ i gruppen.";
 "Message.forwardedFrom" = "Vidarebefordrad från";
 "Message.replyTo" = "Svara på";
 

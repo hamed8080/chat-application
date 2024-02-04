@@ -141,8 +141,10 @@
 /* Message */
 "Message.Participant.left" = "%@ گروه را ترک کرد.";
 "Message.Participant.removed" = "%@ %@ را از گروه حذف کرد.";
+"Message.Participant.removedByMe" = "شما %@ را از گروه حذف کردید.";
 "Message.Participant.joined" = "%@ به گروه پیوست.";
 "Message.Participant.added" = "%@ %@ را به گروه اضافه کرد.";
+"Message.Participant.addedByMe" = "شما %@ را به گروه اضافه کردید.";
 "Message.forwardedFrom" = "ارسال از طرف";
 "Message.replyTo" = "پاسخ به";
 
