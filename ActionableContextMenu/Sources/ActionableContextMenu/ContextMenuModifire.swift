@@ -57,13 +57,13 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     }
 
     private func showMenu() {
+        viewModel.isPresented = true
         viewModel.menus = AnyView(menus().environmentObject(viewModel))
         scale = 1.05
         viewModel.presentedId = id
         viewModel.globalFrame = globalFrame
         viewModel.addedX = addedX
         viewModel.mainView = AnyView(root)
-        viewModel.isPresented.toggle()
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
     }
 
@@ -73,8 +73,10 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                 state = true
             }
             .onChanged { value in
-                viewModel.globalPosition = value.location
-                log("global touched value location x: \(value.location.x) y: \(value.location.y)")
+                if !viewModel.isPresented, value.translation.width > -2 && value.translation.width < 2 {
+                    viewModel.globalPosition = value.location
+                    log("global touched value location x: \(value.location.x) y: \(value.location.y)")
+                }
             }
     }
 
