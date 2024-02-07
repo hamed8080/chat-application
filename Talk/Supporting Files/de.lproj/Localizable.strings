@@ -343,7 +343,7 @@
 "Tags.manageFolders" = "Ordner verwalten";
 
 /* Messages */
-"Messages.deletedMessageReply" = "Nachricht gelöscht.";
+"Messages.deletedMessageReply" = "Die Nachricht wurde gelöscht.";
 "Messages.Footer.edited" = "Bearbeitet";
 "Messages.resend" = "Erneut senden";
 "Messages.ActionMenu.reply" = "Antworten";

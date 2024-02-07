@@ -30,6 +30,7 @@ struct ThreadViewCenterToolbar: View {
             } label: {
                 Text(title)
                     .font(.iransansBoldBody)
+                    .foregroundStyle(Color.App.white)
             }
             .buttonStyle(.plain)
 
@@ -43,7 +44,7 @@ struct ThreadViewCenterToolbar: View {
                 let localizedLabel = String(localized: "Thread.Toolbar.participants")
                 Text("\(localizedLabel) \(participantsCount)")
                     .fixedSize()
-                    .foregroundColor(Color.App.textSecondary)
+                    .foregroundColor(Color.App.toolbarSecondaryText)
                     .font(.iransansFootnote)
             } else if thread.group == nil || thread.group == false {
                 P2PThreadLastSeenView(thread: thread)

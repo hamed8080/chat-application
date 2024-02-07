@@ -35,7 +35,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var reactionsVM: MessageReactionsViewModel
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
-    public let message: Message
+    public var message: Message
     public var isInSelectMode: Bool = false
     public var isMe: Bool
     public var isHighlited: Bool = false
@@ -47,7 +47,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
     public var uploadViewModel: UploadFileViewModel?
-    public var paddingEdgeInset: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
     public var imageWidth: CGFloat? = nil
     public var imageHeight: CGFloat? = nil
     public var isReplyImage: Bool = false
@@ -59,7 +58,9 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var fileName: String? = nil
     public var blurRadius: CGFloat? = 0
     public var addOrRemoveParticipantsAttr: AttributedString? = nil
-    public var textViewPadding: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+    public var avatarColor: Color = .blue
+    public var avatarSplitedCharaters = ""
+
     public var localizedReplyFileName: String? = nil
     public var callText: String?
     private static var formatter: DateFormatter = {
@@ -77,6 +78,19 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var avatarImageLoader: ImageLoaderViewModel?
     public var replyContainerWidth: CGFloat?
     private var cancelable: AnyCancellable?
+    public var paddings = MessagePaddings()
+
+    public var isDownloadCompleted: Bool {
+        downloadFileVM?.state == .completed
+    }
+
+    public var isUploadCompleted: Bool {
+        uploadViewModel == nil
+    }
+
+    public var isInDownloadOrUploadMode: Bool {
+        return !isDownloadCompleted || !isUploadCompleted
+    }
 
     public init(message: Message, viewModel: ThreadViewModel) {
         self.message = message
@@ -99,6 +113,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         cancelable = downloadFileVM?.objectWillChange.sink { [weak self] in
             Task { [weak self] in
                 await self?.prepareImage()
+                await self?.updateVideo()
             }
         }
     }
@@ -118,7 +133,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let paddingTrailing: CGFloat = isReplyOrForward ? (isMe ? 16 : 10) : (isMe ? 4 + tailWidth : 4)
         let paddingTop: CGFloat = isReplyOrForward ? 10 : 4
         let paddingBottom: CGFloat = 4
-        paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
+        paddings.paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
     }
 
     public func recalculateWithAnimation() async {
@@ -133,7 +148,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         setReplyInfo()
         calculatePaddings()
         calculateCallTexts()
-        await setAvatarViewModel()
+        setAvatarViewModel()
         isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
         let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
         let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
@@ -155,10 +170,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         extName = calculateFileTypeWithExt()
         fileName = calculateFileName()
         addOrRemoveParticipantsAttr = calculateAddOrRemoveParticipantRow()
-        textViewPadding = calculateTextViewPadding()
+        paddings.textViewPadding = calculateTextViewPadding()
         localizedReplyFileName = calculateLocalizeReplyFileName()
         calculateGroupParticipantName()
         replyContainerWidth = await calculateReplyContainerWidth()
+        calculateSpacingPaddings()
+        setAvatarColor()
     }
 
     private func calculateImageSize() {
@@ -238,7 +255,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     @MainActor
     private func prepareImage() async {
-        guard let vm = downloadFileVM else { return }
+        guard let vm = downloadFileVM, message.isImage && !isMapType else { return }
         if vm.thumbnailData != nil && vm.state == .downloading { return }
         if vm.state == .completed, let realImage = realImage {
             image = realImage
@@ -262,6 +279,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
+    private func updateVideo() async {
+        if message.isVideo, downloadFileVM?.state == .completed {
+            await asyncAnimateObjectWillChange()
+        }
+    }
+
     private func manageDownload() {
         if !message.isImage { return }
         if downloadFileVM?.isInCache == false, downloadFileVM?.thumbnailData == nil {
@@ -282,14 +305,16 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func calculateFileSize() -> String? {
-        let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
+        let uploadFileSize: Int64 = Int64(message.uploadFile?.uploadFileRequest?.data.count ?? 0)
         let realServerFileSize = fileMetaData?.file?.size
         let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale)?.replacingOccurrences(of: "٫", with: ".")
         return fileSize
     }
 
     private func calculateFileTypeWithExt() -> String? {
-        let split = fileMetaData?.file?.originalName?.split(separator: ".")
+        let uploadFileType = message.uploadFile?.uploadFileRequest?.originalName ?? message.uploadFile?.uploadImageRequest?.originalName
+        let serverFileType = fileMetaData?.file?.originalName
+        let split = (serverFileType ?? uploadFileType)?.split(separator: ".")
         let ext = fileMetaData?.file?.extension
         let lastSplit = String(split?.last ?? "")
         let extensionName = (ext ?? lastSplit)
@@ -301,7 +326,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         if fileName == "" || fileName == "blob", let originalName = fileMetaData?.file?.originalName {
             return originalName
         }
-        return fileName ?? message.uploadFileName
+        return fileName ?? message.uploadFileName?.replacingOccurrences(of: ".\(message.fileExtension ?? "")", with: "")
     }
 
     private func calculateAddOrRemoveParticipantRow() -> AttributedString? {
@@ -330,11 +355,10 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         callText = date.localFormattedTime
     }
 
-    @MainActor
     private func setAvatarViewModel() {
-        let userName = message.participant?.name ?? message.participant?.username
+        avatarSplitedCharaters = String.splitedCharacter(message.participant?.name ?? message.participant?.username ?? "")
         if let image = message.participant?.image {
-            avatarImageLoader = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: userName)
+            avatarImageLoader = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: avatarSplitedCharaters)
         }
     }
 
@@ -374,7 +398,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let font = UIFont(name: "IRANSansX", size: 14) ?? .systemFont(ofSize: 14)
         let textWidth = text.widthOfString(usingFont: font) + replyPrimaryMessageFileIconWidth()
         let minimumWidth: CGFloat = 128
-        let maxOriginal = max(minimumWidth, textWidth + paddingEdgeInset.leading + paddingEdgeInset.trailing)
+        let maxOriginal = max(minimumWidth, textWidth + paddings.paddingEdgeInset.leading + paddings.paddingEdgeInset.trailing)
         return maxOriginal
     }
 
@@ -461,6 +485,29 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func setAsDownloadedImage() {
         guard let downloadVM = downloadFileVM, !downloadVM.isInCache, downloadVM.thumbnailData == nil || downloadVM.fileURL == nil else { return }
         downloadBlurImageWithDelay(downloadVM)
+    }
+
+    private func calculateSpacingPaddings() {
+        paddings.textViewSpacingTop = groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil ? 10 : 0
+        paddings.replyViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
+        paddings.forwardViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
+        paddings.fileViewSpacingTop = groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil ? 10 : 0
+        paddings.radioPadding = EdgeInsets(top: 0, leading: isMe ? 8 : 0, bottom: 8, trailing: isMe ? 8 : 0)
+        paddings.mapViewSapcingTop =  groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil ? 10 : 0
+        let hasAlreadyPadding = message.replyInfo != nil || message.forwardInfo != nil
+        let padding: CGFloat = hasAlreadyPadding ? 0 : 4
+        paddings.groupParticipantNamePadding = .init(top: padding, leading: padding, bottom: 0, trailing: padding)
+    }
+
+    public func swapUploadMessageWith(_ message: Message) {
+        uploadViewModel = nil
+        self.message = message
+        downloadFileVM?.message = message
+        threadVM?.historyVM.appendToNeedUpdate(self)
+    }
+
+    private func setAvatarColor() {
+        avatarColor = String.getMaterialColorByCharCode(str: message.participant?.name ?? message.participant?.username ?? "")
     }
 
     private func clearDownloadViewModel() {

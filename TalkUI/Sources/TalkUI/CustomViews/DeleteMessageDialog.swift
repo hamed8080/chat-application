@@ -20,6 +20,10 @@ public struct DeleteMessageDialog: View {
     /// 86_400_000 is equal to the number of milliseconds in a day
     private var pastDeleteTimeForOthers: [Message] { messages.filter({ Int64($0.time ?? 0) + (86_400_000) < Date().millisecondsSince1970 }) }
 
+    private var isContainPastDeleteTimeAndDeleteableForOthers: Bool {
+        pastDeleteTimeForOthers.count != messages.count
+    }
+
     public init(deleteForMe: Bool, deleteForOthers: Bool, viewModel: ThreadViewModel) {
         self.deleteForMe = deleteForMe
         self.deleteForOthers = deleteForOthers
@@ -38,6 +42,7 @@ public struct DeleteMessageDialog: View {
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBody)
                 .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
 
             let isSingle = messages.count == 1
@@ -46,6 +51,7 @@ public struct DeleteMessageDialog: View {
                     .foregroundStyle(Color.App.textSecondary)
                     .font(.iransansCaption2)
                     .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
             }
 
@@ -100,7 +106,7 @@ public struct DeleteMessageDialog: View {
                     .foregroundStyle(Color.App.red)
                     .font(.iransansBoldCaption)
             }
-        } else if deleteForOthers, !pastDeleteTimeForOthers.isEmpty {
+        } else if deleteForOthers, isContainPastDeleteTimeAndDeleteableForOthers {
             Button {
                 let notPastDeleteTime = messages.filter({!pastDeleteTimeForOthers.contains($0)})
                 if pastDeleteTimeForOthers.count > 0 {

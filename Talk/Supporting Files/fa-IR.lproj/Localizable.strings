@@ -343,7 +343,7 @@
 "Tags.manageFolders" = "مدیریت پوشه ها";
 
 /*  Messages */
-"Messages.deletedMessageReply" = "پیام حذف شده.";
+"Messages.deletedMessageReply" = "پیام پاک شده است.";
 "Messages.Footer.edited" = "اصلاح شده";
 "Messages.resend" = "ارسال مجدد";
 "Messages.ActionMenu.reply" = "پاسخ";

@@ -27,6 +27,7 @@ struct ReplyInfoMessageRow: View {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(viewModel.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
                 )
+                .padding(.top, viewModel.paddings.replyViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         }
     }
 
@@ -42,7 +43,7 @@ struct ReplyInfoMessageRow: View {
                         .frame(maxWidth: 1.5)
                     Text("Messages.deletedMessageReply")
                         .font(.iransansBoldCaption2)
-                        .foregroundColor(Color.App.red)
+                        .foregroundColor(Color.App.textSecondary)
                     Spacer()
                 }
                 .contentShape(Rectangle())

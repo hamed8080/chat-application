@@ -90,15 +90,13 @@ struct ThreadbackgroundView: View {
     @Environment(\.colorScheme) var colorScheme
     let threadId: Int
     private let lightColors = [
-        Color(red: 131/255, green: 161/255, blue: 191/255),
-        Color(red: 190/255, green: 185/255, blue: 181/255),
-        Color(red: 229/255, green: 182/255, blue: 143/255),
-        Color(red: 216/255, green: 125/255, blue: 78/255),
-        Color(red: 60/255, green: 58/255, blue: 75/255),
+        Color(red: 220/255, green: 194/255, blue: 178/255),
+        Color(red: 234/255, green: 173/255, blue: 120/255),
+        Color(red: 216/255, green: 125/255, blue: 78/255)
     ]
 
     private let darkColors = [
-        Color(red: 23/255, green: 23/255, blue: 23/255)
+        Color(red: 0/255, green: 0/255, blue: 0/255)
     ]
 
     var body: some View {
@@ -107,7 +105,6 @@ struct ThreadbackgroundView: View {
             .scaledToFill()
             .id("chat_bg_\(threadId)")
             .ignoresSafeArea()
-            .opacity(colorScheme == .dark ? 0.3 : 0.6)
             .background(
                 LinearGradient(
                     colors: colorScheme == .dark ? darkColors : lightColors,
@@ -236,7 +233,7 @@ struct SectionView: View {
             Spacer()
         }
         .task {
-            Task {
+            if yearText == "" {
                 yearText = section.date.yearCondence ?? ""
             }
         }

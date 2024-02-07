@@ -35,20 +35,23 @@ struct ThreadImageView: View {
                             .foregroundStyle(Color.App.textPrimary)
                     }
             } else if let image = computedImageURL {
-                ImageLoaderView(imageLoader: threadsVM.avatars(for: image, metaData: thread.metadata, userName: thread.title))
-                    .id("\(computedImageURL ?? "")\(thread.id ?? 0)")
-                    .font(.iransansBoldBody)
-                    .foregroundColor(.white)
-                    .frame(width: 54, height: 54)
-                    .background(Color.App.color1.opacity(0.4))
-                    .clipShape(RoundedRectangle(cornerRadius:(24)))
+                ImageLoaderView(
+                    imageLoader: threadsVM.avatars(for: image, metaData: thread.metadata, userName: String.splitedCharacter(thread.title ?? "")),
+                    textFont: .iransansBoldBody
+                )
+                .id("\(computedImageURL ?? "")\(thread.id ?? 0)")
+                .font(.iransansBoldBody)
+                .foregroundColor(.white)
+                .frame(width: 54, height: 54)
+                .background(String.getMaterialColorByCharCode(str: thread.title ?? ""))
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
             } else {
-                Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
+                Text(verbatim: String.splitedCharacter(thread.computedTitle))
                     .id("\(computedImageURL ?? "")\(thread.id ?? 0)")
-                    .font(.iransansBoldBody)
+                    .font(.iransansBoldSubheadline)
                     .foregroundColor(.white)
                     .frame(width: 54, height: 54)
-                    .background(Color.App.color1.opacity(0.4))
+                    .background(String.getMaterialColorByCharCode(str: thread.title ?? ""))
                     .clipShape(RoundedRectangle(cornerRadius:(24)))
             }
         }.task {

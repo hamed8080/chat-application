@@ -59,7 +59,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
         .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: isInSearchMode)
         .frame(minWidth: 0, maxWidth: sizeClass == .compact ? nil : .infinity)
         .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-        .background(MixMaterialBackground().ignoresSafeArea())
+        .background(MixMaterialBackground(color: Color.App.bgToolbar).ignoresSafeArea())
         .onChange(of: searchText) { newValue in
             searchCompletion?(newValue)
         }
@@ -69,6 +69,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                     Text(String(localized: String.LocalizationValue(title)))
                         .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 48)
                         .font(.iransansBoldSubheadline)
+                        .foregroundStyle(Color.App.toolbarButton)
                         .clipped()
                 }
                 centerNavigationViews
@@ -136,7 +137,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 Text("General.cancel")
                     .padding(.leading)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.App.accent)
+                    .foregroundStyle(Color.App.toolbarButton)
             }
             .buttonStyle(.borderless)
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? toolbarHeight : 0)
@@ -151,7 +152,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 }
                 .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
                 .clipped()
-                .foregroundStyle(Color.App.accent)
+                .foregroundStyle(Color.App.toolbarButton)
             }
         }
     }

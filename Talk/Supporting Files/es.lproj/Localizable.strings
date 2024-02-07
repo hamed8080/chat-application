@@ -344,7 +344,7 @@
 "Tags.manageFolders" = "Gestionar carpetas";
 
 /* Mensajes */
-"Messages.deletedMessageReply" = "Mensaje eliminado.";
+"Messages.deletedMessageReply" = "El mensaje ha sido eliminado.";
 "Messages.Footer.edited" = "Editado";
 "Messages.resend" = "Reenviar";
 "Messages.ActionMenu.reply" = "Responder";

@@ -29,7 +29,7 @@ public struct ImageLoaderView: View {
     public var body: some View {
         ZStack {
             if !imageLoader.isImageReady {
-                Text(String(imageLoader.config.userName?.first ?? " "))
+                Text(String(imageLoader.config.userName ?? " "))
                     .font(textFont)
             } else if imageLoader.isImageReady {
                 Image(uiImage: imageLoader.image)

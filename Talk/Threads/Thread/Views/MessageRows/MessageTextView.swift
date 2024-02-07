@@ -19,16 +19,18 @@ struct MessageTextView: View {
         if !viewModel.isPublicLink {
             Text(viewModel.markdownTitle)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
-                .padding(viewModel.textViewPadding)
+                .padding(viewModel.paddings.textViewPadding)
                 .font(.iransansBody)
                 .foregroundColor(Color.App.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, viewModel.paddings.textViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         } else if let fileName = message.uploadFileName, message.isUnsentMessage == true {
             Text(fileName)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
                 .padding(.horizontal, 6)
                 .font(.iransansBody)
                 .foregroundColor(Color.App.textPrimary)
+                .padding(.top, viewModel.paddings.textViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         }
     }
 }

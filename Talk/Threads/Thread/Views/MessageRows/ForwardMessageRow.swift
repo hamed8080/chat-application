@@ -17,7 +17,7 @@ struct ForwardMessageRow: View {
     var message: Message? { viewModel.message }
 
     var body: some View {
-        if let forwardInfo = message?.forwardInfo, let forwardThread = forwardInfo.conversation {
+        if let forwardInfo = message?.forwardInfo, forwardInfo.conversation != nil {
             Button {
                 /// Disabled until they fix the server side.
 //                AppState.shared.objectsContainer.navVM.append(thread: forwardThread)
@@ -51,6 +51,7 @@ struct ForwardMessageRow: View {
             .padding(EdgeInsets(top: 6, leading: viewModel.isMe ? 6 : 0, bottom: 6, trailing: viewModel.isMe ? 0 : 6))
             .background(viewModel.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
             .clipShape(RoundedRectangle(cornerRadius: 6))
+            .padding(.top,viewModel.paddings.forwardViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         }
     }
 }

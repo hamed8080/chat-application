@@ -13,14 +13,12 @@ import ChatCore
 import SwiftUI
 
 public protocol ScrollToPositionProtocol {
-    var canScrollToBottomOfTheList: Bool { get set }
     func scrollToBottom(animation: Animation?)
     func scrollToLastMessageIfLastMessageIsVisible(_ message: Message)
 }
 
 public final class ThreadScrollingViewModel: ObservableObject {
     var task: Task<(), Never>?
-    public var canScrollToBottomOfTheList: Bool = false
     public var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false
@@ -89,7 +87,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
                 guard let self = self else { return }
                 isProgramaticallyScroll = true
             }
-            try? await Task.sleep(for: .milliseconds(2))
+            try? await Task.sleep(for: .seconds(1))
             await MainActor.run { [weak self] in
                 guard let self = self else { return }
                 isProgramaticallyScroll = false

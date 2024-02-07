@@ -43,7 +43,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     @Published public var dismiss = false
     public var sheetType: ThreadSheetType?
     public var exportMessagesViewModel: ExportMessagesViewModel = .init()
-    public var unssetMessagesViewModel: ThreadUnsentMessagesViewModel
+    public var unsentMessagesViewModel: ThreadUnsentMessagesViewModel
     public var uploadMessagesViewModel: ThreadUploadMessagesViewModel
     public var searchedMessagesViewModel: ThreadSearchMessagesViewModel
     public var selectedMessagesViewModel: ThreadSelectedMessagesViewModel = .init()
@@ -83,7 +83,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var canDownloadFiles: Bool = false
 
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
-        self.unssetMessagesViewModel = .init(thread: thread)
+        self.unsentMessagesViewModel = .init(thread: thread)
         self.uploadMessagesViewModel = .init(thread: thread)
         self.unreadMentionsViewModel = .init(thread: thread)
         self.mentionListPickerViewModel = .init(thread: thread)
@@ -101,6 +101,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         selectedMessagesViewModel.threadVM = self
         sendContainerViewModel.threadVM = self
         uploadMessagesViewModel.threadVM = self
+        unsentMessagesViewModel.threadVM = self
         exportMessagesViewModel.thread = thread
         historyVM.setupNotificationObservers()
     }
@@ -334,7 +335,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             cancelable.cancel()
         }
         exportMessagesViewModel.cancelAllObservers()
-        unssetMessagesViewModel.cancelAllObservers()
+        unsentMessagesViewModel.cancelAllObservers()
         uploadMessagesViewModel.cancelAllObservers()
         searchedMessagesViewModel.cancelAllObservers()
         unreadMentionsViewModel.cancelAllObservers()

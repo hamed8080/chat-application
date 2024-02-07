@@ -47,12 +47,6 @@ struct MainSendButtons: View {
             )
             .clipShape(RoundedRectangle(cornerRadius:(24)))
             .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
-            .onChange(of: viewModel.textMessage) { newValue in
-                if Language.isRTL && newValue.first != "\u{200f}" {
-                    viewModel.textMessage = "\u{200f}\(viewModel.textMessage)"
-                }
-                threadVM.sendStartTyping(newValue)
-            }
 
             Button {
                 threadVM.attachmentsViewModel.clear()
@@ -96,9 +90,8 @@ struct MainSendButtons: View {
             if viewModel.showSendButton {
                 Button {
                     if viewModel.showSendButton {
-                        threadVM.sendTextMessage(viewModel.textMessage)
+                        threadVM.sendTextMessage()
                     }
-                    viewModel.clear()
                     threadVM.mentionListPickerViewModel.text = ""
                     threadVM.sheetType = nil
                     threadVM.animateObjectWillChange()

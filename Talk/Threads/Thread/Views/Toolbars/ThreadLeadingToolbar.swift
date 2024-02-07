@@ -21,6 +21,7 @@ struct ThreadLeadingToolbar: View {
                 NotificationCenter.closeSideBar.post(name: Notification.Name.closeSideBar, object: nil)
             }
             .offset(y: -1.5)
+            .foregroundStyle(Color.App.toolbarButton)
         }
 
         NavigationBackButton {

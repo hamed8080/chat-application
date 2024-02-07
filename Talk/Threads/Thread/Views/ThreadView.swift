@@ -22,14 +22,14 @@ struct ThreadView: View, DropDelegate {
     var body: some View {
         ThreadMessagesList(viewModel: viewModel)
             .navigationBarBackButtonHidden(true)
-            .background(Color.App.textSecondary.opacity(0.1).edgesIgnoringSafeArea(.bottom))            
+            .background(Color.App.textSecondary.opacity(0.1).edgesIgnoringSafeArea(.bottom))
             .background(SheetEmptyBackground())
             .onDrop(of: [.image], delegate: self)
             .safeAreaInset(edge: .bottom) {
-                ThreadEmptySpaceView()                    
+                ThreadEmptySpaceView()
             }
             .overlay(alignment: .bottom) {
-                SendContainerOverlayView()                    
+                SendContainerOverlayView()
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 VStack(spacing: 0) {

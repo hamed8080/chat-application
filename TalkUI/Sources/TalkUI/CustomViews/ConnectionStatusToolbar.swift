@@ -24,7 +24,7 @@ public struct ConnectionStatusToolbar: View {
                 let localized = String(localized: .init(connectionStatus.stringValue))
                 Text(localized)
                     .fixedSize()
-                    .foregroundColor(Color.App.textSecondary)
+                    .foregroundColor(Color.App.toolbarSecondaryText)
                     .font(.iransansFootnote)
                     .onReceive(appstate.$connectionStatus) { newSate in
                         if EnvironmentValues.isTalkTest {

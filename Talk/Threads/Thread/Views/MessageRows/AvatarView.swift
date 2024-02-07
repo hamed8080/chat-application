@@ -14,7 +14,7 @@ import TalkViewModels
 
 struct AvatarView: View {
     var message: Message
-    @StateObject var viewModel: MessageRowViewModel
+    @EnvironmentObject var viewModel: MessageRowViewModel
     var threadVM: ThreadViewModel? { viewModel.threadVM }
 
     static var emptyViewSender: some View {
@@ -44,15 +44,15 @@ struct AvatarView: View {
                         .font(.iransansCaption)
                         .foregroundColor(.white)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-                        .background(Color.App.color1.opacity(0.4))
+                        .background(viewModel.avatarColor)
                         .clipShape(RoundedRectangle(cornerRadius:(MessageRowViewModel.avatarSize / 2)))
                 } else {
-                    Text(verbatim: String(message.participant?.name?.first ?? message.participant?.username?.first ?? " "))
+                    Text(verbatim: viewModel.avatarSplitedCharaters)
                         .id("\(message.participant?.image ?? "")\(message.participant?.id ?? 0)")
                         .font(.iransansCaption)
                         .foregroundColor(.white)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-                        .background(Color.App.color1.opacity(0.4))
+                        .background(viewModel.avatarColor)
                         .clipShape(RoundedRectangle(cornerRadius:(MessageRowViewModel.avatarSize / 2)))
                 }
             }

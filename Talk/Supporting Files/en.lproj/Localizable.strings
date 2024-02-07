@@ -342,7 +342,7 @@
 "Tags.manageFolders" = "Manage folders";
 
 /*  Messages */
-"Messages.deletedMessageReply" = "Message deleted.";
+"Messages.deletedMessageReply" = "The message has been deleted.";
 "Messages.Footer.edited" = "Edited";
 "Messages.resend" = "Resend";
 "Messages.ActionMenu.reply" = "Reply";

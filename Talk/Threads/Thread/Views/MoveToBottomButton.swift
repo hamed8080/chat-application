@@ -35,7 +35,7 @@ struct MoveToBottomButton: View {
                         .contentShape(Rectangle())
                 }
                 .frame(width: historyVM.isEmptyThread ? 0 : 40, height: historyVM.isEmptyThread ? 0 : 40)
-                .background(.ultraThinMaterial)
+                .background(.regularMaterial)
                 .clipShape(RoundedRectangle(cornerRadius:(20)))
                 .shadow(color: .gray.opacity(0.4), radius: 2)
                 .scaleEffect(x: 1.0, y: 1.0, anchor: .center)

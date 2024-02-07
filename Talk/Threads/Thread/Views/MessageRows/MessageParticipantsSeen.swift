@@ -70,13 +70,13 @@ struct MessageSeenParticipantRow: View {
 
     var body: some View {
         HStack {
-            let config = ImageLoaderConfig(url: participant.image ?? "", userName: participant.name ?? participant.username)
+            let config = ImageLoaderConfig(url: participant.image ?? "", userName: String.splitedCharacter(participant.name ?? participant.username ?? ""))
             ImageLoaderView(imageLoader: .init(config: config))
                 .id("\(participant.image ?? "")\(participant.id ?? 0)")
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
-                .background(Color.App.color1.opacity(0.4))
+                .background(String.getMaterialColorByCharCode(str: participant.name ?? participant.username ?? ""))
                 .clipShape(RoundedRectangle(cornerRadius:(22)))
 
             HStack(alignment: .center, spacing: 8) {

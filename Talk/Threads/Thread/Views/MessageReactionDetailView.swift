@@ -142,14 +142,14 @@ struct ReactionParticipantRow: View {
     var body: some View {
         HStack {
             ZStack(alignment: .leading) {
-                let config = ImageLoaderConfig(url: reaction.participant?.image ?? "", userName: reaction.participant?.name)
+                let config = ImageLoaderConfig(url: reaction.participant?.image ?? "", userName: String.splitedCharacter(reaction.participant?.name ?? ""))
                 ImageLoaderView(imageLoader: .init(config: config))
                     .scaledToFit()
                     .id(reaction.participant?.id)
                     .font(.iransansBoldCaption2)
                     .foregroundColor(.white)
                     .frame(width: 64, height: 64)
-                    .background(Color.App.color1.opacity(0.4))
+                    .background(String.getMaterialColorByCharCode(str: reaction.participant?.name ?? ""))
                     .clipShape(RoundedRectangle(cornerRadius:(24)))
                 Circle()
                     .fill(.red)

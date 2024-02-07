@@ -27,6 +27,7 @@ struct ReactionCountView: View {
         .fixedSize(horizontal: true, vertical: false)
         .animation(.easeInOut, value: viewModel.reactionCountList.count)
         .padding(.horizontal, 6)
+        .padding(.top, viewModel.topPadding) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
     }
 }
 

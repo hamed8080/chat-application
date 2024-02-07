@@ -24,14 +24,14 @@ struct ThreadViewTrailingToolbar: View {
                 if let imageLoader = imageLoader {
                     ImageLoaderView(imageLoader: imageLoader)
                 } else {
-                    Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
+                    Text(verbatim: String.splitedCharacter(thread.computedTitle))
                 }
             }
             .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
             .font(.iransansBody)
             .foregroundColor(.white)
             .frame(width: 32, height: 32)
-            .background(Color.App.color1.opacity(0.4))
+            .background(String.getMaterialColorByCharCode(str: thread.computedTitle))
             .clipShape(RoundedRectangle(cornerRadius:(16)))
         }
         .onReceive(NotificationCenter.thread.publisher(for: .thread)) { notification in

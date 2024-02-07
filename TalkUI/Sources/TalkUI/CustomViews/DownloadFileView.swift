@@ -86,6 +86,7 @@ struct DownloadFileButton: View {
                     .foregroundColor(Color.App.white)
                     .rotationEffect(Angle(degrees: 270))
                     .frame(width: 28, height: 28)
+                    .rotateAnimtion(pause: viewModel.state == .paused)
                     .environment(\.layoutDirection, .leftToRight)
             }
             .frame(width: 36, height: 36)

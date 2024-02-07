@@ -13,7 +13,7 @@ struct SupportView: View {
 
     var body: some View {
         VStack(alignment: .center, spacing: 24) {
-            Image("support_icon")
+            Image("talk_logo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 128, height: 128)

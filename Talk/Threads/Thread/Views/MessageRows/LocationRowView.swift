@@ -28,6 +28,7 @@ struct LocationRowView: View {
                     .frame(width: width, height: height)
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
             }
+            .padding(.top, viewModel.paddings.mapViewSapcingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
             .onTapGesture {
                 if let url = message.neshanURL, UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url)
@@ -48,15 +49,12 @@ struct LocationRowView: View {
 struct MapImageDownloader: View {
     let width: CGFloat
     let height: CGFloat
+    @State private var image = UIImage(named: "empty_image")!
     @EnvironmentObject var viewModel: DownloadFileViewModel
 
     var body: some View {
-        if viewModel.state == .completed, let image = viewModel.fileURL?.imageScale(width: Int(800))?.image {
-            Image(uiImage: UIImage(cgImage: image))
-                .resizable()
-                .scaledToFill()
-        } else if let emptyImage = UIImage(named: "empty_image") {
-            Image(uiImage: emptyImage)
+        if viewModel.fileURL != nil {
+            Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
                 .frame(width: width, height: height)
@@ -64,6 +62,11 @@ struct MapImageDownloader: View {
                 .zIndex(0)
                 .background(LinearGradient(colors: [Color.App.bgInput, Color.App.bgInput], startPoint: .top, endPoint: .bottom))
                 .clipShape(RoundedRectangle(cornerRadius:(8)))
+                .task {
+                    if let scaledImage = viewModel.fileURL?.imageScale(width: Int(800))?.image {
+                        image = UIImage(cgImage: scaledImage)
+                    }
+                }
         }
     }
 }

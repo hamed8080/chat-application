@@ -18,8 +18,8 @@ struct ThreadEmptySpaceView: View {
         let hasReplyPrivately = appState.appStateNavigationModel.replyPrivately != nil
         let replyMessage = viewModel.replyMessage != nil
         let hasEdit = viewModel.sendContainerViewModel.editMessage != nil
-        let isShowaButton = hasForward || audioRecordingVM.isRecording || hasReplyPrivately || replyMessage || hasEdit
-        return isShowaButton ? 96 : 48
+        let isShowingAnyContainer = hasForward || audioRecordingVM.isRecording || hasReplyPrivately || replyMessage || hasEdit
+        return isShowingAnyContainer ? 96 : 48
     }
 
     var body: some View {

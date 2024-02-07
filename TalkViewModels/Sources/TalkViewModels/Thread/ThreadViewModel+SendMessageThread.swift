@@ -17,51 +17,48 @@ import OSLog
 
 extension ThreadViewModel {
     /// It triggers when send button tapped
-    public func sendTextMessage(_ textMessage: String) {
-        let textMessage = textMessage.replacingOccurrences(of: "\u{200f}", with: "")
+    public func sendTextMessage() {
         if AppState.shared.appStateNavigationModel.forwardMessageRequest?.threadId == threadId {
-            sendForwardMessages(textMessage)
+            sendForwardMessages()
         } else if AppState.shared.appStateNavigationModel.replyPrivately != nil {
-            sendReplyPrivatelyMessage(textMessage)
+            sendReplyPrivatelyMessage()
         } else if let replyMessage = replyMessage, let replyMessageId = replyMessage.id {
-            sendReplyMessage(replyMessageId, textMessage)
+            sendReplyMessage(replyMessageId)
         } else if sendContainerViewModel.editMessage != nil {
-            sendEditMessage(textMessage)
+            sendEditMessage()
         } else if attachmentsViewModel.attachments.count > 0 {
-            sendAttachmentsMessage(textMessage)
+            sendAttachmentsMessage()
         } else {
-            sendNormalMessage(textMessage)
+            sendNormalMessage()
         }
 
-        if sendContainerViewModel.isInEditMode {
-            sendContainerViewModel.isInEditMode = false // close edit mode in ui
-        }
-        sendSeenForAllUnreadMessages()
+        sendContainerViewModel.clear() // close ui
+        historyVM.sendSeenForAllUnreadMessages()
     }
 
-    public func sendAttachmentsMessage(_ textMessage: String = "") {
+    public func sendAttachmentsMessage() {
         let attchments = attachmentsViewModel.attachments
         let type = attchments.map{$0.type}.first
+        let images = attchments.compactMap({$0.request as? ImageItem})
+        let urls = attchments.compactMap({$0.request as? URL})
+        let location = attchments.first(where: {$0.type == .map})?.request as? LocationItem
+        let dropItems = attchments.compactMap({$0.request as? DropItem})
         if type == .gallery {
-            let images = attchments.compactMap({$0.request as? ImageItem})
-            sendPhotos(textMessage, images)
+            sendPhotos(images)
         } else if type == .file {
-            let urls = attchments.compactMap({$0.request as? URL})
-            sendFiles(textMessage, urls)
+            sendFiles(urls)
         } else if type == .contact {
             // TODO: It should be implemented whenever the server side is ready.
-        } else if type == .map, let item = attchments.first(where: {$0.type == .map})?.request as? LocationItem {
-            sendLoaction(textMessage, item)
+        } else if type == .map, let item = location {
+            sendLocation(item)
         } else if type == .drop {
-            let dropItems = attchments.compactMap({$0.request as? DropItem})
-            sendDropFiles(textMessage, dropItems)
+            sendDropFiles(dropItems)
         }
     }
 
-    public func sendReplyMessage(_ replyMessageId: Int, _ textMessage: String) {
-        scrollVM.canScrollToBottomOfTheList = true
+    public func sendReplyMessage(_ replyMessageId: Int) {
         if attachmentsViewModel.attachments.count == 1 {
-            sendSingleReplyAttachment(attachmentsViewModel.attachments.first, replyMessageId, textMessage)
+            sendSingleReplyAttachment(attachmentsViewModel.attachments.first, replyMessageId)
         } else {
             if attachmentsViewModel.attachments.count > 1 {
                 let lastItem = attachmentsViewModel.attachments.last
@@ -69,12 +66,9 @@ extension ThreadViewModel {
                     attachmentsViewModel.remove(lastItem)
                 }
                 sendAttachmentsMessage()
-                sendSingleReplyAttachment(lastItem, replyMessageId, textMessage)
+                sendSingleReplyAttachment(lastItem, replyMessageId)
             } else {
-                let req = ReplyMessageRequest(threadId: threadId,
-                                              repliedTo: replyMessageId,
-                                              textMessage: textMessage,
-                                              messageType: .text)
+                let req = ReplyMessageRequest(model: makeModel())
                 ChatManager.activeInstance?.message.reply(req)
             }
         }
@@ -83,41 +77,21 @@ extension ThreadViewModel {
         sendContainerViewModel.focusOnTextInput = false
     }
 
-    public func sendSingleReplyAttachment(_ attachmentFile: AttachmentFile?, _ replyMessageId: Int, _ textMessage: String) {
-        var req = ReplyMessageRequest(threadId: threadId,
-                                      repliedTo: replyMessageId,
-                                      textMessage: textMessage,
-                                      messageType: .text)
+    public func sendSingleReplyAttachment(_ attachmentFile: AttachmentFile?, _ replyMessageId: Int) {
+        var req = ReplyMessageRequest(model: makeModel())
         if let imageItem = attachmentFile?.request as? ImageItem {
-            let imageReq = UploadImageRequest(data: imageItem.data,
-                                              fileName: imageItem.fileName ?? "",
-                                              mimeType: "image/jpeg",
-                                              userGroupHash: self.thread.userGroupHash,
-                                              hC: imageItem.height,
-                                              wC: imageItem.width
-            )
+            let imageReq = UploadImageRequest(imageItem: imageItem, thread.userGroupHash)
             req.messageType = .podSpacePicture
             ChatManager.activeInstance?.message.reply(req, imageReq)
-        } else if let url = attachmentFile?.request as? URL, let data = try? Data(contentsOf: url) {
-            let fileReq = UploadFileRequest(data: data,
-                                            fileExtension: ".\(url.fileExtension)",
-                                            fileName: url.fileName,
-                                            mimeType: url.mimeType,
-                                            userGroupHash: self.thread.userGroupHash)
+        } else if let url = attachmentFile?.request as? URL, let fileReq = UploadFileRequest(url: url, thread.userGroupHash) {
             req.messageType = .podSpaceFile
             ChatManager.activeInstance?.message.reply(req, fileReq)
         }
     }
 
-    public func sendReplyPrivatelyMessage(_ textMessage: String) {
-        guard
-            let replyMessage = AppState.shared.appStateNavigationModel.replyPrivately,
-            let replyMessageId = replyMessage.id,
-            let fromConversationId = replyMessage.conversation?.id
-        else { return }
-        scrollVM.canScrollToBottomOfTheList = true
+    public func sendReplyPrivatelyMessage() {
         if attachmentsViewModel.attachments.count == 1 {
-            sendSingleReplyPrivatelyAttachment(attachmentsViewModel.attachments.first, fromConversationId, replyMessageId, textMessage)
+            sendSingleReplyPrivatelyAttachment(attachmentsViewModel.attachments.first)
         } else {
             if attachmentsViewModel.attachments.count > 1 {
                 let lastItem = attachmentsViewModel.attachments.last
@@ -125,11 +99,8 @@ extension ThreadViewModel {
                     attachmentsViewModel.remove(lastItem)
                 }
                 sendAttachmentsMessage()
-                sendSingleReplyPrivatelyAttachment(lastItem, fromConversationId, replyMessageId, textMessage)
-            } else {
-                let req = ReplyPrivatelyRequest(repliedTo: replyMessageId,
-                                                messageType: .text,
-                                                content: .init(text: textMessage, targetConversationId: threadId, fromConversationId: fromConversationId))
+                sendSingleReplyPrivatelyAttachment(lastItem)
+            } else if let req = ReplyPrivatelyRequest(model: makeModel()) {
                 ChatManager.activeInstance?.message.replyPrivately(req)
             }
         }
@@ -137,67 +108,45 @@ extension ThreadViewModel {
         AppState.shared.appStateNavigationModel = .init()
     }
 
-    public func sendSingleReplyPrivatelyAttachment(_ attachmentFile: AttachmentFile?, _ fromConversationId: Int, _ replyMessageId: Int, _ textMessage: String) {
-        var req = ReplyPrivatelyRequest(repliedTo: replyMessageId,
-                                                     messageType: .text,
-                                                     content: .init(text: textMessage, targetConversationId: threadId, fromConversationId: fromConversationId))
+    public func sendSingleReplyPrivatelyAttachment(_ attachmentFile: AttachmentFile?) {
+        guard var req = ReplyPrivatelyRequest(model: makeModel()) else { return }
         if let imageItem = attachmentFile?.request as? ImageItem {
-            let imageReq = UploadImageRequest(data: imageItem.data,
-                                              fileName: imageItem.fileName ?? "",
-                                              mimeType: "image/jpeg",
-                                              userGroupHash: self.thread.userGroupHash,
-                                              hC: imageItem.height,
-                                              wC: imageItem.width
-            )
+            let imageReq = UploadImageRequest(imageItem: imageItem, thread.userGroupHash)
             req.messageType = .podSpacePicture
             ChatManager.activeInstance?.message.replyPrivately(req, imageReq)
-        } else if let url = attachmentFile?.request as? URL, let data = try? Data(contentsOf: url) {
-            let fileReq = UploadFileRequest(data: data,
-                                            fileExtension: ".\(url.fileExtension)",
-                                            fileName: url.fileName,
-                                            mimeType: url.mimeType,
-                                            userGroupHash: self.thread.userGroupHash)
+            let message = UploadFileWithTextMessage(imageFileRequest: imageReq, thread: thread)
+            self.uploadMessagesViewModel.append(contentsOf: [message])
+        } else if let url = attachmentFile?.request as? URL, let fileReq = UploadFileRequest(url: url, thread.userGroupHash) {
             req.messageType = .podSpaceFile
             ChatManager.activeInstance?.message.replyPrivately(req, fileReq)
+            let message = UploadFileWithTextMessage(uploadFileRequest: fileReq, thread: thread)
+            self.uploadMessagesViewModel.append(contentsOf: [message])
         }
     }
 
     public func sendAudiorecording() {
         send { [weak self] in
-            guard let self = self, let audioFileURL = audioRecoderVM.recordingOutputPath else { return }
-            guard let data = try? Data(contentsOf: audioFileURL) else { return }
-            self.scrollVM.canScrollToBottomOfTheList = true
-            let uploadRequest = UploadFileRequest(data: data,
-                                                  fileExtension: ".\(audioFileURL.fileExtension)",
-                                                  fileName: "\(audioFileURL.fileName).\(audioFileURL.fileExtension)",
-                                                  mimeType: audioFileURL.mimeType,
-                                                  userGroupHash: self.thread.userGroupHash)
-            let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: "", messageType: .podSpaceVoice)
-            let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
+            guard let self = self,
+                  let request = UploadFileWithTextMessage(audioFileURL: audioRecoderVM.recordingOutputPath, model: makeModel())
+            else { return }
             uploadMessagesViewModel.append(contentsOf: [request])
             audioRecoderVM.cancel()
         }
     }
 
-    public func sendNormalMessage(_ textMessage: String) {
-        send { [weak self] in
-            guard let self = self else {return}
-            scrollVM.canScrollToBottomOfTheList = true
-            let req = SendTextMessageRequest(threadId: threadId,
-                                             textMessage: textMessage,
-                                             messageType: .text)
-            let isMeId = (ChatManager.activeInstance?.userInfo ?? AppState.shared.user)?.id
-            let message = Message(threadId: threadId, message: textMessage, messageType: .text, ownerId: isMeId, time: UInt(Date().millisecondsSince1970), uniqueId: req.uniqueId, conversation: thread)
+    public func sendNormalMessage() {
+        send {
             Task { [weak self] in
                 guard let self = self else { return }
-                await self.historyVM.appendMessagesAndSort([message])
-                ChatManager.activeInstance?.message.send(req)
+                let tuple = Message.makeRequest(model: makeModel())
+                await self.historyVM.appendMessagesAndSort([tuple.message])
+                ChatManager.activeInstance?.message.send(tuple.req)
             }
         }
     }
 
     public func openDestinationConversationToForward(_ destinationConversation: Conversation?, _ contact: Contact?) {
-        sendContainerViewModel.isInEditMode = false /// Close edit mode in ui
+        sendContainerViewModel.clear() /// Close edit mode in ui
         sheetType = nil
         animateObjectWillChange()
         let messages = selectedMessagesViewModel.selectedMessages.compactMap{$0.message}
@@ -205,16 +154,14 @@ extension ThreadViewModel {
         selectedMessagesViewModel.clearSelection()
     }
 
-    public func sendForwardMessages(_ textMessage: String) {
+    public func sendForwardMessages() {
         if let req = AppState.shared.appStateNavigationModel.forwardMessageRequest {
-            if !textMessage.isEmpty {
-                let messageReq = SendTextMessageRequest(threadId: threadId, textMessage: textMessage, messageType: .text)
+            let model = makeModel()
+            if !model.textMessage.isEmpty {
+                let messageReq = SendTextMessageRequest(threadId: threadId, textMessage: model.textMessage, messageType: .text)
                 ChatManager.activeInstance?.message.send(messageReq)
-                Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-                    ChatManager.activeInstance?.message.send(req)
-                    AppState.shared.appStateNavigationModel = .init()
-                }
-            } else {
+            }
+            Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
                 ChatManager.activeInstance?.message.send(req)
                 AppState.shared.appStateNavigationModel = .init()
             }
@@ -223,151 +170,61 @@ extension ThreadViewModel {
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload image
-    public func sendPhotos(_ textMessage: String = "", _ imageItems: [ImageItem]) {
+    public func sendPhotos(_ imageItems: [ImageItem]) {
         send { [weak self] in
             guard let self = self else {return}
-            imageItems.filter({!$0.isVideo}).forEach { imageItem in
-                let index = imageItems.firstIndex(where: { $0 == imageItem })!
-                self.scrollVM.canScrollToBottomOfTheList = true
-                let imageRequest = UploadImageRequest(data: imageItem.data,
-                                                      fileExtension: "png",
-                                                      fileName: "\(imageItem.fileName ?? "").png",
-                                                      mimeType: "image/png",
-                                                      userGroupHash: self.thread.userGroupHash,
-                                                      hC: imageItem.height,
-                                                      wC: imageItem.width
-                )
-                let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .podSpacePicture)
-                let request = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: textRequest, thread: self.thread)
-                request.id = -index
-                self.uploadMessagesViewModel.append(contentsOf: ([request]))
+            for(index, imageItem) in imageItems.filter({!$0.isVideo}).enumerated() {
+                let imageMessage = UploadFileWithTextMessage(imageItem: imageItem, imageModel: makeModel(index))
+                uploadMessagesViewModel.append(contentsOf: ([imageMessage]))
             }
-            sendVideos(textMessage, imageItems.filter({$0.isVideo}))
+            sendVideos(imageItems.filter({$0.isVideo}))
             attachmentsViewModel.clear()
         }
     }
 
-    public func sendVideos(_ textMessage: String = "", _ imageItems: [ImageItem]) {
-        imageItems.filter({$0.isVideo}).forEach { imageItem in
-            let index = imageItems.firstIndex(where: { $0 == imageItem })!
-            self.scrollVM.canScrollToBottomOfTheList = true
-            let uploadRequest = UploadFileRequest(data: imageItem.data,
-                                                  fileExtension: "mp4",
-                                                  fileName: imageItem.fileName,
-                                                  mimeType: "video/mp4",
-                                                  userGroupHash: self.thread.userGroupHash)
-            let textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .podSpaceVideo)
-            let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
-            request.id = -index
-            self.uploadMessagesViewModel.append(contentsOf: ([request]))
+    public func sendVideos(_ imageItems: [ImageItem]) {
+        for (index, item) in imageItems.filter({$0.isVideo}).enumerated() {
+            let videoMessage = UploadFileWithTextMessage(videoItem: item, videoModel: makeModel(index))
+            self.uploadMessagesViewModel.append(contentsOf: ([videoMessage]))
         }
     }
 
     /// add a upload messge entity to bottom of the messages in the thread and then the view start sending upload file
-    public func sendFiles(_ textMessage: String = "", _ urls: [URL], messageType: ChatModels.MessageType = .podSpaceFile) {
+    public func sendFiles(_ urls: [URL]) {
         send { [weak self] in
             guard let self = self else {return}
             for (index, url) in urls.enumerated() {
-                guard let data = try? Data(contentsOf: url) else { return }
-                self.scrollVM.canScrollToBottomOfTheList = true
-                let uploadRequest = UploadFileRequest(data: data,
-                                                      fileExtension: "\(url.fileExtension)",
-                                                      fileName: "\(url.fileName).\(url.fileExtension)", // it should have file name and extension
-                                                      mimeType: url.mimeType,
-                                                      originalName: "\(url.fileName).\(url.fileExtension)",
-                                                      userGroupHash: self.thread.userGroupHash)
-                let isMusic = url.isMusicMimetype
-                let newMessageType = isMusic ? ChatModels.MessageType.podSpaceSound : messageType
-                var textRequest: SendTextMessageRequest? = nil
-                if url == urls.last || urls.count == 1 {
-                    textRequest = SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: newMessageType)
-                }
-                let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
-                request.id = -index
-                self.uploadMessagesViewModel.append(contentsOf: [request])
+                let isLastItem = url == urls.last || urls.count == 1
+                let fileMessage = UploadFileWithTextMessage(urlItem: url, isLastItem: isLastItem, urlModel: makeModel(index))
+                self.uploadMessagesViewModel.append(contentsOf: [fileMessage])
             }
             attachmentsViewModel.clear()
         }
     }
 
-    public func sendDropFiles(_ textMessage: String = "", _ items: [DropItem]) {
+    public func sendDropFiles(_ items: [DropItem]) {
         send { [weak self] in
             guard let self = self else {return}
-            items.forEach { item in
-                let index = items.firstIndex(where: { $0.id == item.id })!
-                self.scrollVM.canScrollToBottomOfTheList = true
-                let uploadRequest = UploadFileRequest(data: item.data ?? Data(),
-                                                      fileExtension: "\(item.ext ?? "")",
-                                                      fileName: "\(item.name ?? "").\(item.ext ?? "")", // it should have file name and extension
-                                                      mimeType: nil,
-                                                      userGroupHash: self.thread.userGroupHash)
-                let textRequest = textMessage.isEmpty == true ? nil : SendTextMessageRequest(threadId: self.threadId, textMessage: textMessage, messageType: .podSpaceFile)
-                let request = UploadFileWithTextMessage(uploadFileRequest: uploadRequest, sendTextMessageRequest: textRequest, thread: self.thread)
-                request.id = -index
-                self.uploadMessagesViewModel.append(contentsOf: ([request]))
+            for (index, item) in items.enumerated() {
+                let fileMessage = UploadFileWithTextMessage(dropItem: item, dropModel: makeModel(index))
+                self.uploadMessagesViewModel.append(contentsOf: ([fileMessage]))
             }
             attachmentsViewModel.clear()
         }
     }
 
-    public func sendEditMessage(_ textMessage: String) {
+    public func sendEditMessage() {
         guard let editMessage = sendContainerViewModel.editMessage, let messageId = editMessage.id else { return }
-        let req = EditMessageRequest(threadId: threadId,
-                                     messageType: .text,
-                                     messageId: messageId,
-                                     textMessage: textMessage)
-        sendContainerViewModel.editMessage = nil
-        sendContainerViewModel.isInEditMode = false
+        let req = EditMessageRequest(messageId: messageId, model: makeModel())
         ChatManager.activeInstance?.message.edit(req)
     }
 
-    public func sendLoaction(_ textMessage: String = "", _ location: LocationItem) {
+    public func sendLocation(_ location: LocationItem) {
         send { [weak self] in
             guard let self = self else {return}
-            let coordinate = Coordinate(lat: location.location.latitude, lng: location.location.longitude)
-            let req = LocationMessageRequest(mapCenter: coordinate,
-                                             threadId: threadId,
-                                             userGroupHash: thread.userGroupHash ?? "",
-                                             mapZoom: 17,
-                                             mapImageName: location.name,
-                                             textMessage: textMessage)
+            let req = LocationMessageRequest(item: location, model: makeModel())
             ChatManager.activeInstance?.message.send(req)
             attachmentsViewModel.clear()
-        }
-    }
-
-    public func resendUnsetMessage(_ message: Message) {
-        switch message {
-        case let req as SendTextMessage:
-            ChatManager.activeInstance?.message.send(req.sendTextMessageRequest)
-        case let req as EditTextMessage:
-            ChatManager.activeInstance?.message.edit(req.editMessageRequest)
-        case let req as ForwardMessage:
-            ChatManager.activeInstance?.message.send(req.forwardMessageRequest)
-        case let req as UploadFileMessage:
-            // remove unset message type to start upload again the new one.
-            historyVM.removeByUniqueId(req.uniqueId)
-            if message.isImage, let imageRequest = req.uploadImageRequest {
-                let imageMessage = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
-                self.uploadMessagesViewModel.append(contentsOf: ([imageMessage]))
-                self.animateObjectWillChange()
-            } else if let fileRequest = req.uploadFileRequest {
-                let fileMessage = UploadFileWithTextMessage(uploadFileRequest: fileRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
-                self.uploadMessagesViewModel.append(contentsOf: ([fileMessage]))
-                self.animateObjectWillChange()
-            }
-        default:
-            log("Type not detected!")
-        }
-    }
-
-    public func onUnSentEditCompletionResult(_ response: ChatResponse<Message>) {
-        if let message = response.result, threadId == message.conversation?.id {
-            Task { [weak self] in
-                guard let self = self else { return }
-                historyVM.onDeleteMessage(response)
-                await historyVM.appendMessagesAndSort([message])
-            }
         }
     }
 
@@ -396,13 +253,16 @@ extension ThreadViewModel {
         createThreadCompletion = nil
     }
 
-    private func sendSeenForAllUnreadMessages() {
-        if let message = thread.lastMessageVO,
-           message.seen == nil || message.seen == false,
-           message.participant?.id != AppState.shared.user?.id,
-           thread.unreadCount ?? 0 > 0
-        {
-            sendSeen(for: message)
-        }
+    func makeModel(_ uploadFileIndex: Int? = nil) -> SendMessageModel {
+        let textMessage = sendContainerViewModel.getText()
+        return SendMessageModel(textMessage: textMessage,
+                                replyMessage: replyMessage,
+                                meId: AppState.shared.user?.id,
+                                conversation: thread,
+                                threadId: threadId,
+                                userGroupHash: thread.userGroupHash,
+                                uploadFileIndex: uploadFileIndex,
+                                replyPrivatelyMessage: AppState.shared.appStateNavigationModel.replyPrivately
+        )
     }
 }

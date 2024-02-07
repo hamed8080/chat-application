@@ -31,6 +31,7 @@ struct OnMoveTime: ChatDTO.UniqueIdProtocol {
 
 public final class ThreadHistoryViewModel: ObservableObject {
     public var sections: ContiguousArray<MessageSection> = .init()
+    public var needUpdates: ContiguousArray<MessageRowViewModel> = .init()
     public var hasNextTop = true
     public var hasNextBottom = true
     public let count: Int = 25
@@ -589,14 +590,20 @@ public final class ThreadHistoryViewModel: ObservableObject {
         fetchReactions(messages: messages)
     }
 
-    func insertOrUpdate(_ message: Message) -> MessageRowViewModel? {
-        let indices = findIncicesBy(uniqueId: message.uniqueId ?? "", message.id ?? -1)
-        if let indices = indices {
-            let vm = sections[indices.sectionIndex].vms[indices.messageIndex]
+    fileprivate typealias SecionAndMessageIndex = (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)
+    fileprivate func updateMessage(_ message: Message, _ indices: SecionAndMessageIndex?) -> MessageRowViewModel? {
+        guard let indices = indices else { return nil }
+        let vm = sections[indices.sectionIndex].vms[indices.messageIndex]
+        if vm.uploadViewModel != nil {
+            /// We have to update animateObjectWillChange because after onNewMessage we will not call it, so upload file not work properly.
+            vm.swapUploadMessageWith(message)
+        } else {
             vm.message.updateMessage(message: message)
-            return vm
         }
-        
+        return vm
+    }
+
+    func insertIntoSection(_ message: Message) -> MessageRowViewModel? {
         if message.threadId == threadId || message.conversation?.id == threadId, let threadViewModel = threadViewModel {
             let viewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
             if let sectionIndex = sectionIndexByDate(message.time?.date ?? Date()) {
@@ -608,6 +615,25 @@ public final class ThreadHistoryViewModel: ObservableObject {
             }
         }
         return nil
+    }
+
+    func insertOrUpdate(_ message: Message) -> MessageRowViewModel? {
+        let indices = findIncicesBy(uniqueId: message.uniqueId ?? "", message.id ?? -1)
+        if let vm = updateMessage(message, indices) {
+            return vm
+        }
+        return insertIntoSection(message)
+    }
+
+    func appendToNeedUpdate(_ vm: MessageRowViewModel) {
+        needUpdates.append(vm)
+    }
+
+    func updateNeeded() async {
+        for (_, vm) in needUpdates.enumerated() {
+            await vm.asyncAnimateObjectWillChange()
+        }
+        needUpdates.removeAll()
     }
 
     func sectionIndexByUniqueId(_ message: Message) -> Array<MessageSection>.Index? {
@@ -836,6 +862,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             Task { [weak self] in                
                 guard let self = self else { return }
                 await appendMessagesAndSort([message])
+                await updateNeeded()
                 await asyncAnimateObjectWillChange()
                 await threadViewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
                 setSeenForAllOlderMessages(newMessage: message)
@@ -940,6 +967,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func onUploadCanceled(_ uniqueId: String?) {
         if let uniqueId = uniqueId {
             removeByUniqueId(uniqueId)
+            animateObjectWillChange()
         }
     }
 
@@ -953,6 +981,16 @@ public final class ThreadHistoryViewModel: ObservableObject {
         if threadViewModel?.searchedMessagesViewModel.isInSearchMode == false {
             let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
             ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
+        }
+    }
+
+    public func sendSeenForAllUnreadMessages() {
+        if let message = thread.lastMessageVO,
+           message.seen == nil || message.seen == false,
+           message.participant?.id != AppState.shared.user?.id,
+           thread.unreadCount ?? 0 > 0
+        {
+            threadViewModel?.sendSeen(for: message)
         }
     }
 

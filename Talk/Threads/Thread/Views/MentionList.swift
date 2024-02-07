@@ -8,6 +8,7 @@
 import SwiftUI
 import TalkViewModels
 import TalkUI
+import TalkExtensions
 
 struct MentionList: View {
     @EnvironmentObject var threadVM: ThreadViewModel
@@ -17,25 +18,20 @@ struct MentionList: View {
         if viewModel.mentionList.count > 0 {
             List(viewModel.mentionList) { participant in
                 HStack {
-                    let config = ImageLoaderConfig(url: participant.image ?? "", userName: participant.name ?? participant.username)
+                    let config = ImageLoaderConfig(url: participant.image ?? "", userName: String.splitedCharacter(participant.name ?? participant.username ?? ""))
                     ImageLoaderView(imageLoader: .init(config: config))
                         .id("\(participant.image ?? "")\(participant.id ?? 0)")
                         .font(.iransansBoldBody)
                         .foregroundColor(.white)
                         .frame(width: 24, height: 24)
-                        .background(Color.App.color1.opacity(0.4))
+                        .background(String.getMaterialColorByCharCode(str: participant.name ?? participant.username ?? ""))
                         .clipShape(RoundedRectangle(cornerRadius:(22)))
                     Text(participant.contactName ?? participant.name ?? "\(participant.firstName ?? "") \(participant.lastName ?? "")")
                         .font(.iransansCaption2)
                     Spacer()
                 }
                 .onTapGesture {
-                    let userName = (participant.username ?? "")
-                    var text = threadVM.sendContainerViewModel.textMessage
-                    if let lastIndex = text.lastIndex(of: "@") {
-                        text.removeSubrange(lastIndex..<text.endIndex)
-                    }
-                    threadVM.sendContainerViewModel.textMessage = "\(text)@\(userName) " // To hide participants dialog
+                    threadVM.sendContainerViewModel.addMention(participant)
                     threadVM.animateObjectWillChange()
                 }
                 .listRowBackground(Color.clear)

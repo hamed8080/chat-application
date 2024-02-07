@@ -17,7 +17,7 @@ struct SettingProfileButton: View {
 
     init() {
         let user = AppState.shared.objectsContainer.userConfigsVM.currentUserConfig?.user
-        let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: user?.name)
+        let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: String.splitedCharacter(user?.name ?? ""))
         self._imageLoader = .init(wrappedValue: .init(config: config))
     }
 

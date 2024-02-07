@@ -24,9 +24,10 @@ public final class MessageReactionsViewModel: ObservableObject {
     public var reactionCountList: ContiguousArray<ReactionCount> = []
     public var currentUserReaction: Reaction?
     public var reactionActor: ReactionActor?
+    public var topPadding: CGFloat = 0
     public weak var viewModel: MessageRowViewModel? {
         didSet {
-                reactionActor = .init(viewModel: viewModel)
+            reactionActor = .init(viewModel: viewModel)
         }
     }
 
@@ -43,6 +44,7 @@ public final class MessageReactionsViewModel: ObservableObject {
             await MainActor.run {
                 self.reactionCountList = reactionCountList
                 self.currentUserReaction = currentUserReaction
+                self.topPadding = reactionCountList.count > 0 ? 10 : 0
                 self.animateObjectWillChange()
             }
         }

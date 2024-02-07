@@ -342,7 +342,7 @@
 "Tags.manageFolders" = "Hantera mappar";
 
 /* Messages */
-"Messages.deletedMessageReply" = "Meddelande raderat.";
+"Messages.deletedMessageReply" = "Meddelandet har raderats.";
 "Messages.Footer.edited" = "Redigerad";
 "Messages.resend" = "Skicka igen";
 "Messages.ActionMenu.reply" = "Svara";

@@ -57,14 +57,25 @@ public final class SendContainerViewModel: ObservableObject {
     }
 
     private func setupNotificationObservers() {
-        $textMessage.sink { [weak self] newValue in
-            self?.onTextMessageChanged(newValue)
-        }
-        .store(in: &cancelable)
+        $textMessage
+            .sink { [weak self] newValue in
+                self?.onTextMessageChanged(newValue)
+            }
+            .store(in: &cancelable)
+        
+        $editMessage
+            .sink { [weak self] editMessage in
+                self?.onTextMessageChanged(editMessage?.message ?? "")
+            }
+            .store(in: &cancelable)
     }
 
     private func onTextMessageChanged(_ newValue: String) {
+        if Language.isRTL && newValue.first != "\u{200f}" {
+            textMessage = "\u{200f}\(newValue)"
+        }
         threadVM?.mentionListPickerViewModel.text = newValue
+        threadVM?.sendStartTyping(newValue)
         let isRTLChar = newValue.count == 1 && newValue.first == "\u{200f}"
         if !isTextEmpty(text: newValue) && !isRTLChar {
             UserDefaults.standard.setValue(newValue, forKey: "draft-\(threadId)")
@@ -75,11 +86,26 @@ public final class SendContainerViewModel: ObservableObject {
 
     public func clear() {
         textMessage = ""
+        editMessage = nil
+        isInEditMode = false
     }
 
     private func isTextEmpty(text: String) -> Bool {
         let sanitizedText = text.replacingOccurrences(of: "\u{200f}", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         return sanitizedText.isEmpty
+    }
+
+    public func addMention(_ participant: Participant) {
+        let userName = (participant.username ?? "")
+        var text = textMessage
+        if let lastIndex = text.lastIndex(of: "@") {
+            text.removeSubrange(lastIndex..<text.endIndex)
+        }
+        textMessage = "\(text)@\(userName) " // To hide participants dialog
+    }
+
+    public func getText() -> String {
+        textMessage.replacingOccurrences(of: "\u{200f}", with: "")
     }
 
     public func cancelAllObservers() {

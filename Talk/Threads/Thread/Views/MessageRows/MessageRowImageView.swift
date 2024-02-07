@@ -1,5 +1,5 @@
 //
-//  MessageRowImageDownloader.swift
+//  MessageRowImageView.swift
 //  Talk
 //
 //  Created by hamed on 11/14/23.
@@ -12,7 +12,7 @@ import ChatModels
 import TalkModels
 import Chat
 
-struct MessageRowImageDownloader: View {
+struct MessageRowImageView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
 
@@ -37,6 +37,11 @@ struct MessageRowImageDownloader: View {
                 viewModel.onTap()
             }
             .clipped()
+            .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        }
+
+        if message.uploadFile?.uploadImageRequest != nil {
+            UploadMessageImageView(viewModel: viewModel)
         }
     }
 
@@ -55,7 +60,7 @@ struct MessageRowImageDownloader: View {
 
     private var gradient: LinearGradient {
         let clearState = viewModel.downloadFileVM?.state == .completed || viewModel.downloadFileVM?.state == .thumbnail
-        return clearState ? MessageRowImageDownloader.clearGradient : MessageRowImageDownloader.emptyImageGradient
+        return clearState ? MessageRowImageView.clearGradient : MessageRowImageView.emptyImageGradient
     }
 }
 
@@ -133,9 +138,104 @@ struct OverlayDownloadImageButton: View {
     }
 }
 
+public struct UploadMessageImageView: View {
+    let viewModel: MessageRowViewModel
+    var message: Message { viewModel.message }
+
+    public var body: some View {
+        ZStack {
+            if let data = message.uploadFile?.uploadImageRequest?.dataToSend, let image = UIImage(data: data) {
+                /// We use max to at least have a width, because there are times that maxWidth is nil.
+                let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (8 + MessageRowBackground.tailSize.width)
+                /// We use max to at least have a width, because there are times that maxWidth is nil.
+                /// We use min to prevent the image gets bigger than 320 if it's bigger.
+                let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
+
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: width, height: height)
+                    .blur(radius: 16, opaque: false)
+                    .clipped()
+                    .zIndex(0)
+                    .clipShape(RoundedRectangle(cornerRadius:(8)))
+            }
+            OverladUploadImageButton(messageRowVM: viewModel)
+                .environmentObject(viewModel.uploadViewModel!)
+        }
+        .onTapGesture {
+            if viewModel.uploadViewModel?.state == .paused {
+                viewModel.uploadViewModel?.resumeUpload()
+            } else if viewModel.uploadViewModel?.state == .uploading {
+                viewModel.uploadViewModel?.cancelUpload()
+            }
+        }
+        .task {
+            viewModel.uploadViewModel?.startUploadImage()
+        }
+    }
+}
+
+struct OverladUploadImageButton: View {
+    let messageRowVM: MessageRowViewModel
+    @EnvironmentObject var viewModel: UploadFileViewModel
+    var message: Message { messageRowVM.message }
+    var percent: Int64 { viewModel.uploadPercent }
+    var stateIcon: String {
+        if viewModel.state == .uploading {
+            return "xmark"
+        } else if viewModel.state == .paused {
+            return "play.fill"
+        } else {
+            return "arrow.up"
+        }
+    }
+
+    var body: some View {
+        if viewModel.state != .completed {
+            HStack {
+                ZStack {
+                    Image(systemName: stateIcon)
+                        .resizable()
+                        .scaledToFit()
+                        .font(.system(size: 8, design: .rounded).bold())
+                        .frame(width: 8, height: 8)
+                        .foregroundStyle(Color.App.textPrimary)
+
+                    Circle()
+                        .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+                        .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                        .foregroundColor(Color.App.white)
+                        .rotationEffect(Angle(degrees: 270))
+                        .frame(width: 18, height: 18)
+                }
+                .frame(width: 26, height: 26)
+                .background(Color.App.white.opacity(0.3))
+                .clipShape(RoundedRectangle(cornerRadius:(13)))
+
+                let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
+                let realServerFileSize = messageRowVM.fileMetaData?.file?.size
+                if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
+                    Text(fileSize)
+                        .multilineTextAlignment(.leading)
+                        .font(.iransansBoldCaption2)
+                        .foregroundColor(Color.App.textPrimary)
+                }
+            }
+            .frame(height: 30)
+            .frame(minWidth: 76)
+            .padding(4)
+            .background(.thinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius:(18)))
+            .animation(.easeInOut, value: stateIcon)
+            .animation(.easeInOut, value: percent)
+        }
+    }
+}
+
 struct MessageRowImageDownloader_Previews: PreviewProvider {
     static var previews: some View {
-        MessageRowImageDownloader()
+        MessageRowImageView()
             .environmentObject(MessageRowViewModel(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
     }
 }

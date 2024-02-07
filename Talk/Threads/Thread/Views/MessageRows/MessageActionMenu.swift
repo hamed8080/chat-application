@@ -51,6 +51,7 @@ struct MessageActionMenu: View {
                 withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
                     threadVM?.forwardMessage = message
                     viewModel.isSelected = true
+                    threadVM?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: true)
                     viewModel.animateObjectWillChange()
                     threadVM?.animateObjectWillChange()
                 }
@@ -125,8 +126,8 @@ struct MessageActionMenu: View {
 
             ContextMenuButton(title: "General.select", image: "checkmark.circle") {
                 withAnimation(animation(appear: threadVM?.selectedMessagesViewModel.isInSelectMode == true)) {
-                    threadVM?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: true)
                     viewModel.isSelected = true
+                    threadVM?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: true)
                     viewModel.animateObjectWillChange()
                     threadVM?.animateObjectWillChange()
                 }

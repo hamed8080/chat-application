@@ -203,4 +203,18 @@ public extension Message {
             return nil
         }
     }
+
+    class func makeRequest (model: SendMessageModel) -> (message: Message,req: SendTextMessageRequest) {
+        let req = SendTextMessageRequest(threadId: model.threadId,
+                                         textMessage: model.textMessage,
+                                         messageType: .text)
+        let message = Message(threadId: model.threadId,
+                              message: model.textMessage,
+                              messageType: .text,
+                              ownerId: model.meId,
+                              time: UInt(Date().millisecondsSince1970),
+                              uniqueId: req.uniqueId,
+                              conversation: model.conversation)
+        return (message, req)
+    }
 }

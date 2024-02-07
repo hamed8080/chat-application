@@ -289,13 +289,13 @@ struct ‌BuilderContactRow: View {
     var body: some View {
         VStack {
             HStack(spacing: 0) {
-                let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: contact.firstName)
+                let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: String.splitedCharacter(contact.firstName ?? ""))
                 ImageLoaderView(imageLoader: .init(config: config))
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
                     .font(.iransansBody)
                     .foregroundColor(Color.App.textPrimary)
                     .frame(width: 52, height: 52)
-                    .background(Color.App.color1.opacity(0.4))
+                    .background(String.getMaterialColorByCharCode(str: contact.firstName ?? ""))
                     .clipShape(RoundedRectangle(cornerRadius:(22)))
 
                 VStack(alignment: .leading, spacing: 2) {

@@ -252,7 +252,7 @@ struct ThreadInfoView: View {
         let config = ImageLoaderConfig(url: viewModel.thread?.computedImageURL ?? "",
                                        size: .ACTUAL,
                                        metaData: viewModel.thread?.metadata,
-                                       userName: viewModel.thread?.title ?? "",
+                                       userName: String.splitedCharacter(viewModel.thread?.title ?? ""),
                                        forceToDownloadFromServer: true)
         self._fullScreenImageLoader = .init(wrappedValue: .init(config: config))
     }
@@ -262,17 +262,17 @@ struct ThreadInfoView: View {
             let image = viewModel.thread?.computedImageURL ?? viewModel.participantDetailViewModel?.participant.image ?? ""
             let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image,
                                                                                    metaData: viewModel.thread?.metadata,
-                                                                                   userName: viewModel.thread?.title)
+                                                                                   userName: String.splitedCharacter(viewModel.thread?.title ?? ""))
             let config = ImageLoaderConfig(url: image,
                                            metaData: viewModel.thread?.metadata,
-                                           userName: viewModel.thread?.title ?? viewModel.participantDetailViewModel?.participant.name)
+                                           userName: String.splitedCharacter(viewModel.thread?.title ?? viewModel.participantDetailViewModel?.participant.name ?? ""))
             let defaultLoader = ImageLoaderViewModel(config: config)
             ImageLoaderView(imageLoader: avatarVM ?? defaultLoader)
                 .id("\(image)\(viewModel.thread?.id ?? 0)")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 64, height: 64)
-                .background(Color.App.color1.opacity(0.4))
+                .background(String.getMaterialColorByCharCode(str: viewModel.thread?.title ?? viewModel.participantDetailViewModel?.participant.name ?? ""))
                 .clipShape(RoundedRectangle(cornerRadius:(28)))
                 .onTapGesture {
                     fullScreenImageLoader.fetch()
@@ -323,7 +323,7 @@ struct ThreadDescription: View {
 
     var body: some View {
         if let description = viewModel.thread?.description.validateString {
-            InfoRowItem(key: "General.description", value: description)
+            InfoRowItem(key: "General.description", value: description, lineLimit: nil)
         }
     }
 }
@@ -342,7 +342,7 @@ struct PublicLink: View {
                     .foregroundStyle(Color.App.textPrimary)
                 AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, message: "General.copied", messageColor: Color.App.textPrimary)
             } label: {
-                InfoRowItem(key: "Thread.inviteLink", value: shortJoinLink, button: AnyView(EmptyView()))
+                InfoRowItem(key: "Thread.inviteLink", value: shortJoinLink, lineLimit: 1, button: AnyView(EmptyView()))
             }
         }
     }
@@ -371,11 +371,13 @@ struct InfoRowItem: View {
     let key: String
     let value: String
     let button: AnyView?
+    let lineLimit: Int?
 
-    init(key: String, value: String, button: AnyView? = nil) {
+    init(key: String, value: String, lineLimit: Int? = 2, button: AnyView? = nil) {
         self.key = key
         self.value = value
         self.button = button
+        self.lineLimit = lineLimit
     }
 
     var body: some View {
@@ -384,9 +386,10 @@ struct InfoRowItem: View {
                 Text(value)
                     .font(.iransansSubtitle)
                     .foregroundStyle(Color.App.textPrimary)
-                    .lineLimit(2)
+                    .lineLimit(lineLimit)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
                 Text(String(localized: .init(key)))
                     .font(.iransansCaption)
                     .foregroundStyle(Color.App.textSecondary)

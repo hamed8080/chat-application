@@ -47,14 +47,14 @@ struct EditGroup: View {
                                     .frame(width: 73, height: 73)
                             }
                         } else {
-                            let config = ImageLoaderConfig(url: viewModel.thread.computedImageURL ?? "", userName: viewModel.thread.computedTitle)
+                            let config = ImageLoaderConfig(url: viewModel.thread.computedImageURL ?? "", userName: String.splitedCharacter(viewModel.thread.computedTitle))
                             ImageLoaderView(imageLoader: .init(config: config))
                                 .scaledToFit()
                                 .id(viewModel.thread.id)
                                 .font(.iransansBoldCaption2)
                                 .foregroundColor(.white)
                                 .frame(width: 72, height: 72)
-                                .background(Color.App.color1.opacity(0.4))
+                                .background(String.getMaterialColorByCharCode(str: viewModel.thread.computedTitle))
                                 .clipShape(RoundedRectangle(cornerRadius:(32)))
                         }
                         Circle()

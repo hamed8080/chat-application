@@ -32,7 +32,7 @@ struct TextMessageType: View {
 
             VStack(spacing: 0) {
                 Spacer()
-                AvatarView(message: message, viewModel: viewModel)
+                AvatarView(message: message)
             }
 
             MutableMessageView(viewModel: viewModel)
@@ -61,7 +61,7 @@ struct SelectMessageRadio: View {
                     viewModel.toggleSelection()
                 }
             }
-            .padding(EdgeInsets(top: 0, leading: viewModel.isMe ? 8 : 0, bottom: 8, trailing: viewModel.isMe ? 8 : 0))
+            .padding(viewModel.paddings.radioPadding)
         }
     }
 }
@@ -85,17 +85,16 @@ struct InnerMessage: View {
     private var message: Message { viewModel.message }
 
     var body: some View {
-        VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 10) {
+        VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 0) {
             GroupParticipantNameView()
             ReplyInfoMessageRow()
             ForwardMessageRow()
             Group {
                 LocationRowView()
-                MessageRowFileDownloader(viewModel: viewModel)
-                MessageRowImageDownloader()
-                MessageRowVideoDownloader(viewModel: viewModel)
-                MessageRowAudioDownloader(viewModel: viewModel)
-                UploadMessageType()
+                MessageRowFileView()
+                MessageRowImageView()
+                MessageRowVideoView()
+                MessageRowAudioView()
             }
             MessageTextView()
             JoinPublicLink(viewModel: viewModel)
@@ -103,11 +102,11 @@ struct InnerMessage: View {
             Group {
                 ReactionCountView()
                     .environmentObject(viewModel.reactionsVM)
-                    .environmentObject(viewModel)
                 MessageFooterView()
             }
         }
-        .padding(viewModel.paddingEdgeInset)
+        .environmentObject(viewModel)
+        .padding(viewModel.paddings.paddingEdgeInset)
         .background(
             MessageRowBackground.instance
                 .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)

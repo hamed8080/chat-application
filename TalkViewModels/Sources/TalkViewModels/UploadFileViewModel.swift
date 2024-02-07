@@ -9,7 +9,7 @@ import ChatTransceiver
 
 public final class UploadFileViewModel: ObservableObject {
     @Published public private(set) var uploadPercent: Int64 = 0
-    @Published public var state: UploadFileState = .uploading
+    @Published public var state: UploadFileState = .paused
     public var message: Message
     var threadId: Int? { (message.uploadFile as? UploadFileMessage)?.conversation?.id }
     public var uploadFileWithTextMessage: UploadWithTextMessageProtocol { message as! UploadWithTextMessageProtocol }
@@ -42,7 +42,7 @@ public final class UploadFileViewModel: ObservableObject {
     }
 
     public func startUploadFile() {
-        if state == .completed { return }
+        if state == .uploading || state == .completed { return }
         state = .uploading
         guard let threadId = threadId else { return }
         let isImage: Bool = message.isImage
@@ -54,7 +54,7 @@ public final class UploadFileViewModel: ObservableObject {
     }
 
     public func startUploadImage() {
-        if state == .completed { return }
+        if state == .uploading || state == .completed { return }
         state = .uploading
         guard let threadId = threadId else { return }
         let isImage: Bool = message.isImage

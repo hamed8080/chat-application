@@ -94,7 +94,7 @@ struct NavigationTypeView: View {
                     .environmentObject(viewModel.searchedMessagesViewModel)
                     .environmentObject(viewModel.scrollVM)
                     .environmentObject(viewModel.historyVM)
-                    .environmentObject(viewModel.unssetMessagesViewModel)
+                    .environmentObject(viewModel.unsentMessagesViewModel)
                     .environmentObject(viewModel.threadPinMessageViewModel)
             }
         case .contact(let contact):
