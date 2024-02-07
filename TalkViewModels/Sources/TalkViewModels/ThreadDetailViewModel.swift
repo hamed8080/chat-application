@@ -27,7 +27,6 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
     private(set) var cancelable: Set<AnyCancellable> = []
     public weak var thread: Conversation?
     public weak var threadVM: ThreadViewModel?
-    public var searchText: String = ""
     @Published public var dismiss = false
     @Published public var isLoading = false
     public var isGroup: Bool { thread?.group == true }
@@ -41,27 +40,12 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         clear()
         self.thread = thread
         self.threadVM = threadVM
-        let threadP2PParticipant = AppState.shared.appStateNavigationModel.userToCreateThread
-        if let participant = participant ?? threadP2PParticipant {
-            self.participantDetailViewModel = ParticipantDetailViewModel(participant: participant)
-        } else if thread?.group == false, let partner = threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id}) {
-            self.participantDetailViewModel = ParticipantDetailViewModel(participant: partner)
-        }
-        if let threadVM = threadVM {
-            editConversationViewModel = EditConversationViewModel(threadVM: threadVM)
-        }
-        NotificationCenter.thread.publisher(for: .thread)
-            .compactMap { $0.object as? ThreadEventTypes }
-            .sink { [weak self] value in
-                self?.onThreadEvent(value)
-            }
-            .store(in: &cancelable)
-        participantDetailViewModel?.objectWillChange.sink { [weak self] _ in
-            self?.updateThreadTitle()
-            /// We have to update the ui all the time and keep it in sync with the ParticipantDetailViewModel.
-            self?.animateObjectWillChange()
-        }
-        .store(in: &cancelable)
+
+        setupParticipantDetailViewModel(participant: participant)
+        setupEditConversationViewModel()
+
+        registerObservers()
+        fetchPartnerParticipant()
     }
 
     private func onThreadEvent(_ event: ThreadEventTypes) {
@@ -83,8 +67,9 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
 
     private func updateThreadTitle() {
         /// Update thread title inside the thread if we don't have any messages with the partner yet or it's p2p thread so the title of the thread is equal to contactName
-        if thread?.group == false || thread?.id ?? 0 == LocalId.emptyThread.rawValue, let contactName = participantDetailViewModel?.participant.contactName {
-            thread?.title = contactName
+        guard let thread = thread else { return }
+        if thread.group == false || thread.id ?? 0 == LocalId.emptyThread.rawValue, let contactName = participantDetailViewModel?.participant.contactName {
+            thread.title = contactName
             threadVM?.animateObjectWillChange()
         }
     }
@@ -151,11 +136,58 @@ public final class ThreadDetailViewModel: ObservableObject, Hashable {
         cancelObservers()
         thread = nil
         threadVM = nil
-        searchText = ""
         dismiss = false
         isLoading = false
         participantDetailViewModel = nil
         editConversationViewModel = nil
+    }
+
+    private func registerObservers() {
+        NotificationCenter.thread.publisher(for: .thread)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink { [weak self] value in
+                self?.onThreadEvent(value)
+            }
+            .store(in: &cancelable)
+        participantDetailViewModel?.objectWillChange.sink { [weak self] _ in
+            self?.updateThreadTitle()
+            /// We have to update the ui all the time and keep it in sync with the ParticipantDetailViewModel.
+            self?.animateObjectWillChange()
+        }
+        .store(in: &cancelable)
+    }
+
+    /// When the thread is a P2P thread and member tab is hidden so getParticipants won't get called.
+    /// We have to call it manually and observe for changes, and make the participantDetailViewModel and then update the UI.
+    public func fetchPartnerParticipant() {
+        guard thread?.group == false, let participantsVM = threadVM?.participantsViewModel else { return }
+        if participantsVM.participants.isEmpty == true {
+            participantsVM.getParticipants()
+        }
+        participantsVM.objectWillChange.sink { [weak self] _ in
+            guard let self = self else { return }
+            let partner = participantsVM.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id})
+            if let partner = partner, participantDetailViewModel == nil {
+                participantDetailViewModel = ParticipantDetailViewModel(participant: partner)
+                self.animateObjectWillChange()
+            }
+        }
+        .store(in: &cancelable)
+    }
+
+    private func setupParticipantDetailViewModel(participant: Participant?) {
+        let partner = threadVM?.participantsViewModel.participants.first(where: {$0.auditor == false && $0.id != AppState.shared.user?.id})
+        let threadP2PParticipant = AppState.shared.appStateNavigationModel.userToCreateThread
+        let participant = participant ?? threadP2PParticipant ?? partner
+        if let participant = participant {
+            self.participantDetailViewModel = ParticipantDetailViewModel(participant: participant)
+        }
+    }
+
+    private func setupEditConversationViewModel() {
+        if let threadVM = threadVM {
+            editConversationViewModel = EditConversationViewModel(threadVM: threadVM)
+        }
     }
 
     public func cancelObservers() {
