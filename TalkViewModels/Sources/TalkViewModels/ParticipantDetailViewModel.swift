@@ -146,6 +146,9 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
         }
     }
 
+    /// In this method we have to listen to addContact globally
+    /// even if it has been called by other methods such as the user clicks on add contact in thread detail
+    /// because it uses global ContactsViewModel, so after adding for the first time we should show the edit button.
     private func onAddContact(_ response: ChatResponse<[Contact]>) {
         response.result?.forEach{ contact in
             if contact.user?.username == participant.username {

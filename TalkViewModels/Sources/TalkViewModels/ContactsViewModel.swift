@@ -220,6 +220,7 @@ public class ContactsViewModel: ObservableObject {
     }
 
     public func onAddContacts(_ response: ChatResponse<[Contact]>) {
+        if !response.cache, response.pop(prepend: "Add-Contact-ContactsViewModel\(isBuilder ? "Builder" : "")") == nil { return }
         if response.error == nil, let contacts = response.result {
             contacts.forEach { newContact in
                 if let index = self.contacts.firstIndex(where: {$0.id == newContact.id }) {
@@ -276,6 +277,7 @@ public class ContactsViewModel: ObservableObject {
         let req: AddContactRequest = isNumber ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
+        RequestsManager.shared.append(prepend: "Add-Contact-ContactsViewModel\(isBuilder ? "Builder" : "")", value: req)
         ChatManager.activeInstance?.contact.add(req)
     }
 
