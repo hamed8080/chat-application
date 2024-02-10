@@ -32,7 +32,11 @@ extension ThreadViewModel {
             sendNormalMessage()
         }
 
-        sendContainerViewModel.clear() // close ui
+        /// A delay is essential for creating a conversation with a person for the person if we are in simulated mode.
+        /// It prevents to delete textMessage inside the SendContainerViewModel with the clear method.
+        Timer.scheduledTimer(withTimeInterval: isSimulatedThared ? 0.5 : 0, repeats: false) { [weak self] _ in
+            self?.sendContainerViewModel.clear() // close ui
+        }
         historyVM.sendSeenForAllUnreadMessages()
     }
 

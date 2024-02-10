@@ -104,8 +104,7 @@ public extension NavigationModel {
     }
 
     func viewModel(for threadId: Int) -> ThreadViewModel? {
-        /// We return last for when the user sends the first message inside a p2p thread after sending a message the thread object inside the ThreadViewModel will change to update the new id and other stuff.
-        return threadStack.first(where: {$0.viewModel.threadId == threadId})?.viewModel ?? threadStack.last?.viewModel
+        return threadStack.first(where: {$0.viewModel.threadId == threadId})?.viewModel
     }
 
     func setSelectedThreadId() {
