@@ -80,10 +80,10 @@ public extension NavigationModel {
 // ThreadViewModel
 public extension NavigationModel {
     private var threadsViewModel: ThreadsViewModel? { AppState.shared.objectsContainer.threadsVM }
-    var threadStack: [ThreadViewModel] { pathsTracking.compactMap{ $0 as? ThreadViewModel } }
+    private var threadStack: [ConversationNavigationValue] { pathsTracking.compactMap{ $0 as? ConversationNavigationValue } }
 
     func switchFromThreadList(thread: Conversation) {
-        presentedThreadViewModel?.cancelAllObservers()
+        presentedThreadViewModel?.viewModel.cancelAllObservers()
         popAllPaths()
         append(thread: thread)
     }
@@ -99,24 +99,24 @@ public extension NavigationModel {
        return ThreadViewModel(thread: conversation, threadsViewModel: threadsViewModel)
     }
 
-    var presentedThreadViewModel: ThreadViewModel? {
+    var presentedThreadViewModel: ConversationNavigationValue? {
         threadStack.last
     }
 
     func viewModel(for threadId: Int) -> ThreadViewModel? {
         /// We return last for when the user sends the first message inside a p2p thread after sending a message the thread object inside the ThreadViewModel will change to update the new id and other stuff.
-        return threadStack.first(where: {$0.threadId == threadId}) ?? threadStack.last
+        return threadStack.first(where: {$0.viewModel.threadId == threadId})?.viewModel ?? threadStack.last?.viewModel
     }
 
     func setSelectedThreadId() {
-        selectedId = threadStack.last?.threadId
+        selectedId = threadStack.last?.viewModel.threadId
     }
 
     func remove(threadId: Int? = nil) {
-        remove(type: ThreadViewModel.self)
         if threadId != nil {
-            presentedThreadViewModel?.cancelAllObservers()
+            presentedThreadViewModel?.viewModel.cancelAllObservers()
         }
+        remove(type: ThreadViewModel.self)
         if let threadId = threadId, (pathsTracking.last as? ThreadViewModel)?.threadId == threadId {
             popLastPathTracking()
             popLastPath()

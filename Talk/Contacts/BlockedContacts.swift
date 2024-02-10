@@ -61,7 +61,7 @@ struct BlockedContacts: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 NavigationBackButton {
-                    AppState.shared.navViewModel?.remove(type: BlockedContactsNavigationValue.self)
+                    AppState.shared.objectsContainer.navVM.remove(type: BlockedContactsNavigationValue.self)
                 }
             }
         }

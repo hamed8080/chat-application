@@ -62,7 +62,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var cancelable: Set<AnyCancellable> = []
     public var threadId: Int { thread.id ?? 0 }
     public var signalMessageText: String?
-    public var isActiveThread: Bool { AppState.shared.navViewModel?.presentedThreadViewModel?.threadId == threadId }
+    public var isActiveThread: Bool { AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel.threadId == threadId }
     public weak var forwardMessage: Message?
     public var seenPublisher = PassthroughSubject<Message, Never>()
     var createThreadCompletion: (()-> Void)?

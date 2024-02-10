@@ -46,7 +46,7 @@ struct SupportView: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 NavigationBackButton {
-                    AppState.shared.navViewModel?.remove(type: SupportNavigationValue.self)
+                    AppState.shared.objectsContainer.navVM.remove(type: SupportNavigationValue.self)
                 }
             }
         }

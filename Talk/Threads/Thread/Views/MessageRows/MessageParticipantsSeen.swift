@@ -49,7 +49,7 @@ struct MessageParticipantsSeen: View {
             ToolbarItemGroup(placement: .navigation) {
                 NavigationBackButton {
                     threadVM.scrollVM.disableExcessiveLoading()
-                    AppState.shared.navViewModel?.remove(type: MessageParticipantsSeenNavigationValue.self)
+                    AppState.shared.objectsContainer.navVM.remove(type: MessageParticipantsSeenNavigationValue.self)
                 }
             }
 

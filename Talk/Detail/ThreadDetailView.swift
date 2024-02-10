@@ -559,7 +559,6 @@ struct DetailView_Previews: PreviewProvider {
         contact.image = "https://imgv3.fotor.com/images/gallery/Realistic-Male-Profile-Picture.jpg"
         contact.user = User(cellphoneNumber: "+1 234 53 12",
                             profile: .init(bio: "I wish the best for you.", metadata: nil))
-        AppState.shared.navViewModel = NavigationModel()
         return contact
     }
 

@@ -44,7 +44,7 @@ struct LogView: View {
 
             ToolbarItemGroup(placement: .navigation) {
                 NavigationBackButton {
-                    AppState.shared.navViewModel?.remove(type: LogNavigationValue.self)
+                    AppState.shared.objectsContainer.navVM.remove(type: LogNavigationValue.self)
                 }
             }
         }

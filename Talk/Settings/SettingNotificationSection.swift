@@ -97,7 +97,7 @@ struct NotificationSettings: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 NavigationBackButton {
-                    AppState.shared.navViewModel?.remove(type: PreferenceNavigationValue.self)
+                    AppState.shared.objectsContainer.navVM.remove(type: PreferenceNavigationValue.self)
                 }
             }
         }

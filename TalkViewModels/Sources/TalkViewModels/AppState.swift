@@ -14,13 +14,6 @@ import ChatCore
 import Combine
 import ChatDTO
 
-public enum AppLifeCycleState {
-    case foreground
-    case background
-    case inactive
-    case active
-}
-
 struct ForwardCreateConversationRequest: ChatDTO.UniqueIdProtocol {
     let uniqueId: String
     let from: Int
@@ -50,7 +43,6 @@ public final class AppState: ObservableObject {
     public static let shared = AppState()
     public var cachedUser = UserConfigManagerVM.instance.currentUserConfig?.user
     public var user: User? { cachedUser ?? ChatManager.activeInstance?.userInfo }
-    public var navViewModel: NavigationModel?
     @Published public var error: ChatError?
     @Published public var isLoading: Bool = false
     @Published public var callLogs: [URL]?
@@ -61,7 +53,6 @@ public final class AppState: ObservableObject {
     public var lifeCycleState: AppLifeCycleState?
     public var objectsContainer: ObjectsContainer!
     public var appStateNavigationModel: AppStateNavigationModel = .init()
-
     @Published public var connectionStatus: ConnectionStatus = .connecting {
         didSet {
             setConnectionStatus(connectionStatus)
@@ -69,6 +60,41 @@ public final class AppState: ObservableObject {
     }
 
     private init() {
+        registerObservers()
+        updateWindowMode()
+    }
+
+    public func updateWindowMode() {
+        windowMode = UIApplication.shared.windowMode()
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+            AppState.isInSlimMode = UIApplication.shared.windowMode().isInSlimMode
+        }
+
+        NotificationCenter.windowMode.post(name: .windowMode, object: windowMode)
+    }
+
+    public func setConnectionStatus(_ status: ConnectionStatus) {
+        if status == .connected {
+            connectionStatusString = ""
+        } else {
+            connectionStatusString = String(describing: status) + " ..."
+        }
+    }
+
+    public func animateAndShowError(_ error: ChatError) {
+        withAnimation {
+            isLoading = false
+            self.error = error
+            Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+                self?.error = nil
+            }
+        }
+    }
+}
+
+// Observers.
+private extension AppState {
+    private func registerObservers() {
         NotificationCenter.thread.publisher(for: .thread)
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] value in
@@ -85,18 +111,11 @@ public final class AppState: ObservableObject {
             self?.updateWindowMode()
         }
         .store(in: &cancelable)
-        updateWindowMode()
     }
+}
 
-    public func updateWindowMode() {
-        windowMode = UIApplication.shared.windowMode()
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-            AppState.isInSlimMode = UIApplication.shared.windowMode().isInSlimMode
-        }
-
-        NotificationCenter.windowMode.post(name: .windowMode, object: windowMode)
-    }
-
+// Event handlers.
+private extension AppState {
     private func onThreadEvent(_ event: ThreadEventTypes) {
         switch event {
         case .threads(let response):
@@ -113,53 +132,6 @@ public final class AppState: ObservableObject {
         }
     }
 
-    func onCreated(_ response: ChatResponse<Conversation>) {
-        if let conversation = response.result, conversation.type == .selfThread {
-            navViewModel?.append(thread: conversation)
-        }
-    }
-
-    private func onDeleted(_ response: ChatResponse<Participant>) {
-        if let index = navViewModel?.pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
-            navViewModel?.popPathTrackingAt(at: index)
-        }
-    }
-
-    private func onLeft(_ response: ChatResponse<User>) {
-        let deletedUserId = response.result?.id
-        let myId = AppState.shared.user?.id
-        let threadsVM = AppState.shared.objectsContainer.threadsVM
-        let conversation = threadsVM.threads.first(where: {$0.id == response.subjectId})
-        let threadVM = navViewModel?.threadStack.first(where: {$0.threadId == conversation?.id})
-        let participant = threadVM?.participantsViewModel.participants.first(where: {$0.id == deletedUserId})
-
-        if deletedUserId == myId {
-            if let conversation = conversation {
-                threadsVM.removeThread(conversation)
-            }
-
-            /// Remove the ThreadViewModel for cleaning the memory.
-            if let index = navViewModel?.pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
-                navViewModel?.popPathTrackingAt(at: index)
-            }
-
-            /// If I am in the detail view and press leave thread I should remove first DetailViewModel -> ThreadViewModel
-            /// That is the reason why we call paths.removeLast() twice.
-            if let index = navViewModel?.pathsTracking.firstIndex(where: { ($0 as? ThreadDetailViewModel)?.thread?.id == response.subjectId }) {
-                navViewModel?.popPathTrackingAt(at: index)
-                navViewModel?.popLastPath()
-                navViewModel?.popLastPath()
-            }
-        } else {
-            if let participant = participant {
-                threadVM?.participantsViewModel.removeParticipant(participant)
-            }
-            conversation?.participantCount = (conversation?.participantCount ?? 0) - 1
-            threadVM?.thread.participantCount = conversation?.participantCount
-            threadVM?.animateObjectWillChange()
-        }
-    }
-
     private func onParticipantsEvents(_ event: ParticipantEventTypes) {
         switch event {
         case .add(let response):
@@ -168,16 +140,11 @@ public final class AppState: ObservableObject {
             break
         }
     }
+}
 
-    public func setConnectionStatus(_ status: ConnectionStatus) {
-        if status == .connected {
-            connectionStatusString = ""
-        } else {
-            connectionStatusString = String(describing: status) + " ..."
-        }
-    }
-
-    func onGetThreads(_ response: ChatResponse<[Conversation]>) {
+// Conversation
+public extension AppState {
+    private func onGetThreads(_ response: ChatResponse<[Conversation]>) {
         if RequestsManager.shared.contains(key: response.uniqueId ?? ""), let thraed = response.result?.first {
             showThread(thread: thraed)
         }
@@ -191,14 +158,61 @@ public final class AppState: ObservableObject {
         }
     }
 
-    public func showThread(thread: Conversation) {
-        withAnimation {
-            isLoading = false
-            navViewModel?.append(thread: thread)
+    private func onCreated(_ response: ChatResponse<Conversation>) {
+        if let conversation = response.result, conversation.type == .selfThread {
+            objectsContainer.navVM.append(thread: conversation)
         }
     }
 
-    public func openThread(contact: Contact) {
+    private func onDeleted(_ response: ChatResponse<Participant>) {
+        if let index = objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
+            objectsContainer.navVM.popPathTrackingAt(at: index)
+        }
+    }
+
+    private func onLeft(_ response: ChatResponse<User>) {
+        let deletedUserId = response.result?.id
+        let myId = AppState.shared.user?.id
+        let threadsVM = AppState.shared.objectsContainer.threadsVM
+        let conversation = threadsVM.threads.first(where: {$0.id == response.subjectId})
+        let threadVM = objectsContainer.navVM.viewModel(for: conversation?.id ?? -1)
+        let participant = threadVM?.participantsViewModel.participants.first(where: {$0.id == deletedUserId})
+
+        if deletedUserId == myId {
+            if let conversation = conversation {
+                threadsVM.removeThread(conversation)
+            }
+
+            /// Remove the ThreadViewModel for cleaning the memory.
+            if let index = objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
+                objectsContainer.navVM.popPathTrackingAt(at: index)
+            }
+
+            /// If I am in the detail view and press leave thread I should remove first DetailViewModel -> ThreadViewModel
+            /// That is the reason why we call paths.removeLast() twice.
+            if let index = objectsContainer.navVM.pathsTracking.firstIndex(where: { ($0 as? ThreadDetailViewModel)?.thread?.id == response.subjectId }) {
+                objectsContainer.navVM.popPathTrackingAt(at: index)
+                objectsContainer.navVM.popLastPath()
+                objectsContainer.navVM.popLastPath()
+            }
+        } else {
+            if let participant = participant {
+                threadVM?.participantsViewModel.removeParticipant(participant)
+            }
+            conversation?.participantCount = (conversation?.participantCount ?? 0) - 1
+            threadVM?.thread.participantCount = conversation?.participantCount
+            threadVM?.animateObjectWillChange()
+        }
+    }
+
+    func showThread(thread: Conversation) {
+        withAnimation {
+            isLoading = false
+            objectsContainer.navVM.append(thread: thread)
+        }
+    }
+
+    func openThread(contact: Contact) {
         let userId = contact.user?.id ?? contact.user?.coreUserId ?? -1
         appStateNavigationModel.userToCreateThread = .init(contactId: contact.id,
                                                            id: userId,
@@ -207,39 +221,33 @@ public final class AppState: ObservableObject {
         searchForP2PThread(coreUserId: userId)
     }
 
-    public func openThread(participant: Participant) {
+    func openThread(participant: Participant) {
         appStateNavigationModel.userToCreateThread = participant
         searchForP2PThread(coreUserId: participant.coreUserId ?? -1)
     }
 
-    public func openThreadWith(userName: String) {
+    func openThreadWith(userName: String) {
         appStateNavigationModel.userToCreateThread = .init(username: userName)
         searchForP2PThread(coreUserId: nil, userName: userName)
     }
 
-    public func openThreadAndMoveToMessage(conversationId: Int, messageId: Int, messageTime: UInt) {
-        self.appStateNavigationModel.moveToMessageId = messageId
-        self.appStateNavigationModel.moveToMessageTime = messageTime
-        searchForGroupThread(threadId: conversationId, moveToMessageId: messageId, moveToMessageTime: messageTime)
-    }
-
     /// Forward messages form a thread to a destination thread.
     /// If the conversation is nil it try to use contact. Firstly it opens a conversation using the given contact core user id then send messages to the conversation.
-    public func openThread(from: Int, conversation: Conversation?, contact: Contact?, messages: [Message]) {
+    func openThread(from: Int, conversation: Conversation?, contact: Contact?, messages: [Message]) {
         self.appStateNavigationModel.forwardMessages = messages
         let messageIds = messages.sorted{$0.time ?? 0 < $1.time ?? 0}.compactMap{$0.id}
         if let conversation = conversation , let destinationConversationId = conversation.id {
-            navViewModel?.append(thread: conversation)
+            objectsContainer.navVM.append(thread: conversation)
             appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
         } else if let coreUserId = contact?.user?.coreUserId, let conversation = checkForP2POffline(coreUserId: coreUserId), let destinationConversationId = conversation.id {
-            navViewModel?.append(thread: conversation)
+            objectsContainer.navVM.append(thread: conversation)
             appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: from, threadId: destinationConversationId, messageIds: messageIds)
         } else if let coreUserId = contact?.user?.coreUserId {
             openForwardConversation(coreUserId: coreUserId, fromThread: from, messageIds: messageIds)
         }
     }
 
-    public func openForwardConversation(coreUserId: Int, fromThread: Int, messageIds: [Int]) {
+    private func openForwardConversation(coreUserId: Int, fromThread: Int, messageIds: [Int]) {
         let invitees = [Invitee(id: "\(coreUserId)", idType: .coreUserId)]
         let req = CreateThreadRequest(invitees: invitees, title: "")
         let request = ForwardCreateConversationRequest(uniqueId: req.uniqueId, from: fromThread, messageIds: messageIds, request: req)
@@ -253,14 +261,14 @@ public final class AppState: ObservableObject {
               let conversation = response.result,
               let destinationConversationId = conversation.id
         else { return }
-        navViewModel?.append(thread: conversation)
+        objectsContainer.navVM.append(thread: conversation)
         /// We call send forward messages with a little bit of delay because it will get history in the above code and there should not be anything in the queue to forward messages.
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
             self?.appStateNavigationModel.forwardMessageRequest = ForwardMessageRequest(fromThreadId: request.from, threadId: destinationConversationId, messageIds: request.messageIds)
         }
     }
 
-    public func searchForP2PThread(coreUserId: Int?, userName: String? = nil) {
+    func searchForP2PThread(coreUserId: Int?, userName: String? = nil) {
         if let thread = checkForP2POffline(coreUserId: coreUserId ?? -1) {
             onSearchP2PThreads(thread: thread)
             return
@@ -270,7 +278,7 @@ public final class AppState: ObservableObject {
         ChatManager.activeInstance?.conversation.get(req)
     }
 
-    public func searchForGroupThread(threadId: Int, moveToMessageId: Int, moveToMessageTime: UInt) {
+    func searchForGroupThread(threadId: Int, moveToMessageId: Int, moveToMessageTime: UInt) {
         if let thread = checkForGroupOffline(tharedId: threadId) {
             onSearchGroupThreads(thread: thread)
             return
@@ -280,21 +288,21 @@ public final class AppState: ObservableObject {
         ChatManager.activeInstance?.conversation.get(req)
     }
 
-    public func onSearchGroupThreads(thread: Conversation?) {
+    private func onSearchGroupThreads(thread: Conversation?) {
         if let thread = thread {
-            navViewModel?.append(thread: thread)
+            objectsContainer.navVM.append(thread: thread)
         }
     }
 
-    public func onSearchP2PThreads(thread: Conversation?) {
+    private func onSearchP2PThreads(thread: Conversation?) {
         if let thread = thread {
-            navViewModel?.append(thread: thread)
+            objectsContainer.navVM.append(thread: thread)
         } else {
             showEmptyThread()
         }
     }
 
-    public func checkForP2POffline(coreUserId: Int) -> Conversation? {
+    func checkForP2POffline(coreUserId: Int) -> Conversation? {
         objectsContainer.threadsVM.threads
             .first(where: {
                 ($0.partner == coreUserId || ($0.participants?.contains(where: {$0.coreUserId == coreUserId}) ?? false))
@@ -302,12 +310,12 @@ public final class AppState: ObservableObject {
             )
     }
 
-    public func checkForGroupOffline(tharedId: Int) -> Conversation? {
+    func checkForGroupOffline(tharedId: Int) -> Conversation? {
         objectsContainer.threadsVM.threads
             .first(where: { $0.group == true && $0.id == tharedId })
     }
 
-    public func showEmptyThread() {
+    func showEmptyThread() {
         guard let participant = appStateNavigationModel.userToCreateThread else { return }
         withAnimation {
             let particpants = [participant]
@@ -315,26 +323,25 @@ public final class AppState: ObservableObject {
                                             image: participant.image,
                                             title: participant.name,
                                             participants: particpants)
-            navViewModel?.append(thread: conversation)
+            objectsContainer.navVM.append(thread: conversation)
             isLoading = false
         }
     }
 
-    public func animateAndShowError(_ error: ChatError) {
-        withAnimation {
-            isLoading = false
-            self.error = error
-            Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
-                self?.error = nil
-            }
-        }
+    func openThreadAndMoveToMessage(conversationId: Int, messageId: Int, messageTime: UInt) {
+        self.appStateNavigationModel.moveToMessageId = messageId
+        self.appStateNavigationModel.moveToMessageTime = messageTime
+        searchForGroupThread(threadId: conversationId, moveToMessageId: messageId, moveToMessageTime: messageTime)
     }
+}
 
-    func onAddParticipants(_ response: ChatResponse<Conversation>) {
+// Participant
+public extension AppState {
+    private func onAddParticipants(_ response: ChatResponse<Conversation>) {
         let addedParticipants = response.result?.participants ?? []
         let threadsVM = AppState.shared.objectsContainer.threadsVM
         let conversation = threadsVM.threads.first(where: {$0.id == response.result?.id})
-        let threadVM = navViewModel?.threadStack.first(where: {$0.threadId == conversation?.id})
+        let threadVM = objectsContainer.navVM.viewModel(for: conversation?.id ?? -1)
         conversation?.participantCount = response.result?.participantCount ?? (conversation?.participantCount ?? 0) + addedParticipants.count
         threadVM?.participantsViewModel.onAdded(addedParticipants)
         threadVM?.animateObjectWillChange()

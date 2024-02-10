@@ -191,7 +191,7 @@ struct EditProfileView: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 NavigationBackButton {
-                    AppState.shared.navViewModel?.remove(type: EditProfileNavigationValue.self)
+                    AppState.shared.objectsContainer.navVM.remove(type: EditProfileNavigationValue.self)
                 }
             }
 

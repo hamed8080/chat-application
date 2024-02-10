@@ -26,7 +26,7 @@ struct ThreadLeadingToolbar: View {
 
         NavigationBackButton {
             AppState.shared.appStateNavigationModel = .init()
-            AppState.shared.navViewModel?.remove(threadId: viewModel.thread.id)
+            AppState.shared.objectsContainer.navVM.remove(threadId: viewModel.thread.id)
         }
     }
 }
