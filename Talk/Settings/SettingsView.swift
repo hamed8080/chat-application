@@ -114,7 +114,8 @@ struct SettingSettingSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "gearshape.fill", title: "Settings.title", color: .gray, showDivider: false) {
-            navModel.appendPreference()
+            let value = PreferenceNavigationValue()
+            navModel.append(type: .preference(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -266,7 +267,8 @@ struct SettingLogSection: View {
     var body: some View {
         if EnvironmentValues.isTalkTest {
             ListSectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown, showDivider: false) {
-                navModel.appendLog()
+                let value = LogNavigationValue()
+                navModel.append(type: .log(value), value: value)
             }
             .listRowInsets(.zero)
             .listRowBackground(Color.App.bgPrimary)
@@ -280,7 +282,8 @@ struct SettingArchivesSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "archivebox.fill", title: "Tab.archives", color: Color.App.color5, showDivider: false) {
-            navModel.appendArhives()
+            let value = ArchivesNavigationValue()
+            navModel.append(type: .archives(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -293,7 +296,8 @@ struct SettingLanguageSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "globe", title: "Settings.language", color: Color.App.red, showDivider: false, trailingView: selectedLanguage) {
-            navModel.appendLanguage()
+            let value = LanguageNavigationValue()
+            navModel.append(type: .language(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -364,7 +368,8 @@ struct BlockedMessageSection: View {
     var body: some View {
         ListSectionButton(imageName: "hand.raised.slash", title: "General.blocked", color: Color.App.red, showDivider: false) {
             withAnimation {
-                navModel.appendBlockedContacts()
+                let value = BlockedContactsNavigationValue()
+                navModel.append(type: .blockedContacts(value), value: value)
             }
         }
         .listRowInsets(.zero)
@@ -380,7 +385,8 @@ struct SupportSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.support", color: Color.App.color2, showDivider: false) {
-            navModel.appendSupport()
+            let value = SupportNavigationValue()
+            navModel.append(type: .support(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -411,7 +417,8 @@ struct SettingAssistantSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "person.fill", title: "Settings.assistants", color: Color.App.color1, showDivider: false) {
-            navModel.appendAssistant()
+            let value = AssistantNavigationValue()
+            navModel.append(type: .assistant(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -442,7 +449,8 @@ struct UserProfileView: View {
             Spacer()
 
             Button {
-                AppState.shared.objectsContainer.navVM.appendEditProfile()
+                let value = EditProfileNavigationValue()
+                AppState.shared.objectsContainer.navVM.append(type: .editProfile(value), value: value)
             } label: {
                 Rectangle()
                     .fill(.clear)

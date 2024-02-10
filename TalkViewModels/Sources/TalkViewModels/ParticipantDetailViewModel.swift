@@ -132,7 +132,7 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
 
     /// Disable for now as a result of a error in server chat.
     public func fetchMutualThreads() {
-//        guard AppState.shared.objectsContainer.navVM.selectedThreadId != LocalId.emptyThread.rawValue, let userId = participant.id else { return }
+//        guard AppState.shared.objectsContainer.navVM.selectedId != LocalId.emptyThread.rawValue, let userId = participant.id else { return }
 //        let invitee = Invitee(id: "\(userId)", idType: .coreUserId)
 //        let req = MutualGroupsRequest(toBeUser: invitee)
 //        RequestsManager.shared.append(value: req)

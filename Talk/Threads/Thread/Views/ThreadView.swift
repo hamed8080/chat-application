@@ -60,7 +60,7 @@ struct ThreadView: View, DropDelegate {
             }
             .onReceive(viewModel.$dismiss) { newValue in
                 if newValue {
-                    AppState.shared.navViewModel?.remove(type: ThreadViewModel.self, threadId: thread.id)
+                    AppState.shared.navViewModel?.remove(threadId: thread.id)
                     dismiss()
                 }
             }

@@ -16,7 +16,7 @@ struct ThreadListRowBackground: View {
     var body: some View {
         color
             .onReceive(AppState.shared.objectsContainer.navVM.objectWillChange) { _ in
-                if thread.id == AppState.shared.objectsContainer.navVM.selectedThreadId {
+                if thread.id == AppState.shared.objectsContainer.navVM.selectedId {
                     isSelected = true
                 } else if isSelected {
                     isSelected = false

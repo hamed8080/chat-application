@@ -75,6 +75,12 @@ public final class AppState: ObservableObject {
                 self?.onThreadEvent(value)
             }
             .store(in: &cancelable)
+        NotificationCenter.participant.publisher(for: .participant)
+            .compactMap { $0.object as? ParticipantEventTypes }
+            .sink { [weak self] event in
+                self?.onParticipantsEvents(event)
+            }
+            .store(in: &cancelable)
         UIApplication.shared.connectedScenes.first(where: {$0.activationState == .foregroundActive}).publisher.sink { [weak self] newValue in
             self?.updateWindowMode()
         }
@@ -97,6 +103,67 @@ public final class AppState: ObservableObject {
             onGetThreads(response)
         case .created(let response):
             onForwardCreateConversation(response)
+            onCreated(response)
+        case .deleted(let response):
+            onDeleted(response)
+        case .left(let response):
+            onLeft(response)
+        default:
+            break
+        }
+    }
+
+    func onCreated(_ response: ChatResponse<Conversation>) {
+        if let conversation = response.result, conversation.type == .selfThread {
+            navViewModel?.append(thread: conversation)
+        }
+    }
+
+    private func onDeleted(_ response: ChatResponse<Participant>) {
+        if let index = navViewModel?.pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
+            navViewModel?.popPathTrackingAt(at: index)
+        }
+    }
+
+    private func onLeft(_ response: ChatResponse<User>) {
+        let deletedUserId = response.result?.id
+        let myId = AppState.shared.user?.id
+        let threadsVM = AppState.shared.objectsContainer.threadsVM
+        let conversation = threadsVM.threads.first(where: {$0.id == response.subjectId})
+        let threadVM = navViewModel?.threadStack.first(where: {$0.threadId == conversation?.id})
+        let participant = threadVM?.participantsViewModel.participants.first(where: {$0.id == deletedUserId})
+
+        if deletedUserId == myId {
+            if let conversation = conversation {
+                threadsVM.removeThread(conversation)
+            }
+
+            /// Remove the ThreadViewModel for cleaning the memory.
+            if let index = navViewModel?.pathsTracking.firstIndex(where: { ($0 as? ThreadViewModel)?.threadId == response.subjectId }) {
+                navViewModel?.popPathTrackingAt(at: index)
+            }
+
+            /// If I am in the detail view and press leave thread I should remove first DetailViewModel -> ThreadViewModel
+            /// That is the reason why we call paths.removeLast() twice.
+            if let index = navViewModel?.pathsTracking.firstIndex(where: { ($0 as? ThreadDetailViewModel)?.thread?.id == response.subjectId }) {
+                navViewModel?.popPathTrackingAt(at: index)
+                navViewModel?.popLastPath()
+                navViewModel?.popLastPath()
+            }
+        } else {
+            if let participant = participant {
+                threadVM?.participantsViewModel.removeParticipant(participant)
+            }
+            conversation?.participantCount = (conversation?.participantCount ?? 0) - 1
+            threadVM?.thread.participantCount = conversation?.participantCount
+            threadVM?.animateObjectWillChange()
+        }
+    }
+
+    private func onParticipantsEvents(_ event: ParticipantEventTypes) {
+        switch event {
+        case .add(let response):
+            onAddParticipants(response)
         default:
             break
         }
@@ -228,7 +295,7 @@ public final class AppState: ObservableObject {
     }
 
     public func checkForP2POffline(coreUserId: Int) -> Conversation? {
-        navViewModel?.threadsViewModel?.threads
+        objectsContainer.threadsVM.threads
             .first(where: {
                 ($0.partner == coreUserId || ($0.participants?.contains(where: {$0.coreUserId == coreUserId}) ?? false))
                 && $0.group == false && $0.type == .normal}
@@ -236,7 +303,7 @@ public final class AppState: ObservableObject {
     }
 
     public func checkForGroupOffline(tharedId: Int) -> Conversation? {
-        navViewModel?.threadsViewModel?.threads
+        objectsContainer.threadsVM.threads
             .first(where: { $0.group == true && $0.id == tharedId })
     }
 
@@ -261,5 +328,15 @@ public final class AppState: ObservableObject {
                 self?.error = nil
             }
         }
+    }
+
+    func onAddParticipants(_ response: ChatResponse<Conversation>) {
+        let addedParticipants = response.result?.participants ?? []
+        let threadsVM = AppState.shared.objectsContainer.threadsVM
+        let conversation = threadsVM.threads.first(where: {$0.id == response.result?.id})
+        let threadVM = navViewModel?.threadStack.first(where: {$0.threadId == conversation?.id})
+        conversation?.participantCount = response.result?.participantCount ?? (conversation?.participantCount ?? 0) + addedParticipants.count
+        threadVM?.participantsViewModel.onAdded(addedParticipants)
+        threadVM?.animateObjectWillChange()
     }
 }

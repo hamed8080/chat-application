@@ -52,7 +52,7 @@ struct ThreadMessagesList: View {
                 viewModel.scrollVM.animateObjectWillChange()
                 let isSwipeEdge = Language.isRTL ? (newValue.startLocation.x > ThreadViewModel.threadWidth - 20) : newValue.startLocation.x < 20
                 if isSwipeEdge, abs(newValue.translation.width) > 48 && newValue.translation.height < 12 {
-                    AppState.shared.objectsContainer.navVM.remove(type: ThreadViewModel.self, threadId: viewModel.threadId)
+                    AppState.shared.objectsContainer.navVM.remove(threadId: viewModel.threadId)
                 }
             }
     }

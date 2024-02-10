@@ -73,7 +73,8 @@ struct MessageActionMenu: View {
             if let threadVM = threadVM, viewModel.message.ownerId == AppState.shared.user?.id && threadVM.thread.group == true {
                 ContextMenuButton(title: "SeenParticipants.title", image: "info.bubble") {
                     withAnimation(animation(appear: threadVM.forwardMessage != nil)) {
-                        AppState.shared.objectsContainer.navVM.appendMessageParticipantsSeen(viewModel.message, threadVM: threadVM)
+                        let value = MessageParticipantsSeenNavigationValue(message: viewModel.message, threadVM: threadVM)
+                        AppState.shared.objectsContainer.navVM.append(type: .messageParticipantsSeen(value), value: value)
                     }
                 }
             }

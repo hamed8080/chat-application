@@ -260,7 +260,7 @@ struct ThreadInfoView: View {
     var body: some View {
         HStack(spacing: 16) {
             let image = viewModel.thread?.computedImageURL ?? viewModel.participantDetailViewModel?.participant.image ?? ""
-            let avatarVM = AppState.shared.navViewModel?.threadsViewModel?.avatars(for: image,
+            let avatarVM = AppState.shared.objectsContainer.threadsVM.avatars(for: image,
                                                                                    metaData: viewModel.thread?.metadata,
                                                                                    userName: String.splitedCharacter(viewModel.thread?.title ?? ""))
             let config = ImageLoaderConfig(url: image,
@@ -560,7 +560,6 @@ struct DetailView_Previews: PreviewProvider {
         contact.user = User(cellphoneNumber: "+1 234 53 12",
                             profile: .init(bio: "I wish the best for you.", metadata: nil))
         AppState.shared.navViewModel = NavigationModel()
-        AppState.shared.navViewModel?.threadsViewModel = .init()
         return contact
     }
 

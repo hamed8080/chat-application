@@ -81,22 +81,20 @@ struct NavigationTypeView: View {
 
     var body: some View {
         switch type {
-        case .conversation(let conversation):
-            if let viewModel = container.navVM.threadViewModel(threadId: conversation.id ?? 0) {
-                ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
-                    .id(conversation.id) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
-                    .environmentObject(container.appOverlayVM)
-                    .environmentObject(viewModel)
-                    .environmentObject(container.threadsVM)
-                    .environmentObject(viewModel.audioRecoderVM)
-                    .environmentObject(viewModel.sendContainerViewModel)
-                    .environmentObject(viewModel.attachmentsViewModel)
-                    .environmentObject(viewModel.searchedMessagesViewModel)
-                    .environmentObject(viewModel.scrollVM)
-                    .environmentObject(viewModel.historyVM)
-                    .environmentObject(viewModel.unsentMessagesViewModel)
-                    .environmentObject(viewModel.threadPinMessageViewModel)
-            }
+        case .threadViewModel(let viewModel):
+            ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
+                .id(viewModel.threadId) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
+                .environmentObject(container.appOverlayVM)
+                .environmentObject(viewModel)
+                .environmentObject(container.threadsVM)
+                .environmentObject(viewModel.audioRecoderVM)
+                .environmentObject(viewModel.sendContainerViewModel)
+                .environmentObject(viewModel.attachmentsViewModel)
+                .environmentObject(viewModel.searchedMessagesViewModel)
+                .environmentObject(viewModel.scrollVM)
+                .environmentObject(viewModel.historyVM)
+                .environmentObject(viewModel.unsentMessagesViewModel)
+                .environmentObject(viewModel.threadPinMessageViewModel)
         case .contact(let contact):
             Text(contact.firstName ?? "")
                 .environmentObject(container.appOverlayVM)

@@ -15,7 +15,7 @@ struct ArchivesView: View {
 
     var body: some View {
         List(viewModel.archives) { thread in
-            let isSelected = container.navVM.selectedThreadId == thread.id
+            let isSelected = container.navVM.selectedId == thread.id
             ThreadRow(thread: thread) {
                 AppState.shared.objectsContainer.navVM.append(thread: thread)
             }

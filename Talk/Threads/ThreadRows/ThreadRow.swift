@@ -107,8 +107,8 @@ struct ThreadRow: View {
     }
 
     private func setSelection() {
-        if AppState.shared.objectsContainer.navVM.selectedThreadId == thread.id {
-            isSelected = forceSelected ?? (AppState.shared.objectsContainer.navVM.selectedThreadId == thread.id)
+        if AppState.shared.objectsContainer.navVM.selectedId == thread.id {
+            isSelected = forceSelected ?? (AppState.shared.objectsContainer.navVM.selectedId == thread.id)
         } else if isSelected == true {
             isSelected = false
         }
