@@ -188,6 +188,7 @@
 "Thread.publicThreadStructrue" = "Offentliga trådnamn bör vara unika utan mellanslag och specialtecken.";
 "Thread.enterValidName" = "Ange namnet på konversationen.";
 "Thread.public" = "Offentlig";
+"Thread.private" = "Privat";
 "Thread.SendContainer.voiceRecording" = "Röstinspelning";
 "Thread.SendContainer.attachment" = "Bilaga";
 "Thread.SendContainer.typeMessageHere" = "Skriv meddelande här...";
@@ -219,7 +220,7 @@
 "Thread.createdAConversation" = "%@ skapade en konversation.";
 "Thread.Toolbar.participants" = "Deltagare";
 "Thread.sendAttachments" = "Skicka %@ filer";
-"Thread.public" = "Publik %@";
+"Thread.typeString" = "%@ %@";
 "Thread.delete" = "Ta bort %@";
 "Thread.inviteLink" = "Inbjudningslänk";
 "Thread.isVoiceRecording" = "Spelar in ljud";
@@ -257,6 +258,7 @@
 /* Edit group */
 "EditGroup.groupName" = "Gruppnamn";
 "EditGroup.groupDescription" = "Gruppbeskrivning (valfritt)";
+"EditGroup.admins" = "Administratörer";
 
 /* Export Chat */
 "ExportChat.startTitle" = "Startdatum";

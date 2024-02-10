@@ -188,6 +188,7 @@
 "Thread.publicThreadStructrue" = "يجب أن تحتوي أسماء المواضيع العامة على أسماء فريدة من دون أي فراغات أو أحرف خاصة.";
 "Thread.enterValidName" = "أدخل اسم المحادثة.";
 "Thread.public" = "عام";
+"Thread.private" = "خاص";
 "Thread.SendContainer.voiceRecording" = "تسجيل صوتي";
 "Thread.SendContainer.attachment" = "مرفق";
 "Thread.SendContainer.typeMessageHere" = "اكتب الرسالة هنا...";
@@ -219,7 +220,7 @@
 "Thread.createdAConversation" = "%@ قام بإنشاء محادثة.";
 "Thread.Toolbar.participants" = "مشاركون";
 "Thread.sendAttachments" = "إرسال %@ ملفات";
-"Thread.public" = "عام %@";
+"Thread.typeString" = "%@ %@";
 "Thread.delete" = "حذف %@";
 "Thread.inviteLink" = "رابط الدعوة";
 "Thread.isVoiceRecording" = "يتم تسجيل الصوت";
@@ -257,6 +258,7 @@
 /* Edit group */
 "EditGroup.groupName" = "اسم المجموعة";
 "EditGroup.groupDescription" = "وصف المجموعة (اختياري)";
+"EditGroup.admins" = "المشرفين";
 
 /* Export Chat */
 "ExportChat.startTitle" = "تاريخ البدء";

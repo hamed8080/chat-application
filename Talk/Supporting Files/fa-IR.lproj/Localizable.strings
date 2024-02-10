@@ -189,6 +189,7 @@
 "Thread.publicThreadStructrue" = "نام گروه های عمومی باید منحصر به فرد و بدون علامت های خاص باشند.";
 "Thread.enterValidName" = "نام گفتگو را اینجا وارد کنید";
 "Thread.public" = "عمومی";
+"Thread.private" = "خصوصی";
 "Thread.SendContainer.voiceRecording" = "در حال ضبط صدا";
 "Thread.SendContainer.attachment" = "پیوست ها";
 "Thread.SendContainer.typeMessageHere" = "پیام خود را اینجا وارد کنید...";
@@ -220,7 +221,7 @@
 "Thread.createdAConversation" = "%@ گفتگویی ساخت.";
 "Thread.Toolbar.participants" = "عضو";
 "Thread.sendAttachments" = "ارسال %@ فایل";
-"Thread.public" = "%@ عمومی";
+"Thread.typeString" = "%@ %@";
 "Thread.delete" = "حذف %@";
 "Thread.inviteLink" = "لینک دعوت";
 "Thread.isVoiceRecording" = "در حال ضبط صدا";
@@ -258,6 +259,7 @@
 /* Edit group */
 "EditGroup.groupName" = "اسم گروه";
 "EditGroup.groupDescription" = "توضیحات (اختیاری)";
+"EditGroup.admins" = "مدیران";
 
 /* Export Chat */
 "ExportChat.startTitle" = "تاریخ شروع";

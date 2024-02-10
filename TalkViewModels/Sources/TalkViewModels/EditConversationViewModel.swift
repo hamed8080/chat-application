@@ -37,6 +37,7 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
     @Published public var threadDescription: String = ""
     public var dismiss: Bool = false
     public var thread: Conversation { threadVM?.thread ?? .init() }
+    @Published public var adminCounts: Int = 0
 
     public init(threadVM: ThreadViewModel?) {
         self.threadVM = threadVM
@@ -51,6 +52,12 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
             .compactMap { $0.object as? ThreadEventTypes }
             .sink { [weak self] value in
                 self?.onThreadEvent(value)
+            }
+            .store(in: &cancelable)
+        NotificationCenter.participant.publisher(for: .participant)
+            .compactMap { $0.object as? ParticipantEventTypes }
+            .sink { [weak self] value in
+                self?.onParticipantsEvent(value)
             }
             .store(in: &cancelable)
         NotificationCenter.upload.publisher(for: .upload)
@@ -130,6 +137,15 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
         }
     }
 
+    private func onParticipantsEvent(_ event: ParticipantEventTypes) {
+        switch event {
+        case .participants(let response):
+            onAdmins(response)
+        default:
+            break
+        }
+    }
+
     public func switchToPrivateType() {
         AppState.shared.objectsContainer.threadsVM.makeThreadPrivate(thread)
     }
@@ -153,6 +169,19 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
             thread.uniqueName = req.uniqueName
         }
         animateObjectWillChange()
+    }
+
+    public func getAdminsCount() {
+        guard let threadId = thread.id else { return }
+        let req = ThreadParticipantRequest(request: .init(threadId: threadId, count: 100), admin: true)
+        RequestsManager.shared.append(prepend: "Edit-Group-Admins", value: req)
+        ChatManager.activeInstance?.conversation.participant.get(req)
+    }
+
+    private func onAdmins(_ response: ChatResponse<[Participant]>) {
+        if !response.cache, response.pop(prepend: "Edit-Group-Admins") != nil {
+            adminCounts = response.result?.count ?? 0
+        }
     }
 
     deinit{

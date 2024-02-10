@@ -9,6 +9,8 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import AdditiveUI
+import TalkModels
+import Additive
 
 struct EditGroup: View {
     @EnvironmentObject var viewModel: EditConversationViewModel
@@ -110,38 +112,54 @@ struct EditGroup: View {
                 }
                 .noSeparators()
                 .listRowBackground(Color.App.bgSecondary)
+
             let isChannel = viewModel.thread.type?.isChannelType == true
-            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
-            let localizedPublic = String(localized: .init("Thread.public"))
-            let localizedDelete = String(localized: .init("Thread.delete"))
             let isPublic = viewModel.thread.type?.isPrivate == false
+            let typeName = String(localized: .init(isChannel ? "Thread.channel" : "Thread.group"))
+            let localizedPublic = String(localized: isPublic ? .init("Thread.public") : "Thread.private")
+            let localizedDelete = String(localized: .init("Thread.delete"))
+            let localizedMainString = String(localized: .init("Thread.typeString"))
+
             Group {
                 StickyHeaderSection(header: "", height: 2)
                     .listRowBackground(Color.App.bgPrimary)
                     .listRowInsets(.zero)
                     .noSeparators()
+
+                item(title: String(format: localizedMainString, typeName, localizedPublic), image: isChannel ? "megaphone" : "person.2")
+
+                let adminsCount = viewModel.adminCounts.localNumber(locale: Language.preferredLocale) ?? ""
+                item(title: String(localized: .init("EditGroup.admins")), image: "person.badge.shield.checkmark", rightLabelText: adminsCount)
+
+                let participantsCount = viewModel.thread.participantCount?.localNumber(locale: Language.preferredLocale) ?? ""
+                item(title: String(localized: .init("Thread.Tabs.members")), image: "person.2", rightLabelText: participantsCount)
                 
-                if EnvironmentValues.isTalkTest {
-                    Toggle(isOn: $viewModel.isPublic) {
-                        Text(String(format: localizedPublic, typeName))
-                    }
-                    .toggleStyle(MyToggleStyle())
-                    .padding(.horizontal)
-                    .listRowBackground(Color.App.bgSecondary)
-                    .listRowSeparatorTint(Color.App.dividerPrimary)
-                    .disabled(isPublic)
-                    .opacity(isPublic ? 0.5 : 1.0)
+//                if EnvironmentValues.isTalkTest {
+//                    Toggle(isOn: $viewModel.isPublic) {
+//                        Text(String(format: localizedPublic, typeName))
+//                    }
+//                    .toggleStyle(MyToggleStyle())
+//                    .padding(.horizontal)
+//                    .listRowBackground(Color.App.bgSecondary)
+//                    .listRowSeparatorTint(Color.App.dividerPrimary)
+//                    .disabled(isPublic)
+//                    .opacity(isPublic ? 0.5 : 1.0)
+//                }
+
+                StickyHeaderSection(header: "", height: 2)
+                    .listRowBackground(Color.App.bgPrimary)
+                    .listRowInsets(.zero)
+                    .noSeparators()
+
+                item(title: String(format: localizedDelete, typeName), image: "trash", textColor: Color.App.red, iconColor: Color.App.red, showDivider: false) {
+                    AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: viewModel.thread.id))
                 }
 
-                Button {
-                    AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: viewModel.thread.id))
-                } label: {
-                    Label(String(format: localizedDelete, typeName), systemImage: "trash")
-                        .foregroundStyle(Color.App.red)
-                }
-                .padding(.horizontal, 8)
-                .listRowBackground(Color.App.bgSecondary)
-                .listRowSeparatorTint(Color.App.dividerPrimary)
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(height: 16)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparatorTint(Color.clear)
             }
         }
         .environment(\.defaultMinListRowHeight, 8)
@@ -172,6 +190,11 @@ struct EditGroup: View {
                 dismiss()
             }
         }
+        .onAppear {
+            if viewModel.adminCounts == 0 {
+                viewModel.getAdminsCount()
+            }
+        }
     }
 
     var toolbarView: some View {
@@ -188,6 +211,38 @@ struct EditGroup: View {
         NavigationBackButton {
             dismiss()
         }
+    }
+
+    @ViewBuilder private func item(title: String,
+                                   image: String,
+                                   rightLabelText: String = "",
+                                   textColor: Color = Color.App.textPrimary,
+                                   iconColor: Color = Color.App.textSecondary,
+                                   showDivider: Bool = true,
+                                   action: (() -> Void)? = nil) -> some View {
+        Button {
+            action?()
+        } label: {
+            HStack {
+                Image(systemName: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .clipped()
+                    .font(.iransansBody)
+                    .foregroundStyle(iconColor)
+                Text(title)
+                    .foregroundStyle(textColor)
+                Spacer()
+                Text(rightLabelText)
+                    .foregroundStyle(Color.App.accent)
+                    .font(.iransansBoldBody)
+            }
+        }
+        .buttonStyle(.borderless)
+        .padding(.horizontal, 8)
+        .listRowBackground(Color.App.bgSecondary)
+        .listRowSeparatorTint(showDivider ? Color.App.dividerPrimary : Color.clear)
     }
 }
 

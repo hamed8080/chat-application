@@ -190,6 +190,7 @@
 "Thread.publicThreadStructrue" = "Los nombres de los hilos públicos deben ser únicos y no contener espacios ni caracteres especiales.";
 "Thread.enterValidName" = "Ingresa el nombre de la conversación.";
 "Thread.public" = "Público";
+"Thread.private" = "Privada";
 "Thread.SendContainer.voiceRecording" = "Grabación de voz";
 "Thread.SendContainer.attachment" = "Adjunto";
 "Thread.SendContainer.typeMessageHere" = "Escribe el mensaje aquí ...";
@@ -221,7 +222,7 @@
 "Thread.createdAConversation" = "%@ creó una conversación.";
 "Thread.Toolbar.participants" = "Las participantes";
 "Thread.sendAttachments" = "Enviar %@ archivos";
-"Thread.public" = "Público %@";
+"Thread.typeString" = "%@ %@";
 "Thread.delete" = "Eliminar %@";
 "Thread.inviteLink" = "Enlace de invitación";
 "Thread.isVoiceRecording" = "Se está grabando voz";
@@ -259,6 +260,7 @@
 /* Edit group */
 "EditGroup.groupName" = "Nombre del grupo";
 "EditGroup.groupDescription" = "Descripción del grupo (opcional)";
+"EditGroup.admins" = "Administradoras";
 
 /* Exportar chat */
 "ExportChat.startTitle" = "Fecha de inicio";

@@ -189,6 +189,7 @@
 "Thread.publicThreadStructrue" = "Öffentliche Thread-Namen sollten eindeutige Namen ohne Leerzeichen und Sonderzeichen haben.";
 "Thread.enterValidName" = "Geben Sie den Namen des Gesprächs ein.";
 "Thread.public" = "Öffentlich";
+"Thread.private" = "Privat";
 "Thread.SendContainer.voiceRecording" = "Sprachaufnahme";
 "Thread.SendContainer.attachment" = "Anhang";
 "Thread.SendContainer.typeMessageHere" = "Hier Nachricht eingeben...";
@@ -220,7 +221,7 @@
 "Thread.createdAConversation" = "%@ hat eine Unterhaltung erstellt.";
 "Thread.Toolbar.participants" = "Teilnehmer";
 "Thread.sendAttachments" = "Senden Sie %@ Dateien";
-"Thread.public" = "Öffentlich %@";
+"Thread.public" = "%@ %@";
 "Thread.delete" = "Lösche %@";
 "Thread.inviteLink" = "Einladungslink";
 "Thread.isVoiceRecording" = "Nimmt Sprachaufnahme auf";
@@ -258,6 +259,7 @@
 /* Edit group */
 "EditGroup.groupName" = "Gruppenname";
 "EditGroup.groupDescription" = "Gruppenbeschreibung (optional)";
+"EditGroup.admins" = "Admins";
 
 /* Export Chat */
 "ExportChat.startTitle" = "Startdatum";

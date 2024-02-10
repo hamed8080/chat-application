@@ -65,8 +65,7 @@ public struct NormalNavigationBackButton: View {
             Spacer()
         }
         .padding(16)
-        .background(.ultraThinMaterial)
-        .foregroundStyle(Color.App.toolbarButton)
+        .background(.ultraThinMaterial)        
     }
 }
 

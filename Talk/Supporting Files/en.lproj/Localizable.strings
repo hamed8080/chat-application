@@ -188,6 +188,7 @@
 "Thread.publicThreadStructrue" = "Public threads names should have a unique names without any whitespace and special characters.";
 "Thread.enterValidName" = "Enter the name of the conversation.";
 "Thread.public" = "Public";
+"Thread.private" = "Private";
 "Thread.SendContainer.voiceRecording" = "Voice Recording";
 "Thread.SendContainer.attachment" = "Attachment";
 "Thread.SendContainer.typeMessageHere" = "Type message here ...";
@@ -219,7 +220,7 @@
 "Thread.createdAConversation" = "%@ created a conversation.";
 "Thread.Toolbar.participants" = "Participants";
 "Thread.sendAttachments" = "Send %@ files";
-"Thread.public" = "Public %@";
+"Thread.typeString" = "%@ %@";
 "Thread.delete" = "Delete %@";
 "Thread.inviteLink" = "Invite Link";
 "Thread.isVoiceRecording" = "Is recording voice";
@@ -257,6 +258,7 @@
 /* Edit group */
 "EditGroup.groupName" = "Group name";
 "EditGroup.groupDescription" = "Group description";
+"EditGroup.admins" = "Admins";
 
 /* Export Chat */
 "ExportChat.startTitle" = "Start Date";

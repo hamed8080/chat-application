@@ -161,6 +161,7 @@ struct EditCreatedConversationDetail: View {
         .listStyle(.plain)
         .safeAreaInset(edge: .top, spacing: 0) {
             NormalNavigationBackButton()
+                .foregroundStyle(Color.App.accent)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             SubmitBottomButton(text: viewModel.createConversationType == .normal ? "Contacts.createGroup" : "Contacts.createChannel",

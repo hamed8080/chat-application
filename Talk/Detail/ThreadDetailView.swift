@@ -85,6 +85,7 @@ struct ThreadDetailView: View {
 
 struct TarilingEditConversation: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         if viewModel.canShowEditConversationButton == true {
@@ -100,7 +101,7 @@ struct TarilingEditConversation: View {
                     .scaledToFit()
                     .frame(width: 16, height: 16)
                     .padding(8)
-                    .foregroundStyle(Color.App.accent)
+                    .foregroundStyle(colorScheme == .dark ? Color.App.accent : Color.App.white)
                     .fontWeight(.heavy)
             }
         } else if let viewModel = viewModel.participantDetailViewModel {
