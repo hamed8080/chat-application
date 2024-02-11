@@ -166,7 +166,6 @@ struct EditProfileView: View {
         }
         .animation(.easeInOut, value: focusedField)
         .background(Color.App.bgPrimary.ignoresSafeArea())
-        .navigationBarBackButtonHidden(true)
         .font(.iransansSubheadline)
         .safeAreaInset(edge: .bottom) {
             SubmitBottomButton(text: "General.submit",
@@ -188,19 +187,7 @@ struct EditProfileView: View {
                 self.viewModel.assetResources = assestResources ?? []
             }
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: EditProfileNavigationValue.self)
-                }
-            }
-
-            ToolbarItem(placement: .principal) {
-                Text("Settings.EditProfile.title")
-                    .fixedSize()
-                    .font(.iransansBoldSubheadline)
-            }
-        }
+        .normalToolbarView(title: "Settings.EditProfile.title", type: EditProfileNavigationValue.self)
     }
 }
 

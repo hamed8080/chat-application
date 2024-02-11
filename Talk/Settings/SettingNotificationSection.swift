@@ -89,18 +89,10 @@ struct NotificationSettings: View {
         .font(.iransansSubheadline)
         .background(Color.App.bgPrimary)
         .listStyle(.plain)
-        .navigationTitle("Settings.notifictionSettings")
-        .navigationBarBackButtonHidden(true)
         .onChange(of: model) { _ in
             model.save()
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: PreferenceNavigationValue.self)
-                }
-            }
-        }
+        .normalToolbarView(title: "Settings.notifictionSettings", type: PreferenceNavigationValue.self)
     }
 }
 
@@ -117,6 +109,7 @@ struct PrivateNotificationSetting: View {
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
+        .normalToolbarView(title: "Notification.PrivateSettings")
         .onChange(of: model) { _ in
             model.save()
         }
@@ -136,6 +129,7 @@ struct GroupNotificationSetting: View {
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
+        .normalToolbarView(title: "Notification.GroupSettings")
         .onChange(of: model) { _ in
             model.save()
         }
@@ -155,6 +149,7 @@ struct ChannelNotificationSetting: View {
         .environment(\.defaultMinListRowHeight, 8)
         .listStyle(.plain)
         .background(Color.App.bgPrimary)
+        .normalToolbarView(title: "Notification.ChannelSettings")
         .onChange(of: model) { _ in
             model.save()
         }

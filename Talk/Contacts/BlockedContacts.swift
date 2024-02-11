@@ -55,16 +55,8 @@ struct BlockedContacts: View {
             .listRowSeparatorTint(blocked.blockId == viewModel.blockedContacts.last?.blockId ? Color.clear : Color.App.dividerPrimary)
         }
         .background(Color.App.bgPrimary)
-        .navigationTitle("Contacts.blockedList")
-        .navigationBarBackButtonHidden(true)
         .listStyle(.plain)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: BlockedContactsNavigationValue.self)
-                }
-            }
-        }
+        .normalToolbarView(title: "Contacts.blockedList", type: BlockedContactsNavigationValue.self)
     }
 }
 

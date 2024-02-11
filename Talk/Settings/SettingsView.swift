@@ -220,18 +220,10 @@ struct PreferenceView: View {
         }
         .background(Color.App.bgPrimary)
         .listStyle(.plain)
-        .navigationTitle("Settings.title")
-        .navigationBarBackButtonHidden(true)
         .onChange(of: model) { _ in
             model.save()
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: PreferenceNavigationValue.self)
-                }
-            }
-        }
+        .normalToolbarView(title: "Settings.title", type: PreferenceNavigationValue.self)        
     }
 }
 

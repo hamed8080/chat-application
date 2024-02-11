@@ -11,23 +11,10 @@ import TalkViewModels
 
 public struct DeleteMessageDialog: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
-    let threadVM: ThreadViewModel
-    var viewModel: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
-    private var messages: [Message] { viewModel.selectedMessages.compactMap({$0.message}) }
-    private let deleteForMe: Bool
-    private let deleteForOthers: Bool
-    private var hasPinnedMessage: Bool { messages.contains(where: {$0.id == threadVM.thread.pinMessage?.id })}
-    /// 86_400_000 is equal to the number of milliseconds in a day
-    private var pastDeleteTimeForOthers: [Message] { messages.filter({ Int64($0.time ?? 0) + (86_400_000) < Date().millisecondsSince1970 }) }
+    private let viewModel: DeleteMessagesViewModelModel
 
-    private var isContainPastDeleteTimeAndDeleteableForOthers: Bool {
-        pastDeleteTimeForOthers.count != messages.count
-    }
-
-    public init(deleteForMe: Bool, deleteForOthers: Bool, viewModel: ThreadViewModel) {
-        self.deleteForMe = deleteForMe
-        self.deleteForOthers = deleteForOthers
-        self.threadVM = viewModel
+    public init(viewModel: DeleteMessagesViewModelModel) {
+        self.viewModel = viewModel
     }
 
     public var body: some View {
@@ -45,9 +32,8 @@ public struct DeleteMessageDialog: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
 
-            let isSingle = messages.count == 1
-            if hasPinnedMessage {
-                Text(isSingle ? "DeleteMessageDialog.singleDeleteIsPinMessage" : "DeleteMessageDialog.multipleDeleteContainsPinMessage")
+            if viewModel.hasPinnedMessage {
+                Text(viewModel.isSingle ? "DeleteMessageDialog.singleDeleteIsPinMessage" : "DeleteMessageDialog.multipleDeleteContainsPinMessage")
                     .foregroundStyle(Color.App.textSecondary)
                     .font(.iransansCaption2)
                     .multilineTextAlignment(.leading)
@@ -56,7 +42,7 @@ public struct DeleteMessageDialog: View {
             }
 
             HStack {
-                if pastDeleteTimeForOthers.isEmpty {
+                if !viewModel.isVstackLayout {
                     HStack(spacing: 16) {
                         buttons
                     }
@@ -73,51 +59,32 @@ public struct DeleteMessageDialog: View {
         .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
         .background(MixMaterialBackground())
         .onDisappear {
-            viewModel.clearSelection()
-            threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
-            appOverlayVM.dialogView = nil
-            viewModel.animateObjectWillChange()
+            viewModel.cleanup()
         }
     }
 
     @ViewBuilder var buttons: some View {
-        if deleteForMe {
-            let isSelfThread = threadVM.thread.type == .selfThread
+        if viewModel.deleteForMe {
             Button {
-                threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
-                threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
-                appOverlayVM.dialogView = nil
-                viewModel.animateObjectWillChange()
+                viewModel.deleteMessagesForMe()
             } label: {
-                Text(isSelfThread ? "General.delete" : "Messages.deleteForMe")
-                    .foregroundStyle(isSelfThread ? Color.App.red : Color.App.accent)
+                Text(viewModel.isSelfThread ? "General.delete" : "Messages.deleteForMe")
+                    .foregroundStyle(viewModel.isSelfThread ? Color.App.red : Color.App.accent)
                     .font(.iransansBoldCaption)
             }
         }
 
-        if deleteForOthers, !hasPinnedMessage, pastDeleteTimeForOthers.isEmpty {
+        if viewModel.deleteForOthers {
             Button {
-                threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
-                threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
-                appOverlayVM.dialogView = nil
-                viewModel.animateObjectWillChange()
+                viewModel.deleteForAll()
             } label: {
                 Text("Messages.deleteForAll")
                     .foregroundStyle(Color.App.red)
                     .font(.iransansBoldCaption)
             }
-        } else if deleteForOthers, isContainPastDeleteTimeAndDeleteableForOthers {
+        } else if viewModel.deleteForOthserIfPossible {
             Button {
-                let notPastDeleteTime = messages.filter({!pastDeleteTimeForOthers.contains($0)})
-                if pastDeleteTimeForOthers.count > 0 {
-                    threadVM.historyVM.deleteMessages(pastDeleteTimeForOthers, forAll: false)
-                }
-                if notPastDeleteTime.count > 0 {
-                    threadVM.historyVM.deleteMessages(notPastDeleteTime, forAll: true)
-                }
-                threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
-                appOverlayVM.dialogView = nil
-                viewModel.animateObjectWillChange()
+                viewModel.deleteForMeAndAllOthersPossible()
             } label: {
                 Text("DeleteMessageDialog.deleteForMeAllOtherIfPossible")
                     .foregroundStyle(Color.App.red)
@@ -130,6 +97,6 @@ public struct DeleteMessageDialog: View {
 
 struct DeleteMessageDialog_Previews: PreviewProvider {
     static var previews: some View {
-        DeleteMessageDialog(deleteForMe: false, deleteForOthers: false, viewModel: .init(thread: Conversation(id: 1)))
+        DeleteMessageDialog(viewModel: .init(threadVM: .init(thread: Conversation(id: 1))))
     }
 }

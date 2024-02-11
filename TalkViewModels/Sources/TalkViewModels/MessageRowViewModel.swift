@@ -213,28 +213,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-    public static func isDeletable(isMe: Bool, message: Message, thread: Conversation?) -> (forMe: Bool, ForOthers: Bool) {
-        let isChannel = thread?.type?.isChannelType == true
-        let isGroup = thread?.group == true
-        let isAdmin = thread?.admin == true
-        let isSelfThread = thread?.type == .selfThread
-        if isSelfThread {
-            return (true, false)
-        } else if isMe {
-            return (true, true)
-        } else if !isMe && !isGroup {
-            return (true, false)
-        } else if isChannel && !isAdmin {
-            return (false, false)
-        } else if !isMe && isGroup && !isAdmin {
-            return (true, false)
-        } else if !isMe && isGroup && isAdmin {
-            return (true, true)
-        } else {
-            return (false, false)
-        }
-    }
-
     public func toggleSelection() {
         withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
             isSelected.toggle()

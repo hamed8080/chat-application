@@ -8,6 +8,7 @@
 import SwiftUI
 import AdditiveUI
 import TalkUI
+import TalkViewModels
 
 struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingContentView: View>: View {
     @ViewBuilder let leadingNavigationViews: LeadingContentView?
@@ -167,6 +168,53 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             searchText = ""
             searchCompletion?("")
         }
+    }
+}
+
+struct NormalToolbarViewModifier<T, TrailingContentView: View>: ViewModifier {
+    let title: String
+    let type: T.Type?
+    @ViewBuilder let trailingView: TrailingContentView?
+
+    public init(title: String, type: T.Type? = nil, trailingView: TrailingContentView? = nil) {
+        self.title = title
+        self.type = type
+        self.trailingView = trailingView
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .navigationBarBackButtonHidden(true)
+            .safeAreaInset(edge: .top) {
+                ToolbarView(title: title,
+                            showSearchButton: false,
+                            leadingViews: leadingView,
+                            centerViews: EmptyView(),
+                            trailingViews: trailingView)
+            }
+    }
+    
+    private var leadingView: some View {
+        NavigationBackButton {
+            if let type = type {
+                AppState.shared.objectsContainer.navVM.remove(type: type)
+            }
+        }
+    }
+}
+
+extension View {
+
+    func normalToolbarView(title: String) -> some View {
+        modifier(NormalToolbarViewModifier<Any, EmptyView>(title: title, type: nil, trailingView: nil))
+    }
+
+    func normalToolbarView<T>(title: String, type: T.Type) -> some View {
+        modifier(NormalToolbarViewModifier<T, EmptyView>(title: title, type: type, trailingView: nil))
+    }
+
+    func normalToolbarView<T, TrailingContentView: View>(title: String, type: T.Type, trailingView: TrailingContentView? = nil) -> some View {
+        modifier(NormalToolbarViewModifier(title: title, type: type, trailingView: trailingView))
     }
 }
 

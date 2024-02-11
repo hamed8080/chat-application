@@ -12,10 +12,11 @@ import TalkUI
 import ChatModels
 
 struct EditMessagePlaceholderView: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
+    @EnvironmentObject var viewModel: SendContainerViewModel
 
     var body: some View {
-        if let editMessage = viewModel.sendContainerViewModel.editMessage {
+        if let editMessage = viewModel.editMessage {
             HStack {
                 SendContainerButton(image: "pencil")
                 EditMessageImage(editMessage: editMessage)
@@ -35,16 +36,15 @@ struct EditMessagePlaceholderView: View {
 
                 Spacer()
                 CloseButton {
-                    viewModel.scrollVM.disableExcessiveLoading()
-                    viewModel.sendContainerViewModel.clear()
-                    viewModel.animateObjectWillChange()
+                    threadVM.scrollVM.disableExcessiveLoading()
+                    viewModel.clear()
                 }
                 .padding(.trailing, 4)
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
             .onAppear {
-                if let messageId = editMessage.id, let uniqueId = editMessage.uniqueId, messageId == viewModel.thread.lastMessageVO?.id {
-                    viewModel.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
+                if let messageId = editMessage.id, let uniqueId = editMessage.uniqueId, messageId == threadVM.thread.lastMessageVO?.id {
+                    threadVM.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
                 }
             }
         }

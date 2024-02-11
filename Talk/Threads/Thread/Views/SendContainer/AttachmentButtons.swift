@@ -53,14 +53,16 @@ struct MutableAttachmentDialog: View {
 
             Spacer()
 
-            AttchmentButtonItem(title: "General.contact", image: "person.2.crop.square.stack.fill") {
-                threadVM.sheetType = .contactPicker
-                viewModel.showActionButtons.toggle()
-                threadVM.animateObjectWillChange()
+            if EnvironmentValues.isTalkTest {
+                AttchmentButtonItem(title: "General.contact", image: "person.2.crop.square.stack.fill") {
+                    threadVM.sheetType = .contactPicker
+                    viewModel.showActionButtons.toggle()
+                    threadVM.animateObjectWillChange()
+                }
+                .disabled(!EnvironmentValues.isTalkTest)
+                .opacity(EnvironmentValues.isTalkTest ? 1.0 : 0.2)
+                Spacer()
             }
-            .disabled(!EnvironmentValues.isTalkTest)
-            .opacity(EnvironmentValues.isTalkTest ? 1.0 : 0.2)
-            Spacer()
         }
         .font(.iransansBody)
         .padding(.top)

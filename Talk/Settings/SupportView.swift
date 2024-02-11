@@ -42,14 +42,7 @@ struct SupportView: View {
         .padding(EdgeInsets(top: 100, leading: 24, bottom: 30, trailing: 24))
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
         .background(Color.App.bgPrimary)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: SupportNavigationValue.self)
-                }
-            }
-        }
+        .normalToolbarView(title: "Logs.title", type: SupportNavigationValue.self)
     }
 }
 

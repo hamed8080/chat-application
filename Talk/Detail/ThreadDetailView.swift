@@ -113,6 +113,7 @@ struct TarilingEditConversation: View {
 
 struct EditContactTrailingButton: View {
     @EnvironmentObject var viewModel: ParticipantDetailViewModel
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         if viewModel.partnerContact != nil {
@@ -127,7 +128,7 @@ struct EditContactTrailingButton: View {
                     .scaledToFit()
                     .frame(width: 16, height: 16)
                     .padding(8)
-                    .foregroundStyle(Color.App.accent)
+                    .foregroundStyle(colorScheme == .dark ?  Color.App.accent : Color.App.white)
                     .fontWeight(.heavy)
             }
         }

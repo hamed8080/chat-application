@@ -80,17 +80,9 @@ struct AutomaticDownloadSettings: View {
         .font(.iransansSubheadline)
         .background(Color.App.bgPrimary)
         .listStyle(.plain)
-        .navigationTitle("Settings.download")
-        .navigationBarBackButtonHidden(true)
+        .normalToolbarView(title: "Settings.download", type: AutomaticDownloadsNavigationValue.self)
         .onChange(of: model) { _ in
             model.save()
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: PreferenceNavigationValue.self)
-                }
-            }
         }
     }
 }

@@ -41,9 +41,8 @@ struct SelectionView: View {
 
             /// Disable showing the delete button when forwarding in a conversation where we are not the admin and we just want to forward messages, so the delete button should be hidden.
             if !threadVM.thread.disableSend {
-                let isAdmin = threadVM.thread.admin == true || threadVM.thread.group != true
                 Button {
-                    appOverlayVM.dialogView = AnyView(DeleteMessageDialog(deleteForMe: true, deleteForOthers: isAdmin, viewModel: threadVM))
+                    appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init(threadVM: threadVM)))
                 } label: {
                     Image("ic_delete")
                         .resizable()

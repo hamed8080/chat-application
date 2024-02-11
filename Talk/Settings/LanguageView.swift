@@ -46,7 +46,6 @@ struct LanguageView: View {
         .animation(.easeInOut, value: selectedLanguage)
         .background(Color.App.bgPrimary)
         .listStyle(.plain)
-        .navigationBarBackButtonHidden(true)
         .alert("Settings.restartToChangeLanguage", isPresented: $restart) {
             Button {
                 restart = true
@@ -54,19 +53,7 @@ struct LanguageView: View {
                 Text("General.close")
             }
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: LanguageNavigationValue.self)
-                }
-            }
-
-            ToolbarItem(placement: .principal) {
-                Text("Settings.language")
-                    .fixedSize()
-                    .font(.iransansBoldSubheadline)
-            }
-        }
+        .normalToolbarView(title: "Settings.language", type: LanguageNavigationValue.self)
     }
 
     func changeLanguage(language: TalkModels.Language) {

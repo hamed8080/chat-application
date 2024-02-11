@@ -34,31 +34,16 @@ struct MessageParticipantsSeen: View {
                                 }
                             }
                     }
+                    .animation(.easeInOut, value: viewModel.participants.count)
                 }
             }
         }
         .background(Color.App.bgPrimary)
-        .animation(.easeInOut, value: viewModel.participants.count)
         .padding(.horizontal, viewModel.isEmpty ? 0 : 6)
-        .navigationBarBackButtonHidden(true)
-        .navigationTitle("SeenParticipants.title")
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $viewModel.isLoading)
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    threadVM.scrollVM.disableExcessiveLoading()
-                    AppState.shared.objectsContainer.navVM.remove(type: MessageParticipantsSeenNavigationValue.self)
-                }
-            }
-
-            ToolbarItemGroup(placement: .principal) {
-                Text("SeenParticipants.title")
-                    .font(.iransansBoldBody)
-                    .foregroundStyle(Color.App.textPrimary)
-            }
-        }
+        .normalToolbarView(title: "SeenParticipants.title", type: MessageParticipantsSeenNavigationValue.self)
         .onAppear {
             viewModel.getParticipants()
         }

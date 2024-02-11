@@ -132,6 +132,12 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
             onEditGroup(response)
         case .changedType(let chatResponse):
             onChangeThreadType(chatResponse)
+        case .left(let response):
+            onLeft(response)
+        case .joined(let response):
+            onJoined(response)
+        case .deleted(let response):
+            onDeletedConversation(response)
         default:
             break
         }
@@ -141,6 +147,10 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
         switch event {
         case .participants(let response):
             onAdmins(response)
+        case .deleted(let response):
+            onDeleted(response)
+        case .add(let response):
+            onAdded(response)
         default:
             break
         }
@@ -181,6 +191,37 @@ public final class EditConversationViewModel: ObservableObject, Hashable {
     private func onAdmins(_ response: ChatResponse<[Participant]>) {
         if !response.cache, response.pop(prepend: "Edit-Group-Admins") != nil {
             adminCounts = response.result?.count ?? 0
+        }
+    }
+
+    private func onDeleted(_ response: ChatResponse<[Participant]>) {
+        if response.subjectId == threadVM?.threadId {
+            animateObjectWillChange()
+        }
+    }
+
+    private func onAdded(_ response: ChatResponse<Conversation>) {
+        if response.result?.id == threadVM?.threadId {
+            animateObjectWillChange()
+        }
+    }
+
+    private func onLeft(_ response: ChatResponse<User>) {
+        if response.subjectId == threadVM?.threadId {
+            animateObjectWillChange()
+        }
+    }
+
+    private func onJoined(_ response: ChatResponse<Conversation>) {
+        if response.result?.id == threadVM?.threadId {
+            animateObjectWillChange()
+        }
+    }
+
+    private func onDeletedConversation(_ response: ChatResponse<Participant>) {
+        if response.subjectId == threadVM?.threadId {
+            AppState.shared.objectsContainer.navVM.popAllPaths()
+            animateObjectWillChange()
         }
     }
 

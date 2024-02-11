@@ -36,20 +36,7 @@ struct ArchivesView: View {
         .animation(.easeInOut, value: viewModel.archives.count)
         .animation(.easeInOut, value: viewModel.isLoading)
         .listStyle(.plain)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: ArchivesNavigationValue.self)
-                }
-            }
-
-            ToolbarItem(placement: .principal) {
-                Text("Tab.archives")
-                    .fixedSize()
-                    .font(.iransansBoldSubheadline)
-            }
-        }
+        .normalToolbarView(title: "Tab.archives", type: ArchivesNavigationValue.self)       
         .task {
             viewModel.getArchivedThreads()
         }

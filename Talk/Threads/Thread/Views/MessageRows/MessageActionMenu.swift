@@ -134,15 +134,14 @@ struct MessageActionMenu: View {
                 }
             }
 
-            let delete = MessageRowViewModel.isDeletable(isMe: viewModel.isMe, message: viewModel.message, thread: viewModel.threadVM?.thread)
-            if delete.forMe || delete.ForOthers {
+            let isDeletable = DeleteMessagesViewModelModel.isDeletable(isMe: viewModel.isMe, message: viewModel.message, thread: threadVM?.thread)
+            if isDeletable {
                 ContextMenuButton(title: "General.delete", image: "trash", iconColor: Color.App.red, showSeparator: false) {
                     withAnimation(animation(appear: true)) {
                         if let threadVM {
-                            threadVM.historyVM.sections.flatMap{$0.vms}.first(where: {$0.message.id == message.id})?.isSelected = true
-                            let dialog = DeleteMessageDialog(deleteForMe: delete.forMe,
-                                                             deleteForOthers: delete.ForOthers,
-                                                             viewModel: threadVM)
+                            viewModel.isSelected = true
+                            let deleteVM = DeleteMessagesViewModelModel(threadVM: threadVM)
+                            let dialog = DeleteMessageDialog(viewModel: deleteVM)
                             AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
                         }
                     }

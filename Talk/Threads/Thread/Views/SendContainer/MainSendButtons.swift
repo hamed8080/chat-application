@@ -63,7 +63,7 @@ struct MainSendButtons: View {
             .buttonStyle(.borderless)
             .fontWeight(.light)
             //            .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
-            .highPriorityGesture(switchRecordingGesture)
+            //.highPriorityGesture(switchRecordingGesture)
             .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
 
             if viewModel.showCamera {

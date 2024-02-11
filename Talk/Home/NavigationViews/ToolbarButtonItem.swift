@@ -32,7 +32,7 @@ public struct ToolbarButtonItem: View {
                 .padding(padding)
                 .frame(width: ToolbarButtonItem.buttonWidth, height: ToolbarButtonItem.buttonWidth)
                 .accessibilityHint(hint)
-                .fontWeight(.bold)
+                .fontWeight(.medium)
         }
         .frame(width: ToolbarButtonItem.buttonWidth, height: ToolbarButtonItem.buttonWidth)
     }

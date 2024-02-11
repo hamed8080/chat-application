@@ -115,7 +115,7 @@ public final class ThreadPinMessageViewModel: ObservableObject {
 
     private var messageText: String {
         if let text = message?.text, !text.isEmpty {
-            return text.prefix(150).replacingOccurrences(of: "\n", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+            return text.prefix(150).replacingOccurrences(of: "\n", with: " ").trimmingCharacters(in: .whitespacesAndNewlines)
         } else if let fileName = fileMetadata?.name {
             return fileName
         } else {

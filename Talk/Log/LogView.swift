@@ -23,6 +23,9 @@ struct LogView: View {
                 .listRowSeparator(.hidden)
                 .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
         }
+        .animation(.easeInOut, value: viewModel.filtered.count)
+        .listStyle(.plain)        
+        .normalToolbarView(title: "Logs.title", type: LogNavigationValue.self, trailingView: trailingToolbars)
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer, prompt: "General.searchHere") {
             if viewModel.searchText.isEmpty == false, viewModel.filtered.count < 1 {
                 HStack {
@@ -30,21 +33,6 @@ struct LogView: View {
                         .foregroundColor(Color.App.textSecondary.opacity(0.8))
                     Text("General.nothingFound")
                         .foregroundColor(Color.App.textSecondary.opacity(0.8))
-                }
-            }
-        }
-        .navigationTitle("Logs.title")
-        .animation(.easeInOut, value: viewModel.filtered.count)
-        .listStyle(.plain)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItemGroup {
-                trailingToolbars
-            }
-
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.objectsContainer.navVM.remove(type: LogNavigationValue.self)
                 }
             }
         }
