@@ -9,24 +9,21 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import ChatModels
+import Chat
+import TalkModels
 
 struct LocationRowView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     var message: Message { viewModel.message }
     
     var body: some View {
-        if viewModel.isMapType, let fileLink = viewModel.fileMetaData?.file?.link, let downloadVM = viewModel.downloadFileVM {
+        if viewModel.isMapType {
             ZStack {
-                /// We use max to at least have a width, because there are times that maxWidth is nil.
-                let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
-                /// We use max to at least have a width, because there are times that maxWidth is nil.
-                /// We use min to prevent the image gets bigger than 320 if it's bigger.
-                let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
-                MapImageDownloader(width: width, height: width)
-                    .id(fileLink)
-                    .environmentObject(downloadVM)
-                    .frame(width: width, height: height)
-                    .clipShape(RoundedRectangle(cornerRadius:(8)))
+                if let downloadVM = viewModel.downloadFileVM {
+                    MapImageDownloader()
+                        .environmentObject(downloadVM)
+                        .clipShape(RoundedRectangle(cornerRadius:(8)))
+                }
             }
             .padding(.top, viewModel.paddings.mapViewSapcingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
             .onTapGesture {
@@ -35,11 +32,9 @@ struct LocationRowView: View {
                 }
             }
             .task {
-                if downloadVM.isInCache {
-                    downloadVM.state = .completed
-                    viewModel.animateObjectWillChange()
-                } else {
-                    downloadVM.startDownload()
+                /// Message.id equal to nil means that we are in upload mode we don't have id
+                if let uploadMessage = message as? UploadFileWithLocationMessage, message.id == nil {
+                    ChatManager.activeInstance?.message.send(uploadMessage.locationRequest)
                 }
             }
         }
@@ -47,26 +42,51 @@ struct LocationRowView: View {
 }
 
 struct MapImageDownloader: View {
-    let width: CGFloat
-    let height: CGFloat
-    @State private var image = UIImage(named: "empty_image")!
+    @State private var image = UIImage(named: "map_placeholder")!
+    /// 0.2 Makes the map placeholder dimmer.
+    @State private var opacity: CGFloat = 0.05
     @EnvironmentObject var viewModel: DownloadFileViewModel
 
     var body: some View {
-        if viewModel.fileURL != nil {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFill()
-                .frame(width: width, height: height)
-                .clipped()
-                .zIndex(0)
-                .background(LinearGradient(colors: [Color.App.bgInput, Color.App.bgInput], startPoint: .top, endPoint: .bottom))
-                .clipShape(RoundedRectangle(cornerRadius:(8)))
-                .task {
-                    if let scaledImage = viewModel.fileURL?.imageScale(width: Int(800))?.image {
-                        image = UIImage(cgImage: scaledImage)
-                    }
-                }
+
+        /// We use max to at least have a width, because there are times that maxWidth is nil.
+        let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (18 + MessageRowBackground.tailSize.width)
+        /// We use max to at least have a width, because there are times that maxWidth is nil.
+        /// We use min to prevent the image gets bigger than 320 if it's bigger.
+        let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
+
+        Image(uiImage: image)
+            .resizable()
+            .scaledToFill()
+            .frame(width: width, height: height)
+            .clipped()
+            .zIndex(0)
+            .opacity(opacity)
+            .background(LinearGradient(colors: [Color.App.bgInput, Color.App.bgInput], startPoint: .top, endPoint: .bottom))
+            .clipShape(RoundedRectangle(cornerRadius:(8)))
+            .animation(.easeInOut, value: image)
+            .task {
+                setImage()
+                manageDownload()
+            }
+            .onReceive(viewModel.objectWillChange) { newValue in
+                setImage()
+            }
+    }
+
+    private func setImage() {
+        if let scaledImage = viewModel.fileURL?.imageScale(width: Int(800))?.image, opacity != 1.0 {
+            image = UIImage(cgImage: scaledImage)
+            opacity = 1.0
+        }
+    }
+
+    private func manageDownload() {
+        if viewModel.isInCache {
+            viewModel.state = .completed
+            viewModel.animateObjectWillChange()
+        } else {
+            viewModel.startDownload()
         }
     }
 }

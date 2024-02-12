@@ -37,7 +37,7 @@ struct MessageFooterView: View {
 
             }
 
-            if message.id == viewModel.threadVM?.thread.pinMessage?.id {
+            if message.id != nil, message.id == viewModel.threadVM?.thread.pinMessage?.id {
                 Image(systemName: "pin.fill")
                     .resizable()
                     .scaledToFit()

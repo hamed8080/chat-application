@@ -41,7 +41,7 @@ public final class ThreadUploadMessagesViewModel {
             .store(in: &cancelable)
     }
 
-    public func append(contentsOf requests: [UploadFileWithTextMessage]) {
+    public func append(contentsOf requests: [Message]) {
         Task {
             await threadVM?.historyVM.appendMessagesAndSort(requests)
             await threadVM?.historyVM.asyncAnimateObjectWillChange()
@@ -51,7 +51,7 @@ public final class ThreadUploadMessagesViewModel {
         }
     }
 
-    public func append(request: UploadFileWithTextMessage) {
+    public func append(request: Message) {
         Task {
             await threadVM?.historyVM.appendMessagesAndSort([request])
             await threadVM?.historyVM.asyncAnimateObjectWillChange()

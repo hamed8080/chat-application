@@ -594,7 +594,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     fileprivate func updateMessage(_ message: Message, _ indices: SecionAndMessageIndex?) -> MessageRowViewModel? {
         guard let indices = indices else { return nil }
         let vm = sections[indices.sectionIndex].vms[indices.messageIndex]
-        if vm.uploadViewModel != nil {
+        if vm.uploadViewModel != nil || vm.message is UploadFileWithLocationMessage {
             /// We have to update animateObjectWillChange because after onNewMessage we will not call it, so upload file not work properly.
             vm.swapUploadMessageWith(message)
         } else {

@@ -149,7 +149,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         calculatePaddings()
         calculateCallTexts()
         setAvatarViewModel()
-        isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
+        isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
         let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
         let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
         isNextMessageTheSameUser = threadVM?.thread.group == true && isSameResponse && message.participant != nil
@@ -181,10 +181,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateImageSize() {
         if message.isImage {
             /// We use max to at least have a width, because there are times that maxWidth is nil.
-            let imageWidth = CGFloat(fileMetaData?.file?.actualWidth ?? (message as? UploadFileWithTextMessage)?.uploadImageRequest?.wC ?? 0)
+            let uploadMapSizeWidth = message is UploadFileWithLocationMessage ? Int(MessageRowViewModel.emptyImage.size.width) : nil
+            let uploadMapSizeHeight = message is UploadFileWithLocationMessage ? Int(MessageRowViewModel.emptyImage.size.height) : nil
+            let uploadImageReq = (message as? UploadFileMessage)?.uploadImageRequest
+            let imageWidth = CGFloat(fileMetaData?.file?.actualWidth ?? uploadImageReq?.wC ?? uploadMapSizeWidth ?? 0)
             let maxWidth = ThreadViewModel.maxAllowedWidth
             /// We use max to at least have a width, because there are times that maxWidth is nil.
-            let imageHeight = CGFloat(fileMetaData?.file?.actualHeight ?? (message as? UploadFileWithTextMessage)?.uploadImageRequest?.hC ?? 0)
+            let imageHeight = CGFloat(fileMetaData?.file?.actualHeight ?? uploadImageReq?.hC ?? uploadMapSizeHeight ?? 0)
             let originalWidth: CGFloat = imageWidth
             let originalHeight: CGFloat = imageHeight
             var designerWidth: CGFloat = maxWidth

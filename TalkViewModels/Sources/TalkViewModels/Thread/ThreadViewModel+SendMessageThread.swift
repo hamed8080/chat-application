@@ -94,37 +94,36 @@ extension ThreadViewModel {
     }
 
     public func sendReplyPrivatelyMessage() {
-        if attachmentsViewModel.attachments.count == 1 {
-            sendSingleReplyPrivatelyAttachment(attachmentsViewModel.attachments.first)
+        if attachmentsViewModel.attachments.count == 1, let first = attachmentsViewModel.attachments.first {
+            sendSingleReplyPrivatelyAttachment(first)
+        } else if attachmentsViewModel.attachments.count > 1 {
+            sendMultipleAttachemntWithReplyPrivately()
         } else {
-            if attachmentsViewModel.attachments.count > 1 {
-                let lastItem = attachmentsViewModel.attachments.last
-                if let lastItem {
-                    attachmentsViewModel.remove(lastItem)
-                }
-                sendAttachmentsMessage()
-                sendSingleReplyPrivatelyAttachment(lastItem)
-            } else if let req = ReplyPrivatelyRequest(model: makeModel()) {
-                ChatManager.activeInstance?.message.replyPrivately(req)
-            }
+            sendTextOnlyReplyPrivately()
         }
         attachmentsViewModel.clear()
         AppState.shared.appStateNavigationModel = .init()
     }
 
-    public func sendSingleReplyPrivatelyAttachment(_ attachmentFile: AttachmentFile?) {
-        guard var req = ReplyPrivatelyRequest(model: makeModel()) else { return }
-        if let imageItem = attachmentFile?.request as? ImageItem {
-            let imageReq = UploadImageRequest(imageItem: imageItem, thread.userGroupHash)
-            req.messageType = .podSpacePicture
-            ChatManager.activeInstance?.message.replyPrivately(req, imageReq)
-            let message = UploadFileWithTextMessage(imageFileRequest: imageReq, thread: thread)
-            self.uploadMessagesViewModel.append(contentsOf: [message])
-        } else if let url = attachmentFile?.request as? URL, let fileReq = UploadFileRequest(url: url, thread.userGroupHash) {
-            req.messageType = .podSpaceFile
-            ChatManager.activeInstance?.message.replyPrivately(req, fileReq)
-            let message = UploadFileWithTextMessage(uploadFileRequest: fileReq, thread: thread)
-            self.uploadMessagesViewModel.append(contentsOf: [message])
+    private func sendMultipleAttachemntWithReplyPrivately() {
+        if let lastItem = attachmentsViewModel.attachments.last {
+            attachmentsViewModel.remove(lastItem)
+            sendAttachmentsMessage()
+            sendSingleReplyPrivatelyAttachment(lastItem)
+        }
+    }
+
+    private func sendTextOnlyReplyPrivately() {
+        if let req = ReplyPrivatelyRequest(model: makeModel()) {
+            ChatManager.activeInstance?.message.replyPrivately(req)
+        }
+    }
+
+    private func sendSingleReplyPrivatelyAttachment(_ attachmentFile: AttachmentFile) {
+        if let imageItem = attachmentFile.request as? ImageItem, let message = UploadFileWithReplyPrivatelyMessage(imageItem: imageItem, model: makeModel()) {
+            uploadMessagesViewModel.append(contentsOf: [message])
+        } else if let message = UploadFileWithReplyPrivatelyMessage(attachmentFile: attachmentFile, model: makeModel()) {
+            uploadMessagesViewModel.append(contentsOf: [message])
         }
     }
 
@@ -226,8 +225,8 @@ extension ThreadViewModel {
     public func sendLocation(_ location: LocationItem) {
         send { [weak self] in
             guard let self = self else {return}
-            let req = LocationMessageRequest(item: location, model: makeModel())
-            ChatManager.activeInstance?.message.send(req)
+            let message = UploadFileWithLocationMessage(location: location, model: makeModel())
+            uploadMessagesViewModel.append(request: message)
             attachmentsViewModel.clear()
         }
     }
