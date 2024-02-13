@@ -44,9 +44,6 @@ struct MessageRowFileView: View {
             .sheet(isPresented: $shareDownloadedFile) {
                 ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.fileMetaData?.file?.originalName)
             }
-            .onTapGesture {
-                onTapGesture()
-            }
         }
     }
 
@@ -81,9 +78,11 @@ struct MessageRowFileView: View {
     @ViewBuilder private var button: some View {
         ZStack {
             if let downloadVM = viewModel.downloadFileVM {
-                DownloadButton()
-                    .frame(width: viewModel.isUploadCompleted ? 46 : 0, height: viewModel.isUploadCompleted ? 46 : 0)
-                    .environmentObject(downloadVM)
+                DownloadButton() {
+                    onTapGesture()
+                }
+                .frame(width: viewModel.isUploadCompleted ? 46 : 0, height: viewModel.isUploadCompleted ? 46 : 0)
+                .environmentObject(downloadVM)
             }
             if let uploadVM = viewModel.uploadViewModel {
                 UploadButton()

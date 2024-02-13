@@ -18,35 +18,23 @@ struct MessageRowVideoView: View {
 
     var body: some View {
         if message.isVideo {
-            HStack(alignment: .top, spacing: 8) {
+            HStack(alignment: .top, spacing: viewModel.isDownloadCompleted ? 0 : 8) {
                 if !viewModel.isMe {
                     button
                 }
 
-                VStack(alignment: .leading, spacing: 4) {
-                    viewView
-                    fileNameView
-                    HStack {
-                        fileTypeView
-                        fileSizeView
-                    }
-                }
+                playerContainerView
 
                 if viewModel.isMe {
                     button
                 }
             }
-            .padding(4)
-            .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+            .padding(viewModel.isDownloadCompleted ? 0 : 4)
+            .padding(.top, viewModel.isDownloadCompleted ? 0 : viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
             .animation(.easeInOut, value: viewModel.uploadViewModel == nil)
             .animation(.easeInOut, value: viewModel.downloadFileVM == nil)
             .task {
                 viewModel.uploadViewModel?.startUploadFile()
-            }
-            .onTapGesture {
-                onTapGesture()
-            }
-            .task {
                 if viewModel.downloadFileVM?.isInCache == true {
                     viewModel.downloadFileVM?.state = .completed
                     viewModel.downloadFileVM?.animateObjectWillChange()
@@ -83,7 +71,18 @@ struct MessageRowVideoView: View {
         }
     }
 
-    @ViewBuilder private var viewView: some View {
+    @ViewBuilder private var playerContainerView: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            playerView
+            fileNameView
+            HStack {
+                fileTypeView
+                fileSizeView
+            }
+        }
+    }
+
+    @ViewBuilder private var playerView: some View {
         if viewModel.isDownloadCompleted, let fileURL = viewModel.downloadFileVM?.fileURL {
             VideoPlayerView()
                 .environmentObject(VideoPlayerViewModel(fileURL: fileURL,
@@ -95,21 +94,21 @@ struct MessageRowVideoView: View {
     }
 
     @ViewBuilder private var button: some View {
-        if viewModel.isInDownloadOrUploadMode {
-            ZStack {
-                if let downloadVM = viewModel.downloadFileVM {
-                    DownloadButton()
-                        .frame(width: viewModel.isUploadCompleted ? 46 : 0, height: viewModel.isUploadCompleted ? 46 : 0)
-                        .environmentObject(downloadVM)
+        ZStack {
+            if let downloadVM = viewModel.downloadFileVM, downloadVM.state != .completed {
+                DownloadButton() {
+                    onTapGesture()
                 }
-                if let uploadVM = viewModel.uploadViewModel {
-                    UploadButton()
-                        .environmentObject(uploadVM)
-                }
+                .frame(width: viewModel.isUploadCompleted ? 46 : 0, height: viewModel.isUploadCompleted ? 46 : 0)
+                .environmentObject(downloadVM)
             }
-            .frame(width: 46, height: 46) /// prevent the button lead to huge resize afetr upload completed.
-            .animation(.easeInOut, value: viewModel.isUploadCompleted)
+            if let uploadVM = viewModel.uploadViewModel {
+                UploadButton()
+                    .environmentObject(uploadVM)
+            }
         }
+        .frame(width: viewModel.isDownloadCompleted ? 0 : 46, height: viewModel.isDownloadCompleted ? 0 : 46) /// prevent the button lead to huge resize afetr upload completed.
+        .animation(.easeInOut, value: viewModel.isUploadCompleted)
     }
 
     private func onTapGesture() {

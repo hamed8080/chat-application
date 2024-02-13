@@ -18,6 +18,7 @@ struct DownloadButton: View {
     @Environment(\.colorScheme) var scheme
     private var message: Message? { viewModel.message }
     private var percent: Int64 { viewModel.downloadPercent }
+    let action: () -> Void
     private var stateIcon: String {
         if message?.isAudio == true, viewModel.state == .completed {
             if audioVM.isPlaying {
@@ -37,14 +38,19 @@ struct DownloadButton: View {
     }
 
     var body: some View {
-        ZStack {
-            iconView
-            progress
+        Button {
+            action()
+        } label: {
+            ZStack {
+                iconView
+                progress
+            }
+            .frame(width: 46, height: 46)
+            .background(scheme == .light ? Color.App.accent : Color.App.white)
+            .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
+            .transition(.scale)
         }
-        .frame(width: 46, height: 46)
-        .background(scheme == .light ? Color.App.accent : Color.App.white)
-        .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
-        .transition(.scale)
+        .buttonStyle(.borderless)
     }
 
     @ViewBuilder private var iconView: some View {
@@ -73,6 +79,8 @@ struct DownloadButton: View {
 
 struct DownloadButton_Previews: PreviewProvider {
     static var previews: some View {
-        DownloadButton()
+        DownloadButton {
+            
+        }
     }
 }

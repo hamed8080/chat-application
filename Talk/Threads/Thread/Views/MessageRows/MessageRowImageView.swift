@@ -81,32 +81,28 @@ struct OverlayDownloadImageButton: View {
 
     var body: some View {
         if viewModel.state != .completed {
-            HStack {
-                ZStack {
-                    iconView
-                    progress
+            Button {
+                manageDownload()
+            } label: {
+                HStack {
+                    ZStack {
+                        iconView
+                        progress
+                    }
+                    .frame(width: 36, height: 36)
+                    .background(Color.App.white.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius:(18)))
+                    sizeView
                 }
-                .frame(width: 26, height: 26)
-                .background(Color.App.white.opacity(0.3))
-                .clipShape(RoundedRectangle(cornerRadius:(13)))
-                sizeView
+                .frame(height: 36)
+                .frame(minWidth: 76)
+                .padding(4)
+                .background(.thinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
             }
-            .frame(height: 30)
-            .frame(minWidth: 76)
-            .padding(4)
-            .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius:(18)))
             .animation(.easeInOut, value: stateIcon)
             .animation(.easeInOut, value: percent)
-            .onTapGesture {
-                if viewModel.state == .paused {
-                    viewModel.resumeDownload()
-                } else if viewModel.state == .downloading {
-                    viewModel.pauseDownload()
-                } else {
-                    viewModel.startDownload()
-                }
-            }
+            .buttonStyle(.borderless)
         }
     }
 
@@ -114,8 +110,8 @@ struct OverlayDownloadImageButton: View {
         Image(systemName: stateIcon)
             .resizable()
             .scaledToFit()
-            .font(.system(size: 8, design: .rounded).bold())
-            .frame(width: 8, height: 8)
+            .font(.system(size: 14, design: .rounded).bold())
+            .frame(width: 14, height: 14)
             .foregroundStyle(Color.App.textPrimary)
     }
 
@@ -125,7 +121,8 @@ struct OverlayDownloadImageButton: View {
             .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
             .foregroundColor(Color.App.white)
             .rotationEffect(Angle(degrees: 270))
-            .frame(width: 18, height: 18)
+            .frame(width: 34, height: 34)
+            .rotateAnimtion(pause: viewModel.state == .paused)
     }
 
     @ViewBuilder private var sizeView: some View {
@@ -134,6 +131,16 @@ struct OverlayDownloadImageButton: View {
                 .multilineTextAlignment(.leading)
                 .font(.iransansBoldCaption2)
                 .foregroundColor(Color.App.textPrimary)
+        }
+    }
+
+    private func manageDownload() {
+        if viewModel.state == .paused {
+            viewModel.resumeDownload()
+        } else if viewModel.state == .downloading {
+            viewModel.pauseDownload()
+        } else {
+            viewModel.startDownload()
         }
     }
 }
@@ -163,13 +170,6 @@ public struct UploadMessageImageView: View {
             OverladUploadImageButton(messageRowVM: viewModel)
                 .environmentObject(viewModel.uploadViewModel!)
         }
-        .onTapGesture {
-            if viewModel.uploadViewModel?.state == .paused {
-                viewModel.uploadViewModel?.resumeUpload()
-            } else if viewModel.uploadViewModel?.state == .uploading {
-                viewModel.uploadViewModel?.cancelUpload()
-            }
-        }
         .task {
             viewModel.uploadViewModel?.startUploadImage()
         }
@@ -193,42 +193,66 @@ struct OverladUploadImageButton: View {
 
     var body: some View {
         if viewModel.state != .completed {
-            HStack {
-                ZStack {
-                    Image(systemName: stateIcon)
-                        .resizable()
-                        .scaledToFit()
-                        .font(.system(size: 8, design: .rounded).bold())
-                        .frame(width: 8, height: 8)
-                        .foregroundStyle(Color.App.textPrimary)
-
-                    Circle()
-                        .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
-                        .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                        .foregroundColor(Color.App.white)
-                        .rotationEffect(Angle(degrees: 270))
-                        .frame(width: 18, height: 18)
+            Button {
+                manageUpload()
+            } label: {
+                HStack {
+                    ZStack {
+                        iconView
+                        progress
+                    }
+                    .frame(width: 36, height: 36)
+                    .background(Color.App.white.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius:(18)))
+                    sizeView
                 }
-                .frame(width: 26, height: 26)
-                .background(Color.App.white.opacity(0.3))
-                .clipShape(RoundedRectangle(cornerRadius:(13)))
-
-                let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-                let realServerFileSize = messageRowVM.fileMetaData?.file?.size
-                if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
-                    Text(fileSize)
-                        .multilineTextAlignment(.leading)
-                        .font(.iransansBoldCaption2)
-                        .foregroundColor(Color.App.textPrimary)
-                }
+                .frame(height: 36)
+                .frame(minWidth: 76)
+                .padding(4)
+                .background(.thinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
             }
-            .frame(height: 30)
-            .frame(minWidth: 76)
-            .padding(4)
-            .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius:(18)))
             .animation(.easeInOut, value: stateIcon)
             .animation(.easeInOut, value: percent)
+            .buttonStyle(.borderless)
+        }
+    }
+
+    private var iconView: some View {
+        Image(systemName: stateIcon)
+            .resizable()
+            .scaledToFit()
+            .font(.system(size: 8, design: .rounded).bold())
+            .frame(width: 14, height: 14)
+            .foregroundStyle(Color.App.textPrimary)
+    }
+
+    private var progress: some View {
+        Circle()
+            .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
+            .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+            .foregroundColor(Color.App.white)
+            .rotationEffect(Angle(degrees: 270))
+            .frame(width: 34, height: 34)
+            .rotateAnimtion(pause: viewModel.state == .paused)
+    }
+
+    @ViewBuilder private var sizeView: some View {
+        let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
+        let realServerFileSize = messageRowVM.fileMetaData?.file?.size
+        if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
+            Text(fileSize)
+                .multilineTextAlignment(.leading)
+                .font(.iransansBoldCaption2)
+                .foregroundColor(Color.App.textPrimary)
+        }
+    }
+    
+    private func manageUpload() {
+        if viewModel.state == .paused {
+            viewModel.resumeUpload()
+        } else if viewModel.state == .uploading {
+            viewModel.cancelUpload()
         }
     }
 }

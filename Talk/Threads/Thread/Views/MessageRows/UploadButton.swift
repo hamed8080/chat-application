@@ -27,18 +27,20 @@ struct UploadButton: View {
 
     var body: some View {
         if message.uploadFile != nil, viewModel.state != .completed {
-            ZStack {
-                iconView
-                progress
+            Button {
+                manageUpload()
+            } label: {
+                ZStack {
+                    iconView
+                    progress
+                }
+                .frame(width: 46, height: 46)
+                .background(scheme == .light ? Color.App.accent : Color.App.white)
+                .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
             }
-            .frame(width: 46, height: 46)
-            .background(scheme == .light ? Color.App.accent : Color.App.white)
-            .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
             .animation(.easeInOut, value: percent)
             .animation(.easeInOut, value: stateIcon)
-            .onTapGesture {
-                manageUpload()
-            }
+            .buttonStyle(.borderless)
             .transition(.scale)
         }
     }

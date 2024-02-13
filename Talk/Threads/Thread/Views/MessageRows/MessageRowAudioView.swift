@@ -45,9 +45,6 @@ struct MessageRowAudioView: View {
             .task {
                 viewModel.uploadViewModel?.startUploadFile()
             }
-            .onTapGesture {
-                onTapGesture()
-            }
             .task {
                 if viewModel.downloadFileVM?.isInCache == true {
                     viewModel.downloadFileVM?.state = .completed
@@ -101,9 +98,11 @@ struct MessageRowAudioView: View {
     @ViewBuilder private var button: some View {
         ZStack {
             if let downloadVM = viewModel.downloadFileVM {
-                DownloadButton()
-                    .frame(width: viewModel.isUploadCompleted ? 46 : 0, height: viewModel.isUploadCompleted ? 46 : 0)
-                    .environmentObject(downloadVM)
+                DownloadButton() {
+                    onTapGesture()
+                }
+                .frame(width: viewModel.isUploadCompleted ? 46 : 0, height: viewModel.isUploadCompleted ? 46 : 0)
+                .environmentObject(downloadVM)
             }
             if let uploadVM = viewModel.uploadViewModel {
                 UploadButton()
