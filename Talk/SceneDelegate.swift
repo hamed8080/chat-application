@@ -46,13 +46,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
 
     func scene(_: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
-        if url.absoluteString.contains("Widget") == true {
-            let threadIdString = url.absoluteString.replacingOccurrences(of: "Widget://link-", with: "")
-            let threadId = Int(threadIdString) ?? 0
+        if let threadId = url.widgetThreaId {
             AppState.shared.showThread(thread: .init(id: threadId))
-        } else if url.absoluteString.contains("ShowUser") {
-            let userName = url.absoluteString.replacingOccurrences(of: "ShowUser:User?userName=", with: "")
+        } else if let userName = url.openThreadUserName {
             AppState.shared.openThreadWith(userName: userName)
+        } else if let decodedOpenURL = url.decodedOpenURL {
+            AppState.shared.openURL(url: decodedOpenURL)
         }
     }
 

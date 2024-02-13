@@ -31,7 +31,8 @@
 			<string>ir.pod.talk-test</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>ShowUser</string>
+				<string>showUser</string>
+				<string>openURL</string>
 			</array>
 		</dict>
 	</array>

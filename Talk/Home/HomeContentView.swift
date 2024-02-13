@@ -67,6 +67,7 @@ struct SplitView: View {
             }
         }
         .animation(.easeInOut, value: isLoggedIn)
+        .overlay(OpenURLView())
         .overlay {
             AppOverlayView(onDismiss: onDismiss) {
                 AppOverlayFactory()

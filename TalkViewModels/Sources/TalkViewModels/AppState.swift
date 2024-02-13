@@ -36,6 +36,7 @@ public struct AppStateNavigationModel {
     public var forwardMessageRequest: ForwardMessageRequest?
     public var moveToMessageId: Int?
     public var moveToMessageTime: UInt?
+    public var openURL: URL?
     public init() {}
 }
 
@@ -345,5 +346,13 @@ public extension AppState {
         conversation?.participantCount = response.result?.participantCount ?? (conversation?.participantCount ?? 0) + addedParticipants.count
         threadVM?.participantsViewModel.onAdded(addedParticipants)
         threadVM?.animateObjectWillChange()
+    }
+}
+
+
+public extension AppState {
+    func openURL(url: URL) {
+        appStateNavigationModel.openURL = url
+        animateObjectWillChange()
     }
 }
