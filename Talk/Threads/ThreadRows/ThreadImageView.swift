@@ -19,21 +19,7 @@ struct ThreadImageView: View {
     var body: some View {
         ZStack {
             if thread.type == .selfThread {
-                let startColor = Color(red: 255/255, green: 145/255, blue: 98/255)
-                let endColor = Color(red: 255/255, green: 90/255, blue: 113/255)
-                Circle()
-                    .foregroundColor(.clear)
-                    .scaledToFit()
-                    .frame(width: 54, height: 54)
-                    .background(LinearGradient(colors: [startColor, endColor], startPoint: .top, endPoint: .bottom))
-                    .clipShape(RoundedRectangle(cornerRadius:(24)))
-                    .overlay {
-                        Image("bookmark")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 27, height: 27)
-                            .foregroundStyle(Color.App.textPrimary)
-                    }
+                SelfThreadImageView(imageSize: 54, iconSize: 27)
             } else if let image = computedImageURL {
                 ImageLoaderView(
                     imageLoader: threadsVM.avatars(for: image, metaData: thread.metadata, userName: String.splitedCharacter(thread.title ?? "")),
@@ -65,5 +51,27 @@ struct ThreadImageView: View {
                 self.computedImageURL = thread.computedImageURL
             }
         }
+    }
+}
+
+struct SelfThreadImageView: View {
+    let imageSize: CGFloat
+    let iconSize: CGFloat
+    var body: some View {
+        let startColor = Color(red: 255/255, green: 145/255, blue: 98/255)
+        let endColor = Color(red: 255/255, green: 90/255, blue: 113/255)
+        Circle()
+            .foregroundColor(.clear)
+            .scaledToFit()
+            .frame(width: imageSize, height: imageSize)
+            .background(LinearGradient(colors: [startColor, endColor], startPoint: .top, endPoint: .bottom))
+            .clipShape(RoundedRectangle(cornerRadius:((imageSize / 2) - 3)))
+            .overlay {
+                Image("bookmark")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: iconSize, height: iconSize)
+                    .foregroundStyle(Color.App.textPrimary)
+            }
     }
 }

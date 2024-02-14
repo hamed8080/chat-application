@@ -17,11 +17,11 @@ struct AvatarView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     var threadVM: ThreadViewModel? { viewModel.threadVM }
 
-    static var emptyViewSender: some View {
+    static func emptyViewSender(trailing: CGFloat = 8) -> some View {
         Rectangle()
             .fill(Color.clear)
             .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
-            .padding(.trailing, 8)
+            .padding(.trailing, trailing)
     }
 
     static var emptyP2PSender: some View {
@@ -65,7 +65,7 @@ struct AvatarView: View {
             }
         } else if isSameUser {
             /// Place a empty view to show the message has sent by the same user.
-            AvatarView.emptyViewSender
+            AvatarView.emptyViewSender(trailing: viewModel.isNextSameUser ? 0 : 8)
         }
     }
 

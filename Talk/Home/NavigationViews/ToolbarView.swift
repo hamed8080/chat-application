@@ -59,7 +59,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
         }
         .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: isInSearchMode)
         .frame(minWidth: 0, maxWidth: sizeClass == .compact ? nil : .infinity)
-        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
+        .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
         .background(MixMaterialBackground(color: Color.App.bgToolbar).ignoresSafeArea())
         .onChange(of: searchText) { newValue in
             searchCompletion?(newValue)

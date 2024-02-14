@@ -56,7 +56,7 @@ public struct AutomaticDownloadsNavigationValue: NavigaitonValueProtocol {
 }
 
 public struct SupportNavigationValue: NavigaitonValueProtocol {
-    public var title: String = "Settings.support"
+    public var title: String = "Settings.about"
     public init() {}
 }
 

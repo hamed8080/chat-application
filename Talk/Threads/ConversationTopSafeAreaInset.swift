@@ -59,6 +59,7 @@ struct ConversationTopSafeAreaInset: View {
             .buttonStyle(.borderless)
             .frame(minWidth: 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
             .clipped()
+            .padding(.horizontal, 8)
         } else {
             ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search", padding: 10) {
                 withAnimation {

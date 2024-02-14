@@ -42,6 +42,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var highlightTimer: Timer?
     public var isSelected = false
     public var showReactionsOverlay = false
+    public var isNextSameUser: Bool = false
     public var isNextMessageTheSameUser: Bool = false
     public var isFirstMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false
@@ -150,9 +151,9 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         calculateCallTexts()
         setAvatarViewModel()
         isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
-        let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
+        isNextSameUser = await (threadVM?.isNextSameUser(message: message) == true)
         let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
-        isNextMessageTheSameUser = threadVM?.thread.group == true && isSameResponse && message.participant != nil
+        isNextMessageTheSameUser = threadVM?.thread.group == true && isNextSameUser && message.participant != nil
         self.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = AttributedString(message.markdownTitle)

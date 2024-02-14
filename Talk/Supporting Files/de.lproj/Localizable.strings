@@ -192,7 +192,7 @@
 "Thread.private" = "Privat";
 "Thread.SendContainer.voiceRecording" = "Sprachaufnahme";
 "Thread.SendContainer.attachment" = "Anhang";
-"Thread.SendContainer.typeMessageHere" = "Hier Nachricht eingeben...";
+"Thread.SendContainer.typeMessageHere" = "Geben Sie hier ein...";
 "Thread.SendContainer.toForward" = "weiterleiten";
 "Thread.export" = "Exportieren";
 "ThreadList.Toolbar.startNewChat" = "Neuen Chat starten";
@@ -302,7 +302,7 @@
 "Settings.logout" = "Abmelden";
 "Settings.notifictionSettings" = "Benachrichtigungseinstellungen";
 "Settings.download" = "Download-Einstellungen";
-"Settings.support" = "Unterstützung";
+"Settings.about" = "Um Talk";
 "Settings.userName" = "Nutzername";
 "Settings.phoneNumber" = "Telefonnummer";
 "Settings.bio" = "Biografie";

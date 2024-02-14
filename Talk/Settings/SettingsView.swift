@@ -137,13 +137,13 @@ struct UserInformationSection: View {
 
         if !phone.isEmpty {
             VStack(alignment: .leading) {
+                Text("Settings.phoneNumber")
+                    .foregroundColor(Color.App.textSecondary)
+                    .font(.iransansCaption)
                 TextField("", text: $phone)
                     .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .disabled(true)
-                Text("Settings.phoneNumber")
-                    .foregroundColor(Color.App.textSecondary)
-                    .font(.iransansCaption)
             }
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.App.dividerPrimary)
@@ -151,13 +151,13 @@ struct UserInformationSection: View {
 
         if !userName.isEmpty {
             VStack(alignment: .leading) {
+                Text("Settings.userName")
+                    .foregroundColor(Color.App.textSecondary)
+                    .font(.iransansCaption)
                 TextField("", text: $userName)
                     .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .disabled(true)
-                Text("Settings.userName")
-                    .foregroundColor(Color.App.textSecondary)
-                    .font(.iransansCaption)
             }
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.App.dividerPrimary)
@@ -165,6 +165,9 @@ struct UserInformationSection: View {
 
         if !bio.isEmpty {
             VStack(alignment: .leading) {
+                Text("Settings.bio")
+                    .foregroundColor(Color.App.textSecondary)
+                    .font(.iransansCaption)
                 Text(bio)
                     .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
@@ -172,10 +175,6 @@ struct UserInformationSection: View {
                     .lineLimit(20)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-
-                Text("Settings.bio")
-                    .foregroundColor(Color.App.textSecondary)
-                    .font(.iransansCaption)
             }
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.clear)
@@ -306,17 +305,17 @@ struct SettingLanguageSection: View {
 }
 
 struct SavedMessageSection: View {
-    @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
         ListSectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: Color.App.color5, showDivider: false) {
-            ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
+            AppState.shared.openSelfThread()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
         .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 }
+
 struct DarkModeSection: View {
     @Environment(\.colorScheme) var currentSystemScheme
     @State var isDarkModeEnabled = AppSettingsModel.restore().isDarkModeEnabled ?? false
@@ -376,7 +375,7 @@ struct SupportSection: View {
     @EnvironmentObject var container: ObjectsContainer
 
     var body: some View {
-        ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.support", color: Color.App.color2, showDivider: false) {
+        ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.about", color: Color.App.color2, showDivider: false) {
             let value = SupportNavigationValue()
             navModel.append(type: .support(value), value: value)
         }

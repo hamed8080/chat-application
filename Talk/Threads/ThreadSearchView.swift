@@ -23,6 +23,7 @@ struct ThreadSearchView: View {
 
                 ForEach(viewModel.searchedContacts.prefix(5)) { contact in
                     ContactRow(isInSelectionMode: .constant(false), contact: contact)
+                        .listRowInsets(.init(top: 16, leading: 16, bottom: 16, trailing: 8)) /// We usre 16 leading due to in ThreadRow we have a yellow bar and it causes spacing in VStack to add 16 pixels, so we have to keep Contacts and Threads row in same alignmen.
                         .listRowBackground(Color.App.bgPrimary)
                         .onTapGesture {
                             AppState.shared.openThread(contact: contact)
@@ -39,7 +40,7 @@ struct ThreadSearchView: View {
                     ThreadRow(thread: thread) {
                         AppState.shared.objectsContainer.navVM.append(thread: thread)
                     }
-                    .listRowInsets(.init(top: 16, leading: 8, bottom: 16, trailing: 8))
+                    .listRowInsets(.init(top: 16, leading: 0, bottom: 16, trailing: 0))
                     .listRowSeparatorTint(Color.App.dividerSecondary)
                     .listRowBackground(thread.pin == true ? Color.App.bgSecondary : Color.App.bgPrimary)
                     .onAppear {

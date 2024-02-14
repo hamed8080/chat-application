@@ -46,7 +46,7 @@ struct ThreadViewCenterToolbar: View {
                     .fixedSize()
                     .foregroundColor(Color.App.toolbarSecondaryText)
                     .font(.iransansFootnote)
-            } else if thread.group == nil || thread.group == false {
+            } else if thread.group == nil || thread.group == false, thread.type != .selfThread {
                 P2PThreadLastSeenView(thread: thread)
             }
         }

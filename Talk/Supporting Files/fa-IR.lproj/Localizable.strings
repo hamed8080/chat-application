@@ -192,7 +192,7 @@
 "Thread.private" = "خصوصی";
 "Thread.SendContainer.voiceRecording" = "در حال ضبط صدا";
 "Thread.SendContainer.attachment" = "پیوست ها";
-"Thread.SendContainer.typeMessageHere" = "پیام خود را اینجا وارد کنید...";
+"Thread.SendContainer.typeMessageHere" = "اینجا بنویسید...";
 "Thread.SendContainer.toForward" = "ارسال به";
 "Thread.export" = "خروجی گرفتن";
 "ThreadList.Toolbar.startNewChat" = "یک گفتگوی جدید ایجاد کنید";
@@ -302,7 +302,7 @@
 "Settings.logout" = "خروج";
 "Settings.notifictionSettings" = "تنظیمات اعلانات";
 "Settings.download" = "تنظیمات دانلود";
-"Settings.support" = "پشتیبانی";
+"Settings.about" = "درباره تاک";
 "Settings.userName" = "نام کاربری";
 "Settings.phoneNumber" = "شماره تلفن";
 "Settings.bio" = "بیوگرافی";

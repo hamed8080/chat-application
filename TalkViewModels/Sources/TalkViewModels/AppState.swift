@@ -160,7 +160,7 @@ public extension AppState {
     }
 
     private func onCreated(_ response: ChatResponse<Conversation>) {
-        if let conversation = response.result, conversation.type == .selfThread {
+        if !response.cache, response.pop(prepend: "CREATE-SELF-THREAD") != nil, let conversation = response.result, conversation.type == .selfThread {
             objectsContainer.navVM.append(thread: conversation)
         }
     }
@@ -230,6 +230,12 @@ public extension AppState {
     func openThreadWith(userName: String) {
         appStateNavigationModel.userToCreateThread = .init(username: userName)
         searchForP2PThread(coreUserId: nil, userName: userName)
+    }
+
+    func openSelfThread() {
+        let req = CreateThreadRequest(title: String(localized: .init("Thread.selfThread")), type: .selfThread)
+        RequestsManager.shared.append(prepend: "CREATE-SELF-THREAD", value: req)
+        ChatManager.activeInstance?.conversation.create(req)
     }
 
     /// Forward messages form a thread to a destination thread.

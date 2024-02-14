@@ -191,7 +191,7 @@
 "Thread.private" = "Private";
 "Thread.SendContainer.voiceRecording" = "Voice Recording";
 "Thread.SendContainer.attachment" = "Attachment";
-"Thread.SendContainer.typeMessageHere" = "Type message here ...";
+"Thread.SendContainer.typeMessageHere" = "Type here...";
 "Thread.SendContainer.toForward" = "to forward";
 "Thread.export" = "Export";
 "ThreadList.Toolbar.startNewChat" = "Start a new Chat";
@@ -301,7 +301,9 @@
 "Settings.logout" = "Logout";
 "Settings.notifictionSettings" = "Notification Settings";
 "Settings.download" = "Download Settings";
-"Settings.support" = "Support";
+"Settings.about" = "About Talk";
+
+
 "Settings.userName" = "Username";
 "Settings.phoneNumber" = "Phone Number";
 "Settings.bio" = "Biography";

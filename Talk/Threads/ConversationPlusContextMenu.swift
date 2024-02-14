@@ -21,25 +21,24 @@ struct ConversationPlusContextMenu: View {
     @EnvironmentObject var appstate: AppState
 
     var body: some View {
-        HStack(spacing: 0) {
-            ToolbarButtonItem(imageName: "plus", hint: "ThreadList.Toolbar.startNewChat", padding: 12) {
-                withAnimation {
-                    AppState.shared.objectsContainer.searchVM.searchText = ""
-                    AppState.shared.objectsContainer.contactsVM.searchContactString = ""
-                    NotificationCenter.cancelSearch.post(name: .cancelSearch, object: true)
-                    showCreateConversationSheet.toggle()
-                }
-            }
-            .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: 38)
-            .clipped()
-            .foregroundStyle(Color.App.toolbarButton)
+        HStack(spacing: 6) {
+//            ToolbarButtonItem(imageName: "plus", hint: "ThreadList.Toolbar.startNewChat", padding: 12) {
+//                withAnimation {
+//                    AppState.shared.objectsContainer.searchVM.searchText = ""
+//                    AppState.shared.objectsContainer.contactsVM.searchContactString = ""
+//                    NotificationCenter.cancelSearch.post(name: .cancelSearch, object: true)
+//                    showCreateConversationSheet.toggle()
+//                }
+//            }
+//            .frame(minWidth: 0, maxWidth: ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: 38)
+//            .clipped()
+//            .foregroundStyle(Color.App.toolbarButton)
 
             Image("talk_logo")
                 .resizable()
                 .scaledToFit()
-                .frame(height: 38)
+                .frame(height: 22)
                 .foregroundStyle(Color.App.toolbarButton)
-                .offset(x: -12)
 
             HStack(spacing: 0) {
                 if appstate.connectionStatus == .connected {
@@ -53,8 +52,8 @@ struct ConversationPlusContextMenu: View {
                     ConnectionStatusToolbar()
                 }
             }
-            .offset(x: -14)
         }
+        .padding(.horizontal, 8)
         //
         //        Menu {
         //            Button {

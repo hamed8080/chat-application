@@ -19,6 +19,7 @@ struct MessageTextView: View {
         if !viewModel.isPublicLink {
             Text(viewModel.markdownTitle)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
+                .lineSpacing(8)
                 .padding(viewModel.paddings.textViewPadding)
                 .font(.iransansBody)
                 .foregroundColor(Color.App.textPrimary)

@@ -28,7 +28,7 @@ struct MessageFooterView: View {
                     .font(.iransansCaption2)
             }
 
-            if viewModel.isMe {
+            if viewModel.isMe, viewModel.threadVM?.thread.type != .selfThread {
                 Image(uiImage: message.footerStatus.image)
                     .resizable()
                     .scaledToFit()

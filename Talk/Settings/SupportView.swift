@@ -16,9 +16,10 @@ struct SupportView: View {
             Image("talk_logo")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 128, height: 128)
+                .frame(width: 120, height: 120)
+                .padding(16)
                 .background(scheme == .dark ? Color.App.white.opacity(0.2) : Color.App.accent)
-                .clipShape(RoundedRectangle(cornerRadius:(64)))
+                .clipShape(RoundedRectangle(cornerRadius:(92)))
                 .foregroundStyle(.white)
             Text("Support.aboutUsText")
                 .frame(maxWidth: 320)
@@ -39,10 +40,10 @@ struct SupportView: View {
                 .foregroundStyle(Color.App.textSecondary)
         }
         .font(.iransansBody)
-        .padding(EdgeInsets(top: 100, leading: 24, bottom: 30, trailing: 24))
+        .padding(EdgeInsets(top: 72, leading: 24, bottom: 30, trailing: 24))
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
         .background(Color.App.bgPrimary)
-        .normalToolbarView(title: "Logs.title", type: SupportNavigationValue.self)
+        .normalToolbarView(title: "Settings.about", type: SupportNavigationValue.self)
     }
 }
 

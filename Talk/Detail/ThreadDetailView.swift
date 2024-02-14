@@ -269,13 +269,18 @@ struct ThreadInfoView: View {
                                            metaData: viewModel.thread?.metadata,
                                            userName: String.splitedCharacter(viewModel.thread?.title ?? viewModel.participantDetailViewModel?.participant.name ?? ""))
             let defaultLoader = ImageLoaderViewModel(config: config)
-            ImageLoaderView(imageLoader: avatarVM ?? defaultLoader)
+            ImageLoaderView(imageLoader: avatarVM)
                 .id("\(image)\(viewModel.thread?.id ?? 0)")
                 .font(.system(size: 16).weight(.heavy))
                 .foregroundColor(.white)
                 .frame(width: 64, height: 64)
                 .background(String.getMaterialColorByCharCode(str: viewModel.thread?.title ?? viewModel.participantDetailViewModel?.participant.name ?? ""))
                 .clipShape(RoundedRectangle(cornerRadius:(28)))
+                .overlay {
+                    if viewModel.thread?.type == .selfThread {
+                        SelfThreadImageView(imageSize: 64, iconSize: 28)
+                    }
+                }
                 .onTapGesture {
                     fullScreenImageLoader.fetch()
                 }
@@ -291,7 +296,7 @@ struct ThreadInfoView: View {
                 }
 
             VStack(alignment: .leading, spacing: 4) {
-                let threadName = viewModel.participantDetailViewModel?.participant.contactName ?? viewModel.thread?.title ?? ""
+                let threadName = viewModel.participantDetailViewModel?.participant.contactName ?? viewModel.thread?.computedTitle ?? ""
                 Text(threadName)
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.textPrimary)
@@ -385,6 +390,9 @@ struct InfoRowItem: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
+                Text(String(localized: .init(key)))
+                    .font(.iransansCaption)
+                    .foregroundStyle(Color.App.textSecondary)
                 Text(value)
                     .font(.iransansSubtitle)
                     .foregroundStyle(Color.App.textPrimary)
@@ -392,9 +400,6 @@ struct InfoRowItem: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     .multilineTextAlignment(.leading)
-                Text(String(localized: .init(key)))
-                    .font(.iransansCaption)
-                    .foregroundStyle(Color.App.textSecondary)
             }
             Spacer()
             button

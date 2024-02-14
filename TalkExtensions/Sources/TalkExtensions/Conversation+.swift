@@ -79,6 +79,7 @@ public extension Conversation {
     }
 
     var computedTitle: String {
+        if type == .selfThread { return String(localized: .init("Thread.selfThread")) }
         return title ?? ""
     }
 

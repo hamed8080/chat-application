@@ -191,7 +191,7 @@
 "Thread.private" = "خاص";
 "Thread.SendContainer.voiceRecording" = "تسجيل صوتي";
 "Thread.SendContainer.attachment" = "مرفق";
-"Thread.SendContainer.typeMessageHere" = "اكتب الرسالة هنا...";
+"Thread.SendContainer.typeMessageHere" = "أكتب هنا...";
 "Thread.SendContainer.toForward" = "للإعادة";
 "Thread.export" = "تصدير";
 "ThreadList.Toolbar.startNewChat" = "بدء محادثة جديدة";
@@ -301,7 +301,7 @@
 "Settings.logout" = "تسجيل الخروج";
 "Settings.notifictionSettings" = "إعدادات الإشعار";
 "Settings.download" = "إعدادات التنزيل";
-"Settings.support" = "دعم";
+"Settings.about" = "عن تاک";
 "Settings.userName" = "اسم المستخدم";
 "Settings.phoneNumber" = "رقم التليفون";
 "Settings.bio" = "سيرة شخصية";

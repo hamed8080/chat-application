@@ -46,7 +46,7 @@ struct TextMessageType: View {
             }
         }
         .environmentObject(viewModel)
-        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
+        .padding(EdgeInsets(top: 1, leading: 8, bottom: viewModel.isNextSameUser ? 1 : 6, trailing: 8))
     }
 }
 
@@ -107,14 +107,26 @@ struct InnerMessage: View {
         }
         .environmentObject(viewModel)
         .padding(viewModel.paddings.paddingEdgeInset)
-        .background(
-            MessageRowBackground.instance
-                .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
-                .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
-        )
-        .contentShape(MessageRowBackground.instance)
+        .background(MessageRowBackgroundView(viewModel: viewModel))
+        .contentShape(viewModel.isNextMessageTheSameUser ? MessageRowBackground.noTail : MessageRowBackground.withTail)
         .customContextMenu(id: message.id, self: SelfContextMenu(viewModel: viewModel), menus: { ContextMenuContent(viewModel: viewModel) })
         .overlay(alignment: .center) { SelectMessageInsideClickOverlay() }
+    }
+}
+
+struct MessageRowBackgroundView: View {
+    let viewModel: MessageRowViewModel
+
+    var body: some View {
+        if viewModel.isNextSameUser {
+            MessageRowBackground.noTail
+                .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
+                .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
+        } else {
+            MessageRowBackground.withTail
+                .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
+                .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
+        }
     }
 }
 

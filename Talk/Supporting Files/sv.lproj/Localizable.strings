@@ -191,7 +191,7 @@
 "Thread.private" = "Privat";
 "Thread.SendContainer.voiceRecording" = "Röstinspelning";
 "Thread.SendContainer.attachment" = "Bilaga";
-"Thread.SendContainer.typeMessageHere" = "Skriv meddelande här...";
+"Thread.SendContainer.typeMessageHere" = "Skriv här...";
 "Thread.SendContainer.toForward" = "att vidarebefordra";
 "Thread.export" = "Exportera";
 "ThreadList.Toolbar.startNewChat" = "Starta en ny chatt";
@@ -301,7 +301,7 @@
 "Settings.logout" = "Logga ut";
 "Settings.notifictionSettings" = "Aviseringsinställningar";
 "Settings.download" = "Nedladdningsinställningar";
-"Settings.support" = "Stöd";
+"Settings.about" = "Om Talk";
 "Settings.userName" = "Användarnamn";
 "Settings.phoneNumber" = "Telefonnummer";
 "Settings.bio" = "Biografi";
