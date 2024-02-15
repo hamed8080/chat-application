@@ -59,7 +59,7 @@ public extension Conversation {
     var unreadCountString: String? {
         if let unreadCount = unreadCount, unreadCount > 0 {
             let unreadCountString = unreadCount.localNumber(locale: Language.preferredLocale)
-            let computedString = unreadCount < 1000 ? unreadCountString : "\(unreadCount / 1000)K+"
+            let computedString = unreadCount < 1000 ? unreadCountString : "+\(999.localNumber(locale: Language.preferredLocale) ?? "")"
             return computedString
         } else {
             return nil

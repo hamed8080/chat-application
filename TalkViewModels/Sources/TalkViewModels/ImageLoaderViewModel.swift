@@ -48,7 +48,7 @@ public final class ImageLoaderViewModel: ObservableObject {
     private(set) var fileMetadata: String?
     public private(set) var cancelable: Set<AnyCancellable> = []
     var uniqueId: String?
-    public let config: ImageLoaderConfig
+    public var config: ImageLoaderConfig
     private var URLObject: URL? { URL(string: config.url) }
     private var isSDKImage: Bool { hashCode != "" }
     private var fileMetadataModel: FileMetaData? {

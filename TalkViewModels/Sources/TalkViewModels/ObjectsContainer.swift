@@ -39,6 +39,7 @@ public final class ObjectsContainer: ObservableObject {
     }
 
     public func reset() {
+        AppState.shared.clear()
         threadsVM.clear()
         contactsVM.clear()
         tagsVM.clear()

@@ -362,3 +362,13 @@ public extension AppState {
         animateObjectWillChange()
     }
 }
+
+public extension AppState {
+    func clear() {
+        appStateNavigationModel = .init()
+        callLogs = nil
+        cachedUser = nil
+        error = nil
+        isLoading = false
+    }
+}
