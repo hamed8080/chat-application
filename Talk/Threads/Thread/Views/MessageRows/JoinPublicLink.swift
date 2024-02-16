@@ -16,33 +16,31 @@ struct JoinPublicLink: View {
     private var message: Message { viewModel.message }
 
     var body: some View {
-        if message.message?.contains(AppRoutes.joinLink) == true {
-            Button {
-                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(JoinToPublicConversationDialog(message: message))
-            } label: {
-                Text(message.message ?? "")
-                    .foregroundStyle(Color.App.color1)
-//                HStack {
-//                    Text("Thread.join")
-//                        .foregroundStyle(Color.App.textPrimary)
-//                        .font(.iransansBoldBody)
-//                        .multilineTextAlignment(.center)
-//                }
-//                .buttonStyle(.plain)
-//                .frame(height: 52)
-//                .fixedSize(horizontal: false, vertical: true)
-//                .frame(minWidth: 196)
-//                .background(Color.App.bgSecondary)
-//                .clipShape(RoundedRectangle(cornerRadius: 8))
-//                .overlay(
-//                    RoundedRectangle(cornerRadius: 8)
-//                        .inset(by: 0.5)
-//                        .stroke(Color.App.gray8, lineWidth: 1)
-//                )
-            }
-            .buttonStyle(.plain)
-            .padding(.horizontal, 10)
+        Button {
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(JoinToPublicConversationDialog(message: message))
+        } label: {
+            Text(message.message ?? "")
+                .foregroundStyle(Color.App.color1)
+            //                HStack {
+            //                    Text("Thread.join")
+            //                        .foregroundStyle(Color.App.textPrimary)
+            //                        .font(.iransansBoldBody)
+            //                        .multilineTextAlignment(.center)
+            //                }
+            //                .buttonStyle(.plain)
+            //                .frame(height: 52)
+            //                .fixedSize(horizontal: false, vertical: true)
+            //                .frame(minWidth: 196)
+            //                .background(Color.App.bgSecondary)
+            //                .clipShape(RoundedRectangle(cornerRadius: 8))
+            //                .overlay(
+            //                    RoundedRectangle(cornerRadius: 8)
+            //                        .inset(by: 0.5)
+            //                        .stroke(Color.App.gray8, lineWidth: 1)
+            //                )
         }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 10)
     }
 }
 

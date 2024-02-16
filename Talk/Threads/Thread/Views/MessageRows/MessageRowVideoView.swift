@@ -17,28 +17,26 @@ struct MessageRowVideoView: View {
     private var message: Message { viewModel.message }
 
     var body: some View {
-        if message.isVideo {
-            HStack(alignment: .top, spacing: viewModel.isDownloadCompleted ? 0 : 8) {
-                if !viewModel.isMe {
-                    button
-                }
-
-                playerContainerView
-
-                if viewModel.isMe {
-                    button
-                }
+        HStack(alignment: .top, spacing: viewModel.isDownloadCompleted ? 0 : 8) {
+            if !viewModel.isMe {
+                button
             }
-            .padding(viewModel.isDownloadCompleted ? 0 : 4)
-            .padding(.top, viewModel.isDownloadCompleted ? 0 : viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
-            .animation(.easeInOut, value: viewModel.uploadViewModel == nil)
-            .animation(.easeInOut, value: viewModel.downloadFileVM == nil)
-            .task {
-                viewModel.uploadViewModel?.startUploadFile()
-                if viewModel.downloadFileVM?.isInCache == true {
-                    viewModel.downloadFileVM?.state = .completed
-                    viewModel.downloadFileVM?.animateObjectWillChange()
-                }
+
+            playerContainerView
+
+            if viewModel.isMe {
+                button
+            }
+        }
+        .padding(viewModel.isDownloadCompleted ? 0 : 4)
+        .padding(.top, viewModel.isDownloadCompleted ? 0 : viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .animation(.easeInOut, value: viewModel.uploadViewModel == nil)
+        .animation(.easeInOut, value: viewModel.downloadFileVM == nil)
+        .task {
+            viewModel.uploadViewModel?.startUploadFile()
+            if viewModel.downloadFileVM?.isInCache == true {
+                viewModel.downloadFileVM?.state = .completed
+                viewModel.downloadFileVM?.animateObjectWillChange()
             }
         }
     }

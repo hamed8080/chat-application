@@ -36,12 +36,15 @@ struct ThreadContentList: View {
         .background(Color.App.bgPrimary)
         .animation(.easeInOut, value: threadsVM.threads.count)
         .animation(.easeInOut, value: threadsVM.isLoading)
-        .listEmptyBackgroundColor(show: threadsVM.threads.isEmpty)
+        .overlay(ThreadListShimmer().environmentObject(threadsVM.shimmerViewModel))
         .safeAreaInset(edge: .top, spacing: 0) {
             ConversationTopSafeAreaInset(container: container)
         }
         .overlay(alignment: .bottom) {
-            ListLoadingView(isLoading: $threadsVM.isLoading)
+            /// The if below is for shimmer
+            if threadsVM.firstSuccessResponse {
+                ListLoadingView(isLoading: $threadsVM.isLoading)
+            }
         }
         .sheet(isPresented: sheetBinding) {
             ThreadsSheetFactoryView()

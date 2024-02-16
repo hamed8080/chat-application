@@ -16,7 +16,7 @@ struct MessageTextView: View {
 
     var body: some View {
         // TODO: TEXT must be alignment and image must be fit
-        if !viewModel.isPublicLink {
+        if !viewModel.rowType.isPublicLink {
             Text(viewModel.markdownTitle)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)
                 .lineSpacing(8)

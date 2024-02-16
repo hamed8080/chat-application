@@ -33,6 +33,7 @@ public final class ThreadsViewModel: ObservableObject {
     private var canLoadMore: Bool { hasNext && !isLoading }
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
     public var serverSortedPinConversations: [Int] = []
+    public var shimmerViewModel = ShimmerViewModel(delayToHide: 0, repeatInterval: 0.5)
 
     public init() {
         AppState.shared.$connectionStatus
@@ -100,6 +101,9 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func getThreads() {
+        if !firstSuccessResponse {
+            shimmerViewModel.show()
+        }
         isLoading = true
         animateObjectWillChange()
         let req = ThreadsRequest(count: count, offset: offset)
@@ -128,11 +132,15 @@ public final class ThreadsViewModel: ObservableObject {
             }
         }
 
-        if response.result?.count ?? 0 > 0 {
+        if !response.cache, response.result?.count ?? 0 > 0 {
             hasNext = response.hasNext
             firstSuccessResponse = true
         }
         isLoading = false
+
+        if firstSuccessResponse {
+            shimmerViewModel.hide()
+        }
     }
 
     public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) {

@@ -18,17 +18,15 @@ struct ReplyInfoMessageRow: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
 
     var body: some View {
-        if hasReplyInfo {
-            replyContent()
-                .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
-                .padding(EdgeInsets(top: 6, leading: viewModel.isMe ? 6 : 0, bottom: 6, trailing: viewModel.isMe ? 0 : 6))
-                .frame(maxWidth: viewModel.replyContainerWidth, maxHeight: 52, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(viewModel.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
-                )
-                .padding(.top, viewModel.paddings.replyViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
-        }
+        replyContent()
+            .environment(\.layoutDirection, viewModel.isMe ? .rightToLeft : .leftToRight)
+            .padding(EdgeInsets(top: 6, leading: viewModel.isMe ? 6 : 0, bottom: 6, trailing: viewModel.isMe ? 0 : 6))
+            .frame(maxWidth: viewModel.replyContainerWidth, maxHeight: 52, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(viewModel.isMe ? Color.App.bgChatMeDark : Color.App.bgChatUserDark)
+            )
+            .padding(.top, viewModel.paddings.replyViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
     }
 
     @ViewBuilder private func replyContent() -> some View {
@@ -81,10 +79,6 @@ struct ReplyInfoMessageRow: View {
         .truncationMode(.tail)
         .contentShape(Rectangle())
         .environmentObject(viewModel)
-    }
-
-    private var hasReplyInfo: Bool {
-        message.replyInfo != nil
     }
 
     private var isReplyPrivately: Bool {

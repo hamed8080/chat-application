@@ -16,26 +16,24 @@ struct LocationRowView: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     var message: Message { viewModel.message }
     
-    var body: some View {
-        if viewModel.isMapType {
-            ZStack {
-                if let downloadVM = viewModel.downloadFileVM {
-                    MapImageDownloader()
-                        .environmentObject(downloadVM)
-                        .clipShape(RoundedRectangle(cornerRadius:(8)))
-                }
+    var body: some View {        
+        ZStack {
+            if let downloadVM = viewModel.downloadFileVM {
+                MapImageDownloader()
+                    .environmentObject(downloadVM)
+                    .clipShape(RoundedRectangle(cornerRadius:(8)))
             }
-            .padding(.top, viewModel.paddings.mapViewSapcingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
-            .onTapGesture {
-                if let url = message.neshanURL, UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url)
-                }
+        }
+        .padding(.top, viewModel.paddings.mapViewSapcingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .onTapGesture {
+            if let url = message.neshanURL, UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
             }
-            .task {
-                /// Message.id equal to nil means that we are in upload mode we don't have id
-                if let uploadMessage = message as? UploadFileWithLocationMessage, message.id == nil {
-                    ChatManager.activeInstance?.message.send(uploadMessage.locationRequest)
-                }
+        }
+        .task {
+            /// Message.id equal to nil means that we are in upload mode we don't have id
+            if let uploadMessage = message as? UploadFileWithLocationMessage, message.id == nil {
+                ChatManager.activeInstance?.message.send(uploadMessage.locationRequest)
             }
         }
     }

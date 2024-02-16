@@ -1,12 +1,6 @@
-//
-//  File.swift
-//  
-//
-//  Created by hamed on 2/5/24.
-//
-
 import Foundation
 import SwiftUI
+import ChatModels
 
 public struct MessagePaddings {
     public var textViewPadding: EdgeInsets

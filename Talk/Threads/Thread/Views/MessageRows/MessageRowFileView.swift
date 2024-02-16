@@ -15,35 +15,32 @@ struct MessageRowFileView: View {
     /// We have to use EnvironmentObject due to we need to update ui after the file has been uploaded so downloadVM now is not a nil value.
     @EnvironmentObject var viewModel: MessageRowViewModel
     private var message: Message { viewModel.message }
-    private var isFileView: Bool { message.isFileType && !viewModel.isMapType && !message.isImage && !message.isAudio && !message.isVideo }
     @State var shareDownloadedFile: Bool = false
 
     var body: some View {
-        if isFileView {
-            HStack(alignment: .top, spacing: 8) {
-                if !viewModel.isMe {
-                    button
-                }
-
-                VStack(alignment: .leading, spacing: 4) {
-                    fileNameView
-                    HStack {
-                        fileTypeView
-                        fileSizeView
-                    }
-                }
-                if viewModel.isMe {
-                    button
+        HStack(alignment: .top, spacing: 8) {
+            if !viewModel.isMe {
+                button
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                fileNameView
+                HStack {
+                    fileTypeView
+                    fileSizeView
                 }
             }
-            .padding(4)
-            .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
-            .task {
-                viewModel.uploadViewModel?.startUploadFile()
+            if viewModel.isMe {
+                button
             }
-            .sheet(isPresented: $shareDownloadedFile) {
-                ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.fileMetaData?.file?.originalName)
-            }
+        }
+        .padding(4)
+        .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .task {
+            viewModel.uploadViewModel?.startUploadFile()
+        }
+        .sheet(isPresented: $shareDownloadedFile) {
+            ActivityViewControllerWrapper(activityItems: [message.tempURL], title: viewModel.fileMetaData?.file?.originalName)
         }
     }
 

@@ -284,6 +284,8 @@
 		05C27FA92AF4BD330008FE2E /* MainSendButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */; };
 		05C6DA1B2B19F3020049BCDC /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */; };
 		05C6DA1C2B19F3020049BCDC /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */; };
+		05CC0B032B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CC0B022B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift */; };
+		05CC0B042B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CC0B022B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift */; };
 		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
 		05D1F2DE2B70D421000CE1FB /* DownloadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D1F2DD2B70D421000CE1FB /* DownloadButton.swift */; };
 		05D1F2DF2B70D421000CE1FB /* DownloadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D1F2DD2B70D421000CE1FB /* DownloadButton.swift */; };
@@ -500,6 +502,7 @@
 		05C27FA42AF4BD010008FE2E /* SelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionView.swift; sourceTree = "<group>"; };
 		05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSendButtons.swift; sourceTree = "<group>"; };
 		05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
+		05CC0B022B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadHistoryShimmerView.swift; sourceTree = "<group>"; };
 		05D1F2DD2B70D421000CE1FB /* DownloadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadButton.swift; sourceTree = "<group>"; };
 		05D1F2E02B70D461000CE1FB /* UploadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadButton.swift; sourceTree = "<group>"; };
 		05D2355F2B24A1520090656C /* ThreadMainToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMainToolbar.swift; sourceTree = "<group>"; };
@@ -741,6 +744,7 @@
 				05F53EEE2B1866A8003DB412 /* CloseRecordingButton.swift */,
 				058022032AE05DFA002816C7 /* MyPHPicker.swift */,
 				05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */,
+				05CC0B022B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1187,6 +1191,7 @@
 				0570CBEF2AAEE98F001832E9 /* ThreadImageView.swift in Sources */,
 				05E9C08D2B1EFBCE00E782BD /* ThreadListRowBackground.swift in Sources */,
 				0560C3622AB77B0B009F6A58 /* TabButtonItem.swift in Sources */,
+				05CC0B032B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift in Sources */,
 				0570CC2F2AAEE98F001832E9 /* ThreadMessagesList.swift in Sources */,
 				0570CC132AAEE98F001832E9 /* AvatarView.swift in Sources */,
 				05C099C32AD1135D007AAC6C /* ToastView.swift in Sources */,
@@ -1341,6 +1346,7 @@
 				0560C3632AB77B0B009F6A58 /* TabButtonItem.swift in Sources */,
 				05E9C08E2B1EFBCE00E782BD /* ThreadListRowBackground.swift in Sources */,
 				0570CC302AAEE98F001832E9 /* ThreadMessagesList.swift in Sources */,
+				05CC0B042B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift in Sources */,
 				0570CC142AAEE98F001832E9 /* AvatarView.swift in Sources */,
 				05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */,
 				0570CC162AAEE98F001832E9 /* UnreadMessagesBubble.swift in Sources */,

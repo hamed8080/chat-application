@@ -19,43 +19,41 @@ struct MessageRowAudioView: View {
     private var isSameFile: Bool { viewModel.downloadFileVM?.fileURL != nil && audioVM.fileURL?.absoluteString == viewModel.downloadFileVM?.fileURL?.absoluteString }
 
     var body: some View {
-        if message.isAudio {
-            HStack(alignment: .top, spacing: 8) {
-                if !viewModel.isMe {
-                    button
-                }
+        HStack(alignment: .top, spacing: 8) {
+            if !viewModel.isMe {
+                button
+            }
 
-                VStack(alignment: .leading, spacing: 4) {
-                    fileNameView
-                    audioProgress
-                    HStack {
-                        fileTypeView
-                        fileSizeView
-                    }
-                }
-
-                if viewModel.isMe {
-                    button
+            VStack(alignment: .leading, spacing: 4) {
+                fileNameView
+                audioProgress
+                HStack {
+                    fileTypeView
+                    fileSizeView
                 }
             }
-            .padding(4)
-            .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
-            .animation(.easeInOut, value: viewModel.uploadViewModel == nil)
-            .animation(.easeInOut, value: viewModel.downloadFileVM == nil)
-            .task {
-                viewModel.uploadViewModel?.startUploadFile()
+
+            if viewModel.isMe {
+                button
             }
-            .task {
-                if viewModel.downloadFileVM?.isInCache == true {
-                    viewModel.downloadFileVM?.state = .completed
-                    viewModel.downloadFileVM?.animateObjectWillChange()
-                }
+        }
+        .padding(4)
+        .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .animation(.easeInOut, value: viewModel.uploadViewModel == nil)
+        .animation(.easeInOut, value: viewModel.downloadFileVM == nil)
+        .task {
+            viewModel.uploadViewModel?.startUploadFile()
+        }
+        .task {
+            if viewModel.downloadFileVM?.isInCache == true {
+                viewModel.downloadFileVM?.state = .completed
+                viewModel.downloadFileVM?.animateObjectWillChange()
             }
         }
     }
 
     @ViewBuilder private var audioProgress: some View {
-        if message.isAudio == true, viewModel.downloadFileVM?.state == .completed, isSameFile {
+        if viewModel.downloadFileVM?.state == .completed, isSameFile {
             VStack(alignment: .leading, spacing: 4) {
                 ProgressView(value: min(audioVM.currentTime / audioVM.duration, 1.0), total: 1.0)
                     .progressViewStyle(.linear)

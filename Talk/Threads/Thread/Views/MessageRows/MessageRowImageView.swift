@@ -17,7 +17,7 @@ struct MessageRowImageView: View {
     private var message: Message { viewModel.message }
 
     var body: some View {
-        if viewModel.canShowImageView {
+        if message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed {
             ZStack {
                 Image(uiImage: viewModel.image)
                     .resizable()
@@ -39,7 +39,7 @@ struct MessageRowImageView: View {
             .clipped()
             .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         }
-
+        
         if message.uploadFile?.uploadImageRequest != nil {
             UploadMessageImageView(viewModel: viewModel)
         }
@@ -71,7 +71,7 @@ struct OverlayDownloadImageButton: View {
     private var percent: Int64 { viewModel.downloadPercent }
     private var stateIcon: String {
         if viewModel.state == .downloading {
-            return "pause.fill"
+            return "pause"
         } else if viewModel.state == .paused {
             return "play.fill"
         } else {
@@ -110,7 +110,8 @@ struct OverlayDownloadImageButton: View {
         Image(systemName: stateIcon)
             .resizable()
             .scaledToFit()
-            .font(.system(size: 14, design: .rounded).bold())
+            .font(.system(size: 14, design: .rounded))
+            .fontWeight(viewModel.state == .downloading ? .semibold : .regular)
             .frame(width: 14, height: 14)
             .foregroundStyle(Color.App.textPrimary)
     }

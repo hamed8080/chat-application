@@ -33,7 +33,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
     init() {}
 
     @MainActor
-    private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.6), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) async {
+    private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.3), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) async {
         try? await Task.sleep(for: .milliseconds(delay))
         if Task.isCancelled == true { return }
         withAnimation(animation) {
@@ -41,7 +41,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
 
         /// Ensure the view is shown as a result of SwiftUI can't properly move for the first time
-        try? await Task.sleep(for: .seconds(1.5))
+        try? await Task.sleep(for: .seconds(0.3))
         withAnimation(animation) {
             scrollProxy?.scrollTo(uniqueId, anchor: anchor)
         }
@@ -79,6 +79,16 @@ public final class ThreadScrollingViewModel: ObservableObject {
             }
             await scrollTo(uniqueId, anchor: anchor)
         }
+    }
+
+    public func showHighlightedAsync(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) async {
+        if Task.isCancelled { return }
+        await MainActor.run {
+            if highlight {
+                NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
+            }
+        }
+        await scrollTo(uniqueId, anchor: anchor)
     }
 
     public func disableExcessiveLoading() {

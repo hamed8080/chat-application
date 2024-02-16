@@ -65,7 +65,7 @@ struct AvatarView: View {
             }
         } else if isSameUser {
             /// Place a empty view to show the message has sent by the same user.
-            AvatarView.emptyViewSender(trailing: viewModel.isNextSameUser ? 0 : 8)
+            AvatarView.emptyViewSender(trailing: viewModel.isLastMessageOfTheUser ? 8 : 0)
         }
     }
 
@@ -78,10 +78,10 @@ struct AvatarView: View {
     }
 
     private var showAvatarOrUserName: Bool {
-        !viewModel.isMe && !viewModel.isNextMessageTheSameUser && viewModel.isCalculated
+        !viewModel.isMe && viewModel.isLastMessageOfTheUser && viewModel.isCalculated
     }
 
     private var isSameUser: Bool {
-        !viewModel.isMe && viewModel.isNextMessageTheSameUser
+        !viewModel.isMe && !viewModel.isLastMessageOfTheUser
     }
 }

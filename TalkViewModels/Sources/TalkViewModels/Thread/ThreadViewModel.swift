@@ -38,7 +38,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     public var thread: Conversation
-    public var centerLoading = false
     public var replyMessage: Message?
     @Published public var dismiss = false
     public var sheetType: ThreadSheetType?
@@ -190,26 +189,25 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         ChatManager.activeInstance?.system.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
     }
 
-    public func isNextSameUser(message: Message) async -> Bool {
-        guard let tuples = historyVM.message(for: message.id) else { return false }
-        let sectionIndex = tuples.sectionIndex
-        let currentMessage = tuples.message
-        let nextMessageInedex = tuples.messageIndex + 1
-        let isNextIndexExist = historyVM.sections[sectionIndex].vms.indices.contains(nextMessageInedex)
-        if isNextIndexExist == true {
-            let nextMessage = historyVM.sections[sectionIndex].vms[nextMessageInedex]
-            return currentMessage.participant?.id ?? 0 == nextMessage.message.participant?.id ?? -1
-        }
-        return false
-    }
-
     public func isFirstMessageOfTheUser(_ message: Message) async -> Bool {
         guard let tuples = historyVM.message(for: message.id) else { return false }
         let sectionIndex = tuples.sectionIndex
-        let previousIndex = tuples.messageIndex - 1
-        let isPreviousIndexExist = historyVM.sections[sectionIndex].vms.indices.contains(previousIndex)
+        let nextIndex = tuples.messageIndex + 1
+        let isNextIndexExist = historyVM.sections[sectionIndex].vms.indices.contains(nextIndex)
+        if isNextIndexExist {
+            let nextMessage = historyVM.sections[sectionIndex].vms[nextIndex]
+            return nextMessage.message.participant?.id != message.participant?.id
+        }
+        return true
+    }
+
+    public func isLastMessageOfTheUser(_ message: Message) async -> Bool {
+        guard let tuples = historyVM.message(for: message.id) else { return false }
+        let sectionIndex = tuples.sectionIndex
+        let prevIndex = tuples.messageIndex - 1
+        let isPreviousIndexExist = historyVM.sections[sectionIndex].vms.indices.contains(prevIndex)
         if isPreviousIndexExist {
-            let prevMessage = historyVM.sections[sectionIndex].vms[previousIndex]
+            let prevMessage = historyVM.sections[sectionIndex].vms[prevIndex]
             return prevMessage.message.participant?.id != message.participant?.id
         }
         return true

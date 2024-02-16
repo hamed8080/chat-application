@@ -36,9 +36,6 @@ struct ThreadMessagesList: View {
                     UICollectionViewCell.appearance().backgroundView = UIView()
                     UITableViewHeaderFooterView.appearance().backgroundView = UIView()
                 }
-                .overlay(alignment: .center) {
-                    CenterLoading()
-                }
         }
         .simultaneousGesture(tap.simultaneously(with: drag))
     }
@@ -76,16 +73,6 @@ struct ThreadMessagesList: View {
     }
 }
 
-struct CenterLoading: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
-    
-    var body: some View {
-        ListLoadingView(isLoading: $viewModel.centerLoading)
-            .frame(width: viewModel.centerLoading ? 48 : 0, height: viewModel.centerLoading ? 48 : 0)
-            .id(-3)
-    }
-}
-
 struct ThreadbackgroundView: View {
     @Environment(\.colorScheme) var colorScheme
     let threadId: Int
@@ -120,14 +107,13 @@ struct ThreadHistoryVStack: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if viewModel.isFetchedServerFirstResponse == false && viewModel.threadViewModel?.isSimulatedThared == false && viewModel.sections.count == 0 {
-                ThreadLoadingOnAppear()
-            } else if viewModel.isEmptyThread {
+             if viewModel.isEmptyThread {
                 EmptyThreadView()
             } else {
                 ThreadHistoryList()
             }
         }
+        .overlay(ThreadHistoryShimmerView().environmentObject(viewModel.shimmerViewModel))
         .environment(\.layoutDirection, .leftToRight)
     }
 }
@@ -143,18 +129,19 @@ struct ThreadHistoryList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .padding([.top, .bottom])
+                .scaleEffect(x: 1, y: -1, anchor: .center)
             ForEach(viewModel.sections) { section in
-                Section {
-                    MessageList(vms: section.vms, viewModel: viewModel)
-                } header: {
-                    SectionView(section: section)
-                }
+                MessageList(vms: section.vms, viewModel: viewModel)
+                SectionView(section: section)
             }
+            .scaleEffect(x: 1, y: -1, anchor: .center)
+
             SpaceForAttachment()
                 .id(-3)
                 .listRowSeparator(.hidden)
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
+                .scaleEffect(x: 1, y: -1, anchor: .center)
             //                UnsentMessagesLoop(historyVM: viewModel)
             ListLoadingView(isLoading: $viewModel.bottomLoading)
                 .id(-2)
@@ -162,28 +149,11 @@ struct ThreadHistoryList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .padding([.top, .bottom])
+                .scaleEffect(x: 1, y: -1, anchor: .center)
         }
         .listStyle(.plain)
+        .scaleEffect(x: 1, y: -1, anchor: .center)
         KeyboardHeightView()
-    }
-}
-
-struct ThreadLoadingOnAppear: View {
-    @EnvironmentObject var viewModel: ThreadHistoryViewModel
-
-    var body: some View {
-        Spacer()
-        HStack {
-            Spacer()
-            ListLoadingView(isLoading: .constant(true))
-                .id(-1)
-                .listRowSeparator(.hidden)
-                .listRowInsets(.zero)
-                .listRowBackground(Color.clear)
-                .padding([.top, .bottom])
-            Spacer()
-        }
-        Spacer()
     }
 }
 

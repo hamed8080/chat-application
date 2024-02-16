@@ -46,7 +46,7 @@ struct TextMessageType: View {
             }
         }
         .environmentObject(viewModel)
-        .padding(EdgeInsets(top: 1, leading: 8, bottom: viewModel.isNextSameUser ? 1 : 6, trailing: 8))
+        .padding(EdgeInsets(top: viewModel.isFirstMessageOfTheUser ? 6 : 1, leading: 8, bottom: 1, trailing: 8))
     }
 }
 
@@ -86,19 +86,39 @@ struct InnerMessage: View {
 
     var body: some View {
         VStack(alignment: viewModel.isMe ? .trailing : .leading, spacing: 0) {
-            GroupParticipantNameView()
-            ReplyInfoMessageRow()
-            ForwardMessageRow()
+            if viewModel.isFirstMessageOfTheUser {
+                GroupParticipantNameView()
+            }
+            if viewModel.rowType.isReply {
+                ReplyInfoMessageRow()
+            }
+            if viewModel.rowType.isForward {
+                ForwardMessageRow()
+            }
             Group {
-                LocationRowView()
-                MessageRowFileView()
-                MessageRowImageView()
-                MessageRowVideoView()
-                MessageRowAudioView()
+                if viewModel.rowType.isMap {
+                    LocationRowView()
+                }
+                if viewModel.rowType.isFile {
+                    MessageRowFileView()
+                }
+                if viewModel.rowType.isImage {
+                    MessageRowImageView()
+                }
+                if viewModel.rowType.isVideo {
+                    MessageRowVideoView()
+                }
+                if viewModel.rowType.isAudio {
+                    MessageRowAudioView()
+                }
             }
             MessageTextView()
-            JoinPublicLink(viewModel: viewModel)
-            UnsentMessageView()
+            if viewModel.rowType.isPublicLink {
+                JoinPublicLink(viewModel: viewModel)
+            }
+            if viewModel.rowType.isUnSent {
+                UnsentMessageView()
+            }
             Group {
                 ReactionCountView()
                     .environmentObject(viewModel.reactionsVM)
@@ -108,7 +128,7 @@ struct InnerMessage: View {
         .environmentObject(viewModel)
         .padding(viewModel.paddings.paddingEdgeInset)
         .background(MessageRowBackgroundView(viewModel: viewModel))
-        .contentShape(viewModel.isNextMessageTheSameUser ? MessageRowBackground.noTail : MessageRowBackground.withTail)
+        .contentShape(viewModel.isLastMessageOfTheUser ? MessageRowBackground.withTail : MessageRowBackground.noTail)
         .customContextMenu(id: message.id, self: SelfContextMenu(viewModel: viewModel), menus: { ContextMenuContent(viewModel: viewModel) })
         .overlay(alignment: .center) { SelectMessageInsideClickOverlay() }
     }
@@ -118,12 +138,12 @@ struct MessageRowBackgroundView: View {
     let viewModel: MessageRowViewModel
 
     var body: some View {
-        if viewModel.isNextSameUser {
-            MessageRowBackground.noTail
+        if viewModel.isLastMessageOfTheUser {
+            MessageRowBackground.withTail
                 .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
                 .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
         } else {
-            MessageRowBackground.withTail
+            MessageRowBackground.noTail
                 .fill(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
                 .scaleEffect(x: viewModel.isMe ? 1 : -1, y: 1)
         }

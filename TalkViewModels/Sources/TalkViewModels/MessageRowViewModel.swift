@@ -42,9 +42,8 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var highlightTimer: Timer?
     public var isSelected = false
     public var showReactionsOverlay = false
-    public var isNextSameUser: Bool = false
-    public var isNextMessageTheSameUser: Bool = false
     public var isFirstMessageOfTheUser: Bool = false
+    public var isLastMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
     public var uploadViewModel: UploadFileViewModel?
@@ -52,7 +51,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var imageHeight: CGFloat? = nil
     public var isReplyImage: Bool = false
     public var replyLink: String?
-    public var isPublicLink: Bool = false
     public var participantColor: Color? = nil
     public var computedFileSize: String? = nil
     public var extName: String? = nil
@@ -70,16 +68,15 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         formatter.locale = Language.preferredLocale
         return formatter
     }()
-    public var isMapType: Bool = false
     public var fileMetaData: FileMetaData?
     private static var emptyImage = UIImage(named: "empty_image")!
     public var image: UIImage = MessageRowViewModel.emptyImage
-    public var canShowImageView: Bool = false
     public var groupMessageParticipantName: String?
     public var avatarImageLoader: ImageLoaderViewModel?
     public var replyContainerWidth: CGFloat?
     private var cancelable: AnyCancellable?
     public var paddings = MessagePaddings()
+    public var rowType = MessageViewRowType()
 
     public var isDownloadCompleted: Bool {
         downloadFileVM?.state == .completed
@@ -150,19 +147,24 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         calculatePaddings()
         calculateCallTexts()
         setAvatarViewModel()
-        isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
-        isNextSameUser = await (threadVM?.isNextSameUser(message: message) == true)
+        rowType.isMap = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
         let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
-        isNextMessageTheSameUser = threadVM?.thread.group == true && isNextSameUser && message.participant != nil
         self.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser
+        let isLastMessageOfTheUser = await (threadVM?.isLastMessageOfTheUser(message) == true)
+        self.isLastMessageOfTheUser = isLastMessageOfTheUser
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = AttributedString(message.markdownTitle)
-        isPublicLink = message.isPublicLink
+        rowType.isPublicLink = message.isPublicLink
+        rowType.isFile = message.isFileType && !rowType.isMap && !message.isImage && !message.isAudio && !message.isVideo
+        rowType.isReply = message.replyInfo != nil
         if let date = message.time?.date {
             timeString = MessageRowViewModel.formatter.string(from: date)
         }
-        let uploadCompleted: Bool = message.uploadFile == nil || uploadViewModel?.state == .completed
-        canShowImageView = !isMapType && message.isImage && uploadCompleted
+        rowType.isImage = !rowType.isMap && message.isImage
+        rowType.isVideo = message.isVideo
+        rowType.isAudio = message.isAudio
+        rowType.isForward = message.forwardInfo != nil
+        rowType.isUnSent = message.isUnsentMessage
         async let color = threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
         participantColor = await Color(uiColor: color ?? .clear)
         await downloadFileVM?.setup()
@@ -237,7 +239,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     @MainActor
     private func prepareImage() async {
-        guard let vm = downloadFileVM, message.isImage && !isMapType else { return }
+        guard let vm = downloadFileVM, message.isImage && !rowType.isMap else { return }
         if vm.thumbnailData != nil && vm.state == .downloading { return }
         if vm.state == .completed, let realImage = realImage {
             image = realImage
