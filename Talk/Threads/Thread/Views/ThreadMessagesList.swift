@@ -123,26 +123,6 @@ struct ThreadHistoryList: View {
 
     var body: some View {
         List {
-            ListLoadingView(isLoading: $viewModel.topLoading)
-                .id(-1)
-                .listRowSeparator(.hidden)
-                .listRowInsets(.zero)
-                .listRowBackground(Color.clear)
-                .padding([.top, .bottom])
-                .scaleEffect(x: 1, y: -1, anchor: .center)
-            ForEach(viewModel.sections) { section in
-                MessageList(vms: section.vms, viewModel: viewModel)
-                SectionView(section: section)
-            }
-            .scaleEffect(x: 1, y: -1, anchor: .center)
-
-            SpaceForAttachment()
-                .id(-3)
-                .listRowSeparator(.hidden)
-                .listRowInsets(.zero)
-                .listRowBackground(Color.clear)
-                .scaleEffect(x: 1, y: -1, anchor: .center)
-            //                UnsentMessagesLoop(historyVM: viewModel)
             ListLoadingView(isLoading: $viewModel.bottomLoading)
                 .id(-2)
                 .listRowSeparator(.hidden)
@@ -150,6 +130,28 @@ struct ThreadHistoryList: View {
                 .listRowBackground(Color.clear)
                 .padding([.top, .bottom])
                 .scaleEffect(x: 1, y: -1, anchor: .center)
+            SpaceForAttachment()
+                .id(-3)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
+                .scaleEffect(x: 1, y: -1, anchor: .center)
+
+            ForEach(viewModel.sections) { section in
+                MessageList(vms: section.vms, viewModel: viewModel)
+                SectionView(section: section)
+            }
+            .scaleEffect(x: 1, y: -1, anchor: .center)
+
+            ListLoadingView(isLoading: $viewModel.topLoading)
+                .id(-1)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
+                .padding([.top, .bottom])
+                .scaleEffect(x: 1, y: -1, anchor: .center)
+
+            //                UnsentMessagesLoop(historyVM: viewModel)
         }
         .listStyle(.plain)
         .scaleEffect(x: 1, y: -1, anchor: .center)

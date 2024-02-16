@@ -52,9 +52,12 @@ public class DetailTabDownloaderViewModel: ObservableObject {
                     }
                 }
                 self.messages.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
-                isLoading = false
                 hasNext = response.hasNext
                 animateObjectWillChange()
+                /// Prevent to call back to back "loadMore" as a result of a bug in SwiftUI onAppear.
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
+                    self?.isLoading = false
+                }
             }
         default:
             break
