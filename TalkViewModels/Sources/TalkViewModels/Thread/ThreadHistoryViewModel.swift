@@ -238,23 +238,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
             guard let self = self else { return }
             /// 2- Append and sort  and calculate the array but not call to update the view.
             await appendMessagesAndSort(messages)
-            /// 3- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
-            appenedUnreadMessagesBannerIfNeeed()
-            /// 4- Disable excessive loading on the top part.
-            threadViewModel?.scrollVM.disableExcessiveLoading()
-            /// 5- To update isLoading fields to hide the loading at the top.
-            await asyncAnimateObjectWillChange()
-
-            /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
+            /// 3- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
             let lastSeenMessage = message(for: thread.lastSeenMessageId)?.message
-            if let uniqueId = lastSeenMessage?.uniqueId, let lastSeenMessageId = lastSeenMessage?.id {
-                await threadViewModel?.scrollVM.showHighlightedAsync(uniqueId, lastSeenMessageId, highlight: false)
-                /// 9- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
-                if let fromTime = lastSeenMessage?.time {
-                    moreBottom(prepend: "MORE-BOTTOM-FIRST-SCENARIO", fromTime.advanced(by: -1))
-                }
+            /// 4- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
+            if let fromTime = lastSeenMessage?.time {
+                moreBottom(prepend: "MORE-BOTTOM-FIRST-SCENARIO", fromTime.advanced(by: -1))
             }
-            /// 7- Set whether it has more messages at the top or not.
+            /// 5- Set whether it has more messages at the top or not.
             await setHasMoreTop(response)
         }
     }
@@ -263,19 +253,22 @@ public final class ThreadHistoryViewModel: ObservableObject {
         guard response.pop(prepend: "MORE-BOTTOM-FIRST-SCENARIO") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
-            /// 10- Append messages to the bottom part of the view and if the user scrolls down can see new messages.
+            /// 6- Append the unread message banner and after sorting it will sit below the last message seen. and it will be added into the secion of lastseen message no the new ones.
+            appenedUnreadMessagesBannerIfNeeed()
+            /// 7- Append messages to the bottom part of the view and if the user scrolls down can see new messages.
             await appendMessagesAndSort(messages)
-            /// 11-  Set whether it has more messages at the bottom or not.
+            /// 8-  Set whether it has more messages at the bottom or not.
             await setHasMoreBottom(response)
-            /// 12- Update all the views to draw new messages for the bottom part and hide loading at the bottom.
+            /// 9- Update all the views to draw new messages for the bottom part and hide loading at the bottom.
             await asyncAnimateObjectWillChange()
+            await threadViewModel?.scrollVM.showHighlightedAsync("\(LocalId.unreadMessageBanner.rawValue)", LocalId.unreadMessageBanner.rawValue, highlight: false)
             shimmerViewModel.hide()
         }
     }
 
     func appenedUnreadMessagesBannerIfNeeed() {
         guard
-            let tuples = message(for: sections.first?.vms.first?.id),
+            let tuples = message(for: thread.lastSeenMessageId),
             let threadViewModel = threadViewModel
         else { return }
         let time = (tuples.message.time ?? 0) + 1
