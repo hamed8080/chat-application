@@ -395,3 +395,6 @@
 "MessageType.location" = "موقع";
 "MessageType.join" = "انضمام";
 "MessageType.left" = "غادر";
+
+/* Delete Conatct In Conversation Detail */
+"ConversationDetail.deleteContact" = "هل أنت متأكد أنك تريد حذف %@ من قائمة جهات الاتصال الخاصة بك؟";

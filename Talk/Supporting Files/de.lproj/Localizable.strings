@@ -396,3 +396,6 @@
 "MessageType.location" = "Ort";
 "MessageType.join" = "Beitreten";
 "MessageType.left" = "Verlassen";
+
+/* Delete Conatct In Conversation Detail */
+"ConversationDetail.deleteContact" = "Sind Sie sicher, dass Sie %@ aus Ihrer Kontaktliste löschen möchten?";

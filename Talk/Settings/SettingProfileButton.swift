@@ -46,12 +46,14 @@ struct SettingProfileButton: View {
                     let user = response.result
                     let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: String.splitedCharacter(user?.name ?? ""))
                     imageLoader.config = config
-                    imageLoader.fetch()
+                    Task {
+                        await imageLoader.fetch()
+                    }
                 }
             }
             .task {
                 if AppState.shared.user != nil {
-                    imageLoader.fetch()
+                    await imageLoader.fetch()
                 }
             }
             .onReceive(NotificationCenter.selectTab.publisher(for: .selectTab)) { notification in

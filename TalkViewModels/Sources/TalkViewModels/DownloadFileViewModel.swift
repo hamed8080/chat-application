@@ -158,6 +158,17 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             return
         }
 
+        if response.cache, let data = response.result {
+            _ = response.pop(prepend: "THUMBNAIL")
+            autoreleasepool {
+                state = .completed
+                downloadPercent = 100
+                self.data = data
+                thumbnailData = nil
+                isInCache = true
+                animateObjectWillChange()
+            }
+        }
         if RequestsManager.shared.contains(key: uniqueId), let data = response.result {
             autoreleasepool {
                 state = .completed

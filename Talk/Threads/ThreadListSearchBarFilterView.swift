@@ -37,6 +37,11 @@ struct ThreadListSearchBarFilterView: View {
                             .background(Color.App.bgSendInput.opacity(0.8))
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
+                    .onAppear {
+                        if isInSearchMode && searchFocus != .saerch {
+                            searchFocus = .saerch
+                        }
+                    }
 
 //                Button {
 //                    showPopover.toggle()

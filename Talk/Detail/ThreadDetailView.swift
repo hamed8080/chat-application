@@ -282,7 +282,9 @@ struct ThreadInfoView: View {
                     }
                 }
                 .onTapGesture {
-                    fullScreenImageLoader.fetch()
+                    Task {
+                        await fullScreenImageLoader.fetch()
+                    }
                 }
                 .onReceive(fullScreenImageLoader.$image) { newValue in
                     if newValue.size.width > 0 {
@@ -291,7 +293,9 @@ struct ThreadInfoView: View {
                 }
                 .onReceive(NotificationCenter.thread.publisher(for: .thread)) { notification in
                     if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(_) = threadEvent {
-                        defaultLoader.fetch()
+                        Task {
+                            await defaultLoader.fetch()
+                        }
                     }
                 }
 

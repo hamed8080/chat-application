@@ -395,3 +395,6 @@
 "MessageType.location" = "Plats";
 "MessageType.join" = "Gå med";
 "MessageType.left" = "Lämnade";
+
+/* Delete Conatct In Conversation Detail */
+"ConversationDetail.deleteContact" = "Är du säker på att du vill ta bort %@ från din kontaktlista?";

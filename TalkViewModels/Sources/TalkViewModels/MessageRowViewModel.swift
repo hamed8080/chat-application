@@ -472,12 +472,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func calculateSpacingPaddings() {
-        paddings.textViewSpacingTop = groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil ? 10 : 0
+        paddings.textViewSpacingTop = (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
         paddings.replyViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
         paddings.forwardViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
-        paddings.fileViewSpacingTop = groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil ? 10 : 0
+        paddings.fileViewSpacingTop = (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
         paddings.radioPadding = EdgeInsets(top: 0, leading: isMe ? 8 : 0, bottom: 8, trailing: isMe ? 8 : 0)
-        paddings.mapViewSapcingTop =  groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil ? 10 : 0
+        paddings.mapViewSapcingTop =  (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
         let hasAlreadyPadding = message.replyInfo != nil || message.forwardInfo != nil
         let padding: CGFloat = hasAlreadyPadding ? 0 : 4
         paddings.groupParticipantNamePadding = .init(top: padding, leading: padding, bottom: 0, trailing: padding)

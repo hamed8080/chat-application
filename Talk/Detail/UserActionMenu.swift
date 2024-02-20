@@ -54,7 +54,10 @@ struct UserActionMenu: View {
         if participant.contactId != nil {
             ContextMenuButton(title: "Contacts.delete", image: "trash", iconColor: Color.App.red) {
                 showPopover.toggle()
-                contactViewModel.delete(.init(id: participant.contactId))
+                AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(
+                    ConversationDetailDeleteContactDialog(participant: participant)
+                        .environmentObject(contactViewModel)
+                )
             }
             .foregroundStyle(Color.App.red)
         }

@@ -46,7 +46,6 @@ struct MessageFooterView: View {
             }
         }
         .font(.subheadline)
-        .padding(EdgeInsets(top: 4, leading: 6, bottom: 0, trailing: 6))
-        .padding(.top, 10) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+        .padding(EdgeInsets(top: 4, leading: 6, bottom: 0, trailing: 6)) /// Top 4 for spacing in VStack in TextMessageType
     }
 }

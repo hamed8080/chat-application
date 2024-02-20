@@ -137,17 +137,14 @@ public final class ImageLoaderViewModel: ObservableObject {
     }
 
     /// The hashCode decode FileMetaData so it needs to be done on the background thread.
-    public func fetch() {
-        Task { [weak self] in
-            guard let self = self else { return }
-            fileMetadata = config.metaData
-            if isSDKImage {
-                await getFromSDK(forceToDownloadFromServer: config.forceToDownloadFromServer, thumbnail: config.thumbnail)
-            } else if let fileURL = fileURL {
-                setImage(fileURL: fileURL)
-            } else {
-                await downloadFromAnyURL(thumbnail: config.thumbnail)
-            }
+    public func fetch() async {        
+        fileMetadata = config.metaData
+        if isSDKImage {
+            await getFromSDK(forceToDownloadFromServer: config.forceToDownloadFromServer, thumbnail: config.thumbnail)
+        } else if let fileURL = fileURL {
+            setImage(fileURL: fileURL)
+        } else {
+            await downloadFromAnyURL(thumbnail: config.thumbnail)
         }
     }
 
@@ -166,6 +163,7 @@ public final class ImageLoaderViewModel: ObservableObject {
             storeInCache(data: data) // For retrieving Widgetkit images with the help of the app group.
         } else {
             guard let url = url else { return }
+            response.pop(prepend: "ImageLoader")
             setImage(fileURL: url)
         }
     }

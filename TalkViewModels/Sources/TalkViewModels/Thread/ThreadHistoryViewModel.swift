@@ -206,7 +206,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func setHasMoreTop(_ response: ChatResponse<[Message]>) async {
         if !response.cache {
             hasNextTop = response.hasNext
@@ -215,7 +214,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func setHasMoreBottom(_ response: ChatResponse<[Message]>) async {
         if !response.cache {
             hasNextBottom = response.hasNext
@@ -254,7 +252,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         Task { [weak self] in
             guard let self = self else { return }
             /// 6- Append the unread message banner and after sorting it will sit below the last message seen. and it will be added into the secion of lastseen message no the new ones.
-            appenedUnreadMessagesBannerIfNeeed()
+            await appenedUnreadMessagesBannerIfNeeed()
             /// 7- Append messages to the bottom part of the view and if the user scrolls down can see new messages.
             await appendMessagesAndSort(messages)
             /// 8-  Set whether it has more messages at the bottom or not.
@@ -266,7 +264,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    func appenedUnreadMessagesBannerIfNeeed() {
+    func appenedUnreadMessagesBannerIfNeeed() async {
         guard
             let tuples = message(for: thread.lastSeenMessageId),
             let threadViewModel = threadViewModel
@@ -337,7 +335,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
             if response.result?.count ?? 0 > 0 {
                 removeOldBanner()
-                appenedUnreadMessagesBannerIfNeeed()
+                await appenedUnreadMessagesBannerIfNeeed()
                 /// 3- Append and sort and calculate the array but not call to update the view.
                 await appendMessagesAndSort(messages)
             }

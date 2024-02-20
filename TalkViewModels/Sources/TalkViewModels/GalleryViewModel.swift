@@ -72,7 +72,7 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func onImage(_ response: ChatResponse<Data>, _ fileURL: URL?) {
-        if let data = response.result, let request = response.pop() as? ImageRequest {
+        if let data = response.result, let request = response.pop(prepend: "GalleryView-Fetch") as? ImageRequest {
             state = .completed
             downloadedImages[request.hashCode] = data
             /// Send a notification to update the original.
@@ -84,7 +84,7 @@ public final class GalleryViewModel: ObservableObject {
     }
 
     private func onProgress(_ uniqueId: String, _ progress: DownloadFileProgress?) {
-        if let progress = progress, RequestsManager.shared.pop(for: uniqueId) != nil {
+        if let progress = progress, RequestsManager.shared.contains(key: "GalleryView-Fetch-\(uniqueId)") {
             state = .downloading
             percent = progress.percent
             animateObjectWillChange()
@@ -109,7 +109,7 @@ public final class GalleryViewModel: ObservableObject {
         animateObjectWillChange()
         guard let hashCode = currentImageMessage?.fileMetaData?.file?.hashCode else { return }
         let req = ImageRequest(hashCode: hashCode, size: .ACTUAL)
-        RequestsManager.shared.append(value: req)
+        RequestsManager.shared.append(prepend: "GalleryView-Fetch", value: req)
         ChatManager.activeInstance?.file.get(req)
     }
 

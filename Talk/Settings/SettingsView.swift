@@ -465,13 +465,17 @@ struct UserProfileView: View {
             if imageLoader?.isImageReady == false, case let .user(response) = event, let user = response.result {
                 let config = ImageLoaderConfig(url: user.image ?? "", size: .LARG, userName: user.name)
                 imageLoader = .init(config: config)
-                imageLoader?.fetch()
+                Task {
+                    await imageLoader?.fetch()
+                }
             }
         }
         .onAppear {
             let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: user?.name)
             imageLoader = .init(config: config)
-            imageLoader?.fetch()
+            Task {
+                await imageLoader?.fetch()
+            }
         }
     }
 }

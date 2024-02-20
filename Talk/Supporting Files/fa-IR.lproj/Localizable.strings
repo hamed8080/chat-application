@@ -396,3 +396,6 @@
 "MessageType.location" = "موقعیت مکانی";
 "MessageType.join" = "پیوستن";
 "MessageType.left" = "ترک کردن";
+
+/* Delete Conatct In Conversation Detail */
+"ConversationDetail.deleteContact" = "آیا مطمئن هستید که می خواهید %@ را از لیست مخاطبین خود حذف کنید؟";

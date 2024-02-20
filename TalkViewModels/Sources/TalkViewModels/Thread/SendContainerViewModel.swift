@@ -41,6 +41,20 @@ public final class SendContainerViewModel: ObservableObject {
     @Published public var isInEditMode: Bool = false
     @Published public var editMessage: Message?
     public var height: CGFloat = 0
+    private var draft: String {
+        get {
+            UserDefaults.standard.string(forKey: "draft-\(threadId)") ?? ""
+        }
+        set {
+            if newValue.isEmpty {
+                UserDefaults.standard.removeObject(forKey: "draft-\(threadId)")
+            } else {
+                UserDefaults.standard.setValue(newValue, forKey: "draft-\(threadId)")
+            }
+        }
+    }
+
+    private var isDraft: Bool { !draft.isEmpty }
 
     public static func == (lhs: SendContainerViewModel, rhs: SendContainerViewModel) -> Bool {
         rhs.thread.id == lhs.thread.id
@@ -65,7 +79,9 @@ public final class SendContainerViewModel: ObservableObject {
         
         $editMessage
             .sink { [weak self] editMessage in
-                self?.onTextMessageChanged(editMessage?.message ?? "")
+                if editMessage != nil, self?.isDraft == false {
+                    self?.onTextMessageChanged(editMessage?.message ?? "")
+                }
             }
             .store(in: &cancelable)
     }
@@ -78,9 +94,9 @@ public final class SendContainerViewModel: ObservableObject {
         threadVM?.sendStartTyping(newValue)
         let isRTLChar = newValue.count == 1 && newValue.first == "\u{200f}"
         if !isTextEmpty(text: newValue) && !isRTLChar {
-            UserDefaults.standard.setValue(newValue, forKey: "draft-\(threadId)")
+            draft = newValue
         } else {
-            UserDefaults.standard.removeObject(forKey: "draft-\(threadId)")
+            draft = ""
         }
     }
 
