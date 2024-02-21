@@ -10,6 +10,7 @@ import TalkUI
 import TalkViewModels
 import TalkExtensions
 import ChatCore
+import TalkModels
 
 struct AppOverlayFactory: View {
     @EnvironmentObject var viewModel: AppOverlayViewModel
@@ -47,6 +48,8 @@ struct AppOverlayFactory: View {
                 } else if error?.isPresentable == true {
                     let title = String(format: String(localized: "Errors.occuredTitle"), "\(error?.code ?? 0)")
                     ToastView(title: title, message: error?.message ?? "") {}
+                } else if let appError = AppErrorTypes(rawValue: error?.code ?? 0) {
+                    ToastView(title: "", message: appError.localized) {}
                 }
             }
         case .none:

@@ -131,6 +131,8 @@ struct NavigationTypeView: View {
             LanguageView(container: container)
         case .editProfile(_):
             EditProfileView()
+        case .loadTests(_):
+            LoadTestsView()
         }
     }
 }

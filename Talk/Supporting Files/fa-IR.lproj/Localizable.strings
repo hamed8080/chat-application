@@ -217,6 +217,7 @@
 "Thread.Tabs.voice" = "صدا";
 "Thread.Tabs.link" = "لینک";
 "Thread.accessMicrophonePermission" = "لطفاً به قسمت تنظیمات و سپس اپلیکیشن تاک مراجعه کنید و سپس میکروفن را روشن کنید.";
+"Thread.accessLocaitonPermission" = "لطفاً به قسمت تنظمیات و سپس اپلیکیشن تاک مراجعه کنید و سپس دسترسی به موقعیت مکانی را فعال کنید.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ گفتگویی ساخت.";
 "Thread.Toolbar.participants" = "عضو";

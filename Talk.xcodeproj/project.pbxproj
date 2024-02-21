@@ -299,6 +299,8 @@
 		05D493932B21FF3800508472 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 052F46652B21F5B400085C26 /* PhotosUI.framework */; };
 		05D813B02B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */; };
 		05D813B12B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */; };
+		05D893052B862BEE00D8F7AF /* LoadTestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D893042B862BEE00D8F7AF /* LoadTestsView.swift */; };
+		05D893062B862BF100D8F7AF /* LoadTestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D893042B862BEE00D8F7AF /* LoadTestsView.swift */; };
 		05DAA42C2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DAA42B2B296C12007427DC /* SelectMessageInsideClickOverlay.swift */; };
 		05DAA42D2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DAA42B2B296C12007427DC /* SelectMessageInsideClickOverlay.swift */; };
 		05DAA42F2B29BE74007427DC /* ThreadListSearchBarFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DAA42E2B29BE74007427DC /* ThreadListSearchBarFilterView.swift */; };
@@ -510,6 +512,7 @@
 		05D1F2E02B70D461000CE1FB /* UploadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadButton.swift; sourceTree = "<group>"; };
 		05D2355F2B24A1520090656C /* ThreadMainToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMainToolbar.swift; sourceTree = "<group>"; };
 		05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplyPrivatelyMessageViewPlaceholder.swift; sourceTree = "<group>"; };
+		05D893042B862BEE00D8F7AF /* LoadTestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadTestsView.swift; sourceTree = "<group>"; };
 		05DAA42B2B296C12007427DC /* SelectMessageInsideClickOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMessageInsideClickOverlay.swift; sourceTree = "<group>"; };
 		05DAA42E2B29BE74007427DC /* ThreadListSearchBarFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadListSearchBarFilterView.swift; sourceTree = "<group>"; };
 		05DAA4312B29BEBC007427DC /* ContactListSearchBarFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListSearchBarFilterView.swift; sourceTree = "<group>"; };
@@ -837,6 +840,7 @@
 				0594FE562B0347B50031AADF /* AutomaticDownloadSettings.swift */,
 				0594FE582B034B050031AADF /* SettingNotificationSection.swift */,
 				05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */,
+				05D893042B862BEE00D8F7AF /* LoadTestsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1221,6 +1225,7 @@
 				05593BA52AFF560A00316E39 /* ThreadSearchView.swift in Sources */,
 				0570CC532AAEE98F001832E9 /* PictureView.swift in Sources */,
 				0570CC192AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */,
+				05D893052B862BEE00D8F7AF /* LoadTestsView.swift in Sources */,
 				05466B0A2AEEA3F7005CC176 /* ArchivesView.swift in Sources */,
 				0594FE632B0386F00031AADF /* MessageTextView.swift in Sources */,
 				0570CC732AAEE98F001832E9 /* AssistantHistoryView.swift in Sources */,
@@ -1377,6 +1382,7 @@
 				05593BA62AFF560A00316E39 /* ThreadSearchView.swift in Sources */,
 				0570CC542AAEE98F001832E9 /* PictureView.swift in Sources */,
 				0570CC1A2AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */,
+				05D893062B862BF100D8F7AF /* LoadTestsView.swift in Sources */,
 				05466B0B2AEEA3F7005CC176 /* ArchivesView.swift in Sources */,
 				0594FE642B0386F00031AADF /* MessageTextView.swift in Sources */,
 				0570CC742AAEE98F001832E9 /* AssistantHistoryView.swift in Sources */,

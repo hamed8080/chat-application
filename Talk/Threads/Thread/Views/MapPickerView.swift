@@ -11,6 +11,7 @@ import SwiftUI
 import TalkModels
 import TalkUI
 import TalkViewModels
+import ChatCore
 
 struct MapPickerView: View {
     @Environment(\.dismiss) var dismiss
@@ -38,31 +39,52 @@ struct MapPickerView: View {
             }
         }
         .overlay(alignment: .topTrailing) {
-            Button {
-                withAnimation {
-                    viewModel.sheetType = nil
-                    viewModel.animateObjectWillChange()
-                    dismiss()
-                }
-            } label: {
-                Image(systemName: "xmark")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 16, height: 16)
-                    .padding()
-                    .foregroundColor(Color.App.accent)
-                    .aspectRatio(contentMode: .fit)
-                    .contentShape(Rectangle())
-            }
-            .frame(width: 40, height: 40)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius:(20)))
-            .padding(4)
+            closeButton
         }
+        .overlay {
+            if locationManager.error != nil {
+                errorView
+            }
+        }
+    }
+
+    private var closeButton: some View {
+        Button {
+            withAnimation {
+                viewModel.sheetType = nil
+                viewModel.animateObjectWillChange()
+                dismiss()
+            }
+        } label: {
+            Image(systemName: "xmark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 16, height: 16)
+                .padding()
+                .foregroundColor(Color.App.accent)
+                .aspectRatio(contentMode: .fit)
+                .contentShape(Rectangle())
+        }
+        .frame(width: 40, height: 40)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius:(20)))
+        .padding(4)
+    }
+
+    private var errorView: some View {
+        ToastView(message: AppErrorTypes.location_access_denied.localized) {}
+            .onAppear {
+                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+                    withAnimation {
+                        locationManager.error = nil
+                    }
+                }
+            }
     }
 }
 
 final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
+    @Published var error: AppErrorTypes?
     @Published var currentLocation: LocationItem?
     let manager = CLLocationManager()
     @Published var region: MKCoordinateRegion = .init(center: CLLocationCoordinate2D(latitude: 51.507222,
@@ -83,6 +105,16 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
             if let currentLocation = locations.first, MKMapPoint(currentLocation.coordinate).distance(to: MKMapPoint(self?.currentLocation?.location ?? CLLocationCoordinate2D())) > 100 {
                 self?.currentLocation = .init(name: String(localized: .init("Map.mayLocation")), description: String(localized: .init("Map.hereIAm")), location: currentLocation.coordinate)
                 self?.region.center = currentLocation.coordinate
+            }
+        }
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if manager.authorizationStatus == .denied {
+            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
+                withAnimation {
+                    self?.error = AppErrorTypes.location_access_denied
+                }
             }
         }
     }

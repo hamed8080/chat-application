@@ -216,6 +216,7 @@
 "Thread.Tabs.voice" = "Voice";
 "Thread.Tabs.link" = "Link";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
+"Thread.accessLocaitonPermission" = "Please go to the settings>Talk and then turn on location access.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ created a conversation.";
 "Thread.Toolbar.participants" = "Participants";

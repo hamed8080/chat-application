@@ -63,7 +63,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var signalMessageText: String?
     public var isActiveThread: Bool { AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel.threadId == threadId }
     public weak var forwardMessage: Message?
-    public var seenPublisher = PassthroughSubject<Message, Never>()
     var createThreadCompletion: (()-> Void)?
     public static var threadWidth: CGFloat = 0 {
         didSet {
@@ -112,15 +111,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             }
             .store(in: &cancelable)
         registerNotifications()
-        seenPublisher
-            .filter{ [weak self] in $0.id ?? -1 >= self?.thread.lastSeenMessageId ?? 0 }
-            .debounce(for: 0.5, scheduler: RunLoop.main)
-            .removeDuplicates()
-            .sink { [weak self] newValue in
-                self?.sendSeen(for: newValue)
-            }
-            .store(in: &cancelable)
-
         NotificationCenter.appSettingsModel.publisher(for: .appSettingsModel)
             .sink { [weak self] _ in
                 self?.setAppSettingsModel()
@@ -173,15 +163,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             ChatManager.activeInstance?.system.snedStartTyping(threadId: threadId)
         } else {
             ChatManager.activeInstance?.system.sendStopTyping()
-        }
-    }
-
-    public func sendSeen(for message: Message) {
-        let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, !isMe {
-            thread.lastSeenMessageId = messageId
-            log("send seen for message:\(message.messageTitle) with id:\(messageId)")
-            ChatManager.activeInstance?.message.seen(.init(threadId: threadId, messageId: messageId))
         }
     }
 
@@ -259,32 +240,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
             .store(in: &cancelable)
         exportMessagesViewModel.exportChats(startDate: startDate, endDate: endDate)
         animateObjectWillChange()
-    }
-
-    /// We reduce it locally to keep the UI Sync and user feels it really read the message.
-    /// However, we only send seen request with debouncing
-    func reduceUnreadCountLocaly(_ message: Message?) {
-        let messageId = message?.id ?? -1
-        let beforeUnreadCount = thread.unreadCount ?? -1
-        if beforeUnreadCount > 0, messageId > thread.lastSeenMessageId ?? 0 {
-            let newUnreadCount = beforeUnreadCount - 1
-            thread.unreadCount = newUnreadCount
-            if let index = threadsViewModel?.threads.firstIndex(where: {$0.id == threadId}) {
-                threadsViewModel?.threads[index].unreadCount = newUnreadCount
-            }
-            threadsViewModel?.animateObjectWillChange()
-            animateObjectWillChange()
-        }
-
-        /// We do this to remove number 1 as fast as the user scrolls to the last Message in the thread
-        /// If we remove these lines it will work, however, we should wait for the server's response to remove the number 1 unread count when the user scrolls fast.
-        if thread.unreadCount == 1, messageId == thread.lastMessageVO?.id {
-            if let index = threadsViewModel?.threads.firstIndex(where: {$0.id == threadId}) {
-                threadsViewModel?.threads[index].unreadCount = 0
-                threadsViewModel?.animateObjectWillChange()
-            }
-            animateObjectWillChange()
-        }
     }
 
     /// This method prevents to update unread count if the local unread count is smaller than server unread count.

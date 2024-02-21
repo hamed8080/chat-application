@@ -10,6 +10,7 @@ import Chat
 import Foundation
 import OSLog
 import TalkModels
+import ChatCore
 
 protocol AudioRecordingViewModelprotocol: ObservableObject {
     var audioRecorder: AVAudioRecorder { get set }
@@ -132,7 +133,9 @@ public final class AudioRecordingViewModel: AudioRecordingViewModelprotocol {
         if granted {
             start()
         } else {
-            AppState.shared.animateAndShowError(.init(message: String(localized: .init("Thread.accessMicrophonePermission")), code: 0, hasError: true))
+            let error = AppErrorTypes.microphone_access_denied
+            let chatError = ChatError(code: error.rawValue, hasError: true)
+            AppState.shared.animateAndShowError(chatError)
             stop()
         }
     }

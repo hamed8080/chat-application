@@ -217,6 +217,7 @@
 "Thread.Tabs.voice" = "Sprachnachricht";
 "Thread.Tabs.link" = "Link";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
+"Thread.accessLocaitonPermission" = "Gehen Sie bitte zu „Einstellungen“ > „Sprechen“ und aktivieren Sie dann den Standortzugriff.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ hat eine Unterhaltung erstellt.";
 "Thread.Toolbar.participants" = "Teilnehmer";

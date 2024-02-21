@@ -37,7 +37,7 @@ extension ThreadViewModel {
         Timer.scheduledTimer(withTimeInterval: isSimulatedThared ? 0.5 : 0, repeats: false) { [weak self] _ in
             self?.sendContainerViewModel.clear() // close ui
         }
-        historyVM.sendSeenForAllUnreadMessages()
+        historyVM.seenVM.sendSeenForAllUnreadMessages()
     }
 
     public func sendAttachmentsMessage() {

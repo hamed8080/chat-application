@@ -216,6 +216,7 @@
 "Thread.Tabs.voice" = "Röst";
 "Thread.Tabs.link" = "Länk";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
+"Thread.accessLocaitonPermission" = "Gå till inställningarna > Prata och aktivera sedan platsåtkomst.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ skapade en konversation.";
 "Thread.Toolbar.participants" = "Deltagare";

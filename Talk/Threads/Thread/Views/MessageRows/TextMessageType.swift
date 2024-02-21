@@ -202,10 +202,7 @@ struct TextMessageType_Previews: PreviewProvider {
                 TextMessageType(viewModel: viewModel)
             }
             .environmentObject(viewModel)
-            .environmentObject(NavigationModel())
-            .onAppear {
-                AppState.shared.cachedUser = .init(id: 1)
-            }
+            .environmentObject(NavigationModel())           
         }
     }
 

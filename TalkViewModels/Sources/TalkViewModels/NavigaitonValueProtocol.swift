@@ -84,3 +84,8 @@ public struct EditProfileNavigationValue: NavigaitonValueProtocol {
     public var title: String = "Settings.EditProfile.title"
     public init() {}
 }
+
+public struct LoadTestsNavigationValue: NavigaitonValueProtocol {
+    public var title: String = "Load Tests"
+    public init() {}
+}

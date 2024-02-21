@@ -46,11 +46,16 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var lastTopVisibleMessage: Message?
     public var isFetchedServerFirstResponse: Bool = false
     private var cancelable: Set<AnyCancellable> = []
-    public weak var threadViewModel: ThreadViewModel?
+    public weak var threadViewModel: ThreadViewModel? {
+        didSet {
+            seenVM.threadVM = threadViewModel
+        }
+    }
     private var thread: Conversation { threadViewModel?.thread ?? .init(id: -1) }
     private var threadId: Int { thread.id ?? -1 }
     var hasSentHistoryRequest = false
     public var shimmerViewModel: ShimmerViewModel = .init(delayToHide: 0)
+    public var seenVM = HistorySeenViewModel()
 
     public var isEmptyThread: Bool {
         let noMessage = isFetchedServerFirstResponse == true && sections.count == 0
@@ -687,40 +692,21 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     @MainActor
     public func onMessageAppear(_ message: Message) async {
-        guard let threadViewModel = threadViewModel else { return }
-        let scrollVM = threadViewModel.scrollVM
+        guard let threadVM = threadViewModel else { return }
+        let scrollVM = threadVM.scrollVM
         if message.id == sections.last?.vms.last?.id {
             lastTopVisibleMessage = message
         } else {
             lastTopVisibleMessage = nil
         }
+
         Task { [weak self] in
             guard let self = self else { return }
-            if message.id == thread.lastMessageVO?.id, threadViewModel.scrollVM.isAtBottomOfTheList == false {
-                threadViewModel.scrollVM.isAtBottomOfTheList = true
-                threadViewModel.scrollVM.animateObjectWillChange()
+            if message.id == thread.lastMessageVO?.id, threadVM.scrollVM.isAtBottomOfTheList == false {
+                threadVM.scrollVM.isAtBottomOfTheList = true
+                threadVM.scrollVM.animateObjectWillChange()
             }
-            /// We get next item in the list because when we are scrolling up the message is beneth NavigationView so we should get the next item to ensure we are in right position
-            guard
-                let sectionIndex = sectionIndexByMessageId(message),
-                let messageIndex = messageIndex(message.id ?? -1, in: sectionIndex)
-            else { return }
-            let section = sections[sectionIndex]
-            if scrollVM.scrollingUP == true, section.vms.indices.contains(messageIndex + 1) == true {
-                let message = section.vms[messageIndex + 1].message
-                log("Scrolling Up with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
-            } else if scrollVM.scrollingUP == false, section.vms.indices.contains(messageIndex - 1), section.vms.first?.id != message.id {
-                let message = section.vms[messageIndex - 1].message
-                log("Scroling Down with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
-                threadViewModel.reduceUnreadCountLocaly(message)
-                threadViewModel.seenPublisher.send(message)
-            } else {
-                // Last Item
-                log("Last Item with id:\(message.id ?? 0) uniqueId:\(message.uniqueId ?? "") text:\(message.message ?? "")")
-                threadViewModel.reduceUnreadCountLocaly(message)
-                threadViewModel.seenPublisher.send(message)
-            }
-
+            await seenVM.onAppear(message)
             if scrollVM.scrollingUP == true, scrollVM.isProgramaticallyScroll == false, isInTopSlice(message) {
                 moreTop(sections.last?.vms.last?.message.time)
             }
@@ -736,6 +722,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             threadViewModel?.scrollVM.isAtBottomOfTheList = false
             threadViewModel?.scrollVM.animateObjectWillChange()
         }
+       await seenVM.onDisappear(message)
     }
 
     public func onSent(_ response: ChatResponse<MessageResponse>) {
@@ -974,16 +961,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         if threadViewModel?.searchedMessagesViewModel.isInSearchMode == false {
             let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
             ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
-        }
-    }
-
-    public func sendSeenForAllUnreadMessages() {
-        if let message = thread.lastMessageVO,
-           message.seen == nil || message.seen == false,
-           message.participant?.id != AppState.shared.user?.id,
-           thread.unreadCount ?? 0 > 0
-        {
-            threadViewModel?.sendSeen(for: message)
         }
     }
 

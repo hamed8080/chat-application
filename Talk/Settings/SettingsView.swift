@@ -50,6 +50,7 @@ struct SettingsView: View {
                 }
                 SettingNotificationSection()
                     .listRowSeparator(.hidden)
+                LoadTestsSection()
             }
 
             Group {
@@ -124,7 +125,6 @@ struct SettingSettingSection: View {
 }
 
 struct UserInformationSection: View {
-    @EnvironmentObject var navModel: NavigationModel
     @State var phone = ""
     @State var userName = ""
     @State var bio = ""
@@ -183,20 +183,26 @@ struct UserInformationSection: View {
             .frame(width: 0, height: 0)
             .listRowSeparator(.hidden)
             .onAppear {
-                let user = AppState.shared.user
-                phone = user?.cellphoneNumber ?? ""
-                userName = user?.username ?? ""
-                bio = user?.chatProfileVO?.bio ?? ""
+                updateUI(user: AppState.shared.user)
             }
-            .onReceive(NotificationCenter.connect.publisher(for: .connect)) { notification in
-                /// We use this to fetch the user profile image once the active instance is initialized.
-                if let status = notification.object as? ChatState, status == .connected {
-                    let user = AppState.shared.user
-                    phone = user?.cellphoneNumber ?? ""
-                    userName = user?.username ?? ""
-                    bio = user?.chatProfileVO?.bio ?? ""
+            .onReceive(NotificationCenter.user.publisher(for: .user)) { notif in
+                let event = notif.object as? UserEventTypes
+                if case let .user(response) = event, response.result != nil {
+                    updateUI(user: response.result)
                 }
             }
+            .onReceive(NotificationCenter.connect.publisher(for: .connect)) { notif in
+                /// We use this to fetch the user profile image once the active instance is initialized.
+                if let status = notif.object as? ChatState, status == .connected {
+                    updateUI(user: AppState.shared.user)
+                }
+            }
+    }
+
+    private func updateUI(user: User?) {
+        phone = user?.cellphoneNumber ?? ""
+        userName = user?.username ?? ""
+        bio = user?.chatProfileVO?.bio ?? ""
     }
 }
 
@@ -476,6 +482,22 @@ struct UserProfileView: View {
             Task {
                 await imageLoader?.fetch()
             }
+        }
+    }
+}
+
+struct LoadTestsSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
+    var body: some View {
+        if EnvironmentValues.isTalkTest {
+            ListSectionButton(imageName: "testtube.2", title: "Load Tests", color: Color.App.color4, showDivider: false) {
+                let value = LoadTestsNavigationValue()
+                navModel.append(type: .loadTests(value), value: value)
+            }
+            .listRowInsets(.zero)
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparatorTint(Color.App.dividerPrimary)
         }
     }
 }
