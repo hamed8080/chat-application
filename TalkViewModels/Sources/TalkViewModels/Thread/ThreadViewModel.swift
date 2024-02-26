@@ -8,25 +8,12 @@
 import Chat
 import Combine
 import Foundation
-import MapKit
-import Photos
 import ChatModels
 import TalkModels
 import ChatCore
 import ChatDTO
 import SwiftUI
 import OSLog
-
-public struct MessageSection: Identifiable, Hashable, Equatable {
-    public var id: Int64 { date.millisecondsSince1970 }
-    public let date: Date
-    public var vms: ContiguousArray<MessageRowViewModel>
-
-    public init(date: Date, vms: ContiguousArray<MessageRowViewModel>) {
-        self.date = date
-        self.vms = vms
-    }
-}
 
 public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public static func == (lhs: ThreadViewModel, rhs: ThreadViewModel) -> Bool {
@@ -53,7 +40,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var sendContainerViewModel: SendContainerViewModel
     public var audioRecoderVM: AudioRecordingViewModel = .init()
     public var scrollVM: ThreadScrollingViewModel = .init()
-    public var historyVM: ThreadHistoryViewModel = .init()
+    public var historyVM: ThreadHistoryViewModel!
     public weak var threadsViewModel: ThreadsViewModel?
     public var participantsColorVM: ParticipantsColorViewModel = .init()
     public var threadPinMessageViewModel: ThreadPinMessageViewModel
@@ -92,8 +79,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.thread = thread
         self.threadsViewModel = threadsViewModel
         self.participantsViewModel = ParticipantsViewModel(thread: thread)
+        self.historyVM = ThreadHistoryViewModel(threadViewModel: self)
         scrollVM.threadVM = self
-        historyVM.threadViewModel = self
         setupNotificationObservers()
         setAppSettingsModel()
         selectedMessagesViewModel.threadVM = self
@@ -101,7 +88,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         uploadMessagesViewModel.threadVM = self
         unsentMessagesViewModel.threadVM = self
         exportMessagesViewModel.thread = thread
-        historyVM.setupNotificationObservers()
     }
 
     private func setupNotificationObservers() {

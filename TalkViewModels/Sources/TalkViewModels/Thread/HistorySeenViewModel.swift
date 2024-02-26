@@ -13,19 +13,21 @@ import OSLog
 import Chat
 
 public final class HistorySeenViewModel: ObservableObject {
-    public weak var threadVM: ThreadViewModel?
+    private weak var threadVM: ThreadViewModel?
     private var historyVM: ThreadHistoryViewModel? { threadVM?.historyVM }
     private var onScreenMessages: [Message] = []
     private var isFirstTimeProgramaticallyScroll: Bool = true
-    public var seenPublisher = PassthroughSubject<Message, Never>()
-    public var cancelable: Set<AnyCancellable> = []
+    private var seenPublisher = PassthroughSubject<Message, Never>()
+    private var cancelable: Set<AnyCancellable> = []
     private var thread: Conversation? { threadVM?.thread }
+    private let queue = DispatchQueue(label: "SEEN_SERIAL_QUEUE")
 
-    public init() {
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
-            Task { [weak self] in
+    public init(threadViewModel: ThreadViewModel) {
+        self.threadVM = threadViewModel
+        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+            self?.queue.sync { [weak self] in
                 self?.isFirstTimeProgramaticallyScroll = false
-                await self?.sendSeenAndReduceUnredaCountLocally()
+                self?.sendSeenAndReduceUnredaCountLocally()
             }
         }
         seenPublisher
@@ -38,49 +40,51 @@ public final class HistorySeenViewModel: ObservableObject {
             .store(in: &cancelable)
     }
 
-    public func onAppear(_ message: Message) async {
-        /// We get next item in the list because when we are scrolling up the message is beneth NavigationView so we should get the next item to ensure we are in right position
-        guard
-            let historyVM = historyVM,
-            let sectionIndex = historyVM.sectionIndexByMessageId(message),
-            let messageIndex = historyVM.messageIndex(message.id ?? -1, in: sectionIndex)
-        else { return }
+    internal func onAppear(_ message: Message) {
+        queue.sync {
+            /// We get next item in the list because when we are scrolling up the message is beneth NavigationView so we should get the next item to ensure we are in right position
+            guard
+                let historyVM = historyVM,
+                let sectionIndex = historyVM.sectionIndexByMessageId(message),
+                let messageIndex = historyVM.messageIndex(message.id ?? -1, in: sectionIndex)
+            else { return }
 
-        let section = historyVM.sections[sectionIndex]
-        let isScrollUP = threadVM?.scrollVM.scrollingUP == true
-        let vms = section.vms
-        let indices = vms.indices
-        let hasUpMessage = indices.contains(messageIndex - 1) == true
-        let hasDownMessage = vms.indices.contains(messageIndex + 1)
+            let section = historyVM.sections[sectionIndex]
+            let isScrollUP = threadVM?.scrollVM.scrollingUP == true
+            let vms = section.vms
+            let indices = vms.indices
+            let hasUpMessage = indices.contains(messageIndex - 1) == true
+            let hasDownMessage = vms.indices.contains(messageIndex + 1)
 
-        if isScrollUP, hasUpMessage {
-            let prevMessage = vms[messageIndex - 1].message
-            await onMessageScroll(prevMessage, isUp: true)
-        } else if !isScrollUP, hasDownMessage, vms.first?.id != message.id {
-            let nextMessage = vms[messageIndex + 1].message
-            await onMessageScroll(nextMessage, isUp: false)
-        } else {
-            // Last Item
-            await onMessageScroll(message)
+            if isScrollUP, hasUpMessage {
+                let prevMessage = vms[messageIndex - 1].message
+                onMessageScroll(prevMessage, isUp: true)
+            } else if !isScrollUP, hasDownMessage, vms.first?.id != message.id {
+                let nextMessage = vms[messageIndex + 1].message
+                onMessageScroll(nextMessage, isUp: false)
+            } else {
+                // Last Item
+                onMessageScroll(message)
+            }
         }
     }
 
-    public func onDisappear(_ message: Message) async {
-        await MainActor.run {
+    internal func onDisappear(_ message: Message) {
+        queue.sync {
             log("Item disappeared with scroling with id: \(message.id ?? 0) message: \(message.message ?? "")")
             onScreenMessages.removeAll(where: {$0.id == message.id})
         }
     }
 
-    private func sendSeenAndReduceUnredaCountLocally() async {
+    private func sendSeenAndReduceUnredaCountLocally() {
         let maxId = onScreenMessages.compactMap({$0.id}).max()
         let message = onScreenMessages.first(where: {$0.id == maxId})
         guard let message else { return }
-        await reduceUnreadCountLocaly(message)
+        reduceUnreadCountLocaly(message)
         seenPublisher.send(message)
     }
 
-    private func onMessageScroll(_ message: Message, isUp: Bool? = nil) async {
+    private func onMessageScroll(_ message: Message, isUp: Bool? = nil) {
         let dir = isUp == true ? "UP" : (isUp == false ? "DOWN" : "LAST")
         let messageId = message.id ?? 0
         let uniqueId = message.uniqueId ?? ""
@@ -91,12 +95,12 @@ public final class HistorySeenViewModel: ObservableObject {
         if isFirstTimeProgramaticallyScroll == true {
             return
         }
-        await sendSeenAndReduceUnredaCountLocally()
+        sendSeenAndReduceUnredaCountLocally()
     }
 
     /// We reduce it locally to keep the UI Sync and user feels it really read the message.
     /// However, we only send seen request with debouncing
-    func reduceUnreadCountLocaly(_ message: Message?) async {
+    private func reduceUnreadCountLocaly(_ message: Message?) {
         guard 
             let threadVM = threadVM,
             let threadsVM = threadVM.threadsViewModel
@@ -126,7 +130,7 @@ public final class HistorySeenViewModel: ObservableObject {
         }
     }
 
-    public func sendSeen(for message: Message) {
+    private func sendSeen(for message: Message) {
         guard let thread = thread, let threadId = thread.id else { return }
         let isMe = message.isMe(currentUserId: AppState.shared.user?.id)
         if let messageId = message.id, let lastMsgId = thread.lastSeenMessageId, messageId > lastMsgId, !isMe {
@@ -136,7 +140,7 @@ public final class HistorySeenViewModel: ObservableObject {
         }
     }
 
-    public func sendSeenForAllUnreadMessages() {
+    internal func sendSeenForAllUnreadMessages() {
         if let message = thread?.lastMessageVO,
            message.seen == nil || message.seen == false,
            message.participant?.id != AppState.shared.user?.id,

@@ -15,20 +15,6 @@ import OSLog
 import TalkModels
 import Combine
 
-struct OnMoveTime: ChatDTO.UniqueIdProtocol {
-    let uniqueId: String
-    let messageId: Int
-    let request: GetHistoryRequest
-    let highlight: Bool
-
-    init(messageId: Int, request: GetHistoryRequest, highlight: Bool) {
-        self.messageId = messageId
-        self.request = request
-        self.highlight = highlight
-        uniqueId = request.uniqueId
-    }
-}
-
 public final class ThreadHistoryViewModel: ObservableObject {
     public var sections: ContiguousArray<MessageSection> = .init()
     public var needUpdates: ContiguousArray<MessageRowViewModel> = .init()
@@ -46,16 +32,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var lastTopVisibleMessage: Message?
     public var isFetchedServerFirstResponse: Bool = false
     private var cancelable: Set<AnyCancellable> = []
-    public weak var threadViewModel: ThreadViewModel? {
-        didSet {
-            seenVM.threadVM = threadViewModel
-        }
-    }
+    private weak var threadViewModel: ThreadViewModel?
     private var thread: Conversation { threadViewModel?.thread ?? .init(id: -1) }
     private var threadId: Int { thread.id ?? -1 }
     var hasSentHistoryRequest = false
     public var shimmerViewModel: ShimmerViewModel = .init(delayToHide: 0)
-    public var seenVM = HistorySeenViewModel()
+    public var seenVM: HistorySeenViewModel
 
     public var isEmptyThread: Bool {
         let noMessage = isFetchedServerFirstResponse == true && sections.count == 0
@@ -63,7 +45,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return emptyThread || noMessage
     }
 
-    public init() {}
+    public init(threadViewModel: ThreadViewModel) {
+        self.threadViewModel = threadViewModel
+        seenVM = HistorySeenViewModel(threadViewModel: threadViewModel)
+        setupNotificationObservers()
+    }
 
     public func setupNotificationObservers() {
         AppState.shared.$connectionStatus
@@ -706,7 +692,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 threadVM.scrollVM.isAtBottomOfTheList = true
                 threadVM.scrollVM.animateObjectWillChange()
             }
-            await seenVM.onAppear(message)
+            seenVM.onAppear(message)
             if scrollVM.scrollingUP == true, scrollVM.isProgramaticallyScroll == false, isInTopSlice(message) {
                 moreTop(sections.last?.vms.last?.message.time)
             }
@@ -722,7 +708,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             threadViewModel?.scrollVM.isAtBottomOfTheList = false
             threadViewModel?.scrollVM.animateObjectWillChange()
         }
-       await seenVM.onDisappear(message)
+        seenVM.onDisappear(message)
     }
 
     public func onSent(_ response: ChatResponse<MessageResponse>) {
