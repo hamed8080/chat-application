@@ -107,7 +107,11 @@ struct ParticipantRowContainer: View {
 
                     if !isMe, viewModel.thread?.admin == true {
                         ContextMenuButton(title: "General.delete", image: "trash") {
-                            viewModel.removePartitipant(participant)
+                            let dialog = AnyView(
+                                DeleteParticipantDialog(participant: participant)
+                                    .environmentObject(viewModel)
+                            )
+                            AppState.shared.objectsContainer.appOverlayVM.dialogView = dialog
                             showPopover.toggle()
                         }
                         .foregroundStyle(Color.App.red)

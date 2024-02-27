@@ -399,3 +399,6 @@
 
 /* Delete Conatct In Conversation Detail */
 "ConversationDetail.deleteContact" = "هل أنت متأكد أنك تريد حذف %@ من قائمة جهات الاتصال الخاصة بك؟";
+
+/* Delete a Member in members tab */
+"DeleteParticipantDialog.title" = "هل أنت متأكد أنك تريد إزالة %@ من %@؟";

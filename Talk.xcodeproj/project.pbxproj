@@ -244,6 +244,8 @@
 		0570CCBA2AAEEE78001832E9 /* TalkModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCB92AAEEE78001832E9 /* TalkModels */; };
 		0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBB2AAEEE78001832E9 /* TalkUI */; };
 		0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */ = {isa = PBXBuildFile; productRef = 0570CCBD2AAEEE78001832E9 /* TalkViewModels */; };
+		05729A562B8DACDA00D62D69 /* DeleteParticipantDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05729A552B8DACDA00D62D69 /* DeleteParticipantDialog.swift */; };
+		05729A572B8DACDA00D62D69 /* DeleteParticipantDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05729A552B8DACDA00D62D69 /* DeleteParticipantDialog.swift */; };
 		05745AF02AF2626B00102193 /* UserActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05745AEF2AF2626B00102193 /* UserActionMenu.swift */; };
 		05745AF12AF2628000102193 /* UserActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05745AEF2AF2626B00102193 /* UserActionMenu.swift */; };
 		05745AF32AF2B1B100102193 /* SettingProfileButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05745AF22AF2B1B100102193 /* SettingProfileButton.swift */; };
@@ -484,6 +486,7 @@
 		0570CCA62AAEED33001832E9 /* TalkModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkModels; sourceTree = "<group>"; };
 		0570CCA72AAEED33001832E9 /* TalkViewModels */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkViewModels; sourceTree = "<group>"; };
 		0570CCA82AAEED33001832E9 /* TalkExtensions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = TalkExtensions; sourceTree = "<group>"; };
+		05729A552B8DACDA00D62D69 /* DeleteParticipantDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteParticipantDialog.swift; sourceTree = "<group>"; };
 		05745AEF2AF2626B00102193 /* UserActionMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserActionMenu.swift; sourceTree = "<group>"; };
 		05745AF22AF2B1B100102193 /* SettingProfileButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingProfileButton.swift; sourceTree = "<group>"; };
 		057A18DE2B04C78A0007868D /* MessageParticipantsSeen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageParticipantsSeen.swift; sourceTree = "<group>"; };
@@ -853,6 +856,7 @@
 				0570CBB42AAEE98D001832E9 /* ThreadDetailView.swift */,
 				05745AEF2AF2626B00102193 /* UserActionMenu.swift */,
 				05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */,
+				05729A552B8DACDA00D62D69 /* DeleteParticipantDialog.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -1157,6 +1161,7 @@
 				050B29182AB40DC20072706C /* ToolbarView.swift in Sources */,
 				05F70E5A2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */,
 				0594FE692B0387920031AADF /* UnsentMessageView.swift in Sources */,
+				05729A562B8DACDA00D62D69 /* DeleteParticipantDialog.swift in Sources */,
 				057A18DF2B04C78A0007868D /* MessageParticipantsSeen.swift in Sources */,
 				052191562B2F262300CC99D1 /* MutualThreadRow.swift in Sources */,
 				05FF13332AF8CD8200F120DF /* SelectedContact.swift in Sources */,
@@ -1314,6 +1319,7 @@
 				050B29192AB40DC20072706C /* ToolbarView.swift in Sources */,
 				05F70E5B2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */,
 				0594FE6A2B0387920031AADF /* UnsentMessageView.swift in Sources */,
+				05729A572B8DACDA00D62D69 /* DeleteParticipantDialog.swift in Sources */,
 				057A18E02B04C78A0007868D /* MessageParticipantsSeen.swift in Sources */,
 				052191572B2F262300CC99D1 /* MutualThreadRow.swift in Sources */,
 				05FF13342AF8CD8200F120DF /* SelectedContact.swift in Sources */,

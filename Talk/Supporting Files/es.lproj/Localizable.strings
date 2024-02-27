@@ -401,3 +401,6 @@
 
 /* Delete Conatct In Conversation Detail */
 "ConversationDetail.deleteContact" = "¿Estás seguro de que deseas eliminar %@ de tu lista de contactos?";
+
+/* Delete a Member in members tab */
+"DeleteParticipantDialog.title" = "¿Estás seguro de que deseas eliminar %@ de %@?";

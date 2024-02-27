@@ -1,18 +1,19 @@
 //
-//  ConversationDetailDeleteContactDialog.swift
+//  DeleteParticipantDialog.swift
 //  Talk
 //
-//  Created by hamed on 2/20/24.
+//  Created by hamed on 2/27/24.
 //
 
-import SwiftUI
+import Foundation
 import ChatModels
 import TalkViewModels
+import SwiftUI
 import TalkUI
 
-struct ConversationDetailDeleteContactDialog: View {
+struct DeleteParticipantDialog: View {
     let participant: Participant
-    @EnvironmentObject var viewModel: ContactsViewModel
+    @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 16) {
@@ -36,7 +37,7 @@ struct ConversationDetailDeleteContactDialog: View {
 
                 Button {
                     withAnimation {
-                        viewModel.delete(.init(id: participant.contactId))
+                        viewModel.removePartitipant(participant)
                         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
                     }
                 } label: {
@@ -53,19 +54,21 @@ struct ConversationDetailDeleteContactDialog: View {
     }
 
     private var attributedString: AttributedString {
-        let key = String(localized: .init("ConversationDetail.deleteContact"))
-        let contactName = participant.contactName ?? participant.name ?? ""
-        let string = String(format: key, contactName)
+        let type = viewModel.thread?.type?.isChannelType == true ? "Thread.channel" : "Thread.group"
+        let locaizedType = String(localized: .init(type)).lowercased()
+        let key = String(localized: .init("DeleteParticipantDialog.title"))
+        let participantName = participant.contactName ?? participant.name ?? ""
+        let string = String(format: key, participantName, locaizedType)
         let attr = NSMutableAttributedString(string: string)
-        let range = (attr.string as NSString).range(of: contactName)
+        let range = (attr.string as NSString).range(of: participantName)
         attr.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "accent")!], range: range)
         return AttributedString(attr)
     }
 }
 
-struct ConversationDetailDeleteContactDialog_Previews: PreviewProvider {
+struct DeleteParticipantDialog_Previews: PreviewProvider {
     static var previews: some View {
-        ConversationDetailDeleteContactDialog(participant: .init(id: 1))
+        DeleteParticipantDialog(participant: .init(id: 1))
             .environmentObject(ContactsViewModel())
     }
 }

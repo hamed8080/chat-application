@@ -403,3 +403,5 @@
 /* Delete Conatct In Conversation Detail */
 "ConversationDetail.deleteContact" = "Are you sure you want to delete %@ from your contact list?";
 
+/* Delete a Member in members tab */
+"DeleteParticipantDialog.title" = "Are you sure you want to remove %@ from the %@?";

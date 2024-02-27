@@ -399,3 +399,6 @@
 
 /* Delete Conatct In Conversation Detail */
 "ConversationDetail.deleteContact" = "Är du säker på att du vill ta bort %@ från din kontaktlista?";
+
+/* Delete a Member in members tab */
+"DeleteParticipantDialog.title" = "Är du säker på att du vill ta bort %@ från %@?";

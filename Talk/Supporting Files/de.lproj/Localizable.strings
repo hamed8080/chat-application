@@ -400,3 +400,6 @@
 
 /* Delete Conatct In Conversation Detail */
 "ConversationDetail.deleteContact" = "Sind Sie sicher, dass Sie %@ aus Ihrer Kontaktliste löschen möchten?";
+
+/* Delete a Member in members tab */
+"DeleteParticipantDialog.title" = "Sind Sie sicher, dass Sie %@ aus %@ entfernen möchten?";
