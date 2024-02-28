@@ -402,3 +402,10 @@
 
 /* Delete a Member in members tab */
 "DeleteParticipantDialog.title" = "هل أنت متأكد أنك تريد إزالة %@ من %@؟";
+
+/* SearchFiltersMessagesDialog */
+"SearchFiltersMessagesDialog.filter" = "منقي";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "إظهار المحادثات غير المقروءة";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "المحادثات غير المقروءة فقط";

@@ -45,6 +45,14 @@ extension ThreadsViewModel {
                 }
             }
             .store(in: &cancelable)
+        $showUnreadConversations.sink { [weak self] newValue in
+            if newValue == true {
+                self?.getUnreadConversations()
+            } else if newValue == false {
+                self?.resetUnreadConversations()
+            }
+        }
+        .store(in: &cancelable)
     }
 
     func onParticipantEvent(_ event: ParticipantEventTypes) {

@@ -405,3 +405,13 @@
 
 /* Delete a Member in members tab */
 "DeleteParticipantDialog.title" = "Are you sure you want to remove %@ from the %@?";
+
+/* SearchFiltersMessagesDialog */
+"SearchFiltersMessagesDialog.filter" = "Filter";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "Show unread conversations";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "Only unread conversations";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "المحادثات غير المقروءة فقط";

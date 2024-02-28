@@ -18,10 +18,18 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
     public var conversations: ContiguousArray<Conversation> = .init()
     public var contacts:ContiguousArray<Contact> = .init()
     @Published public var isLoading = false
+    public var isIsSearchMode = false
+    private var count: Int = 25
+    private var offset: Int = 0
+    private var hasNextConversation: Bool = true
+
+    private var contactsCount: Int = 25
+    private var contactsOffset: Int = 0
+    private var hasNextContacts: Bool = true
 
     public init() {
-        conversations = AppState.shared.objectsContainer.threadsVM.threads
-        contacts = AppState.shared.objectsContainer.contactsVM.contacts
+        getContacts()
+        getThreads()
         setupObservers()
     }
 
@@ -32,15 +40,18 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
             .filter { $0.count > 1 }
             .removeDuplicates()
             .sink { [weak self] newValue in
+                self?.isIsSearchMode = true
                 self?.search(newValue)
             }
             .store(in: &cancellableSet)
 
         $searchText
-            .filter{$0.count == 0}
-            .sink { [weak self] newValue in
-                self?.conversations = AppState.shared.objectsContainer.threadsVM.threads
-                self?.contacts = AppState.shared.objectsContainer.contactsVM.contacts
+            .filter { $0.count == 0 }
+            .sink { [weak self] _ in
+                if self?.isIsSearchMode == true {
+                    self?.isIsSearchMode = false
+                    self?.reset()
+                }
             }
             .store(in: &cancellableSet)
 
@@ -68,21 +79,71 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
         contacts.removeAll()
         isLoading = true
         animateObjectWillChange()
+
         let req = ThreadsRequest(searchText: text)
+        RequestsManager.shared.append(prepend: "GET_THREADS_IN_SELECT_THREAD", value: req)
         ChatManager.activeInstance?.conversation.get(req)
 
         let contactsReq = ContactsRequest(query: text)
+        RequestsManager.shared.append(prepend: "GET_CONTCATS_IN_SELECT_CONTACT", value: contactsReq)
         ChatManager.activeInstance?.contact.get(contactsReq)
     }
 
     private func onNewConversations(_ response: ChatResponse<[Conversation]>) {
-        isLoading = false
-        conversations.append(contentsOf: response.result ?? [])
-        animateObjectWillChange()
+        if !response.cache, response.pop(prepend: "GET_THREADS_IN_SELECT_THREAD") != nil {
+            isLoading = false
+            hasNextConversation = response.hasNext
+            conversations.append(contentsOf: response.result ?? [])
+            animateObjectWillChange()
+        }
     }
 
     private func onNewContacts(_ response: ChatResponse<[Contact]>) {
-        contacts.append(contentsOf: response.result ?? [])
-        animateObjectWillChange()
+        if !response.cache, response.pop(prepend: "GET_CONTCATS_IN_SELECT_CONTACT") != nil {
+            isLoading = false
+            hasNextContacts = response.hasNext
+            contacts.append(contentsOf: response.result ?? [])
+            animateObjectWillChange()
+        }
+    }
+
+    public func loadMore() {
+        if isLoading || !hasNextConversation { return }
+        offset += count
+        getThreads()
+    }
+
+    public func getThreads() {
+        let req = ThreadsRequest(count: count, offset: offset)
+        RequestsManager.shared.append(prepend: "GET_THREADS_IN_SELECT_THREAD", value: req)
+        ChatManager.activeInstance?.conversation.get(req)
+    }
+
+    public func loadMoreContacts() {
+        if isLoading || !hasNextContacts { return }
+        contactsOffset += contactsCount
+        getContacts()
+    }
+
+    public func getContacts() {
+        let req = ContactsRequest(count: contactsCount, offset: contactsOffset)
+        RequestsManager.shared.append(prepend: "GET_CONTCATS_IN_SELECT_CONTACT", value: req)
+        ChatManager.activeInstance?.contact.get(req)
+    }
+
+    public func cancelObservers() {
+        cancellableSet.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
+
+    public func reset() {
+        isLoading = false
+        offset = 0
+        contactsOffset = 0
+        hasNextConversation = true
+        hasNextContacts = true
+        getContacts()
+        getThreads()
     }
 }

@@ -7,14 +7,19 @@
 
 import SwiftUI
 
-struct TabViewButtonsContainer: View {
+public struct TabViewButtonsContainer: View {
     @Binding var selectedTabIndex: Int
     let tabs: [Tab]
     @Namespace var id
     @State private var width: CGFloat = 0
     @Environment(\.horizontalSizeClass) var sizeClass
 
-    var body: some View {
+    public init(selectedTabIndex: Binding<Int>, tabs: [Tab]) {
+        self._selectedTabIndex = selectedTabIndex
+        self.tabs = tabs
+    }
+
+    public var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 HStack(spacing: 28) {
@@ -32,7 +37,7 @@ struct TabViewButtonsContainer: View {
                                             .fixedSize()
                                     }
                                     Text(String(localized: .init(tab.title)))
-                                        .font(index == selectedTabIndex ? . iransansBoldCaption : .iransansCaption)
+                                        .font(index == selectedTabIndex ? .iransansBoldCaption : .iransansCaption)
                                         .fixedSize()
                                         .foregroundStyle(index == selectedTabIndex ? Color.App.textPrimary : Color.App.textSecondary)
                                 }

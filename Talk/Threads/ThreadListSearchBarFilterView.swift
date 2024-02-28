@@ -15,69 +15,24 @@ struct ThreadListSearchBarFilterView: View {
     @State private var showPopover = false
     @Binding var isInSearchMode: Bool
     @EnvironmentObject var viewModel: ThreadsSearchViewModel
+    @EnvironmentObject var threadsVM: ThreadsViewModel
     enum Field: Hashable {
         case saerch
     }
     @FocusState var searchFocus: Field?
 
     var body: some View {
-        HStack {
+        VStack {
             if isInSearchMode {
-                TextField(String(localized: String.LocalizationValue("General.searchHere")), text: $viewModel.searchText)
-                    .font(.iransansBody)
-                    .textFieldStyle(.clear)
-                    .focused($searchFocus, equals: .saerch)
-                    .frame(minWidth: 0, maxWidth: nil, minHeight: 0, maxHeight: 38)
-                    .clipped()
-                    .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top).combined(with: .opacity)))
-                    .foregroundStyle(viewModel.searchText.count == 0 ? Color.App.textPrimary.opacity(0.7) : Color.App.textPrimary)
-                    .background {
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(.clear)
-                            .background(Color.App.bgSendInput.opacity(0.8))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                    .onAppear {
-                        if isInSearchMode && searchFocus != .saerch {
-                            searchFocus = .saerch
-                        }
-                    }
-
-//                Button {
-//                    showPopover.toggle()
-//                } label: {
-//                    HStack {
-//                        Text(String(localized: .init(viewModel.searchType.rawValue)))
-//                            .font(.iransansBoldCaption3)
-//                            .foregroundColor(Color.App.textSecondary)
-//                        Image(systemName: "chevron.down")
-//                            .resizable()
-//                            .scaledToFit()
-//                            .frame(width: 8, height: 12)
-//                            .fontWeight(.medium)
-//                            .foregroundColor(Color.App.textSecondary)
-//                    }
-//                }
-//                .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
-//                    VStack(alignment: .leading, spacing: 0) {
-//                        ForEach(SearchParticipantType.allCases.filter({ $0 != .admin })) { item in
-//                            ContextMenuButton(title: String(localized: .init(item.rawValue)), image: "") {
-//                                withAnimation {
-//                                    showPopover.toggle()
-//                                    viewModel.searchType = item
-//                                }
-//                            }
-//                        }
-//                    }
-//                    .foregroundColor(.primary)
-//                    .frame(width: 196)
-//                    .background(MixMaterialBackground())
-//                    .clipShape(RoundedRectangle(cornerRadius:((12))))
-//                    .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
-//                }
+                HStack {
+                    searchField
+                    filterButton
+                }
             }
+            selectedSearchFilters
         }
-        .animation(.easeInOut.speed(2), value: isInSearchMode)
+        .animation(.easeInOut, value: isInSearchMode)
+        .animation(.easeInOut, value: threadsVM.showUnreadConversations)
         .padding(EdgeInsets(top: isInSearchMode ? 4 : 0, leading: 4, bottom: isInSearchMode ? 6 : 0, trailing: 4))
         .onChange(of: viewModel.searchText) { newValue in
             AppState.shared.objectsContainer.contactsVM.searchContactString = newValue
@@ -90,6 +45,124 @@ struct ThreadListSearchBarFilterView: View {
                     searchFocus = .saerch
                 }
             }
+        }
+    }
+
+    private var searchField: some View {
+        TextField(String(localized: String.LocalizationValue("General.searchHere")), text: $viewModel.searchText)
+            .font(.iransansBody)
+            .textFieldStyle(.clear)
+            .focused($searchFocus, equals: .saerch)
+            .frame(minWidth: 0, maxWidth: nil, minHeight: 0, maxHeight: 38)
+            .clipped()
+            .transition(.asymmetric(insertion: .push(from: .top), removal: .move(edge: .top).combined(with: .opacity)))
+            .foregroundStyle(viewModel.searchText.count == 0 ? Color.App.textPrimary.opacity(0.7) : Color.App.textPrimary)
+            .background {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.clear)
+                    .background(Color.App.bgSendInput.opacity(0.8))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .onAppear {
+                if isInSearchMode && searchFocus != .saerch {
+                    searchFocus = .saerch
+                }
+            }
+    }
+
+    private var filterButton: some View {
+        Button {
+            AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(
+                SearchFiltersMessagesDialog()
+                    .environmentObject(viewModel)
+            )
+        } label: {
+            Image("ic_search_filter")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 22, height: 22)
+                .fontWeight(.medium)
+                .foregroundColor(Color.App.textSecondary)
+        }
+    }
+
+    @ViewBuilder
+    private var selectedSearchFilters: some View {
+        if threadsVM.showUnreadConversations == true {
+            HStack {
+                FilterChip(text: "Filters.onlyUnreadConversations") {
+                    /// On remove
+                    threadsVM.showUnreadConversations?.toggle()
+                }
+                Spacer()
+            }
+        }
+    }
+
+    //    private var threadTypeButton: some View {
+    //                Button {
+    //                    showPopover.toggle()
+    //                } label: {
+    //                    HStack {
+    //                        Text(String(localized: .init(viewModel.searchType.rawValue)))
+    //                            .font(.iransansBoldCaption3)
+    //                            .foregroundColor(Color.App.textSecondary)
+    //                        Image(systemName: "chevron.down")
+    //                            .resizable()
+    //                            .scaledToFit()
+    //                            .frame(width: 8, height: 12)
+    //                            .fontWeight(.medium)
+    //                            .foregroundColor(Color.App.textSecondary)
+    //                    }
+    //                }
+    //                .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
+    //                    VStack(alignment: .leading, spacing: 0) {
+    //                        ForEach(SearchParticipantType.allCases.filter({ $0 != .admin })) { item in
+    //                            ContextMenuButton(title: String(localized: .init(item.rawValue)), image: "") {
+    //                                withAnimation {
+    //                                    showPopover.toggle()
+    //                                    viewModel.searchType = item
+    //                                }
+    //                            }
+    //                        }
+    //                    }
+    //                    .foregroundColor(.primary)
+    //                    .frame(width: 196)
+    //                    .background(MixMaterialBackground())
+    //                    .clipShape(RoundedRectangle(cornerRadius:((12))))
+    //                    .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
+    //                }
+    //    }
+}
+
+struct FilterChip: View {
+    let text: String
+    let action: () -> Void
+    @State var isSelectedToDelete: Bool = false
+
+    var body: some View {
+        HStack {
+            Image(systemName: "xmark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 14, height: 14)
+                .foregroundStyle(Color.App.white)
+                .contentShape(Rectangle())
+            Text(String(localized: .init(text)))
+                .lineLimit(1)
+                .font(.iransansCaption2)
+                .foregroundColor(isSelectedToDelete ? Color.App.white : Color.App.textPrimary)
+        }
+        .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+        .background(isSelectedToDelete ?  Color.App.accent : Color.App.textSecondary)
+        .clipShape(RoundedRectangle(cornerRadius:(12)))
+        .animation(.easeInOut, value: isSelectedToDelete)
+        .transition(.scale)
+        .onTapGesture {
+            if isSelectedToDelete {
+                action()
+            }
+            isSelectedToDelete.toggle()
         }
     }
 }

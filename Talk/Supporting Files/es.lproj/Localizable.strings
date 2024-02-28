@@ -404,3 +404,10 @@
 
 /* Delete a Member in members tab */
 "DeleteParticipantDialog.title" = "¿Estás seguro de que deseas eliminar %@ de %@?";
+
+/* SearchFiltersMessagesDialog */
+"SearchFiltersMessagesDialog.filter" = "filtrada";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "Mostrar conversaciones no leídas";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "Sólo conversaciones no leídas";

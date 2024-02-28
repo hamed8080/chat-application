@@ -403,3 +403,10 @@
 
 /* Delete a Member in members tab */
 "DeleteParticipantDialog.title" = "آیا شما مطمئن هستید می خواهید %@ را از %@ حذف کنید؟";
+
+/* SearchFiltersMessagesDialog */
+"SearchFiltersMessagesDialog.filter" = "فیلتر";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "نمایش پیام های خوانده نشده";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "فقط گفتگو های خوانده نشده";

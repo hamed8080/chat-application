@@ -34,6 +34,7 @@ public final class ThreadsViewModel: ObservableObject {
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
     public var serverSortedPinConversations: [Int] = []
     public var shimmerViewModel = ShimmerViewModel(delayToHide: 0, repeatInterval: 0.5)
+    @Published public var showUnreadConversations: Bool? = nil
 
     public init() {
         AppState.shared.$connectionStatus
@@ -100,13 +101,13 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public func getThreads() {
+    public func getThreads(new: Bool? = nil) {
         if !firstSuccessResponse {
             shimmerViewModel.show()
         }
         isLoading = true
         animateObjectWillChange()
-        let req = ThreadsRequest(count: count, offset: offset)
+        let req = ThreadsRequest(count: count, offset: offset, new: new)
         RequestsManager.shared.append(prepend: "GET-THREADS", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
@@ -462,6 +463,18 @@ public final class ThreadsViewModel: ObservableObject {
             RequestsManager.shared.append(prepend: "GET-NOT-ACTIVE-THREADS", value: req)
             ChatManager.activeInstance?.conversation.get(req)
         }
+    }
+
+    public func getUnreadConversations() {
+        threads.removeAll()
+        offset = 0
+        getThreads(new: true)
+    }
+
+    public func resetUnreadConversations() {
+        threads.removeAll()
+        offset = 0
+        getThreads(new: nil)
     }
 }
 

@@ -402,3 +402,10 @@
 
 /* Delete a Member in members tab */
 "DeleteParticipantDialog.title" = "Är du säker på att du vill ta bort %@ från %@?";
+
+/* SearchFiltersMessagesDialog */
+"SearchFiltersMessagesDialog.filter" = "Filtrera";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "Visa olästa konversationer";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "Endast olästa konversationer";
