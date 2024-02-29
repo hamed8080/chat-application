@@ -14,10 +14,10 @@ import TalkModels
 import ActionableContextMenu
 
 struct MusicView: View {
-    @State var viewModel: DetailTabDownloaderViewModel
+    @StateObject var viewModel: DetailTabDownloaderViewModel
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType, tabName: "Music")
+        _viewModel = StateObject(wrappedValue: .init(conversation: conversation, messageType: messageType, tabName: "Music"))
     }
 
     var body: some View {

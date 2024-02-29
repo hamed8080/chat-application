@@ -37,7 +37,7 @@ extension ThreadsViewModel: PinThreadProtocol {
     }
 
     public func onPin(_ response: ChatResponse<Conversation>) {
-        serverSortedPinConversations.insert(response.result?.id ?? -1, at: 0)
+        serverSortedPins.insert(response.result?.id ?? -1, at: 0)
         if response.result != nil, let threadIndex = firstIndex(response.result?.id) {
             threads[threadIndex].pin?.toggle()
             sort()
@@ -48,7 +48,7 @@ extension ThreadsViewModel: PinThreadProtocol {
 
     public func onUNPin(_ response: ChatResponse<Conversation>) {
         if response.result != nil, let threadIndex = firstIndex(response.result?.id) {
-            serverSortedPinConversations.removeAll(where: {$0 == response.result?.id})
+            serverSortedPins.removeAll(where: {$0 == response.result?.id})
             threads[threadIndex].pin?.toggle()
             sort()
             animateObjectWillChange()

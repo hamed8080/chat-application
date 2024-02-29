@@ -13,10 +13,10 @@ import TalkViewModels
 import TalkExtensions
 
 struct LinkView: View {
-    @State var viewModel: DetailTabDownloaderViewModel
+    @StateObject var viewModel: DetailTabDownloaderViewModel
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType, tabName: "Link")
+        _viewModel = StateObject(wrappedValue: .init(conversation: conversation, messageType: messageType, tabName: "Link"))
     }
 
     var body: some View {

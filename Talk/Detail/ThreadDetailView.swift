@@ -14,29 +14,50 @@ import TalkViewModels
 import TalkExtensions
 import Additive
 import TalkModels
+import TalkUI
 
 struct ThreadDetailView: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
     @Environment(\.dismiss) var dismiss
 
+
     var body: some View {
-        ScrollView(.vertical) {
-            VStack(alignment: .leading, spacing: 0) {
-                ThreadInfoView(viewModel: viewModel)
-                if let participantViewModel = viewModel.participantDetailViewModel {
-                    UserName()
-                        .environmentObject(participantViewModel)
-                    CellPhoneNumber()
-                        .environmentObject(participantViewModel)
+        ZStack {
+            if let thread = viewModel.thread, #available(iOS 17.0, *) {
+                VStack(spacing: 0) {
+                    ThreadInfoView(viewModel: viewModel)
+                    if let participantViewModel = viewModel.participantDetailViewModel {
+                        UserName()
+                            .environmentObject(participantViewModel)
+                        CellPhoneNumber()
+                            .environmentObject(participantViewModel)
+                    }
+                    PublicLink()
+                    ThreadDescription()
+                    ThreadDetailTopButtons()
+                        .padding([.top, .bottom])
+                    StickyHeaderSection(header: "", height: 10)
+                    DetailTabs(thread: thread)
+                        .environmentObject(viewModel.threadVM?.participantsViewModel ?? .init())
                 }
-                PublicLink()
-                ThreadDescription()
-                StickyHeaderSection(header: "", height: 10)
-                ThreadDetailTopButtons()
-                    .padding([.top, .bottom])
-                StickyHeaderSection(header: "", height: 10)
-                StickyHeaderSection(header: "", height: 10)
-                TabDetail(viewModel: viewModel)
+            } else {
+                ScrollView(.vertical) {
+                    VStack(spacing: 0) {
+                        ThreadInfoView(viewModel: viewModel)
+                        if let participantViewModel = viewModel.participantDetailViewModel {
+                            UserName()
+                                .environmentObject(participantViewModel)
+                            CellPhoneNumber()
+                                .environmentObject(participantViewModel)
+                        }
+                        PublicLink()
+                        ThreadDescription()
+                        ThreadDetailTopButtons()
+                            .padding([.top, .bottom])
+                        StickyHeaderSection(header: "", height: 10)
+                        TabDetail(viewModel: viewModel)
+                    }
+                }
             }
         }
         .background(Color.App.bgPrimary)
@@ -79,6 +100,170 @@ struct ThreadDetailView: View {
             AppState.shared.objectsContainer.contactsVM.editContact = nil
             AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
             AppState.shared.objectsContainer.threadDetailVM.clear()
+        }
+    }
+}
+
+class DetailTabViewModel: ObservableObject {
+    let thread: Conversation
+    @Published var selectedTab: Int = 0 {
+        didSet {
+            print("new value \(selectedTab)")
+        }
+    }
+
+    var index: Int {
+        let realIndex = max(0, hideMemberTab ? selectedTab - 1 : selectedTab)
+        return realIndex
+    }
+
+    init(thread: Conversation) {
+        self.thread = thread
+    }
+
+    var hideMemberTab: Bool {
+        if thread.group == false || thread.group == nil {
+            return true
+        }
+        if thread.group == true, thread.type?.isChannelType == true, (thread.admin == false || thread.admin == nil) {
+            return true
+        }
+        return false
+    }
+
+    var tabs: [Tab] {
+        let emptyView = AnyView(EmptyView())
+        var tabs: [Tab] = [
+            .init(title: "Thread.Tabs.members", view: emptyView),
+            //            .init(title: "Thread.Tabs.mutualgroup", view: emptyView),
+            .init(title: "Thread.Tabs.photos", view: emptyView),
+            .init(title: "Thread.Tabs.videos", view: emptyView),
+            .init(title: "Thread.Tabs.file", view: emptyView),
+            .init(title: "Thread.Tabs.music", view: emptyView),
+            .init(title: "Thread.Tabs.voice", view: emptyView),
+            .init(title: "Thread.Tabs.link", view: emptyView)
+        ]
+
+        if hideMemberTab {
+            tabs.removeAll(where: {$0.title == "Thread.Tabs.members"})
+        }
+
+        return tabs
+    }
+}
+
+struct DetailTabs: View {
+    @StateObject private var viewModel: DetailTabViewModel
+
+    init(thread: Conversation) {
+        self._viewModel = StateObject(wrappedValue: .init(thread: thread))
+    }
+
+    var body: some View {
+        DetailTabsHeader(selectedTabIndex: .constant(viewModel.index), tabs: viewModel.tabs) { tappedIndex in
+            viewModel.selectedTab = tappedIndex
+        }
+        TabView(selection: $viewModel.selectedTab) {
+            if !viewModel.hideMemberTab {
+                ScrollView(.vertical) {
+                    MemberView()
+                }
+                .tag(0)
+            }
+
+            ScrollView(.vertical) {
+                PictureView(conversation: viewModel.thread, messageType: .podSpacePicture)
+            }
+            .tag(1)
+
+            ScrollView(.vertical) {
+                VideoView(conversation: viewModel.thread, messageType: .podSpaceVideo)
+            }
+            .tag(2)
+
+            ScrollView(.vertical) {
+                FileView(conversation: viewModel.thread, messageType: .podSpaceFile)
+            }
+            .tag(3)
+
+            ScrollView(.vertical) {
+                MusicView(conversation: viewModel.thread, messageType: .podSpaceSound)
+            }
+            .tag(4)
+
+            ScrollView(.vertical) {
+                VoiceView(conversation: viewModel.thread, messageType: .podSpaceVoice)
+            }
+            .tag(5)
+
+            ScrollView(.vertical) {
+                LinkView(conversation: viewModel.thread, messageType: .link)
+            }
+            .tag(6)
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+    }
+}
+
+struct DetailTabsHeader: View {
+    let selectedTabAction: (Int) -> Void
+    @Binding var selectedTabIndex: Int
+    let tabs: [Tab]
+    @Namespace var id
+
+    public init(selectedTabIndex: Binding<Int>, tabs: [Tab], selectedTabAction: @escaping (Int) -> Void ) {
+        self._selectedTabIndex = selectedTabIndex
+        self.tabs = tabs
+        self.selectedTabAction = selectedTabAction
+    }
+
+    var body: some View {
+
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack {
+                HStack(spacing: 28) {
+                    ForEach(tabs) { tab in
+                        let index = tabs.firstIndex(where: { $0.title == tab.title })
+                        Button {
+                            selectedTabAction(index ?? 0)
+                            selectedTabIndex = index ?? 0
+                        } label: {
+                            VStack(spacing: 6) {
+                                HStack(spacing: 8) {
+                                    if let icon = tab.icon {
+                                        Image(systemName: icon)
+                                            .frame(width: 24, height: 24)
+                                            .foregroundColor(Color.App.textSecondary)
+                                            .fixedSize()
+                                    }
+                                    Text(String(localized: .init(tab.title)))
+                                        .font(index == selectedTabIndex ? .iransansBoldCaption : .iransansCaption)
+                                        .fixedSize()
+                                        .foregroundStyle(index == selectedTabIndex ? Color.App.textPrimary : Color.App.textSecondary)
+                                }
+                                .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+
+                                if index == selectedTabIndex {
+                                    Rectangle()
+                                        .fill(Color.App.accent)
+                                        .frame(height: 3)
+                                        .cornerRadius(2, corners: [.topLeft, .topRight])
+                                        .matchedGeometryEffect(id: "DetailTabSeparator", in: id)
+                                }
+                            }
+                            .frame(height: 48)
+                            .contentShape(Rectangle())
+                            .fixedSize(horizontal: true, vertical: true)
+                        }
+                        .buttonStyle(.plain)
+                        .frame(height: 48)
+                        .contentShape(Rectangle())
+                    }
+                }
+                .animation(.spring(), value: selectedTabIndex)
+                .padding([.leading, .trailing])
+                Spacer()
+            }
         }
     }
 }
@@ -263,8 +448,8 @@ struct ThreadInfoView: View {
         HStack(spacing: 16) {
             let image = viewModel.thread?.computedImageURL ?? viewModel.participantDetailViewModel?.participant.image ?? ""
             let avatarVM = AppState.shared.objectsContainer.threadsVM.avatars(for: image,
-                                                                                   metaData: viewModel.thread?.metadata,
-                                                                                   userName: String.splitedCharacter(viewModel.thread?.title ?? ""))
+                                                                              metaData: viewModel.thread?.metadata,
+                                                                              userName: String.splitedCharacter(viewModel.thread?.title ?? ""))
             let config = ImageLoaderConfig(url: image,
                                            metaData: viewModel.thread?.metadata,
                                            userName: String.splitedCharacter(viewModel.thread?.title ?? viewModel.participantDetailViewModel?.participant.name ?? ""))
@@ -358,24 +543,24 @@ struct PublicLink: View {
         }
     }
 
-//    var qrButton: some View {
-//        Button {
-//            withAnimation {
-//                UIPasteboard.general.string = joinLink
-//            }
-//        } label: {
-//            Image(systemName: "qrcode")
-//                .resizable()
-//                .scaledToFit()
-//                .frame(width: 20, height: 20)
-//                .padding()
-//                .foregroundColor(Color.App.white)
-//                .contentShape(Rectangle())
-//        }
-//        .frame(width: 40, height: 40)
-//        .background(Color.App.textSecondary)
-//        .clipShape(RoundedRectangle(cornerRadius:(20)))
-//    }
+    //    var qrButton: some View {
+    //        Button {
+    //            withAnimation {
+    //                UIPasteboard.general.string = joinLink
+    //            }
+    //        } label: {
+    //            Image(systemName: "qrcode")
+    //                .resizable()
+    //                .scaledToFit()
+    //                .frame(width: 20, height: 20)
+    //                .padding()
+    //                .foregroundColor(Color.App.white)
+    //                .contentShape(Rectangle())
+    //        }
+    //        .frame(width: 40, height: 40)
+    //        .background(Color.App.textSecondary)
+    //        .clipShape(RoundedRectangle(cornerRadius:(20)))
+    //    }
 }
 
 struct InfoRowItem: View {
@@ -438,12 +623,12 @@ struct ThreadDetailTopButtons: View {
                 .opacity(0.4)
                 .allowsHitTesting(false)
             }
-//
-//            if viewModel.thread?.admin == true {
-//                DetailViewButton(accessibilityText: "", icon: viewModel.thread?.isPrivate == true ? "lock.fill" : "globe") {
-//                    viewModel.toggleThreadVisibility()
-//                }
-//            }
+            //
+            //            if viewModel.thread?.admin == true {
+            //                DetailViewButton(accessibilityText: "", icon: viewModel.thread?.isPrivate == true ? "lock.fill" : "globe") {
+            //                    viewModel.toggleThreadVisibility()
+            //                }
+            //            }
 
             if viewModel.threadVM?.threadId != nil {
                 DetailViewButton(accessibilityText: "", icon: "magnifyingglass") {
@@ -451,17 +636,17 @@ struct ThreadDetailTopButtons: View {
                 }
             }
 
-//            Menu {
-//                if let conversation = viewModel.thread {
-//                    ThreadRowActionMenu(isDetailView: true, thread: conversation)
-//                        .environmentObject(AppState.shared.objectsContainer.threadsVM)
-//                }
-//                if let user = viewModel.user {
-//                    UserActionMenu(participant: user)
-//                }
-//            } label: {
-//                DetailViewButton(accessibilityText: "", icon: "ellipsis"){}
-//            }
+            //            Menu {
+            //                if let conversation = viewModel.thread {
+            //                    ThreadRowActionMenu(isDetailView: true, thread: conversation)
+            //                        .environmentObject(AppState.shared.objectsContainer.threadsVM)
+            //                }
+            //                if let user = viewModel.user {
+            //                    UserActionMenu(participant: user)
+            //                }
+            //            } label: {
+            //                DetailViewButton(accessibilityText: "", icon: "ellipsis"){}
+            //            }
 
             DetailViewButton(accessibilityText: "", icon: "ellipsis") {
                 showPopover.toggle()

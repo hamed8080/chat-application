@@ -20,19 +20,22 @@ public final class UserConfigManagerVM: ObservableObject, Equatable {
     @Published public var userConfigs: [UserConfig] = []
     @Published public var currentUserConfig: UserConfig?
     public static let instance = UserConfigManagerVM()
+    private var queue = DispatchQueue(label: "USER_CONFIG_MANAGER_SERIAL_QUEUE")
 
     private init() {
         setup()
     }
 
     private func setup() {
-        if let data = UserDefaults.standard.data(forKey: UserDefaults.keys.userConfigsData.rawValue), let userConfigs = try? JSONDecoder.instance.decode([UserConfig].self, from: data) {
-            self.userConfigs = userConfigs
-        }
+        queue.sync {
+            if let data = UserDefaults.standard.data(forKey: UserDefaults.keys.userConfigsData.rawValue), let userConfigs = try? JSONDecoder.instance.decode([UserConfig].self, from: data) {
+                self.userConfigs = userConfigs
+            }
 
-        if let data = UserDefaults.standard.data(forKey: UserDefaults.keys.userConfigData.rawValue), let currentUserConfig = try? JSONDecoder.instance.decode(UserConfig.self, from: data) {
-            self.currentUserConfig = currentUserConfig
-            setCurrentUserAndSwitch(currentUserConfig)
+            if let data = UserDefaults.standard.data(forKey: UserDefaults.keys.userConfigData.rawValue), let currentUserConfig = try? JSONDecoder.instance.decode(UserConfig.self, from: data) {
+                self.currentUserConfig = currentUserConfig
+                setCurrentUserAndSwitch(currentUserConfig)
+            }
         }
     }
 

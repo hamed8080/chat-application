@@ -19,7 +19,7 @@ struct ThreadRowActionMenu: View {
     var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
 
     var body: some View {
-        if thread.pin == true || viewModel.serverSortedPinConversations.count < 5 {
+        if thread.pin == true || viewModel.serverSortedPins.count < 5 {
             ContextMenuButton(title: (thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", image: "pin") {
                 viewModel.togglePin(thread)
                 showPopover.toggle()

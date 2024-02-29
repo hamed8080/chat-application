@@ -16,10 +16,11 @@ import TalkModels
 import ActionableContextMenu
 
 struct VideoView: View {
-    @State var viewModel: DetailTabDownloaderViewModel
+    @StateObject var viewModel: DetailTabDownloaderViewModel
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType, tabName: "Video")
+        let vm = DetailTabDownloaderViewModel(conversation: conversation, messageType: messageType, tabName: "Video")
+        _viewModel = StateObject(wrappedValue: vm)
     }
 
     var body: some View {

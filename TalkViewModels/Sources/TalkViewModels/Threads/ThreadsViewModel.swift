@@ -32,7 +32,7 @@ public final class ThreadsViewModel: ObservableObject {
     public var selectedThraed: Conversation?
     private var canLoadMore: Bool { hasNext && !isLoading }
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
-    public var serverSortedPinConversations: [Int] = []
+    public var serverSortedPins: [Int] = []
     public var shimmerViewModel = ShimmerViewModel(delayToHide: 0, repeatInterval: 0.5)
     @Published public var showUnreadConversations: Bool? = nil
 
@@ -120,20 +120,21 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
         if response.pop(prepend: "GET-THREADS") == nil { return }
-        if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
-            Task { [weak self] in
-                guard let self = self else { return }
-                /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
-                if let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}), serverSortedPinConversations.isEmpty {
-                    serverSortedPinConversations.removeAll()
-                    serverSortedPinConversations.append(contentsOf: serverSortedPinConversationIds)
-                }
-                await appendThreads(threads: threads)
-                await asyncAnimateObjectWillChange()
+        let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil})
+        let pinThreads = response.result?.filter({$0.pin == true})
+        let hasAnyResults = response.result?.count ?? 0 > 0
+        Task { [weak self] in
+            guard let self = self else { return }
+            /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
+            if let serverSortedPinIds = pinThreads?.compactMap({$0.id}), serverSortedPins.isEmpty {
+                serverSortedPins.removeAll()
+                serverSortedPins.append(contentsOf: serverSortedPinIds)
             }
+            await appendThreads(threads: threads ?? [])
+            await asyncAnimateObjectWillChange()
         }
 
-        if !response.cache, response.result?.count ?? 0 > 0 {
+        if hasAnyResults {
             hasNext = response.hasNext
             firstSuccessResponse = true
         }
@@ -246,8 +247,8 @@ public final class ThreadsViewModel: ObservableObject {
         threads.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
         threads.sort(by: { $0.pin == true && ($1.pin == false || $1.pin == nil) })
         threads.sort(by: { (firstItem, secondItem) in
-            guard let firstIndex = serverSortedPinConversations.firstIndex(where: {$0 == firstItem.id}),
-                  let secondIndex = serverSortedPinConversations.firstIndex(where: {$0 == secondItem.id}) else {
+            guard let firstIndex = serverSortedPins.firstIndex(where: {$0 == firstItem.id}),
+                  let secondIndex = serverSortedPins.firstIndex(where: {$0 == secondItem.id}) else {
                 return false // Handle the case when an element is not found in the server-sorted array
             }
             return firstIndex < secondIndex
