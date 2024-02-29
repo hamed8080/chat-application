@@ -140,6 +140,7 @@ struct DownloadPictureButtonView: View {
                     .scaledToFit()
                     .clipped()
                     .transition(.opacity)
+                    .contentShape(RoundedRectangle(cornerRadius: 8))
             }
         case .undefined, .thumbnail:
             ZStack {
@@ -153,9 +154,11 @@ struct DownloadPictureButtonView: View {
                         .zIndex(0)
                         .background(Color.App.dividerSecondary)
                         .clipShape(RoundedRectangle(cornerRadius:(8)))
+                        .contentShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
             .frame(width: itemWidth, height: itemWidth)
+            .contentShape(RoundedRectangle(cornerRadius: 8))
             .onAppear {
                 if viewModel.isInCache {
                     viewModel.state = .completed
@@ -171,6 +174,7 @@ struct DownloadPictureButtonView: View {
                 .fill(Color.App.bgSecondary)
                 .frame(width: itemWidth, height: itemWidth)
                 .clipShape(RoundedRectangle(cornerRadius:(8)))
+                .contentShape(RoundedRectangle(cornerRadius: 8))
         }
     }
 }
