@@ -150,7 +150,6 @@ struct DownloadPictureButtonView: View {
                         .scaledToFill()
                         .frame(width: itemWidth, height: itemWidth)
                         .clipped()
-                        .transition(.opacity)
                         .zIndex(0)
                         .background(Color.App.dividerSecondary)
                         .clipShape(RoundedRectangle(cornerRadius:(8)))
@@ -159,6 +158,7 @@ struct DownloadPictureButtonView: View {
             }
             .frame(width: itemWidth, height: itemWidth)
             .contentShape(RoundedRectangle(cornerRadius: 8))
+            .transition(.opacity)
             .onAppear {
                 if viewModel.isInCache {
                     viewModel.state = .completed
@@ -175,6 +175,7 @@ struct DownloadPictureButtonView: View {
                 .frame(width: itemWidth, height: itemWidth)
                 .clipShape(RoundedRectangle(cornerRadius:(8)))
                 .contentShape(RoundedRectangle(cornerRadius: 8))
+                .transition(.opacity)
         }
     }
 }

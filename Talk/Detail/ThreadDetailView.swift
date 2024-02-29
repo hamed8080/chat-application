@@ -493,11 +493,10 @@ struct TabDetail: View {
     let viewModel: ThreadDetailViewModel
 
     var body: some View {
-        let isEmptyThread = viewModel.thread?.id == LocalId.emptyThread.rawValue
-        if !isEmptyThread, let participantViewModel = viewModel.threadVM?.participantsViewModel, let thread = viewModel.thread {
-            ConversationDetailTabViews(thread: thread)
-                .environmentObject(participantViewModel)
-        }
+        let thread = viewModel.thread ?? .init(id: LocalId.emptyThread.rawValue)
+        let participantViewModel = viewModel.threadVM?.participantsViewModel ?? .init()
+        ConversationDetailTabViews(thread: thread)
+            .environmentObject(participantViewModel)
     }
 }
 
