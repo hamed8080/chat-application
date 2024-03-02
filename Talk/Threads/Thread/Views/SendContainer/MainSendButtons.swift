@@ -90,7 +90,7 @@ struct MainSendButtons: View {
             if viewModel.showSendButton {
                 Button {
                     if viewModel.showSendButton {
-                        threadVM.sendTextMessage()
+                        threadVM.sendMessageViewModel.sendTextMessage()
                     }
                     threadVM.mentionListPickerViewModel.text = ""
                     threadVM.sheetType = nil

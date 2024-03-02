@@ -41,6 +41,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var audioRecoderVM: AudioRecordingViewModel = .init()
     public var scrollVM: ThreadScrollingViewModel = .init()
     public var historyVM: ThreadHistoryViewModel!
+    public var sendMessageViewModel: ThreadSendMessageViewModel!
     public weak var threadsViewModel: ThreadsViewModel?
     public var participantsColorVM: ParticipantsColorViewModel = .init()
     public var threadPinMessageViewModel: ThreadPinMessageViewModel
@@ -50,7 +51,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var signalMessageText: String?
     public var isActiveThread: Bool { AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel.threadId == threadId }
     public weak var forwardMessage: Message?
-    var createThreadCompletion: (()-> Void)?
     public static var threadWidth: CGFloat = 0 {
         didSet {
             // 38 = Avatar width + tail width + leading padding + trailing padding
@@ -80,6 +80,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.threadsViewModel = threadsViewModel
         self.participantsViewModel = ParticipantsViewModel(thread: thread)
         self.historyVM = ThreadHistoryViewModel(threadViewModel: self)
+        self.sendMessageViewModel = ThreadSendMessageViewModel(threadVM: self)
         scrollVM.threadVM = self
         setupNotificationObservers()
         setAppSettingsModel()

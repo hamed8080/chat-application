@@ -54,7 +54,7 @@ struct ThreadSheetView: View {
             }
         case .threadPicker:
             SelectConversationOrContactList { (conversation, contact) in
-                viewModel.openDestinationConversationToForward(conversation, contact)
+                viewModel.sendMessageViewModel.openDestinationConversationToForward(conversation, contact)
             }
             .onDisappear {
                 closeSheet()
