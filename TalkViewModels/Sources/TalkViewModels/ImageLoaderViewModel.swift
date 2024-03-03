@@ -55,7 +55,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         guard let fileMetadata = fileMetadata?.data(using: .utf8) else { return nil }
         return try? JSONDecoder.instance.decode(FileMetaData.self, from: fileMetadata)
     }
-    
+    private var isFetching: Bool = false
     private var fileURL: URL? {
         guard let URLObject = URLObject, let fileManager = ChatManager.activeInstance?.file else { return nil }
         if fileManager.isFileExist(URLObject) {
@@ -116,6 +116,7 @@ public final class ImageLoaderViewModel: ObservableObject {
             DispatchQueue.main.async { [weak self] in
                 guard let image = image else { return }
                 self?.image = image
+                self?.isFetching = false
             }
         }
     }
@@ -137,10 +138,12 @@ public final class ImageLoaderViewModel: ObservableObject {
     }
 
     /// The hashCode decode FileMetaData so it needs to be done on the background thread.
-    public func fetch() async {        
+    public func fetch() async {
+        if isFetching { return }
+        isFetching = true
         fileMetadata = config.metaData
         if isSDKImage {
-            await getFromSDK(forceToDownloadFromServer: config.forceToDownloadFromServer, thumbnail: config.thumbnail)
+            await getFromSDK()
         } else if let fileURL = fileURL {
             setImage(fileURL: fileURL)
         } else {
@@ -148,7 +151,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         }
     }
 
-    private func getFromSDK(forceToDownloadFromServer: Bool = false, thumbnail: Bool) async {
+    private func getFromSDK() async {
         let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: config.forceToDownloadFromServer, size: config.size, thumbnail: config.thumbnail)
         uniqueId = req.uniqueId
         RequestsManager.shared.append(prepend: "ImageLoader", value: req)
@@ -211,5 +214,10 @@ public final class ImageLoaderViewModel: ObservableObject {
             request.addValue(value, forHTTPHeaderField: key)
         }
         return req
+    }
+
+    public func clear() {
+        image = .init()
+        isFetching = false
     }
 }

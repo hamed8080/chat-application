@@ -12,14 +12,8 @@ import TalkModels
 import Chat
 
 struct SettingProfileButton: View {
-    @StateObject var imageLoader: ImageLoaderViewModel
+    @EnvironmentObject var imageLoader: ImageLoaderViewModel
     @State var isSelected = false
-
-    init() {
-        let user = AppState.shared.objectsContainer.userConfigsVM.currentUserConfig?.user
-        let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: String.splitedCharacter(user?.name ?? ""))
-        self._imageLoader = .init(wrappedValue: .init(config: config))
-    }
 
     var body: some View {
         Image(systemName: "gear")
@@ -39,23 +33,7 @@ struct SettingProfileButton: View {
                             .strokeBorder(isSelected ? Color.App.accent : Color.App.bgPrimary, lineWidth: isImageReady ? 1 : 0)
                             .animation(.easeInOut, value: isSelected)
                     }
-            }
-            .onReceive(NotificationCenter.user.publisher(for: .user)) { notification in
-                let event = notification.object as? UserEventTypes
-                if imageLoader.isImageReady == false, case let .user(response) = event, response.result != nil {
-                    let user = response.result
-                    let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: String.splitedCharacter(user?.name ?? ""))
-                    imageLoader.config = config
-                    Task {
-                        await imageLoader.fetch()
-                    }
-                }
-            }
-            .task {
-                if AppState.shared.user != nil {
-                    await imageLoader.fetch()
-                }
-            }
+            }            
             .onReceive(NotificationCenter.selectTab.publisher(for: .selectTab)) { notification in
                 if let selectedTab = notification.object as? String, selectedTab == "Tab.settings" {
                     isSelected = true

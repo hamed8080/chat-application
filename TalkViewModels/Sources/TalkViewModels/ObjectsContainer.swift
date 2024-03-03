@@ -22,6 +22,7 @@ public final class ObjectsContainer: ObservableObject {
     @Published public var archivesVM = ArchiveThreadsViewModel()
     @Published public var reactions = ReactionViewModel.shared
     @Published public var errorVM = ErrorHandlerViewModel()
+    @Published public var userProfileImageVM: ImageLoaderViewModel!
 
     /// As a result of a bug in the SwiftUI sheet where it can't release the memory, we have to keep a global object and rest its values to default to prevent memory leak unless we end up not receiving server messages.
     @Published public var conversationBuilderVM = ConversationBuilderViewModel()
@@ -35,7 +36,16 @@ public final class ObjectsContainer: ObservableObject {
                 self?.onMessageEvent(event)
             }
             .store(in: &cancellableSet)
+        NotificationCenter.user.publisher(for: .user)
+            .compactMap { $0.object as? UserEventTypes }
+            .sink { [weak self] event in
+                self?.onUserEvent(event)
+            }
+            .store(in: &cancellableSet)
         AppState.shared.objectsContainer = self
+
+        let user = userConfigsVM.currentUserConfig?.user
+        fetchUserProfile(user: user)
     }
 
     public func reset() {
@@ -51,6 +61,7 @@ public final class ObjectsContainer: ObservableObject {
         appOverlayVM.clear()
         reactions.clear()
         conversationBuilderVM.clear()
+        userProfileImageVM.clear()
     }
 
     private func onMessageEvent(_ event: MessageEventTypes) {
@@ -90,6 +101,36 @@ public final class ObjectsContainer: ObservableObject {
         if let fileURL = Bundle.main.url(forResource: sent ? "sent_message" : "new_message", withExtension: "mp3") {
             try? messagePlayer.setup(message: nil, fileURL: fileURL, ext: "mp3", category: .ambient)
             messagePlayer.toggle()
+        }
+    }
+
+    private func onUserEvent(_ event: UserEventTypes) {
+        switch event {
+        case .user(let chatResponse):
+            onUser(chatResponse)
+        default:
+            break
+        }
+    }
+
+    private func onUser(_ response: ChatResponse<User>) {
+        if response.result != nil {
+            fetchUserProfile(user: response.result)
+        }
+    }
+
+    private func fetchUserProfile(user: User?) {
+        let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: String.splitedCharacter(user?.name ?? ""))
+        if userProfileImageVM == nil {
+            userProfileImageVM = .init(config: config)
+        } else {
+            userProfileImageVM.config = config
+        }
+        Task {
+            // We wait for the cache to fill its properties, due to forceToDownloadFromServer having set to false,
+            // we have to wait for init and then the cache is not nil and can find the file
+            try? await Task.sleep(for: .seconds(1))
+            await userProfileImageVM.fetch()
         }
     }
 }

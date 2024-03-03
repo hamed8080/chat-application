@@ -428,13 +428,14 @@ struct UserProfileView: View {
     var userConfig: UserConfig? { container.userConfigsVM.currentUserConfig }
     var user: User? { userConfig?.user }
     @EnvironmentObject var viewModel: SettingViewModel
-    @State var imageLoader: ImageLoaderViewModel?
+    @EnvironmentObject var imageLoader: ImageLoaderViewModel
 
     var body: some View {
         HStack(spacing: 0) {
-            let config = ImageLoaderConfig(url: user?.image ?? "", userName: String.splitedCharacter(AppState.shared.user?.name ?? ""))
-            ImageLoaderView(imageLoader: imageLoader ?? .init(config: config))
+            Image(uiImage: imageLoader.image)
+                .resizable()
                 .id("\(userConfig?.user.image ?? "")\(userConfig?.user.id ?? 0)")
+                .scaledToFill()
                 .frame(width: 64, height: 64)
                 .background(String.getMaterialColorByCharCode(str: AppState.shared.user?.name ?? ""))
                 .clipShape(RoundedRectangle(cornerRadius:(28)))
@@ -466,23 +467,6 @@ struct UserProfileView: View {
         }
         .listRowInsets(.init(top: 16, leading: 16, bottom: 16, trailing: 16))
         .frame(height: 70)
-        .onReceive(NotificationCenter.user.publisher(for: .user)) { notification in
-            let event = notification.object as? UserEventTypes
-            if imageLoader?.isImageReady == false, case let .user(response) = event, let user = response.result {
-                let config = ImageLoaderConfig(url: user.image ?? "", size: .LARG, userName: user.name)
-                imageLoader = .init(config: config)
-                Task {
-                    await imageLoader?.fetch()
-                }
-            }
-        }
-        .onAppear {
-            let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: user?.name)
-            imageLoader = .init(config: config)
-            Task {
-                await imageLoader?.fetch()
-            }
-        }
     }
 }
 
