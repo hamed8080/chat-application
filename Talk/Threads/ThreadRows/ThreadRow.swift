@@ -66,7 +66,7 @@ struct ThreadRow: View {
                 }
                 HStack {
                     SecondaryMessageView(isSelected: isSelected, thread: thread)
-                        .environmentObject(ThreadEventViewModel(threadId: thread.id ?? -1))
+                        .environmentObject(viewModel.threadEventModels.first{$0.threadId == thread.id} ?? .init(threadId: thread.id ?? 0))
                     Spacer()
                     ThreadUnreadCount(isSelected: isSelected)
                         .environmentObject(thread)

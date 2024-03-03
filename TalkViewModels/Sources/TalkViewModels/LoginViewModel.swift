@@ -124,6 +124,7 @@ public final class LoginViewModel: ObservableObject {
             ssoToken.keyId = keyId
             await saveTokenAndCreateChatObject(ssoToken)
             await MainActor.run {
+                hideKeyboard()
                 resetState()
                 doHaptic()
             }
@@ -200,4 +201,7 @@ public final class LoginViewModel: ObservableObject {
         UIImpactFeedbackGenerator(style: failed ? .rigid : .soft).impactOccurred()
     }
 
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 }

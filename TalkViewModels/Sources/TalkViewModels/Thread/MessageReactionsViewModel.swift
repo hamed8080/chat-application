@@ -11,7 +11,7 @@ import ChatModels
 import Chat
 
 public actor ReactionActor {
-    let viewModel: MessageRowViewModel?
+    weak var viewModel: MessageRowViewModel?
     var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
 
     public init(viewModel: MessageRowViewModel?) {

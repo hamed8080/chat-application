@@ -144,6 +144,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         RequestsManager.shared.append(prepend: prepend, value: req)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
             if self != nil {
+                Logger.viewModels.debug("Start of sending history request: \(Date().millisecondsSince1970)")
                 ChatManager.activeInstance?.message.history(req)
             }
         }
@@ -178,6 +179,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         animateObjectWillChange()
         let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
         RequestsManager.shared.append(prepend: prepend, value: req)
+        Logger.viewModels.debug("Start of sending history request: \(Date().millisecondsSince1970)")
         ChatManager.activeInstance?.message.history(req)
     }
 
@@ -315,6 +317,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             let fromTime = lastMessageInListTime.advanced(by: 1)
             let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
             RequestsManager.shared.append(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", value: req)
+            Logger.viewModels.debug("Start of sending history request: \(Date().millisecondsSince1970)")
             ChatManager.activeInstance?.message.history(req)
         }
     }
@@ -349,6 +352,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             let toTimeReq = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: time.advanced(by: 1), readOnly: threadViewModel?.readOnly == true)
             let timeReqManager = OnMoveTime(messageId: messageId, request: toTimeReq, highlight: highlight)
             RequestsManager.shared.append(prepend: "TO-TIME", value: timeReqManager)
+            Logger.viewModels.debug("Start of sending history request: \(Date().millisecondsSince1970)")
             ChatManager.activeInstance?.message.history(toTimeReq)
         }
     }
@@ -371,6 +375,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
             let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)
             RequestsManager.shared.append(prepend: "FROM-TIME", value: fromReqManager)
+            Logger.viewModels.debug("Start of sending history request: \(Date().millisecondsSince1970)")
             ChatManager.activeInstance?.message.history(fromTimeReq)
         }
     }
@@ -399,6 +404,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: message.time, offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
         let fromReqManager = OnMoveTime(messageId: message.id ?? 0, request: fromTimeReq, highlight: false)
         RequestsManager.shared.append(prepend: "FROM-TIME", value: fromReqManager)
+        Logger.viewModels.debug("Start of sending history request: \(Date().millisecondsSince1970)")
         ChatManager.activeInstance?.message.history(fromTimeReq)
     }
 
@@ -422,6 +428,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     func requestBottomPartByCountAndOffset() {
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, readOnly: threadViewModel?.readOnly == true)
         RequestsManager.shared.append(prepend: "FETCH-BY-OFFSET", value: req)
+        Logger.viewModels.debug("Start of sending history request: \(Date().millisecondsSince1970)")
         ChatManager.activeInstance?.message.history(req)
     }
 
@@ -537,7 +544,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     public func sort() {
         let logger = Logger.viewModels
-        logger.debug("Start o f the Sort function: \(Date().millisecondsSince1970)")
+        logger.debug("Start of the Sort function: \(Date().millisecondsSince1970)")
         sections.indices.forEach { sectionIndex in
             sections[sectionIndex].vms.sort { m1, m2 in
                 if m1 is UnreadMessageProtocol {

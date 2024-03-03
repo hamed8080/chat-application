@@ -22,18 +22,17 @@ public final class TagsViewModel: ObservableObject {
     private var cancelable: Set<AnyCancellable> = []
 
     public init() {
-        AppState.shared.$connectionStatus
-            .sink{ [weak self] status in
-                self?.onConnectionStatusChanged(status)
-            }
-            .store(in: &cancelable)
-        NotificationCenter.tag.publisher(for: .tag)
-            .compactMap { $0.object as? TagEventTypes }
-            .sink { [weak self] value in
-                self?.onTagEvent(value)
-            }
-            .store(in: &cancelable)
-        getTagList()
+//        AppState.shared.$connectionStatus
+//            .sink{ [weak self] status in
+//                self?.onConnectionStatusChanged(status)
+//            }
+//            .store(in: &cancelable)
+//        NotificationCenter.tag.publisher(for: .tag)
+//            .compactMap { $0.object as? TagEventTypes }
+//            .sink { [weak self] value in
+//                self?.onTagEvent(value)
+//            }
+//            .store(in: &cancelable)
     }
 
     private func onTagEvent(_ event: TagEventTypes) {

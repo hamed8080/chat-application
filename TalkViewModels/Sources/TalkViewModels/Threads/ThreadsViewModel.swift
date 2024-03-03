@@ -35,6 +35,7 @@ public final class ThreadsViewModel: ObservableObject {
     public var serverSortedPins: [Int] = []
     public var shimmerViewModel = ShimmerViewModel(delayToHide: 0, repeatInterval: 0.5)
     @Published public var showUnreadConversations: Bool? = nil
+    public var threadEventModels: [ThreadEventViewModel] = []
 
     public init() {
         AppState.shared.$connectionStatus
@@ -95,6 +96,7 @@ public final class ThreadsViewModel: ObservableObject {
             getThreads()
         } else if status == .connected, firstSuccessResponse == true {
             // After connecting again
+            threads.removeAll()
             offset = 0
             getThreads()
 //            refreshThreadsUnreadCount()
@@ -238,6 +240,10 @@ public final class ThreadsViewModel: ObservableObject {
                 oldThread.animateObjectWillChange() // To update properties such as unread count when we get threads again after disconnect.
             } else {
                 self.threads.append(thread)
+            }
+            if !threadEventModels.contains(where: {$0.threadId == thread.id}) {
+                let eventVM = ThreadEventViewModel(threadId: thread.id ?? 0)
+                threadEventModels.append(eventVM)
             }
         }
         sort()

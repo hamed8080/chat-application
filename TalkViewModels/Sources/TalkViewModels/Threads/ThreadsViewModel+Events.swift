@@ -53,6 +53,24 @@ extension ThreadsViewModel {
             }
         }
         .store(in: &cancelable)
+        NotificationCenter.system.publisher(for: .system)
+            .compactMap { $0.object as? SystemEventTypes }
+            .sink { [weak self] systemMessageEvent in
+                self?.onThreadSystemEvent(systemMessageEvent)
+            }
+            .store(in: &cancelable)
+    }
+
+    func onThreadSystemEvent(_ event: SystemEventTypes) {
+        switch event {
+        case .systemMessage(let chatResponse):
+            guard let result = chatResponse.result else { return }
+            if let eventVM = threadEventModels.first(where: {$0.threadId == chatResponse.subjectId}) {
+                eventVM.startEventTimer(result)
+            }
+        default:
+            break
+        }
     }
 
     func onParticipantEvent(_ event: ParticipantEventTypes) {
