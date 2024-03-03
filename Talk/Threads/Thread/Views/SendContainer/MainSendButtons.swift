@@ -16,7 +16,7 @@ struct MainSendButtons: View {
     @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(alignment: .bottom, spacing: 8) {
             Button {
                 withAnimation(animation(appear: !viewModel.showActionButtons)) {
                     viewModel.showActionButtons.toggle()
