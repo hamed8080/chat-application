@@ -78,6 +78,7 @@ struct TabContainerView: View {
             }
         }
         .frame(minWidth: 0, maxWidth: maxWidth)
+        .ignoresSafeArea(.keyboard)
         .onChange(of: selectedId) { newValue in
             onSelectedTab?(selectedId)
         }

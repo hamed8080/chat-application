@@ -44,7 +44,6 @@ public final class ThreadsViewModel: ObservableObject {
             }
             .store(in: &cancelable)
         registerNotifications()
-        getThreads()
     }
 
     func onCreate(_ response: ChatResponse<Conversation>) {
