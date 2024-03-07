@@ -18,24 +18,24 @@ import Combine
 public final class ThreadHistoryViewModel: ObservableObject {
     // MARK: Stored Properties
     public var sections: ContiguousArray<MessageSection> = .init()
-    public var needUpdates: ContiguousArray<MessageRowViewModel> = .init()
-    public var hasNextTop = true
-    public var hasNextBottom = true
-    public let count: Int = 25
+    private var needUpdates: ContiguousArray<MessageRowViewModel> = .init()
+    private var hasNextTop = true
+    private var hasNextBottom = true
+    private let count: Int = 25
     private let thresholdToLoad = 20
-    public var topLoading = false
-    public var bottomLoading = false
+    public private(set) var topLoading = false
+    public private(set) var bottomLoading = false
     private var topSliceId: Int = 0
     private var bottomSliceId: Int = 0
     @MainActor
-    public var lastTopVisibleMessage: Message?
-    public var isFetchedServerFirstResponse: Bool = false
+    private var lastTopVisibleMessage: Message?
+    private var isFetchedServerFirstResponse: Bool = false
     private var cancelable: Set<AnyCancellable> = []
     private weak var threadViewModel: ThreadViewModel?
-    var hasSentHistoryRequest = false
+    private var hasSentHistoryRequest = false
     public var shimmerViewModel: ShimmerViewModel = .init(delayToHide: 0)
     public var messageSlotShimmerVM: ShimmerViewModel = .init(delayToHide: 0)
-    public var seenVM: HistorySeenViewModel
+    internal var seenVM: HistorySeenViewModel
 
     // MARK: Computed Properties
     public var isEmptyThread: Bool {
@@ -57,8 +57,21 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Scenarios Common Functions
+    public func start() {
+        /// After deleting a thread it will again tries to call histroy,
+        /// we should prevent it from calling it to not get any error.
+        if isFetchedServerFirstResponse == false {
+            startFetchingHistory()
+            threadViewModel?.threadsViewModel?.clearAvatarsOnSelectAnotherThread()
+        } else if isFetchedServerFirstResponse == true {
+            /// try to open reply privately if user has tried to click on  reply privately and back button multiple times
+            /// iOS has a bug where it tries to keep the object in the memory, so multiple back and forward doesn't lead to destroy the object.
+            moveToMessageTimeOnOpenConversation()
+        }
+    }
+    
     /// On Thread view, it will start calculating to fetch what part of [top, bottom, both top and bottom] receive.
-    public func startFetchingHistory() {
+    private func startFetchingHistory() {
         /// We check this to prevent recalling these methods when the view reappears again.
         /// If centerLoading is true it is mean theat the array has gotten clear for Scenario 6 to move to a time.
         let isSimulatedThread = threadViewModel?.isSimulatedThared == true

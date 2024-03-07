@@ -16,54 +16,52 @@ import TalkViewModels
 struct ThreadView: View, DropDelegate {
     private var thread: Conversation { viewModel.thread }
     let viewModel: ThreadViewModel
-    let threadsVM: ThreadsViewModel
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        ThreadMessagesList(viewModel: viewModel)
-            .navigationBarBackButtonHidden(true)
-            .background(Color.App.textSecondary.opacity(0.1).edgesIgnoringSafeArea(.bottom))
-            .background(SheetEmptyBackground())
-            .onDrop(of: [.image], delegate: self)
-            .safeAreaInset(edge: .bottom) {
-                ThreadEmptySpaceView()
-            }
-            .overlay(alignment: .bottom) {
-                SendContainerOverlayView()
-            }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                VStack(spacing: 0) {
-                    ThreadMainToolbar(viewModel: viewModel)
-                    ThreadPinMessage(threadVM: viewModel)
-                    AudioPlayerView(threadVM: viewModel)
-                }
-            }
-            .background {
-                GeometryReader { reader in
-                    Color.clear.onAppear {
-                        DispatchQueue.main.async {
-                            ThreadViewModel.threadWidth = reader.size.width
-                        }
+        ScrollViewReader { scrollProxy in
+            ThreadHistoryVStack()
+                .background(ThreadbackgroundView(threadId: viewModel.threadId))
+                .overlay(alignment: .bottom) {
+                    VStack {
+                        MoveToBottomButton()
+                        SendContainerOverButtons()
                     }
                 }
-            }
-            .task {
-                /// After deleting a thread it will again tries to call histroy we should prevent it from calling it to not get any error.
-                if viewModel.historyVM.isFetchedServerFirstResponse == false {
-                    viewModel.historyVM.startFetchingHistory()
-                    threadsVM.clearAvatarsOnSelectAnotherThread()
-                } else if viewModel.historyVM.isFetchedServerFirstResponse == true {
-                    /// try to open reply privately if user has tried to click on  reply privately and back button multiple times
-                    /// iOS has a bug where it tries to keep the object in the memory, so multiple back and forward doesn't lead to destroy the object.
-                    viewModel.historyVM.moveToMessageTimeOnOpenConversation()
+                .task {
+                    viewModel.historyVM.start()
+                    viewModel.scrollVM.scrollProxy = scrollProxy
+                    /// It will lead to a memory leak and so many other crashes like:
+                    /// 1- In context menus almost every place we will see crashes.
+                    /// 2- If we remove this section, the background won't work.
+                    /// 3- Don't use the group list style it will prevent the background from being shown.
+                    /// 4- On iPadOS if we switch between threads threadViewModel will stay in the memory even if we press the back button or select another thread. However, by canceling observers we won't have any conflict, and after two more switch threads the app will release the object.
+                    UICollectionViewCell.appearance().backgroundView = UIView()
+                    UITableViewHeaderFooterView.appearance().backgroundView = UIView()
                 }
+        }
+        .simultaneousGesture(tap.simultaneously(with: drag))
+        .navigationBarBackButtonHidden(true)
+        .background(Color.App.textSecondary.opacity(0.1).edgesIgnoringSafeArea(.bottom))
+        .background(SheetEmptyBackground())
+        .onDrop(of: [.image], delegate: self)
+        .safeAreaInset(edge: .bottom) {
+            ThreadEmptySpaceView()
+        }
+        .overlay(alignment: .bottom) {
+            SendContainerOverlayView()
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            VStack(spacing: 0) {
+                ThreadMainToolbar(viewModel: viewModel)
+                ThreadPinMessage(threadVM: viewModel)
+                AudioPlayerView(threadVM: viewModel)
             }
-            .onReceive(viewModel.$dismiss) { newValue in
-                if newValue {
-                    AppState.shared.objectsContainer.navVM.remove(threadId: thread.id)
-                    dismiss()
-                }
-            }
+        }
+        .background(threadWidthSetter)
+        .onReceive(viewModel.$dismiss) { newValue in
+            onDismiss(dismiss: newValue)
+        }
     }
 
     func dropUpdated(info _: DropInfo) -> DropProposal? { DropProposal(operation: .copy) }
@@ -71,6 +69,55 @@ struct ThreadView: View, DropDelegate {
     func performDrop(info: DropInfo) -> Bool {
         viewModel.storeDropItems(info.itemProviders(for: [.item]))
         return true
+    }
+
+    private var threadWidthSetter: some View {
+        GeometryReader { reader in
+            Color.clear.onAppear {
+                DispatchQueue.main.async {
+                    ThreadViewModel.threadWidth = reader.size.width
+                }
+            }
+        }
+    }
+
+    private func onDismiss(dismiss: Bool) {
+        if dismiss {
+            AppState.shared.objectsContainer.navVM.remove(threadId: thread.id)
+            self.dismiss()
+        }
+    }
+
+    private var drag: some Gesture {
+        DragGesture(minimumDistance: 10, coordinateSpace: .global)
+            .onChanged { newValue in
+                viewModel.scrollVM.cancelTask()
+                viewModel.scrollVM.isProgramaticallyScroll = false
+                viewModel.scrollVM.scrollingUP = newValue.translation.height > 10
+                viewModel.scrollVM.animateObjectWillChange()
+                let isSwipeEdge = Language.isRTL ? (newValue.startLocation.x > ThreadViewModel.threadWidth - 20) : newValue.startLocation.x < 20
+                if isSwipeEdge, abs(newValue.translation.width) > 48 && newValue.translation.height < 12 {
+                    AppState.shared.objectsContainer.navVM.remove(threadId: viewModel.threadId)
+                }
+            }
+    }
+
+    private var tap: some Gesture {
+        TapGesture()
+            .onEnded { _ in
+                hideKeyboardOnTapOrDrag()
+            }
+    }
+
+    private func hideKeyboardOnTapOrDrag() {
+        if viewModel.searchedMessagesViewModel.searchText.isEmpty {
+            NotificationCenter.cancelSearch.post(name: .cancelSearch, object: true)
+        }
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        viewModel.historyVM.sections.flatMap{$0.vms}.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
+            rowViewModel.showReactionsOverlay = false
+            rowViewModel.animateObjectWillChange()
+        }
     }
 }
 
@@ -83,7 +130,7 @@ struct ThreadView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        ThreadView(viewModel: .init(thread: .init(id: 1)), threadsVM: ThreadsViewModel())
+        ThreadView(viewModel: .init(thread: .init(id: 1)))
             .environmentObject(ThreadViewModel(thread: MockData.thread))
             .environmentObject(AppState.shared)
             .onAppear {

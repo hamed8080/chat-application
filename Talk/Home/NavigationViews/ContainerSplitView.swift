@@ -82,7 +82,7 @@ struct NavigationTypeView: View {
     var body: some View {
         switch type {
         case .threadViewModel(let viewModel):
-            ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
+            ThreadView(viewModel: viewModel)
                 .id(viewModel.threadId) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
                 .environmentObject(container.appOverlayVM)
                 .environmentObject(viewModel)
