@@ -145,6 +145,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             hasNextTop = response.hasNext
             isFetchedServerFirstResponse = true
             topLoading = false
+            removeAllSlotsWhenReachTopOfTheList()
         }
     }
 
@@ -775,6 +776,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     private func setSlotsThresholds(messages: [Message]) {
         topSliceId = messages.prefix(thresholdToLoad).compactMap{$0.id}.last ?? 0
+    }
+
+    private func removeAllSlotsWhenReachTopOfTheList() {
+        if !hasNextTop {
+            sections[0].vms.removeAll(where: {$0.message.id == LocalId.emptyMessageSlot.rawValue})
+            animateObjectWillChange()
+        }
     }
 
     // MARK: Time for more Bottom and Top
