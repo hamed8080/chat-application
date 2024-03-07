@@ -24,7 +24,7 @@ struct TextMessageType: View {
         if viewModel.isSlot {
             MessageSlotShimmerView()
                 .environmentObject(viewModel)
-                .environmentObject(threadVM!.historyVM.messgaeSlotShimmerVM)
+                .environmentObject(threadVM!.historyVM.messageSlotShimmerVM)
         } else {
             textMessageView
         }

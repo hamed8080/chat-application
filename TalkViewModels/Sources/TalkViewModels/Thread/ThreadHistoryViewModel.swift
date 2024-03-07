@@ -16,6 +16,7 @@ import TalkModels
 import Combine
 
 public final class ThreadHistoryViewModel: ObservableObject {
+    // MARK: Stored Properties
     public var sections: ContiguousArray<MessageSection> = .init()
     public var needUpdates: ContiguousArray<MessageRowViewModel> = .init()
     public var hasNextTop = true
@@ -24,8 +25,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private let thresholdToLoad = 20
     public var topLoading = false
     public var bottomLoading = false
-    public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
-    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.vms.last?.id != thread.lastMessageVO?.id && hasNextBottom }
     private var topSliceId: Int = 0
     private var bottomSliceId: Int = 0
     @MainActor
@@ -33,93 +32,31 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var isFetchedServerFirstResponse: Bool = false
     private var cancelable: Set<AnyCancellable> = []
     private weak var threadViewModel: ThreadViewModel?
-    private var thread: Conversation { threadViewModel?.thread ?? .init(id: -1) }
-    private var threadId: Int { thread.id ?? -1 }
     var hasSentHistoryRequest = false
     public var shimmerViewModel: ShimmerViewModel = .init(delayToHide: 0)
-    public var messgaeSlotShimmerVM: ShimmerViewModel = .init(delayToHide: 0)
+    public var messageSlotShimmerVM: ShimmerViewModel = .init(delayToHide: 0)
     public var seenVM: HistorySeenViewModel
 
+    // MARK: Computed Properties
     public var isEmptyThread: Bool {
         let noMessage = isFetchedServerFirstResponse == true && sections.count == 0
         let emptyThread = threadViewModel?.isSimulatedThared == true
         return emptyThread || noMessage
     }
+    private var thread: Conversation { threadViewModel?.thread ?? .init(id: -1) }
+    private var threadId: Int { thread.id ?? -1 }
+    public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
+    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.vms.last?.id != thread.lastMessageVO?.id && hasNextBottom }
+    private var isSimulated: Bool { threadViewModel?.isSimulatedThared == true }
 
+    // MARK: Initializer
     public init(threadViewModel: ThreadViewModel) {
         self.threadViewModel = threadViewModel
         seenVM = HistorySeenViewModel(threadViewModel: threadViewModel)
         setupNotificationObservers()
     }
 
-    public func setupNotificationObservers() {
-        AppState.shared.$connectionStatus
-            .sink { [weak self] status in
-                self?.onConnectionStatusChanged(status)
-            }
-            .store(in: &cancelable)
-        NotificationCenter.message.publisher(for: .message)
-            .compactMap { $0.object as? MessageEventTypes }
-            .sink { [weak self] event in
-                self?.onMessageEvent(event)
-            }
-            .store(in: &cancelable)
-        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
-            .sink { [weak self] newValue in
-                if let key = newValue.object as? String {
-                    self?.onCancelTimer(key: key)
-                }
-            }
-            .store(in: &cancelable)
-        NotificationCenter.windowMode.publisher(for: .windowMode)
-            .sink { [weak self] newValue in
-                self?.updateAllRows()
-            }
-            .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"))
-            .compactMap {$0.object as? MessageResponse}
-            .sink { [weak self] newValue in
-                self?.updateOlderSeensLocally()
-            }
-            .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: Notification.Name("HIGHLIGHT"))
-            .compactMap {$0.object as? Int}
-            .sink { [weak self] newValue in
-                self?.setHighlight(messageId: newValue)
-            }
-            .store(in: &cancelable)
-        threadViewModel?.selectedMessagesViewModel.$isInSelectMode
-            .sink { [weak self] newValue in
-                self?.setRowsIsInSelectMode(newValue: newValue)
-            }
-            .store(in: &cancelable)
-
-        NotificationCenter.upload.publisher(for: .upload)
-            .sink { [weak self] notification in
-                self?.onUploadEvents(notification)
-            }
-            .store(in: &cancelable)
-
-        NotificationCenter.reactionMessageUpdated.publisher(for: .reactionMessageUpdated)
-            .sink { [weak self] notification in
-                self?.onReactionEvent(notification)
-            }
-            .store(in: &cancelable)
-    }
-
-    public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        let isSimulated = threadViewModel?.isSimulatedThared == true
-        if !isSimulated, status == .connected, isFetchedServerFirstResponse == true, threadViewModel?.isActiveThread == true {
-            // After connecting again get latest messages.
-            tryFifthScenario(status: status)
-        }
-
-        /// Fetch the history for the first time if the internet connection is not available.
-        if !isSimulated, status == .connected, hasSentHistoryRequest == true, sections.isEmpty {
-            startFetchingHistory()
-        }
-    }
-
+    // MARK: Scenarios Common Functions
     /// On Thread view, it will start calculating to fetch what part of [top, bottom, both top and bottom] receive.
     public func startFetchingHistory() {
         /// We check this to prevent recalling these methods when the view reappears again.
@@ -137,10 +74,10 @@ public final class ThreadHistoryViewModel: ObservableObject {
         tryNinthScenario()
     }
 
-    public func moreTop(prepend: String = "MORE-TOP", delay: TimeInterval = 0.5, _ toTime: UInt?) {
+    private func moreTop(prepend: String = "MORE-TOP", delay: TimeInterval = 0.5, _ toTime: UInt?) {
         if !canLoadMoreTop { return }
         topLoading = true
-        messgaeSlotShimmerVM.show()
+        messageSlotShimmerVM.show()
         if sections.first?.vms.contains(where: {$0.message.id == LocalId.emptyMessageSlot.rawValue}) == false {
             Task {
                 await insertEmptySlots()
@@ -159,7 +96,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    public func onMoreTop(_ response: ChatResponse<[Message]>) {
+    private func onMoreTop(_ response: ChatResponse<[Message]>) {
         guard response.pop(prepend: "MORE-TOP") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
@@ -170,13 +107,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 5- Set whether it has more messages at the top or not.
             await setHasMoreTop(response)
             isFetchedServerFirstResponse = true
-            messgaeSlotShimmerVM.hide()
+            messageSlotShimmerVM.hide()
             /// 6- To update isLoading fields to hide the loading at the top.
             await asyncAnimateObjectWillChange()
         }
     }
 
-    public func moreBottom(prepend: String = "MORE-BOTTOM", _ fromTime: UInt?) {
+    private func moreBottom(prepend: String = "MORE-BOTTOM", _ fromTime: UInt?) {
         if !hasNextBottom || bottomLoading { return }
         bottomLoading = true
         animateObjectWillChange()
@@ -186,7 +123,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         ChatManager.activeInstance?.message.history(req)
     }
 
-    public func onMoreBottom(_ response: ChatResponse<[Message]>) {
+    private func onMoreBottom(_ response: ChatResponse<[Message]>) {
         guard response.pop(prepend: "MORE-BOTTOM") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
@@ -202,7 +139,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    func setHasMoreTop(_ response: ChatResponse<[Message]>) async {
+    // MARK: Scenarios utilities
+    private func setHasMoreTop(_ response: ChatResponse<[Message]>) async {
         if !response.cache {
             hasNextTop = response.hasNext
             isFetchedServerFirstResponse = true
@@ -210,7 +148,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    func setHasMoreBottom(_ response: ChatResponse<[Message]>) async {
+    private func setHasMoreBottom(_ response: ChatResponse<[Message]>) async {
         if !response.cache {
             hasNextBottom = response.hasNext
             isFetchedServerFirstResponse = true
@@ -218,15 +156,31 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    /// Scenario 1
-    func tryFirstScenario() {
+    private func appenedUnreadMessagesBannerIfNeeed() async {
+        guard
+            let tuples = message(for: thread.lastSeenMessageId),
+            let threadViewModel = threadViewModel
+        else { return }
+        let time = (tuples.message.time ?? 0) + 1
+        let unreadMessage = UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: time, uniqueId: "\(LocalId.unreadMessageBanner.rawValue)")
+        sections[tuples.sectionIndex].vms.append(.init(message: unreadMessage, viewModel: threadViewModel))
+    }
+
+    private func removeOldBanner() {
+        if let indices = indicesByMessageUniqueId("\(LocalId.unreadMessageBanner.rawValue)") {
+            sections[indices.sectionIndex].vms.remove(at: indices.messageIndex)
+        }
+    }
+
+    // MARK: Scenario 1
+    private func tryFirstScenario() {
         /// 1- Get the top part to time messages
         if thread.lastMessageVO?.id ?? 0 > thread.lastSeenMessageId ?? 0, let toTime = thread.lastSeenMessageTime {
             moreTop(prepend: "MORE-TOP-FIRST-SCENARIO", delay: TimeInterval(0), toTime.advanced(by: 1))
         }
     }
 
-    public func onMoreTopFirstScenario(_ response: ChatResponse<[Message]>) {
+    private func onMoreTopFirstScenario(_ response: ChatResponse<[Message]>) {
         guard response.pop(prepend: "MORE-TOP-FIRST-SCENARIO") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
@@ -243,7 +197,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    public func onMoreBottomFirstScenario(_ response: ChatResponse<[Message]>) {
+    private func onMoreBottomFirstScenario(_ response: ChatResponse<[Message]>) {
         guard response.pop(prepend: "MORE-BOTTOM-FIRST-SCENARIO") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
@@ -262,31 +216,15 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    func appenedUnreadMessagesBannerIfNeeed() async {
-        guard
-            let tuples = message(for: thread.lastSeenMessageId),
-            let threadViewModel = threadViewModel
-        else { return }
-        let time = (tuples.message.time ?? 0) + 1
-        let unreadMessage = UnreadMessage(id: LocalId.unreadMessageBanner.rawValue, time: time, uniqueId: "\(LocalId.unreadMessageBanner.rawValue)")
-        sections[tuples.sectionIndex].vms.append(.init(message: unreadMessage, viewModel: threadViewModel))
-    }
-
-    public func removeOldBanner() {
-        if let indices = indicesByMessageUniqueId("\(LocalId.unreadMessageBanner.rawValue)") {
-            sections[indices.sectionIndex].vms.remove(at: indices.messageIndex)
-        }
-    }
-
-    /// Scenario 2
-    func trySecondScenario() {
+    // MARK: Scenario 2
+    private func trySecondScenario() {
         /// 1- Get the top part to time messages
         if thread.lastMessageVO?.id ?? 0 == thread.lastSeenMessageId ?? 0, let toTime = thread.lastSeenMessageTime {
             moreTop(prepend: "MORE-TOP-SECOND-SCENARIO", toTime.advanced(by: 1))
         }
     }
 
-    public func onMoreTopSecondScenario(_ response: ChatResponse<[Message]>) {
+    private func onMoreTopSecondScenario(_ response: ChatResponse<[Message]>) {
         guard response.pop(prepend: "MORE-TOP-SECOND-SCENARIO") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
@@ -308,10 +246,10 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    /// Scenario 3 or 4 more top/bottom.
+    // MARK: Scenario 3 or 4 more top/bottom.
 
-    /// Scenario 5
-    func tryFifthScenario(status: ConnectionStatus) {
+    // MARK: Scenario 5
+    private func tryFifthScenario(status: ConnectionStatus) {
         /// 1- Get the bottom part of the list of what is inside the memory.
         if status == .connected,
            isFetchedServerFirstResponse == true,
@@ -327,7 +265,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    public func onMoreBottomFifthScenario(_ response: ChatResponse<[Message]>) {
+    private func onMoreBottomFifthScenario(_ response: ChatResponse<[Message]>) {
         guard response.pop(prepend: "MORE-BOTTOM-FIFTH-SCENARIO") != nil, let messages = response.result else { return }
         Task { [weak self] in
             guard let self = self else { return }
@@ -345,7 +283,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    /// Scenario 6
+    // MARK: Scenario 6
     public func moveToTime(_ time: UInt, _ messageId: Int, highlight: Bool = true) {
         Task { [weak self] in
             guard let self = self else { return }
@@ -362,7 +300,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    func onMoveToTime(_ response: ChatResponse<[Message]>) {
+    private func onMoveToTime(_ response: ChatResponse<[Message]>) {
         guard let request = response.pop(prepend: "TO-TIME") as? OnMoveTime,
               let messages = response.result
         else { return }
@@ -385,7 +323,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    func onMoveFromTime(_ response: ChatResponse<[Message]>) {
+    private func onMoveFromTime(_ response: ChatResponse<[Message]>) {
         guard
             let request = response.pop(prepend: "FROM-TIME") as? OnMoveTime,
             let messages = response.result
@@ -404,18 +342,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    func moreBottomMoveTo(_ message: Message) {
-        /// 12- Fetch the next part of the bottom when the user scrolls to the bottom part of move to.
-        let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: message.time, offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
-        let fromReqManager = OnMoveTime(messageId: message.id ?? 0, request: fromTimeReq, highlight: false)
-        RequestsManager.shared.append(prepend: "FROM-TIME", value: fromReqManager)
-        logHistoryRequest(req: fromTimeReq)
-        ChatManager.activeInstance?.message.history(fromTimeReq)
-    }
-
     /// Search for a message with an id in the messages array, and if it can find the message, it will redirect to that message locally, and there is no request sent to the server.
     /// - Returns: Indicate that it moved loclally or not.
-    func moveToMessageLocally(_ messageId: Int, highlight: Bool) async -> Bool {
+    private func moveToMessageLocally(_ messageId: Int, highlight: Bool) async -> Bool {
         if let uniqueId = message(for: messageId)?.message.uniqueId {
             await threadViewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: highlight)
             return true
@@ -423,21 +352,22 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return false
     }
 
-    /// Scenario 7 = When lastMessgeSeenId is bigger than thread.lastMessageVO.id as a result of server chat bug.
-    func trySeventhScenario() {
+    // MARK: Scenario 7
+    /// When lastMessgeSeenId is bigger than thread.lastMessageVO.id as a result of server chat bug.
+    private func trySeventhScenario() {
         if thread.lastMessageVO?.id ?? 0 < thread.lastSeenMessageId ?? 0 {
             requestBottomPartByCountAndOffset()
         }
     }
 
-    func requestBottomPartByCountAndOffset() {
+    private func requestBottomPartByCountAndOffset() {
         let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, readOnly: threadViewModel?.readOnly == true)
         RequestsManager.shared.append(prepend: "FETCH-BY-OFFSET", value: req)
         logHistoryRequest(req: req)
         ChatManager.activeInstance?.message.history(req)
     }
 
-    func onFetchByOffset(_ response: ChatResponse<[Message]>) {
+    private func onFetchByOffset(_ response: ChatResponse<[Message]>) {
         guard
             response.pop(prepend: "FETCH-BY-OFFSET") != nil,
             let messages = response.result
@@ -453,81 +383,33 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    /// Scenario 8 = When a new thread has been built and me is added by another person and this is our first time to visit the thread.
-    func tryEightScenario() {
+    // MARK: Scenario 8
+    /// When a new thread has been built and me is added by another person and this is our first time to visit the thread.
+    private func tryEightScenario() {
         if thread.lastSeenMessageId == 0, thread.lastSeenMessageTime == nil, let lastMSGId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
             moveToTime(time, lastMSGId, highlight: false)
         }
     }
 
+    // MARK: Scenario 9
     /// When a new thread has been built and there is no message inside the thread yet.
-    func tryNinthScenario() {
+    private func tryNinthScenario() {
         if (thread.lastSeenMessageId == 0 || thread.lastSeenMessageId == nil) && thread.lastMessageVO == nil {
             requestBottomPartByCountAndOffset()
         }
     }
 
-    func sectionIndexByUniqueId(_ uniqueId: String) -> Array<MessageSection>.Index? {
-        sections.firstIndex(where: { $0.vms.contains(where: {$0.message.uniqueId == uniqueId }) })
+    // MARK: Scenario 10
+    public func moveToMessageTimeOnOpenConversation() {
+        let model = AppState.shared.appStateNavigationModel
+        if let id = model.moveToMessageId, let time = model.moveToMessageTime {
+            moveToTime(time, id, highlight: true)
+            AppState.shared.appStateNavigationModel = .init()
+        }
     }
 
-    func sectionIndexByMessageId(_ message: Message) -> Array<MessageSection>.Index? {
-        sectionIndexByMessageId(message.id ?? 0)
-    }
-
-    func sectionIndexByMessageId(_ id: Int) -> Array<MessageSection>.Index? {
-        sections.firstIndex(where: { $0.vms.contains(where: {$0.message.id == id }) })
-    }
-
-    func sectionIndexByDate(_ date: Date) -> Array<MessageSection>.Index? {
-        sections.firstIndex(where: { Calendar.current.isDate(date, inSameDayAs: $0.date)})
-    }
-
-    public func messageIndex(_ messageId: Int, in section: Array<MessageSection>.Index) -> Array<Message>.Index? {
-        sections[section].vms.firstIndex(where: { $0.id == messageId })
-    }
-
-    public func messageIndex(_ uniqueId: String, in section: Array<MessageSection>.Index) -> Array<Message>.Index? {
-        sections[section].vms.firstIndex(where: { $0.message.uniqueId == uniqueId })
-    }
-
-    func message(for id: Int?) -> (message: Message, sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
-        guard
-            let id = id,
-            let sectionIndex = sectionIndexByMessageId(id),
-            let messageIndex = messageIndex(id, in: sectionIndex)
-        else { return nil }
-        let message = sections[sectionIndex].vms[messageIndex].message
-        return (message: message, sectionIndex: sectionIndex, messageIndex: messageIndex)
-    }
-
-    func indicesByMessageUniqueId(_ uniqueId: String) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
-        guard
-            let sectionIndex = sectionIndexByUniqueId(uniqueId),
-            let messageIndex = messageIndex(uniqueId, in: sectionIndex)
-        else { return nil }
-        return (sectionIndex: sectionIndex, messageIndex: messageIndex)
-    }
-
-    func viewModel(uniqueId: String) -> MessageRowViewModel? {
-        guard let indicies = indicesByMessageUniqueId(uniqueId) else {return nil}
-        return sections[indicies.sectionIndex].vms[indicies.messageIndex]
-    }
-
-    func findIncicesBy(uniqueId: String?, _ id: Int?) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
-        guard
-            let sectionIndex = sections.firstIndex(where: { $0.vms.contains(where: { $0.message.uniqueId == uniqueId || $0.id == id }) }),
-            let messageIndex = sections[sectionIndex].vms.firstIndex(where: { $0.message.uniqueId == uniqueId || $0.id == id })
-        else { return nil }
-        return (sectionIndex: sectionIndex, messageIndex: messageIndex)
-    }
-
-    public func removeById(_ id: Int?) {
-        guard let id = id, let indices = message(for: id) else { return }
-        sections[indices.sectionIndex].vms.remove(at: indices.messageIndex)
-    }
-
-    public func removeByUniqueId(_ uniqueId: String?) {
+    // MARK: Delete Message
+    internal func removeByUniqueId(_ uniqueId: String?) {
         guard let uniqueId = uniqueId, let indices = indicesByMessageUniqueId(uniqueId) else { return }
         sections[indices.sectionIndex].vms.remove(at: indices.messageIndex)
     }
@@ -538,45 +420,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         threadViewModel?.selectedMessagesViewModel.clearSelection()
     }
 
-    /// Delete a message with an Id is needed for when the message has persisted before.
-    /// Delete a message with a uniqueId is needed for when the message is sent to a request.
-    public func onDeleteMessage(_ response: ChatResponse<Message>) {
-        guard let responseThreadId = response.subjectId ?? response.result?.threadId ?? response.result?.conversation?.id,
-              threadId == responseThreadId,
-              let indices = findIncicesBy(uniqueId: response.uniqueId, response.result?.id)
-        else { return }
-        sections[indices.sectionIndex].vms.remove(at: indices.messageIndex)
-        if sections[indices.sectionIndex].vms.count == 0 {
-            sections.remove(at: indices.sectionIndex)
-        }
-        animateObjectWillChange()
-    }
-
-    public func sort() {
-        let logger = Logger.viewModels
-        logger.debug("Start of the Sort function: \(Date().millisecondsSince1970)")
-        sections.indices.forEach { sectionIndex in
-            sections[sectionIndex].vms.sort { m1, m2 in
-                if m1 is UnreadMessageProtocol {
-                    return false
-                }
-                let isSlot1 = m1.message.id == LocalId.emptyMessageSlot.rawValue
-                let isSlot2 = m2.message.id == LocalId.emptyMessageSlot.rawValue
-                if isSlot1 || isSlot2 {
-                    return true
-                }
-                if let t1 = m1.message.time, let t2 = m2.message.time {
-                    return t1 < t2
-                } else {
-                    return false
-                }
-            }
-        }
-        sections.sort(by: {$0.date < $1.date})
-        logger.debug("End of the Sort function: \(Date().millisecondsSince1970)")
-    }
-
-    public func appendMessagesAndSort(_ messages: [Message], isToTime: Bool = false) async {
+    // MARK: Appending and Sorting
+    internal func appendMessagesAndSort(_ messages: [Message], isToTime: Bool = false) async {
         let logger = Logger.viewModels
         logger.debug("Start of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
         guard messages.count > 0 else { return }
@@ -609,7 +454,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return vm
     }
 
-    func insertIntoSection(_ message: Message) -> MessageRowViewModel? {
+    private func insertIntoSection(_ message: Message) -> MessageRowViewModel? {
         if message.threadId == threadId || message.conversation?.id == threadId, let threadViewModel = threadViewModel {
             let viewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
             if let sectionIndex = sectionIndexByDate(message.time?.date ?? Date()) {
@@ -623,7 +468,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return nil
     }
 
-    func insertOrUpdate(_ message: Message) -> MessageRowViewModel? {
+    private func insertOrUpdate(_ message: Message) -> MessageRowViewModel? {
         let indices = findIncicesBy(uniqueId: message.uniqueId ?? "", message.id ?? -1)
         if let vm = updateMessage(message, indices) {
             return vm
@@ -631,77 +476,45 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return insertIntoSection(message)
     }
 
-    func appendToNeedUpdate(_ vm: MessageRowViewModel) {
+    private func sort() {
+        let logger = Logger.viewModels
+        logger.debug("Start of the Sort function: \(Date().millisecondsSince1970)")
+        sections.indices.forEach { sectionIndex in
+            sections[sectionIndex].vms.sort { m1, m2 in
+                if m1 is UnreadMessageProtocol {
+                    return false
+                }
+                let isSlot1 = m1.message.id == LocalId.emptyMessageSlot.rawValue
+                let isSlot2 = m2.message.id == LocalId.emptyMessageSlot.rawValue
+                if isSlot1 || isSlot2 {
+                    return true
+                }
+                if let t1 = m1.message.time, let t2 = m2.message.time {
+                    return t1 < t2
+                } else {
+                    return false
+                }
+            }
+        }
+        sections.sort(by: {$0.date < $1.date})
+        logger.debug("End of the Sort function: \(Date().millisecondsSince1970)")
+    }
+
+    internal func appendToNeedUpdate(_ vm: MessageRowViewModel) {
         needUpdates.append(vm)
     }
 
-    func updateNeeded() async {
-        for (_, vm) in needUpdates.enumerated() {
-            await vm.asyncAnimateObjectWillChange()
-        }
-        needUpdates.removeAll()
-    }
-
-    func sectionIndexByUniqueId(_ message: Message) -> Array<MessageSection>.Index? {
-        sectionIndexByUniqueId(message.uniqueId ?? "")
-    }
-
-    private func isInTopSlice(_ message: Message) -> Bool {
-        return message.id ?? 0 <= topSliceId
-    }
-
-    private func isInBottomSlice(_ message: Message) -> Bool {
-        return message.id ?? 0 >= bottomSliceId
-    }
-
-    @discardableResult
-    public func messageViewModel(for message: Message) -> MessageRowViewModel? {
-        /// For unsent messages, uniqueId has value but message.id is always nil, so we have to check both to make sure we get the right viewModel, unless it will lead to an overwrite on a message and it will break down all the things.
-        let messageViewModels = sections.flatMap{$0.vms}
-        if let viewModel = messageViewModels.first(where: {  $0.message.uniqueId == message.uniqueId && $0.message.id == message.id }){
-            return viewModel
-        } else if let threadViewModel = threadViewModel {
-            let newViewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
-            if let lastIndex = sections.indices.last {
-                sections[lastIndex].vms.append(newViewModel)
-            } else {
-                sections.append(.init(date: Date(), vms: [.init(message: message, viewModel: threadViewModel)]))
-            }
-            return newViewModel
-        } else {
-            return nil
+    private func fetchReactions(messages: [Message]) {
+        if threadViewModel?.searchedMessagesViewModel.isInSearchMode == false {
+            let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
+            ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
         }
     }
 
-    @discardableResult
-    public func messageViewModel(for messageId: Int) -> MessageRowViewModel? {
-        return sections.flatMap{$0.vms}.first(where: { $0.message.id == messageId })
-    }
-
-    @discardableResult
-    public func messageViewModel(for uniqueId: String) -> MessageRowViewModel? {
-        return sections.flatMap{$0.vms}.first(where: { $0.message.uniqueId == uniqueId })
-    }
-
-    public func moveToMessageTimeOnOpenConversation() {
-        if let moveToMessageId = AppState.shared.appStateNavigationModel.moveToMessageId, let moveToMessageTime = AppState.shared.appStateNavigationModel.moveToMessageTime {
-            moveToTime(moveToMessageTime, moveToMessageId, highlight: true)
-            AppState.shared.appStateNavigationModel = .init()
-        }
-    }
-
-    private func onCancelTimer(key: String) {
-        if topLoading || bottomLoading {
-            topLoading = false
-            bottomLoading = false
-            animateObjectWillChange()
-        }
-    }
-
+    // MARK: Appear & Disappear
     @MainActor
     public func onMessageAppear(_ message: Message) async {
         guard let threadVM = threadViewModel else { return }
-        let scrollVM = threadVM.scrollVM
         if message.id == sections.first?.vms.first?.id {
             lastTopVisibleMessage = message
         } else {
@@ -715,26 +528,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 threadVM.scrollVM.animateObjectWillChange()
             }
             seenVM.onAppear(message)
-            if scrollVM.scrollingUP == true,
-               scrollVM.isProgramaticallyScroll == false,
-               isInTopSlice(message),
-               let time = sections.first?.vms.first(where: {$0.id != LocalId.emptyMessageSlot.rawValue})?.message.time {
-                moreTop(time)
-            } else if scrollVM.scrollingUP,
-                      message.id == LocalId.emptyMessageSlot.rawValue,
-                      let time = sections.first?.vms.first(where: {$0.id != LocalId.emptyMessageSlot.rawValue})?.message.time {
-                log("Second more top function")
-                moreTop(time)
-            } else if !scrollVM.scrollingUP,
-                      scrollVM.isProgramaticallyScroll == false,
-                      isInTopSlice(message),
-                      let time = sections.first?.vms.first(where: {$0.id != LocalId.emptyMessageSlot.rawValue})?.message.time  {
-                log("Third more top function")
+            if let time = moreTopTime(message: message) {
                 moreTop(time)
             }
 
-            if scrollVM.scrollingUP == false, scrollVM.isProgramaticallyScroll == false, isInBottomSlice(message) {
-                moreBottom(sections.last?.vms.last?.message.time?.advanced(by: 1))
+            if let time = moreBottomTime(message: message) {
+                moreBottom(time)
             }
         }
     }
@@ -747,62 +546,39 @@ public final class ThreadHistoryViewModel: ObservableObject {
         seenVM.onDisappear(message)
     }
 
-    public func onSent(_ response: ChatResponse<MessageResponse>) {
-        guard threadId == response.result?.threadId else { return }
-        if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
-            vm.setSent(messageTime: response.result?.messageTime)
+    // MARK: Event Handlers
+    private func onReactionEvent(_ notification: Notification) {
+        if let messageId = notification.object as? Int, let vm = messageViewModel(for: messageId) {
+            vm.reactionsVM.updateWithDelay()
         }
     }
 
-    func replaceUploadMessage(_ response: ChatResponse<MessageResponse>) -> Bool {
-        let lasSectionIndex = sections.firstIndex(where: {$0.id == sections.last?.id})
-        if  let threadViewModel = threadViewModel,
-            let lasSectionIndex,
-            sections.indices.contains(lasSectionIndex),
-            let oldUploadFileIndex = sections[lasSectionIndex].vms.firstIndex(where: { $0.message.isUploadMessage && $0.message.uniqueId == response.uniqueId }) {
-            sections[lasSectionIndex].vms.remove(at: oldUploadFileIndex) /// Remove because it was of type UploadWithTextMessageProtocol
-            let message = Message(threadId: response.subjectId, id: response.result?.messageId, time: response.result?.messageTime, uniqueId: response.uniqueId)
-            let viewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
-            sections[lasSectionIndex].vms.append(viewModel)
-            return true
-        }
-        return false
-    }
-
-    public func onDeliver(_ response: ChatResponse<MessageResponse>) {
-        guard threadId == response.result?.threadId else { return }
-        if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
-            vm.setDelivered()
+    private func onUploadEvents(_ notification: Notification) {
+        guard let event = notification.object as? UploadEventTypes else { return }
+        switch event {
+        case .canceled(let uniqueId):
+            onUploadCanceled(uniqueId)
+        case .completed(let uniqueId, let fileMetaData, let data, let error):
+            onUploadCompleted(uniqueId, fileMetaData, data, error)
+        default:
+            break
         }
     }
 
-    public func onSeen(_ response: ChatResponse<MessageResponse>) {
-        guard threadId == response.result?.threadId, let messageId = response.result?.messageId else { return }
-        if let vm = messageViewModel(for: messageId) {
-            vm.setSeen()
-        }
-        setSeenForOlderMessages(messageId: response.result?.messageId)
-    }
-
-    private func setSeenForOlderMessages(messageId: Int?) {
-        if let messageId = messageId {
-            sections.indices.forEach { sectionIndex in
-                sections[sectionIndex].vms.indices.forEach { messageIndex in
-                    let message = sections[sectionIndex].vms[messageIndex].message
-                    if (message.id ?? 0 < messageId) &&
-                        (message.seen ?? false == false || message.delivered ?? false == false)
-                        && message.ownerId == ChatManager.activeInstance?.userInfo?.id {
-                        sections[sectionIndex].vms[messageIndex].message.delivered = true
-                        sections[sectionIndex].vms[messageIndex].message.seen = true
-                        let result = MessageResponse(messageState: .seen, threadId: threadId, messageId: message.id)
-                        NotificationCenter.default.post(name: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"), object: result)
-                    }
-                }
-            }
+    private func onUploadCompleted(_ uniqueId: String?, _ fileMetaData: FileMetaData?, _ data: Data?, _ error: Error?) {
+        if let uniqueId = uniqueId, let vm = messageViewModel(for: uniqueId) {
+            vm.uploadCompleted(uniqueId, fileMetaData, data, error)
         }
     }
 
-    public func onMessageEvent(_ event: MessageEventTypes?) {
+    private func onUploadCanceled(_ uniqueId: String?) {
+        if let uniqueId = uniqueId {
+            removeByUniqueId(uniqueId)
+            animateObjectWillChange()
+        }
+    }
+
+    private func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
         case .history(let response):
             let logger = Logger.viewModels
@@ -859,7 +635,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    public func onNewMessage(_ response: ChatResponse<Message>) {
+    private func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
             Task { [weak self] in
                 guard let self = self else { return }
@@ -878,145 +654,55 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    func onPinMessage(_ response: ChatResponse<PinMessage>) {
+    private func onPinMessage(_ response: ChatResponse<PinMessage>) {
         if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
             vm.pinMessage(time: response.result?.time)
         }
     }
 
-    func onUNPinMessage(_ response: ChatResponse<PinMessage>) {
+    private func onUNPinMessage(_ response: ChatResponse<PinMessage>) {
         if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
             vm.unpinMessage()
         }
     }
 
-    /// When you have sent messages for example 5 messages and your partner didn't read messages and send a message directly it will send you only one seen.
-    /// So you have to set seen to true for older unread messages you have sent, because the partner has read all messages and after you back to the list of thread the server will respond with seen == true for those messages.
-    public func setSeenForAllOlderMessages(newMessage: Message) {
-        let unseenMessages = sections.last?.vms.filter({($0.message.seen == false || $0.message.seen == nil) && $0.message.isMe(currentUserId: AppState.shared.user?.id)})
-        let isNotMe = !newMessage.isMe(currentUserId: AppState.shared.user?.id)
-        if isNotMe, unseenMessages?.count ?? 0 > 0 {
-            unseenMessages?.forEach { vm in
-                vm.message.seen = true
-                vm.animateObjectWillChange()
-            }
+    private func onDeliver(_ response: ChatResponse<MessageResponse>) {
+        guard threadId == response.result?.threadId else { return }
+        if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
+            vm.setDelivered()
         }
     }
 
-    public func updateAllRows() {
-        sections.forEach { section in
-            section.vms.forEach { vm in
-                Task {
-                    await vm.recalculateWithAnimation()
-                }
-            }
-        }
-    }
-
-    public func updateOlderSeensLocally() {
-        sections.forEach { section in
-            section.vms.forEach { vm in
-                if vm.message.seen == false || vm.message.seen == nil {
-                    vm.message.delivered = true
-                    vm.message.seen = true
-                    vm.animateObjectWillChange()
-                }
-            }
-        }
-    }
-
-    public func setHighlight(messageId: Int) {
+    private func onSeen(_ response: ChatResponse<MessageResponse>) {
+        guard threadId == response.result?.threadId, let messageId = response.result?.messageId else { return }
         if let vm = messageViewModel(for: messageId) {
-            vm.setHighlight()
+            vm.setSeen()
+        }
+        setSeenForOlderMessages(messageId: response.result?.messageId)
+    }
+
+    private func onSent(_ response: ChatResponse<MessageResponse>) {
+        guard threadId == response.result?.threadId else { return }
+        if let messageId = response.result?.messageId, let vm = messageViewModel(for: messageId) {
+            vm.setSent(messageTime: response.result?.messageTime)
         }
     }
 
-    public func setRowsIsInSelectMode(newValue: Bool) {
-        sections.forEach { section in
-            section.vms.forEach { vm in
-                if newValue != vm.isInSelectMode {
-                    vm.isInSelectMode = newValue
-                    vm.animateObjectWillChange()
-                }
-            }
+    /// Delete a message with an Id is needed for when the message has persisted before.
+    /// Delete a message with a uniqueId is needed for when the message is sent to a request.
+    internal func onDeleteMessage(_ response: ChatResponse<Message>) {
+        guard let responseThreadId = response.subjectId ?? response.result?.threadId ?? response.result?.conversation?.id,
+              threadId == responseThreadId,
+              let indices = findIncicesBy(uniqueId: response.uniqueId, response.result?.id)
+        else { return }
+        sections[indices.sectionIndex].vms.remove(at: indices.messageIndex)
+        if sections[indices.sectionIndex].vms.count == 0 {
+            sections.remove(at: indices.sectionIndex)
         }
+        animateObjectWillChange()
     }
 
-    private func onReactionEvent(_ notification: Notification) {
-        if let messageId = notification.object as? Int, let vm = messageViewModel(for: messageId) {
-            vm.reactionsVM.updateWithDelay()
-        }
-    }
-
-    private func onUploadEvents(_ notification: Notification) {
-        guard let event = notification.object as? UploadEventTypes else { return }
-        switch event {
-        case .canceled(let uniqueId):
-            onUploadCanceled(uniqueId)
-        case .completed(let uniqueId, let fileMetaData, let data, let error):
-            onUploadCompleted(uniqueId, fileMetaData, data, error)
-        default:
-            break
-        }
-    }
-
-    private func onUploadCompleted(_ uniqueId: String?, _ fileMetaData: FileMetaData?, _ data: Data?, _ error: Error?) {
-        if let uniqueId = uniqueId, let vm = messageViewModel(for: uniqueId) {
-            vm.uploadCompleted(uniqueId, fileMetaData, data, error)
-        }
-    }
-
-    private func onUploadCanceled(_ uniqueId: String?) {
-        if let uniqueId = uniqueId {
-            removeByUniqueId(uniqueId)
-            animateObjectWillChange()
-        }
-    }
-
-    public func cancelAllObservers() {
-        cancelable.forEach { cancelable in
-            cancelable.cancel()
-        }
-    }
-
-    private func fetchReactions(messages: [Message]) {
-        if threadViewModel?.searchedMessagesViewModel.isInSearchMode == false {
-            let messageIds = messages.filter({$0.reactionableType}).compactMap({$0.id})
-            ReactionViewModel.shared.getReactionSummary(messageIds, conversationId: threadId)
-        }
-    }
-
-    private func replaceEmptyTopSlotsWithMessages(_ messages: [Message]) async {
-        log("Start of the appendMessagesAndSort in top: \(Date().millisecondsSince1970)")
-        let sorted = messages.sortedByTime()
-        let tuple = insertMessagesIntoSlots(messages: sorted.reversed())
-        removeTopRemainingSlots()
-        sort()
-        moveRemainingSlotsToTheTop(tuple.remainingSlots)
-        await insertEmptySlots(count: max(2, 100 - tuple.remainingSlots.count))
-        for viewModel in tuple.vmsToUpdate {
-            await viewModel.performaCalculation()
-        }
-        setThresholds(messages: sorted)
-        fetchReactions(messages: sorted)
-        log("End of the appendMessagesAndSort in top: \(Date().millisecondsSince1970)")
-    }
-
-    private func moveRemainingSlotsToTheTop(_ remainingSlots: [MessageRowViewModel]) {
-        sections[0].vms.insert(contentsOf: remainingSlots, at: 0)
-    }
-
-    private func removeTopRemainingSlots() {
-        for (i,_) in sections.enumerated() {
-            sections[i].vms.removeAll(where: {$0.message.id == LocalId.emptyMessageSlot.rawValue})
-        }
-    }
-
-    private func setThresholds(messages: [Message]) {
-        topSliceId = messages.prefix(thresholdToLoad).compactMap{$0.id}.last ?? 0
-        bottomSliceId = messages.suffix(thresholdToLoad).compactMap{$0.id}.first ?? 0
-    }
-
+    // MARK: Slots
     private func insertMessagesIntoSlots(messages: [Message]) -> (vmsToUpdate: [MessageRowViewModel], remainingSlots: [MessageRowViewModel]) {
         var vmsToUpdate: [MessageRowViewModel] = []
         var slots = sections.first?.vms.filter{$0.message.id == LocalId.emptyMessageSlot.rawValue} ?? []
@@ -1061,16 +747,325 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return slots
     }
 
-    func logHistoryRequest(req: GetHistoryRequest) {
+    private func replaceEmptyTopSlotsWithMessages(_ messages: [Message]) async {
+        log("Start of the appendMessagesAndSort in top: \(Date().millisecondsSince1970)")
+        let sorted = messages.sortedByTime()
+        let tuple = insertMessagesIntoSlots(messages: sorted.reversed())
+        removeTopRemainingSlots()
+        sort()
+        moveRemainingSlotsToTheTop(tuple.remainingSlots)
+        await insertEmptySlots(count: max(2, 100 - tuple.remainingSlots.count))
+        for viewModel in tuple.vmsToUpdate {
+            await viewModel.performaCalculation()
+        }
+        setSlotsThresholds(messages: sorted)
+        fetchReactions(messages: sorted)
+        log("End of the appendMessagesAndSort in top: \(Date().millisecondsSince1970)")
+    }
+
+    private func moveRemainingSlotsToTheTop(_ remainingSlots: [MessageRowViewModel]) {
+        sections[0].vms.insert(contentsOf: remainingSlots, at: 0)
+    }
+
+    private func removeTopRemainingSlots() {
+        for (i,_) in sections.enumerated() {
+            sections[i].vms.removeAll(where: {$0.message.id == LocalId.emptyMessageSlot.rawValue})
+        }
+    }
+
+    private func setSlotsThresholds(messages: [Message]) {
+        topSliceId = messages.prefix(thresholdToLoad).compactMap{$0.id}.last ?? 0
+    }
+
+    // MARK: Time for more Bottom and Top
+    private func moreTopTime(message: Message) -> UInt? {
+        guard let scrollVM = threadViewModel?.scrollVM else { return nil }
+        if scrollVM.isProgramaticallyScroll == false,
+           isInTopSlice(message),
+           let time = sections.first?.vms.first(where: {$0.id != LocalId.emptyMessageSlot.rawValue})?.message.time {
+            return time
+        } else {
+            return nil
+        }
+    }
+
+    private func moreBottomTime(message: Message) -> UInt? {
+        guard let scrollVM = threadViewModel?.scrollVM else { return nil }
+        if scrollVM.isProgramaticallyScroll == false, isInBottomSlice(message) {
+            return sections.last?.vms.last?.message.time?.advanced(by: 1)
+        } else {
+            return nil
+        }
+    }
+
+    // MARK: Logging
+    private func logHistoryRequest(req: GetHistoryRequest) {
 #if DEBUG
         let date = Date().millisecondsSince1970
         Logger.viewModels.debug("Start of sending history request: \(date) milliseconds")
 #endif
     }
 
-    func log(_ string: String) {
+    private func log(_ string: String) {
 #if DEBUG
         Logger.viewModels.info("\(string, privacy: .sensitive)")
 #endif
     }
+
+    // MARK: Cancel Observers
+    internal func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
+
+    // MARK: Cleanup
+    private func onCancelTimer(key: String) {
+        if topLoading || bottomLoading {
+            topLoading = false
+            bottomLoading = false
+            animateObjectWillChange()
+        }
+    }
+
+    // MARK: On Notifications actions
+    public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
+        if !isSimulated, status == .connected, isFetchedServerFirstResponse == true, threadViewModel?.isActiveThread == true {
+            // After connecting again get latest messages.
+            tryFifthScenario(status: status)
+        }
+
+        /// Fetch the history for the first time if the internet connection is not available.
+        if !isSimulated, status == .connected, hasSentHistoryRequest == true, sections.isEmpty {
+            startFetchingHistory()
+        }
+    }
+
+    private func updateOlderSeensLocally() {
+        sections.forEach { section in
+            section.vms.forEach { vm in
+                if vm.message.seen == false || vm.message.seen == nil {
+                    vm.message.delivered = true
+                    vm.message.seen = true
+                    vm.animateObjectWillChange()
+                }
+            }
+        }
+    }
+
+    private func setHighlight(messageId: Int) {
+        if let vm = messageViewModel(for: messageId) {
+            vm.setHighlight()
+        }
+    }
+
+    private func setRowsIsInSelectMode(newValue: Bool) {
+        sections.forEach { section in
+            section.vms.forEach { vm in
+                if newValue != vm.isInSelectMode {
+                    vm.isInSelectMode = newValue
+                    vm.animateObjectWillChange()
+                }
+            }
+        }
+    }
+
+    private func updateAllRows() {
+        sections.forEach { section in
+            section.vms.forEach { vm in
+                Task {
+                    await vm.recalculateWithAnimation()
+                }
+            }
+        }
+    }
+
+    // MARK: New Message handlers
+    private func updateNeeded() async {
+        for (_, vm) in needUpdates.enumerated() {
+            await vm.asyncAnimateObjectWillChange()
+        }
+        needUpdates.removeAll()
+    }
+
+    /// When you have sent messages for example 5 messages and your partner didn't read messages and send a message directly it will send you only one seen.
+    /// So you have to set seen to true for older unread messages you have sent, because the partner has read all messages and after you back to the list of thread the server will respond with seen == true for those messages.
+    private func setSeenForAllOlderMessages(newMessage: Message) {
+        let unseenMessages = sections.last?.vms.filter({($0.message.seen == false || $0.message.seen == nil) && $0.message.isMe(currentUserId: AppState.shared.user?.id)})
+        let isNotMe = !newMessage.isMe(currentUserId: AppState.shared.user?.id)
+        if isNotMe, unseenMessages?.count ?? 0 > 0 {
+            unseenMessages?.forEach { vm in
+                vm.message.seen = true
+                vm.animateObjectWillChange()
+            }
+        }
+    }
+
+    private func setSeenForOlderMessages(messageId: Int?) {
+        if let messageId = messageId {
+            sections.indices.forEach { sectionIndex in
+                sections[sectionIndex].vms.indices.forEach { messageIndex in
+                    let message = sections[sectionIndex].vms[messageIndex].message
+                    if (message.id ?? 0 < messageId) &&
+                        (message.seen ?? false == false || message.delivered ?? false == false)
+                        && message.ownerId == ChatManager.activeInstance?.userInfo?.id {
+                        sections[sectionIndex].vms[messageIndex].message.delivered = true
+                        sections[sectionIndex].vms[messageIndex].message.seen = true
+                        let result = MessageResponse(messageState: .seen, threadId: threadId, messageId: message.id)
+                        NotificationCenter.default.post(name: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"), object: result)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: Finding index and ViewModels
+    private func isInTopSlice(_ message: Message) -> Bool {
+        return message.id ?? 0 <= topSliceId
+    }
+
+    private func isInBottomSlice(_ message: Message) -> Bool {
+        return message.id ?? 0 >= bottomSliceId
+    }
+
+    private func sectionIndexByUniqueId(_ message: Message) -> Array<MessageSection>.Index? {
+        sectionIndexByUniqueId(message.uniqueId ?? "")
+    }
+
+    internal func sectionIndexByUniqueId(_ uniqueId: String) -> Array<MessageSection>.Index? {
+        sections.firstIndex(where: { $0.vms.contains(where: {$0.message.uniqueId == uniqueId }) })
+    }
+
+    internal func sectionIndexByMessageId(_ message: Message) -> Array<MessageSection>.Index? {
+        sectionIndexByMessageId(message.id ?? 0)
+    }
+
+    private func sectionIndexByMessageId(_ id: Int) -> Array<MessageSection>.Index? {
+        sections.firstIndex(where: { $0.vms.contains(where: {$0.message.id == id }) })
+    }
+
+    private func sectionIndexByDate(_ date: Date) -> Array<MessageSection>.Index? {
+        sections.firstIndex(where: { Calendar.current.isDate(date, inSameDayAs: $0.date)})
+    }
+
+    internal func messageIndex(_ messageId: Int, in section: Array<MessageSection>.Index) -> Array<Message>.Index? {
+        sections[section].vms.firstIndex(where: { $0.id == messageId })
+    }
+
+    private func messageIndex(_ uniqueId: String, in section: Array<MessageSection>.Index) -> Array<Message>.Index? {
+        sections[section].vms.firstIndex(where: { $0.message.uniqueId == uniqueId })
+    }
+
+    internal func message(for id: Int?) -> (message: Message, sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
+        guard
+            let id = id,
+            let sectionIndex = sectionIndexByMessageId(id),
+            let messageIndex = messageIndex(id, in: sectionIndex)
+        else { return nil }
+        let message = sections[sectionIndex].vms[messageIndex].message
+        return (message: message, sectionIndex: sectionIndex, messageIndex: messageIndex)
+    }
+
+    internal func indicesByMessageUniqueId(_ uniqueId: String) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
+        guard
+            let sectionIndex = sectionIndexByUniqueId(uniqueId),
+            let messageIndex = messageIndex(uniqueId, in: sectionIndex)
+        else { return nil }
+        return (sectionIndex: sectionIndex, messageIndex: messageIndex)
+    }
+
+    internal func findIncicesBy(uniqueId: String?, _ id: Int?) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
+        guard
+            let sectionIndex = sections.firstIndex(where: { $0.vms.contains(where: { $0.message.uniqueId == uniqueId || $0.id == id }) }),
+            let messageIndex = sections[sectionIndex].vms.firstIndex(where: { $0.message.uniqueId == uniqueId || $0.id == id })
+        else { return nil }
+        return (sectionIndex: sectionIndex, messageIndex: messageIndex)
+    }
+
+    @discardableResult
+    public func messageViewModel(for message: Message) -> MessageRowViewModel? {
+        /// For unsent messages, uniqueId has value but message.id is always nil, so we have to check both to make sure we get the right viewModel, unless it will lead to an overwrite on a message and it will break down all the things.
+        let messageViewModels = sections.flatMap{$0.vms}
+        if let viewModel = messageViewModels.first(where: {  $0.message.uniqueId == message.uniqueId && $0.message.id == message.id }){
+            return viewModel
+        } else if let threadViewModel = threadViewModel {
+            let newViewModel = MessageRowViewModel(message: message, viewModel: threadViewModel)
+            if let lastIndex = sections.indices.last {
+                sections[lastIndex].vms.append(newViewModel)
+            } else {
+                sections.append(.init(date: Date(), vms: [.init(message: message, viewModel: threadViewModel)]))
+            }
+            return newViewModel
+        } else {
+            return nil
+        }
+    }
+
+    @discardableResult
+    public func messageViewModel(for messageId: Int) -> MessageRowViewModel? {
+        return sections.flatMap{$0.vms}.first(where: { $0.message.id == messageId })
+    }
+
+    @discardableResult
+    public func messageViewModel(for uniqueId: String) -> MessageRowViewModel? {
+        guard let indicies = indicesByMessageUniqueId(uniqueId) else {return nil}
+        return sections[indicies.sectionIndex].vms[indicies.messageIndex]
+    }
+
+    // MARK: Register Notifications
+    private func setupNotificationObservers() {
+        AppState.shared.$connectionStatus
+            .sink { [weak self] status in
+                self?.onConnectionStatusChanged(status)
+            }
+            .store(in: &cancelable)
+        NotificationCenter.message.publisher(for: .message)
+            .compactMap { $0.object as? MessageEventTypes }
+            .sink { [weak self] event in
+                self?.onMessageEvent(event)
+            }
+            .store(in: &cancelable)
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
+            .sink { [weak self] newValue in
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
+                }
+            }
+            .store(in: &cancelable)
+        NotificationCenter.windowMode.publisher(for: .windowMode)
+            .sink { [weak self] newValue in
+                self?.updateAllRows()
+            }
+            .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"))
+            .compactMap {$0.object as? MessageResponse}
+            .sink { [weak self] newValue in
+                self?.updateOlderSeensLocally()
+            }
+            .store(in: &cancelable)
+        NotificationCenter.default.publisher(for: Notification.Name("HIGHLIGHT"))
+            .compactMap {$0.object as? Int}
+            .sink { [weak self] newValue in
+                self?.setHighlight(messageId: newValue)
+            }
+            .store(in: &cancelable)
+        threadViewModel?.selectedMessagesViewModel.$isInSelectMode
+            .sink { [weak self] newValue in
+                self?.setRowsIsInSelectMode(newValue: newValue)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.upload.publisher(for: .upload)
+            .sink { [weak self] notification in
+                self?.onUploadEvents(notification)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.reactionMessageUpdated.publisher(for: .reactionMessageUpdated)
+            .sink { [weak self] notification in
+                self?.onReactionEvent(notification)
+            }
+            .store(in: &cancelable)
+    }
+
 }
