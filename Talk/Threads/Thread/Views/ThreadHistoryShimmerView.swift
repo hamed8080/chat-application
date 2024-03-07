@@ -38,10 +38,10 @@ struct MessageRowShimmer: View {
     let color: Color = Color.App.textSecondary.opacity(0.5)
     let isImage: Bool = Bool.random()
 
-    public init(id: Int) {
+    public init(id: Int, width: CGFloat? = nil, isMe: Bool? = nil) {
         self.id = id
-        width = CGFloat.random(in: (128...ThreadViewModel.maxAllowedWidth))
-        isMe = Bool.random()
+        self.width = width ?? CGFloat.random(in: (128...ThreadViewModel.maxAllowedWidth))
+        self.isMe = isMe ?? Bool.random()
         isSameUserMessage = Bool.random()
     }
 
@@ -60,7 +60,7 @@ struct MessageRowShimmer: View {
                         .fill(color)
                         .frame(width: MessageRowViewModel.avatarSize, height: MessageRowViewModel.avatarSize)
                         .clipShape(RoundedRectangle(cornerRadius:(MessageRowViewModel.avatarSize / 2)))
-                        .shimmer(cornerRadius: MessageRowViewModel.avatarSize / 2)
+                        .shimmer(cornerRadius: MessageRowViewModel.avatarSize / 2, startFromLeading: !isMe)
                         .padding(.trailing, 2)
                 } else {
                     /// Empty avatar
@@ -79,7 +79,7 @@ struct MessageRowShimmer: View {
                             .fill(color)
                             .frame(width: width, height: CGFloat.random(in: 64...196))
                             .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .shimmer(cornerRadius: 6)
+                            .shimmer(cornerRadius: 6, startFromLeading: !isMe)
                             .padding(.bottom, 8)
                     }
 
@@ -88,7 +88,7 @@ struct MessageRowShimmer: View {
                         .fill(color)
                         .frame(width: CGFloat.random(in: 128...width), height: 14)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
-                        .shimmer()
+                        .shimmer(startFromLeading: !isMe)
 
                     //// Text Message view
                     ForEach(1...Int.random(in: 1...3), id: \.self) { id in
@@ -96,7 +96,7 @@ struct MessageRowShimmer: View {
                             .foregroundColor(color)
                             .frame(width: CGFloat.random(in: 128...width), height: 8)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .shimmer(cornerRadius: 2)
+                            .shimmer(cornerRadius: 2, startFromLeading: !isMe)
                             .padding(.top, 8)
                     }
 
@@ -107,14 +107,14 @@ struct MessageRowShimmer: View {
                             .fill(color)
                             .frame(width: 64, height: 12)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .shimmer()
+                            .shimmer(startFromLeading: !isMe)
 
                         /// Image status
                         Rectangle()
                             .fill(color)
                             .frame(width: 12, height: 12)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .shimmer(cornerRadius: 4)
+                            .shimmer(cornerRadius: 4, startFromLeading: !isMe)
                     }
                     .padding(.top, 10)
                 }

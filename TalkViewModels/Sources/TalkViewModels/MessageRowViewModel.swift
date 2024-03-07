@@ -26,6 +26,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         hasher.combine(id)
     }
 
+    public let uniqueId: String = UUID().uuidString
     public var id: Int { message.id ?? -1 }
     public var isCalculated = false
     public var isEnglish = true
@@ -77,6 +78,9 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private var cancelable: AnyCancellable?
     public var paddings = MessagePaddings()
     public var rowType = MessageViewRowType()
+    public var isSlot: Bool
+    public var width: CGFloat? = nil
+    public var height: CGFloat? = nil
 
     public var isDownloadCompleted: Bool {
         downloadFileVM?.state == .completed
@@ -97,6 +101,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        isSlot = message.id == LocalId.emptyMessageSlot.rawValue
+        if isSlot {
+            width = ThreadViewModel.maxAllowedWidth
+            height = 200
+            isMe = Bool.random()
+        }
         reactionsVM = MessageReactionsViewModel()
         reactionsVM.viewModel = self
         if message.uploadFile != nil {
@@ -498,6 +508,25 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         downloadFileVM?.cancelObservers()
         downloadFileVM = nil
         cancelable = nil
+    }
+
+    public func updateMessage(_ message: Message) {
+        self.message = message
+        if message.isFileType {
+            self.downloadFileVM = DownloadFileViewModel(message: message)
+        }
+        self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        reactionsVM = MessageReactionsViewModel()
+        reactionsVM.viewModel = self
+        if message.uploadFile != nil {
+            uploadViewModel = .init(message: message)
+            isMe = true
+        }
+        canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
+        isSlot = false
+        width = nil
+        height = nil
+        registerObservers()
     }
 
     deinit {

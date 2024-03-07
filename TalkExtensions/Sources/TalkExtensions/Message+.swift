@@ -217,4 +217,24 @@ public extension Message {
                               conversation: model.conversation)
         return (message, req)
     }
+
+    class func slotWith(threadId: Int, meId: Int) -> Message {
+        let randomUserId = Int.random(in: (meId + 1)...(meId + 500))
+        let randomMe = Bool.random() ? meId : randomUserId;
+        let message = Message(
+            threadId: threadId,
+            id: LocalId.emptyMessageSlot.rawValue,
+            messageType: .text,
+            ownerId: randomMe,
+            uniqueId: UUID().uuidString,
+            conversation: Conversation(id: threadId)
+        )
+        return message
+    }
+}
+
+public extension Array where Element: Message {
+    func sortedByTime() -> [Message] {
+        sorted(by: {$0.time ?? 0 < $1.time ?? 0})
+    }
 }

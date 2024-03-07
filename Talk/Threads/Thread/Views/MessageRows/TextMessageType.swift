@@ -21,6 +21,16 @@ struct TextMessageType: View {
     let viewModel: MessageRowViewModel
 
     var body: some View {
+        if viewModel.isSlot {
+            MessageSlotShimmerView()
+                .environmentObject(viewModel)
+                .environmentObject(threadVM!.historyVM.messgaeSlotShimmerVM)
+        } else {
+            textMessageView
+        }
+    }
+
+    var textMessageView: some View {
         HStack(spacing: 0) {
             if !viewModel.isMe {
                 SelectMessageRadio()
@@ -47,6 +57,19 @@ struct TextMessageType: View {
         }
         .environmentObject(viewModel)
         .padding(EdgeInsets(top: viewModel.isFirstMessageOfTheUser ? 6 : 1, leading: 8, bottom: 1, trailing: 8))
+    }
+}
+
+struct MessageSlotShimmerView: View {
+    @EnvironmentObject var messageRowVM: MessageRowViewModel
+    @EnvironmentObject var viewModel: ShimmerViewModel
+
+    var body: some View {
+        if messageRowVM.isSlot {
+            MessageRowShimmer(id: 0, width: ThreadViewModel.threadWidth - 64, isMe: messageRowVM.isMe)
+                .id(messageRowVM.uniqueId)
+                .environmentObject(viewModel.itemViewModel)
+        }
     }
 }
 

@@ -50,6 +50,8 @@ public class ShimmerViewModel: ObservableObject {
     }
 
     public func startTimer() {
+        timer?.invalidateTimer()
+        timer = nil
         timer = Timer.scheduledTimer(withTimeInterval: repeatInterval, repeats: true) { [weak self] timer in
             if timer.isValid {
                 withAnimation(.easeInOut) {

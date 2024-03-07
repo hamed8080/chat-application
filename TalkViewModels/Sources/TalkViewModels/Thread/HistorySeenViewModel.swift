@@ -71,7 +71,7 @@ public final class HistorySeenViewModel: ObservableObject {
 
     internal func onDisappear(_ message: Message) {
         queue.sync {
-            log("Item disappeared with scroling with id: \(message.id ?? 0) message: \(message.message ?? "")")
+            logMessageApperance(message, appeard: false)
             onScreenMessages.removeAll(where: {$0.id == message.id})
         }
     }
@@ -85,12 +85,7 @@ public final class HistorySeenViewModel: ObservableObject {
     }
 
     private func onMessageScroll(_ message: Message, isUp: Bool? = nil) {
-        let dir = isUp == true ? "UP" : (isUp == false ? "DOWN" : "LAST")
-        let messageId = message.id ?? 0
-        let uniqueId = message.uniqueId ?? ""
-        let text = message.message ?? ""
-        let detailText = "with id:\(messageId) uniqueId:\(uniqueId) text:\(text)"
-        log("Item appeared with scroling \(dir) \(detailText)")
+        logMessageApperance(message, appeard: true, isUp: isUp)
         onScreenMessages.append(message)
         if isFirstTimeProgramaticallyScroll == true {
             return
@@ -148,6 +143,25 @@ public final class HistorySeenViewModel: ObservableObject {
         {
             sendSeen(for: message)
         }
+    }
+
+
+    func logMessageApperance(_ message: Message, appeard: Bool, isUp: Bool? = nil) {
+#if DEBUG
+        let dir = isUp == true ? "UP" : (isUp == false ? "DOWN" : "")
+        let messageId = message.id ?? 0
+        let uniqueId = message.uniqueId ?? ""
+        let text = message.message ?? ""
+        let time = message.time ?? 0
+        let appeardText = appeard ? "appeared" : "disappeared"
+        let detailedText = "id: \(messageId) uniqueId: \(uniqueId) message: \(text) time: \(time)"
+        if isUp != nil {
+            log("On message \(appeardText) when scrolling \(dir), \(detailedText)")
+        } else {
+            log("On message \(appeardText) with \(detailedText)")
+        }
+        Logger.viewModels.info("\(detailedText)")
+#endif
     }
 
     func log(_ string: String) {

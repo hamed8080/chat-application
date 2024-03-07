@@ -34,6 +34,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
 
     @MainActor
     private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.3), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) async {
+        guard let uniqueId = threadVM?.historyVM.viewModel(uniqueId: uniqueId)?.uniqueId else { return }
         try? await Task.sleep(for: .milliseconds(delay))
         if Task.isCancelled == true { return }
         withAnimation(animation) {
