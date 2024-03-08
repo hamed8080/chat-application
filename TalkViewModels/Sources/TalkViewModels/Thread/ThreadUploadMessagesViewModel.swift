@@ -1,6 +1,6 @@
 //
 //  ThreadUploadMessagesViewModel.swift
-//  
+//
 //
 //  Created by hamed on 11/27/23.
 //
@@ -15,8 +15,8 @@ import Combine
 import SwiftUI
 
 public final class ThreadUploadMessagesViewModel {
-    public weak var threadVM: ThreadViewModel?
-    let thread: Conversation
+    internal weak var threadVM: ThreadViewModel?
+    private let thread: Conversation
     private var cancelable: Set<AnyCancellable> = []
 
     public static func == (lhs: ThreadUploadMessagesViewModel, rhs: ThreadUploadMessagesViewModel) -> Bool {
@@ -41,7 +41,7 @@ public final class ThreadUploadMessagesViewModel {
             .store(in: &cancelable)
     }
 
-    public func append(contentsOf requests: [Message]) {
+    internal func append(contentsOf requests: [Message]) {
         Task {
             await threadVM?.historyVM.appendMessagesAndSort(requests)
             await threadVM?.historyVM.asyncAnimateObjectWillChange()
@@ -51,7 +51,7 @@ public final class ThreadUploadMessagesViewModel {
         }
     }
 
-    public func append(request: Message) {
+    internal func append(request: Message) {
         Task {
             await threadVM?.historyVM.appendMessagesAndSort([request])
             await threadVM?.historyVM.asyncAnimateObjectWillChange()
@@ -64,7 +64,7 @@ public final class ThreadUploadMessagesViewModel {
         threadVM?.historyVM.removeByUniqueId(uniqueId)
     }
 
-    public func onUploadEvent(_ event: UploadEventTypes) {
+    private func onUploadEvent(_ event: UploadEventTypes) {
         switch event {
         case .canceled(uniqueId: let uniqueId):
             withAnimation {
@@ -75,7 +75,7 @@ public final class ThreadUploadMessagesViewModel {
         }
     }
 
-    public func cancelAllObservers() {
+    internal func cancelAllObservers() {
         cancelable.forEach { cancelable in
             cancelable.cancel()
         }

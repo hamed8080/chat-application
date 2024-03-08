@@ -798,6 +798,31 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
+    // MARK: Check Same User
+    internal func isFirstMessageOfTheUser(_ message: Message) async -> Bool {
+        guard let tuples = self.message(for: message.id) else { return false }
+        let sectionIndex = tuples.sectionIndex
+        let nextIndex = tuples.messageIndex + 1
+        let isNextIndexExist = sections[sectionIndex].vms.indices.contains(nextIndex)
+        if isNextIndexExist {
+            let nextMessage = sections[sectionIndex].vms[nextIndex]
+            return nextMessage.message.participant?.id != message.participant?.id
+        }
+        return true
+    }
+
+    internal func isLastMessageOfTheUser(_ message: Message) async -> Bool {
+        guard let tuples = self.message(for: message.id) else { return false }
+        let sectionIndex = tuples.sectionIndex
+        let prevIndex = tuples.messageIndex - 1
+        let isPreviousIndexExist = sections[sectionIndex].vms.indices.contains(prevIndex)
+        if isPreviousIndexExist {
+            let prevMessage = sections[sectionIndex].vms[prevIndex]
+            return prevMessage.message.participant?.id != message.participant?.id
+        }
+        return true
+    }
+
     // MARK: Time for more Bottom and Top
     private func moreTopTime(message: Message) -> UInt? {
         guard let scrollVM = threadViewModel?.scrollVM else { return nil }

@@ -158,9 +158,9 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         calculateCallTexts()
         setAvatarViewModel()
         rowType.isMap = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
-        let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
+        let isFirstMessageOfTheUser = await (threadVM?.historyVM.isFirstMessageOfTheUser(message) == true)
         self.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser
-        let isLastMessageOfTheUser = await (threadVM?.isLastMessageOfTheUser(message) == true)
+        let isLastMessageOfTheUser = await (threadVM?.historyVM.isLastMessageOfTheUser(message) == true)
         self.isLastMessageOfTheUser = isLastMessageOfTheUser
         isEnglish = message.message?.naturalTextAlignment == .leading
         markdownTitle = AttributedString(message.markdownTitle)

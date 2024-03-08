@@ -24,6 +24,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         hasher.combine(threadId)
     }
 
+    // MARK: Stored Properties
     public var thread: Conversation
     public var replyMessage: Message?
     @Published public var dismiss = false
@@ -46,11 +47,20 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var participantsColorVM: ParticipantsColorViewModel = .init()
     public var threadPinMessageViewModel: ThreadPinMessageViewModel
     public var readOnly = false
-    public var cancelable: Set<AnyCancellable> = []
-    public var threadId: Int { thread.id ?? 0 }
+    private var cancelable: Set<AnyCancellable> = []
     public var signalMessageText: String?
-    public var isActiveThread: Bool { AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel.threadId == threadId }
     public weak var forwardMessage: Message?
+    var model: AppSettingsModel = .init()
+    public var canDownloadImages: Bool = false
+    public var canDownloadFiles: Bool = false
+
+    // MARK: Computed Properties
+    public var threadId: Int { thread.id ?? 0 }
+    public var isActiveThread: Bool { AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel.threadId == threadId }
+    public var isSimulatedThared: Bool {
+        AppState.shared.appStateNavigationModel.userToCreateThread != nil && thread.id == LocalId.emptyThread.rawValue
+    }
+    public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize)
     public static var threadWidth: CGFloat = 0 {
         didSet {
             // 38 = Avatar width + tail width + leading padding + trailing padding
@@ -58,15 +68,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    public var isSimulatedThared: Bool {
-        AppState.shared.appStateNavigationModel.userToCreateThread != nil && thread.id == LocalId.emptyThread.rawValue
-    }
-
-    public static var maxAllowedWidth: CGFloat = ThreadViewModel.threadWidth - (38 + MessageRowViewModel.avatarSize)
-    var model: AppSettingsModel = .init()
-    public var canDownloadImages: Bool = false
-    public var canDownloadFiles: Bool = false
-
+    // MARK: Initializer
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
         self.unsentMessagesViewModel = .init(thread: thread)
         self.uploadMessagesViewModel = .init(thread: thread)
@@ -82,7 +84,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         self.historyVM = ThreadHistoryViewModel(threadViewModel: self)
         self.sendMessageViewModel = ThreadSendMessageViewModel(threadVM: self)
         scrollVM.threadVM = self
-        setupNotificationObservers()
+        registerNotifications()
         setAppSettingsModel()
         selectedMessagesViewModel.threadVM = self
         sendContainerViewModel.threadVM = self
@@ -91,59 +93,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         exportMessagesViewModel.thread = thread
     }
 
-    private func setupNotificationObservers() {
-        AppState.shared.$connectionStatus
-            .sink { [weak self] status in
-                self?.onConnectionStatusChanged(status)
-            }
-            .store(in: &cancelable)
-        registerNotifications()
-        NotificationCenter.appSettingsModel.publisher(for: .appSettingsModel)
-            .sink { [weak self] _ in
-                self?.setAppSettingsModel()
-            }
-            .store(in: &cancelable)
-    }
-
-    private func setAppSettingsModel() {
-        Task { [weak self] in
-            guard let self = self else { return }
-            model = AppSettingsModel.restore()
-            canDownloadImages = canDownloadImagesInConversation()
-            canDownloadFiles = canDownloadFilesInConversation()
-        }
-    }
-
-    public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if status == .connected && !isSimulatedThared {
-            unreadMentionsViewModel.fetchAllUnreadMentions()
-        }
-    }
-
-    public func onLastMessageChanged(_ thread: Conversation) {
-        if thread.id == threadId {
-            self.thread.lastMessage = thread.lastMessage
-            self.thread.lastMessageVO = thread.lastMessageVO
-            setUnreadCount(thread.unreadCount)
-            animateObjectWillChange()
-        }
-    }
-
-    public func onEditedMessage(_ response: ChatResponse<Message>) {
-        guard
-            let editedMessage = response.result,
-            let oldMessage = historyVM.message(for: response.result?.id)?.message
-        else { return }
-        oldMessage.updateMessage(message: editedMessage)
-        updateIfIsPinMessage(editedMessage: editedMessage)
-    }
-
-    func updateIfIsPinMessage(editedMessage: Message) {
-        if editedMessage.id == thread.pinMessage?.id {
-            thread.pinMessage = PinMessage(message: editedMessage)
-        }
-    }
-
+    // MARK: Actions
     public func sendStartTyping(_ newValue: String) {
         if threadId == LocalId.emptyThread.rawValue { return }
         if newValue.isEmpty == false {
@@ -155,30 +105,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func sendSignal(_ signalMessage: SignalMessageType) {
         ChatManager.activeInstance?.system.sendSignalMessage(req: .init(signalType: signalMessage, threadId: threadId))
-    }
-
-    public func isFirstMessageOfTheUser(_ message: Message) async -> Bool {
-        guard let tuples = historyVM.message(for: message.id) else { return false }
-        let sectionIndex = tuples.sectionIndex
-        let nextIndex = tuples.messageIndex + 1
-        let isNextIndexExist = historyVM.sections[sectionIndex].vms.indices.contains(nextIndex)
-        if isNextIndexExist {
-            let nextMessage = historyVM.sections[sectionIndex].vms[nextIndex]
-            return nextMessage.message.participant?.id != message.participant?.id
-        }
-        return true
-    }
-
-    public func isLastMessageOfTheUser(_ message: Message) async -> Bool {
-        guard let tuples = historyVM.message(for: message.id) else { return false }
-        let sectionIndex = tuples.sectionIndex
-        let prevIndex = tuples.messageIndex - 1
-        let isPreviousIndexExist = historyVM.sections[sectionIndex].vms.indices.contains(prevIndex)
-        if isPreviousIndexExist {
-            let prevMessage = historyVM.sections[sectionIndex].vms[prevIndex]
-            return prevMessage.message.participant?.id != message.participant?.id
-        }
-        return true
     }
 
     public func clearCacheFile(message: Message) {
@@ -205,13 +131,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    public func onUnreadCount(_ response: ChatResponse<UnreadCount>) {
-        if threadId == response.result?.threadId {
-            setUnreadCount(response.result?.unreadCount)
-            animateObjectWillChange()
-        }
-    }
-
     public func setupRecording() {
         audioRecoderVM.threadViewModel = self
         audioRecoderVM.toggle()
@@ -230,31 +149,10 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     /// This method prevents to update unread count if the local unread count is smaller than server unread count.
-    public func setUnreadCount(_ newCount: Int?) {
+    private func setUnreadCount(_ newCount: Int?) {
         if newCount ?? 0 <= thread.unreadCount ?? 0 {
             thread.unreadCount = newCount
             animateObjectWillChange()
-        }
-    }
-
-    func onDeleteThread(_ response: ChatResponse<Participant>) {
-        if response.subjectId == threadId {
-            dismiss = true
-        }
-    }
-
-    func onLeftThread(_ response: ChatResponse<User>) {
-        if response.subjectId == threadId, response.result?.id == AppState.shared.user?.id {
-            dismiss = true
-        } else {
-            thread.participantCount = (thread.participantCount ?? 0) - 1
-            animateObjectWillChange()
-        }
-    }
-
-    func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
-        if response.result == threadId {
-            dismiss = true
         }
     }
 
@@ -270,7 +168,100 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
-    public func cancelAllObservers() {
+    private func updateIfIsPinMessage(editedMessage: Message) {
+        if editedMessage.id == thread.pinMessage?.id {
+            thread.pinMessage = PinMessage(message: editedMessage)
+        }
+    }
+
+    // MARK: Events
+    private func onThreadEvent(_ event: ThreadEventTypes?) {
+        switch event {
+        case .lastMessageDeleted(let response), .lastMessageEdited(let response):
+            if let thread = response.result {
+                onLastMessageChanged(thread)
+            }
+        case .updatedUnreadCount(let response):
+            onUnreadCount(response)
+        case .deleted(let response):
+            onDeleteThread(response)
+        case .userRemoveFormThread(let response):
+            onUserRemovedByAdmin(response)
+        default:
+            break
+        }
+    }
+
+    private func onMessageEvent(_ event: MessageEventTypes?) {
+        switch event {
+        case .edited(let response):
+            onEditedMessage(response)
+        default:
+            break
+        }
+    }
+
+    private func onDeleteThread(_ response: ChatResponse<Participant>) {
+        if response.subjectId == threadId {
+            dismiss = true
+        }
+    }
+
+    private func onLeftThread(_ response: ChatResponse<User>) {
+        if response.subjectId == threadId, response.result?.id == AppState.shared.user?.id {
+            dismiss = true
+        } else {
+            thread.participantCount = (thread.participantCount ?? 0) - 1
+            animateObjectWillChange()
+        }
+    }
+
+    private func onUserRemovedByAdmin(_ response: ChatResponse<Int>) {
+        if response.result == threadId {
+            dismiss = true
+        }
+    }
+
+    private func onUnreadCount(_ response: ChatResponse<UnreadCount>) {
+        if threadId == response.result?.threadId {
+            setUnreadCount(response.result?.unreadCount)
+            animateObjectWillChange()
+        }
+    }
+
+    private func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
+        if status == .connected && !isSimulatedThared {
+            unreadMentionsViewModel.fetchAllUnreadMentions()
+        }
+    }
+
+    private func onLastMessageChanged(_ thread: Conversation) {
+        if thread.id == threadId {
+            self.thread.lastMessage = thread.lastMessage
+            self.thread.lastMessageVO = thread.lastMessageVO
+            setUnreadCount(thread.unreadCount)
+            animateObjectWillChange()
+        }
+    }
+
+    private func onEditedMessage(_ response: ChatResponse<Message>) {
+        guard
+            let editedMessage = response.result,
+            let oldMessage = historyVM.message(for: response.result?.id)?.message
+        else { return }
+        oldMessage.updateMessage(message: editedMessage)
+        updateIfIsPinMessage(editedMessage: editedMessage)
+    }
+
+    // MARK: Logs
+    private func log(_ string: String) {
+#if DEBUG
+        Logger.viewModels.info("\(string, privacy: .sensitive)")
+#endif
+    }
+
+    // MARK: Observers
+    internal func cancelAllObservers() {
         cancelable.forEach { cancelable in
             cancelable.cancel()
         }
@@ -286,10 +277,70 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         threadPinMessageViewModel.cancelAllObservers()
     }
 
-    func log(_ string: String) {
-#if DEBUG
-        Logger.viewModels.info("\(string, privacy: .sensitive)")
-#endif
+    private func registerNotifications() {
+        NotificationCenter.message.publisher(for: .message)
+            .compactMap { $0.object as? MessageEventTypes }
+            .sink { [weak self] event in
+                self?.onMessageEvent(event)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.thread.publisher(for: .thread)
+            .compactMap { $0.object as? ThreadEventTypes }
+            .sink { [weak self] event in
+                self?.onThreadEvent(event)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.appSettingsModel.publisher(for: .appSettingsModel)
+            .sink { [weak self] _ in
+                self?.setAppSettingsModel()
+            }
+            .store(in: &cancelable)
+
+        AppState.shared.$connectionStatus
+            .sink { [weak self] status in
+                self?.onConnectionStatusChanged(status)
+            }
+            .store(in: &cancelable)
+    }
+
+    // MARK: Setting Observer
+    private func setAppSettingsModel() {
+        Task { [weak self] in
+            guard let self = self else { return }
+            model = AppSettingsModel.restore()
+            canDownloadImages = canDownloadImagesInConversation()
+            canDownloadFiles = canDownloadFilesInConversation()
+        }
+    }
+
+    private func canDownloadImagesInConversation() -> Bool {
+        let type = thread.type
+        let globalDownload = model.automaticDownloadSettings.downloadImages
+        if type == .channel || type == .channelGroup, globalDownload && model.automaticDownloadSettings.channel.downloadImages {
+            return true
+        } else if (type == .ownerGroup || type == .publicGroup) && thread.group == true, globalDownload && model.automaticDownloadSettings.group.downloadImages {
+            return true
+        } else if type == .normal || (thread.group == false || thread.group == nil), globalDownload && model.automaticDownloadSettings.privateChat.downloadImages {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    private func canDownloadFilesInConversation() -> Bool {
+        let type = thread.type
+        let globalDownload = model.automaticDownloadSettings.downloadFiles
+        if type?.isChannelType == true, globalDownload && model.automaticDownloadSettings.channel.downloadFiles {
+            return true
+        } else if (type == .ownerGroup || type == .publicGroup) && thread.group == true, globalDownload && model.automaticDownloadSettings.group.downloadImages {
+            return true
+        } else if type == .normal || (thread.group == false || thread.group == nil), globalDownload && model.automaticDownloadSettings.privateChat.downloadFiles {
+            return true
+        } else {
+            return false
+        }
     }
 
     deinit {
