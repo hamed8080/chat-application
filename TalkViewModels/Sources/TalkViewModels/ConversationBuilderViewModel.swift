@@ -121,11 +121,11 @@ public final class ConversationBuilderViewModel: ContactsViewModel {
             clear()
             if let conversation = response.result {
                 if #available(iOS 17, *) {
-                    AppState.shared.showThread(thread: conversation)
+                    AppState.shared.showThread(thread: conversation, created: true)
                 } else {
                     /// It will prevent a bug on small deveice can not click on the back button after creation.
                     Timer.scheduledTimer(withTimeInterval: 0.8, repeats: false) { _ in
-                        AppState.shared.showThread(thread: conversation)
+                        AppState.shared.showThread(thread: conversation, created: true)
                     }
                 }
             }

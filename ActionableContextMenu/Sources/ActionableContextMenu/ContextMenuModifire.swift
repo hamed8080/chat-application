@@ -90,6 +90,8 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                 /// We check this to prevent rapidally update the UI.
                 let beofreX = viewModel.localPosition?.x ?? 0
                 let beofreY = viewModel.localPosition?.y ?? 0
+                // This line prevent the ui move around
+                if viewModel.isPresented && viewModel.localPosition?.x ?? 0 > 0 { return }
                 if isPastTheMargin(first: beofreX, newValue: value.location.x) || isPastTheMargin(first: beofreY, newValue: value.location.y) {
                     viewModel.localPosition = value.location
                     log("local touched value location x: \(value.location.x) y:\(value.location.y)")
@@ -112,7 +114,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
     }
 
     func isPastTheMargin(first: CGFloat, newValue: CGFloat) -> Bool {
-        let padding: CGFloat = 12
+        let padding: CGFloat = 14
         return newValue > first + padding || newValue < first - padding
     }
 

@@ -88,8 +88,9 @@ public extension NavigationModel {
         append(thread: thread)
     }
 
-    func append(thread: Conversation) {
+    func append(thread: Conversation, created: Bool = false) {
         let viewModel = viewModel(for: thread.id ?? 0) ?? createViewModel(conversation: thread)
+        viewModel.historyVM.created = created
         let value = ConversationNavigationValue(viewModel: viewModel)
         append(type: .threadViewModel(viewModel), value: value)
         selectedId = thread.id

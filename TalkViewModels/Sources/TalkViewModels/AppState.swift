@@ -206,10 +206,10 @@ public extension AppState {
         }
     }
 
-    func showThread(thread: Conversation) {
+    func showThread(thread: Conversation, created: Bool = false) {
         withAnimation {
             isLoading = false
-            objectsContainer.navVM.append(thread: thread)
+            objectsContainer.navVM.append(thread: thread, created: created)
         }
     }
 

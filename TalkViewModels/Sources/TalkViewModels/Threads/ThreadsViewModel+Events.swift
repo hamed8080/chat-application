@@ -89,6 +89,7 @@ extension ThreadsViewModel {
         case .threads(let response):
             if !response.cache {
                 onThreads(response)
+                onUnreadThreads(response)
                 onNotActiveThreads(response)
             }
         case .created(let response):

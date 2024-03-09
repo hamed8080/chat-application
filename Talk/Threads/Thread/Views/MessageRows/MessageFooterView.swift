@@ -15,6 +15,13 @@ import TalkViewModels
 struct MessageFooterView: View {
     var message: Message { viewModel.message }
     @EnvironmentObject var viewModel: MessageRowViewModel
+    private var threadVM: ThreadViewModel? { viewModel.threadVM }
+    private var thread: Conversation? { threadVM?.thread }
+    private var isSelfThread: Bool { thread?.type == .selfThread }
+    private var isSelfThreadDelvived: Bool {
+        if !isSelfThread { return true }
+        return message.id != nil
+    }
 
     var body: some View {
         HStack {
@@ -28,16 +35,15 @@ struct MessageFooterView: View {
                     .font(.iransansCaption2)
             }
 
-            if viewModel.isMe, viewModel.threadVM?.thread.type != .selfThread {
+            if viewModel.isMe, isSelfThreadDelvived {
                 Image(uiImage: message.footerStatus.image)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
                     .foregroundColor(message.footerStatus.fgColor)
-
             }
 
-            if message.id != nil, message.id == viewModel.threadVM?.thread.pinMessage?.id {
+            if message.id != nil, message.id == thread?.pinMessage?.id {
                 Image(systemName: "pin.fill")
                     .resizable()
                     .scaledToFit()

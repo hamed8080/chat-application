@@ -159,10 +159,7 @@ struct FilterChip: View {
         .animation(.easeInOut, value: isSelectedToDelete)
         .transition(.scale)
         .onTapGesture {
-            if isSelectedToDelete {
-                action()
-            }
-            isSelectedToDelete.toggle()
+            action()            
         }
     }
 }

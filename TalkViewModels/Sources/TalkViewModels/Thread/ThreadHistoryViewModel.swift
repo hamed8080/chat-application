@@ -36,6 +36,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var shimmerViewModel: ShimmerViewModel = .init(delayToHide: 0)
     public var messageSlotShimmerVM: ShimmerViewModel = .init(delayToHide: 0)
     internal var seenVM: HistorySeenViewModel
+    public var created: Bool = false
 
     // MARK: Computed Properties
     public var isEmptyThread: Bool {
@@ -79,7 +80,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
         moveToMessageTimeOnOpenConversation()
         if sections.count > 0 || shimmerViewModel.isShowing == true || hasAnythingToLoadOnOpen || isSimulatedThread { return }
         hasSentHistoryRequest = true
-        shimmerViewModel.show()
+        if !created {
+            shimmerViewModel.show()
+        }
         tryFirstScenario()
         trySecondScenario()
         trySeventhScenario()
@@ -887,18 +890,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    private func updateOlderSeensLocally() {
-        sections.forEach { section in
-            section.vms.forEach { vm in
-                if vm.message.seen == false || vm.message.seen == nil {
-                    vm.message.delivered = true
-                    vm.message.seen = true
-                    vm.animateObjectWillChange()
-                }
-            }
-        }
-    }
-
     private func setHighlight(messageId: Int) {
         if let vm = messageViewModel(for: messageId) {
             vm.setHighlight()
@@ -949,20 +940,22 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     private func setSeenForOlderMessages(messageId: Int?) {
         if let messageId = messageId {
-            sections.indices.forEach { sectionIndex in
-                sections[sectionIndex].vms.indices.forEach { messageIndex in
-                    let message = sections[sectionIndex].vms[messageIndex].message
-                    if (message.id ?? 0 < messageId) &&
-                        (message.seen ?? false == false || message.delivered ?? false == false)
-                        && message.ownerId == ChatManager.activeInstance?.userInfo?.id {
-                        sections[sectionIndex].vms[messageIndex].message.delivered = true
-                        sections[sectionIndex].vms[messageIndex].message.seen = true
-                        let result = MessageResponse(messageState: .seen, threadId: threadId, messageId: message.id)
-                        NotificationCenter.default.post(name: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"), object: result)
-                    }
+            let isMeId = ChatManager.activeInstance?.userInfo?.id ?? 0
+            sections
+                .flatMap { $0.vms }
+                .filter {
+                    let message = $0.message
+                    let notDelivered = message.delivered ?? false == false
+                    let notSeen = message.seen ?? false == false
+                    let isValidToChange = (message.id ?? 0 < messageId) && (notSeen || notDelivered) && message.ownerId == isMeId
+                    return isValidToChange
                 }
-            }
-        }
+                .forEach { vm in
+                    vm.message.delivered = true
+                    vm.message.seen = true
+                    vm.animateObjectWillChange()
+                }
+        }        
     }
 
     // MARK: Finding index and ViewModels
@@ -1081,12 +1074,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         NotificationCenter.windowMode.publisher(for: .windowMode)
             .sink { [weak self] newValue in
                 self?.updateAllRows()
-            }
-            .store(in: &cancelable)
-        NotificationCenter.default.publisher(for: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"))
-            .compactMap {$0.object as? MessageResponse}
-            .sink { [weak self] newValue in
-                self?.updateOlderSeensLocally()
             }
             .store(in: &cancelable)
         NotificationCenter.default.publisher(for: Notification.Name("HIGHLIGHT"))

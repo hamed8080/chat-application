@@ -406,7 +406,7 @@
 
 /* SearchFiltersMessagesDialog */
 "SearchFiltersMessagesDialog.filter" = "فیلتر";
-"SearchFiltersMessagesDialog.showUnreadConversations" = "نمایش پیام های خوانده نشده";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "نمایش گفتگو های خوانده نشده";
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "فقط گفتگو های خوانده نشده";
