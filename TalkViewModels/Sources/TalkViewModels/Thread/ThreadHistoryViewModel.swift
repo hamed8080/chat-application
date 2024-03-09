@@ -49,6 +49,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
     public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.vms.last?.id != thread.lastMessageVO?.id && hasNextBottom }
     private var isSimulated: Bool { threadViewModel?.isSimulatedThared == true }
+    public typealias Indices = (message: Message, sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)
 
     // MARK: Initializer
     public init(threadViewModel: ThreadViewModel) {
@@ -560,7 +561,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
             threadViewModel?.scrollVM.isAtBottomOfTheList = false
             threadViewModel?.scrollVM.animateObjectWillChange()
         }
-        seenVM.onDisappear(message)
     }
 
     // MARK: Event Handlers
@@ -1049,6 +1049,38 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public func messageViewModel(for uniqueId: String) -> MessageRowViewModel? {
         guard let indicies = indicesByMessageUniqueId(uniqueId) else {return nil}
         return sections[indicies.sectionIndex].vms[indicies.messageIndex]
+    }
+
+    /// We retrieve previous message when messages are beneath the sand bar.
+    public func previous(_ message: Message) -> Message? {
+        guard let indices = self.message(for: message.id) else { return nil }
+        let message = inSameSection(indices) ?? inPrevSection(indices)
+        return message
+    }
+
+    public func inPrevSection(_ indices: Indices) -> Message? {
+        let prevSectionIndex = indices.sectionIndex - 1
+        if indices.messageIndex == 0, sections.count > 1 {
+            if !sections.indices.contains(prevSectionIndex) {
+                return nil
+            } else if sections[prevSectionIndex].vms.isEmpty {
+                return nil
+            }
+            let prevSection = sections[prevSectionIndex]
+            return prevSection.vms.last?.message
+        } else {
+            return nil
+        }
+    }
+
+    public func inSameSection(_ indices: Indices) -> Message? {
+        let prevIndex = indices.messageIndex - 1
+        if sections[indices.sectionIndex].vms.indices.contains(prevIndex) {
+            // we have preve in the same section
+            return sections[indices.sectionIndex].vms[prevIndex].message
+        } else {
+            return nil
+        }
     }
 
     // MARK: Register Notifications
