@@ -15,8 +15,6 @@ import Chat
 public final class HistorySeenViewModel: ObservableObject {
     private weak var threadVM: ThreadViewModel?
     private var historyVM: ThreadHistoryViewModel? { threadVM?.historyVM }
-    private var onScreenMessages: [Message] = []
-    private var isFirstTimeProgramaticallyScroll: Bool = true
     private var seenPublisher = PassthroughSubject<Message, Never>()
     private var cancelable: Set<AnyCancellable> = []
     private var thread: Conversation? { threadVM?.thread }
@@ -24,12 +22,6 @@ public final class HistorySeenViewModel: ObservableObject {
 
     public init(threadViewModel: ThreadViewModel) {
         self.threadVM = threadViewModel
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
-            self?.queue.sync { [weak self] in
-                self?.isFirstTimeProgramaticallyScroll = false
-                self?.sendSeenAndReduceUnredaCountLocally()
-            }
-        }
         seenPublisher
             .filter{ [weak self] in $0.id ?? -1 >= self?.thread?.lastSeenMessageId ?? 0 }
             .debounce(for: 0.5, scheduler: RunLoop.main)
@@ -72,25 +64,17 @@ public final class HistorySeenViewModel: ObservableObject {
     internal func onDisappear(_ message: Message) {
         queue.sync {
             logMessageApperance(message, appeard: false)
-            onScreenMessages.removeAll(where: {$0.id == message.id})
         }
     }
 
-    private func sendSeenAndReduceUnredaCountLocally() {
-        let maxId = onScreenMessages.compactMap({$0.id}).max()
-        let message = onScreenMessages.first(where: {$0.id == maxId})
-        guard let message else { return }
+    private func sendSeenAndReduceUnredaCountLocally(_ message: Message) {
         reduceUnreadCountLocaly(message)
         seenPublisher.send(message)
     }
 
     private func onMessageScroll(_ message: Message, isUp: Bool? = nil) {
         logMessageApperance(message, appeard: true, isUp: isUp)
-        onScreenMessages.append(message)
-        if isFirstTimeProgramaticallyScroll == true {
-            return
-        }
-        sendSeenAndReduceUnredaCountLocally()
+        sendSeenAndReduceUnredaCountLocally(message)
     }
 
     /// We reduce it locally to keep the UI Sync and user feels it really read the message.

@@ -22,12 +22,13 @@ struct SecondaryMessageView: View {
         HStack {
             if draft.isEmpty {
                 ThreadLastMessageView(isSelected: isSelected, thread: thread)
+                MutableMessageStatusView(isSelected: isSelected)
+                    .environmentObject(thread)
             } else {
                 DraftView(draft: draft)
             }
-            MutableMessageStatusView(isSelected: isSelected)
-                .environmentObject(thread)
         }
+        .animation(.easeInOut, value: draft.isEmpty)
         .onReceive(userDfault) { _ in
             let threadId = thread.id ?? 0
             draft = UserDefaults.standard.string(forKey: "draft-\(threadId)") ?? ""
