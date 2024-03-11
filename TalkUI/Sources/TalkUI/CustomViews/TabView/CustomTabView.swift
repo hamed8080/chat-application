@@ -25,6 +25,42 @@ public struct CustomTabView: View {
     }
 }
 
+public struct CustomDetailTabView<T: View>: View {
+    @Environment(\.selectedTabIndex) var tabIndex
+    let tabs: [Tab]
+    let tabButtons: () -> T
+
+    public init(tabs: [Tab], @ViewBuilder tabButtons: @escaping () -> T) {
+        self.tabs = tabs
+        self.tabButtons = tabButtons
+    }
+
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            tabButtons()
+            tabs[tabIndex].view
+                .transition(.asymmetric(insertion: .push(from: .leading), removal: .move(edge: .trailing)))
+        }
+    }
+}
+
+public struct SelectedTabIndexKey: EnvironmentKey {
+    public static var defaultValue: Int = 0
+}
+
+public extension EnvironmentValues {
+    var selectedTabIndex: Int {
+        get { self[SelectedTabIndexKey.self] }
+        set { self[SelectedTabIndexKey.self] = newValue }
+    }
+}
+
+public extension View {
+    func selectedTabIndx(index: Int) -> some View {
+        environment(\.selectedTabIndex, index)
+    }
+}
+
 struct CustomTabView_Previews: PreviewProvider {
     static var previews: some View {
         CustomTabView(tabs: [])

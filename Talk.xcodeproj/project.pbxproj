@@ -184,8 +184,6 @@
 		0570CC5C2AAEE98F001832E9 /* LinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB12AAEE98D001832E9 /* LinkView.swift */; };
 		0570CC5D2AAEE98F001832E9 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB22AAEE98D001832E9 /* MemberView.swift */; };
 		0570CC5E2AAEE98F001832E9 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB22AAEE98D001832E9 /* MemberView.swift */; };
-		0570CC5F2AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB32AAEE98D001832E9 /* ConversationDetailTabViews.swift */; };
-		0570CC602AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB32AAEE98D001832E9 /* ConversationDetailTabViews.swift */; };
 		0570CC612AAEE98F001832E9 /* ThreadDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB42AAEE98D001832E9 /* ThreadDetailView.swift */; };
 		0570CC622AAEE98F001832E9 /* ThreadDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB42AAEE98D001832E9 /* ThreadDetailView.swift */; };
 		0570CC652AAEE98F001832E9 /* ContactRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CBB72AAEE98E001832E9 /* ContactRow.swift */; };
@@ -455,7 +453,6 @@
 		0570CBB02AAEE98D001832E9 /* MutualThreadsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutualThreadsView.swift; sourceTree = "<group>"; };
 		0570CBB12AAEE98D001832E9 /* LinkView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkView.swift; sourceTree = "<group>"; };
 		0570CBB22AAEE98D001832E9 /* MemberView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberView.swift; sourceTree = "<group>"; };
-		0570CBB32AAEE98D001832E9 /* ConversationDetailTabViews.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationDetailTabViews.swift; sourceTree = "<group>"; };
 		0570CBB42AAEE98D001832E9 /* ThreadDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadDetailView.swift; sourceTree = "<group>"; };
 		0570CBB72AAEE98E001832E9 /* ContactRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactRow.swift; sourceTree = "<group>"; };
 		0570CBB82AAEE98E001832E9 /* SyncView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncView.swift; sourceTree = "<group>"; };
@@ -865,7 +862,6 @@
 				0570CBB02AAEE98D001832E9 /* MutualThreadsView.swift */,
 				0570CBB12AAEE98D001832E9 /* LinkView.swift */,
 				0570CBB22AAEE98D001832E9 /* MemberView.swift */,
-				0570CBB32AAEE98D001832E9 /* ConversationDetailTabViews.swift */,
 				05E869C52AEF883000F6B200 /* DetailLoading.swift */,
 				052191552B2F262300CC99D1 /* MutualThreadRow.swift */,
 				055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */,
@@ -1323,7 +1319,6 @@
 				050260782B15C408005F3E64 /* ManuallyConnectionManagerView.swift in Sources */,
 				0570CBED2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				05745AF02AF2626B00102193 /* UserActionMenu.swift in Sources */,
-				0570CC5F2AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */,
 				0570CBF92AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				05DAA4352B29BF39007427DC /* ContactListToolbar.swift in Sources */,
 				0505D5AC2AE2CEC900A5B081 /* EditGroup.swift in Sources */,
@@ -1485,7 +1480,6 @@
 				050260792B15C408005F3E64 /* ManuallyConnectionManagerView.swift in Sources */,
 				0570CBEE2AAEE98F001832E9 /* SecondaryMessageView.swift in Sources */,
 				05745AF12AF2628000102193 /* UserActionMenu.swift in Sources */,
-				0570CC602AAEE98F001832E9 /* ConversationDetailTabViews.swift in Sources */,
 				0570CBFA2AAEE98F001832E9 /* SelectConversationOrContactList.swift in Sources */,
 				05DAA4362B29BF39007427DC /* ContactListToolbar.swift in Sources */,
 				0505D5AD2AE2CEC900A5B081 /* EditGroup.swift in Sources */,

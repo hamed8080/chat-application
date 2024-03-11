@@ -99,7 +99,7 @@ struct NavigationTypeView: View {
             Text(contact.firstName ?? "")
                 .environmentObject(container.appOverlayVM)
         case .threadDetil(let detailViewModel):
-            ThreadDetailView()
+            ThreadDetailView(thread: detailViewModel.thread)
                 .environmentObject(container.appOverlayVM)
                 .environmentObject(detailViewModel)
                 .environmentObject(container.threadsVM)

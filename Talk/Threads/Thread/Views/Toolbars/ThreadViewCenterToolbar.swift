@@ -31,6 +31,7 @@ struct ThreadViewCenterToolbar: View {
                 Text(title)
                     .font(.iransansBoldBody)
                     .foregroundStyle(Color.App.white)
+                    .padding(.horizontal, 48) // for super large titles we need to cut the text the best way for this is add a horizontal padding
             }
             .buttonStyle(.plain)
 
