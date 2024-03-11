@@ -93,7 +93,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
 
     private func onNewConversations(_ response: ChatResponse<[Conversation]>) {
         if !response.cache, response.pop(prepend: "GET_THREADS_IN_SELECT_THREAD") != nil {
-            isLoadingConversation = false
+            hideConversationsLoadingWithDelay()
             hasNextConversation = response.hasNext
             conversations.append(contentsOf: response.result ?? [])
             animateObjectWillChange()
@@ -102,7 +102,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
 
     private func onNewContacts(_ response: ChatResponse<[Contact]>) {
         if !response.cache, response.pop(prepend: "GET_CONTCATS_IN_SELECT_CONTACT") != nil {
-            isLoadingContacts = false
+            hideContactsLoadingWithDelay()
             hasNextContacts = response.hasNext
             contacts.append(contentsOf: response.result ?? [])
             animateObjectWillChange()
@@ -141,6 +141,18 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
         }
     }
 
+    private func hideConversationsLoadingWithDelay() {
+        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+            self?.isLoadingConversation = false
+        }
+    }
+
+    private func hideContactsLoadingWithDelay() {
+        Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+            self?.isLoadingContacts = false
+        }
+    }
+
     public func reset() {
         isLoadingContacts = false
         isLoadingConversation = false
@@ -148,6 +160,8 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
         contactsOffset = 0
         hasNextConversation = true
         hasNextContacts = true
+        conversations.removeAll()
+        contacts.removeAll()
         getContacts()
         getThreads()
     }

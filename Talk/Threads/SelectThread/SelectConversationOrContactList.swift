@@ -85,6 +85,7 @@ struct SelectConversationTab: View {
         }
         .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.conversations.count)
+        .animation(.easeInOut, value: viewModel.isLoadingConversation)
     }
 }
 
@@ -116,6 +117,7 @@ struct SelectContactTab: View {
         }
         .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.contacts.count)
+        .animation(.easeInOut, value: viewModel.isLoadingContacts)
     }
 }
 
