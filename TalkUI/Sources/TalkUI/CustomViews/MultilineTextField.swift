@@ -144,7 +144,7 @@ public struct MultilineTextField: View {
             .background(placeholderView, alignment: .topLeading)
             .background(backgroundColor)
             .onChange(of: text) { newValue in
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     showingPlaceholder = newValue.isEmpty || (newValue.first == "\u{200f}" && newValue.count == 1)
                 }
             }
@@ -157,7 +157,7 @@ public struct MultilineTextField: View {
                     .font(.iransansBody)
                     .foregroundColor(placeholderColor)
                     .padding(EdgeInsets(top: 8, leading: 8, bottom: 0, trailing: 0))
-                    .transition(.slide)
+                    .transition(.asymmetric(insertion: .push(from: .leading), removal: .move(edge: .leading)))
             }
         }
     }

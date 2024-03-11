@@ -78,6 +78,11 @@ struct SelectConversationTab: View {
                 }
             }
         }
+        .safeAreaInset(edge: .top) {
+            if viewModel.isLoadingConversation {
+                SwingLoadingIndicator()
+            }
+        }
         .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.conversations.count)
     }
@@ -102,6 +107,11 @@ struct SelectContactTab: View {
                             viewModel.loadMoreContacts()
                         }
                     }
+            }
+        }
+        .safeAreaInset(edge: .top) {
+            if viewModel.isLoadingContacts {
+                SwingLoadingIndicator()
             }
         }
         .listStyle(.plain)

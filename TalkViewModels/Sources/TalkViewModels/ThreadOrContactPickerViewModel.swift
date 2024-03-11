@@ -17,7 +17,8 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
     @Published public var searchText: String = ""
     public var conversations: ContiguousArray<Conversation> = .init()
     public var contacts:ContiguousArray<Contact> = .init()
-    @Published public var isLoading = false
+    @Published public var isLoadingConversation = false
+    @Published public var isLoadingContacts = false
     public var isIsSearchMode = false
     private var count: Int = 25
     private var offset: Int = 0
@@ -77,7 +78,8 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
     func search(_ text: String) {
         conversations.removeAll()
         contacts.removeAll()
-        isLoading = true
+        isLoadingConversation = true
+        isLoadingContacts = true
         animateObjectWillChange()
 
         let req = ThreadsRequest(searchText: text)
@@ -91,7 +93,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
 
     private func onNewConversations(_ response: ChatResponse<[Conversation]>) {
         if !response.cache, response.pop(prepend: "GET_THREADS_IN_SELECT_THREAD") != nil {
-            isLoading = false
+            isLoadingConversation = false
             hasNextConversation = response.hasNext
             conversations.append(contentsOf: response.result ?? [])
             animateObjectWillChange()
@@ -100,7 +102,7 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
 
     private func onNewContacts(_ response: ChatResponse<[Contact]>) {
         if !response.cache, response.pop(prepend: "GET_CONTCATS_IN_SELECT_CONTACT") != nil {
-            isLoading = false
+            isLoadingContacts = false
             hasNextContacts = response.hasNext
             contacts.append(contentsOf: response.result ?? [])
             animateObjectWillChange()
@@ -108,24 +110,26 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
     }
 
     public func loadMore() {
-        if isLoading || !hasNextConversation { return }
+        if isLoadingConversation || !hasNextConversation { return }
         offset += count
         getThreads()
     }
 
     public func getThreads() {
+        isLoadingConversation = true
         let req = ThreadsRequest(count: count, offset: offset)
         RequestsManager.shared.append(prepend: "GET_THREADS_IN_SELECT_THREAD", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
 
     public func loadMoreContacts() {
-        if isLoading || !hasNextContacts { return }
+        if isLoadingContacts || !hasNextContacts { return }
         contactsOffset += contactsCount
         getContacts()
     }
 
     public func getContacts() {
+        isLoadingContacts = true
         let req = ContactsRequest(count: contactsCount, offset: contactsOffset)
         RequestsManager.shared.append(prepend: "GET_CONTCATS_IN_SELECT_CONTACT", value: req)
         ChatManager.activeInstance?.contact.get(req)
@@ -138,7 +142,8 @@ public class ThreadOrContactPickerViewModel: ObservableObject {
     }
 
     public func reset() {
-        isLoading = false
+        isLoadingContacts = false
+        isLoadingConversation = false
         offset = 0
         contactsOffset = 0
         hasNextConversation = true
