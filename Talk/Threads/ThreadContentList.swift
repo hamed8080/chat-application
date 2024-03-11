@@ -49,6 +49,9 @@ struct ThreadContentList: View {
         .sheet(isPresented: sheetBinding) {
             ThreadsSheetFactoryView()
         }
+        .refreshable {
+            threadsVM.refresh()            
+        }
     }
 }
 

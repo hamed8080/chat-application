@@ -36,6 +36,7 @@ public final class ThreadsViewModel: ObservableObject {
     public var shimmerViewModel = ShimmerViewModel(delayToHide: 0, repeatInterval: 0.5)
     @Published public var showUnreadConversations: Bool? = nil
     public var threadEventModels: [ThreadEventViewModel] = []
+    private var cache: Bool = true
 
     public init() {
         AppState.shared.$connectionStatus
@@ -108,7 +109,7 @@ public final class ThreadsViewModel: ObservableObject {
         }
         isLoading = true
         animateObjectWillChange()
-        let req = ThreadsRequest(count: count, offset: offset)
+        let req = ThreadsRequest(count: count, offset: offset, cache: cache)
         RequestsManager.shared.append(prepend: "GET-THREADS", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
@@ -162,8 +163,10 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func refresh() {
+        cache = false
         clear()
         getThreads()
+        cache = true
     }
 
     /// Create a thread and send a message without adding a contact.
