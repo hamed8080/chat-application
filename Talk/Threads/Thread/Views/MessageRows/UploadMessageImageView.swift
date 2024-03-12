@@ -16,63 +16,6 @@ import TalkModels
 import ChatDTO
 import TalkUI
 
-struct OverladUploadImageButton: View {
-    let messageRowVM: MessageRowViewModel
-    @EnvironmentObject var viewModel: UploadFileViewModel
-    var message: Message { messageRowVM.message }
-    var percent: Int64 { viewModel.uploadPercent }
-    var stateIcon: String {
-        if viewModel.state == .uploading {
-            return "xmark"
-        } else if viewModel.state == .paused {
-            return "play.fill"
-        } else {
-            return "arrow.up"
-        }
-    }
-
-    var body: some View {
-        if viewModel.state != .completed {
-            HStack {
-                ZStack {
-                    Image(systemName: stateIcon)
-                        .resizable()
-                        .scaledToFit()
-                        .font(.system(size: 8, design: .rounded).bold())
-                        .frame(width: 8, height: 8)
-                        .foregroundStyle(Color.App.textPrimary)
-
-                    Circle()
-                        .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
-                        .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                        .foregroundColor(Color.App.white)
-                        .rotationEffect(Angle(degrees: 270))
-                        .frame(width: 18, height: 18)
-                }
-                .frame(width: 26, height: 26)
-                .background(Color.App.white.opacity(0.3))
-                .clipShape(RoundedRectangle(cornerRadius:(13)))
-
-                let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
-                let realServerFileSize = messageRowVM.fileMetaData?.file?.size
-                if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
-                    Text(fileSize)
-                        .multilineTextAlignment(.leading)
-                        .font(.iransansBoldCaption2)
-                        .foregroundColor(Color.App.textPrimary)
-                }
-            }
-            .frame(height: 30)
-            .frame(minWidth: 76)
-            .padding(4)
-            .background(.thinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius:(18)))
-            .animation(.easeInOut, value: stateIcon)
-            .animation(.easeInOut, value: percent)
-        }
-    }
-}
-
 final class UploadMessageImageView: UIView {
     private let container = UIView()
     private let stack = UIStackView()
@@ -139,7 +82,7 @@ final class UploadMessageImageView: UIView {
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set(_ viewModel: MessageRowViewModel) {
         let message = viewModel.message
         if let data = message.uploadFile?.uploadImageRequest?.dataToSend, let image = UIImage(data: data) {
             uploadImage.image = image
@@ -155,6 +98,10 @@ final class UploadMessageImageView: UIView {
         if let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale) {
             fileSizeLabel.text = fileSize
         }
+
+        let canShow = message.isUploadMessage && message.isImage
+        isHidden = !canShow
+        heightAnchor.constraint(equalToConstant: canShow ? 128 : 0).isActive = true
     }
 
     private func stateIcon(viewModel: MessageRowViewModel) -> String {
@@ -174,7 +121,7 @@ struct UploadMessageImageViewWapper: UIViewRepresentable {
 
     func makeUIView(context: Context) -> some UIView {
         let view = UploadMessageImageView()
-        view.setValues(viewModel: viewModel)
+        view.set(viewModel)
         return view
     }
 

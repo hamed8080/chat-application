@@ -1,5 +1,5 @@
 //
-//  MessageRowAudioDownloader.swift
+//  MessageRowAudioDownloaderView.swift
 //  Talk
 //
 //  Created by hamed on 11/14/23.
@@ -11,14 +11,10 @@ import TalkUI
 import ChatModels
 import TalkModels
 
-final class MessageRowAudioDownloader: UIView {
-    private let container = UIView()
-    private let hStack = UIStackView()
-    private let vStack = UIStackView()
+final class MessageRowAudioDownloaderView: UIView {
     private let fileNameLabel = UILabel()
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
-    private let iconImageView = UIImageView()
     private let progressButton = CircleProgressButton(color: Color.App.textPrimaryUIColor, iconTint: Color.App.textPrimaryUIColor)
     private let timeLabel = UILabel()
     private var viewModel: MessageRowViewModel?
@@ -41,6 +37,13 @@ final class MessageRowAudioDownloader: UIView {
         layer.cornerRadius = 5
         layer.masksToBounds = true
 
+        translatesAutoresizingMaskIntoConstraints = false
+        progressButton.translatesAutoresizingMaskIntoConstraints = false
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
+        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
         fileSizeLabel.textColor = Color.App.textPrimaryUIColor
@@ -48,6 +51,7 @@ final class MessageRowAudioDownloader: UIView {
         fileNameLabel.font = UIFont.uiiransansBoldCaption2
         fileNameLabel.textAlignment = .left
         fileNameLabel.textColor = Color.App.textPrimaryUIColor
+        fileNameLabel.numberOfLines = 1
 
         fileTypeLabel.font = UIFont.uiiransansBoldCaption2
         fileTypeLabel.textAlignment = .left
@@ -56,44 +60,30 @@ final class MessageRowAudioDownloader: UIView {
         timeLabel.textColor = Color.App.whiteUIColor
         timeLabel.font = UIFont.uiiransansBoldCaption2
 
-        let innerhStack = UIStackView()
-        innerhStack.axis = .horizontal
-        innerhStack.addArrangedSubview(fileTypeLabel)
-        innerhStack.addArrangedSubview(fileSizeLabel)
-
-        vStack.spacing = 4
-        vStack.addArrangedSubview(fileNameLabel)
-        vStack.addArrangedSubview(innerhStack)
-        vStack.addArrangedSubview(timeLabel)
-
-        hStack.axis = .horizontal
-        hStack.spacing = 12
-        hStack.addArrangedSubview(progressButton)
-        container.addSubview(hStack)
-        addSubview(container)
-
-        iconImageView.contentMode = .scaleAspectFit
-        iconImageView.tintColor = Color.App.bgPrimaryUIColor
-
-        iconImageView.translatesAutoresizingMaskIntoConstraints = false
-        hStack.translatesAutoresizingMaskIntoConstraints = false
-        container.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(progressButton)
+        addSubview(fileNameLabel)
+        addSubview(fileTypeLabel)
+        addSubview(fileSizeLabel)
+        addSubview(timeLabel)
 
         NSLayoutConstraint.activate([
-            container.leadingAnchor.constraint(equalTo: leadingAnchor),
-            container.trailingAnchor.constraint(equalTo: trailingAnchor),
-            container.topAnchor.constraint(equalTo: topAnchor),
-            container.bottomAnchor.constraint(equalTo: bottomAnchor),
-            hStack.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            hStack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            progressButton.widthAnchor.constraint(equalToConstant: 42),
-            progressButton.heightAnchor.constraint(equalToConstant: 42),
-            iconImageView.widthAnchor.constraint(equalToConstant: 16),
-            iconImageView.heightAnchor.constraint(equalToConstant: 16),
+            heightAnchor.constraint(greaterThanOrEqualToConstant: 52),
+            progressButton.widthAnchor.constraint(equalToConstant: 52),
+            progressButton.heightAnchor.constraint(equalToConstant: 52),
+            progressButton.leadingAnchor.constraint(equalTo: leadingAnchor),
+            progressButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            fileNameLabel.topAnchor.constraint(equalTo: progressButton.topAnchor, constant: 8),
+            fileNameLabel.leadingAnchor.constraint(equalTo: progressButton.trailingAnchor, constant: 8),
+            fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
+            fileTypeLabel.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor),
+            fileSizeLabel.topAnchor.constraint(equalTo: fileTypeLabel.topAnchor),
+            fileSizeLabel.leadingAnchor.constraint(equalTo: fileTypeLabel.trailingAnchor, constant: 8),
+            timeLabel.topAnchor.constraint(equalTo: fileTypeLabel.bottomAnchor, constant: 2),
+            timeLabel.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor)
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
         let message = viewModel.message
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
@@ -110,10 +100,6 @@ final class MessageRowAudioDownloader: UIView {
             fileNameLabel.text = fileName
         }
 
-        let font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        let config = UIImage.SymbolConfiguration(font: font)
-        iconImageView.image = UIImage(systemName: stateIcon().replacingOccurrences(of: ".circle", with: ""), withConfiguration: config)
-
         let split = viewModel.fileMetaData?.file?.originalName?.split(separator: ".")
         let ext = viewModel.fileMetaData?.file?.extension
         let lastSplit = String(split?.last ?? "")
@@ -123,6 +109,10 @@ final class MessageRowAudioDownloader: UIView {
         let time = "\(audioVM.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(audioVM.duration.timerString(locale: Language.preferredLocale) ?? "")"
         timeLabel.text = time
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
+
+        let canShow = !message.isUploadMessage && message.isAudio == true
+        isHidden = !canShow
+        heightAnchor.constraint(equalToConstant: canShow ? 52 : 0).isActive = true
     }
 
     private func stateIcon() -> String {
@@ -185,12 +175,21 @@ final class MessageRowAudioDownloader: UIView {
 }
 
 struct MessageRowAudioDownloaderWapper: UIViewRepresentable {
-    let viewModel: MessageRowViewModel
+
+    @StateObject var viewModel: MessageRowViewModel
+
+    init(viewModel: MessageRowViewModel) {
+        ThreadViewModel.maxAllowedWidth = 340
+        self._viewModel = StateObject(wrappedValue: viewModel)
+        Task {
+            await viewModel.performaCalculation()
+            await viewModel.asyncAnimateObjectWillChange()
+        }
+    }
 
     func makeUIView(context: Context) -> some UIView {
-        let view = MessageRowAudioDownloader()
-        AppState.shared.objectsContainer.audioPlayerVM = .init()
-        view.setValues(viewModel: viewModel)
+        let view = MessageRowAudioDownloaderView()
+        view.set(viewModel)
         return view
     }
 
@@ -201,6 +200,9 @@ struct MessageRowAudioDownloaderWapper: UIViewRepresentable {
 
 struct MessageRowAudioDownloader_Previews: PreviewProvider {
     static var previews: some View {
-        MessageRowAudioDownloaderWapper(viewModel: .init(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
+        let viewModels = MockAppConfiguration.shared.viewModels
+        let audioVM = viewModels.first(where: {$0.message.isAudio})
+        _ = audioVM?.downloadFileVM?.state = .completed
+        return MessageRowAudioDownloaderWapper(viewModel: audioVM!)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  MessageRowAudioDownloader.swift
+//  MessageRowVideoDownloaderView.swift
 //  Talk
 //
 //  Created by hamed on 11/14/23.
@@ -11,14 +11,10 @@ import TalkUI
 import ChatModels
 import TalkModels
 
-final class MessageRowFileDownloader: UIView {
-    private let container = UIView()
-    private let hStack = UIStackView()
-    private let vStack = UIStackView()
+final class MessageRowVideoDownloaderView: UIView {
     private let fileNameLabel = UILabel()
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
-    private let iconImageView = UIImageView()
     private let progressButton = CircleProgressButton(color: Color.App.textPrimaryUIColor, iconTint: Color.App.textPrimaryUIColor)
     private var viewModel: MessageRowViewModel?
     private var downloadVM: DownloadFileViewModel? { viewModel?.downloadFileVM }
@@ -34,14 +30,16 @@ final class MessageRowFileDownloader: UIView {
     }
 
     private func configureView() {
-
-        iconImageView.translatesAutoresizingMaskIntoConstraints = false
-        hStack.translatesAutoresizingMaskIntoConstraints = false
-        container.translatesAutoresizingMaskIntoConstraints = false
-
         layoutMargins = UIEdgeInsets(all: 8)
+        backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
+
+        translatesAutoresizingMaskIntoConstraints = false
+        progressButton.translatesAutoresizingMaskIntoConstraints = false
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
@@ -55,70 +53,52 @@ final class MessageRowFileDownloader: UIView {
         fileTypeLabel.textAlignment = .left
         fileTypeLabel.textColor = Color.App.textSecondaryUIColor
 
-        let innerhStack = UIStackView()
-        innerhStack.axis = .horizontal
-        innerhStack.spacing = 4
-        innerhStack.addArrangedSubview(fileTypeLabel)
-        innerhStack.addArrangedSubview(fileSizeLabel)
-
-        vStack.axis = .vertical
-        vStack.spacing = 0
-        vStack.addArrangedSubview(fileNameLabel)
-        vStack.addArrangedSubview(innerhStack)
-
-        hStack.axis = .horizontal
-        hStack.spacing = 12
-        hStack.addArrangedSubview(progressButton)
-        hStack.addArrangedSubview(vStack)
-        container.addSubview(hStack)
-        addSubview(container)
-
-        iconImageView.contentMode = .scaleAspectFit
-        iconImageView.tintColor = Color.App.bgPrimaryUIColor
+        addSubview(progressButton)
+        addSubview(fileNameLabel)
+        addSubview(fileTypeLabel)
+        addSubview(fileSizeLabel)
 
         NSLayoutConstraint.activate([
             heightAnchor.constraint(greaterThanOrEqualToConstant: 52),
-            container.leadingAnchor.constraint(equalTo: leadingAnchor),
-            container.trailingAnchor.constraint(equalTo: trailingAnchor),
-            container.topAnchor.constraint(equalTo: topAnchor),
-            container.bottomAnchor.constraint(equalTo: bottomAnchor),
-            hStack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            hStack.topAnchor.constraint(equalTo: container.topAnchor),
             progressButton.widthAnchor.constraint(equalToConstant: 52),
             progressButton.heightAnchor.constraint(equalToConstant: 52),
-            iconImageView.widthAnchor.constraint(equalToConstant: 24),
-            iconImageView.heightAnchor.constraint(equalToConstant: 24),
+            progressButton.leadingAnchor.constraint(equalTo: leadingAnchor),
+            progressButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            fileNameLabel.topAnchor.constraint(equalTo: progressButton.topAnchor, constant: 8),
+            fileNameLabel.leadingAnchor.constraint(equalTo: progressButton.trailingAnchor, constant: 8),
+            fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
+            fileTypeLabel.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor),
+            fileSizeLabel.topAnchor.constraint(equalTo: fileTypeLabel.topAnchor),
+            fileSizeLabel.leadingAnchor.constraint(equalTo: fileTypeLabel.trailingAnchor, constant: 8),
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
-        self.viewModel = viewModel
-        let metaData = viewModel.fileMetaData
+    public func set(_ viewModel: MessageRowViewModel) {
+        let message = viewModel.message
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
         progressButton.animate(to: progress, systemIconName: stateIcon())
         if progress >= 1 {
             progressButton.removeProgress()
         }
 
-        if let fileSize = metaData?.file?.size?.toSizeString(locale: Language.preferredLocale)  {
+        if let fileSize = viewModel.fileMetaData?.file?.size?.toSizeString(locale: Language.preferredLocale)  {
             fileSizeLabel.text = fileSize
         }
 
-        if let fileName = metaData?.file?.name {
+        if let fileName = message.fileMetaData?.file?.name {
             fileNameLabel.text = fileName
         }
 
-        let font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        let config = UIImage.SymbolConfiguration(font: font)
-        let icon = stateIcon().replacingOccurrences(of: ".circle", with: "")
-        iconImageView.image = UIImage(systemName: icon, withConfiguration: config)
-
-        let split = metaData?.file?.originalName?.split(separator: ".")
-        let ext = metaData?.file?.extension
+        let split = viewModel.fileMetaData?.file?.originalName?.split(separator: ".")
+        let ext = viewModel.fileMetaData?.file?.extension
         let lastSplit = String(split?.last ?? "")
         let extensionName = (ext ?? lastSplit)
-        fileTypeLabel.text = extensionName.uppercased()
+        fileTypeLabel.text = extensionName
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
+
+        let canShow = !message.isUploadMessage && message.isVideo == true
+        isHidden = !canShow
+        heightAnchor.constraint(equalToConstant: canShow ? 52 : 0).isActive = true
     }
 
     private func stateIcon() -> String {
@@ -159,18 +139,18 @@ final class MessageRowFileDownloader: UIView {
         Task {
             _ = await message?.makeTempURL()
             await MainActor.run {
-//                shareDownloadedFile.toggle()
+                //                shareDownloadedFile.toggle()
             }
         }
     }
 }
 
-struct MessageRowFileDownloaderWapper: UIViewRepresentable {
+struct MessageRowVideoDownloaderWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
     func makeUIView(context: Context) -> some UIView {
-        let view = MessageRowFileDownloader()
-        view.setValues(viewModel: viewModel)
+        let view = MessageRowVideoDownloaderView()
+        view.set(viewModel)
         return view
     }
 
@@ -179,26 +159,8 @@ struct MessageRowFileDownloaderWapper: UIViewRepresentable {
     }
 }
 
-struct MessageRowFileDownloader_Previews: PreviewProvider {
-    struct Preview: View {
-        @StateObject var viewModel: MessageRowViewModel
-
-        init(viewModel: MessageRowViewModel) {
-            ThreadViewModel.maxAllowedWidth = 340
-            self._viewModel = StateObject(wrappedValue: viewModel)
-            Task {
-                await viewModel.performaCalculation()
-                await viewModel.asyncAnimateObjectWillChange()
-            }
-        }
-
-        var body: some View {
-            MessageRowFileDownloaderWapper(viewModel: viewModel)
-        }
-    }
-
+struct MessageRowVideoDownloader_Previews: PreviewProvider {
     static var previews: some View {
-        Preview(viewModel: MockAppConfiguration.shared.viewModels.first(where: {$0.message.isFileType == true && !$0.message.isImage})!)
-            .previewDisplayName("FileDownloader")
+        MessageRowVideoDownloaderWapper(viewModel: .init(message: .init(id: 1), viewModel: .init(thread: .init(id: 1))))
     }
 }

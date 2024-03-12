@@ -33,12 +33,13 @@ class MockAppConfiguration: ChatDelegate {
     }
 
     static var shared: MockAppConfiguration = MockAppConfiguration()
+    static let isMeId = 1
 
     private init () {
         AppState.shared.mockUser = .init(cellphoneNumber: nil,
                                            coreUserId: nil,
                                            email: nil,
-                                           id: 1,
+                                           id: MockAppConfiguration.isMeId,
                                            image: nil,
                                            lastSeen: nil,
                                            name: "MySelf",
@@ -64,7 +65,15 @@ In this new line we are going to test if it can break the line.
                       mimeType: "application/pdf",
                       name: "Report",
                       originalName: "Report.pdf",
-                      size: 50000)
+                      size: 1350000)
+        )
+        let audioMetaData = FileMetaData(file:
+                .init(fileExtension: "mp3",
+                      link: "https://podspace.pod.ir/api/files/59XAD7YZFXY4BSPS",
+                      mimeType: "audio/mpeg",
+                      name: "dance the night",
+                      originalName: "dance the night.mp3",
+                      size: 48202520)
         )
         let imageMetaData = FileMetaData(file:
                 .init(fileExtension: "jpg",
@@ -133,7 +142,7 @@ In this new line we are going to test if it can break the line.
                 id: 1,
                 message: longText,
                 messageType: .text,
-                ownerId: 1,
+                ownerId:MockAppConfiguration.isMeId,
                 seen: true,
                 time: UInt(Date().millisecondsSince1970),
                 participant: Participant(id: 0, name: "John Doe"))
@@ -160,7 +169,7 @@ In this new line we are going to test if it can break the line.
                 id: 1,
                 message: longText,
                 messageType: .text,
-                ownerId: 1,
+                ownerId: MockAppConfiguration.isMeId,
                 seen: true,
                 time: UInt(Date().millisecondsSince1970),
                 participant: Participant(id: 1, name: "Myself")
@@ -169,7 +178,8 @@ In this new line we are going to test if it can break the line.
                 id: 1,
                 message: longText,
                 messageType: .podSpacePicture,
-                metadata: try? JSONEncoder().encode(imageMetaData).utf8String, ownerId: 1,
+                metadata: try? JSONEncoder().encode(imageMetaData).utf8String,
+                ownerId: MockAppConfiguration.isMeId,
                 seen: true,
                 time: UInt(Date().millisecondsSince1970),
                 participant: Participant(id: 2, name: "John doe")
@@ -178,7 +188,38 @@ In this new line we are going to test if it can break the line.
                 id: 1,
                 message: longText,
                 messageType: .podSpaceFile,
-                metadata: try? JSONEncoder().encode(fileMetaData).utf8String, ownerId: 1,
+                metadata: try? JSONEncoder().encode(fileMetaData).utf8String,
+                ownerId: MockAppConfiguration.isMeId,
+                seen: true,
+                time: UInt(Date().millisecondsSince1970),
+                participant: Participant(id: 2, name: "John doe")
+            ),
+            .init(
+                id: 1,
+                message: nil,
+                messageType: .podSpaceFile,
+                metadata: try? JSONEncoder().encode(fileMetaData).utf8String,
+                ownerId: MockAppConfiguration.isMeId,
+                seen: true,
+                time: UInt(Date().millisecondsSince1970),
+                participant: Participant(id: 2, name: "John doe")
+            ),
+            .init(
+                id: 1,
+                message: nil,
+                messageType: .podSpaceSound,
+                metadata: try? JSONEncoder().encode(audioMetaData).utf8String,
+                ownerId: 2,
+                seen: true,                
+                time: UInt(Date().millisecondsSince1970),
+                participant: Participant(id: 2, name: "John doe")
+            ),
+            .init(
+                id: 1,
+                message: longText,
+                messageType: .text,
+                metadata: nil,
+                ownerId: 2,
                 seen: true,
                 time: UInt(Date().millisecondsSince1970),
                 participant: Participant(id: 2, name: "John doe")

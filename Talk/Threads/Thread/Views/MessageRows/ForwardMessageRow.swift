@@ -13,12 +13,10 @@ import TalkUI
 import TalkViewModels
 
 final class ForwardMessageRow: UIButton {
-    private let hStackWithBar = UIStackView()
-    private let vStack = UIStackView()
-    private let hStack = UIStackView()
     private let forwardStaticLebel = UILabel()
     private let participantLabel = UILabel()
     private let bar = UIView()
+    private var heightConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,14 +28,16 @@ final class ForwardMessageRow: UIButton {
     }
 
     private func configureView() {
-        hStackWithBar.translatesAutoresizingMaskIntoConstraints = false
-        vStack.translatesAutoresizingMaskIntoConstraints = false
-
         layoutMargins = UIEdgeInsets(all: 8)
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
         configuration = .borderless()
+
+        translatesAutoresizingMaskIntoConstraints = false
+        forwardStaticLebel.translatesAutoresizingMaskIntoConstraints = false
+        participantLabel.translatesAutoresizingMaskIntoConstraints = false
+        bar.translatesAutoresizingMaskIntoConstraints = false
 
         forwardStaticLebel.font = UIFont.uiiransansCaption3
         forwardStaticLebel.textColor = Color.App.textPrimaryUIColor
@@ -51,38 +51,31 @@ final class ForwardMessageRow: UIButton {
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
-        vStack.axis = .vertical
-        vStack.spacing = 2
-        vStack.alignment = .leading
-        vStack.layoutMargins = UIEdgeInsets(all: 8)
-        vStack.isLayoutMarginsRelativeArrangement = true
+        addSubview(forwardStaticLebel)
+        addSubview(participantLabel)
+        addSubview(bar)
 
-        hStack.axis = .horizontal
-        hStack.spacing = 4
-
-        vStack.addArrangedSubview(forwardStaticLebel)
-        vStack.addArrangedSubview(participantLabel)
-        vStack.addArrangedSubview(hStack)
-
-        hStackWithBar.axis = .horizontal
-        hStackWithBar.spacing = 2
-        hStackWithBar.addArrangedSubview(bar)
-        hStackWithBar.addArrangedSubview(vStack)
-        addSubview(hStackWithBar)
-
+        heightConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 52)
         NSLayoutConstraint.activate([
-            bar.heightAnchor.constraint(equalTo: hStackWithBar.heightAnchor),
+            heightConstraint,
+            bar.topAnchor.constraint(equalTo: topAnchor),
+            bar.leadingAnchor.constraint(equalTo: leadingAnchor),
             bar.widthAnchor.constraint(equalToConstant: 1.5),
-            hStackWithBar.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
-            hStackWithBar.topAnchor.constraint(equalTo: topAnchor),
-            hStackWithBar.bottomAnchor.constraint(equalTo: bottomAnchor),
+            forwardStaticLebel.topAnchor.constraint(equalTo: topAnchor),
+            forwardStaticLebel.leadingAnchor.constraint(equalTo: bar.leadingAnchor, constant: 8),
+            participantLabel.topAnchor.constraint(equalTo: forwardStaticLebel.bottomAnchor, constant: 2),
+            participantLabel.leadingAnchor.constraint(equalTo: forwardStaticLebel.leadingAnchor),
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set(_ viewModel: MessageRowViewModel) {
         participantLabel.text = viewModel.message.forwardInfo?.participant?.name
         participantLabel.isHidden = viewModel.message.forwardInfo?.participant?.name == nil
         registerGestures(viewModel: viewModel)
+        let canShow = viewModel.message.forwardInfo != nil
+        isHidden = !canShow
+        forwardStaticLebel.heightAnchor.constraint(equalToConstant: canShow ? 16 : 0).isActive = true
+        heightConstraint.constant = canShow ? 52 : 0
     }
 
     private func registerGestures(viewModel: MessageRowViewModel) {
@@ -102,7 +95,7 @@ struct ForwardMessageRowWapper: UIViewRepresentable {
 
     func makeUIView(context: Context) -> some UIView {
         let view = ForwardMessageRow()
-        view.setValues(viewModel: viewModel)
+        view.set(viewModel)
         return view
     }
 

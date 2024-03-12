@@ -53,10 +53,9 @@ final class AvatarView: UIView {
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set(_ viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
         let showImage = avatarVM?.image != nil
-
         label.isHidden = showImage
         image.isHidden = !showImage
         if showImage {
@@ -66,6 +65,18 @@ final class AvatarView: UIView {
         }
         if avatarVM?.isImageReady == false {
             avatarVM?.fetch()
+        }
+
+        if viewModel.isNextMessageTheSameUser {
+            widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize).isActive = true
+            heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize).isActive = true
+            image.isHidden = true
+        } else {
+            let canShow = !viewModel.isMe && !viewModel.isNextMessageTheSameUser && viewModel.threadVM?.thread.group == true
+            isHidden = !canShow
+            widthAnchor.constraint(equalToConstant: canShow ? MessageRowViewModel.avatarSize : 0 ).isActive = true
+            heightAnchor.constraint(equalToConstant: canShow ? MessageRowViewModel.avatarSize : 0 ).isActive = true
+            print("can show is:\(canShow)")
         }
     }
 
@@ -91,7 +102,7 @@ struct AvatarViewWapper: UIViewRepresentable {
 
     func makeUIView(context: Context) -> some UIView {
         let view = AvatarView()
-        view.setValues(viewModel: viewModel)
+        view.set(viewModel)
         return view
     }
 

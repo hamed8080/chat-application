@@ -41,7 +41,6 @@ public final class ThreadsViewModel: ObservableObject {
             }
             .store(in: &cancelable)
         registerNotifications()
-        getThreads()
         RequestsManager.shared.$cancelRequest
             .sink { [weak self] newValue in
                 if let newValue {

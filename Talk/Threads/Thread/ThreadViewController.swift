@@ -59,7 +59,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
             return cell
         default:
             if let cell = cell as? TextMessageTypeCell, message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                cell.viewModel = viewModel
+                cell.setValues(viewModel: viewModel)
                 return cell
             } else if message is UnreadMessageProtocol {
                 return UnreadBubbleUITableViewCell()

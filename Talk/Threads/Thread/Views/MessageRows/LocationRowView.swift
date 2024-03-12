@@ -43,7 +43,7 @@ final class LocationRowView: UIView {
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set(_ viewModel: MessageRowViewModel) {
         if !viewModel.isMapType { return }
         if let mapImage = viewModel.downloadFileVM?.fileURL?.imageScale(width: Int(800))?.image {
             imageView.image = UIImage(cgImage: mapImage)
@@ -52,6 +52,10 @@ final class LocationRowView: UIView {
             layer.insertSublayer(gradient, at: 0)
             setNeedsLayout()
         }
+
+        let canShow = viewModel.isMapType
+        isHidden = !canShow
+        heightAnchor.constraint(equalToConstant: canShow ? 400 : 0).isActive = true
     }
 
     override func layoutSubviews() {
@@ -65,7 +69,7 @@ struct LocationRowViewWapper: UIViewRepresentable {
 
     func makeUIView(context: Context) -> some UIView {
         let view = LocationRowView()
-        view.setValues(viewModel: viewModel)
+        view.set(viewModel)
         return view
     }
 

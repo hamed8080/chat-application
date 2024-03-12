@@ -38,9 +38,9 @@ final class MessageTextView: UIView {
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set(_ viewModel: MessageRowViewModel) {
         let message = viewModel.message
-        textView.textAlignment = viewModel.isEnglish ? .left : .right
+        textView.textAlignment = viewModel.isMe ? .right : .left
         if !message.messageTitle.isEmpty {
             textView.attributedText = viewModel.nsMarkdownTitle
         }
@@ -53,6 +53,9 @@ final class MessageTextView: UIView {
             tap.viewModel = viewModel
             textView.addGestureRecognizer(tap)
         }
+
+        let canShow = message.messageTitle.isEmpty == false
+        isHidden = !canShow
     }
 
     @objc func onTapJoinGroup(_ sender: MessageTapGestureRecognizer) {
@@ -65,7 +68,7 @@ struct MessageTextViewWapper: UIViewRepresentable {
 
     func makeUIView(context: Context) -> some UIView {
         let view = MessageTextView()
-        view.setValues(viewModel: viewModel)
+        view.set(viewModel)
         return view
     }
 

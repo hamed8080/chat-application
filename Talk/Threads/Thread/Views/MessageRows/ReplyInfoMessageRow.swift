@@ -13,49 +13,14 @@ import TalkUI
 import TalkViewModels
 import Additive
 
-struct ReplyImageIcon: View {
-    let viewModel: MessageRowViewModel
-
-    var body: some View {
-        if viewModel.isReplyImage, let link = viewModel.replyLink {
-            let config = ImageLoaderConfig(url: link, size: .SMALL, metaData: viewModel.message.replyInfo?.metadata, thumbnail: true)
-            ImageLoaderView(imageLoader: .init(config: config), contentMode: .fill)
-                .frame(width: 32, height: 32)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
-                .clipped()
-        }
-    }
-}
-
-struct ReplyFileIcon: View {
-    private var message: Message { viewModel.message }
-    @EnvironmentObject var viewModel: MessageRowViewModel
-
-    var body: some View {
-        if !viewModel.isReplyImage, viewModel.canShowIconFile {
-            if let iconName = self.message.replyIconName {
-                Image(systemName: iconName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 32, height: 32)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .foregroundColor(Color.App.accent)
-                    .clipped()
-            }
-        }
-    }
-}
-
 final class ReplyInfoMessageRow: UIButton {
-    private let hStackWithBar = UIStackView()
-    private let vStack = UIStackView()
-    private let hStack = UIStackView()
     private let replyStaticLebel = UILabel()
     private let participantLabel = UILabel()
     private let imageIconView = ImageLoaderUIView()
     private let deletedLabel = UILabel()
     private let replyLabel = UILabel()
     private let bar = UIView()
+    private var heightConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -67,14 +32,19 @@ final class ReplyInfoMessageRow: UIButton {
     }
 
     private func configureView() {
-        hStackWithBar.translatesAutoresizingMaskIntoConstraints = false
-        vStack.translatesAutoresizingMaskIntoConstraints = false
-
         layoutMargins = UIEdgeInsets(all: 8)
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
         configuration = .borderless()
+
+        translatesAutoresizingMaskIntoConstraints = false
+        replyStaticLebel.translatesAutoresizingMaskIntoConstraints = false
+        participantLabel.translatesAutoresizingMaskIntoConstraints = false
+        imageIconView.translatesAutoresizingMaskIntoConstraints = false
+        deletedLabel.translatesAutoresizingMaskIntoConstraints = false
+        replyLabel.translatesAutoresizingMaskIntoConstraints = false
+        bar.translatesAutoresizingMaskIntoConstraints = false
 
         replyStaticLebel.font = UIFont.uiiransansCaption3
         replyStaticLebel.textColor = Color.App.textPrimaryUIColor
@@ -87,6 +57,7 @@ final class ReplyInfoMessageRow: UIButton {
         replyLabel.numberOfLines = 2
         replyLabel.textColor = UIColor.gray
         replyLabel.lineBreakMode = .byTruncatingTail
+        replyLabel.textAlignment = .left
 
         deletedLabel.text = "Messages.deletedMessageReply".localized()
         deletedLabel.font = UIFont.uiiransansBoldCaption2
@@ -96,40 +67,31 @@ final class ReplyInfoMessageRow: UIButton {
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
-        hStack.axis = .horizontal
-        hStack.spacing = 4
-        hStack.addArrangedSubview(imageIconView)
-        hStack.addArrangedSubview(deletedLabel)
-        hStack.addArrangedSubview(replyLabel)
-
-        hStackWithBar.axis = .horizontal
-        hStackWithBar.spacing = 2
-
-        vStack.axis = .vertical
-        vStack.spacing = 2
-        vStack.alignment = .leading
-        vStack.layoutMargins = UIEdgeInsets(horizontal: 8, vertical: 4)
-        vStack.isLayoutMarginsRelativeArrangement = true
-        vStack.addArrangedSubview(replyStaticLebel)
-        vStack.addArrangedSubview(participantLabel)
-        vStack.addArrangedSubview(hStack)
-
-        hStackWithBar.addArrangedSubview(bar)
-        hStackWithBar.addArrangedSubview(vStack)
-
-        addSubview(hStackWithBar)
-
+        addSubview(replyStaticLebel)
+        addSubview(participantLabel)
+        addSubview(imageIconView)
+        addSubview(deletedLabel)
+        addSubview(replyLabel)
+        addSubview(bar)
+        heightConstraint = heightAnchor.constraint(equalToConstant: 52)
         NSLayoutConstraint.activate([
+            heightConstraint,
+            bar.topAnchor.constraint(equalTo: topAnchor),
+            bar.leadingAnchor.constraint(equalTo: leadingAnchor),
             bar.widthAnchor.constraint(equalToConstant: 1.5),
-            imageIconView.widthAnchor.constraint(equalToConstant: 28),
-            imageIconView.heightAnchor.constraint(equalToConstant: 28),
-            hStackWithBar.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
-            hStackWithBar.topAnchor.constraint(equalTo: topAnchor),
-            hStackWithBar.bottomAnchor.constraint(equalTo: bottomAnchor),
+            bar.bottomAnchor.constraint(equalTo: bottomAnchor),
+            replyStaticLebel.topAnchor.constraint(equalTo: topAnchor),
+            replyStaticLebel.leadingAnchor.constraint(equalTo: bar.leadingAnchor, constant: 8),
+            participantLabel.topAnchor.constraint(equalTo: replyStaticLebel.bottomAnchor, constant: 2),
+            participantLabel.leadingAnchor.constraint(equalTo: replyStaticLebel.leadingAnchor),
+            replyLabel.topAnchor.constraint(equalTo: participantLabel.bottomAnchor, constant: 2),
+            imageIconView.leadingAnchor.constraint(equalTo: replyStaticLebel.leadingAnchor),
+            replyLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: 8),
+            replyLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8)
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set(_ viewModel: MessageRowViewModel) {
         let replyInfo = viewModel.message.replyInfo
         participantLabel.text = viewModel.message.replyInfo?.participant?.name
         participantLabel.isHidden = viewModel.message.replyInfo?.participant?.name == nil
@@ -137,11 +99,16 @@ final class ReplyInfoMessageRow: UIButton {
         replyLabel.isHidden = replyInfo?.message?.isEmpty == true
         replyLabel.textAlignment = viewModel.isEnglish || viewModel.isMe ? .right : .left
         deletedLabel.isHidden = replyInfo?.deleted == nil || replyInfo?.deleted == false
-        imageIconView.isHidden = !viewModel.isReplyImage
+        let hasImage = viewModel.isReplyImage
+        imageIconView.isHidden = !hasImage
         if viewModel.isReplyImage, let url = viewModel.replyLink {
             imageIconView.setValues(config: .init(url: url, metaData: viewModel.message.replyInfo?.metadata))
         }
         registerGestures(viewModel)
+        let canShow = viewModel.message.replyInfo != nil
+        isHidden = !canShow
+        heightConstraint.constant = canShow ? 52 : 0
+        imageIconView.widthAnchor.constraint(equalToConstant: hasImage ? 24 : 0).isActive = true
     }
 
     private func registerGestures(_ viewModel: MessageRowViewModel) {
@@ -154,7 +121,6 @@ final class ReplyInfoMessageRow: UIButton {
     @objc func onReplyTapped(_ sender: MessageTapGestureRecognizer) {
         print("on reply tapped")
     }
-
 }
 
 struct ReplyInfoMessageRowWapper: UIViewRepresentable {
@@ -162,7 +128,7 @@ struct ReplyInfoMessageRowWapper: UIViewRepresentable {
 
     func makeUIView(context: Context) -> some UIView {
         let view = ReplyInfoMessageRow()
-        view.setValues(viewModel: viewModel)
+        view.set(viewModel)
         return view
     }
 

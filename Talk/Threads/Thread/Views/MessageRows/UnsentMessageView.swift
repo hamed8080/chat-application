@@ -11,7 +11,6 @@ import TalkViewModels
 import ChatModels
 
 final class UnsentMessageView: UIView {
-    private let stack = UIStackView()
     private let btnCancel = UIButton()
     private let btnResend = UIButton()
 
@@ -25,26 +24,27 @@ final class UnsentMessageView: UIView {
     }
 
     private func configureView() {
+        btnCancel.translatesAutoresizingMaskIntoConstraints = false
+        btnResend.translatesAutoresizingMaskIntoConstraints = false
+
         btnCancel.setTitle("General.cancel".localized(), for: .normal)
         btnResend.setTitle("Messages.resend".localized(), for: .normal)
-        stack.axis = .horizontal
-        stack.spacing = 16
-        stack.layoutMargins = UIEdgeInsets(horizontal: 6)
 
-        stack.addArrangedSubview(btnResend)
-        stack.addArrangedSubview(btnCancel)
-
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(stack)
+        addSubview(btnCancel)
+        addSubview(btnResend)
 
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            stack.topAnchor.constraint(equalTo: topAnchor),
+            btnCancel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            btnCancel.topAnchor.constraint(equalTo: topAnchor),
+            btnResend.topAnchor.constraint(equalTo: topAnchor),
+            btnResend.leadingAnchor.constraint(equalTo: btnCancel.trailingAnchor, constant: 8),
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
-        
+    public func set(_ viewModel: MessageRowViewModel) {
+        let canShow = viewModel.message.isUnsentMessage
+        isHidden = !canShow
+        heightAnchor.constraint(equalToConstant:  canShow ? 28 : 0).isActive = true
     }
 }
 

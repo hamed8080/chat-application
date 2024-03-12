@@ -65,7 +65,7 @@ final class UploadMessageFileView: UIView {
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set(_ viewModel: MessageRowViewModel) {
         let message = viewModel.message
         let progress = CGFloat(viewModel.uploadViewModel?.uploadPercent ?? 0)
         progressView.animate(to: progress, systemIconName: stateIcon(viewModel: viewModel))
@@ -82,6 +82,11 @@ final class UploadMessageFileView: UIView {
         if let fileName = message.uploadFileName ?? viewModel.fileMetaData?.file?.originalName {
             fileNameLabel.text = fileName
         }
+
+
+        let canShow = message.isUploadMessage && !message.isImage && message.isFileType
+        isHidden = !canShow
+        heightAnchor.constraint(equalToConstant: canShow ? 52 : 0).isActive = true
     }
 
     private func stateIcon(viewModel: MessageRowViewModel) -> String {
@@ -101,7 +106,7 @@ struct UploadMessageFileViewWapper: UIViewRepresentable {
 
     func makeUIView(context: Context) -> some UIView {
         let view = UploadMessageFileView()
-        view.setValues(viewModel: viewModel)
+        view.set(viewModel)
         return view
     }
 

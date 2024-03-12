@@ -1,5 +1,5 @@
 //
-//  MessageRowImageDownloader.swift
+//  MessageRowImageDownloaderView.swift
 //  Talk
 //
 //  Created by hamed on 11/14/23.
@@ -12,7 +12,7 @@ import ChatModels
 import TalkModels
 import Chat
 
-final class MessageRowImageDownloader: UIView {
+final class MessageRowImageDownloaderView: UIView {
     private let container = UIView()
     private let stack = UIStackView()
     private let fileSizeLabel = UILabel()
@@ -82,7 +82,7 @@ final class MessageRowImageDownloader: UIView {
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set(_ viewModel: MessageRowViewModel) {
         imageView.image = viewModel.image
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
         progressView.animate(to: progress, systemIconName: stateIcon(viewModel: viewModel))
@@ -96,6 +96,10 @@ final class MessageRowImageDownloader: UIView {
         let tap = MessageTapGestureRecognizer(target: self, action: #selector(onTap(_:)))
         stack.isUserInteractionEnabled = true
         stack.addGestureRecognizer(tap)
+
+        let canShow = viewModel.canShowImageView
+        isHidden = !canShow
+        heightAnchor.constraint(equalToConstant: canShow ? 128 : 0).isActive = true
     }
 
     @objc func onTap(_ sender: MessageTapGestureRecognizer) {
@@ -133,8 +137,8 @@ struct MessageRowImageDownloaderWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
     func makeUIView(context: Context) -> some UIView {
-        let view = MessageRowImageDownloader()
-        view.setValues(viewModel: viewModel)
+        let view = MessageRowImageDownloaderView()
+        view.set(viewModel)
         return view
     }
 
