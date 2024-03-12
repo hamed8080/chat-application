@@ -17,7 +17,7 @@ final class MessageRowImageDownloader: UIView {
     private let stack = UIStackView()
     private let fileSizeLabel = UILabel()
     private let imageView = UIImageView()
-    private let progressView = CircleProgressView(color: Color.App.whiteUIColor, iconTint: Color.App.whiteUIColor)
+    private let progressView = CircleProgressButton(color: Color.App.whiteUIColor, iconTint: Color.App.whiteUIColor)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

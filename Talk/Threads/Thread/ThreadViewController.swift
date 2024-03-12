@@ -13,29 +13,6 @@ import Combine
 import TalkModels
 import ChatModels
 
-struct UIKitThreadViewWrapper: UIViewControllerRepresentable {
-    let threadVM: ThreadViewModel
-
-    func makeUIViewController(context: Context) -> some UIViewController {
-        let vc = ThreadViewController()
-        vc.viewModel = threadVM
-        return vc
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-
-    }
-}
-
-final class UnreadBubbleUITableViewCell: UITableViewCell {
-    convenience init(viewModel: MessageRowViewModel) {
-        self.init(style: .default, reuseIdentifier: "UnreadBubbleUITableViewCell")
-        let label = UILabel(frame: contentView.frame)
-        label.text = "unread bubble"
-        contentView.addSubview(label)
-    }
-}
-
 final class ThreadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var viewModel: ThreadViewModel!
     var tableView: UITableView!
@@ -146,5 +123,19 @@ extension ThreadViewController {
                 self?.reload()
             }
             .store(in: &cancelable)
+    }
+}
+
+struct UIKitThreadViewWrapper: UIViewControllerRepresentable {
+    let threadVM: ThreadViewModel
+
+    func makeUIViewController(context: Context) -> some UIViewController {
+        let vc = ThreadViewController()
+        vc.viewModel = threadVM
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+
     }
 }

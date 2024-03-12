@@ -16,44 +16,6 @@ import TalkModels
 import ChatDTO
 import TalkUI
 
-//public struct UploadMessageImageView: View {
-//    let viewModel: MessageRowViewModel
-//    var message: Message { viewModel.message }
-//
-//    public var body: some View {
-//        ZStack {
-//            if let data = message.uploadFile?.uploadImageRequest?.dataToSend, let image = UIImage(data: data) {
-//                /// We use max to at least have a width, because there are times that maxWidth is nil.
-//                let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (8 + MessageRowBackground.tailSize.width)
-//                /// We use max to at least have a width, because there are times that maxWidth is nil.
-//                /// We use min to prevent the image gets bigger than 320 if it's bigger.
-//                let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
-//                
-//                Image(uiImage: image)
-//                    .resizable()
-//                    .scaledToFill()
-//                    .frame(width: width, height: height)
-//                    .blur(radius: 16, opaque: false)
-//                    .clipped()
-//                    .zIndex(0)
-//                    .clipShape(RoundedRectangle(cornerRadius:(8)))
-//            }
-//            OverladUploadImageButton(messageRowVM: viewModel)
-//                .environmentObject(viewModel.uploadViewModel!)
-//        }
-//        .onTapGesture {
-//            if viewModel.uploadViewModel?.state == .paused {
-//                viewModel.uploadViewModel?.resumeUpload()
-//            } else if viewModel.uploadViewModel?.state == .uploading {
-//                viewModel.uploadViewModel?.cancelUpload()
-//            }
-//        }
-//        .task {
-//            viewModel.uploadViewModel?.startUploadImage()
-//        }
-//    }
-//}
-
 struct OverladUploadImageButton: View {
     let messageRowVM: MessageRowViewModel
     @EnvironmentObject var viewModel: UploadFileViewModel
@@ -116,7 +78,7 @@ final class UploadMessageImageView: UIView {
     private let stack = UIStackView()
     private let fileSizeLabel = UILabel()
     private let uploadImage = UIImageView()
-    private let progressView = CircleProgressView(color: Color.App.whiteUIColor, iconTint: Color.App.whiteUIColor)
+    private let progressView = CircleProgressButton(color: Color.App.whiteUIColor, iconTint: Color.App.whiteUIColor)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

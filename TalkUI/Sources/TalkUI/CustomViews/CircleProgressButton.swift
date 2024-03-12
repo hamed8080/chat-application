@@ -1,5 +1,5 @@
 //
-//  CircleProgressView.swift
+//  CircleProgressButton.swift
 //
 //
 //  Created by hamed on 1/3/24.
@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 import SwiftUI
 
-public final class CircleProgressView: UIView {
-    public var color: UIColor?
-    public var bgColor: UIColor?
+public final class CircleProgressButton: UIButton {
+    private var color: UIColor?
+    private var bgColor: UIColor?
     private var shapeLayer = CAShapeLayer()
     private let imgCenter = UIImageView()
     private var iconTint: UIColor?

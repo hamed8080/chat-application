@@ -10,25 +10,6 @@ import TalkViewModels
 import TalkUI
 import ChatModels
 
-//struct GroupParticipantNameView: View {
-//    private var message: Message { viewModel.message }
-//    @EnvironmentObject var viewModel: MessageRowViewModel
-//    var canShowName: Bool {
-//        !viewModel.isMe && viewModel.threadVM?.thread.group == true && viewModel.threadVM?.thread.type?.isChannelType == false
-//    }
-//
-//    var body: some View {
-//        if canShowName {
-//            HStack {
-//                Text(verbatim: message.participant?.name ?? "")
-//                    .foregroundStyle(Color.App.purple)
-//                    .font(.iransansBody)
-//            }
-//            .padding(.horizontal, 6)
-//        }
-//    }
-//}
-
 final class GroupParticipantNameView: UIView {
     private let label = UILabel()
 

@@ -41,7 +41,7 @@ public extension Message {
         mutableAttr.addLinkColor(messageTitle, UIColor(named: "text_secondary") ?? .gray)
         return mutableAttr
     }
-    
+
     var uploadFile: UploadWithTextMessageProtocol? { self as? UploadWithTextMessageProtocol }
     var fileExtension: String? { uploadFile?.uploadFileRequest?.fileExtension ?? uploadFile?.uploadImageRequest?.fileExtension }
     var uploadFileName: String? { uploadFile?.uploadFileRequest?.fileName ?? uploadFile?.uploadImageRequest?.fileName }

@@ -19,7 +19,10 @@ final class MessageRowFileDownloader: UIView {
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
     private let iconImageView = UIImageView()
-    private let progressView = CircleProgressView(color: Color.App.textPrimaryUIColor, iconTint: Color.App.bgPrimaryUIColor)
+    private let progressButton = CircleProgressButton(color: Color.App.textPrimaryUIColor, iconTint: Color.App.textPrimaryUIColor)
+    private var viewModel: MessageRowViewModel?
+    private var downloadVM: DownloadFileViewModel? { viewModel?.downloadFileVM }
+    private var message: Message? { viewModel?.message }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -65,7 +68,7 @@ final class MessageRowFileDownloader: UIView {
 
         hStack.axis = .horizontal
         hStack.spacing = 12
-        hStack.addArrangedSubview(progressView)
+        hStack.addArrangedSubview(progressButton)
         hStack.addArrangedSubview(vStack)
         container.addSubview(hStack)
         addSubview(container)
@@ -81,19 +84,20 @@ final class MessageRowFileDownloader: UIView {
             container.bottomAnchor.constraint(equalTo: bottomAnchor),
             hStack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             hStack.topAnchor.constraint(equalTo: container.topAnchor),
-            progressView.widthAnchor.constraint(equalToConstant: 52),
-            progressView.heightAnchor.constraint(equalToConstant: 52),
+            progressButton.widthAnchor.constraint(equalToConstant: 52),
+            progressButton.heightAnchor.constraint(equalToConstant: 52),
             iconImageView.widthAnchor.constraint(equalToConstant: 24),
             iconImageView.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
         let metaData = viewModel.fileMetaData
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
-        progressView.animate(to: progress, systemIconName: stateIcon(viewModel: viewModel))
+        progressButton.animate(to: progress, systemIconName: stateIcon())
         if progress >= 1 {
-            progressView.removeProgress()
+            progressButton.removeProgress()
         }
 
         if let fileSize = metaData?.file?.size?.toSizeString(locale: Language.preferredLocale)  {
@@ -106,7 +110,7 @@ final class MessageRowFileDownloader: UIView {
 
         let font = UIFont.systemFont(ofSize: 12, weight: .medium)
         let config = UIImage.SymbolConfiguration(font: font)
-        let icon = stateIcon(viewModel: viewModel).replacingOccurrences(of: ".circle", with: "")
+        let icon = stateIcon().replacingOccurrences(of: ".circle", with: "")
         iconImageView.image = UIImage(systemName: icon, withConfiguration: config)
 
         let split = metaData?.file?.originalName?.split(separator: ".")
@@ -114,28 +118,34 @@ final class MessageRowFileDownloader: UIView {
         let lastSplit = String(split?.last ?? "")
         let extensionName = (ext ?? lastSplit)
         fileTypeLabel.text = extensionName.uppercased()
-        
-        let tap = MessageTapGestureRecognizer(target: self, action: #selector(onTap(_:)))
-        vStack.isUserInteractionEnabled = true
-        vStack.addGestureRecognizer(tap)
+        progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
     }
 
-    private func stateIcon(viewModel: MessageRowViewModel) -> String {
-        let message = viewModel.message
-        guard let downloadVM = viewModel.downloadFileVM else { return "" }
-        if let iconName = message.iconName, downloadVM.state == .completed {
+    private func stateIcon() -> String {
+        guard let state = downloadVM?.state else { return "arrow.down" }
+        if let iconName = message?.iconName, state == .completed {
             return iconName
-        } else if downloadVM.state == .downloading {
+        } else if state == .downloading {
             return "pause.fill"
-        } else if downloadVM.state == .paused {
+        } else if state == .paused {
             return "play.fill"
         } else {
             return "arrow.down"
         }
     }
 
-    @objc func onTap(_ sender: MessageTapGestureRecognizer) {
-        guard let viewModel = sender.viewModel?.downloadFileVM else { return }
+    @objc private func onTap() {
+        print("tapped")
+        guard let downloadVM = downloadVM else { return }
+        if downloadVM.state == .completed {
+            shareFile()
+        } else {
+            manageDownload()
+        }
+    }
+
+    private func manageDownload() {
+        guard let viewModel = downloadVM else { return }
         if viewModel.state == .paused {
             viewModel.resumeDownload()
         } else if viewModel.state == .downloading {
@@ -146,12 +156,12 @@ final class MessageRowFileDownloader: UIView {
     }
 
     private func shareFile() {
-//        Task {
-//            _ = await message.makeTempURL()
-//            await MainActor.run {
+        Task {
+            _ = await message?.makeTempURL()
+            await MainActor.run {
 //                shareDownloadedFile.toggle()
-//            }
-//        }
+            }
+        }
     }
 }
 

@@ -12,90 +12,13 @@ import ChatModels
 import TalkModels
 import ChatDTO
 import TalkUI
-//
-//public struct UploadMessageFileView: View {
-//    let viewModel: MessageRowViewModel
-//    var message: Message { viewModel.message }
-//
-//    public var body: some View {
-//        HStack(spacing: 4) {
-//            UploadImageButton(messageRowVM: viewModel)
-//                .environmentObject(viewModel.uploadViewModel!)
-//            if let fileName = message.uploadFileName ?? viewModel.fileMetaData?.file?.originalName {
-//                Text("\(fileName)")
-//                    .foregroundStyle(Color.App.text)
-//                    .font(.iransansBoldCaption)
-//            }
-//        }
-//        .task {
-//            viewModel.uploadViewModel?.startUploadFile()
-//        }
-//    }
-//}
-//
-//struct UploadImageButton: View {
-//    let messageRowVM: MessageRowViewModel
-//    @EnvironmentObject var viewModel: UploadFileViewModel
-//    var message: Message { messageRowVM.message }
-//    var percent: Int64 { viewModel.uploadPercent }
-//    var stateIcon: String {
-//        if viewModel.state == .uploading {
-//            return "xmark"
-//        } else if viewModel.state == .paused {
-//            return "play.fill"
-//        } else {
-//            return "arrow.up"
-//        }
-//    }
-//
-//    var body: some View {
-//        if viewModel.state != .completed {
-//            HStack {
-//                ZStack {
-//                    Image(systemName: stateIcon)
-//                        .resizable()
-//                        .scaledToFit()
-//                        .frame(width: 12, height: 12)
-//                        .foregroundStyle(Color.App.bgPrimary)
-//
-//                    Circle()
-//                        .trim(from: 0.0, to: min(Double(percent) / 100, 1.0))
-//                        .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-//                        .foregroundColor(Color.App.bgPrimary)
-//                        .rotationEffect(Angle(degrees: 270))
-//                        .frame(width: 32, height: 32)
-//                        .environment(\.layoutDirection, .leftToRight)
-//                }
-//                .frame(width: 42, height: 42)
-//                .background(Color.App.btnDownload)
-//                .clipShape(RoundedRectangle(cornerRadius:(42 / 2)))
-//                .onTapGesture {
-//                    if viewModel.state == .paused {
-//                        viewModel.resumeUpload()
-//                    } else if viewModel.state == .uploading {
-//                        viewModel.cancelUpload()
-//                    }
-//                }
-//
-//                VStack(alignment: .leading, spacing: 8) {
-//                    if let fileZize = messageRowVM.fileMetaData?.file?.size {
-//                        Text(String(fileZize))
-//                            .multilineTextAlignment(.leading)
-//                            .font(.iransansBoldCaption2)
-//                            .foregroundColor(.white)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
 
 final class UploadMessageFileView: UIView {
     private let container = UIView()
     private let stack = UIStackView()
     private let fileNameLabel = UILabel()
     private let fileSizeLabel = UILabel()
-    private let progressView = CircleProgressView(color: Color.App.bgPrimaryUIColor, iconTint: Color.App.bgPrimaryUIColor)
+    private let progressView = CircleProgressButton(color: Color.App.bgPrimaryUIColor, iconTint: Color.App.bgPrimaryUIColor)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

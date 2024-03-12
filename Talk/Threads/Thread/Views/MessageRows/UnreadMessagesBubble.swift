@@ -9,21 +9,6 @@ import SwiftUI
 import ChatModels
 import TalkViewModels
 
-//struct UnreadMessagesBubble: View {
-//    var body: some View {
-//        HStack {
-//            Spacer()
-//            Text("Messages.unreadMessages")
-//                .font(.iransansCaption)
-//                .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-//                .background(Color.App.hint)
-//                .clipShape(RoundedRectangle(cornerRadius:(16)))
-//                .foregroundColor(Color.App.white)
-//            Spacer()
-//        }
-//    }
-//}
-
 final class UnreadMessagesBubble: UIView {
     private let label = UILabel()
 
@@ -52,6 +37,15 @@ final class UnreadMessagesBubble: UIView {
             label.trailingAnchor.constraint(equalTo: trailingAnchor),
             label.topAnchor.constraint(equalTo: topAnchor),
         ])
+    }
+}
+
+final class UnreadBubbleUITableViewCell: UITableViewCell {
+    convenience init(viewModel: MessageRowViewModel) {
+        self.init(style: .default, reuseIdentifier: "UnreadBubbleUITableViewCell")
+        let label = UILabel(frame: contentView.frame)
+        label.text = "unread bubble"
+        contentView.addSubview(label)
     }
 }
 
