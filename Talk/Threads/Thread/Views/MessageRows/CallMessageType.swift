@@ -50,7 +50,6 @@ final class CallEventUITableViewCell: UITableViewCell {
         stack.layer.masksToBounds = true
         stack.layoutMargins = .init(top: 4, left: 16, bottom: 4, right: 16)
         stack.isLayoutMarginsRelativeArrangement = true
-        contentView.backgroundColor = .yellow
         contentView.addSubview(stack)
 
         NSLayoutConstraint.activate([

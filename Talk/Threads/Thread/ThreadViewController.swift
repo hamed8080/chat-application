@@ -68,6 +68,10 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
             }
         }
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.backgroundColor = UIColor.clear
+    }
 
     enum CellTypes: String {
         case call = "CallEventUITableViewCell"
@@ -115,6 +119,12 @@ extension ThreadViewController {
         tableView.register(ParticipantsEventUITableViewCell.self, forCellReuseIdentifier: "ParticipantsEventUITableViewCell")
         tableView.register(UnreadBubbleUITableViewCell.self, forCellReuseIdentifier: "UnreadBubbleUITableViewCell")
         view.addSubview(tableView)
+
+        let imageView = UIImageView(image: UIImage(named: "chat_bg"))
+        view.backgroundColor = Color.App.bgPrimaryUIColor
+        view.addSubview(imageView)
+
+        view.bringSubviewToFront(tableView)
     }
 
     private func setupObservers() {

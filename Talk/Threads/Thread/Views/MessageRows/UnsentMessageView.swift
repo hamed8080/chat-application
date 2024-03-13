@@ -24,6 +24,7 @@ final class UnsentMessageView: UIView {
     }
 
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
         btnCancel.translatesAutoresizingMaskIntoConstraints = false
         btnResend.translatesAutoresizingMaskIntoConstraints = false
 
@@ -43,6 +44,8 @@ final class UnsentMessageView: UIView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         let canShow = viewModel.message.isUnsentMessage
+        btnCancel.isHidden = !canShow
+        btnResend.isHidden = !canShow
         isHidden = !canShow
         heightAnchor.constraint(equalToConstant:  canShow ? 28 : 0).isActive = true
     }

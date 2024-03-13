@@ -68,9 +68,9 @@ final class AvatarView: UIView {
         }
 
         if viewModel.isNextMessageTheSameUser {
+            isHidden = false
             widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize).isActive = true
             heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize).isActive = true
-            image.isHidden = true
         } else {
             let canShow = !viewModel.isMe && !viewModel.isNextMessageTheSameUser && viewModel.threadVM?.thread.group == true
             isHidden = !canShow

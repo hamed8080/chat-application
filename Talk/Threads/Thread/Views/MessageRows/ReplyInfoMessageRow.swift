@@ -20,7 +20,6 @@ final class ReplyInfoMessageRow: UIButton {
     private let deletedLabel = UILabel()
     private let replyLabel = UILabel()
     private let bar = UIView()
-    private var heightConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -33,7 +32,7 @@ final class ReplyInfoMessageRow: UIButton {
 
     private func configureView() {
         layoutMargins = UIEdgeInsets(all: 8)
-        backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
+        backgroundColor = Color.App.bgSecondaryUIColor
         layer.cornerRadius = 5
         layer.masksToBounds = true
         configuration = .borderless()
@@ -73,9 +72,8 @@ final class ReplyInfoMessageRow: UIButton {
         addSubview(deletedLabel)
         addSubview(replyLabel)
         addSubview(bar)
-        heightConstraint = heightAnchor.constraint(equalToConstant: 52)
         NSLayoutConstraint.activate([
-            heightConstraint,
+            heightAnchor.constraint(equalToConstant: 56),
             bar.topAnchor.constraint(equalTo: topAnchor),
             bar.leadingAnchor.constraint(equalTo: leadingAnchor),
             bar.widthAnchor.constraint(equalToConstant: 1.5),
@@ -92,6 +90,7 @@ final class ReplyInfoMessageRow: UIButton {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         let replyInfo = viewModel.message.replyInfo
         participantLabel.text = viewModel.message.replyInfo?.participant?.name
         participantLabel.isHidden = viewModel.message.replyInfo?.participant?.name == nil
@@ -107,8 +106,13 @@ final class ReplyInfoMessageRow: UIButton {
         registerGestures(viewModel)
         let canShow = viewModel.message.replyInfo != nil
         isHidden = !canShow
-        heightConstraint.constant = canShow ? 52 : 0
+        heightAnchor.constraint(equalToConstant: canShow ? 56 : 0 ).isActive = true
         imageIconView.widthAnchor.constraint(equalToConstant: hasImage ? 24 : 0).isActive = true
+        if hasImage {
+            replyLabel.leadingAnchor.constraint(equalTo: imageIconView.leadingAnchor).isActive = true
+        } else {
+            replyLabel.leadingAnchor.constraint(equalTo: replyStaticLebel.leadingAnchor).isActive = true
+        }
     }
 
     private func registerGestures(_ viewModel: MessageRowViewModel) {

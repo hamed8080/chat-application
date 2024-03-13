@@ -16,7 +16,6 @@ final class ForwardMessageRow: UIButton {
     private let forwardStaticLebel = UILabel()
     private let participantLabel = UILabel()
     private let bar = UIView()
-    private var heightConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,9 +54,8 @@ final class ForwardMessageRow: UIButton {
         addSubview(participantLabel)
         addSubview(bar)
 
-        heightConstraint = heightAnchor.constraint(greaterThanOrEqualToConstant: 52)
         NSLayoutConstraint.activate([
-            heightConstraint,
+            heightAnchor.constraint(greaterThanOrEqualToConstant: 52),
             bar.topAnchor.constraint(equalTo: topAnchor),
             bar.leadingAnchor.constraint(equalTo: leadingAnchor),
             bar.widthAnchor.constraint(equalToConstant: 1.5),
@@ -69,13 +67,15 @@ final class ForwardMessageRow: UIButton {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        let canShow = viewModel.message.forwardInfo != nil
+        forwardStaticLebel.isHidden = !canShow
+        bar.isHidden = !canShow
         participantLabel.text = viewModel.message.forwardInfo?.participant?.name
         participantLabel.isHidden = viewModel.message.forwardInfo?.participant?.name == nil
         registerGestures(viewModel: viewModel)
-        let canShow = viewModel.message.forwardInfo != nil
         isHidden = !canShow
-        forwardStaticLebel.heightAnchor.constraint(equalToConstant: canShow ? 16 : 0).isActive = true
-        heightConstraint.constant = canShow ? 52 : 0
+        heightAnchor.constraint(equalToConstant: canShow ? 16 : 0).isActive = true
     }
 
     private func registerGestures(viewModel: MessageRowViewModel) {

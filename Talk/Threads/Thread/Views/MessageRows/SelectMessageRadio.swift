@@ -23,9 +23,10 @@ public final class SelectMessageRadio: UIView {
     }
 
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
-        addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(imageView)
         NSLayoutConstraint.activate([
             widthAnchor.constraint(equalToConstant: 48),
             heightAnchor.constraint(equalToConstant: 48),

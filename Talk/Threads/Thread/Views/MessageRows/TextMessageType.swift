@@ -78,8 +78,6 @@ final class TextMessageTypeCell: UITableViewCell {
 
         registerGestures()
 
-//        setDebugColors()
-
         contentView.addSubview(avatar)
         contentView.addSubview(radio)
         contentView.addSubview(groupParticipantNameView)
@@ -111,7 +109,6 @@ final class TextMessageTypeCell: UITableViewCell {
             avatar.heightAnchor.constraint(equalToConstant: 36),
             groupParticipantNameView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
             groupParticipantNameView.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 8),
-//            groupParticipantNameView.heightAnchor.constraint(equalToConstant: 22),
             replyInfoMessageRow.topAnchor.constraint(equalTo: groupParticipantNameView.bottomAnchor, constant: 2),
             replyInfoMessageRow.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
             replyInfoMessageRow.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
@@ -126,19 +123,19 @@ final class TextMessageTypeCell: UITableViewCell {
             messageRowImageDownloader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             messageRowVideoDownloader.topAnchor.constraint(equalTo: messageRowImageDownloader.bottomAnchor, constant: 2),
             messageRowVideoDownloader.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            messageRowVideoDownloader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            messageRowVideoDownloader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             messageRowAudioDownloader.topAnchor.constraint(equalTo: messageRowVideoDownloader.bottomAnchor, constant: 2),
             messageRowAudioDownloader.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            messageRowAudioDownloader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            messageRowAudioDownloader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             locationRowView.topAnchor.constraint(equalTo: messageRowAudioDownloader.bottomAnchor, constant: 2),
             locationRowView.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            locationRowView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            locationRowView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             uploadImage.topAnchor.constraint(equalTo: locationRowView.bottomAnchor, constant: 2),
             uploadImage.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            uploadImage.trailingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            uploadImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             uploadFile.topAnchor.constraint(equalTo: uploadImage.bottomAnchor, constant: 2),
             uploadFile.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            uploadFile.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            uploadFile.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             messageTextView.topAnchor.constraint(equalTo: uploadFile.bottomAnchor, constant: 2),
             messageTextView.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
             messageTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
@@ -156,7 +153,6 @@ final class TextMessageTypeCell: UITableViewCell {
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
         contentView.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
-        setLeadingWhenIsNotAvatarAndRadio()
         avatar.set(viewModel)
         messageTextView.set(viewModel)
         replyInfoMessageRow.set(viewModel)
@@ -172,6 +168,8 @@ final class TextMessageTypeCell: UITableViewCell {
         radio.set(viewModel)
         uploadImage.set(viewModel)
         uploadFile.set(viewModel)
+        setLeadingWhenIsNotAvatarAndRadio()
+        setDebugColors()
     }
 
     private func setLeadingWhenIsNotAvatarAndRadio() {
@@ -216,10 +214,10 @@ final class TextMessageTypeCell: UITableViewCell {
         messageRowImageDownloader.backgroundColor = .magenta
         messageRowVideoDownloader.backgroundColor = .purple
         messageRowAudioDownloader.backgroundColor = .green
-        locationRowView.backgroundColor = .systemTeal
-        uploadImage.backgroundColor = .systemTeal
+        locationRowView.backgroundColor = .darkGray
+        uploadImage.backgroundColor = .opaqueSeparator
         uploadFile.backgroundColor = .systemTeal
-        messageTextView.backgroundColor = .brown
+        messageTextView.backgroundColor = viewModel.isMe ? .green : .brown
         reactionView.backgroundColor = .blue.withAlphaComponent(0.5)
         unsentMessageView.backgroundColor = .yellow.withAlphaComponent(0.2)
         #endif
@@ -266,10 +264,10 @@ struct TextMessageType_Previews: PreviewProvider {
         let viewModels = MockAppConfiguration.shared.viewModels
 //        Preview(viewModel: viewModels.first(where: {$0.isMe})!)
 //            .previewDisplayName("IsMe")
-//        Preview(viewModel: viewModels.first(where: {$0.message.replyInfo != nil })!)
-//            .previewDisplayName("Reply")
-        Preview(viewModel: viewModels.first(where: {$0.message.isImage == true})!)
-            .previewDisplayName("ImageDownloader")
+        Preview(viewModel: viewModels.first(where: {$0.message.replyInfo != nil })!)
+            .previewDisplayName("Reply")
+//        Preview(viewModel: viewModels.first(where: {$0.message.isImage == true})!)
+//            .previewDisplayName("ImageDownloader")
 //        Preview(viewModel: viewModels.first(where: {$0.message.isFileType == true && !$0.message.isImage})!)
 //            .previewDisplayName("FileDownloader")
 //        let vm = viewModels.first(where: {$0.message.message != nil && !$0.message.isImage})!
