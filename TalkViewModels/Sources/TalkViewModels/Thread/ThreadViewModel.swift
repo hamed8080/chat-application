@@ -343,6 +343,17 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         }
     }
 
+    public func onDragged(translation: CGSize, startLocation: CGPoint) {
+        scrollVM.cancelTask()
+        scrollVM.isProgramaticallyScroll = false
+        scrollVM.scrollingUP = translation.height > 10
+        scrollVM.animateObjectWillChange()
+        let isSwipeEdge = Language.isRTL ? (startLocation.x > ThreadViewModel.threadWidth - 20) : startLocation.x < 20
+        if isSwipeEdge, abs(translation.width) > 48 && translation.height < 12 {
+            AppState.shared.objectsContainer.navVM.remove(threadId: threadId)
+        }
+    }
+
     deinit {
         log("deinit called in class ThreadViewModel: \(self.thread.title ?? "")")
     }

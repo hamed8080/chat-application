@@ -48,6 +48,10 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
     }
 
+    public func scrollToSlot(_ uniqueId: String, anchor: UnitPoint? = .top) {
+        scrollProxy?.scrollTo(uniqueId, anchor: anchor)
+    }
+
     public func scrollToBottom(animation: Animation? = .easeInOut) {
         if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
             threadVM?.historyVM.moveToTime(time, messageId, highlight: false)

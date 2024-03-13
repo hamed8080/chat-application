@@ -93,9 +93,8 @@ struct MessageList: View {
     let viewModel: ThreadHistoryViewModel
 
     var body: some View {
-        ForEach(vms) { vm in
+        ForEach(vms, id: \.uniqueId) { vm in
             MessageRowFactory(viewModel: vm)
-                .id(vm.uniqueId)
                 .listRowSeparator(.hidden)
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)

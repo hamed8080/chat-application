@@ -91,14 +91,7 @@ struct ThreadView: View, DropDelegate {
     private var drag: some Gesture {
         DragGesture(minimumDistance: 10, coordinateSpace: .global)
             .onChanged { newValue in
-                viewModel.scrollVM.cancelTask()
-                viewModel.scrollVM.isProgramaticallyScroll = false
-                viewModel.scrollVM.scrollingUP = newValue.translation.height > 10
-                viewModel.scrollVM.animateObjectWillChange()
-                let isSwipeEdge = Language.isRTL ? (newValue.startLocation.x > ThreadViewModel.threadWidth - 20) : newValue.startLocation.x < 20
-                if isSwipeEdge, abs(newValue.translation.width) > 48 && newValue.translation.height < 12 {
-                    AppState.shared.objectsContainer.navVM.remove(threadId: viewModel.threadId)
-                }
+                viewModel.onDragged(translation: newValue.translation, startLocation: newValue.location)
             }
     }
 

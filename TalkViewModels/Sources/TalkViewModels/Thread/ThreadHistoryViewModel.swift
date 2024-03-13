@@ -532,6 +532,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     // MARK: Appear & Disappear
     @MainActor
     public func onMessageAppear(_ message: Message) async {
+        log("Message appear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
         guard let threadVM = threadViewModel else { return }
         if message.id == sections.first?.vms.first?.id {
             lastTopVisibleMessage = message
@@ -557,6 +558,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMessegeDisappear(_ message: Message) async {
+        log("Message disappear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
         if message.id == thread.lastMessageVO?.id, threadViewModel?.scrollVM.isAtBottomOfTheList == true {
             threadViewModel?.scrollVM.isAtBottomOfTheList = false
             threadViewModel?.scrollVM.animateObjectWillChange()
@@ -725,7 +727,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         var slots = sections.first?.vms.filter{$0.message.id == LocalId.emptyMessageSlot.rawValue} ?? []
         messages.forEach { message in
             if let vm = slots.popLast() {
-                /// remove form incorrect section
+                /// remove from incorrect section
                 sections[0].vms.removeAll(where: {$0.uniqueId == vm.uniqueId})
                 vm.updateMessage(message)
                 vmsToUpdate.append(vm)
