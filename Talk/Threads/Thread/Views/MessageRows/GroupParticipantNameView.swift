@@ -10,9 +10,7 @@ import TalkViewModels
 import TalkUI
 import ChatModels
 
-final class GroupParticipantNameView: UIView {
-    private let label = UILabel()
-    private var heightConstraint: NSLayoutConstraint!
+final class GroupParticipantNameView: UILabel {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,26 +22,16 @@ final class GroupParticipantNameView: UIView {
     }
 
     private func configureView() {
-        label.font = UIFont.uiiransansBody
-        label.numberOfLines = 1
-        label.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(label)
-        heightConstraint = heightAnchor.constraint(equalToConstant: 24)
-        NSLayoutConstraint.activate([
-            heightConstraint,
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
-            label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
-            label.topAnchor.constraint(equalTo: topAnchor),
-        ])
+        font = UIFont.uiiransansBody
+        numberOfLines = 1
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         let canShowName: Bool = !viewModel.isMe && viewModel.threadVM?.thread.group == true && viewModel.threadVM?.thread.type?.isChannelType == false
-        label.textColor = viewModel.participantColor
-        label.textAlignment = viewModel.isMe ? .right : .left
-        label.text = viewModel.message.participant?.name ?? ""
-        label.isHidden = !canShowName
-        heightConstraint.constant = canShowName ? 24 : 0
+        textColor = viewModel.participantColor
+        textAlignment = viewModel.isMe ? .right : .left
+        text = viewModel.message.participant?.name ?? ""
+        isHidden = !canShowName
     }
 }
 

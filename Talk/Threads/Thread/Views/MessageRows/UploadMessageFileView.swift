@@ -19,6 +19,7 @@ final class UploadMessageFileView: UIView {
     private let fileNameLabel = UILabel()
     private let fileSizeLabel = UILabel()
     private let progressView = CircleProgressButton(color: Color.App.bgPrimaryUIColor, iconTint: Color.App.bgPrimaryUIColor)
+    private var heightConstraint: NSLayoutConstraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,6 +31,13 @@ final class UploadMessageFileView: UIView {
     }
 
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
+        container.translatesAutoresizingMaskIntoConstraints = false
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+
         layoutMargins = UIEdgeInsets(all: 8)
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
@@ -50,10 +58,10 @@ final class UploadMessageFileView: UIView {
         container.addSubview(stack)
         addSubview(container)
 
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        container.translatesAutoresizingMaskIntoConstraints = false
+        heightConstraint = heightAnchor.constraint(equalToConstant: 52)
 
         NSLayoutConstraint.activate([
+            heightConstraint!,
             container.leadingAnchor.constraint(equalTo: leadingAnchor),
             container.trailingAnchor.constraint(equalTo: trailingAnchor),
             container.topAnchor.constraint(equalTo: topAnchor),
@@ -86,7 +94,7 @@ final class UploadMessageFileView: UIView {
 
         let canShow = message.isUploadMessage && !message.isImage && message.isFileType
         isHidden = !canShow
-        heightAnchor.constraint(equalToConstant: canShow ? 52 : 0).isActive = true
+        heightConstraint?.constant = canShow ? 52 : 0
     }
 
     private func stateIcon(viewModel: MessageRowViewModel) -> String {

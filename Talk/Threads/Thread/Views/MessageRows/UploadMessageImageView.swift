@@ -22,6 +22,7 @@ final class UploadMessageImageView: UIView {
     private let fileSizeLabel = UILabel()
     private let uploadImage = UIImageView()
     private let progressView = CircleProgressButton(color: Color.App.whiteUIColor, iconTint: Color.App.whiteUIColor)
+    private var heightConstraint:NSLayoutConstraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -38,6 +39,13 @@ final class UploadMessageImageView: UIView {
         layer.cornerRadius = 5
         layer.masksToBounds = true
 
+        translatesAutoresizingMaskIntoConstraints = false
+        container.translatesAutoresizingMaskIntoConstraints = false
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
+        uploadImage.translatesAutoresizingMaskIntoConstraints = false
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+
         uploadImage.layer.cornerRadius = 8
         uploadImage.layer.masksToBounds = true
 
@@ -45,6 +53,7 @@ final class UploadMessageImageView: UIView {
         let blurView = UIVisualEffectView(effect: blurEffect)
         blurView.frame = uploadImage.bounds
         blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurView.translatesAutoresizingMaskIntoConstraints = false
         uploadImage.addSubview(blurView)
         container.addSubview(uploadImage)
 
@@ -63,10 +72,10 @@ final class UploadMessageImageView: UIView {
         container.addSubview(stack)
         addSubview(container)
 
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        container.translatesAutoresizingMaskIntoConstraints = false
+        heightConstraint = heightAnchor.constraint(equalToConstant: 128)
 
         NSLayoutConstraint.activate([
+            heightConstraint!,
             container.leadingAnchor.constraint(equalTo: leadingAnchor),
             container.trailingAnchor.constraint(equalTo: trailingAnchor),
             container.topAnchor.constraint(equalTo: topAnchor),
@@ -101,7 +110,7 @@ final class UploadMessageImageView: UIView {
 
         let canShow = message.isUploadMessage && message.isImage
         isHidden = !canShow
-        heightAnchor.constraint(equalToConstant: canShow ? 128 : 0).isActive = true
+        heightConstraint?.constant = canShow ? 128 : 0
     }
 
     private func stateIcon(viewModel: MessageRowViewModel) -> String {

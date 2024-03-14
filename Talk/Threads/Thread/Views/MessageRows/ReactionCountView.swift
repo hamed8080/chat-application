@@ -13,28 +13,7 @@ import Chat
 import TalkUI
 import TalkModels
 
-struct AsyncReactionCountTextView: View {
-    let reactionCount: ReactionCount
-    @State private var countText = ""
-    let isMyReaction: Bool
-
-    var body: some View {
-        Text(countText)
-            .font(.iransansBody)
-            .foregroundStyle(isMyReaction ? Color.App.white : Color.App.textPrimary)
-            .task {
-                Task {
-                    let countText = reactionCount.count?.localNumber(locale: Language.preferredLocale) ?? ""
-                    await MainActor.run {
-                        self.countText = countText
-                    }
-                }
-            }
-    }
-}
-
-final class ReactionCountView: UIView {
-    private let scrollView = UIScrollView()
+final class ReactionCountView: UIScrollView {
     private let stack = UIStackView()
 
     override init(frame: CGRect) {
@@ -47,62 +26,82 @@ final class ReactionCountView: UIView {
     }
 
     private func configureView() {
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        layoutMargins = .init(horizontal: 6)
+        
         stack.axis = .horizontal
-        scrollView.layoutMargins = .init(horizontal: 6)
-        scrollView.addSubview(stack)
-        addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        stack.spacing = 4
+        stack.alignment = .fill
+        stack.distribution = .equalSpacing
+
+        addSubview(stack)
 
         NSLayoutConstraint.activate([
-            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            stack.widthAnchor.constraint(equalTo: widthAnchor),
+            stack.leadingAnchor.constraint(equalTo: leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            stack.topAnchor.constraint(equalTo: topAnchor),
+            stack.bottomAnchor.constraint(equalTo: bottomAnchor),
+            stack.heightAnchor.constraint(equalTo: heightAnchor),
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
-        let reactionsVM = viewModel.reactionsVM
-        reactionsVM.reactionCountList.forEach { reactionCount in
-            let row = ReactionCountRow()
-            row.reactionCount = reactionCount
-            stack.addArrangedSubview(row)
+    public func set(_ viewModel: MessageRowViewModel) {
+        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        stack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        let recitonList = viewModel.reactionsVM.reactionCountList
+        stack.subviews.forEach { reaction in
+            reaction.removeFromSuperview()
         }
+        recitonList.forEach { reactionCount in
+            let row = ReactionCountRow(frame: bounds, reactionCount: reactionCount)
+            stack.addArrangedSubview(row)
+            row.set()
+        }
+        let canShow = recitonList.count > 0
+        isHidden = !canShow
     }
 }
 
-final class ReactionCountRow: UIView {
-    private let stack = UIStackView()
-    private let reactionLabel = UILabel()
+final class ReactionCountRow: UIStackView {
+    private let reactionEmoji = UILabel()
     private let reactionCountLabel = UILabel()
-    var reactionCount: ReactionCount!
+    let reactionCount: ReactionCount
 
-    override init(frame: CGRect) {
+    init(frame: CGRect, reactionCount: ReactionCount) {
+        self.reactionCount = reactionCount
         super.init(frame: frame)
         configureView()
     }
 
-    required init?(coder: NSCoder) {
+    required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     private func configureView() {
 
-        reactionLabel.font = .systemFont(ofSize: 14)
+        reactionEmoji.translatesAutoresizingMaskIntoConstraints = false
+        reactionEmoji.font = .systemFont(ofSize: 14)
 
         reactionCountLabel.font = UIFont.uiiransansBody
         reactionCountLabel.textColor = Color.App.textPrimaryUIColor
 
-        stack.axis = .horizontal
-        stack.addArrangedSubview(reactionLabel)
-        stack.addArrangedSubview(reactionCountLabel)
-        reactionLabel.translatesAutoresizingMaskIntoConstraints = false
+        axis = .horizontal
+        spacing = 4
+
+        addArrangedSubview(reactionEmoji)
+        addArrangedSubview(reactionCountLabel)
+
         NSLayoutConstraint.activate([
-            reactionLabel.widthAnchor.constraint(equalToConstant: 20),
-            reactionLabel.heightAnchor.constraint(equalToConstant: 20),
+            reactionEmoji.widthAnchor.constraint(equalToConstant: 20),
+            reactionEmoji.heightAnchor.constraint(equalToConstant: 20),
         ])
     }
 
-    public func setValues(viewModel: MessageRowViewModel) {
+    public func set() {
         if reactionCount.count ?? -1 > 0, let sticker = reactionCount.sticker {
-            reactionCountLabel.text = sticker.emoji
+            reactionEmoji.text = sticker.emoji
             Task {
                 let countText = reactionCount.count?.localNumber(locale: Language.preferredLocale) ?? ""
                 await MainActor.run {
@@ -118,7 +117,7 @@ struct ReactionCountViewWapper: UIViewRepresentable {
 
     func makeUIView(context: Context) -> some UIView {
         let view = ReactionCountView()
-        view.setValues(viewModel: viewModel)
+        view.set(viewModel)
         return view
     }
 

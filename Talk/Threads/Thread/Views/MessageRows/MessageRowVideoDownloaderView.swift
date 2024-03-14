@@ -11,7 +11,8 @@ import TalkUI
 import ChatModels
 import TalkModels
 
-final class MessageRowVideoDownloaderView: UIView {
+final class MessageRowVideoDownloaderView: UIStackView {
+    private let vStack = UIStackView()
     private let fileNameLabel = UILabel()
     private let fileTypeLabel = UILabel()
     private let fileSizeLabel = UILabel()
@@ -25,7 +26,7 @@ final class MessageRowVideoDownloaderView: UIView {
         configureView()
     }
 
-    required init?(coder: NSCoder) {
+    required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -35,11 +36,14 @@ final class MessageRowVideoDownloaderView: UIView {
         layer.cornerRadius = 5
         layer.masksToBounds = true
 
-        translatesAutoresizingMaskIntoConstraints = false
         progressButton.translatesAutoresizingMaskIntoConstraints = false
-        fileNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        fileTypeLabel.translatesAutoresizingMaskIntoConstraints = false
-        fileSizeLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        axis = .horizontal
+        spacing = 8
+
+        vStack.axis = .vertical
+        vStack.alignment = .leading
+        vStack.spacing = 4
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
@@ -53,27 +57,27 @@ final class MessageRowVideoDownloaderView: UIView {
         fileTypeLabel.textAlignment = .left
         fileTypeLabel.textColor = Color.App.textSecondaryUIColor
 
-        addSubview(progressButton)
-        addSubview(fileNameLabel)
-        addSubview(fileTypeLabel)
-        addSubview(fileSizeLabel)
+        let typeSizeHStack = UIStackView()
+        typeSizeHStack.axis = .horizontal
+        typeSizeHStack.spacing = 4
+
+        typeSizeHStack.addArrangedSubview(fileTypeLabel)
+        typeSizeHStack.addArrangedSubview(fileSizeLabel)
+
+        vStack.addArrangedSubview(fileNameLabel)
+        vStack.addArrangedSubview(typeSizeHStack)
+
+        addArrangedSubview(progressButton)
+        addArrangedSubview(vStack)
 
         NSLayoutConstraint.activate([
-            heightAnchor.constraint(greaterThanOrEqualToConstant: 52),
             progressButton.widthAnchor.constraint(equalToConstant: 52),
             progressButton.heightAnchor.constraint(equalToConstant: 52),
-            progressButton.leadingAnchor.constraint(equalTo: leadingAnchor),
-            progressButton.centerYAnchor.constraint(equalTo: centerYAnchor),
-            fileNameLabel.topAnchor.constraint(equalTo: progressButton.topAnchor, constant: 8),
-            fileNameLabel.leadingAnchor.constraint(equalTo: progressButton.trailingAnchor, constant: 8),
-            fileTypeLabel.topAnchor.constraint(equalTo: fileNameLabel.bottomAnchor, constant: 2),
-            fileTypeLabel.leadingAnchor.constraint(equalTo: fileNameLabel.leadingAnchor),
-            fileSizeLabel.topAnchor.constraint(equalTo: fileTypeLabel.topAnchor),
-            fileSizeLabel.leadingAnchor.constraint(equalTo: fileTypeLabel.trailingAnchor, constant: 8),
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         let message = viewModel.message
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
         progressButton.animate(to: progress, systemIconName: stateIcon())
@@ -98,7 +102,6 @@ final class MessageRowVideoDownloaderView: UIView {
 
         let canShow = !message.isUploadMessage && message.isVideo == true
         isHidden = !canShow
-        heightAnchor.constraint(equalToConstant: canShow ? 52 : 0).isActive = true
     }
 
     private func stateIcon() -> String {

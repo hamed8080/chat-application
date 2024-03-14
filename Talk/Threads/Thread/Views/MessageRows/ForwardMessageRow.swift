@@ -12,7 +12,8 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 
-final class ForwardMessageRow: UIButton {
+final class ForwardMessageRow: UIStackView {
+    private let vStack = UIStackView()
     private let forwardStaticLebel = UILabel()
     private let participantLabel = UILabel()
     private let bar = UIView()
@@ -22,7 +23,7 @@ final class ForwardMessageRow: UIButton {
         configureView()
     }
 
-    required init?(coder: NSCoder) {
+    required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -31,12 +32,15 @@ final class ForwardMessageRow: UIButton {
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 5
         layer.masksToBounds = true
-        configuration = .borderless()
 
-        translatesAutoresizingMaskIntoConstraints = false
-        forwardStaticLebel.translatesAutoresizingMaskIntoConstraints = false
-        participantLabel.translatesAutoresizingMaskIntoConstraints = false
         bar.translatesAutoresizingMaskIntoConstraints = false
+
+        axis = .horizontal
+        spacing = 4
+
+        vStack.axis = .vertical
+        vStack.alignment = .leading
+        vStack.spacing = 0
 
         forwardStaticLebel.font = UIFont.uiiransansCaption3
         forwardStaticLebel.textColor = Color.App.textPrimaryUIColor
@@ -50,24 +54,20 @@ final class ForwardMessageRow: UIButton {
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
-        addSubview(forwardStaticLebel)
-        addSubview(participantLabel)
-        addSubview(bar)
+        vStack.addArrangedSubview(forwardStaticLebel)
+        vStack.addArrangedSubview(participantLabel)
+
+        addArrangedSubview(bar)
+        addArrangedSubview(vStack)
 
         NSLayoutConstraint.activate([
-            heightAnchor.constraint(greaterThanOrEqualToConstant: 52),
-            bar.topAnchor.constraint(equalTo: topAnchor),
-            bar.leadingAnchor.constraint(equalTo: leadingAnchor),
             bar.widthAnchor.constraint(equalToConstant: 1.5),
-            forwardStaticLebel.topAnchor.constraint(equalTo: topAnchor),
-            forwardStaticLebel.leadingAnchor.constraint(equalTo: bar.leadingAnchor, constant: 8),
-            participantLabel.topAnchor.constraint(equalTo: forwardStaticLebel.bottomAnchor, constant: 2),
-            participantLabel.leadingAnchor.constraint(equalTo: forwardStaticLebel.leadingAnchor),
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        vStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         let canShow = viewModel.message.forwardInfo != nil
         forwardStaticLebel.isHidden = !canShow
         bar.isHidden = !canShow
@@ -75,7 +75,6 @@ final class ForwardMessageRow: UIButton {
         participantLabel.isHidden = viewModel.message.forwardInfo?.participant?.name == nil
         registerGestures(viewModel: viewModel)
         isHidden = !canShow
-        heightAnchor.constraint(equalToConstant: canShow ? 16 : 0).isActive = true
     }
 
     private func registerGestures(viewModel: MessageRowViewModel) {

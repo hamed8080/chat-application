@@ -15,6 +15,8 @@ import TalkViewModels
 final class AvatarView: UIView {
     private let label = UILabel()
     private let image = UIImageView()
+    private var widthConstraint: NSLayoutConstraint?
+    private var heightConstraint: NSLayoutConstraint?
     public var viewModel: MessageRowViewModel!
     var message: Message { viewModel.message }
     var avatarVM: ImageLoaderViewModel? { viewModel.avatarImageLoader }
@@ -29,6 +31,10 @@ final class AvatarView: UIView {
     }
 
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        image.translatesAutoresizingMaskIntoConstraints = false
+
         label.font = UIFont.uiiransansCaption
         label.textColor = Color.App.whiteUIColor
         label.textAlignment = .center
@@ -42,14 +48,21 @@ final class AvatarView: UIView {
 
         addSubview(image)
         addSubview(label)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        image.translatesAutoresizingMaskIntoConstraints = false
+
+        widthConstraint = widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize)
+        heightConstraint = heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize)
 
         NSLayoutConstraint.activate([
+            widthConstraint!,
+            heightConstraint!,
+            image.centerXAnchor.constraint(equalTo: centerXAnchor),
+            image.centerYAnchor.constraint(equalTo: centerYAnchor),
             image.widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
             image.heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
             label.widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
             label.heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
+            label.centerXAnchor.constraint(equalTo: centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }
 
@@ -67,16 +80,17 @@ final class AvatarView: UIView {
             avatarVM?.fetch()
         }
 
-        if viewModel.isNextMessageTheSameUser {
+        if viewModel.isMe {
+            isHidden = true
+        } else if viewModel.isNextMessageTheSameUser {
             isHidden = false
-            widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize).isActive = true
-            heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize).isActive = true
+            widthConstraint?.constant = MessageRowViewModel.avatarSize
+            heightConstraint?.constant = MessageRowViewModel.avatarSize
         } else {
             let canShow = !viewModel.isMe && !viewModel.isNextMessageTheSameUser && viewModel.threadVM?.thread.group == true
             isHidden = !canShow
-            widthAnchor.constraint(equalToConstant: canShow ? MessageRowViewModel.avatarSize : 0 ).isActive = true
-            heightAnchor.constraint(equalToConstant: canShow ? MessageRowViewModel.avatarSize : 0 ).isActive = true
-            print("can show is:\(canShow)")
+            widthConstraint?.constant = canShow ? MessageRowViewModel.avatarSize : 0
+            heightConstraint?.constant = canShow ? MessageRowViewModel.avatarSize : 0
         }
     }
 

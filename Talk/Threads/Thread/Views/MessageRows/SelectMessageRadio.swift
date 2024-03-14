@@ -12,6 +12,8 @@ import SwiftUI
 
 public final class SelectMessageRadio: UIView {
     private let imageView = UIImageView()
+    private var widthConstraint: NSLayoutConstraint?
+    private var heightConstraint: NSLayoutConstraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,15 +26,21 @@ public final class SelectMessageRadio: UIView {
 
     private func configureView() {
         translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
+
+        imageView.contentMode = .scaleAspectFit
         addSubview(imageView)
+
+        widthConstraint = widthAnchor.constraint(equalToConstant: 48)
+        heightConstraint = heightAnchor.constraint(equalToConstant: 48)
+
         NSLayoutConstraint.activate([
-            widthAnchor.constraint(equalToConstant: 48),
-            heightAnchor.constraint(equalToConstant: 48),
+            widthConstraint!,
+            heightConstraint!,
+            imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             imageView.widthAnchor.constraint(equalToConstant: 28),
             imageView.heightAnchor.constraint(equalToConstant: 28),
-            imageView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
 
@@ -45,7 +53,7 @@ public final class SelectMessageRadio: UIView {
 
         let canShow = viewModel.isInSelectMode
         isHidden = !canShow
-        widthAnchor.constraint(equalToConstant: canShow ? 48 : 0 ).isActive = true
-        heightAnchor.constraint(equalToConstant: canShow ? 48 : 0 ).isActive = true
+        widthConstraint?.constant = canShow ? 48 : 0
+        heightConstraint?.constant = canShow ? 48 : 0
     }
 }

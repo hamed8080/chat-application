@@ -10,9 +10,9 @@ import TalkUI
 import TalkViewModels
 import ChatModels
 
-final class LocationRowView: UIView {
-    private let imageView = UIImageView()
+final class LocationRowView: UIImageView {
     private let gradient = CAGradientLayer()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
@@ -23,44 +23,37 @@ final class LocationRowView: UIView {
     }
 
     private func configureView() {
-        imageView.layer.cornerRadius = 8
-        imageView.layer.masksToBounds = true
-        imageView.clipsToBounds = true
-        imageView.contentMode = .scaleAspectFill
+        layer.cornerRadius = 8
+        layer.masksToBounds = true
+        clipsToBounds = true
+        contentMode = .scaleAspectFill
+
+        translatesAutoresizingMaskIntoConstraints = false
+
         gradient.cornerRadius = 8
         gradient.colors = [Color.App.bgPrimaryUIColor!.cgColor, Color.App.bgPrimaryUIColor?.cgColor ?? UIColor.black.cgColor]
         gradient.startPoint = CGPoint(x: 0.0, y: 1.0)
         gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
 
-        addSubview(imageView)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: topAnchor),
-            imageView.heightAnchor.constraint(lessThanOrEqualToConstant: 400),
-            imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            heightAnchor.constraint(lessThanOrEqualToConstant: 320),
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        if !viewModel.isMapType { return }
-        if let mapImage = viewModel.downloadFileVM?.fileURL?.imageScale(width: Int(800))?.image {
-            imageView.image = UIImage(cgImage: mapImage)
-        } else {
-            imageView.image = UIImage(named: "empty_image")
-            layer.insertSublayer(gradient, at: 0)
-            setNeedsLayout()
-        }
-
         let canShow = viewModel.isMapType
+        if canShow, let mapImage = viewModel.downloadFileVM?.fileURL?.imageScale(width: Int(800))?.image {
+            image = UIImage(cgImage: mapImage)
+        } else if canShow {
+            image = UIImage(named: "empty_image")
+            layer.insertSublayer(gradient, at: 0)
+        }
         isHidden = !canShow
-        heightAnchor.constraint(equalToConstant: canShow ? 400 : 0).isActive = true
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        gradient.frame = imageView.frame
+        gradient.frame = frame
     }
 }
 
@@ -68,7 +61,7 @@ struct LocationRowViewWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
     func makeUIView(context: Context) -> some UIView {
-        let view = LocationRowView()
+        let view = LocationRowView(frame: .init(origin: .zero, size: .init(width: 64, height: 64)))
         view.set(viewModel)
         return view
     }

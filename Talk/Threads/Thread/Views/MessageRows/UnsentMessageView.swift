@@ -13,6 +13,7 @@ import ChatModels
 final class UnsentMessageView: UIView {
     private let btnCancel = UIButton()
     private let btnResend = UIButton()
+    private var heightConstraint: NSLayoutConstraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -34,7 +35,10 @@ final class UnsentMessageView: UIView {
         addSubview(btnCancel)
         addSubview(btnResend)
 
+        heightConstraint = heightAnchor.constraint(equalToConstant: 0)
+
         NSLayoutConstraint.activate([
+            heightConstraint!,
             btnCancel.leadingAnchor.constraint(equalTo: leadingAnchor),
             btnCancel.topAnchor.constraint(equalTo: topAnchor),
             btnResend.topAnchor.constraint(equalTo: topAnchor),
@@ -47,7 +51,7 @@ final class UnsentMessageView: UIView {
         btnCancel.isHidden = !canShow
         btnResend.isHidden = !canShow
         isHidden = !canShow
-        heightAnchor.constraint(equalToConstant:  canShow ? 28 : 0).isActive = true
+        heightConstraint?.constant = canShow ? 28 : 0
     }
 }
 

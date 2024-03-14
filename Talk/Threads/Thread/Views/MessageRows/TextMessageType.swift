@@ -15,30 +15,141 @@ import Combine
 import TalkModels
 import TalkExtensions
 
-final class TextMessageTypeCell: UITableViewCell {
-    private var viewModel: MessageRowViewModel! {
-        didSet {
-            setupObservers()
-        }
-    }
-    private let avatar = AvatarView()
-    private let radio = SelectMessageRadio()
+final class TextMessageContainer: UIStackView {
+    private var viewModel: MessageRowViewModel!
     private let messageRowFileDownloader = MessageRowFileDownloaderView()
-    private let messageRowImageDownloader = MessageRowImageDownloaderView()
+    private let messageRowImageDownloader = MessageRowImageDownloaderView(frame: .zero)
     private let messageRowVideoDownloader = MessageRowVideoDownloaderView()
     private let messageRowAudioDownloader = MessageRowAudioDownloaderView()
-    private let locationRowView = LocationRowView()
+    private let locationRowView = LocationRowView(frame: .zero)
     private let groupParticipantNameView = GroupParticipantNameView()
     private let replyInfoMessageRow = ReplyInfoMessageRow()
     private let forwardMessageRow = ForwardMessageRow()
     private let uploadImage = UploadMessageImageView()
     private let uploadFile = UploadMessageFileView()
     private let messageTextView = MessageTextView()
+    private let reactionView = ReactionCountView()
+    private let fotterView = MessageFooterView()
     private let unsentMessageView = UnsentMessageView()
-    private let reactionView = MessageReactionsView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureView()
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public func configureView() {
+        axis = .vertical
+        spacing = 0
+        alignment = .leading
+        distribution = .fill
+        registerGestures()
+
+        addArrangedSubview(groupParticipantNameView)
+        addArrangedSubview(replyInfoMessageRow)
+        addArrangedSubview(forwardMessageRow)
+        addArrangedSubview(messageRowFileDownloader)
+        addArrangedSubview(messageRowImageDownloader)
+        addArrangedSubview(messageRowVideoDownloader)
+        addArrangedSubview(messageRowAudioDownloader)
+        addArrangedSubview(locationRowView)
+//        addArrangedSubview(uploadImage)
+//        addArrangedSubview(uploadFile)
+        addArrangedSubview(messageTextView)
+        addArrangedSubview(reactionView)
+        addArrangedSubview(fotterView)
+//        addArrangedSubview(unsentMessageView)
+    }
+
+    private func setVerticalSpacings(viewModel: MessageRowViewModel) {
+//        let message = viewModel.message
+//        let isReply = viewModel.message.replyInfo != nil
+//        let isForward = viewModel.message.forwardInfo != nil
+//        let isFile = message.isUploadMessage && !message.isImage && message.isFileType
+//        let isImage = viewModel.canShowImageView
+//        let isVideo = !message.isUploadMessage && message.isVideo == true
+//        let isAudio = !message.isUploadMessage && message.isAudio == true
+//        let isLocation = viewModel.isMapType
+//        let isUploadImage = message.isUploadMessage && message.isImage
+//        let isUploadFile = !message.isUploadMessage && message.isFileType && !viewModel.isMapType && !message.isImage && !message.isAudio && !message.isVideo
+//        let isTextEmpty = message.messageTitle.isEmpty
+//        let isUnsent = viewModel.message.isUnsentMessage
+//        let hasReaction = viewModel.reactionsVM.reactionCountList.count > 0
+    }
+
+    public func set(_ viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
+        setVerticalSpacings(viewModel: viewModel)
+        messageTextView.set(viewModel)
+        replyInfoMessageRow.set(viewModel)
+        forwardMessageRow.set(viewModel)
+        messageRowImageDownloader.set(viewModel)
+        groupParticipantNameView.set(viewModel)
+        locationRowView.set(viewModel)
+        messageRowFileDownloader.set(viewModel)
+        messageRowAudioDownloader.set(viewModel)
+        messageRowVideoDownloader.set(viewModel)
+        unsentMessageView.set(viewModel)
+        reactionView.set(viewModel)
+        uploadImage.set(viewModel)
+        uploadFile.set(viewModel)
+        fotterView.set(viewModel)
+        setDebugColors()
+    }
+
+    private func registerGestures() {
+        replyInfoMessageRow.isUserInteractionEnabled = true
+        forwardMessageRow.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onTap(_:)))
+        addGestureRecognizer(tap)
+    }
+
+    @objc func onTap(_ sender: UITapGestureRecognizer? = nil) {
+        if viewModel.isInSelectMode == true {
+//            viewModel.isSelected.toggle()
+//            radio.set(viewModel)
+//            backgroundColor = viewModel.isSelected ? Color.App.accentUIColor?.withAlphaComponent(0.2) : UIColor.clear
+        }
+    }
+
+    private func setDebugColors() {
+#if DEBUG
+        groupParticipantNameView.backgroundColor = .blue
+        replyInfoMessageRow.backgroundColor = .systemPink
+        forwardMessageRow.backgroundColor = .orange
+        messageRowFileDownloader.backgroundColor = .brown
+        messageRowImageDownloader.backgroundColor = .magenta
+        messageRowVideoDownloader.backgroundColor = .purple
+        messageRowAudioDownloader.backgroundColor = .green
+        uploadImage.backgroundColor = .opaqueSeparator
+        uploadFile.backgroundColor = .systemTeal
+        messageTextView.backgroundColor = viewModel.isMe ? .green : .brown
+        reactionView.backgroundColor = .blue.withAlphaComponent(0.5)
+        fotterView.backgroundColor = .cyan
+        locationRowView.backgroundColor = .magenta
+        unsentMessageView.backgroundColor = .yellow.withAlphaComponent(0.2)
+#endif
+    }
+}
+
+final class TextMessageTypeCell: UITableViewCell {
+    private var viewModel: MessageRowViewModel! {
+        didSet {
+            setupObservers()
+        }
+    }
+    private let hStack = UIStackView()
+    private let avatar = AvatarView()
+    private let radio = SelectMessageRadio()
+    private let messageContainer = TextMessageContainer()
+
     private var cancellable = Set<AnyCancellable>()
     private var message: Message { viewModel.message }
     private var isEmptyMessage: Bool { message.message == nil || message.message?.isEmpty == true  }
+
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -58,140 +169,40 @@ final class TextMessageTypeCell: UITableViewCell {
     }
 
     public func configureView() {
+        contentView.isUserInteractionEnabled = true
+        hStack.translatesAutoresizingMaskIntoConstraints = false
 
-        translatesAutoresizingMaskIntoConstraints = false
-        avatar.translatesAutoresizingMaskIntoConstraints = false
-        radio.translatesAutoresizingMaskIntoConstraints = false
-        messageRowFileDownloader.translatesAutoresizingMaskIntoConstraints = false
-        messageRowImageDownloader.translatesAutoresizingMaskIntoConstraints = false
-        messageRowVideoDownloader.translatesAutoresizingMaskIntoConstraints = false
-        messageRowAudioDownloader.translatesAutoresizingMaskIntoConstraints = false
-        locationRowView.translatesAutoresizingMaskIntoConstraints = false
-        groupParticipantNameView.translatesAutoresizingMaskIntoConstraints = false
-        replyInfoMessageRow.translatesAutoresizingMaskIntoConstraints = false
-        forwardMessageRow.translatesAutoresizingMaskIntoConstraints = false
-        uploadImage.translatesAutoresizingMaskIntoConstraints = false
-        uploadFile.translatesAutoresizingMaskIntoConstraints = false
-        messageTextView.translatesAutoresizingMaskIntoConstraints = false
-        reactionView.translatesAutoresizingMaskIntoConstraints = false
-        unsentMessageView.translatesAutoresizingMaskIntoConstraints = false
+        hStack.axis = .horizontal
+        hStack.alignment = .bottom
+        hStack.spacing = 8
+        hStack.distribution = .fill
 
-        registerGestures()
+        hStack.addArrangedSubview(radio)
+        hStack.addArrangedSubview(avatar)
+        hStack.addArrangedSubview(messageContainer)
 
-        contentView.addSubview(avatar)
-        contentView.addSubview(radio)
-        contentView.addSubview(groupParticipantNameView)
-        contentView.addSubview(replyInfoMessageRow)
-        contentView.addSubview(forwardMessageRow)
-        contentView.addSubview(messageRowFileDownloader)
-        contentView.addSubview(messageRowImageDownloader)
-        contentView.addSubview(messageRowVideoDownloader)
-        contentView.addSubview(messageRowAudioDownloader)
-        contentView.addSubview(locationRowView)
-        contentView.addSubview(uploadImage)
-        contentView.addSubview(uploadFile)
-        contentView.addSubview(messageTextView)
-        contentView.addSubview(reactionView)
-        contentView.addSubview(unsentMessageView)
+        contentView.addSubview(hStack)
 
         setConstraints()
     }
 
     private func setConstraints() {
         NSLayoutConstraint.activate([
-            radio.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
-            radio.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            radio.widthAnchor.constraint(equalToConstant: 24),
-            radio.heightAnchor.constraint(equalToConstant: 24),
-            avatar.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
-            avatar.leadingAnchor.constraint(equalTo: radio.trailingAnchor, constant: 8),
-            avatar.widthAnchor.constraint(equalToConstant: 36),
-            avatar.heightAnchor.constraint(equalToConstant: 36),
-            groupParticipantNameView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
-            groupParticipantNameView.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 8),
-            replyInfoMessageRow.topAnchor.constraint(equalTo: groupParticipantNameView.bottomAnchor, constant: 2),
-            replyInfoMessageRow.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            replyInfoMessageRow.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            forwardMessageRow.topAnchor.constraint(equalTo: replyInfoMessageRow.bottomAnchor, constant: 2),
-            forwardMessageRow.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            forwardMessageRow.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            messageRowFileDownloader.topAnchor.constraint(equalTo: forwardMessageRow.bottomAnchor, constant: 2),
-            messageRowFileDownloader.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            messageRowFileDownloader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            messageRowImageDownloader.topAnchor.constraint(equalTo: messageRowFileDownloader.bottomAnchor, constant: 2),
-            messageRowImageDownloader.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            messageRowImageDownloader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            messageRowVideoDownloader.topAnchor.constraint(equalTo: messageRowImageDownloader.bottomAnchor, constant: 2),
-            messageRowVideoDownloader.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            messageRowVideoDownloader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            messageRowAudioDownloader.topAnchor.constraint(equalTo: messageRowVideoDownloader.bottomAnchor, constant: 2),
-            messageRowAudioDownloader.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            messageRowAudioDownloader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            locationRowView.topAnchor.constraint(equalTo: messageRowAudioDownloader.bottomAnchor, constant: 2),
-            locationRowView.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            locationRowView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            uploadImage.topAnchor.constraint(equalTo: locationRowView.bottomAnchor, constant: 2),
-            uploadImage.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            uploadImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            uploadFile.topAnchor.constraint(equalTo: uploadImage.bottomAnchor, constant: 2),
-            uploadFile.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            uploadFile.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            messageTextView.topAnchor.constraint(equalTo: uploadFile.bottomAnchor, constant: 2),
-            messageTextView.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            messageTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            messageTextView.bottomAnchor.constraint(equalTo: reactionView.topAnchor),
-            reactionView.bottomAnchor.constraint(equalTo: avatar.topAnchor, constant: -2),
-            reactionView.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
-            reactionView.heightAnchor.constraint(equalToConstant: 48),
-            reactionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            unsentMessageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            unsentMessageView.topAnchor.constraint(equalTo: reactionView.bottomAnchor, constant: 2),
-            unsentMessageView.leadingAnchor.constraint(equalTo: groupParticipantNameView.leadingAnchor),
+            hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            hStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            hStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
         ])
     }
 
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
         contentView.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        messageContainer.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         avatar.set(viewModel)
-        messageTextView.set(viewModel)
-        replyInfoMessageRow.set(viewModel)
-        forwardMessageRow.set(viewModel)
-        messageRowImageDownloader.set(viewModel)
-        groupParticipantNameView.set(viewModel)
-        locationRowView.set(viewModel)
-        messageRowFileDownloader.set(viewModel)
-        messageRowAudioDownloader.set(viewModel)
-        messageRowVideoDownloader.set(viewModel)
-        unsentMessageView.set(viewModel)
-        reactionView.set(viewModel)
+        messageContainer.set(viewModel)
         radio.set(viewModel)
-        uploadImage.set(viewModel)
-        uploadFile.set(viewModel)
-        setLeadingWhenIsNotAvatarAndRadio()
         setDebugColors()
-    }
-
-    private func setLeadingWhenIsNotAvatarAndRadio() {
-        if avatar.isHidden && radio.isHidden {
-            groupParticipantNameView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
-        }
-    }
-
-    private func registerGestures() {
-        replyInfoMessageRow.isUserInteractionEnabled = true
-        forwardMessageRow.isUserInteractionEnabled = true
-        contentView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(onTap(_:)))
-        addGestureRecognizer(tap)
-    }
-
-    @objc func onTap(_ sender: UITapGestureRecognizer? = nil) {
-        if viewModel.isInSelectMode == true {
-            viewModel.isSelected.toggle()
-            radio.set(viewModel)
-            backgroundColor = viewModel.isSelected ? Color.App.accentUIColor?.withAlphaComponent(0.2) : UIColor.clear
-        }
     }
 
     override func draw(_ rect: CGRect) {
@@ -205,21 +216,10 @@ final class TextMessageTypeCell: UITableViewCell {
     private func setDebugColors() {
         #if DEBUG
         contentView.backgroundColor = .red
+        hStack.backgroundColor = .black
         avatar.backgroundColor = .yellow
         radio.backgroundColor = .systemMint
-        groupParticipantNameView.backgroundColor = .blue
-        replyInfoMessageRow.backgroundColor = .systemPink
-        forwardMessageRow.backgroundColor = .orange
-        messageRowFileDownloader.backgroundColor = .brown
-        messageRowImageDownloader.backgroundColor = .magenta
-        messageRowVideoDownloader.backgroundColor = .purple
-        messageRowAudioDownloader.backgroundColor = .green
-        locationRowView.backgroundColor = .darkGray
-        uploadImage.backgroundColor = .opaqueSeparator
-        uploadFile.backgroundColor = .systemTeal
-        messageTextView.backgroundColor = viewModel.isMe ? .green : .brown
-        reactionView.backgroundColor = .blue.withAlphaComponent(0.5)
-        unsentMessageView.backgroundColor = .yellow.withAlphaComponent(0.2)
+        messageContainer.backgroundColor = .lightGray
         #endif
     }
 }

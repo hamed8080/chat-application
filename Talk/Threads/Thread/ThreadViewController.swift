@@ -22,7 +22,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
         super.viewDidLoad()
         ThreadViewModel.threadWidth = view.frame.width
         configureViews()
-        setupObservers()
+        viewModel.historyVM.delegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -42,12 +42,22 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
         return UITableView.automaticDimension
     }
 
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let sectionVM = viewModel.historyVM.sections[section]
+        let headerView = SectionHeaderView()
+        headerView.set(sectionVM)
+        return headerView
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = viewModel.historyVM.sections[indexPath.section].vms[indexPath.row].message
         let identifier = cellIdentifier(for: message)
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier.rawValue, for: indexPath)
         guard let viewModel = viewModel.historyVM.messageViewModel(for: message) else { return UITableViewCell() }
         let type = message.type
+//        Task {
+//            await self.viewModel.historyVM.onMessageAppear(viewModel.message)
+//        }
         switch type {
         case .endCall, .startCall:
             let cell = (cell as? CallEventUITableViewCell) ?? CallEventUITableViewCell()
@@ -68,7 +78,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
             }
         }
     }
-    
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.backgroundColor = UIColor.clear
     }
@@ -98,10 +108,6 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
             }
         }
     }
-
-    func reload() {
-        tableView.reloadData()
-    }
 }
 
 extension ThreadViewController {
@@ -126,13 +132,59 @@ extension ThreadViewController {
 
         view.bringSubviewToFront(tableView)
     }
+}
 
-    private func setupObservers() {
-        viewModel.historyVM.objectWillChange
-            .sink { [weak self] _ in
-                self?.reload()
+// MARK: Scrolling to
+extension ThreadViewController: HistoryScrollDelegate {
+    func reload() {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.reloadData()
+        }
+    }
+    
+    func scrollTo(index: IndexPath) {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.scrollToRow(at: index, at: .bottom, animated: true)
+        }
+    }
+
+    func scrollTo(uniqueId: String) {
+        let index = viewModel.historyVM.indicesByMessageUniqueId(uniqueId)
+        if let row = index?.messageIndex, let section = index?.sectionIndex {
+            DispatchQueue.main.async { [weak self] in
+                self?.tableView.scrollToRow(at: IndexPath(item: row, section: section), at: .bottom, animated: true)
             }
-            .store(in: &cancelable)
+        }
+    }
+
+    func relaod(at: IndexPath) {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.reloadRows(at: [at], with: .fade)
+        }
+    }
+
+    func insertd(at: IndexPath) {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.insertRows(at: [at], with: .fade)
+        }
+    }
+    
+    func insertd(at: [IndexPath]) {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.insertRows(at: at, with: .fade)
+        }
+    }
+    
+    func remove(at: IndexPath) {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.deleteRows(at: [at], with: .fade)
+        }
+    }
+    
+    func remove(at: [IndexPath]) {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.deleteRows(at: at, with: .fade)
+        }
     }
 }
 

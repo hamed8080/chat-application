@@ -13,7 +13,9 @@ import TalkUI
 import TalkViewModels
 import Additive
 
-final class ReplyInfoMessageRow: UIButton {
+final class ReplyInfoMessageRow: UIStackView {
+    private let vStack = UIStackView()
+    private let imageTextHStack = UIStackView()
     private let replyStaticLebel = UILabel()
     private let participantLabel = UILabel()
     private let imageIconView = ImageLoaderUIView()
@@ -26,7 +28,7 @@ final class ReplyInfoMessageRow: UIButton {
         configureView()
     }
 
-    required init?(coder: NSCoder) {
+    required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -35,15 +37,17 @@ final class ReplyInfoMessageRow: UIButton {
         backgroundColor = Color.App.bgSecondaryUIColor
         layer.cornerRadius = 5
         layer.masksToBounds = true
-        configuration = .borderless()
 
-        translatesAutoresizingMaskIntoConstraints = false
-        replyStaticLebel.translatesAutoresizingMaskIntoConstraints = false
-        participantLabel.translatesAutoresizingMaskIntoConstraints = false
         imageIconView.translatesAutoresizingMaskIntoConstraints = false
-        deletedLabel.translatesAutoresizingMaskIntoConstraints = false
-        replyLabel.translatesAutoresizingMaskIntoConstraints = false
+        imageIconView.translatesAutoresizingMaskIntoConstraints = false
         bar.translatesAutoresizingMaskIntoConstraints = false
+
+        axis = .horizontal
+        spacing = 4
+
+        vStack.axis = .vertical
+        vStack.alignment = .leading
+        vStack.spacing = 0
 
         replyStaticLebel.font = UIFont.uiiransansCaption3
         replyStaticLebel.textColor = Color.App.textPrimaryUIColor
@@ -52,11 +56,18 @@ final class ReplyInfoMessageRow: UIButton {
         participantLabel.font = UIFont.uiiransansBoldCaption2
         participantLabel.textColor = Color.App.textPrimaryUIColor
 
+
         replyLabel.font = UIFont.uiiransansCaption3
-        replyLabel.numberOfLines = 2
+        replyLabel.numberOfLines = 1
         replyLabel.textColor = UIColor.gray
         replyLabel.lineBreakMode = .byTruncatingTail
         replyLabel.textAlignment = .left
+
+        imageTextHStack.axis = .horizontal
+        imageTextHStack.spacing = 4
+
+        imageTextHStack.addArrangedSubview(imageIconView)
+        imageTextHStack.addArrangedSubview(replyLabel)
 
         deletedLabel.text = "Messages.deletedMessageReply".localized()
         deletedLabel.font = UIFont.uiiransansBoldCaption2
@@ -66,31 +77,24 @@ final class ReplyInfoMessageRow: UIButton {
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
-        addSubview(replyStaticLebel)
-        addSubview(participantLabel)
-        addSubview(imageIconView)
-        addSubview(deletedLabel)
-        addSubview(replyLabel)
-        addSubview(bar)
+        vStack.addArrangedSubview(replyStaticLebel)
+        vStack.addArrangedSubview(participantLabel)
+        vStack.addArrangedSubview(deletedLabel)
+        vStack.addArrangedSubview(imageTextHStack)
+
+        addArrangedSubview(bar)
+        addArrangedSubview(vStack)
+
         NSLayoutConstraint.activate([
-            heightAnchor.constraint(equalToConstant: 56),
-            bar.topAnchor.constraint(equalTo: topAnchor),
-            bar.leadingAnchor.constraint(equalTo: leadingAnchor),
+            imageIconView.heightAnchor.constraint(equalToConstant: 24),
+            imageIconView.widthAnchor.constraint(equalToConstant: 24),
             bar.widthAnchor.constraint(equalToConstant: 1.5),
-            bar.bottomAnchor.constraint(equalTo: bottomAnchor),
-            replyStaticLebel.topAnchor.constraint(equalTo: topAnchor),
-            replyStaticLebel.leadingAnchor.constraint(equalTo: bar.leadingAnchor, constant: 8),
-            participantLabel.topAnchor.constraint(equalTo: replyStaticLebel.bottomAnchor, constant: 2),
-            participantLabel.leadingAnchor.constraint(equalTo: replyStaticLebel.leadingAnchor),
-            replyLabel.topAnchor.constraint(equalTo: participantLabel.bottomAnchor, constant: 2),
-            imageIconView.leadingAnchor.constraint(equalTo: replyStaticLebel.leadingAnchor),
-            replyLabel.leadingAnchor.constraint(equalTo: imageIconView.trailingAnchor, constant: 8),
-            replyLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8)
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
+        vStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         let replyInfo = viewModel.message.replyInfo
         participantLabel.text = viewModel.message.replyInfo?.participant?.name
         participantLabel.isHidden = viewModel.message.replyInfo?.participant?.name == nil
@@ -106,13 +110,7 @@ final class ReplyInfoMessageRow: UIButton {
         registerGestures(viewModel)
         let canShow = viewModel.message.replyInfo != nil
         isHidden = !canShow
-        heightAnchor.constraint(equalToConstant: canShow ? 56 : 0 ).isActive = true
-        imageIconView.widthAnchor.constraint(equalToConstant: hasImage ? 24 : 0).isActive = true
-        if hasImage {
-            replyLabel.leadingAnchor.constraint(equalTo: imageIconView.leadingAnchor).isActive = true
-        } else {
-            replyLabel.leadingAnchor.constraint(equalTo: replyStaticLebel.leadingAnchor).isActive = true
-        }
+        imageIconView.isHidden = !hasImage
     }
 
     private func registerGestures(_ viewModel: MessageRowViewModel) {

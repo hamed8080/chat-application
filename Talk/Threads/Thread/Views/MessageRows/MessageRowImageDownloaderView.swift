@@ -12,11 +12,9 @@ import ChatModels
 import TalkModels
 import Chat
 
-final class MessageRowImageDownloaderView: UIView {
-    private let container = UIView()
+final class MessageRowImageDownloaderView: UIImageView {
     private let stack = UIStackView()
     private let fileSizeLabel = UILabel()
-    private let imageView = UIImageView()
     private let progressView = CircleProgressButton(color: Color.App.whiteUIColor, iconTint: Color.App.whiteUIColor)
 
     override init(frame: CGRect) {
@@ -29,24 +27,24 @@ final class MessageRowImageDownloaderView: UIView {
     }
 
     private func configureView() {
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        container.translatesAutoresizingMaskIntoConstraints = false
-        
         layoutMargins = UIEdgeInsets(all: 8)
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
         layer.cornerRadius = 8
         layer.masksToBounds = true
 
-        imageView.layer.cornerRadius = 8
-        imageView.layer.masksToBounds = true
+        translatesAutoresizingMaskIntoConstraints = false
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        layer.cornerRadius = 8
+        layer.masksToBounds = true
 
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         let blurView = UIVisualEffectView(effect: blurEffect)
-        blurView.frame = imageView.bounds
+        blurView.frame = bounds
         blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        imageView.addSubview(blurView)
-        container.addSubview(imageView)
+        addSubview(blurView)
+
+        bringSubviewToFront(blurView)
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
@@ -57,33 +55,25 @@ final class MessageRowImageDownloaderView: UIView {
         stack.addArrangedSubview(progressView)
         stack.addArrangedSubview(fileSizeLabel)
         stack.backgroundColor = .white.withAlphaComponent(0.2)
-        stack.layoutMargins = .init(horizontal: 6, vertical: 6)
+        stack.layoutMargins = .init(horizontal: 4, vertical: 4)
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layer.cornerRadius = 18
-        container.addSubview(stack)
-        addSubview(container)
 
-        NSLayoutConstraint.activate([            
-            heightAnchor.constraint(equalToConstant: 128),
-            container.leadingAnchor.constraint(equalTo: leadingAnchor),
-            container.trailingAnchor.constraint(equalTo: trailingAnchor),
-            container.topAnchor.constraint(equalTo: topAnchor),
-            container.bottomAnchor.constraint(equalTo: bottomAnchor),
-            imageView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            imageView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            imageView.widthAnchor.constraint(greaterThanOrEqualToConstant: 136),
-            imageView.heightAnchor.constraint(equalToConstant: 136),
-            blurView.widthAnchor.constraint(equalTo: imageView.widthAnchor),
-            blurView.heightAnchor.constraint(equalTo: imageView.heightAnchor),
-            stack.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            stack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+        addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            widthAnchor.constraint(greaterThanOrEqualToConstant: 128),
+            blurView.widthAnchor.constraint(equalTo: widthAnchor),
+            blurView.heightAnchor.constraint(equalTo: heightAnchor),
+            stack.centerXAnchor.constraint(equalTo: centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: centerYAnchor),
             progressView.widthAnchor.constraint(equalToConstant: 28),
             progressView.heightAnchor.constraint(equalToConstant: 28),
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        imageView.image = viewModel.image
+        image = viewModel.image
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
         progressView.animate(to: progress, systemIconName: stateIcon(viewModel: viewModel))
         if progress >= 1 {
@@ -99,7 +89,6 @@ final class MessageRowImageDownloaderView: UIView {
 
         let canShow = viewModel.canShowImageView
         isHidden = !canShow
-        heightAnchor.constraint(equalToConstant: canShow ? 128 : 0).isActive = true
     }
 
     @objc func onTap(_ sender: MessageTapGestureRecognizer) {
@@ -137,7 +126,7 @@ struct MessageRowImageDownloaderWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
     func makeUIView(context: Context) -> some UIView {
-        let view = MessageRowImageDownloaderView()
+        let view = MessageRowImageDownloaderView(frame: .zero)
         view.set(viewModel)
         return view
     }

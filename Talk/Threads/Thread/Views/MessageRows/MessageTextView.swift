@@ -11,11 +11,10 @@ import ChatModels
 import TalkViewModels
 import TalkModels
 
-final class MessageTextView: UIView {
-    private let textView = UITextView()
+final class MessageTextView: UITextView {
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(frame: CGRect, textContainer: NSTextContainer?) {
+        super.init(frame: frame, textContainer: textContainer)
         configureView()
     }
 
@@ -24,34 +23,26 @@ final class MessageTextView: UIView {
     }
 
     private func configureView() {
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.isScrollEnabled = false
-        textView.isEditable = false
-        textView.isSelectable = false /// Only is going to be enable when we are in context menu
-        addSubview(textView)
-
-        NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
-            textView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
-            textView.topAnchor.constraint(equalTo: topAnchor),
-            textView.bottomAnchor.constraint(equalTo: bottomAnchor),
-        ])
+        translatesAutoresizingMaskIntoConstraints = false
+        isScrollEnabled = false
+        isEditable = false
+        isSelectable = false /// Only is going to be enable when we are in context menu
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
         let message = viewModel.message
-        textView.textAlignment = viewModel.isMe ? .right : .left
+        textAlignment = viewModel.isMe ? .right : .left
         if !message.messageTitle.isEmpty {
-            textView.attributedText = viewModel.nsMarkdownTitle
+            attributedText = viewModel.nsMarkdownTitle
         }
-        textView.textColor = Color.App.textPrimaryUIColor
-        textView.backgroundColor = .clear
-        textView.font = UIFont.uiiransansBody
+        textColor = Color.App.textPrimaryUIColor
+        backgroundColor = .clear
+        font = UIFont.uiiransansBody
 
         if message.message?.contains(AppRoutes.joinLink) == true {
             let tap = MessageTapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
             tap.viewModel = viewModel
-            textView.addGestureRecognizer(tap)
+            addGestureRecognizer(tap)
         }
 
         let canShow = message.messageTitle.isEmpty == false

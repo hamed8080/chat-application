@@ -48,6 +48,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private var thread: Conversation { threadViewModel?.thread ?? .init(id: -1) }
     private var threadId: Int { thread.id ?? -1 }
     var hasSentHistoryRequest = false
+    public weak var delegate: HistoryScrollDelegate?
 
     public var isEmptyThread: Bool {
         let noMessage = isFetchedServerFirstResponse == true && sections.count == 0
@@ -136,6 +137,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
             await setHasMoreTop(response)
             isFetchedServerFirstResponse = true
             /// 6- To update isLoading fields to hide the loading at the top.
+
+            var insertedIndexes: [IndexPath] = []
+            messages.forEach { message in
+                if let index = indicesByMessageUniqueId(message.uniqueId ?? "") {
+                    insertedIndexes.append(IndexPath(item: index.sectionIndex, section: index.messageIndex))
+                }
+            }
+            delegate?.insertd(at: insertedIndexes)
             await asyncAnimateObjectWillChange()
 
             if let uniqueId = lastTopVisibleMessage?.uniqueId, let id = lastTopVisibleMessage?.id {
@@ -216,6 +225,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 6- Find the last Seen message ID in the list of messages section and use the unique ID to scroll to.
             let lastSeenMessage = message(for: thread.lastSeenMessageId)?.message
             if let uniqueId = lastSeenMessage?.uniqueId, let lastSeenMessageId = lastSeenMessage?.id {
+                delegate?.reload()
+                delegate?.scrollTo(uniqueId: uniqueId)
                 await threadViewModel?.scrollVM.showHighlighted(uniqueId, lastSeenMessageId, highlight: false)
                 /// 9- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
                 if let fromTime = lastSeenMessage?.time {
@@ -276,6 +287,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 5- To update isLoading fields to hide the loading at the top and prepare the ui for scrolling to.
             await asyncAnimateObjectWillChange()
             if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
+                delegate?.reload()
+                delegate?.scrollTo(uniqueId: uniqueId)
                 await threadViewModel?.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
             }
             /// 6- Set whether it has more messages at the top or not.
@@ -470,7 +483,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return (message: message, sectionIndex: sectionIndex, messageIndex: messageIndex)
     }
 
-    func indicesByMessageUniqueId(_ uniqueId: String) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
+    public func indicesByMessageUniqueId(_ uniqueId: String) -> (sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)? {
         guard
             let sectionIndex = sectionIndexByUniqueId(uniqueId),
             let messageIndex = messageIndex(uniqueId, in: sectionIndex)
@@ -656,7 +669,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 threadViewModel.seenPublisher.send(message)
             }
 
-            if scrollVM.scrollingUP == true, scrollVM.isProgramaticallyScroll == false, isInTopSlice(message) {
+            if isInTopSlice(message) {
                 moreTop(sections.first?.vms.first?.message.time)
             }
 
