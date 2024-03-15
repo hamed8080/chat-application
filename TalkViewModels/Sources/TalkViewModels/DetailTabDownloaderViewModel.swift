@@ -12,6 +12,7 @@ import ChatModels
 import Combine
 import SwiftUI
 import TalkExtensions
+import TalkModels
 
 public class DetailTabDownloaderViewModel: ObservableObject {
     public private(set) var messages: ContiguousArray<Message> = []
@@ -24,8 +25,10 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     private let count = 25
     public var itemCount = 3
     private var downloadVMS: [DownloadFileViewModel] = []
+    private let tabName: String
 
-    public init(conversation: Conversation, messageType: MessageType) {
+    public init(conversation: Conversation, messageType: MessageType, tabName: String) {
+        self.tabName = tabName
         self.conversation = conversation
         self.messageType = messageType
         NotificationCenter.message.publisher(for: .message)
@@ -39,9 +42,9 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     private func onMessageEvent(_ event: MessageEventTypes) {
         switch event {
         case let .history(response):
-            if response.value(prepend: "DetailViewHistory") != nil,
-               !response.cache,
+            if !response.cache,
                response.subjectId == conversation.id,
+               response.pop(prepend: "DetailViewHistory-\(tabName)") != nil,
                let messages = response.result {
                 messages.forEach { message in
                     if !self.messages.contains(where: { $0.id == message.id }) {
@@ -49,8 +52,8 @@ public class DetailTabDownloaderViewModel: ObservableObject {
                     }
                 }
                 self.messages.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
-                isLoading = false
                 hasNext = response.hasNext
+                isLoading = false
                 animateObjectWillChange()
             }
         default:
@@ -68,9 +71,9 @@ public class DetailTabDownloaderViewModel: ObservableObject {
     }
 
     public func loadMore() {
-        guard let conversationId = conversation.id, !isLoading, hasNext else { return }
+        guard let conversationId = conversation.id, conversationId != LocalId.emptyThread.rawValue, !isLoading, hasNext else { return }
         let req: GetHistoryRequest = .init(threadId: conversationId, count: count, messageType: messageType.rawValue, offset: offset)
-        RequestsManager.shared.append(prepend: "DetailViewHistory", value: req)
+        RequestsManager.shared.append(prepend: "DetailViewHistory-\(tabName)", value: req)
         offset += count
         isLoading = true
         animateObjectWillChange()
@@ -88,8 +91,8 @@ public class DetailTabDownloaderViewModel: ObservableObject {
             itemCount = 4
             return readerWidth / 4
         } else {
-            itemCount = 7
-            return readerWidth / 7
+            itemCount = 5
+            return readerWidth / 5
         }
     }
 
@@ -101,5 +104,9 @@ public class DetailTabDownloaderViewModel: ObservableObject {
             downloadVMS.append(newDownloadVM)
             return newDownloadVM
         }
+    }
+
+    deinit {
+        print("deinit DetailTabDownloaderViewModel for\(tabName)")
     }
 }

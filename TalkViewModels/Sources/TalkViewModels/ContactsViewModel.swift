@@ -17,56 +17,31 @@ import Photos
 import TalkExtensions
 import ChatTransceiver
 
-public final class ContactsViewModel: ObservableObject {
+public class ContactsViewModel: ObservableObject {
     private var count = 15
     private var offset = 0
     private var hasNext: Bool = true
-    public private(set) var selectedContacts: ContiguousArray<Contact> = []
-    public private(set) var canceableSet: Set<AnyCancellable> = []
+    public var selectedContacts: ContiguousArray<Contact> = []
+    public var canceableSet: Set<AnyCancellable> = []
     public private(set) var firstSuccessResponse = false
     private var canLoadNextPage: Bool { !isLoading && hasNext }
     @Published public private(set) var maxContactsCountInServer = 0
-    public private(set) var contacts: ContiguousArray<Contact> = []
+    public var contacts: ContiguousArray<Contact> = []
     @Published public var searchType: SearchParticipantType = .name
-    @Published public private(set) var searchedContacts: ContiguousArray<Contact> = []
+    @Published public var searchedContacts: ContiguousArray<Contact> = []
     @Published public var isLoading = false
     @Published public var searchContactString: String = ""
     public var blockedContacts: ContiguousArray<BlockedContactResponse> = []
-    @Published public var createConversationType: ThreadTypes?
-    @Published public var showTitleError: Bool = false
-    @Published public var showConversaitonBuilder = false
-    @Published public var showCreateConversationDetail = false
     @Published public var addContact: Contact?
     @Published public var editContact: Contact?
     @Published public var showAddOrEditContactSheet = false
-    /// When the user initiates a create group/channel with the plus button in the Conversation List.
-    @Published public var closeConversationContextMenu: Bool = false
-    public var createdConversation: Conversation?
-    @Published public var isCreateLoading = false
-    @Published public var isInSelectionMode = false {
-        didSet {
-            selectedContacts = []
-            animateObjectWillChange()
-        }
-    }
-
-    @Published public var conversationTitle: String = ""
-    @Published public var threadDescription: String = ""
-    public var assetResources: [PHAssetResource] = []
-    public var image: UIImage?
-
-    /// Check public thread name.
-    @Published public var isPublic: Bool = false
-    @Published public var isPublicNameAvailable: Bool = false
-    @Published public var isCehckingName: Bool = false
+    public var isBuilder: Bool = false
+    @Published public var isInSelectionMode = false
     @Published public var successAdded: Bool = false
     @Published public var userNotFound: Bool = false
 
-    public var uploadProfileUniqueId: String?
-    public var uploadProfileProgress: Int64?
-
-    public init() {
-        getContacts()
+    public init(isBuilder: Bool = false) {
+        self.isBuilder = isBuilder
         setupPublishers()
     }
 
@@ -96,32 +71,12 @@ public final class ContactsViewModel: ObservableObject {
                 self?.searchContacts(searchText)
             }
             .store(in: &canceableSet)
-        NotificationCenter.connect.publisher(for: .contact)
+        NotificationCenter.contact.publisher(for: .contact)
             .compactMap { $0.object as? ContactEventTypes }
             .sink{ [weak self] event in
                 self?.onContactEvent(event)
             }
             .store(in: &canceableSet)
-
-        NotificationCenter.thread.publisher(for: .thread)
-            .compactMap { $0.object as? ThreadEventTypes }
-            .sink{ [weak self] event in
-                self?.onConversationEvent(event)
-            }
-            .store(in: &canceableSet)
-        NotificationCenter.upload.publisher(for: .upload)
-            .compactMap { $0.object as? UploadEventTypes }
-            .sink { [weak self] value in
-                self?.onUploadEvent(value)
-            }
-            .store(in: &canceableSet)
-        $conversationTitle
-            .sink { [weak self] newValue in
-            if newValue.count >= 2 {
-                self?.showTitleError = false
-            }
-        }
-        .store(in: &canceableSet)
     }
 
     public func onContactEvent(_ event: ContactEventTypes?) {
@@ -144,29 +99,14 @@ public final class ContactsViewModel: ObservableObject {
         }
     }
 
-    public func onConversationEvent(_ event: ThreadEventTypes?) {
-        switch event {
-        case .created(let response):
-            onCreateGroup(response)
-        case .updatedInfo(let response):
-            onEditGroup(response)
-        case .isNameAvailable(let response):
-            onIsNameAvailable(response)
-        default:
-            break
-        }
-    }
-
     public func onContacts(_ response: ChatResponse<[Contact]>) {
-        if !response.cache, response.value(prepend: "GET-CONTACTS") != nil {
+        if !response.cache, response.pop(prepend: "GET-CONTACTS\(isBuilder ? "-Builder" : "")") != nil {
             if let contacts = response.result {
                 firstSuccessResponse = !response.cache
                 appendOrUpdateContact(contacts)
                 setMaxContactsCountInServer(count: response.contentCount ?? 0)
             }
-            if !response.cache {
-                hasNext = response.hasNext
-            }
+            hasNext = response.hasNext
             isLoading = false
         }
     }
@@ -178,7 +118,7 @@ public final class ContactsViewModel: ObservableObject {
     public func getContacts() {
         isLoading = true
         let req = ContactsRequest(count: count, offset: offset)
-        RequestsManager.shared.append(prepend: "GET-CONTACTS", value: req)
+        RequestsManager.shared.append(prepend: "GET-CONTACTS\(isBuilder ? "-Builder" : "")", value: req)
         ChatManager.activeInstance?.contact.get(req)
     }
 
@@ -192,7 +132,7 @@ public final class ContactsViewModel: ObservableObject {
         } else {
             req = ContactsRequest(query: searchText)
         }
-        RequestsManager.shared.append(prepend: "SEARCH-CONTACTS", value: req)
+        RequestsManager.shared.append(prepend: "SEARCH-CONTACTS\(isBuilder ? "-Builder" : "")", value: req)
         ChatManager.activeInstance?.contact.search(req)
     }
 
@@ -222,10 +162,19 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func clear() {
+        searchContactString = ""
+        firstSuccessResponse = false
         hasNext = true
         offset = 0
         count = 15
+        showAddOrEditContactSheet = false
+        isInSelectionMode = false
+        addContact = nil
+        editContact = nil
+        successAdded = false
+        userNotFound = false
         contacts = []
+        blockedContacts = []
         selectedContacts = []
         searchedContacts = []
         maxContactsCountInServer = 0
@@ -271,6 +220,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onAddContacts(_ response: ChatResponse<[Contact]>) {
+        if !response.cache, response.pop(prepend: "Add-Contact-ContactsViewModel\(isBuilder ? "Builder" : "")") == nil { return }
         if response.error == nil, let contacts = response.result {
             contacts.forEach { newContact in
                 if let index = self.contacts.firstIndex(where: {$0.id == newContact.id }) {
@@ -310,7 +260,7 @@ public final class ContactsViewModel: ObservableObject {
     }
 
     public func onSearchContacts(_ response: ChatResponse<[Contact]>) {
-        if response.value(prepend: "SEARCH-CONTACTS") != nil {
+        if !response.cache, response.pop(prepend: "SEARCH-CONTACTS\(isBuilder ? "-Builder" : "")") != nil {
             isLoading = false
             searchedContacts = .init(response.result ?? [])
         }
@@ -318,7 +268,7 @@ public final class ContactsViewModel: ObservableObject {
 
     public func addContact(contactValue: String, firstName: String?, lastName: String?) {
         isLoading = true
-        let isNumber = isNumber(value: contactValue)
+        let isNumber = ContactsViewModel.isNumber(value: contactValue)
         if isNumber && contactValue.count < 10 {
             userNotFound = true
             isLoading = false
@@ -327,6 +277,7 @@ public final class ContactsViewModel: ObservableObject {
         let req: AddContactRequest = isNumber ?
             .init(cellphoneNumber: contactValue, email: nil, firstName: firstName, lastName: lastName, ownerId: nil, typeCode: "default") :
             .init(email: nil, firstName: firstName, lastName: lastName, ownerId: nil, username: contactValue, typeCode: "default")
+        RequestsManager.shared.append(prepend: "Add-Contact-ContactsViewModel\(isBuilder ? "Builder" : "")", value: req)
         ChatManager.activeInstance?.contact.add(req)
     }
 
@@ -334,7 +285,7 @@ public final class ContactsViewModel: ObservableObject {
         contacts.first { $0.id == contact.id }
     }
 
-    public func isNumber(value: String) -> Bool {
+    public static func isNumber(value: String) -> Bool {
         let phoneRegex = "^[0-9]*$"
         let phoneTest = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
         let result = phoneTest.evaluate(with: value)
@@ -392,128 +343,4 @@ public final class ContactsViewModel: ObservableObject {
             ChatManager.activeInstance?.contact.sync()
         }
     }
-
-    public func moveToNextPage() {
-        showCreateConversationDetail = true
-    }
-
-    public func createGroupWithSelectedContacts() {
-        if conversationTitle.count < 2 {
-            showTitleError = true
-            return
-        }
-        guard let type = createConversationType else { return }
-        isCreateLoading = true
-        let invitees = selectedContacts.map { Invitee(id: "\($0.id ?? 0)", idType: .contactId) }
-        let req = CreateThreadRequest(description: threadDescription,
-                                      invitees: invitees,
-                                      title: conversationTitle,
-                                      type: isPublic ? type.publicType : type,
-                                      uniqueName: isPublic ? UUID().uuidString : nil
-        )
-        RequestsManager.shared.append(prepend: "ConversationBuilder", value: req)
-        ChatManager.activeInstance?.conversation.create(req)
-    }
-
-    public func onCreateGroup(_ response: ChatResponse<Conversation>) {
-        if response.value(prepend: "ConversationBuilder") != nil {
-            isCreateLoading = false
-            if let conversation = response.result {
-                self.createdConversation = conversation
-                editGroup()
-            }
-        }
-    }
-
-    public func editGroup() {
-        isCreateLoading = true
-        guard let createdConversation = createdConversation, let threadId = createdConversation.id else { return }
-        var imageRequest: UploadImageRequest?
-        if let image = image {
-            let width = Int(image.size.width)
-            let height = Int(image.size.height)
-            imageRequest = UploadImageRequest(data: image.pngData() ?? Data(),
-                                              fileExtension: "png",
-                                              fileName: assetResources.first?.originalFilename ?? "",
-                                              isPublic: true,
-                                              mimeType: "image/png",
-                                              originalName: assetResources.first?.originalFilename ?? "",
-                                              userGroupHash: createdConversation.userGroupHash,
-                                              hC: height,
-                                              wC: width
-            )
-            uploadProfileUniqueId = imageRequest?.uniqueId
-        }
-        let req = UpdateThreadInfoRequest(description: threadDescription, threadId: threadId, threadImage: imageRequest, title: conversationTitle)
-        RequestsManager.shared.append(prepend: "EditConversation", value: req, autoCancel: false)
-        ChatManager.activeInstance?.conversation.updateInfo(req)
-    }
-
-    public func onEditGroup(_ response: ChatResponse<Conversation>) {
-        if response.value(prepend: "EditConversation") != nil {
-            closeConversationContextMenu = true
-            closeBuilder()
-            isCreateLoading = false
-            showCreateConversationDetail = false
-            image = nil
-            assetResources = []
-            createConversationType = nil
-            conversationTitle = ""
-            if let conversation = createdConversation {
-                /// It will fix a bug in small devices where they can not click on the buttons in the toolbar after the thread has been created.
-                /// This bug is because a sheet prevents the view from being calculated correctly.
-                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
-                    AppState.shared.showThread(thread: conversation)
-                    self?.createdConversation = nil
-                }
-            }
-        }
-    }
-
-    public func closeBuilder() {
-        selectedContacts = []
-        showConversaitonBuilder = false
-        searchContactString = ""
-        showTitleError = false
-        isPublic = false
-        AppState.shared.navViewModel?.threadsViewModel?.sheetType = nil
-    }
-
-    public func checkPublicName(_ title: String) {
-        if titleIsValid {
-            isCehckingName = true
-            ChatManager.activeInstance?.conversation.isNameAvailable(.init(name: title))
-        }
-    }
-
-    private func onIsNameAvailable(_ response: ChatResponse<PublicThreadNameAvailableResponse>) {
-        if conversationTitle == response.result?.name {
-            self.isPublicNameAvailable = true
-        }
-        isCehckingName = false
-    }
-
-    public var titleIsValid: Bool {
-        if conversationTitle.isEmpty { return false }
-        if !isPublic { return true }
-        guard let regex = try? Regex("^[a-zA-Z0-9]\\S*$") else { return false }
-        return conversationTitle.contains(regex)
-    }
-
-    private func onUploadEvent(_ event: UploadEventTypes) {
-        switch event {
-        case .progress(let uniqueId, let progress):
-            onUploadConversationProfile(uniqueId, progress)
-        default:
-            break
-        }
-    }
-
-    private func onUploadConversationProfile(_ uniqueId: String, _ progress: UploadFileProgress?) {
-        if uniqueId == uploadProfileUniqueId {
-            uploadProfileProgress = progress?.percent ?? 0
-            animateObjectWillChange()
-        }
-    }
-
 }

@@ -53,13 +53,13 @@ struct EditProfileView: View {
                     viewModel.showImagePicker = true
                 } label: {
                     ZStack(alignment: .leading) {
-                        let config = ImageLoaderConfig(url: AppState.shared.user?.image ?? "", userName: AppState.shared.user?.name)
+                        let config = ImageLoaderConfig(url: AppState.shared.user?.image ?? "", userName: String.splitedCharacter(AppState.shared.user?.name ?? ""))
                         ImageLoaderView(imageLoader: .init(config: config))
                             .scaledToFit()
                             .font(.iransansBoldCaption2)
                             .foregroundColor(.white)
                             .frame(width: 100, height: 100)
-                            .background(Color.App.color1.opacity(0.4))
+                            .background(Color(uiColor: String.getMaterialColorByCharCode(str: AppState.shared.user?.name ?? "")))
                             .clipShape(RoundedRectangle(cornerRadius:(44)))
                             .overlay(alignment: .center) {
                                 /// Showing the image taht user has selected.
@@ -166,7 +166,6 @@ struct EditProfileView: View {
         }
         .animation(.easeInOut, value: focusedField)
         .background(Color.App.bgPrimary.ignoresSafeArea())
-        .navigationBarBackButtonHidden(true)
         .font(.iransansSubheadline)
         .safeAreaInset(edge: .bottom) {
             SubmitBottomButton(text: "General.submit",
@@ -188,19 +187,7 @@ struct EditProfileView: View {
                 self.viewModel.assetResources = assestResources ?? []
             }
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.navViewModel?.remove(type: EditProfileNavigationValue.self)
-                }
-            }
-
-            ToolbarItem(placement: .principal) {
-                Text("Settings.EditProfile.title")
-                    .fixedSize()
-                    .font(.iransansBoldSubheadline)
-            }
-        }
+        .normalToolbarView(title: "Settings.EditProfile.title", type: EditProfileNavigationValue.self)
     }
 }
 

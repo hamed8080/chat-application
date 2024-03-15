@@ -19,13 +19,13 @@ struct ParticipantRow: View {
     var body: some View {
         HStack {
             ZStack {
-                let config = ImageLoaderConfig(url: participant.image ?? "", userName: participant.name ?? participant.username)
+                let config = ImageLoaderConfig(url: participant.image ?? "", userName: String.splitedCharacter(participant.name ?? participant.username ?? ""))
                 ImageLoaderView(imageLoader: .init(config: config))
                     .id("\(participant.image ?? "")\(participant.id ?? 0)")
                     .font(.iransansBoldBody)
                     .foregroundColor(.white)
                     .frame(width: 48, height: 48)
-                    .background(Color.App.color1.opacity(0.4))
+                    .background(Color(uiColor:String.getMaterialColorByCharCode(str: participant.name ?? participant.username ?? "")))
                     .clipShape(RoundedRectangle(cornerRadius:(22)))
 
 //                Circle()
@@ -80,7 +80,7 @@ struct ParticipantRowLables: View {
         HStack {
             if let participant = paritcipant {
                 if viewModel.thread?.inviter?.id == participantId {
-                    Text("Participant.owner")
+                    Text("Participant.admin")
                         .padding(EdgeInsets(top: 2, leading: 4, bottom: 2, trailing: 4))
                         .foregroundColor(Color.App.accent)
                 } else if participant.admin == true {

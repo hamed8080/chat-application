@@ -32,7 +32,11 @@ public final class ThreadsViewModel: ObservableObject {
     public var selectedThraed: Conversation?
     private var canLoadMore: Bool { hasNext && !isLoading }
     private var avatarsVM: [String :ImageLoaderViewModel] = [:]
-    public var serverSortedPinConversations: [Int] = []
+    public var serverSortedPins: [Int] = []
+    public var shimmerViewModel = ShimmerViewModel(delayToHide: 0, repeatInterval: 0.5)
+    @Published public var showUnreadConversations: Bool? = nil
+    public var threadEventModels: [ThreadEventViewModel] = []
+    private var cache: Bool = true
 
     public init() {
         AppState.shared.$connectionStatus
@@ -41,19 +45,13 @@ public final class ThreadsViewModel: ObservableObject {
             }
             .store(in: &cancelable)
         registerNotifications()
-        RequestsManager.shared.$cancelRequest
-            .sink { [weak self] newValue in
-                if let newValue {
-                    self?.onCancelTimer(key: newValue)
-                }
-            }
-            .store(in: &cancelable)
     }
 
     func onCreate(_ response: ChatResponse<Conversation>) {
         isLoading = false
         if let thread = response.result {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 await appendThreads(threads: [thread])
                 await asyncAnimateObjectWillChange()
             }
@@ -82,12 +80,7 @@ public final class ThreadsViewModel: ObservableObject {
             threads[index].animateObjectWillChange()
             animateObjectWillChange()
         }
-
-        if let conversationId = response.result?.conversation?.id, !threads.contains(where: {$0.id == conversationId })  {
-            let req = ThreadsRequest(threadIds: [conversationId])
-            RequestsManager.shared.append(prepend: "GET-NOT-ACTIVE-THREADS", value: req)
-            ChatManager.activeInstance?.conversation.get(req)
-        }
+        getNotActiveThreads(response.result?.conversation)
     }
 
     func onChangedType(_ response: ChatResponse<Conversation>) {
@@ -103,6 +96,7 @@ public final class ThreadsViewModel: ObservableObject {
             getThreads()
         } else if status == .connected, firstSuccessResponse == true {
             // After connecting again
+            threads.removeAll()
             offset = 0
             getThreads()
 //            refreshThreadsUnreadCount()
@@ -110,9 +104,12 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func getThreads() {
+        if !firstSuccessResponse {
+            shimmerViewModel.show()
+        }
         isLoading = true
         animateObjectWillChange()
-        let req = ThreadsRequest(count: count, offset: offset)
+        let req = ThreadsRequest(count: count, offset: offset, cache: cache)
         RequestsManager.shared.append(prepend: "GET-THREADS", value: req)
         ChatManager.activeInstance?.conversation.get(req)
     }
@@ -120,32 +117,45 @@ public final class ThreadsViewModel: ObservableObject {
     public func loadMore() {
         if !canLoadMore { return }
         preparePaginiation()
-        getThreads()
+        if showUnreadConversations == true {
+            getUnreadThreads()
+        } else {
+            getThreads()
+        }
     }
 
     public func onThreads(_ response: ChatResponse<[Conversation]>) {
-        if response.value(prepend: "GET-THREADS") == nil { return }
-        if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
-            if let serverSortedPinConversationIds = response.result?.filter({$0.pin == true}).compactMap({$0.id}) {
-                serverSortedPinConversations.append(contentsOf: serverSortedPinConversationIds)
+        if response.pop(prepend: "GET-THREADS") == nil { return }
+        let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil})
+        let pinThreads = response.result?.filter({$0.pin == true})
+        let hasAnyResults = response.result?.count ?? 0 > 0
+        Task { [weak self] in
+            guard let self = self else { return }
+            /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
+            if let serverSortedPinIds = pinThreads?.compactMap({$0.id}), serverSortedPins.isEmpty {
+                serverSortedPins.removeAll()
+                serverSortedPins.append(contentsOf: serverSortedPinIds)
             }
-            Task {
-                await appendThreads(threads: threads)
-                await asyncAnimateObjectWillChange()
-            }
+            await appendThreads(threads: threads ?? [])
+            await asyncAnimateObjectWillChange()
         }
 
-        if response.result?.count ?? 0 > 0 {
+        if hasAnyResults {
             hasNext = response.hasNext
             firstSuccessResponse = true
         }
         isLoading = false
+
+        if firstSuccessResponse {
+            shimmerViewModel.hide()
+        }
     }
 
     public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) {
-        if response.value(prepend: "GET-NOT-ACTIVE-THREADS") == nil { return }
+        if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") == nil { return }
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 await appendThreads(threads: threads)
                 await asyncAnimateObjectWillChange()
             }
@@ -153,8 +163,10 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func refresh() {
+        cache = false
         clear()
         getThreads()
+        cache = true
     }
 
     /// Create a thread and send a message without adding a contact.
@@ -198,7 +210,8 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     func onAddPrticipant(_ response: ChatResponse<Conversation>) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             if response.result?.participants?.first(where: {$0.id == AppState.shared.user?.id}) != nil, let newConversation = response.result {
                 /// It means an admin added a user to the conversation, and if the added user is in the app at the moment, should see this new conversation in its conversation list.
                 await appendThreads(threads: [newConversation])
@@ -234,6 +247,10 @@ public final class ThreadsViewModel: ObservableObject {
             } else {
                 self.threads.append(thread)
             }
+            if !threadEventModels.contains(where: {$0.threadId == thread.id}) {
+                let eventVM = ThreadEventViewModel(threadId: thread.id ?? 0)
+                threadEventModels.append(eventVM)
+            }
         }
         sort()
     }
@@ -242,8 +259,8 @@ public final class ThreadsViewModel: ObservableObject {
         threads.sort(by: { $0.time ?? 0 > $1.time ?? 0 })
         threads.sort(by: { $0.pin == true && ($1.pin == false || $1.pin == nil) })
         threads.sort(by: { (firstItem, secondItem) in
-            guard let firstIndex = serverSortedPinConversations.firstIndex(where: {$0 == firstItem.id}),
-                  let secondIndex = serverSortedPinConversations.firstIndex(where: {$0 == secondItem.id}) else {
+            guard let firstIndex = serverSortedPins.firstIndex(where: {$0 == firstItem.id}),
+                  let secondIndex = serverSortedPins.firstIndex(where: {$0 == secondItem.id}) else {
                 return false // Handle the case when an element is not found in the server-sorted array
             }
             return firstIndex < secondIndex
@@ -292,7 +309,9 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func leave(_ thread: Conversation) {
         guard let threadId = thread.id else { return }
-        ChatManager.activeInstance?.conversation.leave(.init(threadId: threadId, clearHistory: true))
+        let req = LeaveThreadRequest(threadId: threadId, clearHistory: true)
+        RequestsManager.shared.append(prepend: "Leave", value: req)
+        ChatManager.activeInstance?.conversation.leave(req)
     }
 
     public func clearHistory(_ thread: Conversation) {
@@ -339,6 +358,7 @@ public final class ThreadsViewModel: ObservableObject {
     public func updateThreadInfo(_ thread: Conversation) {
         if let index = firstIndex(thread.id) {
             threads[index].updateValues(thread)
+            threads[index].animateObjectWillChange()
             animateObjectWillChange()
         }
     }
@@ -448,6 +468,64 @@ public final class ThreadsViewModel: ObservableObject {
             thread?.unreadCount = (thread?.unreadCount ?? 0) - 1
             thread?.animateObjectWillChange()
         }
+    }
+
+    public func getNotActiveThreads(_ conversation: Conversation?) {
+        if let conversationId = conversation?.id, !threads.contains(where: {$0.id == conversationId }) {
+            let req = ThreadsRequest(threadIds: [conversationId])
+            RequestsManager.shared.append(prepend: "GET-NOT-ACTIVE-THREADS", value: req)
+            ChatManager.activeInstance?.conversation.get(req)
+        }
+    }
+
+    public func getUnreadThreads() {
+        if !firstSuccessResponse {
+            shimmerViewModel.show()
+        }
+        isLoading = true
+        animateObjectWillChange()
+        let req = ThreadsRequest(count: count, offset: offset, new: true)
+        RequestsManager.shared.append(prepend: "GET-UNREAD-THREADS", value: req)
+        ChatManager.activeInstance?.conversation.get(req)
+    }
+
+    public func onUnreadThreads(_ response: ChatResponse<[Conversation]>) {
+        if response.pop(prepend: "GET-UNREAD-THREADS") == nil { return }
+        let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil})
+        let pinThreads = response.result?.filter({$0.pin == true})
+        let hasAnyResults = response.result?.count ?? 0 > 0
+        Task { [weak self] in
+            guard let self = self else { return }
+            /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
+            if let serverSortedPinIds = pinThreads?.compactMap({$0.id}), serverSortedPins.isEmpty {
+                serverSortedPins.removeAll()
+                serverSortedPins.append(contentsOf: serverSortedPinIds)
+            }
+            await appendThreads(threads: threads ?? [])
+            await asyncAnimateObjectWillChange()
+        }
+
+        if hasAnyResults {
+            hasNext = response.hasNext
+            firstSuccessResponse = true
+        }
+        isLoading = false
+
+        if firstSuccessResponse {
+            shimmerViewModel.hide()
+        }
+    }
+
+    public func getUnreadConversations() {
+        threads.removeAll()
+        offset = 0
+        getUnreadThreads()
+    }
+
+    public func resetUnreadConversations() {
+        threads.removeAll()
+        offset = 0
+        getThreads()
     }
 }
 

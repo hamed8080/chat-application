@@ -67,6 +67,7 @@
 "General.imageSaved" = "تم حفظ الصورة.";
 "General.copied" = "تم النسخ إلى الحافظة.";
 "General.ban" = "قام الخادم بحظرك لمدة %@ ثانية.";
+"General.addText" = "أضف نصًا";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";
@@ -139,8 +140,10 @@
 /* Message */
 "Message.Participant.left" = "غادر %@ المجموعة.";
 "Message.Participant.removed" = "قام %@ بإزالة %@ من المجموعة.";
+"Message.Participant.removedByMe" = "لقد قمت بإزالة %@ من المجموعة.";
 "Message.Participant.joined" = "انضم %@ إلى المجموعة.";
 "Message.Participant.added" = "وأضاف %@ %@ إلى المجموعة.";
+"Message.Participant.addedByMe" = "لقد أضفت %@ إلى المجموعة.";
 "Message.forwardedFrom" = "مُعاد توجيهه من";
 "Message.replyTo" = "الرد على";
 
@@ -185,9 +188,10 @@
 "Thread.publicThreadStructrue" = "يجب أن تحتوي أسماء المواضيع العامة على أسماء فريدة من دون أي فراغات أو أحرف خاصة.";
 "Thread.enterValidName" = "أدخل اسم المحادثة.";
 "Thread.public" = "عام";
+"Thread.private" = "خاص";
 "Thread.SendContainer.voiceRecording" = "تسجيل صوتي";
 "Thread.SendContainer.attachment" = "مرفق";
-"Thread.SendContainer.typeMessageHere" = "اكتب الرسالة هنا...";
+"Thread.SendContainer.typeMessageHere" = "أكتب هنا...";
 "Thread.SendContainer.toForward" = "للإعادة";
 "Thread.export" = "تصدير";
 "ThreadList.Toolbar.startNewChat" = "بدء محادثة جديدة";
@@ -212,11 +216,12 @@
 "Thread.Tabs.voice" = "الصوت";
 "Thread.Tabs.link" = "الرابط";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
+"Thread.accessLocaitonPermission" = "يرجى الانتقال إلى الإعدادات> التحدث ثم تشغيل الوصول إلى الموقع.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ قام بإنشاء محادثة.";
 "Thread.Toolbar.participants" = "مشاركون";
 "Thread.sendAttachments" = "إرسال %@ ملفات";
-"Thread.public" = "عام %@";
+"Thread.typeString" = "%@ %@";
 "Thread.delete" = "حذف %@";
 "Thread.inviteLink" = "رابط الدعوة";
 "Thread.isVoiceRecording" = "يتم تسجيل الصوت";
@@ -228,7 +233,8 @@
 "Thread.leaveButton" = "المغادرة";
 "Thread.leave.footer" = "هل أنت متأكد أنك تريد مغادرة هذا الحوار؟";
 "Thread.noMessage" = "لا توجد رسالة ليتم إظهارها.";
-"Thread.onlyAdminError" = "أنت المسؤول الوحيد في المجموعة، لا يمكنك مغادرة المجموعة أو حذفها!";
+"Thread.onlyGroupAdminError" = "أنت المسؤول الوحيد في المجموعة، لا يمكنك مغادرة المجموعة أو حذفها!";
+"Thread.onlyChannelAdminError" = "أنت المسؤول الوحيد في القناة، لا يمكنك مغادرة القناة أو حذفها!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "جاري الاتصال";
@@ -253,6 +259,7 @@
 /* Edit group */
 "EditGroup.groupName" = "اسم المجموعة";
 "EditGroup.groupDescription" = "وصف المجموعة (اختياري)";
+"EditGroup.admins" = "المشرفين";
 
 /* Export Chat */
 "ExportChat.startTitle" = "تاريخ البدء";
@@ -262,6 +269,9 @@
 /* DeleteMessageDialog */
 "DeleteMessageDialog.title" = "حذف الرسائل المحددة";
 "DeleteMessageDialog.subtitle" = "هل أنت متأكد من رغبتك في حذف جميع الرسائل المحددة؟";
+"DeleteMessageDialog.singleDeleteIsPinMessage" = "الرسالة المحذوفة هي رسالة مثبتة، لذلك لا يمكنك حذفها للآخرين.";
+"DeleteMessageDialog.multipleDeleteContainsPinMessage" = "تحتوي الرسائل المحددة على رسالة دبوس، وبالتالي لا يمكنك حذفها للآخرين.";
+"DeleteMessageDialog.deleteForMeAllOtherIfPossible" = "حذف بالنسبة لي وللآخرين حيثما كان ذلك ممكنا";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "كيف ترغب في تثبيت هذه الرسالة؟";
@@ -292,7 +302,7 @@
 "Settings.logout" = "تسجيل الخروج";
 "Settings.notifictionSettings" = "إعدادات الإشعار";
 "Settings.download" = "إعدادات التنزيل";
-"Settings.support" = "دعم";
+"Settings.about" = "عن تاک";
 "Settings.userName" = "اسم المستخدم";
 "Settings.phoneNumber" = "رقم التليفون";
 "Settings.bio" = "سيرة شخصية";
@@ -316,6 +326,8 @@
 /* Support */
 "Support.version" = "إصدار: %@";
 "Support.aboutUsText" = "ولد Talk في عام 2016. تم إنتاج وتطوير هذا الرسول بهدف خلق تواصل عميق وبناء وفهم الاحتياجات التنظيمية وغير التنظيمية. ومن المأمول أنه وفقًا للظروف الحالية، سيتخذ تاك خطوة أقوى كل يوم على طريق التنمية المستدامة وإنشاء منصة آمنة وسريعة.";
+"Support.number" = "021-91033000 داخلي 9";
+"Support.callDetail" = "للتواصل مع وحدة دعم Talk، يمكنك استخدام الأرقام التالية للتواصل مع الخبراء المعنيين";
 
 /* NotificationSettings */
 "Notification.Sound" = "صوت";
@@ -368,6 +380,7 @@
 
 /* Message Seen Participants */
 "SeenParticipants.title" = "شوهد المشاركون";
+"SeenParticipants.noOneSeenTheMssage" = "لم يرى أحد الرسالة.";
 
 /* Message Types */
 "MessageType.text" = "نص";
@@ -383,3 +396,16 @@
 "MessageType.location" = "موقع";
 "MessageType.join" = "انضمام";
 "MessageType.left" = "غادر";
+
+/* Delete Conatct In Conversation Detail */
+"ConversationDetail.deleteContact" = "هل أنت متأكد أنك تريد حذف %@ من قائمة جهات الاتصال الخاصة بك؟";
+
+/* Delete a Member in members tab */
+"DeleteParticipantDialog.title" = "هل أنت متأكد أنك تريد إزالة %@ من %@؟";
+
+/* SearchFiltersMessagesDialog */
+"SearchFiltersMessagesDialog.filter" = "منقي";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "إظهار المحادثات غير المقروءة";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "المحادثات غير المقروءة فقط";

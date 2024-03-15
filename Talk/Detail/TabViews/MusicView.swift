@@ -14,28 +14,30 @@ import TalkModels
 import ActionableContextMenu
 
 struct MusicView: View {
-    @State var viewModel: DetailTabDownloaderViewModel
+    @StateObject var viewModel: DetailTabDownloaderViewModel
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType)
+        _viewModel = StateObject(wrappedValue: .init(conversation: conversation, messageType: messageType, tabName: "Music"))
     }
 
     var body: some View {
-        StickyHeaderSection(header: "", height:  4)
-            .onAppear {
-                if viewModel.messages.count == 0 {
-                    viewModel.loadMore()
+        VStack {
+            ThreadTabDetailStickyHeaderSection(header: "", height:  4)
+                .onAppear {
+                    if viewModel.messages.count == 0 {
+                        viewModel.loadMore()
+                    }
                 }
-            }
-        MessageListMusicView()
-            .padding(.top, 8)
-            .environmentObject(viewModel)
+            MessageListMusicView()
+                .padding(.top, 8)
+                .environmentObject(viewModel)
+        }
     }
 }
 
 struct MessageListMusicView: View {
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-    @EnvironmentObject var detailViewModel: DetailViewModel
+    @EnvironmentObject var detailViewModel: ThreadDetailViewModel
 
     var body: some View {
         ForEach(viewModel.messages) { message in
@@ -64,7 +66,7 @@ struct MusicRowView: View {
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var downloadVM: DownloadFileViewModel
     @EnvironmentObject var downloadViewModel: DownloadFileViewModel
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @Environment(\.dismiss) var dismiss
 
     var body: some View {

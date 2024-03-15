@@ -38,6 +38,7 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     }
 
     public func cancel() {
+        NotificationCenter.cancelSearch.post(name: .cancelSearch, object: nil)
         isInSearchMode = false
         searchedMessages.removeAll()
     }
@@ -50,41 +51,52 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
             }
             .store(in: &cancelable)
 
-        $searchText
-            .debounce(for: 0.5, scheduler: RunLoop.main)
-            .sink { [weak self] newValue in
-                self?.doSearch(text: newValue)
+        NotificationCenter.cancelSearch.publisher(for: .cancelSearch)
+            .sink { [weak self] event in
+                self?.reset()
             }
             .store(in: &cancelable)
 
-        RequestsManager.shared.$cancelRequest
+        $searchText
+            .debounce(for: 1.0, scheduler: RunLoop.main)
             .sink { [weak self] newValue in
-                if let newValue {
-                    self?.onCancelTimer(key: newValue)
+                self?.doNewSearch(text: newValue)
+            }
+            .store(in: &cancelable)
+
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
+            .sink { [weak self] newValue in
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
                 }
             }
             .store(in: &cancelable)
     }
 
-    public func doSearch(text: String, offset: Int = 0) {
-        isInSearchMode = text.count >= 2
+    public func doNewSearch(text: String) {
+        if text.count < 2 { return }
         searchedMessages.removeAll()
-        guard text.count >= 2 else { return }
+        isInSearchMode = text.count >= 2
         isLoading = true
-        let req = GetHistoryRequest(threadId: threadId, count: count, offset: offset, query: "\(text)")
+        offset = 0
+        hasMore = true
+        let req = GetHistoryRequest(threadId: threadId, count: count, offset: 0, query: "\(text)")
         RequestsManager.shared.append(prepend: "SEARCH", value: req, autoCancel: false)
         ChatManager.activeInstance?.message.history(req)
-        self.offset = offset + count
     }
 
     public func loadMore() {
         if hasMore {
-            doSearch(text: searchText)
+            self.offset = offset + count
+            isLoading = true
+            let req = GetHistoryRequest(threadId: threadId, count: count, offset: offset, query: "\(searchText)")
+            RequestsManager.shared.append(prepend: "SEARCH", value: req, autoCancel: false)
+            ChatManager.activeInstance?.message.history(req)
         }
     }
 
     func onSearch(_ response: ChatResponse<[Message]>) {
-        if !response.cache, response.value(prepend: "SEARCH") != nil {
+        if !response.cache, response.pop(prepend: "SEARCH") != nil {
             isLoading = false
             response.result?.forEach { message in
                 if !(searchedMessages.contains(where: { $0.id == message.id })) {
@@ -108,9 +120,24 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     }
 
     private func onCancelTimer(key: String) {
-        if isLoading {
+        if isLoading, key.contains("SEARCH") {
             isLoading = false
             animateObjectWillChange()
+        }
+    }
+
+    private func reset() {
+        searchText = ""
+        hasMore = true
+        isLoading = false
+        isInSearchMode = false
+        offset = 0
+        searchedMessages.removeAll()
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
         }
     }
 }

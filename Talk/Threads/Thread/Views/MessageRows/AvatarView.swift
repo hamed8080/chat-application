@@ -71,26 +71,27 @@ final class AvatarView: UIView {
         let showImage = avatarVM?.image != nil
         label.isHidden = showImage
         image.isHidden = !showImage
+        backgroundColor = viewModel.avatarColor
         if showImage {
             image.image = avatarVM?.image
         } else {
-            label.text = String(message.participant?.name?.first ?? message.participant?.username?.first ?? " ")
+            label.text = viewModel.avatarSplitedCharaters
         }
         if avatarVM?.isImageReady == false {
-            avatarVM?.fetch()
+            Task {
+                await avatarVM?.fetch()
+            }
         }
-
-        if viewModel.isMe {
+        if hiddenView {
             isHidden = true
-        } else if viewModel.isNextMessageTheSameUser {
+        } else if showAvatarOrUserName {
+            isHidden = false
+            widthConstraint?.constant = MessageRowViewModel.avatarSize
+            heightConstraint?.constant = MessageRowViewModel.avatarSize 
+        } else if isSameUser {
             isHidden = false
             widthConstraint?.constant = MessageRowViewModel.avatarSize
             heightConstraint?.constant = MessageRowViewModel.avatarSize
-        } else {
-            let canShow = !viewModel.isMe && !viewModel.isNextMessageTheSameUser && viewModel.threadVM?.thread.group == true
-            isHidden = !canShow
-            widthConstraint?.constant = canShow ? MessageRowViewModel.avatarSize : 0
-            heightConstraint?.constant = canShow ? MessageRowViewModel.avatarSize : 0
         }
     }
 
@@ -103,11 +104,11 @@ final class AvatarView: UIView {
     }
 
     private var showAvatarOrUserName: Bool {
-        !viewModel.isMe && !viewModel.isNextMessageTheSameUser && viewModel.isCalculated
+        !viewModel.isMe && viewModel.isLastMessageOfTheUser && viewModel.isCalculated
     }
 
     private var isSameUser: Bool {
-        !viewModel.isMe && viewModel.isNextMessageTheSameUser
+        !viewModel.isMe && !viewModel.isLastMessageOfTheUser
     }
 }
 

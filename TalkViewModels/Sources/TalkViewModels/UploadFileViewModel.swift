@@ -9,7 +9,7 @@ import ChatTransceiver
 
 public final class UploadFileViewModel: ObservableObject {
     @Published public private(set) var uploadPercent: Int64 = 0
-    @Published public var state: UploadFileState = .uploading
+    @Published public var state: UploadFileState = .paused
     public var message: Message
     var threadId: Int? { (message.uploadFile as? UploadFileMessage)?.conversation?.id }
     public var uploadFileWithTextMessage: UploadWithTextMessageProtocol { message as! UploadWithTextMessageProtocol }
@@ -42,7 +42,7 @@ public final class UploadFileViewModel: ObservableObject {
     }
 
     public func startUploadFile() {
-        if state == .completed { return }
+        if state == .uploading || state == .completed { return }
         state = .uploading
         guard let threadId = threadId else { return }
         let isImage: Bool = message.isImage
@@ -54,7 +54,7 @@ public final class UploadFileViewModel: ObservableObject {
     }
 
     public func startUploadImage() {
-        if state == .completed { return }
+        if state == .uploading || state == .completed { return }
         state = .uploading
         guard let threadId = threadId else { return }
         let isImage: Bool = message.isImage
@@ -67,12 +67,20 @@ public final class UploadFileViewModel: ObservableObject {
 
     public func uploadFile(_ message: SendTextMessageRequest, _ uploadFileRequest: UploadFileRequest) {
         uploadUniqueId = uploadFileRequest.uniqueId
-        ChatManager.activeInstance?.message.send(message, uploadFileRequest)
+        if let uploadMessage = self.message as? UploadFileWithReplyPrivatelyMessage {
+            ChatManager.activeInstance?.message.replyPrivately(uploadMessage.replyPrivatelyRequest, uploadFileRequest)
+        } else {
+            ChatManager.activeInstance?.message.send(message, uploadFileRequest)
+        }
     }
 
     public func uploadImage(_ message: SendTextMessageRequest, _ uploadImageRequest: UploadImageRequest) {
         uploadUniqueId = uploadImageRequest.uniqueId
-        ChatManager.activeInstance?.message.send(message, uploadImageRequest)
+        if let uploadMessage = self.message as? UploadFileWithReplyPrivatelyMessage {
+            ChatManager.activeInstance?.message.replyPrivately(uploadMessage.replyPrivatelyRequest, uploadImageRequest)
+        } else {
+            ChatManager.activeInstance?.message.send(message, uploadImageRequest)
+        }
     }
 
     private func onUploadProgress(_ uniqueId: String, _ uploadFileProgress: UploadFileProgress?) {

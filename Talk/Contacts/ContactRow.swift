@@ -20,13 +20,13 @@ struct ContactRow: View {
     var body: some View {
         VStack {
             HStack(spacing: 0) {
-                let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: contact.firstName)
-                ImageLoaderView(imageLoader: .init(config: config))
+                let config = ImageLoaderConfig(url: contact.image ?? contact.user?.image ?? "", userName: String.splitedCharacter(contact.firstName ?? ""))
+                ImageLoaderView(imageLoader: .init(config: config), textFont: .iransansBoldBody)
                     .id("\(contact.image ?? "")\(contact.id ?? 0)")
                     .font(.iransansBody)
-                    .foregroundColor(Color.App.textPrimary)
+                    .foregroundColor(Color.App.white)
                     .frame(width: 52, height: 52)
-                    .background(Color.App.color1.opacity(0.4))
+                    .background(Color(uiColor: String.getMaterialColorByCharCode(str: contact.firstName ?? "")))
                     .clipShape(RoundedRectangle(cornerRadius:(22)))
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -35,14 +35,14 @@ struct ContactRow: View {
                         .lineLimit(1)
                         .font(.iransansBoldBody)
                         .foregroundColor(Color.App.textPrimary)
-                    if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
-                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
-                        let time = String(format: lastVisitedLabel, notSeenDuration)
-                        Text(time)
-                            .padding(.leading, 16)
-                            .font(.iransansBody)
-                            .foregroundColor(Color.App.textSecondary)
-                    }
+//                    if let notSeenDuration = contact.notSeenDuration?.localFormattedTime {
+//                        let lastVisitedLabel = String(localized: .init("Contacts.lastVisited"))
+//                        let time = String(format: lastVisitedLabel, notSeenDuration)
+//                        Text(time)
+//                            .padding(.leading, 16)
+//                            .font(.iransansBody)
+//                            .foregroundColor(Color.App.textSecondary)
+//                    }
                 }
                 Spacer()
                 if contact.blocked == true {

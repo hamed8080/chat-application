@@ -13,13 +13,12 @@ import ChatCore
 import SwiftUI
 
 public protocol ScrollToPositionProtocol {
-    var canScrollToBottomOfTheList: Bool { get set }
     func scrollToBottom(animation: Animation?)
     func scrollToLastMessageIfLastMessageIsVisible(_ message: Message)
 }
 
 public final class ThreadScrollingViewModel: ObservableObject {
-    public var canScrollToBottomOfTheList: Bool = false
+    var task: Task<(), Never>?
     public var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false
@@ -34,22 +33,37 @@ public final class ThreadScrollingViewModel: ObservableObject {
     init() {}
 
     @MainActor
-    private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.6), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) async {
+    private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.3), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) async {
+        guard let uniqueId = threadVM?.historyVM.messageViewModel(for: uniqueId)?.uniqueId else { return }
         try? await Task.sleep(for: .milliseconds(delay))
+        if Task.isCancelled == true { return }
         withAnimation(animation) {
             scrollProxy?.scrollTo(uniqueId, anchor: anchor)
         }
 
         /// Ensure the view is shown as a result of SwiftUI can't properly move for the first time
-        try? await Task.sleep(for: .seconds(1.5))
+        try? await Task.sleep(for: .seconds(0.3))
         withAnimation(animation) {
             scrollProxy?.scrollTo(uniqueId, anchor: anchor)
         }
     }
 
+    public func scrollToSlot(_ uniqueId: String, anchor: UnitPoint? = .top) {
+        scrollProxy?.scrollTo(uniqueId, anchor: anchor)
+    }
+
     public func scrollToBottom(animation: Animation? = .easeInOut) {
         if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
             threadVM?.historyVM.moveToTime(time, messageId, highlight: false)
+        }
+    }
+
+    public func scrollToEmptySpace(animation: Animation? = .easeInOut) {
+        task = Task {
+            try? await Task.sleep(for: .seconds(0.5))
+            withAnimation(animation) {
+                scrollProxy?.scrollTo(-3, anchor: .bottom)
+            }
         }
     }
 
@@ -60,23 +74,44 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
     }
 
-    @MainActor
-    func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) async {
-        if highlight {
-            NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
+    public func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) {
+       task = Task {
+            if Task.isCancelled { return }
+            await MainActor.run {
+                if highlight {
+                    NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
+                }
+            }
+            await scrollTo(uniqueId, anchor: anchor)
+        }
+    }
+
+    public func showHighlightedAsync(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) async {
+        if Task.isCancelled { return }
+        await MainActor.run {
+            if highlight {
+                NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
+            }
         }
         await scrollTo(uniqueId, anchor: anchor)
     }
 
     public func disableExcessiveLoading() {
-        Task {
-            await MainActor.run {
+        task = Task { [weak self] in
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 isProgramaticallyScroll = true
             }
-            try? await Task.sleep(for: .milliseconds(2))
-            await MainActor.run {
+            try? await Task.sleep(for: .seconds(1))
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 isProgramaticallyScroll = false
             }
         }
+    }
+
+    public func cancelTask() {
+        task?.cancel()
+        task = nil
     }
 }

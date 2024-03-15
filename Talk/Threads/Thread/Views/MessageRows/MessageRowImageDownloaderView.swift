@@ -86,9 +86,7 @@ final class MessageRowImageDownloaderView: UIImageView {
         let tap = MessageTapGestureRecognizer(target: self, action: #selector(onTap(_:)))
         stack.isUserInteractionEnabled = true
         stack.addGestureRecognizer(tap)
-
-        let canShow = viewModel.canShowImageView
-        isHidden = !canShow
+        isHidden = !viewModel.rowType.isImage
     }
 
     @objc func onTap(_ sender: MessageTapGestureRecognizer) {

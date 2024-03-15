@@ -12,7 +12,7 @@ import TalkModels
 
 public struct PinMessageDialog: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
-    @EnvironmentObject var threadVM:ThreadViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
     let message: Message
 
     public init(message: Message) {

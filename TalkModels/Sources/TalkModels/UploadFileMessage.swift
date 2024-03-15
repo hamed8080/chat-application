@@ -1,3 +1,4 @@
+import Foundation
 import Chat
 import ChatDTO
 import ChatModels
@@ -12,6 +13,7 @@ public class UploadFileMessage: Message, UploadWithTextMessageProtocol {
         self.sendTextMessageRequest = sendTextMessageRequest
         self.uploadFileRequest = uploadFileRequest
         super.init(uniqueId: uploadFileRequest.uniqueId)
+        self.time = UInt(Date().millisecondsSince1970)
         if let sendTextMessageRequest = sendTextMessageRequest {
             self.sendTextMessageRequest = sendTextMessageRequest
             self.uploadFileRequest = uploadFileRequest
@@ -28,6 +30,7 @@ public class UploadFileMessage: Message, UploadWithTextMessageProtocol {
         self.sendTextMessageRequest = sendTextMessageRequest
         self.uploadImageRequest = imageFileRequest
         super.init(uniqueId: imageFileRequest.uniqueId)
+        self.time = UInt(Date().millisecondsSince1970)
         if let sendTextMessageRequest = sendTextMessageRequest {
             self.sendTextMessageRequest = sendTextMessageRequest
             message = sendTextMessageRequest.textMessage

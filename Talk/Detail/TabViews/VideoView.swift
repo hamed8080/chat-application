@@ -16,29 +16,32 @@ import TalkModels
 import ActionableContextMenu
 
 struct VideoView: View {
-    @State var viewModel: DetailTabDownloaderViewModel
+    @StateObject var viewModel: DetailTabDownloaderViewModel
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType)
+        let vm = DetailTabDownloaderViewModel(conversation: conversation, messageType: messageType, tabName: "Video")
+        _viewModel = StateObject(wrappedValue: vm)
     }
 
     var body: some View {
-        StickyHeaderSection(header: "", height:  4)
-            .onAppear {
-                if viewModel.messages.count == 0 {
-                    viewModel.loadMore()
+        LazyVStack {
+            ThreadTabDetailStickyHeaderSection(header: "", height:  4)
+                .onAppear {
+                    if viewModel.messages.count == 0 {
+                        viewModel.loadMore()
+                    }
                 }
-            }
-        MessageListVideoView()
-            .padding(.top, 8)
-            .environmentObject(viewModel)
+            MessageListVideoView()
+                .padding(.top, 8)
+                .environmentObject(viewModel)
+        }
     }
 }
 
 struct MessageListVideoView: View {
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-    @EnvironmentObject var detailViewModel: DetailViewModel
-    
+    @EnvironmentObject var detailViewModel: ThreadDetailViewModel
+
     var body: some View {
         ForEach(viewModel.messages) { message in
             VideoRowView(message: message)
@@ -65,7 +68,7 @@ struct VideoRowView: View {
     let message: Message
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var downloadVM: DownloadFileViewModel
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @Environment(\.dismiss) var dismiss
     @State var width: CGFloat? = 48
     @State var height: CGFloat? = 48

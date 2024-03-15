@@ -28,6 +28,7 @@ struct AddOrEditContactView: View {
     @State var contactValue: String = ""
     @State var firstName: String = ""
     @State var lastName: String = ""
+    var showToolbar: Bool = false
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var viewModel: ContactsViewModel
     var addContact: Contact? { viewModel.addContact }
@@ -36,46 +37,54 @@ struct AddOrEditContactView: View {
     var isInEditMode: Bool { addContact == nil && editContact != nil }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            if !isLargeSize{
-                Spacer()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                if !showToolbar {
+                    Text(isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title")
+                        .font(.iransansBoldSubtitle)
+                        .padding()
+                        .offset(y: 24)
+                }
+                TextField("General.firstName", text: $firstName)
+                    .focused($focusState, equals: .firstName)
+                    .textContentType(.name)
+                    .padding()
+                    .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
+                        focusState = .firstName
+                    }
+                TextField(optioanlAPpend(text: "General.lastName"), text: $lastName)
+                    .focused($focusState, equals: .lastName)
+                    .textContentType(.familyName)
+                    .padding()
+                    .applyAppTextfieldStyle(topPlaceholder: "General.lastName", isFocused: focusState == .lastName) {
+                        focusState = .lastName
+                    }
+                TextField("Contacts.Add.phoneOrUserName", text: $contactValue)
+                    .focused($focusState, equals: .contactValue)
+                    .keyboardType(.default)
+                    .padding()
+                    .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", error: viewModel.userNotFound ? "Contctas.notFound" : nil, isFocused: focusState == .contactValue) {
+                        focusState = .contactValue
+                    }
+                    .disabled(isInEditMode)
+                    .opacity(isInEditMode ? 0.3 : 1)
+                if !isLargeSize {
+                    Spacer()
+                }
             }
-            Text(isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title")
-                .font(.iransansBoldSubtitle)
-                .padding()
-                .offset(y: 24)
-            TextField("General.firstName", text: $firstName)
-                .focused($focusState, equals: .firstName)
-                .textContentType(.name)
-                .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "General.firstName", isFocused: focusState == .firstName) {
-                    focusState = .firstName
-                }
-            TextField(optioanlAPpend(text: "General.lastName"), text: $lastName)
-                .focused($focusState, equals: .lastName)
-                .textContentType(.familyName)
-                .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "General.lastName", isFocused: focusState == .lastName) {
-                    focusState = .lastName
-                }
-            TextField("Contacts.Add.phoneOrUserName", text: $contactValue)
-                .focused($focusState, equals: .contactValue)
-                .keyboardType(.default)
-                .padding()
-                .applyAppTextfieldStyle(topPlaceholder: "Contacts.Add.phoneOrUserName", error: viewModel.userNotFound ? "Contctas.notFound" : nil, isFocused: focusState == .contactValue) {
-                    focusState = .contactValue
-                }
-                .disabled(isInEditMode)
-                .opacity(isInEditMode ? 0.3 : 1)
-            if isLargeSize {
-                Spacer()
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if showToolbar {
+                toolbarView
             }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             let title = isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title"
             SubmitBottomButton(text: title, enableButton: .constant(enableButton), isLoading: $viewModel.isLoading) {
                 submit()
             }
         }
-        .presentationDetents([.fraction((isLargeSize ? 100 : 60) / 100)])
+        .presentationDetents([.fraction((isLargeSize ? 100 : 70) / 100)])
         .presentationBackground(.ultraThinMaterial)
         .presentationDragIndicator(.visible)
         .animation(.easeInOut, value: enableButton)
@@ -112,13 +121,6 @@ struct AddOrEditContactView: View {
             focusState = .firstName
             viewModel.successAdded = false
         }
-        .onDisappear {
-            /// Clearing the view for when the user cancels the sheet by dropping it down.
-            viewModel.successAdded = false
-            viewModel.showAddOrEditContactSheet = false
-            viewModel.addContact = nil
-            viewModel.editContact = nil
-        }
     }
 
     private var isLargeSize: Bool {
@@ -141,6 +143,22 @@ struct AddOrEditContactView: View {
 
     func optioanlAPpend(text: String) -> String {
         "\(String(localized: .init(text))) \(String(localized: "General.optional"))"
+    }
+
+    var toolbarView: some View {
+        VStack(spacing: 0) {
+            ToolbarView(title: isInEditMode ? "Contacts.Edit.title" : "Contacts.Add.title",
+                        showSearchButton: false,
+                        leadingViews: leadingTralingView,
+                        centerViews: EmptyView(),
+                        trailingViews: EmptyView()) {_ in }
+        }
+    }
+
+    var leadingTralingView: some View {
+        NavigationBackButton {
+            dismiss()
+        }
     }
 }
 

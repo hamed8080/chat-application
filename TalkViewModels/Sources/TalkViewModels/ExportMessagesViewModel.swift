@@ -12,15 +12,7 @@ import Combine
 import ChatCore
 import ChatDTO
 
-public protocol ExportMessagesViewModelProtocol {
-    var thread: Conversation? { get set }
-    var filePath: URL? { get set }
-    var threadId: Int { get }
-    func exportChats(startDate: Date, endDate: Date)
-    func deleteFile()
-}
-
-public final class ExportMessagesViewModel: ObservableObject, ExportMessagesViewModelProtocol {
+public final class ExportMessagesViewModel: ObservableObject {
     public weak var thread: Conversation?
     public var threadId: Int { thread?.id ?? 0 }
     public var filePath: URL?
@@ -50,5 +42,11 @@ public final class ExportMessagesViewModel: ObservableObject, ExportMessagesView
     public func deleteFile() {
         guard let url = filePath else { return }
         try? FileManager.default.removeItem(at: url)
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
     }
 }

@@ -9,7 +9,7 @@
         "server": "integration"
     },
     {
-        "socketAddresss": "wss://chat-sandbox.pod.ir/ws",
+        "socketAddresss": "wss://chat-sandbox.sandpod.ir/ws",
         "ssoHost": "https://accounts.pod.ir",
         "platformHost": "https://sandbox.pod.ir:8043/srv/basic-platform",
         "fileServer": "http://sandbox.podspace.ir:8080",

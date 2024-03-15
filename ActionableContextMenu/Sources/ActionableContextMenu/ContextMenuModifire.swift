@@ -36,7 +36,7 @@ struct ContextMenuModifire<V: View>: ViewModifier {
             .background(frameReader)
             .scaleEffect(x: scale, y: scale, anchor: .center)
             .gesture(tapgesture)
-            .gesture(longGesture.simultaneously(with: postionGesture).simultaneously(with: localPostionGesture))
+            .gesture(postionGesture.simultaneously(with: localPostionGesture))
             .onChange(of: viewModel.isPresented) { newValue in
                 var transaction = Transaction()
                 transaction.animation = .easeInOut(duration: 0.2)
@@ -56,25 +56,15 @@ struct ContextMenuModifire<V: View>: ViewModifier {
             }
     }
 
-    var longGesture: some Gesture {
-        LongPressGesture(minimumDuration: 0.2, maximumDistance: 10)
-            .onEnded { finished in
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    scale = 0.9
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    withAnimation(.easeInOut) {
-                        viewModel.menus = AnyView(menus().environmentObject(viewModel))
-                        scale = 1.05
-                        viewModel.presentedId = id
-                        viewModel.globalFrame = globalFrame
-                        viewModel.addedX = addedX
-                        viewModel.mainView = AnyView(root)
-                        viewModel.isPresented.toggle()
-                        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-                    }
-                }
-            }
+    private func showMenu() {
+        viewModel.isPresented = true
+        viewModel.menus = AnyView(menus().environmentObject(viewModel))
+        scale = 1.05
+        viewModel.presentedId = id
+        viewModel.globalFrame = globalFrame
+        viewModel.addedX = addedX
+        viewModel.mainView = AnyView(root)
+        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
     }
 
     var postionGesture: some Gesture {
@@ -83,8 +73,10 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                 state = true
             }
             .onChanged { value in
-                viewModel.globalPosition = value.location
-                log("global touched value location x: \(value.location.x) y: \(value.location.y)")
+                if !viewModel.isPresented, value.translation.width > -2 && value.translation.width < 2 {
+                    viewModel.globalPosition = value.location
+                    log("global touched value location x: \(value.location.x) y: \(value.location.y)")
+                }
             }
     }
 
@@ -94,33 +86,53 @@ struct ContextMenuModifire<V: View>: ViewModifier {
                 state = true
             }
             .onChanged { value in
+
                 /// We check this to prevent rapidally update the UI.
                 let beofreX = viewModel.localPosition?.x ?? 0
                 let beofreY = viewModel.localPosition?.y ?? 0
+                // This line prevent the ui move around
+                if viewModel.isPresented && viewModel.localPosition?.x ?? 0 > 0 { return }
                 if isPastTheMargin(first: beofreX, newValue: value.location.x) || isPastTheMargin(first: beofreY, newValue: value.location.y) {
                     viewModel.localPosition = value.location
                     log("local touched value location x: \(value.location.x) y:\(value.location.y)")
+                }
+
+                /// We check translation to make sure user is not dragging
+                if !viewModel.isPresented && value.translation.width > -2 && value.translation.width < 2 {
+                    var transaction = Transaction()
+                    transaction.animation = Animation.easeInOut(duration: 0.2)
+                    withTransaction(transaction) {
+                        scale = 0.9
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            withAnimation {
+                                showMenu()
+                            }
+                        }
+                    }
                 }
             }
     }
 
     func isPastTheMargin(first: CGFloat, newValue: CGFloat) -> Bool {
-        let padding: CGFloat = 12
+        let padding: CGFloat = 14
         return newValue > first + padding || newValue < first - padding
     }
 
     var frameReader: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
-                let itemWidth = reader.frame(in: .local).width
                 let globalFrame = reader.frame(in: .global)
-                DispatchQueue.main.async {
-                    /// We must check the presented is equal to the id of the initialized modifier, unless the viewModel.item Width will be set to another wrong view width.
-                    if viewModel.isPresented, viewModel.presentedId == id {
-                        viewModel.itemWidth = itemWidth
+                let itemWidth = reader.frame(in: .local).width
+                /// Check for repetitive update.
+                if self.globalFrame.width != globalFrame.width && self.globalFrame.height != globalFrame.height {
+                    DispatchQueue.main.async {
+                        /// We must check the presented is equal to the id of the initialized modifier, unless the viewModel.item Width will be set to another wrong view width.
+                        if viewModel.isPresented, viewModel.presentedId == id {
+                            viewModel.itemWidth = itemWidth
+                        }
+                        self.globalFrame = globalFrame
+                        log("globalFrame width: \(globalFrame.width) height: \(globalFrame.height)  originX: \(globalFrame.origin.x) originY: \(globalFrame.origin.y)")
                     }
-                    self.globalFrame = globalFrame
-                    log("globalFrame width: \(globalFrame.width) height: \(globalFrame.height)  originX: \(globalFrame.origin.x) originY: \(globalFrame.origin.y)")
                 }
             }
         }

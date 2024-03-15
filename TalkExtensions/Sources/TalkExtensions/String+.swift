@@ -7,6 +7,7 @@
 
 import ChatModels
 import UniformTypeIdentifiers
+import UIKit
 import SwiftUI
 import NaturalLanguage
 
@@ -112,29 +113,29 @@ public extension String {
         }
     }
 
-    static func getMaterialColorByCharCode(str: String) -> Color {
+    static func getMaterialColorByCharCode(str: String) -> UIColor {
         let splited = String.splitedCharacter(str).split(separator: " ")
-        let defaultColor = Color(red: 50/255, green: 128/255, blue: 192/255)
+        let defaultColor = UIColor(red: 50/255, green: 128/255, blue: 192/255, alpha: 1.0)
         guard let code = splited.first?.unicodeScalars.first?.value else { return defaultColor }
         var firstInt = Int(code)
         if let lastCode = splited.last?.unicodeScalars.first?.value {
             let lastInt = Int(lastCode)
             firstInt -= firstInt - lastInt
         }
-        if (0..<20).contains(firstInt) { return Color(red: 50/255, green: 128/255, blue: 192/255) }
-        if (20..<39).contains(firstInt) { return Color(red: 60/255, green: 156/255, blue: 33/255) }
-        if (40..<59).contains(firstInt) { return Color(red: 195/255, green: 112/255, blue: 36/255) }
-        if (60..<79).contains(firstInt) { return Color(red: 185/255, green: 76/255, blue: 71/255) }
-        if (80..<99).contains(firstInt) { return Color(red: 137/255, green: 87/255, blue: 202/255) }
-        if (100..<119).contains(firstInt) { return Color(red: 54/255, green: 164/255, blue: 177/255) }
-        if (120..<199).contains(firstInt) { return Color(red: 183/255, green: 76/255, blue: 130/255) }
-        if (1500..<1549).contains(firstInt) { return Color(red: 50/255, green: 128/255, blue: 192/255) }
-        if (1550..<1599).contains(firstInt) { return Color(red: 60/255, green: 156/255, blue: 33/255) }
-        if (1600..<1619).contains(firstInt) { return Color(red: 195/255, green: 112/255, blue: 36/255) }
-        if (1620..<1679).contains(firstInt) { return Color(red: 185/255, green: 76/255, blue: 71/255) }
-        if (1680..<1699).contains(firstInt) { return Color(red: 137/255, green: 87/255, blue: 202/255) }
-        if (1700...1749).contains(firstInt) { return Color(red: 54/255, green: 164/255, blue: 177/255) }
-        if (1750..<1799).contains(firstInt) { return Color(red: 183/255, green: 76/255, blue: 130/255) }
+        if (0..<20).contains(firstInt) { return UIColor(red: 50/255, green: 128/255, blue: 192/255, alpha: 1.0) }
+        if (20..<39).contains(firstInt) { return UIColor(red: 60/255, green: 156/255, blue: 33/255, alpha: 1.0) }
+        if (40..<59).contains(firstInt) { return UIColor(red: 195/255, green: 112/255, blue: 36/255, alpha: 1.0) }
+        if (60..<79).contains(firstInt) { return UIColor(red: 185/255, green: 76/255, blue: 71/255, alpha: 1.0) }
+        if (80..<99).contains(firstInt) { return UIColor(red: 137/255, green: 87/255, blue: 202/255, alpha: 1.0) }
+        if (100..<119).contains(firstInt) { return UIColor(red: 54/255, green: 164/255, blue: 177/255, alpha: 1.0) }
+        if (120..<199).contains(firstInt) { return UIColor(red: 183/255, green: 76/255, blue: 130/255, alpha: 1.0) }
+        if (1500..<1549).contains(firstInt) { return UIColor(red: 50/255, green: 128/255, blue: 192/255, alpha: 1.0) }
+        if (1550..<1599).contains(firstInt) { return UIColor(red: 60/255, green: 156/255, blue: 33/255, alpha: 1.0) }
+        if (1600..<1619).contains(firstInt) { return UIColor(red: 195/255, green: 112/255, blue: 36/255, alpha: 1.0) }
+        if (1620..<1679).contains(firstInt) { return UIColor(red: 185/255, green: 76/255, blue: 71/255, alpha: 1.0) }
+        if (1680..<1699).contains(firstInt) { return UIColor(red: 137/255, green: 87/255, blue: 202/255, alpha: 1.0) }
+        if (1700...1749).contains(firstInt) { return UIColor(red: 54/255, green: 164/255, blue: 177/255, alpha: 1.0) }
+        if (1750..<1799).contains(firstInt) { return UIColor(red: 183/255, green: 76/255, blue: 130/255, alpha: 1.0) }
         return defaultColor
     }
 }

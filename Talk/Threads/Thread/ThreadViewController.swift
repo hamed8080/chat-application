@@ -27,7 +27,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.historyVM.startFetchingHistory()
+        viewModel.historyVM.start()
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {

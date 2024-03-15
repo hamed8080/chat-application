@@ -124,6 +124,7 @@ public final class LoginViewModel: ObservableObject {
             ssoToken.keyId = keyId
             await saveTokenAndCreateChatObject(ssoToken)
             await MainActor.run {
+                hideKeyboard()
                 resetState()
                 doHaptic()
             }
@@ -144,7 +145,8 @@ public final class LoginViewModel: ObservableObject {
     }
 
     public func showError(_ state: LoginState) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             await MainActor.run {
                 self.state = state
             }
@@ -152,8 +154,9 @@ public final class LoginViewModel: ObservableObject {
     }
 
     public func showLoading(_ show: Bool) {
-        Task {
-            await MainActor.run {
+        Task { [weak self] in
+            await MainActor.run { [weak self] in
+                guard let self = self else { return }
                 isLoading = show
             }
         }
@@ -161,7 +164,8 @@ public final class LoginViewModel: ObservableObject {
 
     public func resend() {
         if let keyId = keyId {
-            Task {
+            Task { [weak self] in
+                guard let self = self else { return }
                 await requestOTP(identity: text, keyId: keyId, resend: true)
                 await startTimer()
             }
@@ -197,4 +201,7 @@ public final class LoginViewModel: ObservableObject {
         UIImpactFeedbackGenerator(style: failed ? .rigid : .soft).impactOccurred()
     }
 
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 }

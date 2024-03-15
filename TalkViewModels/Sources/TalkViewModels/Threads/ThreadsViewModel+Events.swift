@@ -38,6 +38,39 @@ extension ThreadsViewModel {
                 self?.onParticipantEvent(event)
             }
             .store(in: &cancelable)
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
+            .sink { [weak self] newValue in
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
+                }
+            }
+            .store(in: &cancelable)
+        $showUnreadConversations.sink { [weak self] newValue in
+            if newValue == true {
+                self?.getUnreadConversations()
+            } else if newValue == false {
+                self?.resetUnreadConversations()
+            }
+        }
+        .store(in: &cancelable)
+        NotificationCenter.system.publisher(for: .system)
+            .compactMap { $0.object as? SystemEventTypes }
+            .sink { [weak self] systemMessageEvent in
+                self?.onThreadSystemEvent(systemMessageEvent)
+            }
+            .store(in: &cancelable)
+    }
+
+    func onThreadSystemEvent(_ event: SystemEventTypes) {
+        switch event {
+        case .systemMessage(let chatResponse):
+            guard let result = chatResponse.result else { return }
+            if let eventVM = threadEventModels.first(where: {$0.threadId == chatResponse.subjectId}) {
+                eventVM.startEventTimer(result)
+            }
+        default:
+            break
+        }
     }
 
     func onParticipantEvent(_ event: ParticipantEventTypes) {
@@ -56,6 +89,7 @@ extension ThreadsViewModel {
         case .threads(let response):
             if !response.cache {
                 onThreads(response)
+                onUnreadThreads(response)
                 onNotActiveThreads(response)
             }
         case .created(let response):

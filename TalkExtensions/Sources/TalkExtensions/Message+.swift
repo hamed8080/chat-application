@@ -18,7 +18,7 @@ public extension Message {
     static let audioTypes = [ChatModels.MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice]
     static let videoTypes = [ChatModels.MessageType.video, .podSpaceVideo, .video]
     static let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice, .podSpaceVideo]
-    static let reactionableTypes = [ChatModels.MessageType.endCall, .endCall, .participantJoin, .participantLeft]
+    static let unreactionableTypes = [ChatModels.MessageType.endCall, .endCall, .participantJoin, .participantLeft]
 
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
@@ -31,14 +31,8 @@ public extension Message {
                                                                     languageCode: nil,
                                                                     appliesSourcePositionAttributes: false)
         guard let mutableAttr = try? NSMutableAttributedString(markdown: messageTitle, options: option) else { return NSAttributedString() }
-        let title = mutableAttr.string
-        title.matches(char: "@")?.forEach { match in
-            let userName = title[Range(match.range, in: title)!]
-            let sanitizedUserName = String(userName).trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "@", with: "")
-            mutableAttr.addAttributes([NSAttributedString.Key.link: NSURL(string: "ShowUser:User?userName=\(sanitizedUserName)")!], range: match.range)
-            mutableAttr.addAttributes([NSAttributedString.Key.foregroundColor: UIColor(named: "accent") ?? .orange], range: match.range)
-        }
-        mutableAttr.addLinkColor(messageTitle, UIColor(named: "text_secondary") ?? .gray)
+        mutableAttr.addUserColor(UIColor(named: "accent") ?? .orange)
+        mutableAttr.addLinkColor(UIColor(named: "text_secondary") ?? .gray)
         return mutableAttr
     }
 
@@ -56,7 +50,7 @@ public extension Message {
     var isImage: Bool { Message.imageTypes.contains(messageType ?? .unknown) }
     var isAudio: Bool { Message.audioTypes.contains(messageType ?? .unknown) }
     var isVideo: Bool { Message.videoTypes.contains(messageType ?? .unknown) }
-    var reactionableType: Bool { !Message.reactionableTypes.contains(messageType ?? .unknown) }
+    var reactionableType: Bool { !Message.unreactionableTypes.contains(messageType ?? .unknown) }
 
     var fileHashCode: String { fileMetaData?.fileHash ?? fileMetaData?.file?.hashCode ?? "" }
 
@@ -182,8 +176,9 @@ public extension Message {
 
     static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
 
-    var addOrRemoveParticipantString: String? {
+    func addOrRemoveParticipantString(meId: Int?) -> String? {
         guard let requestType = addRemoveParticipant?.requestTypeEnum else { return nil }
+        let isMe = participant?.id == meId
         let effectedName = addRemoveParticipant?.participnats?.first?.name ?? ""
         let participantName = participant?.name ?? ""
         let effectedParticipantsName = addRemoveParticipant?.participnats?.compactMap{$0.name}.joined(separator: ", ") ?? ""
@@ -193,11 +188,53 @@ public extension Message {
         case .joinThread:
             return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.joined", comment: ""), participantName)
         case .removedFromThread:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
+            if isMe {
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removedByMe" , comment: ""), effectedName)
+            } else {
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.removed", comment: ""), participantName, effectedName)
+            }
         case .addParticipant:
-            return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedParticipantsName)
+            if isMe {
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.addedByMe", comment: ""), effectedParticipantsName)
+            } else {
+                return Message.textDirectionMark + String(format: NSLocalizedString("Message.Participant.added", comment: ""), participantName, effectedParticipantsName)
+            }
         default:
             return nil
         }
+    }
+
+    class func makeRequest (model: SendMessageModel) -> (message: Message,req: SendTextMessageRequest) {
+        let req = SendTextMessageRequest(threadId: model.threadId,
+                                         textMessage: model.textMessage,
+                                         messageType: .text)
+        let message = Message(threadId: model.threadId,
+                              message: model.textMessage,
+                              messageType: .text,
+                              ownerId: model.meId,
+                              time: UInt(Date().millisecondsSince1970),
+                              uniqueId: req.uniqueId,
+                              conversation: model.conversation)
+        return (message, req)
+    }
+
+    class func slotWith(threadId: Int, meId: Int) -> Message {
+        let randomUserId = Int.random(in: (meId + 1)...(meId + 500))
+        let randomMe = Bool.random() ? meId : randomUserId;
+        let message = Message(
+            threadId: threadId,
+            id: LocalId.emptyMessageSlot.rawValue,
+            messageType: .text,
+            ownerId: randomMe,
+            uniqueId: UUID().uuidString,
+            conversation: Conversation(id: threadId)
+        )
+        return message
+    }
+}
+
+public extension Array where Element: Message {
+    func sortedByTime() -> [Message] {
+        sorted(by: {$0.time ?? 0 < $1.time ?? 0})
     }
 }

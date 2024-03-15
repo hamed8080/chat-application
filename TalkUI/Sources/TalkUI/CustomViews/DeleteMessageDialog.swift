@@ -11,16 +11,10 @@ import TalkViewModels
 
 public struct DeleteMessageDialog: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
-    let threadVM: ThreadViewModel
-    var viewModel: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
-    private var messages: [Message] { viewModel.selectedMessages.compactMap({$0.message}) }
-    private let deleteForMe: Bool
-    private let deleteForOthers: Bool
+    private let viewModel: DeleteMessagesViewModelModel
 
-    public init(deleteForMe: Bool, deleteForOthers: Bool, viewModel: ThreadViewModel) {
-        self.deleteForMe = deleteForMe
-        self.deleteForOthers = deleteForOthers
-        self.threadVM = viewModel
+    public init(viewModel: DeleteMessagesViewModelModel) {
+        self.viewModel = viewModel
     }
 
     public var body: some View {
@@ -35,58 +29,74 @@ public struct DeleteMessageDialog: View {
                 .foregroundStyle(Color.App.textPrimary)
                 .font(.iransansBody)
                 .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
 
-            HStack(spacing: 16) {
-                Button {
-                    viewModel.clearSelection()
-                    threadVM.isInEditMode = false
-                    appOverlayVM.dialogView = nil
-                    viewModel.animateObjectWillChange()
-                } label: {
-                    Text("General.cancel")
-                        .foregroundStyle(Color.App.textPlaceholder)
-                        .font(.iransansBoldBody)
-                        .frame(minWidth: 48, minHeight: 48)
-                }
+            if viewModel.hasPinnedMessage {
+                Text(viewModel.isSingle ? "DeleteMessageDialog.singleDeleteIsPinMessage" : "DeleteMessageDialog.multipleDeleteContainsPinMessage")
+                    .foregroundStyle(Color.App.textSecondary)
+                    .font(.iransansCaption2)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+            }
 
-                if deleteForMe {
-                    Button {
-                        threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
-                        threadVM.isInEditMode = false
-                        appOverlayVM.dialogView = nil
-                        viewModel.animateObjectWillChange()
-                    } label: {
-                        Text("Messages.deleteForMe")
-                            .foregroundStyle(Color.App.accent)
-                            .font(.iransansBoldBody)
-                            .frame(minWidth: 48, minHeight: 48)
+            HStack {
+                if !viewModel.isVstackLayout {
+                    HStack(spacing: 16) {
+                        buttons
                     }
-                }
-
-                if deleteForOthers {
-                    Button {
-                        threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
-                        threadVM.isInEditMode = false
-                        appOverlayVM.dialogView = nil
-                        viewModel.animateObjectWillChange()
-                    } label: {
-                        Text("Messages.deleteForAll")
-                            .foregroundStyle(Color.App.red)
-                            .font(.iransansBoldBody)
-                            .frame(minWidth: 48, minHeight: 48)
+                } else {
+                    VStack(alignment: .leading, spacing: 12) {
+                        buttons
                     }
+                    .padding(.bottom, 4)
                 }
+                Spacer()
             }
         }
         .frame(maxWidth: 320)
         .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
         .background(MixMaterialBackground())
+        .onDisappear {
+            viewModel.cleanup()
+        }
+    }
+
+    @ViewBuilder var buttons: some View {
+        if viewModel.deleteForMe {
+            Button {
+                viewModel.deleteMessagesForMe()
+            } label: {
+                Text(viewModel.isSelfThread ? "General.delete" : "Messages.deleteForMe")
+                    .foregroundStyle(viewModel.isSelfThread ? Color.App.red : Color.App.accent)
+                    .font(.iransansBoldCaption)
+            }
+        }
+
+        if viewModel.deleteForOthers {
+            Button {
+                viewModel.deleteForAll()
+            } label: {
+                Text("Messages.deleteForAll")
+                    .foregroundStyle(Color.App.red)
+                    .font(.iransansBoldCaption)
+            }
+        } else if viewModel.deleteForOthserIfPossible {
+            Button {
+                viewModel.deleteForMeAndAllOthersPossible()
+            } label: {
+                Text("DeleteMessageDialog.deleteForMeAllOtherIfPossible")
+                    .foregroundStyle(Color.App.red)
+                    .multilineTextAlignment(.leading)
+                    .font(.iransansBoldCaption)
+            }
+        }
     }
 }
 
 struct DeleteMessageDialog_Previews: PreviewProvider {
     static var previews: some View {
-        DeleteMessageDialog(deleteForMe: false, deleteForOthers: false, viewModel: .init(thread: Conversation(id: 1)))
+        DeleteMessageDialog(viewModel: .init(threadVM: .init(thread: Conversation(id: 1))))
     }
 }

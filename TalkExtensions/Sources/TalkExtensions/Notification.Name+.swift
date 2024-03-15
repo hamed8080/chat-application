@@ -9,6 +9,7 @@ import Foundation
 import Chat
 
 public extension Notification.Name {
+    static let onRequestTimer = Notification.Name("onRequestTimer")
     static let download = Notification.Name("download")
     static let upload = Notification.Name("upload")
     static let assistant = Notification.Name("assistant")
@@ -39,6 +40,7 @@ public extension Notification.Name {
 }
 
 public extension NotificationCenter {
+    static let onRequestTimer = NotificationCenter()
     static let download = NotificationCenter()
     static let upload = NotificationCenter()
     static let assistant = NotificationCenter()
@@ -72,12 +74,15 @@ public extension NotificationCenter {
         case let .bot(botEventTypes):
             Self.bot.post(name: .bot, object: botEventTypes)
         case let .contact(contactEventTypes):
-            Self.connect.post(name: .contact, object: contactEventTypes)
+            Self.contact.post(name: .contact, object: contactEventTypes)
         case let .download(downloadEventTypes):
             Self.download.post(name: .download, object: downloadEventTypes)
         case let .upload(uploadEventTypes):
             Self.upload.post(name: .upload, object: uploadEventTypes)
         case let .system(systemEventTypes):
+            if case .error(let chatResponse) = systemEventTypes {
+                Self.error.post(name: .error, object: chatResponse)
+            }
             Self.system.post(name: .system, object: systemEventTypes)
         case let .message(messageEventTypes):
             Self.message.post(name: .message, object: messageEventTypes)

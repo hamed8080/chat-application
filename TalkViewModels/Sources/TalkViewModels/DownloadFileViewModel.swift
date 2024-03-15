@@ -39,13 +39,10 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     public init(message: Message) {
         self.message = message
         setObservers()
-        Task {
-            await setup()
-        }
     }
 
     /// It should be on the background thread because it decodes metadata in message.url.
-    private func setup() async {
+    public func setup() async {
         if let url = url {
             isInCache = chat?.file.isFileExist(url) ?? false || chat?.file.isFileExistInGroup(url) ?? false
         }
@@ -112,7 +109,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     /// We use a Task to decode fileMetaData and hashCode inside the fileHashCode.
     private func downloadFile() {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             state = .downloading
             let req = FileRequest(hashCode: fileHashCode)
             uniqueId = req.uniqueId
@@ -124,7 +122,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     /// We use a Task to decode fileMetaData and hashCode inside the fileHashCode.
     private func downloadImage() {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             state = .downloading
             let req = ImageRequest(hashCode: fileHashCode, size: .ACTUAL)
             uniqueId = req.uniqueId
@@ -136,7 +135,8 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     /// We use a Task to decode fileMetaData and hashCode inside the fileHashCode.
     public func downloadBlurImage(quality: Float = 0.02, size: ImageSize = .SMALL) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             state = .thumbnailDownloaing
             let req = ImageRequest(hashCode: fileHashCode, quality: quality, size: size, thumbnail: true)
             uniqueId = req.uniqueId
@@ -148,10 +148,9 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
 
     private func onResponse(_ response: ChatResponse<Data>, _ url: URL?) {
         if response.uniqueId != uniqueId { return }
-        if RequestsManager.shared.value(prepend: "THUMBNAIL", for: uniqueId) != nil, let data = response.result {
+        if !response.cache, response.pop(prepend: "THUMBNAIL") != nil, let data = response.result {
             //State is not completed and blur view can show the thumbnail
             state = .thumbnail
-            RequestsManager.shared.remove(prepend: "THUMBNAIL", for: uniqueId)
             autoreleasepool {
                 self.thumbnailData = data
                 animateObjectWillChange()
@@ -159,7 +158,18 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
             return
         }
 
-        if RequestsManager.shared.value(for: uniqueId) != nil, let data = response.result {
+        if response.cache, let data = response.result {
+            _ = response.pop(prepend: "THUMBNAIL")
+            autoreleasepool {
+                state = .completed
+                downloadPercent = 100
+                self.data = data
+                thumbnailData = nil
+                isInCache = true
+                animateObjectWillChange()
+            }
+        }
+        if RequestsManager.shared.contains(key: uniqueId), let data = response.result {
             autoreleasepool {
                 state = .completed
                 downloadPercent = 100
@@ -171,7 +181,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
         }
 
         /// When the user clicks on the side of an image not directly hit the download button, it triggers gallery view, and therefore after the user is back to the view the image and file should update properly.
-        if RequestsManager.shared.value(for: uniqueId) != nil, url?.absoluteString == fileURL?.absoluteString, !response.cache {
+        if !response.cache, RequestsManager.shared.contains(key: uniqueId), url?.absoluteString == fileURL?.absoluteString {
             autoreleasepool {
                 RequestsManager.shared.remove(key: uniqueId)
                 state = .completed
@@ -220,7 +230,7 @@ public final class DownloadFileViewModel: ObservableObject, DownloadFileViewMode
     }
     
     private func isSameUnqiueId(_ uniqueId: String) -> Bool {
-        RequestsManager.shared.value(for: self.uniqueId) != nil && uniqueId == self.uniqueId
+        RequestsManager.shared.contains(key: self.uniqueId) && uniqueId == self.uniqueId
     }
 
     deinit {

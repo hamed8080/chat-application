@@ -67,6 +67,7 @@
 "General.moveToSettings" = "Gå till inställningar";
 "General.imageSaved" = "Bild sparad.";
 "General.ban" = "Servern har blockerat dig i %@ sekunder.";
+"General.addText" = "Lägg till text";
 
 /* Tabs */
 "Tab.chats" = "Chattar";
@@ -139,8 +140,10 @@
 /* Message */
 "Message.Participant.left" = "%@ har lämnat gruppen.";
 "Message.Participant.removed" = "%@ tog bort %@ från gruppen.";
+"Message.Participant.removedByMe" = "Du tog bort %@ från gruppen.";
 "Message.Participant.joined" = "%@ har gått med i gruppen.";
 "Message.Participant.added" = "%@ lade till %@ i gruppen.";
+"Message.Participant.addedByMe" = "Du lade till %@ i gruppen.";
 "Message.forwardedFrom" = "Vidarebefordrad från";
 "Message.replyTo" = "Svara på";
 
@@ -185,9 +188,10 @@
 "Thread.publicThreadStructrue" = "Offentliga trådnamn bör vara unika utan mellanslag och specialtecken.";
 "Thread.enterValidName" = "Ange namnet på konversationen.";
 "Thread.public" = "Offentlig";
+"Thread.private" = "Privat";
 "Thread.SendContainer.voiceRecording" = "Röstinspelning";
 "Thread.SendContainer.attachment" = "Bilaga";
-"Thread.SendContainer.typeMessageHere" = "Skriv meddelande här...";
+"Thread.SendContainer.typeMessageHere" = "Skriv här...";
 "Thread.SendContainer.toForward" = "att vidarebefordra";
 "Thread.export" = "Exportera";
 "ThreadList.Toolbar.startNewChat" = "Starta en ny chatt";
@@ -212,11 +216,12 @@
 "Thread.Tabs.voice" = "Röst";
 "Thread.Tabs.link" = "Länk";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
+"Thread.accessLocaitonPermission" = "Gå till inställningarna > Prata och aktivera sedan platsåtkomst.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ skapade en konversation.";
 "Thread.Toolbar.participants" = "Deltagare";
 "Thread.sendAttachments" = "Skicka %@ filer";
-"Thread.public" = "Publik %@";
+"Thread.typeString" = "%@ %@";
 "Thread.delete" = "Ta bort %@";
 "Thread.inviteLink" = "Inbjudningslänk";
 "Thread.isVoiceRecording" = "Spelar in ljud";
@@ -228,7 +233,8 @@
 "Thread.leaveButton" = "Lämna";
 "Thread.leave.footer" = "Är du säker på att du vill lämna denna konversation?";
 "Thread.noMessage" = "Det finns inget meddelande att visa.";
-"Thread.onlyAdminError" = "Du är den enda administratören i gruppen, du kan inte lämna eller ta bort gruppen!";
+"Thread.onlyGroupAdminError" = "Du är den enda administratören i gruppen, du kan inte lämna eller ta bort gruppen!";
+"Thread.onlyChannelAdminError" = "Du är den enda administratören i kanalen, du kan inte lämna eller ta bort kanalen!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "ansluter";
@@ -253,6 +259,7 @@
 /* Edit group */
 "EditGroup.groupName" = "Gruppnamn";
 "EditGroup.groupDescription" = "Gruppbeskrivning (valfritt)";
+"EditGroup.admins" = "Administratörer";
 
 /* Export Chat */
 "ExportChat.startTitle" = "Startdatum";
@@ -262,6 +269,9 @@
 /* DeleteMessageDialog */
 "DeleteMessageDialog.title" = "Radera markerade meddelanden";
 "DeleteMessageDialog.subtitle" = "Är du säker på att du vill radera alla markerade meddelanden?";
+"DeleteMessageDialog.singleDeleteIsPinMessage" = "Det raderade meddelandet är ett fäst meddelande, därför kan du inte radera det för andra.";
+"DeleteMessageDialog.multipleDeleteContainsPinMessage" = "Valda meddelanden innehåller ett pinmeddelande, därför kan du inte radera dem för andra.";
+"DeleteMessageDialog.deleteForMeAllOtherIfPossible" = "Radera för mig och andra där det är möjligt";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "Hur vill du sätta fast detta meddelande?";
@@ -292,7 +302,7 @@
 "Settings.logout" = "Logga ut";
 "Settings.notifictionSettings" = "Aviseringsinställningar";
 "Settings.download" = "Nedladdningsinställningar";
-"Settings.support" = "Stöd";
+"Settings.about" = "Om Talk";
 "Settings.userName" = "Användarnamn";
 "Settings.phoneNumber" = "Telefonnummer";
 "Settings.bio" = "Biografi";
@@ -316,6 +326,8 @@
 /* Support */
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk föddes 2016. Denna budbärare producerades och utvecklades med syftet att skapa djup och konstruktiv kommunikation och förstå organisatoriska och icke-organisatoriska behov. Förhoppningen är att Tak, enligt rådande förutsättningar, varje dag tar ett starkare steg på vägen mot hållbar utveckling och att skapa en säker och snabb plattform.";
+"Support.number" = "021-91033000 intern 9";
+"Support.callDetail" = "För att kontakta Talks supportenhet kan du använda följande nummer för att kommunicera med relevanta experter";
 
 /* NotificationSettings */
 "Notification.Sound" = "Ljud";
@@ -333,7 +345,7 @@
 "Tags.manageFolders" = "Hantera mappar";
 
 /* Messages */
-"Messages.deletedMessageReply" = "Meddelande raderat.";
+"Messages.deletedMessageReply" = "Meddelandet har raderats.";
 "Messages.Footer.edited" = "Redigerad";
 "Messages.resend" = "Skicka igen";
 "Messages.ActionMenu.reply" = "Svara";
@@ -368,6 +380,7 @@
 
 /* Message Seen Participants */
 "SeenParticipants.title" = "Sett deltagare";
+"SeenParticipants.noOneSeenTheMssage" = "Ingen har sett meddelandet.";
 
 /* Message Types */
 "MessageType.text" = "Text";
@@ -383,3 +396,16 @@
 "MessageType.location" = "Plats";
 "MessageType.join" = "Gå med";
 "MessageType.left" = "Lämnade";
+
+/* Delete Conatct In Conversation Detail */
+"ConversationDetail.deleteContact" = "Är du säker på att du vill ta bort %@ från din kontaktlista?";
+
+/* Delete a Member in members tab */
+"DeleteParticipantDialog.title" = "Är du säker på att du vill ta bort %@ från %@?";
+
+/* SearchFiltersMessagesDialog */
+"SearchFiltersMessagesDialog.filter" = "Filtrera";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "Visa olästa konversationer";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "Endast olästa konversationer";

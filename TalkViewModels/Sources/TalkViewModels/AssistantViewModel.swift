@@ -69,7 +69,7 @@ public final class AssistantViewModel: ObservableObject {
             hasNext = response.hasNext
         }
 
-        if !response.cache, response.value != nil {
+        if !response.cache, response.pop() != nil {
             firstSuccessResponse = true
             isLoading = false
         }
@@ -117,7 +117,7 @@ public final class AssistantViewModel: ObservableObject {
     }
 
     public func onDeactiveAssistant(_ response: ChatResponse<[Assistant]>) {
-        if response.value != nil {
+        if response.pop() != nil {
             response.result?.forEach { assistant in
                 assistants.removeAll(where: {$0.participant?.id == assistant.participant?.id})
             }
@@ -131,7 +131,7 @@ public final class AssistantViewModel: ObservableObject {
     }
 
     public func onBlockAssistant(_ response: ChatResponse<[Assistant]>) {
-        if response.value != nil {
+        if response.pop() != nil {
             assistants.first(where: {$0.participant?.id == response.result?.first?.participant?.id})?.block = true
         }
     }
@@ -143,7 +143,7 @@ public final class AssistantViewModel: ObservableObject {
     }
 
     public func onUnBlockAssistant(_ response: ChatResponse<[Assistant]>) {
-        if response.value != nil {
+        if response.pop() != nil {
             assistants.first(where: {$0.participant?.id == response.result?.first?.participant?.id})?.block = false
         }
     }
@@ -155,7 +155,7 @@ public final class AssistantViewModel: ObservableObject {
     }
 
     public func onBlockedListAssistant(_ response: ChatResponse<[Assistant]>) {
-        if response.value != nil {
+        if response.pop() != nil {
             response.result?.forEach{ blockedAssistant in
                 if !blockedAssistants.contains(where: {$0.id == blockedAssistant.id}) {
                     blockedAssistants.append(blockedAssistant)
@@ -172,7 +172,7 @@ public final class AssistantViewModel: ObservableObject {
     }
 
     public func onRegisterAssistant(_ response: ChatResponse<[Assistant]>) {
-        if response.value != nil {
+        if response.pop() != nil {
             assistants.append(contentsOf: response.result ?? [])
         }
     }

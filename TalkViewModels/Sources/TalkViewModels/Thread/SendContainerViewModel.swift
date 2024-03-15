@@ -20,7 +20,7 @@ public final class SendContainerViewModel: ObservableObject {
     @Published public var textMessage: String
     private var cancelable: Set<AnyCancellable> = []
     public var canShowMute: Bool {
-        (thread.type == .channel || thread.type == .channelGroup) &&
+        (thread.type?.isChannelType == true) &&
         (thread.admin == false || thread.admin == nil) &&
         !isInEditMode
     }
@@ -41,6 +41,20 @@ public final class SendContainerViewModel: ObservableObject {
     @Published public var isInEditMode: Bool = false
     @Published public var editMessage: Message?
     public var height: CGFloat = 0
+    private var draft: String {
+        get {
+            UserDefaults.standard.string(forKey: "draft-\(threadId)") ?? ""
+        }
+        set {
+            if newValue.isEmpty {
+                UserDefaults.standard.removeObject(forKey: "draft-\(threadId)")
+            } else {
+                UserDefaults.standard.setValue(newValue, forKey: "draft-\(threadId)")
+            }
+        }
+    }
+
+    private var isDraft: Bool { !draft.isEmpty }
 
     public static func == (lhs: SendContainerViewModel, rhs: SendContainerViewModel) -> Bool {
         rhs.thread.id == lhs.thread.id
@@ -57,28 +71,63 @@ public final class SendContainerViewModel: ObservableObject {
     }
 
     private func setupNotificationObservers() {
-        $textMessage.sink { [weak self] newValue in
-            self?.onTextMessageChanged(newValue)
-        }
-        .store(in: &cancelable)
+        $textMessage
+            .sink { [weak self] newValue in
+                self?.onTextMessageChanged(newValue)
+            }
+            .store(in: &cancelable)
+        
+        $editMessage
+            .sink { [weak self] editMessage in
+                if editMessage != nil, self?.isDraft == false {
+                    self?.onTextMessageChanged(editMessage?.message ?? "")
+                }
+            }
+            .store(in: &cancelable)
     }
 
     private func onTextMessageChanged(_ newValue: String) {
+        if Language.isRTL && newValue.first != "\u{200f}" {
+            textMessage = "\u{200f}\(newValue)"
+        }
         threadVM?.mentionListPickerViewModel.text = newValue
+        threadVM?.sendStartTyping(newValue)
         let isRTLChar = newValue.count == 1 && newValue.first == "\u{200f}"
         if !isTextEmpty(text: newValue) && !isRTLChar {
-            UserDefaults.standard.setValue(newValue, forKey: "draft-\(threadId)")
+            draft = newValue
         } else {
-            UserDefaults.standard.removeObject(forKey: "draft-\(threadId)")
+            draft = ""
         }
     }
 
     public func clear() {
         textMessage = ""
+        editMessage = nil
+        isInEditMode = false
+        threadVM?.animateObjectWillChange()
     }
 
     private func isTextEmpty(text: String) -> Bool {
         let sanitizedText = text.replacingOccurrences(of: "\u{200f}", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         return sanitizedText.isEmpty
+    }
+
+    public func addMention(_ participant: Participant) {
+        let userName = (participant.username ?? "")
+        var text = textMessage
+        if let lastIndex = text.lastIndex(of: "@") {
+            text.removeSubrange(lastIndex..<text.endIndex)
+        }
+        textMessage = "\(text)@\(userName) " // To hide participants dialog
+    }
+
+    public func getText() -> String {
+        textMessage.replacingOccurrences(of: "\u{200f}", with: "")
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
     }
 }

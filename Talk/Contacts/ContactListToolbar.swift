@@ -73,17 +73,17 @@ struct ContactListToolbar: View {
                 }
             }
 
-            if !viewModel.showConversaitonBuilder {
-                ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete", padding: 10) {
-                    withAnimation {
-                        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteContactView().environmentObject(viewModel))
-                    }
-                }
-                .foregroundStyle(.red)
-                .opacity(viewModel.isInSelectionMode ? 1 : 0.2)
-                .disabled(!viewModel.isInSelectionMode)
-                .scaleEffect(x: viewModel.isInSelectionMode ? 1.0 : 0.002, y: viewModel.isInSelectionMode ? 1.0 : 0.002)
-            }
+//            if !viewModel.showConversaitonBuilder {
+//                ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete", padding: 10) {
+//                    withAnimation {
+//                        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteContactView().environmentObject(viewModel))
+//                    }
+//                }
+//                .foregroundStyle(.red)
+//                .opacity(viewModel.isInSelectionMode ? 1 : 0.2)
+//                .disabled(!viewModel.isInSelectionMode)
+//                .scaleEffect(x: viewModel.isInSelectionMode ? 1.0 : 0.002, y: viewModel.isInSelectionMode ? 1.0 : 0.002)
+//            }
         }
     }
 }

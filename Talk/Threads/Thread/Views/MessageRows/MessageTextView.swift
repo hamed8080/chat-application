@@ -45,7 +45,7 @@ final class MessageTextView: UITextView {
             addGestureRecognizer(tap)
         }
 
-        let canShow = message.messageTitle.isEmpty == false
+        let canShow = message.messageTitle.isEmpty == false && !viewModel.rowType.isPublicLink
         isHidden = !canShow
     }
 

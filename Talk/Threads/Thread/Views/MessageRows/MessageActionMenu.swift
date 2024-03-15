@@ -17,7 +17,6 @@ struct MessageActionMenu: View {
     private var message: Message { viewModel.message }
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var viewModel: MessageRowViewModel
-    @EnvironmentObject var navVM: NavigationModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -52,14 +51,15 @@ struct MessageActionMenu: View {
                 withAnimation(animation(appear: threadVM?.forwardMessage != nil)) {
                     threadVM?.forwardMessage = message
                     viewModel.isSelected = true
-                    threadVM?.isInEditMode = true
+                    threadVM?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: true)
                     viewModel.animateObjectWillChange()
                     threadVM?.animateObjectWillChange()
                 }
             }
 
             if viewModel.canEdit {
-                ContextMenuButton(title: "General.edit", image: "pencil.circle") {
+                let emptyText = message.message == nil || message.message == ""
+                ContextMenuButton(title: emptyText ? "General.addText" : "General.edit", image: "pencil.circle") {
                     withAnimation(animation(appear: threadVM?.sendContainerViewModel.editMessage != nil)) {
                         threadVM?.sendContainerViewModel.editMessage = message
                         threadVM?.objectWillChange.send()
@@ -73,7 +73,8 @@ struct MessageActionMenu: View {
             if let threadVM = threadVM, viewModel.message.ownerId == AppState.shared.user?.id && threadVM.thread.group == true {
                 ContextMenuButton(title: "SeenParticipants.title", image: "info.bubble") {
                     withAnimation(animation(appear: threadVM.forwardMessage != nil)) {
-                        AppState.shared.objectsContainer.navVM.appendMessageParticipantsSeen(viewModel.message, threadVM: threadVM)
+                        let value = MessageParticipantsSeenNavigationValue(message: viewModel.message, threadVM: threadVM)
+                        AppState.shared.objectsContainer.navVM.append(type: .messageParticipantsSeen(value), value: value)
                     }
                 }
             }
@@ -125,23 +126,22 @@ struct MessageActionMenu: View {
             }
 
             ContextMenuButton(title: "General.select", image: "checkmark.circle") {
-                withAnimation(animation(appear: threadVM?.isInEditMode == true)) {
-                    threadVM?.isInEditMode = true
+                withAnimation(animation(appear: threadVM?.selectedMessagesViewModel.isInSelectMode == true)) {
                     viewModel.isSelected = true
+                    threadVM?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: true)
                     viewModel.animateObjectWillChange()
                     threadVM?.animateObjectWillChange()
                 }
             }
 
-            let delete = MessageRowViewModel.isDeletable(isMe: viewModel.isMe, message: viewModel.message, thread: viewModel.threadVM?.thread)
-            if delete.forMe || delete.ForOthers {
-                ContextMenuButton(title: "General.delete", image: "trash", showSeparator: false) {
+            let isDeletable = DeleteMessagesViewModelModel.isDeletable(isMe: viewModel.isMe, message: viewModel.message, thread: threadVM?.thread)
+            if isDeletable {
+                ContextMenuButton(title: "General.delete", image: "trash", iconColor: Color.App.red, showSeparator: false) {
                     withAnimation(animation(appear: true)) {
                         if let threadVM {
-                            threadVM.historyVM.sections.flatMap{$0.vms}.first(where: {$0.message.id == message.id})?.isSelected = true
-                            let dialog = DeleteMessageDialog(deleteForMe: delete.forMe,
-                                                             deleteForOthers: delete.ForOthers,
-                                                             viewModel: threadVM)
+                            viewModel.isSelected = true
+                            let deleteVM = DeleteMessagesViewModelModel(threadVM: threadVM)
+                            let dialog = DeleteMessageDialog(viewModel: deleteVM)
                             AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
                         }
                     }

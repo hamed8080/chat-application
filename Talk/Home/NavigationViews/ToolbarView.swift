@@ -8,6 +8,7 @@
 import SwiftUI
 import AdditiveUI
 import TalkUI
+import TalkViewModels
 
 struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingContentView: View>: View {
     @ViewBuilder let leadingNavigationViews: LeadingContentView?
@@ -58,8 +59,8 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
         }
         .animation(.interactiveSpring(response: 0.4, dampingFraction: 0.7, blendDuration: 0.2), value: isInSearchMode)
         .frame(minWidth: 0, maxWidth: sizeClass == .compact ? nil : .infinity)
-        .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
-        .background(MixMaterialBackground().ignoresSafeArea())
+        .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+        .background(MixMaterialBackground(color: Color.App.bgToolbar).ignoresSafeArea())
         .onChange(of: searchText) { newValue in
             searchCompletion?(newValue)
         }
@@ -69,6 +70,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                     Text(String(localized: String.LocalizationValue(title)))
                         .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : nil, minHeight: 0, maxHeight: isInSearchMode ? 0 : 48)
                         .font(.iransansBoldSubheadline)
+                        .foregroundStyle(Color.App.toolbarButton)
                         .clipped()
                 }
                 centerNavigationViews
@@ -136,7 +138,7 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 Text("General.cancel")
                     .padding(.leading)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.App.accent)
+                    .foregroundStyle(Color.App.toolbarButton)
             }
             .buttonStyle(.borderless)
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 72 : 0, minHeight: 0, maxHeight: isInSearchMode ? toolbarHeight : 0)
@@ -151,13 +153,14 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
                 }
                 .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : toolbarHeight)
                 .clipped()
-                .foregroundStyle(Color.App.accent)
+                .foregroundStyle(Color.App.toolbarButton)
             }
         }
     }
 
     private func cancelSaerch() {
         withAnimation {
+            NotificationCenter.cancelSearch.post(name: .cancelSearch, object: nil)
             if isInSearchMode {
                 hideKeyboard()
             }
@@ -165,6 +168,53 @@ struct ToolbarView<LeadingContentView: View, CenterContentView: View, TrailingCo
             searchText = ""
             searchCompletion?("")
         }
+    }
+}
+
+struct NormalToolbarViewModifier<T, TrailingContentView: View>: ViewModifier {
+    let title: String
+    let type: T.Type?
+    @ViewBuilder let trailingView: TrailingContentView?
+
+    public init(title: String, type: T.Type? = nil, trailingView: TrailingContentView? = nil) {
+        self.title = title
+        self.type = type
+        self.trailingView = trailingView
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .navigationBarBackButtonHidden(true)
+            .safeAreaInset(edge: .top) {
+                ToolbarView(title: title,
+                            showSearchButton: false,
+                            leadingViews: leadingView,
+                            centerViews: EmptyView(),
+                            trailingViews: trailingView)
+            }
+    }
+    
+    private var leadingView: some View {
+        NavigationBackButton {
+            if let type = type {
+                AppState.shared.objectsContainer.navVM.remove(type: type)
+            }
+        }
+    }
+}
+
+extension View {
+
+    func normalToolbarView(title: String) -> some View {
+        modifier(NormalToolbarViewModifier<Any, EmptyView>(title: title, type: nil, trailingView: nil))
+    }
+
+    func normalToolbarView<T>(title: String, type: T.Type) -> some View {
+        modifier(NormalToolbarViewModifier<T, EmptyView>(title: title, type: type, trailingView: nil))
+    }
+
+    func normalToolbarView<T, TrailingContentView: View>(title: String, type: T.Type, trailingView: TrailingContentView? = nil) -> some View {
+        modifier(NormalToolbarViewModifier(title: title, type: type, trailingView: trailingView))
     }
 }
 

@@ -57,12 +57,21 @@ final class MessageFooterView: UIStackView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         let message = viewModel.message
+        let thread = viewModel.threadVM?.thread
+        let isPin = message.id != nil && message.id == thread?.pinMessage?.id
         statusImage.image = message.footerStatus.image
         statusImage.tintColor = message.uiFooterStatus.fgColor
         statusImage.isHidden = !viewModel.isMe
         timelabel.text = viewModel.timeString
         editedLabel.isHidden = !viewModel.isMe
-        pinImage.isHidden = message.id != viewModel.threadVM?.thread.pinMessage?.id
+        pinImage.isHidden = !isPin
+        let isSelfThread = thread?.type == .selfThread
+        let isDelivered = message.id != nil
+        if isDelivered, isSelfThread {
+            statusImage.isHidden = false
+        } else if viewModel.isMe, !isSelfThread {
+            statusImage.isHidden = false
+        }
     }
 }
 

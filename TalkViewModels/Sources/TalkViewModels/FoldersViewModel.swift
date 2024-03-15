@@ -34,10 +34,10 @@ public final class FoldersViewModel: ObservableObject {
                 self?.onThreadEvent(event)
             }
             .store(in: &cancelable)
-        RequestsManager.shared.$cancelRequest
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
             .sink { [weak self] newValue in
-                if let newValue {
-                    self?.onCancelTimer(key: newValue)
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
                 }
             }
             .store(in: &cancelable)
@@ -73,7 +73,7 @@ public final class FoldersViewModel: ObservableObject {
     }
 
     private func onConversationInsideFolder(_ response: ChatResponse<[Conversation]>) {
-        if response.value(prepend: "CONVERSATION-INSIDE-FOLDER") != nil {
+        if response.pop(prepend: "CONVERSATION-INSIDE-FOLDER") != nil {
             threads.append(contentsOf: response.result ?? [])
             animateObjectWillChange()
         }

@@ -67,6 +67,7 @@
 "General.imageSaved" = "Image saved.";
 "General.copied" = "Copied to clipboard.";
 "General.ban" = "The server has banned you for %@ seconds.";
+"General.addText" = "Add text";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -139,8 +140,10 @@
 /* Message */
 "Message.Participant.left" = "%@ has left the group.";
 "Message.Participant.removed" = "%@ remvoed %@ from the group.";
+"Message.Participant.removedByMe" = "You removed %@ from the group.";
 "Message.Participant.joined" = "%@ has joind the group.";
 "Message.Participant.added" = "%@ added %@.";
+"Message.Participant.addedByMe" = "You added %@ to the group.";
 "Message.forwardedFrom" = "Forwarded from";
 "Message.replyTo" = "Reply to";
 
@@ -185,9 +188,10 @@
 "Thread.publicThreadStructrue" = "Public threads names should have a unique names without any whitespace and special characters.";
 "Thread.enterValidName" = "Enter the name of the conversation.";
 "Thread.public" = "Public";
+"Thread.private" = "Private";
 "Thread.SendContainer.voiceRecording" = "Voice Recording";
 "Thread.SendContainer.attachment" = "Attachment";
-"Thread.SendContainer.typeMessageHere" = "Type message here ...";
+"Thread.SendContainer.typeMessageHere" = "Type here...";
 "Thread.SendContainer.toForward" = "to forward";
 "Thread.export" = "Export";
 "ThreadList.Toolbar.startNewChat" = "Start a new Chat";
@@ -212,11 +216,12 @@
 "Thread.Tabs.voice" = "Voice";
 "Thread.Tabs.link" = "Link";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
+"Thread.accessLocaitonPermission" = "Please go to the settings>Talk and then turn on location access.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ created a conversation.";
 "Thread.Toolbar.participants" = "Participants";
 "Thread.sendAttachments" = "Send %@ files";
-"Thread.public" = "Public %@";
+"Thread.typeString" = "%@ %@";
 "Thread.delete" = "Delete %@";
 "Thread.inviteLink" = "Invite Link";
 "Thread.isVoiceRecording" = "Is recording voice";
@@ -228,7 +233,8 @@
 "Thread.leaveButton" = "Leave";
 "Thread.leave.footer" = "Are you sure you want to leave this conversation?";
 "Thread.noMessage" = "There is no message to be shown.";
-"Thread.onlyAdminError" = "You are the only admin in the group, you can not leave or delete the group!";
+"Thread.onlyGroupAdminError" = "You are the only admin in the group, you can not leave or delete the group!";
+"Thread.onlyChannelAdminError" = "You are the only admin in the channel, you can not leave or delete the channel!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "connecting";
@@ -253,6 +259,7 @@
 /* Edit group */
 "EditGroup.groupName" = "Group name";
 "EditGroup.groupDescription" = "Group description";
+"EditGroup.admins" = "Admins";
 
 /* Export Chat */
 "ExportChat.startTitle" = "Start Date";
@@ -262,6 +269,9 @@
 /* DeleteMessageDialog */
 "DeleteMessageDialog.title" = "Delete selected messages";
 "DeleteMessageDialog.subtitle" = "Are you sure you want to delete all selected messages?";
+"DeleteMessageDialog.singleDeleteIsPinMessage" = "The deleted message is a pinned message, therefore you can not delete it for others.";
+"DeleteMessageDialog.multipleDeleteContainsPinMessage" = "Selected messages contain a pin message, therefore you can not delete them for others.";
+"DeleteMessageDialog.deleteForMeAllOtherIfPossible" = "Delete for me and others where it is possible";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "How would you like to pin this message?";
@@ -292,7 +302,9 @@
 "Settings.logout" = "Logout";
 "Settings.notifictionSettings" = "Notification Settings";
 "Settings.download" = "Download Settings";
-"Settings.support" = "Support";
+"Settings.about" = "About Talk";
+
+
 "Settings.userName" = "Username";
 "Settings.phoneNumber" = "Phone Number";
 "Settings.bio" = "Biography";
@@ -316,6 +328,8 @@
 /* Support */
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk was born in 2016. This messenger was produced and developed with the aim of creating deep and constructive communication and understanding organizational and non-organizational needs. It is hoped that according to the current conditions, Tak will take a stronger step every day on the path of sustainable development and creating a safe and fast platform.";
+"Support.number" = "021-91033000 internal 9";
+"Support.callDetail" = "To contact the Talk support unit, you can use the following numbers to communicate with the relevant experts";
 
 /* NotificationSettings */
 "Notification.Sound" = "Sound";
@@ -333,7 +347,7 @@
 "Tags.manageFolders" = "Manage folders";
 
 /*  Messages */
-"Messages.deletedMessageReply" = "Message deleted.";
+"Messages.deletedMessageReply" = "The message has been deleted.";
 "Messages.Footer.edited" = "Edited";
 "Messages.resend" = "Resend";
 "Messages.ActionMenu.reply" = "Reply";
@@ -369,6 +383,7 @@
 
 /* Message Seen Participants */
 "SeenParticipants.title" = "Seen participants";
+"SeenParticipants.noOneSeenTheMssage" = "No one has seen the message.";
 
 /* Message Types */
 "MessageType.text" = "Text";
@@ -384,3 +399,19 @@
 "MessageType.location" = "Location";
 "MessageType.join" = "Join";
 "MessageType.left" = "Left";
+
+/* Delete Conatct In Conversation Detail */
+"ConversationDetail.deleteContact" = "Are you sure you want to delete %@ from your contact list?";
+
+/* Delete a Member in members tab */
+"DeleteParticipantDialog.title" = "Are you sure you want to remove %@ from the %@?";
+
+/* SearchFiltersMessagesDialog */
+"SearchFiltersMessagesDialog.filter" = "Filter";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "Show unread conversations";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "Only unread conversations";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "المحادثات غير المقروءة فقط";

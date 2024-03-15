@@ -10,52 +10,12 @@ import MapKit
 import SwiftUI
 import TalkExtensions
 import ChatModels
-import Combine
 import TalkModels
 import NaturalLanguage
 import ChatDTO
 import OSLog
 import ChatCore
-
-public final class MessageReactionsViewModel: ObservableObject {
-    public var message: Message? { viewModel?.message }
-    public weak var viewModel: MessageRowViewModel?
-    public var reactionCountList: ContiguousArray<ReactionCount> = []
-    private var inMemoryReaction: InMemoryReactionProtocol? { ChatManager.activeInstance?.reaction.inMemoryReaction }
-    public var currentUserReaction: Reaction?
-    private var cancelableSet = Set<AnyCancellable>()
-
-    init() {
-        setupObservers()
-    }
-
-    func setupObservers() {
-        NotificationCenter.reactionMessageUpdated.publisher(for: .reactionMessageUpdated)
-            .sink { [weak self] notification in
-                self?.onReactionEvent(notification)
-            }
-            .store(in: &cancelableSet)
-    }
-
-    private func onReactionEvent(_ notification: Notification) {
-        if notification.object as? Int == self.message?.id {
-            Task {
-                try? await Task.sleep(for: .seconds(0.3))
-                await self.setReactionList()
-            }
-        }
-    }
-
-    func setReactionList() async {
-        if let reactionCountList = inMemoryReaction?.summary(for: message?.id ?? -1) {
-            self.reactionCountList = .init(reactionCountList)
-            currentUserReaction = ChatManager.activeInstance?.reaction.inMemoryReaction.currentReaction(message?.id ?? -1)
-            await MainActor.run {
-                self.animateObjectWillChange()
-            }
-        }
-    }
-}
+import Combine
 
 public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable {
     public static func == (lhs: MessageRowViewModel, rhs: MessageRowViewModel) -> Bool {
@@ -66,64 +26,73 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         hasher.combine(id)
     }
 
+    public let uniqueId: String = UUID().uuidString
     public var id: Int { message.id ?? -1 }
     public var isCalculated = false
     public var isEnglish = true
-    public var markdownTitle = AttributedString()
     public var nsMarkdownTitle = NSAttributedString()
     public var timeString: String = ""
     public static var avatarSize: CGFloat = 37
     public var reactionsVM: MessageReactionsViewModel
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
-    private var cancelableSet = Set<AnyCancellable>()
-    public let message: Message
+    public var message: Message
     public var isInSelectMode: Bool = false
     public var isMe: Bool
     public var isHighlited: Bool = false
     public var highlightTimer: Timer?
     public var isSelected = false
     public var showReactionsOverlay = false
-    public var isNextMessageTheSameUser: Bool = false
     public var isFirstMessageOfTheUser: Bool = false
+    public var isLastMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false
     public var canEdit: Bool { (message.editable == true && isMe) || (message.editable == true && threadVM?.thread.admin == true && threadVM?.thread.type?.isChannelType == true) }
     public var uploadViewModel: UploadFileViewModel?
-    public var paddingEdgeInset: UIEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)
     public var imageWidth: CGFloat? = nil
     public var imageHeight: CGFloat? = nil
     public var isReplyImage: Bool = false
     public var replyLink: String?
-    public var isPublicLink: Bool = false
-    public var participantColor: UIColor? = nil
+    public var participantColor: UIColor = .clear
     public var computedFileSize: String? = nil
     public var extName: String? = nil
     public var fileName: String? = nil
     public var blurRadius: CGFloat? = 0
     public var addOrRemoveParticipantsAttr: AttributedString? = nil
+    public var avatarColor: UIColor = .blue
+    public var avatarSplitedCharaters = ""
+
     public var localizedReplyFileName: String? = nil
+    public var callText: String?
     private static var formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         formatter.locale = Language.preferredLocale
         return formatter
     }()
-    public var isMapType: Bool = false
     public var fileMetaData: FileMetaData?
     private static var emptyImage = UIImage(named: "empty_image")!
     public var image: UIImage = MessageRowViewModel.emptyImage
-    public var canShowImageView: Bool = false
-    public var imageScale: ContentMode = .fill
+    public var groupMessageParticipantName: String?
+    public var avatarImageLoader: ImageLoaderViewModel?
+    public var replyContainerWidth: CGFloat?
+    private var cancelable: AnyCancellable?
+    public var paddings = MessagePaddings()
+    public var rowType = MessageViewRowType()
+    public var isSlot: Bool
+    public var width: CGFloat? = nil
+    public var height: CGFloat? = nil
     public var participantEvenMarkdown = NSAttributedString()
 
-    public var avatarImageLoader: ImageLoaderViewModel? {
-        let userName = message.participant?.name ?? message.participant?.username
-        if let image = message.participant?.image,
-           let imageLoaderVM = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: userName) {
-            return imageLoaderVM
-        } else {
-            return nil
-        }
+    public var isDownloadCompleted: Bool {
+        downloadFileVM?.state == .completed
+    }
+
+    public var isUploadCompleted: Bool {
+        uploadViewModel == nil
+    }
+
+    public var isInDownloadOrUploadMode: Bool {
+        return !isDownloadCompleted || !isUploadCompleted
     }
 
     public init(message: Message, viewModel: ThreadViewModel) {
@@ -133,75 +102,29 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        isSlot = message.id == LocalId.emptyMessageSlot.rawValue
+        if isSlot {
+            width = ThreadViewModel.maxAllowedWidth
+            height = 200
+            isMe = Bool.random()
+        }
         reactionsVM = MessageReactionsViewModel()
         reactionsVM.viewModel = self
         if message.uploadFile != nil {
             uploadViewModel = .init(message: message)
             isMe = true
         }
-        setupObservers()
-        canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.message.isEmptyOrNil == true && message.replyInfo?.deleted == false
+        canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
+        registerObservers()
     }
 
-    func setupObservers() {
-        NotificationCenter.windowMode.publisher(for: .windowMode)
-            .sink { [weak self] newValue in
-                self?.recalculateWithAnimation()
-            }
-            .store(in: &cancelableSet)
-
-        NotificationCenter.message.publisher(for: .message)
-            .compactMap{ $0.object as? MessageEventTypes }
-            .sink { [weak self] event in
-                self?.onMessageEvent(event)
-            }
-            .store(in: &cancelableSet)
-
-        NotificationCenter.default.publisher(for: Notification.Name("UPDATE_OLDER_SEENS_LOCALLY"))
-            .compactMap {$0.object as? MessageResponse}
-            .sink { [weak self] newValue in
-                self?.message.delivered = true
-                self?.message.seen = true
-                self?.animateObjectWillChange()
-            }
-            .store(in: &cancelableSet)
-
-        NotificationCenter.default.publisher(for: Notification.Name("HIGHLIGHT"))
-            .compactMap {$0.object as? Int}
-            .sink { [weak self] newValue in
-                if let messageId = self?.message.id, messageId == newValue {
-                    self?.isHighlited = true
-                    self?.animateObjectWillChange()
-                    self?.startHighlightTimer()
-                }
-            }
-            .store(in: &cancelableSet)
-        threadVM?.$isInEditMode.sink { [weak self] newValue in
-            /// Use if newValue != isInSelectMode to assure the newValue has arrived and all message rows will not get refreshed.
-            if newValue != self?.isInSelectMode {
-                self?.isInSelectMode = newValue
-                self?.animateObjectWillChange()
-            }
-        }
-        .store(in: &cancelableSet)
-
-        NotificationCenter.upload.publisher(for: .upload)
-            .sink { [weak self] notification in
-                self?.onUploadEventUpload(notification)
-            }
-            .store(in: &cancelableSet)
-
-        downloadFileVM?.objectWillChange.sink { [weak self] in
+    private func registerObservers() {
+        cancelable = downloadFileVM?.objectWillChange.sink { [weak self] in
             Task { [weak self] in
-                await self?.onImageDownload()
+                await self?.prepareImage()
+                await self?.updateVideo()
             }
         }
-        .store(in: &cancelableSet)
-
-        uploadViewModel?.$state.sink { [weak self] state in
-            self?.deleteUploadedMessage(state: state)
-        }
-        .store(in: &cancelableSet)
     }
 
     private func startHighlightTimer() {
@@ -212,106 +135,73 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-    private func onMessageEvent(_ event: MessageEventTypes) {
-        /// Update the message after message has sent to server and the chat server respond wtih MessageVOTypes.Message we should update ui for upload messages.
-        if case let .new(response) = event, message.uniqueId == response.result?.uniqueId, let message = response.result {
-            self.message.updateMessage(message: message)
-            recalculateWithAnimation()
-        }
-        if case let .edited(response) = event, message.id == response.result?.id {
-            message.message = response.result?.message
-            message.time = response.result?.time
-            message.edited = true
-            recalculateWithAnimation()
-        }
-
-        if case let .seen(response) = event, message.id == response.result?.messageId {
-            message.delivered = true
-            message.seen = true
-            animateObjectWillChange()
-        }
-
-        if case let .sent(response) = event, message.id == response.result?.messageId {
-            message.id = response.result?.messageId
-            message.time = response.result?.messageTime
-            animateObjectWillChange()
-        }
-
-        if case let .delivered(response) = event, message.id == response.result?.messageId {
-            message.delivered = true
-            animateObjectWillChange()
-        }
-
-        if case let .pin(response) = event, message.id == response.result?.messageId {
-            message.pinned = true
-            message.pinTime = response.result?.time
-            recalculateWithAnimation()
-        }
-
-        if case let .unpin(response) = event, message.id == response.result?.messageId {
-            message.pinned = false
-            message.pinTime = nil
-            recalculateWithAnimation()
-        }
-    }
-
-    private func calculatePaddings() async {
+    private func calculatePaddings() {
         let isReplyOrForward = (message.forwardInfo != nil || message.replyInfo != nil) && !message.isImage
         let tailWidth: CGFloat = 6
         let paddingLeading = isReplyOrForward ? (isMe ? 10 : 16) : (isMe ? 4 : 4 + tailWidth)
         let paddingTrailing: CGFloat = isReplyOrForward ? (isMe ? 16 : 10) : (isMe ? 4 + tailWidth : 4)
         let paddingTop: CGFloat = isReplyOrForward ? 10 : 4
         let paddingBottom: CGFloat = 4
-        paddingEdgeInset = .init(top: paddingTop, left: paddingLeading, bottom: paddingBottom, right: paddingTrailing)
+        paddings.paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
     }
 
-    private func recalculateWithAnimation() {
-        Task {
-            await performaCalculation()
-            await MainActor.run {
-                self.animateObjectWillChange()
-            }
-        }
+    public func recalculateWithAnimation() async {
+        await performaCalculation()
+        self.animateObjectWillChange()
     }
 
     public func performaCalculation() async {
         isCalculated = true
         fileMetaData = message.fileMetaData /// decoding data so expensive if it will happen on the main thread.
-        await calculateImageSize()
-        await setReplyInfo()
-        await calculatePaddings()
-        await setParticipantEvent()
-        isMapType = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil
-        let isSameResponse = await (threadVM?.isNextSameUser(message: message) == true)
-        let isFirstMessageOfTheUser = await (threadVM?.isFirstMessageOfTheUser(message) == true)
-        isNextMessageTheSameUser = threadVM?.thread.group == true && isSameResponse && message.participant != nil
+        calculateImageSize()
+        setReplyInfo()
+        calculatePaddings()
+        calculateCallTexts()
+        setAvatarViewModel()
+        rowType.isMap = fileMetaData?.mapLink != nil || fileMetaData?.latitude != nil || message is UploadFileWithLocationMessage
+        let isFirstMessageOfTheUser = await (threadVM?.historyVM.isFirstMessageOfTheUser(message) == true)
         self.isFirstMessageOfTheUser = threadVM?.thread.group == true && isFirstMessageOfTheUser
+        let isLastMessageOfTheUser = await (threadVM?.historyVM.isLastMessageOfTheUser(message) == true)
+        self.isLastMessageOfTheUser = isLastMessageOfTheUser
         isEnglish = message.message?.naturalTextAlignment == .leading
-        markdownTitle = AttributedString(message.markdownTitle)
-        nsMarkdownTitle = NSAttributedString(markdownTitle)
-        isPublicLink = message.isPublicLink
+        nsMarkdownTitle = message.markdownTitle
+        rowType.isPublicLink = message.isPublicLink
+        rowType.isFile = message.isFileType && !rowType.isMap && !message.isImage && !message.isAudio && !message.isVideo
+        rowType.isReply = message.replyInfo != nil
         if let date = message.time?.date {
             timeString = MessageRowViewModel.formatter.string(from: date)
         }
-        let uploadCompleted: Bool = message.uploadFile == nil || uploadViewModel?.state == .completed
-        canShowImageView = !isMapType && message.isImage && uploadCompleted
-        let color = await threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
-        participantColor = color ?? .clear
-        await manageDownload()
+        rowType.isImage = !rowType.isMap && message.isImage
+        rowType.isVideo = message.isVideo
+        rowType.isAudio = message.isAudio
+        rowType.isForward = message.forwardInfo != nil
+        rowType.isUnSent = message.isUnsentMessage
+        async let color = threadVM?.participantsColorVM.color(for: message.participant?.id ?? -1)
+        participantColor = await color ?? .clear
+        await downloadFileVM?.setup()
+        manageDownload()
         computedFileSize = calculateFileSize()
         extName = calculateFileTypeWithExt()
         fileName = calculateFileName()
         addOrRemoveParticipantsAttr = calculateAddOrRemoveParticipantRow()
+        paddings.textViewPadding = calculateTextViewPadding()
         localizedReplyFileName = calculateLocalizeReplyFileName()
+        calculateGroupParticipantName()
+        replyContainerWidth = await calculateReplyContainerWidth()
+        calculateSpacingPaddings()
+        setAvatarColor()
     }
 
-    private func calculateImageSize() async {
+    private func calculateImageSize() {
         if message.isImage {
             /// We use max to at least have a width, because there are times that maxWidth is nil.
-            let imageWidth = CGFloat(fileMetaData?.file?.actualWidth ?? 0)
+            let uploadMapSizeWidth = message is UploadFileWithLocationMessage ? Int(MessageRowViewModel.emptyImage.size.width) : nil
+            let uploadMapSizeHeight = message is UploadFileWithLocationMessage ? Int(MessageRowViewModel.emptyImage.size.height) : nil
+            let uploadImageReq = (message as? UploadFileMessage)?.uploadImageRequest
+            let imageWidth = CGFloat(fileMetaData?.file?.actualWidth ?? uploadImageReq?.wC ?? uploadMapSizeWidth ?? 0)
             let maxWidth = ThreadViewModel.maxAllowedWidth
             /// We use max to at least have a width, because there are times that maxWidth is nil.
-            let imageHeight = CGFloat(fileMetaData?.file?.actualHeight ?? 0)
+            let imageHeight = CGFloat(fileMetaData?.file?.actualHeight ?? uploadImageReq?.hC ?? uploadMapSizeHeight ?? 0)
             let originalWidth: CGFloat = imageWidth
             let originalHeight: CGFloat = imageHeight
             var designerWidth: CGFloat = maxWidth
@@ -329,7 +219,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-    private func setReplyInfo() async {
+    private func setReplyInfo() {
         /// Reply file info
         if let replyInfo = message.replyInfo {
             self.isReplyImage = [MessageType.picture, .podSpacePicture].contains(replyInfo.messageType)
@@ -337,35 +227,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             if let data = metaData?.data(using: .utf8), let fileMetaData = try? JSONDecoder.instance.decode(FileMetaData.self, from: data) {
                 replyLink = fileMetaData.file?.link
             }
-        }
-    }
-
-    private func deleteUploadedMessage(state: UploadFileState) {
-        if state == .completed {
-            threadVM?.uploadMessagesViewModel.cancel(message.uniqueId)
-            threadVM?.unssetMessagesViewModel.cancel(message.uniqueId)
-            threadVM?.historyVM.onDeleteMessage(ChatResponse(uniqueId: message.uniqueId, subjectId: threadVM?.threadId))
-            threadVM?.animateObjectWillChange()
-            Logger.viewModels.info("Upload Message with uniqueId removed:\(self.message.uniqueId ?? "")")
-        }
-    }
-
-    public static func isDeletable(isMe: Bool, message: Message, thread: Conversation?) -> (forMe: Bool, ForOthers: Bool) {
-        let isChannel = thread?.type?.isChannelType == true
-        let isGroup = thread?.group == true
-        let isAdmin = thread?.admin == true
-        if isMe {
-            return (true, true)
-        } else if !isMe && !isGroup {
-            return (true, false)
-        } else if isChannel && !isAdmin {
-            return (false, false)
-        } else if !isMe && isGroup && !isAdmin {
-            return (true, false)
-        } else if !isMe && isGroup && isAdmin {
-            return (true, true)
-        } else {
-            return (false, false)
         }
     }
 
@@ -387,10 +248,14 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         return UIImage(data: data)
     }
 
-    private func onImageDownload() async {
-        if downloadFileVM?.state == .completed, let realImage = realImage {
+    @MainActor
+    private func prepareImage() async {
+        guard let vm = downloadFileVM, message.isImage && !rowType.isMap else { return }
+        if vm.thumbnailData != nil && vm.state == .downloading { return }
+        if vm.state == .completed, let realImage = realImage {
             image = realImage
             blurRadius = 0
+            clearDownloadViewModel()
         } else if let blurImage = blurImage {
             image = blurImage
             blurRadius = 16
@@ -398,33 +263,24 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             image = MessageRowViewModel.emptyImage
             blurRadius = 0
         }
-        animateObjectWillChange()
-        //        if downloadFileVM?.state == .completed {
-        //            self.downloadFileVM?.thumbnailData = nil
-        //            self.downloadFileVM?.data = nil
-        //        }
-    }
-
-    private func onUploadEventUpload(_ notification: Notification) {
-        guard
-            let event = notification.object as? UploadEventTypes,
-            case .completed(uniqueId: _, fileMetaData: _, data: _, error: _) = event,
-            let downloadVM = downloadFileVM,
-            !downloadVM.isInCache,
-            downloadVM.thumbnailData == nil || downloadVM.fileURL == nil
-        else { return }
-        downloadBlurImageWithDelay(downloadVM)
+        await asyncAnimateObjectWillChange()
     }
 
     private func downloadBlurImageWithDelay(delay: TimeInterval = 1.0, _ downloadVM: DownloadFileViewModel) {
-        /// We wait for 2 seconds to download the thumbnail image.
+        /// We wait for 1.0 seconds to download the thumbnail image.
         /// If we upload the image for the first time we have to wait, due to a server process to make a thumbnail.
         Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { timer in
             downloadVM.downloadBlurImage()
         }
     }
 
-    private func manageDownload() async {
+    private func updateVideo() async {
+        if message.isVideo, downloadFileVM?.state == .completed {
+            await asyncAnimateObjectWillChange()
+        }
+    }
+
+    private func manageDownload() {
         if !message.isImage { return }
         if downloadFileVM?.isInCache == false, downloadFileVM?.thumbnailData == nil {
             downloadFileVM?.downloadBlurImage()
@@ -436,7 +292,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     public func onTap() {
-        if downloadFileVM?.state == .completed {
+        if downloadFileVM == nil && image != MessageRowViewModel.emptyImage {
             AppState.shared.objectsContainer.appOverlayVM.galleryMessage = message
         } else if downloadFileVM?.state != .completed && downloadFileVM?.thumbnailData != nil {
             downloadFileVM?.startDownload()
@@ -444,14 +300,16 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func calculateFileSize() -> String? {
-        let uploadFileSize: Int64 = Int64((message as? UploadFileMessage)?.uploadImageRequest?.data.count ?? 0)
+        let uploadFileSize: Int64 = Int64(message.uploadFile?.uploadFileRequest?.data.count ?? 0)
         let realServerFileSize = fileMetaData?.file?.size
         let fileSize = (realServerFileSize ?? uploadFileSize).toSizeString(locale: Language.preferredLocale)?.replacingOccurrences(of: "٫", with: ".")
         return fileSize
     }
 
     private func calculateFileTypeWithExt() -> String? {
-        let split = fileMetaData?.file?.originalName?.split(separator: ".")
+        let uploadFileType = message.uploadFile?.uploadFileRequest?.originalName ?? message.uploadFile?.uploadImageRequest?.originalName
+        let serverFileType = fileMetaData?.file?.originalName
+        let split = (serverFileType ?? uploadFileType)?.split(separator: ".")
         let ext = fileMetaData?.file?.extension
         let lastSplit = String(split?.last ?? "")
         let extensionName = (ext ?? lastSplit)
@@ -459,27 +317,228 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     }
 
     private func calculateFileName() -> String? {
-       return fileMetaData?.file?.name ?? message.uploadFileName
+        let fileName = fileMetaData?.file?.name
+        if fileName == "" || fileName == "blob", let originalName = fileMetaData?.file?.originalName {
+            return originalName
+        }
+        return fileName ?? message.uploadFileName?.replacingOccurrences(of: ".\(message.fileExtension ?? "")", with: "")
     }
 
     private func calculateAddOrRemoveParticipantRow() -> AttributedString? {
+        if ![.participantJoin, .participantLeft].contains(message.type) { return nil }
         let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
-        return try? AttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
+        return try? AttributedString(markdown: "\(message.addOrRemoveParticipantString(meId: AppState.shared.user?.id) ?? "") \(date)")
     }
-    
+
+    private func calculateTextViewPadding() -> EdgeInsets {
+      return EdgeInsets(top: !message.isImage && message.replyInfo == nil && message.forwardInfo == nil ? 6 : 0, leading: 6, bottom: 0, trailing: 6)
+    }
+
     private func calculateLocalizeReplyFileName() -> String? {
-        let hinTextMessage = message.replyInfo?.message ?? message.replyFileStringName?.localized()
-        return hinTextMessage
+        if let message = message.replyInfo?.message?.prefix(150).replacingOccurrences(of: "\n", with: " "), !message.isEmpty {
+            return message
+        } else if let fileHint = message.replyFileStringName?.localized(), !fileHint.isEmpty {
+            return fileHint
+        } else {
+            return nil
+        }
+    }
+
+    private func calculateCallTexts() {
+        if ![.endCall, .startCall].contains(message.type) { return }
+        let date = Date(milliseconds: Int64(message.time ?? 0))
+        callText = date.localFormattedTime
+    }
+
+    private func setAvatarViewModel() {
+        avatarSplitedCharaters = String.splitedCharacter(message.participant?.name ?? message.participant?.username ?? "")
+        if let image = message.participant?.image {
+            avatarImageLoader = threadVM?.threadsViewModel?.avatars(for: image, metaData: nil, userName: avatarSplitedCharaters)
+        }
+    }
+
+    private func calculateGroupParticipantName() {
+        let canShowGroupName = !isMe && threadVM?.thread.group == true && threadVM?.thread.type?.isChannelType == false
+        && isFirstMessageOfTheUser
+        if canShowGroupName {
+            groupMessageParticipantName = message.participant?.contactName ?? message.participant?.name
+        }
+    }
+
+    private func calculateReplyContainerWidth() async -> CGFloat? {
+        guard let replyInfo = message.replyInfo else { return nil }
+        let messageFileText = textForContianerCalculation()
+        let textWidth = messageContainerTextWidth()
+
+        let senderNameWithIconOrImageInReply = replySenderWidthWithIconOrImage(replyInfo: replyInfo)
+        let maxWidthWithSender = max(textWidth, senderNameWithIconOrImageInReply)
+
+        if !message.isImage, messageFileText.count < 60 {
+            return max(senderNameWithIconOrImageInReply, maxWidthWithSender)
+        } else if !message.isImage, replyInfo.message?.count ?? 0 < messageFileText.count {
+            let maxAllowedWidth = min(maxWidthWithSender, ThreadViewModel.maxAllowedWidth)
+            return maxAllowedWidth
+        } else {
+            return nil
+        }
+    }
+
+    private func replyPrimaryMessageFileIconWidth() -> CGFloat {
+        if fileName == nil || fileName?.isEmpty == true { return 0 }
+        return 32
+    }
+
+    private func messageContainerTextWidth() -> CGFloat {
+        let text = textForContianerCalculation()
+        let font = UIFont(name: "IRANSansX", size: 14) ?? .systemFont(ofSize: 14)
+        let textWidth = text.widthOfString(usingFont: font) + replyPrimaryMessageFileIconWidth()
+        let minimumWidth: CGFloat = 128
+        let maxOriginal = max(minimumWidth, textWidth + paddings.paddingEdgeInset.leading + paddings.paddingEdgeInset.trailing)
+        return maxOriginal
+    }
+
+    private func textForContianerCalculation() -> String {
+        let fileNameText = fileName ?? ""
+        let messageText = message.message?.prefix(150).replacingOccurrences(of: "\n", with: " ") ?? ""
+        let messageFileText = messageText.count > fileNameText.count ? messageText : fileNameText
+        return messageFileText
+    }
+
+    private func replyIconOrImageWidth() -> CGFloat {
+        let isReplyImageOrIcon = isReplyImage || canShowIconFile
+        return isReplyImageOrIcon ? 32 : 0
+    }
+
+    private func replySenderWidthCalculation(replyInfo: ReplyInfo) -> CGFloat {
+        let senderNameText = replyInfo.participant?.contactName ?? replyInfo.participant?.name ?? ""
+        let senderFont = UIFont(name: "IRANSansX-Bold", size: 12) ?? .systemFont(ofSize: 12)
+        let senderNameWidth = senderNameText.widthOfString(usingFont: senderFont)
+        return senderNameWidth
+    }
+
+    private func replySenderWidthWithIconOrImage(replyInfo: ReplyInfo) -> CGFloat {
+        let iconWidth = replyIconOrImageWidth()
+        let senderNameWidth = replySenderWidthCalculation(replyInfo: replyInfo)
+        let space: CGFloat = 1.5 + 32 /// 1.5 bar + 8 for padding + 8 for space between image and leading bar + 8 between image and sender name + 16 for padding
+        let senderNameWithImageSize = senderNameWidth + space + iconWidth
+        return senderNameWithImageSize
+    }
+
+    public func setHighlight() {
+        isHighlited = true
+        animateObjectWillChange()
+        startHighlightTimer()
+    }
+
+    public func unpinMessage() {
+        Task {
+            message.pinned = false
+            message.pinTime = nil
+            await recalculateWithAnimation()
+        }
+    }
+
+    public func pinMessage(time: UInt? ) {
+        Task {
+            message.pinned = true
+            message.pinTime = time
+            await recalculateWithAnimation()
+        }
+    }
+
+    public func setDelivered() {
+        message.delivered = true
+        animateObjectWillChange()
+    }
+
+    public func setSent(messageTime: UInt?) {
+        message.time = messageTime
+        animateObjectWillChange()
+    }
+
+    public func setSeen() {
+        message.delivered = true
+        message.seen = true
+        animateObjectWillChange()
+    }
+
+    public func setEdited(_ edited: Message) {
+        Task {
+            message.message = message.message
+            message.time = message.time
+            message.edited = true
+            await recalculateWithAnimation()
+        }
+    }
+
+    public func uploadCompleted(_ uniqueId: String?, _ fileMetaData: FileMetaData?, _ data: Data?, _ error: Error?) {
+        if message.isImage {
+            setAsDownloadedImage()
+        }
+    }
+
+    private func setAsDownloadedImage() {
+        guard let downloadVM = downloadFileVM, !downloadVM.isInCache, downloadVM.thumbnailData == nil || downloadVM.fileURL == nil else { return }
+        downloadBlurImageWithDelay(downloadVM)
+    }
+
+    private func calculateSpacingPaddings() {
+        paddings.textViewSpacingTop = (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
+        paddings.replyViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
+        paddings.forwardViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
+        paddings.fileViewSpacingTop = (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
+        paddings.radioPadding = EdgeInsets(top: 0, leading: isMe ? 8 : 0, bottom: 8, trailing: isMe ? 8 : 0)
+        paddings.mapViewSapcingTop =  (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
+        let hasAlreadyPadding = message.replyInfo != nil || message.forwardInfo != nil
+        let padding: CGFloat = hasAlreadyPadding ? 0 : 4
+        paddings.groupParticipantNamePadding = .init(top: padding, leading: padding, bottom: 0, trailing: padding)
+    }
+
+    public func swapUploadMessageWith(_ message: Message) {
+        uploadViewModel = nil
+        self.message = message
+        downloadFileVM?.message = message
+        threadVM?.historyVM.appendToNeedUpdate(self)
+    }
+
+    private func setAvatarColor() {
+        avatarColor = String.getMaterialColorByCharCode(str: message.participant?.name ?? message.participant?.username ?? "")
+    }
+
+    private func clearDownloadViewModel() {
+        downloadFileVM?.cancelObservers()
+        downloadFileVM = nil
+        cancelable = nil
+    }
+
+    public func updateMessage(_ message: Message) {
+        self.message = message
+        if message.isFileType {
+            self.downloadFileVM = DownloadFileViewModel(message: message)
+        }
+        self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
+        reactionsVM = MessageReactionsViewModel()
+        reactionsVM.viewModel = self
+        if message.uploadFile != nil {
+            uploadViewModel = .init(message: message)
+            isMe = true
+        }
+        canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
+        isSlot = false
+        width = nil
+        height = nil
+        registerObservers()
     }
 
     private func setParticipantEvent() async {
+        let meId = AppState.shared.user?.id
         let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
-        participantEvenMarkdown = try! NSAttributedString(markdown: "\(message.addOrRemoveParticipantString ?? "") - \(date)")
+        participantEvenMarkdown = try! NSAttributedString(markdown: "\(message.addOrRemoveParticipantString(meId: meId) ?? "") - \(date)")
     }
 
+
     deinit {
-        downloadFileVM?.cancelObservers()
-        downloadFileVM = nil
+        clearDownloadViewModel()
 #if DEBUG
         Logger.viewModels.info("Deinit get called for message: \(self.message.message ?? "") and message isFileTye:\(self.message.isFileType) and id is: \(self.message.id ?? 0)")
 #endif

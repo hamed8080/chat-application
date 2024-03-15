@@ -16,7 +16,7 @@ struct MainSendButtons: View {
     @EnvironmentObject var threadVM: ThreadViewModel
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(alignment: .bottom, spacing: 8) {
             Button {
                 withAnimation(animation(appear: !viewModel.showActionButtons)) {
                     viewModel.showActionButtons.toggle()
@@ -39,7 +39,7 @@ struct MainSendButtons: View {
             MultilineTextField(
                 "Thread.SendContainer.typeMessageHere",
                 text: $viewModel.textMessage,
-                textColor: UIColor(named: "message_text"),
+                textColor: UIColor(named: "text_primary"),
                 backgroundColor: Color.App.bgSendInput,
                 placeholderColor: Color.App.textPrimary.opacity(0.7),
                 mention: true,
@@ -47,12 +47,6 @@ struct MainSendButtons: View {
             )
             .clipShape(RoundedRectangle(cornerRadius:(24)))
             .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
-            .onChange(of: viewModel.textMessage) { newValue in
-                if Language.isRTL && newValue.first != "\u{200f}" {
-                    viewModel.textMessage = "\u{200f}\(viewModel.textMessage)"
-                }
-                threadVM.sendStartTyping(newValue)
-            }
 
             Button {
                 threadVM.attachmentsViewModel.clear()
@@ -69,7 +63,7 @@ struct MainSendButtons: View {
             .buttonStyle(.borderless)
             .fontWeight(.light)
             //            .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
-            .highPriorityGesture(switchRecordingGesture)
+            //.highPriorityGesture(switchRecordingGesture)
             .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
 
             if viewModel.showCamera {
@@ -96,9 +90,8 @@ struct MainSendButtons: View {
             if viewModel.showSendButton {
                 Button {
                     if viewModel.showSendButton {
-                        threadVM.sendTextMessage(viewModel.textMessage)
+                        threadVM.sendMessageViewModel.sendTextMessage()
                     }
-                    viewModel.clear()
                     threadVM.mentionListPickerViewModel.text = ""
                     threadVM.sheetType = nil
                     threadVM.animateObjectWillChange()

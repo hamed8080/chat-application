@@ -49,11 +49,11 @@ struct LoginContentView: View {
                         .padding(.horizontal)
                 }
 
-                Text("Login.footer")
-                    .multilineTextAlignment(.center)
-                    .font(.iransansFootnote)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .foregroundColor(.gray.opacity(1))
+//                Text("Login.footer")
+//                    .multilineTextAlignment(.center)
+//                    .font(.iransansFootnote)
+//                    .fixedSize(horizontal: false, vertical: true)
+//                    .foregroundColor(.gray.opacity(1))
                 if EnvironmentValues.isTalkTest {
                     Picker("Server", selection: $viewModel.selectedServerType) {
                         ForEach(ServerTypes.allCases) { server in

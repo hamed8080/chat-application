@@ -22,18 +22,17 @@ public final class TagsViewModel: ObservableObject {
     private var cancelable: Set<AnyCancellable> = []
 
     public init() {
-        AppState.shared.$connectionStatus
-            .sink{ [weak self] status in
-                self?.onConnectionStatusChanged(status)
-            }
-            .store(in: &cancelable)
-        NotificationCenter.tag.publisher(for: .tag)
-            .compactMap { $0.object as? TagEventTypes }
-            .sink { [weak self] value in
-                self?.onTagEvent(value)
-            }
-            .store(in: &cancelable)
-        getTagList()
+//        AppState.shared.$connectionStatus
+//            .sink{ [weak self] status in
+//                self?.onConnectionStatusChanged(status)
+//            }
+//            .store(in: &cancelable)
+//        NotificationCenter.tag.publisher(for: .tag)
+//            .compactMap { $0.object as? TagEventTypes }
+//            .sink { [weak self] value in
+//                self?.onTagEvent(value)
+//            }
+//            .store(in: &cancelable)
     }
 
     private func onTagEvent(_ event: TagEventTypes) {
@@ -146,7 +145,7 @@ public final class TagsViewModel: ObservableObject {
     }
 
     private func onRemoveTagParticipant(_ response: ChatResponse<[TagParticipant]>) {
-        if let tagParticipants = response.result, let request = response.value as? RemoveTagParticipantsRequest {
+        if !response.cache, let tagParticipants = response.result, let request = response.pop() as? RemoveTagParticipantsRequest {
             removeParticipants(request.tagId, tagParticipants)
         }
         isLoading = false

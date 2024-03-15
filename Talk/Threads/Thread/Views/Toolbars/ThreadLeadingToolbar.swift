@@ -21,11 +21,12 @@ struct ThreadLeadingToolbar: View {
                 NotificationCenter.closeSideBar.post(name: Notification.Name.closeSideBar, object: nil)
             }
             .offset(y: -1.5)
+            .foregroundStyle(Color.App.toolbarButton)
         }
 
         NavigationBackButton {
             AppState.shared.appStateNavigationModel = .init()
-            AppState.shared.navViewModel?.remove(type: ThreadViewModel.self, threadId: viewModel.thread.id)
+            AppState.shared.objectsContainer.navVM.remove(threadId: viewModel.thread.id)
         }
     }
 }

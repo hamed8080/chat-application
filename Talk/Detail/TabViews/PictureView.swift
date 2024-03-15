@@ -15,51 +15,61 @@ import TalkExtensions
 import ActionableContextMenu
 
 struct PictureView: View {
-    @EnvironmentObject var detailViewModel: DetailViewModel
-    let viewModel: DetailTabDownloaderViewModel
+    @EnvironmentObject var detailViewModel: ThreadDetailViewModel
+    @StateObject var viewModel: DetailTabDownloaderViewModel
     @State var viewWidth: CGFloat = 0
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType)
+        let vm = DetailTabDownloaderViewModel(conversation: conversation, messageType: messageType, tabName: "Picture")
+        _viewModel = StateObject(wrappedValue: vm)
     }
 
     var body: some View {
         StickyHeaderSection(header: "", height:  4)
-        let spacing: CGFloat = 8
-        let padding: CGFloat = 16
-        let viewWidth = viewWidth - padding
-        let itemWidthWithouthSpacing = viewModel.itemWidth(readerWidth: viewWidth)
-        let itemWidth = itemWidthWithouthSpacing - spacing
-        LazyVGrid(
-            columns: Array(
-                repeating: .init(
-                    .flexible(
-                        minimum: itemWidth,
-                        maximum: itemWidth
-                    ),
-                    spacing: spacing
-                ),
-                count: viewModel.itemCount
-            ),
-            alignment: .leading,
-            spacing: spacing
-        ) {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: spacing) {
             if viewWidth != 0 {
                 MessageListPictureView(itemWidth: abs(itemWidth))
             }
         }
         .padding(padding)
-        .onAppear {
-            if viewModel.messages.count == 0 {
-                viewModel.loadMore()
-            }
-        }
         .environmentObject(viewModel)
-        .background {
-            GeometryReader { reader in
-                Color.clear.onAppear {
-                    self.viewWidth = reader.size.width
-                }
+        .background(frameReader)
+        .onAppear {
+            onLoad()
+        }
+    }
+
+    private var columns: Array<GridItem> {
+        let flexible = GridItem.Size.flexible(minimum: itemWidth, maximum: itemWidth)
+        let item = GridItem(flexible,spacing: spacing)
+        return Array(repeating: item, count: viewModel.itemCount)
+    }
+
+    private var spacing: CGFloat {
+        return 8
+    }
+
+    private var padding: CGFloat {
+        return 16
+    }
+
+    private var itemWidth: CGFloat {
+        let viewWidth = viewWidth - padding
+        let itemWidthWithouthSpacing = viewModel.itemWidth(readerWidth: viewWidth)
+        let itemWidth = itemWidthWithouthSpacing - spacing
+        return itemWidth
+    }
+
+    private func onLoad() {
+        if viewModel.messages.count == 0 {
+            viewModel.loadMore()
+        }
+    }
+
+    private var frameReader: some View {
+        GeometryReader { reader in
+            Color.clear.onAppear {
+                self.viewWidth = reader.size.width
             }
         }
     }
@@ -68,8 +78,7 @@ struct PictureView: View {
 struct MessageListPictureView: View {
     let itemWidth: CGFloat
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-    @EnvironmentObject var detailViewModel: DetailViewModel
-    
+
     var body: some View {
         ForEach(viewModel.messages) { message in
             PictureRowView(message: message, itemWidth: itemWidth)
@@ -91,13 +100,8 @@ struct PictureRowView: View {
     @EnvironmentObject var downloadVM: DownloadFileViewModel
     @EnvironmentObject var appOverlayViewModel: AppOverlayViewModel
     var threadVM: ThreadViewModel? { viewModel.threadVM }
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     let itemWidth: CGFloat
-
-    init(message: Message, itemWidth: CGFloat) {
-        self.message = message
-        self.itemWidth = itemWidth
-    }
 
     var body: some View {
         DownloadPictureButtonView(itemWidth: itemWidth)
@@ -135,36 +139,43 @@ struct DownloadPictureButtonView: View {
                     .frame(width: itemWidth, height: itemWidth)
                     .scaledToFit()
                     .clipped()
-                    .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
+                    .transition(.opacity)
+                    .contentShape(RoundedRectangle(cornerRadius: 8))
             }
         case .undefined, .thumbnail:
             ZStack {
-                let data = viewModel.thumbnailData
-                let image = UIImage(data: data ?? Data()) ?? UIImage()
-                Image(uiImage: image)
-                    .resizable()
-                    .frame(width: itemWidth, height: itemWidth)
-                    .scaledToFit()
-                    .clipped()
-                    .transition(.scale.animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.5)))
-                    .zIndex(0)
-                    .background(Color.App.dividerSecondary)
-                    .clipShape(RoundedRectangle(cornerRadius:(8)))
-                    .onAppear {
-                        if viewModel.isInCache {
-                            viewModel.state = .completed
-                            viewModel.animateObjectWillChange()
-                        } else {
-                            if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
-                                viewModel.downloadBlurImage(quality: 1.0, size: .SMALL)
-                            }
-                        }
-
-                    }
+                if let data = viewModel.thumbnailData, let image = UIImage(data: data) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: itemWidth, height: itemWidth)
+                        .clipped()
+                        .zIndex(0)
+                        .background(Color.App.dividerSecondary)
+                        .clipShape(RoundedRectangle(cornerRadius:(8)))
+                        .contentShape(RoundedRectangle(cornerRadius: 8))
+                }
             }
             .frame(width: itemWidth, height: itemWidth)
+            .contentShape(RoundedRectangle(cornerRadius: 8))
+            .transition(.opacity)
+            .onAppear {
+                if viewModel.isInCache {
+                    viewModel.state = .completed
+                    viewModel.animateObjectWillChange()
+                } else {
+                    if message?.isImage == true, !viewModel.isInCache, viewModel.thumbnailData == nil {
+                        viewModel.downloadBlurImage(quality: 1.0, size: .MEDIUM)
+                    }
+                }
+            }
         default:
-            EmptyView()
+            Rectangle()
+                .fill(Color.App.bgSecondary)
+                .frame(width: itemWidth, height: itemWidth)
+                .clipShape(RoundedRectangle(cornerRadius:(8)))
+                .contentShape(RoundedRectangle(cornerRadius: 8))
+                .transition(.opacity)
         }
     }
 }

@@ -51,7 +51,7 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     }
 
     func onUnreadMentions(_ response: ChatResponse<[Message]>) {
-        if response.value(prepend: "UnreadMentions") != nil, !response.cache, let unreadMentions = response.result {
+        if !response.cache, response.pop(prepend: "UnreadMentions") != nil, let unreadMentions = response.result {
             self.unreadMentions.removeAll()
             self.unreadMentions.append(contentsOf: unreadMentions)
             self.unreadMentions.sort(by: {$0.time ?? 0 < $1.time ?? 1})
@@ -64,6 +64,12 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
             onUnreadMentions(response)
         default:
             break
+        }
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
         }
     }
 }

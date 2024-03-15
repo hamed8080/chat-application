@@ -102,7 +102,7 @@ final class MessageRowFileDownloaderView: UIStackView {
         progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
 
         let message = viewModel.message
-        let canShow = !message.isUploadMessage && message.isFileType && !viewModel.isMapType && !message.isImage && !message.isAudio && !message.isVideo
+        let canShow = !message.isUploadMessage && message.isFileType && !viewModel.rowType.isMap && !message.isImage && !message.isAudio && !message.isVideo
         isHidden = !canShow
     }
 

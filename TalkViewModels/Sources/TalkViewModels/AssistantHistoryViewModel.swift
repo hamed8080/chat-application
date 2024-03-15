@@ -55,7 +55,7 @@ public final class AssistantHistoryViewModel: ObservableObject {
             hasNext = response.hasNext
         }
 
-        if !response.cache, response.value != nil {
+        if !response.cache, response.pop() != nil {
             firstSuccessResponse = true
             isLoading = false
         }

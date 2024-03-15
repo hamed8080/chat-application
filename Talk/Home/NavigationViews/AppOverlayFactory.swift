@@ -9,6 +9,8 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import TalkExtensions
+import ChatCore
+import TalkModels
 
 struct AppOverlayFactory: View {
     @EnvironmentObject var viewModel: AppOverlayViewModel
@@ -36,11 +38,19 @@ struct AppOverlayFactory: View {
                 leadingView
             }
         case .error(let error):
-            if let localizedError = error?.localizedError {
-                ToastView(title: "", message: localizedError) {}
-            } else {
+            let isUnknown = error?.code == ServerErrorType.unknownError.rawValue
+            if EnvironmentValues.isTalkTest, isUnknown {
                 let title = String(format: String(localized: "Errors.occuredTitle"), "\(error?.code ?? 0)")
                 ToastView(title: title, message: error?.message ?? "") {}
+            } else if !isUnknown {
+                if let localizedError = error?.localizedError {
+                    ToastView(title: "", message: localizedError) {}
+                } else if error?.isPresentable == true {
+                    let title = String(format: String(localized: "Errors.occuredTitle"), "\(error?.code ?? 0)")
+                    ToastView(title: title, message: error?.message ?? "") {}
+                } else if let appError = AppErrorTypes(rawValue: error?.code ?? 0) {
+                    ToastView(title: "", message: appError.localized) {}
+                }
             }
         case .none:
             EmptyView()

@@ -150,7 +150,6 @@ final class TextMessageTypeCell: UITableViewCell {
     private var message: Message { viewModel.message }
     private var isEmptyMessage: Bool { message.message == nil || message.message?.isEmpty == true  }
 
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureView()

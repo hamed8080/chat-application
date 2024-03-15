@@ -72,7 +72,7 @@ public final class MentionListPickerViewModel: ObservableObject {
     }
 
     func onParticipants(_ response: ChatResponse<[Participant]>) {
-        if response.value(prepend: "MentionParticipants") != nil, !response.cache, let participants = response.result {
+        if !response.cache, response.pop(prepend: "MentionParticipants") != nil, let participants = response.result {
             self.mentionList.removeAll()
             self.mentionList = .init(participants)
             mentionList.removeAll(where: {$0.id == AppState.shared.user?.id})
@@ -86,6 +86,12 @@ public final class MentionListPickerViewModel: ObservableObject {
             onParticipants(response)
         default:
             break
+        }
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
         }
     }
 }

@@ -30,7 +30,7 @@ final class ForwardMessageRow: UIStackView {
     private func configureView() {
         layoutMargins = UIEdgeInsets(all: 8)
         backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
-        layer.cornerRadius = 5
+        layer.cornerRadius = 6
         layer.masksToBounds = true
 
         bar.translatesAutoresizingMaskIntoConstraints = false
@@ -43,11 +43,11 @@ final class ForwardMessageRow: UIStackView {
         vStack.spacing = 0
 
         forwardStaticLebel.font = UIFont.uiiransansCaption3
-        forwardStaticLebel.textColor = Color.App.textPrimaryUIColor
+        forwardStaticLebel.textColor = Color.App.accentUIColor
         forwardStaticLebel.text = "Message.forwardedFrom".localized()
 
         participantLabel.font = UIFont.uiiransansBoldCaption2
-        participantLabel.textColor = Color.App.textPrimaryUIColor
+        participantLabel.textColor = Color.App.accentUIColor
         participantLabel.numberOfLines = 1
 
         bar.backgroundColor = Color.App.accentUIColor
@@ -66,12 +66,13 @@ final class ForwardMessageRow: UIStackView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        backgroundColor = viewModel.isMe ? Color.App.bgChatMeUIColor : Color.App.bgChatUserDarkUIColor
         semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         vStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         let canShow = viewModel.message.forwardInfo != nil
         forwardStaticLebel.isHidden = !canShow
         bar.isHidden = !canShow
-        participantLabel.text = viewModel.message.forwardInfo?.participant?.name
+        participantLabel.text = viewModel.message.forwardInfo?.participant?.name ?? viewModel.message.participant?.name
         participantLabel.isHidden = viewModel.message.forwardInfo?.participant?.name == nil
         registerGestures(viewModel: viewModel)
         isHidden = !canShow

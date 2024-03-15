@@ -11,10 +11,20 @@ import TalkViewModels
 
 struct ThreadListRowBackground: View {
     let thread: Conversation
-    @EnvironmentObject var navVM: NavigationModel
-    var isSelected: Bool { navVM.selectedThreadId == thread.id }
+    @State private var isSelected: Bool = false
 
     var body: some View {
+        color
+            .onReceive(AppState.shared.objectsContainer.navVM.objectWillChange) { _ in
+                if thread.id == AppState.shared.objectsContainer.navVM.selectedId {
+                    isSelected = true
+                } else if isSelected {
+                    isSelected = false
+                }
+            }
+    }
+
+    var color: Color {
         isSelected ? Color.App.bgChatSelected : thread.pin == true ? Color.App.bgSecondary : Color.App.bgPrimary
     }
 }

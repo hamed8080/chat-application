@@ -14,6 +14,9 @@ import ChatModels
 
 struct ContactContentList: View {
     @EnvironmentObject var viewModel: ContactsViewModel
+    @State private var type: ThreadTypes = .normal
+    @State private var showBuilder = false
+    @EnvironmentObject var builderVM: ConversationBuilderViewModel
 
     var body: some View {
         List {
@@ -38,8 +41,8 @@ struct ContactContentList: View {
             }
 
             Button {
-                viewModel.createConversationType = .normal
-                viewModel.showConversaitonBuilder.toggle()
+                type = .normal
+                showBuilder.toggle()
             } label: {
                 Label("Contacts.createGroup", systemImage: "person.2")
                     .foregroundStyle(Color.App.accent)
@@ -48,8 +51,8 @@ struct ContactContentList: View {
             .listRowSeparatorTint(Color.App.dividerPrimary)
 
             Button {
-                viewModel.createConversationType = .channel
-                viewModel.showConversaitonBuilder.toggle()
+                type = .channel
+                showBuilder.toggle()
             } label: {
                 Label("Contacts.createChannel", systemImage: "megaphone")
                     .foregroundStyle(Color.App.accent)
@@ -96,12 +99,30 @@ struct ContactContentList: View {
         .sheet(isPresented: $viewModel.showAddOrEditContactSheet) {
             AddOrEditContactView()
                 .environmentObject(viewModel)
+                .onDisappear {
+                    /// Clearing the view for when the user cancels the sheet by dropping it down.
+                    viewModel.successAdded = false
+                    viewModel.showAddOrEditContactSheet = false
+                    viewModel.addContact = nil
+                    viewModel.editContact = nil
+                }
         }
-        .sheet(isPresented: $viewModel.showConversaitonBuilder) {
-            viewModel.showConversaitonBuilder = false
-        } content: {
+        .onReceive(builderVM.$dismiss) { newValue in
+            if newValue == true {
+                showBuilder = false
+            }
+        }
+        .sheet(isPresented: $showBuilder, onDismiss: onDismissBuilder){
             ConversationBuilder()
+                .environmentObject(builderVM)
+                .onAppear {
+                    builderVM.show(type: type)
+                }
         }
+    }
+
+    private func onDismissBuilder() {
+        builderVM.clear()
     }
 }
 
@@ -169,8 +190,6 @@ struct ContactRowContainer: View {
                 if viewModel.isInSelectionMode {
                     viewModel.toggleSelectedContact(contact: contact)
                 } else {
-                    viewModel.closeConversationContextMenu = true
-                    viewModel.closeBuilder()
                     AppState.shared.openThread(contact: contact)
                 }
             }

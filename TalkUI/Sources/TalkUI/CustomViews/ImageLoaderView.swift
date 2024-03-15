@@ -30,7 +30,7 @@ public struct ImageLoaderView: View {
     public var body: some View {
         ZStack {
             if !imageLoader.isImageReady {
-                Text(String(imageLoader.config.userName?.first ?? " "))
+                Text(String(imageLoader.config.userName ?? " "))
                     .font(textFont)
             } else if imageLoader.isImageReady {
                 Image(uiImage: imageLoader.image)
@@ -42,7 +42,9 @@ public struct ImageLoaderView: View {
         .animation(.easeInOut, value: imageLoader.isImageReady)
         .onAppear {
             if !imageLoader.isImageReady {
-                imageLoader.fetch()
+                Task {
+                    await imageLoader.fetch()
+                }
             }
         }
     }
@@ -84,7 +86,9 @@ public final class ParticipantImageLoaderUIView: UIView {
         if imageLoaderVM == nil {
             imageLoaderVM = .init(.init(config: config))
             setupObserver()
-            imageLoaderVM?.fetch()
+            Task {
+                await imageLoaderVM?.fetch()
+            }
         }
         participantLabel.text = String(imageLoaderVM?.config.userName?.first ?? " ")
     }
@@ -134,7 +138,9 @@ public final class ImageLoaderUIView: UIView {
         if imageLoaderVM == nil {
             imageLoaderVM = .init(.init(config: config))
             setupObserver()
-            imageLoaderVM?.fetch()
+            Task {
+                await imageLoaderVM?.fetch()
+            }
         }
     }
 

@@ -26,7 +26,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         textField.font = UIFont(name: "IRANSansX", size: 16)
         textField.isSelectable = true
         textField.isUserInteractionEnabled = true
-        textField.isScrollEnabled = false
+        textField.isScrollEnabled = true
         textField.backgroundColor = UIColor.clear
         textField.textColor = textColor
         textField.returnKeyType = keyboardReturnType
@@ -140,11 +140,11 @@ public struct MultilineTextField: View {
                           keyboardReturnType: keyboardReturnType,
                           mention: mention,
                           onDone: onDone)
-            .frame(minHeight: dynamicHeight, maxHeight: dynamicHeight)
+            .frame(minHeight: min(64, dynamicHeight), maxHeight: min(256, dynamicHeight))
             .background(placeholderView, alignment: .topLeading)
             .background(backgroundColor)
             .onChange(of: text) { newValue in
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     showingPlaceholder = newValue.isEmpty || (newValue.first == "\u{200f}" && newValue.count == 1)
                 }
             }
@@ -157,7 +157,7 @@ public struct MultilineTextField: View {
                     .font(.iransansBody)
                     .foregroundColor(placeholderColor)
                     .padding(EdgeInsets(top: 8, leading: 8, bottom: 0, trailing: 0))
-                    .transition(.slide)
+                    .transition(.asymmetric(insertion: .push(from: .leading), removal: .move(edge: .leading)))
             }
         }
     }

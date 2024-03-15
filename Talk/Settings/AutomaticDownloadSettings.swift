@@ -14,7 +14,8 @@ struct AutomaticDownloadSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "arrow.down.square.fill", title: "Settings.download", color: Color.App.color5, showDivider: false) {
-            navModel.appendAutomaticDownloads()
+            let value = AutomaticDownloadsNavigationValue()
+            navModel.append(type: .automaticDownloadsSettings(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -79,17 +80,9 @@ struct AutomaticDownloadSettings: View {
         .font(.iransansSubheadline)
         .background(Color.App.bgPrimary)
         .listStyle(.plain)
-        .navigationTitle("Settings.download")
-        .navigationBarBackButtonHidden(true)
+        .normalToolbarView(title: "Settings.download", type: AutomaticDownloadsNavigationValue.self)
         .onChange(of: model) { _ in
             model.save()
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.navViewModel?.remove(type: PreferenceNavigationValue.self)
-                }
-            }
         }
     }
 }

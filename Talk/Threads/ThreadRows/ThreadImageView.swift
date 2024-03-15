@@ -19,36 +19,25 @@ struct ThreadImageView: View {
     var body: some View {
         ZStack {
             if thread.type == .selfThread {
-                let startColor = Color(red: 255/255, green: 145/255, blue: 98/255)
-                let endColor = Color(red: 255/255, green: 90/255, blue: 113/255)
-                Circle()
-                    .foregroundColor(.clear)
-                    .scaledToFit()
-                    .frame(width: 54, height: 54)
-                    .background(LinearGradient(colors: [startColor, endColor], startPoint: .top, endPoint: .bottom))
-                    .clipShape(RoundedRectangle(cornerRadius:(24)))
-                    .overlay {
-                        Image("bookmark")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 27, height: 27)
-                            .foregroundStyle(Color.App.textPrimary)
-                    }
+                SelfThreadImageView(imageSize: 54, iconSize: 27)
             } else if let image = computedImageURL {
-                ImageLoaderView(imageLoader: threadsVM.avatars(for: image, metaData: thread.metadata, userName: thread.title))
-                    .id("\(computedImageURL ?? "")\(thread.id ?? 0)")
-                    .font(.iransansBoldBody)
-                    .foregroundColor(.white)
-                    .frame(width: 54, height: 54)
-                    .background(Color.App.color1.opacity(0.4))
-                    .clipShape(RoundedRectangle(cornerRadius:(24)))
+                ImageLoaderView(
+                    imageLoader: threadsVM.avatars(for: image, metaData: thread.metadata, userName: String.splitedCharacter(thread.title ?? "")),
+                    textFont: .iransansBoldBody
+                )
+                .id("\(computedImageURL ?? "")\(thread.id ?? 0)")
+                .font(.iransansBoldBody)
+                .foregroundColor(.white)
+                .frame(width: 54, height: 54)
+                .background(Color(uiColor: String.getMaterialColorByCharCode(str: thread.title ?? "")))
+                .clipShape(RoundedRectangle(cornerRadius:(24)))
             } else {
-                Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
+                Text(verbatim: String.splitedCharacter(thread.computedTitle))
                     .id("\(computedImageURL ?? "")\(thread.id ?? 0)")
-                    .font(.iransansBoldBody)
+                    .font(.iransansBoldSubheadline)
                     .foregroundColor(.white)
                     .frame(width: 54, height: 54)
-                    .background(Color.App.color1.opacity(0.4))
+                    .background(Color(uiColor: String.getMaterialColorByCharCode(str: thread.title ?? "")))
                     .clipShape(RoundedRectangle(cornerRadius:(24)))
             }
         }.task {
@@ -57,5 +46,32 @@ struct ThreadImageView: View {
                 computedImageURL = thread.computedImageURL
             }
         }
+        .onReceive(thread.objectWillChange) { _ in /// update an image of a thread by another device
+            if computedImageURL != self.thread.computedImageURL {
+                self.computedImageURL = thread.computedImageURL
+            }
+        }
+    }
+}
+
+struct SelfThreadImageView: View {
+    let imageSize: CGFloat
+    let iconSize: CGFloat
+    var body: some View {
+        let startColor = Color(red: 255/255, green: 145/255, blue: 98/255)
+        let endColor = Color(red: 255/255, green: 90/255, blue: 113/255)
+        Circle()
+            .foregroundColor(.clear)
+            .scaledToFit()
+            .frame(width: imageSize, height: imageSize)
+            .background(LinearGradient(colors: [startColor, endColor], startPoint: .top, endPoint: .bottom))
+            .clipShape(RoundedRectangle(cornerRadius:((imageSize / 2) - 3)))
+            .overlay {
+                Image("bookmark")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: iconSize, height: iconSize)
+                    .foregroundStyle(Color.App.textPrimary)
+            }
     }
 }

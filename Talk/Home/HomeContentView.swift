@@ -38,6 +38,8 @@ struct HomeContentView: View {
                 .environmentObject(container.logVM)
                 .environmentObject(container.audioPlayerVM)
                 .environmentObject(container.reactions)
+                .environmentObject(container.conversationBuilderVM)
+                .environmentObject(container.userProfileImageVM)
         }
         .modifier(ColorSchemeModifier())
         .contextMenuContainer()
@@ -66,6 +68,7 @@ struct SplitView: View {
             }
         }
         .animation(.easeInOut, value: isLoggedIn)
+        .overlay(OpenURLView())
         .overlay {
             AppOverlayView(onDismiss: onDismiss) {
                 AppOverlayFactory()
@@ -92,8 +95,6 @@ struct SplitViewContent: View {
     var body: some View {
         ContainerSplitView(sidebarView: sidebarViews, container: container)
             .onAppear {
-                AppState.shared.navViewModel = container.navVM
-                container.navVM.threadsViewModel = container.threadsVM
                 if let appMode = AppSettingsModel.restore().isDarkModeEnabled {
                     self.statusBarStyle.currentStyle = appMode == true ? .lightContent : .darkContent
                 } else {

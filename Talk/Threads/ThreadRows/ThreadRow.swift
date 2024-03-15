@@ -16,8 +16,7 @@ import ActionableContextMenu
 struct ThreadRow: View {
     /// It is essential in the case of forwarding. We don't want to highlight the row in forwarding mode.
     var forceSelected: Bool?
-    @EnvironmentObject var navVM: NavigationModel
-    var isSelected: Bool { forceSelected ?? (navVM.selectedThreadId == thread.id) }
+    @State private var isSelected: Bool = false
     @EnvironmentObject var viewModel: ThreadsViewModel
     var thread: Conversation
     let onTap: (() -> Void)?
@@ -28,7 +27,7 @@ struct ThreadRow: View {
             ThreadImageView(thread: thread, threadsVM: viewModel)
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    if thread.type == .channel {
+                    if thread.type?.isChannelType == true {
                         Image(systemName: "megaphone.fill")
                             .resizable()
                             .scaledToFit()
@@ -36,7 +35,7 @@ struct ThreadRow: View {
                             .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
 
-                    if thread.group == true, thread.type != .channel {
+                    if thread.group == true, thread.type?.isChannelType == false {
                         Image(systemName: "person.2.fill")
                             .resizable()
                             .scaledToFit()
@@ -67,7 +66,7 @@ struct ThreadRow: View {
                 }
                 HStack {
                     SecondaryMessageView(isSelected: isSelected, thread: thread)
-                        .environmentObject(ThreadEventViewModel(threadId: thread.id ?? -1))
+                        .environmentObject(viewModel.threadEventModels.first{$0.threadId == thread.id} ?? .init(threadId: thread.id ?? 0))
                     Spacer()
                     ThreadUnreadCount(isSelected: isSelected)
                         .environmentObject(thread)
@@ -98,15 +97,20 @@ struct ThreadRow: View {
         ) {
             onTap?()
         } menus: {
-            VStack(alignment: .leading, spacing: 0) {
-                ThreadRowActionMenu(showPopover: .constant(true), thread: thread)
-                    .environmentObject(viewModel)
-            }
-            .foregroundColor(.primary)
-            .frame(width: 196)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius:((12))))
-            .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
+            ThreadRowContextMenu(thread: thread, viewModel: viewModel)
+        }
+        .onReceive(AppState.shared.objectsContainer.navVM.objectWillChange) { _ in
+            setSelection()
+        }.onAppear {
+            setSelection()
+        }
+    }
+
+    private func setSelection() {
+        if AppState.shared.objectsContainer.navVM.selectedId == thread.id {
+            isSelected = forceSelected ?? (AppState.shared.objectsContainer.navVM.selectedId == thread.id)
+        } else if isSelected == true {
+            isSelected = false
         }
     }
 }
@@ -126,6 +130,22 @@ struct ThreadRowSelfContextMenu: View {
             .environmentObject(AppState.shared.objectsContainer.navVM)
             .environmentObject(viewModel)
             .environment(\.layoutDirection, direction == .leftToRight && Language.isRTL ? .rightToLeft : .leftToRight)
+    }
+}
+
+struct ThreadRowContextMenu: View {
+    let thread: Conversation
+    let viewModel: ThreadsViewModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ThreadRowActionMenu(showPopover: .constant(true), thread: thread)
+                .environmentObject(viewModel)
+        }
+        .foregroundColor(.primary)
+        .frame(width: 246)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius:((12))))
     }
 }
 

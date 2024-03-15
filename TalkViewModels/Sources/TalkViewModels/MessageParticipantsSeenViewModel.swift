@@ -20,6 +20,7 @@ public class MessageParticipantsSeenViewModel: ObservableObject {
     let message: Message
     @Published public var isLoading = false
     private var cancelable: Set<AnyCancellable> = []
+    public var isEmpty: Bool { !isLoading && participants.isEmpty }
 
     public init(message: Message) {
         self.message = message
@@ -51,7 +52,7 @@ public class MessageParticipantsSeenViewModel: ObservableObject {
 
     private func onSeenParticipants(_ response: ChatResponse<[Participant]> ) {
         isLoading = false
-        response.result?.forEach{ newParticipant in
+        response.result?.filter({ $0.id != AppState.shared.user?.id }).forEach{ newParticipant in
             if !self.participants.contains(where: {$0.id == newParticipant.id}) {
                 self.participants.append(newParticipant)
             }

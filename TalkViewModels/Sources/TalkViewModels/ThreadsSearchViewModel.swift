@@ -18,6 +18,7 @@ import OSLog
 
 public final class ThreadsSearchViewModel: ObservableObject {
     @Published public var searchedConversations: ContiguousArray<Conversation> = []
+    @Published public var searchedContacts: ContiguousArray<Contact> = []
     @Published public var searchText: String = ""
     public private(set) var count = 15
     public private(set) var offset = 0
@@ -53,17 +54,24 @@ public final class ThreadsSearchViewModel: ObservableObject {
                 } else if newValue.first != "@" && !newValue.isEmpty {
                     self?.hasNext = true
                     self?.searchThreads(newValue)
+                    self?.searchContacts(newValue)
                 } else if newValue.count == 0, self?.hasNext == false {
                     self?.offset = 0
                     self?.hasNext = true
                 }
             }
             .store(in: &cancelable)
-        RequestsManager.shared.$cancelRequest
+        NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
             .sink { [weak self] newValue in
-                if let newValue {
-                    self?.onCancelTimer(key: newValue)
+                if let key = newValue.object as? String {
+                    self?.onCancelTimer(key: key)
                 }
+            }
+            .store(in: &cancelable)
+        NotificationCenter.contact.publisher(for: .contact)
+            .compactMap { $0.object as? ContactEventTypes }
+            .sink{ [weak self] event in
+                self?.onContactEvent(event)
             }
             .store(in: &cancelable)
     }
@@ -80,6 +88,15 @@ public final class ThreadsSearchViewModel: ObservableObject {
             setHasNextOnResponse(response)
             onPublicThreadSearch(response)
             onSearch(response)
+        default:
+            break
+        }
+    }
+
+    public func onContactEvent(_ event: ContactEventTypes?) {
+        switch event {
+        case let .contacts(response):
+            onSearchContacts(response)
         default:
             break
         }
@@ -112,14 +129,14 @@ public final class ThreadsSearchViewModel: ObservableObject {
 
     func onSearch(_ response: ChatResponse<[Conversation]>) {
         isLoading = false
-        if !response.cache, let threads = response.result, response.value(prepend: "SEARCH") != nil {
+        if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH") != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
 
     func onPublicThreadSearch(_ response: ChatResponse<[Conversation]>) {
         isLoading = false
-        if !response.cache, let threads = response.result, response.value(prepend: "SEARCH-PUBLIC-THREAD") != nil {
+        if !response.cache, let threads = response.result, response.pop(prepend: "SEARCH-PUBLIC-THREAD") != nil {
             searchedConversations.append(contentsOf: threads)
         }
     }
@@ -127,6 +144,28 @@ public final class ThreadsSearchViewModel: ObservableObject {
     private func setHasNextOnResponse(_ response: ChatResponse<[Conversation]>) {
         if !response.cache, response.result?.count ?? 0 > 0 {
             hasNext = response.hasNext
+        }
+    }
+
+    public func searchContacts(_ searchText: String) {
+        let req: ContactsRequest
+        if searchType == .username {
+            req = ContactsRequest(userName: searchText)
+        } else if searchType == .cellphoneNumber {
+            req = ContactsRequest(cellphoneNumber: searchText)
+        } else {
+            req = ContactsRequest(query: searchText)
+        }
+        RequestsManager.shared.append(prepend: "SEARCH-CONTACTS-IN-THREADS-LIST", value: req)
+        ChatManager.activeInstance?.contact.search(req)
+    }
+
+    public func onSearchContacts(_ response: ChatResponse<[Contact]>) {
+        if !response.cache, response.pop(prepend: "SEARCH-CONTACTS-IN-THREADS-LIST") != nil {
+            if let contacts = response.result {
+                self.searchedContacts.removeAll()
+                self.searchedContacts.append(contentsOf: contacts)
+            }
         }
     }
 

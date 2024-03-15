@@ -21,13 +21,13 @@ struct TagParticipantRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     if let thread = tagParticipant.conversation {
-                        let config = ImageLoaderConfig(url: tagParticipant.conversation?.computedImageURL ?? "", metaData: thread.metadata, userName: tagParticipant.conversation?.title)
+                        let config = ImageLoaderConfig(url: tagParticipant.conversation?.computedImageURL ?? "", metaData: thread.metadata, userName: String.splitedCharacter( tagParticipant.conversation?.title ?? ""))
                         ImageLoaderView(imageLoader: .init(config: config))
                             .id("\(tagParticipant.conversation?.computedImageURL ?? "")\(tagParticipant.conversation?.id ?? 0)")
                             .font(.system(size: 16).weight(.heavy))
                             .foregroundColor(.white)
                             .frame(width: 28, height: 28)
-                            .background(Color.App.color1.opacity(0.4))
+                            .background(Color(uiColor: String.getMaterialColorByCharCode(str: tagParticipant.conversation?.title ?? "")))
                             .clipShape(RoundedRectangle(cornerRadius:(14)))
                         VStack(alignment: .leading) {
                             Text(thread.title ?? "")

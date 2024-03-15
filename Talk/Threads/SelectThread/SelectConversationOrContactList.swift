@@ -13,7 +13,7 @@ import TalkUI
 import TalkViewModels
 
 struct SelectConversationOrContactList: View {
-    var viewModel: ThreadOrContactPickerViewModel = .init()
+    @StateObject var viewModel: ThreadOrContactPickerViewModel = .init()
     var onSelect: (Conversation?, Contact?) -> Void
     @Environment(\.dismiss) var dismiss
     @State var selectedTabId: Int = 0
@@ -36,6 +36,9 @@ struct SelectConversationOrContactList: View {
             .safeAreaInset(edge: .top, spacing: 0) {
                 SearchInSelectConversationOrContact()
                     .environmentObject(viewModel)
+            }
+            .onDisappear {
+                viewModel.cancelObservers()
             }
     }
 }
@@ -68,10 +71,21 @@ struct SelectConversationTab: View {
                     dismiss()
                 }
                 .listRowBackground(Color.App.bgPrimary)
+                .onAppear {
+                    if conversation == conversations.last {
+                        viewModel.loadMore()
+                    }
+                }
+            }
+        }
+        .safeAreaInset(edge: .top) {
+            if viewModel.isLoadingConversation {
+                SwingLoadingIndicator()
             }
         }
         .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.conversations.count)
+        .animation(.easeInOut, value: viewModel.isLoadingConversation)
     }
 }
 
@@ -89,10 +103,21 @@ struct SelectContactTab: View {
                         dismiss()
                     }
                     .listRowBackground(Color.App.bgPrimary)
+                    .onAppear {
+                        if contact == viewModel.contacts.last {
+                            viewModel.loadMoreContacts()
+                        }
+                    }
+            }
+        }
+        .safeAreaInset(edge: .top) {
+            if viewModel.isLoadingContacts {
+                SwingLoadingIndicator()
             }
         }
         .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.contacts.count)
+        .animation(.easeInOut, value: viewModel.isLoadingContacts)
     }
 }
 

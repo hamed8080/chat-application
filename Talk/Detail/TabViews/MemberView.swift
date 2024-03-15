@@ -18,12 +18,13 @@ struct MemberView: View {
     @EnvironmentObject var viewModel: ParticipantsViewModel
 
     var body: some View {
-        ParticipantSearchView()
-        AddParticipantButton(conversation: viewModel.thread)
-            .listRowSeparatorTint(.gray.opacity(0.2))
-            .listRowBackground(Color.App.bgPrimary)
-        StickyHeaderSection(header: "", height: 10)
         LazyVStack(spacing: 0) {
+            ParticipantSearchView()
+            AddParticipantButton(conversation: viewModel.thread)
+                .listRowSeparatorTint(.gray.opacity(0.2))
+                .listRowBackground(Color.App.bgPrimary)
+            StickyHeaderSection(header: "", height: 10)
+
             if viewModel.searchedParticipants.count > 0 || !viewModel.searchText.isEmpty {
                 StickyHeaderSection(header: "Memebers.searchedMembers")
                 ForEach(viewModel.searchedParticipants) { participant in
@@ -35,7 +36,6 @@ struct MemberView: View {
                 }
             }
         }
-        .listStyle(.plain)
         .animation(.easeInOut, value: viewModel.participants.count)
         .animation(.easeInOut, value: viewModel.searchedParticipants.count)
         .animation(.easeInOut, value: viewModel.searchText)
@@ -85,33 +85,40 @@ struct ParticipantRowContainer: View {
                 }
             }
             .onLongPressGesture {
-                if !isMe {
+                if !isMe, viewModel.thread?.admin == true {
                     showPopover.toggle()
                 }
             }
             .popover(isPresented: $showPopover, attachmentAnchor: .point(.bottom), arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 0) {
                     if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == false {
-                        ContextMenuButton(title: "Participant.addAdminAccess", image: "person.crop.circle.badge.minus") {
+                        ContextMenuButton(title: "Participant.addAdminAccess", image: "person.crop.circle.badge.plus") {
                             viewModel.makeAdmin(participant)
+                            showPopover.toggle()
                         }
                     }
 
                     if !isMe, viewModel.thread?.admin == true, (participant.admin ?? false) == true {
-                        ContextMenuButton(title: "Participant.removeAdminAccess", image: "person.badge.key.fill") {
+                        ContextMenuButton(title: "Participant.removeAdminAccess", image: "person.crop.circle.badge.minus") {
                             viewModel.removeAdminRole(participant)
+                            showPopover.toggle()
                         }
                     }
 
                     if !isMe, viewModel.thread?.admin == true {
                         ContextMenuButton(title: "General.delete", image: "trash") {
-                            viewModel.removePartitipant(participant)
+                            let dialog = AnyView(
+                                DeleteParticipantDialog(participant: participant)
+                                    .environmentObject(viewModel)
+                            )
+                            AppState.shared.objectsContainer.appOverlayVM.dialogView = dialog
+                            showPopover.toggle()
                         }
                         .foregroundStyle(Color.App.red)
                     }
                 }
                 .foregroundColor(.primary)
-                .frame(width: 196)
+                .frame(width: 246)
                 .background(MixMaterialBackground())
                 .clipShape(RoundedRectangle(cornerRadius:((12))))
                 .presentationCompactAdaptation(horizontal: .popover, vertical: .popover)
@@ -197,7 +204,7 @@ struct ParticipantSearchView: View {
             }
             .popover(isPresented: $showPopover, arrowEdge: .bottom) {
                 VStack(alignment: .leading, spacing: 8) {
-                    ForEach(SearchParticipantType.allCases) { item in
+                    ForEach(SearchParticipantType.allCases.filter({$0 != .admin })) { item in
                         Button {
                             withAnimation {
                                 viewModel.searchType = item

@@ -14,28 +14,30 @@ import TalkModels
 import ActionableContextMenu
 
 struct VoiceView: View {
-    @State var viewModel: DetailTabDownloaderViewModel
+    @StateObject var viewModel: DetailTabDownloaderViewModel
 
     init(conversation: Conversation, messageType: MessageType) {
-        viewModel = .init(conversation: conversation, messageType: messageType)
+        _viewModel =  StateObject(wrappedValue: .init(conversation: conversation, messageType: messageType, tabName: "Voice"))
     }
 
     var body: some View {
-        StickyHeaderSection(header: "", height:  4)
-            .onAppear {
-                if viewModel.messages.count == 0 {
-                    viewModel.loadMore()
+        LazyVStack {
+            ThreadTabDetailStickyHeaderSection(header: "", height:  4)
+                .onAppear {
+                    if viewModel.messages.count == 0 {
+                        viewModel.loadMore()
+                    }
                 }
-            }
-        MessageListVoiceView()
-            .padding(.top, 8)
-            .environmentObject(viewModel)
+            MessageListVoiceView()
+                .padding(.top, 8)
+                .environmentObject(viewModel)
+        }
     }
 }
 
 struct MessageListVoiceView: View {
     @EnvironmentObject var viewModel: DetailTabDownloaderViewModel
-    @EnvironmentObject var detailViewModel: DetailViewModel
+    @EnvironmentObject var detailViewModel: ThreadDetailViewModel
 
     var body: some View {
         ForEach(viewModel.messages) { message in
@@ -63,7 +65,7 @@ struct VoiceRowView: View {
     let message: Message
     var threadVM: ThreadViewModel? { viewModel.threadVM }
     @EnvironmentObject var downloadVM: DownloadFileViewModel
-    @EnvironmentObject var viewModel: DetailViewModel
+    @EnvironmentObject var viewModel: ThreadDetailViewModel
     @Environment(\.dismiss) var dismiss
     @State var shareDownloadedFile = false
     @EnvironmentObject var downloadViewModel: DownloadFileViewModel

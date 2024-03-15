@@ -17,10 +17,10 @@ struct BlockedContacts: View {
         List(viewModel.blockedContacts, id: \.blockId) { blocked in
             HStack {
                 let contactName = blocked.contact?.user?.name ?? blocked.contact?.firstName
-                let name = blocked.nickName ?? contactName
+                let name = contactName ?? blocked.nickName
                 let userId = blocked.contact?.cellphoneNumber ?? blocked.contact?.email ?? "\(blocked.coreUserId ?? 0)"
 
-                let config = ImageLoaderConfig(url: blocked.profileImage ?? blocked.contact?.image ?? "", userName: name)
+                let config = ImageLoaderConfig(url: blocked.profileImage ?? blocked.contact?.image ?? "", userName: String.splitedCharacter(name ?? ""))
                 ImageLoaderView(imageLoader: .init(config: config))
                     .id(userId)
                     .font(.iransansBody)
@@ -55,16 +55,8 @@ struct BlockedContacts: View {
             .listRowSeparatorTint(blocked.blockId == viewModel.blockedContacts.last?.blockId ? Color.clear : Color.App.dividerPrimary)
         }
         .background(Color.App.bgPrimary)
-        .navigationTitle("Contacts.blockedList")
-        .navigationBarBackButtonHidden(true)
         .listStyle(.plain)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.navViewModel?.remove(type: BlockedContactsNavigationValue.self)
-                }
-            }
-        }
+        .normalToolbarView(title: "Contacts.blockedList", type: BlockedContactsNavigationValue.self)
     }
 }
 

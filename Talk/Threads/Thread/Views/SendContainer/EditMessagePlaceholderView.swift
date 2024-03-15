@@ -9,14 +9,17 @@ import SwiftUI
 import TalkViewModels
 import TalkExtensions
 import TalkUI
+import ChatModels
 
 struct EditMessagePlaceholderView: View {
-    @EnvironmentObject var viewModel: ThreadViewModel
+    @EnvironmentObject var threadVM: ThreadViewModel
+    @EnvironmentObject var viewModel: SendContainerViewModel
 
     var body: some View {
-        if let editMessage = viewModel.sendContainerViewModel.editMessage {
+        if let editMessage = viewModel.editMessage {
             HStack {
                 SendContainerButton(image: "pencil")
+                EditMessageImage(editMessage: editMessage)
                 VStack(alignment: .leading, spacing: 0) {
                     if let name = editMessage.participant?.name {
                         Text(name)
@@ -33,15 +36,54 @@ struct EditMessagePlaceholderView: View {
 
                 Spacer()
                 CloseButton {
-                    viewModel.scrollVM.disableExcessiveLoading()
-                    viewModel.isInEditMode = false
-                    viewModel.sendContainerViewModel.editMessage = nil
-                    viewModel.sendContainerViewModel.textMessage = ""
-                    viewModel.animateObjectWillChange()
+                    threadVM.scrollVM.disableExcessiveLoading()
+                    viewModel.clear()
                 }
                 .padding(.trailing, 4)
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
+            .onAppear {
+                if let messageId = editMessage.id, let uniqueId = editMessage.uniqueId, messageId == threadVM.thread.lastMessageVO?.id {
+                    threadVM.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
+                }
+            }
+        }
+    }
+}
+
+struct EditMessageImage: View {
+    let editMessage: Message
+    @EnvironmentObject var viewModel: ThreadHistoryViewModel
+
+    var body: some View {
+        if let viewModel = viewModel.messageViewModel(for: editMessage) {
+            if viewModel.message.isImage {
+                image(viewModel: viewModel)
+            } else if viewModel.message.isFileType {
+                iconImage(viewModel: viewModel)
+            }
+        }
+    }
+
+    @ViewBuilder func image(viewModel: MessageRowViewModel) -> some View {
+        if viewModel.message.isImage {
+                Image(uiImage: viewModel.image)
+                .frame(width: 32, height: 32)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .clipped()
+        }
+    }
+
+
+    @ViewBuilder func iconImage(viewModel: MessageRowViewModel) -> some View {
+        if viewModel.message.isFileType, let iconName = viewModel.message.iconName {
+            Image(systemName: iconName)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 32, height: 32)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .foregroundColor(Color.App.accent)
+                .clipped()
         }
     }
 }

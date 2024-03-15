@@ -53,7 +53,7 @@ public final class ParticipantsViewModel: ObservableObject {
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] searchText in
-                if searchText.count > 2 {
+                if searchText.count >= 2 {
                     self?.searchParticipants(searchText.lowercased())
                 } else {
                     self?.searchedParticipants.removeAll()
@@ -110,7 +110,9 @@ public final class ParticipantsViewModel: ObservableObject {
 
     public func getParticipants() {
         isLoading = true
-        ChatManager.activeInstance?.conversation.participant.get(.init(threadId: thread?.id ?? 0, offset: offset, count: count))
+        let req = ThreadParticipantRequest(threadId: thread?.id ?? 0, offset: offset, count: count)
+        RequestsManager.shared.append(prepend: "Load-Participants", value: req)
+        ChatManager.activeInstance?.conversation.participant.get(req)
     }
 
     public func searchParticipants(_ searchText: String) {
@@ -145,7 +147,7 @@ public final class ParticipantsViewModel: ObservableObject {
         // FIXME: This bug should be fixed in the caching system as described in the text below.
         /// If we remove this line due to a bug in the Cache, we will get an incorrect participants list.
         /// For example, after a user leaves a thread, if the user updates their getHistory, the left participant will be shown in the list, which is incorrect.
-        if !response.cache, let participants = response.result {
+        if !response.cache, response.pop(prepend: "Load-Participants") != nil, let participants = response.result, response.subjectId == thread?.id {
             firstSuccessResponse = true
             appendParticipants(participants: participants)
             hasNext = response.hasNext
@@ -154,7 +156,7 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func onSearchedParticipants(_ response: ChatResponse<[Participant]>) {
-        if response.value(prepend: "SearchParticipants") != nil, let participants = response.result {
+        if !response.cache, response.pop(prepend: "SearchParticipants") != nil, let participants = response.result {
             searchedParticipants.removeAll()
             searchedParticipants.append(contentsOf: participants)
         }
@@ -227,7 +229,7 @@ public final class ParticipantsViewModel: ObservableObject {
         }
 
 //        /// If an admin makes another participant admin the setter will not get a list of roles in the response.
-        if response.value(prepend: "REQUEST-TO-ADMIN-PARTICIPANT") != nil, response.error == nil {
+        if response.pop(prepend: "REQUEST-TO-ADMIN-PARTICIPANT") != nil, response.error == nil {
             response.result?.forEach{ userRole in
                 if let index = participants.firstIndex(where: {$0.id == userRole.id}) {
                     participants[index].admin = true
@@ -260,8 +262,14 @@ public final class ParticipantsViewModel: ObservableObject {
     }
 
     public func onError(_ response: ChatResponse<Any>) {
-        if response.error != nil, response.value(prepend: "SearchParticipants") != nil {
+        if response.error != nil, response.pop(prepend: "SearchParticipants") != nil {
             searchedParticipants.removeAll()
+        }
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
         }
     }
 }

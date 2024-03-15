@@ -19,13 +19,15 @@ public final class LogViewModel: ObservableObject {
     public private(set) var cancellableSet: Set<AnyCancellable> = []
 
     public init() {
-        NotificationCenter.logs.publisher(for: .logs)
-            .compactMap { $0.object as? Log }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] log in
-                self?.logs.insert(log, at: 0)
-            }
-            .store(in: &cancellableSet)
+        #if DEBUG
+            NotificationCenter.logs.publisher(for: .logs)
+                .compactMap { $0.object as? Log }
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] log in
+                    self?.logs.insert(log, at: 0)
+                }
+                .store(in: &cancellableSet)
+        #endif
     }
 
     public var filtered: [Log] {

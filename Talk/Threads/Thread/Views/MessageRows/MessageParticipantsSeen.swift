@@ -20,39 +20,30 @@ struct MessageParticipantsSeen: View {
     var body: some View {
         ScrollView(.vertical) {
             VStack {
-                let me = AppState.shared.user?.id
-                ForEach(viewModel.participants.filter({$0.id != me})) { participant in
-                    MessageSeenParticipantRow(participant: participant)
-                        .onAppear {
-                            if participant == viewModel.participants.last {
-                                viewModel.loadMore()
+                if viewModel.isEmpty {
+                    Text("SeenParticipants.noOneSeenTheMssage")
+                        .font(.iransansBoldSubheadline)
+                        .foregroundColor(Color.App.textPrimary)
+                        .frame(minWidth: 0, maxWidth: .infinity)
+                } else {
+                    ForEach(viewModel.participants) { participant in
+                        MessageSeenParticipantRow(participant: participant)
+                            .onAppear {
+                                if participant == viewModel.participants.last {
+                                    viewModel.loadMore()
+                                }
                             }
-                        }
+                    }
+                    .animation(.easeInOut, value: viewModel.participants.count)
                 }
             }
         }
         .background(Color.App.bgPrimary)
-        .animation(.easeInOut, value: viewModel.participants.count)
-        .padding(.horizontal, 6)
-        .navigationBarBackButtonHidden(true)
-        .navigationTitle("SeenParticipants.title")
+        .padding(.horizontal, viewModel.isEmpty ? 0 : 6)
         .overlay(alignment: .bottom) {
             ListLoadingView(isLoading: $viewModel.isLoading)
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    threadVM.scrollVM.disableExcessiveLoading()
-                    AppState.shared.navViewModel?.remove(type: MessageParticipantsSeenNavigationValue.self)
-                }
-            }
-
-            ToolbarItemGroup(placement: .principal) {
-                Text("SeenParticipants.title")
-                    .font(.iransansBoldBody)
-                    .foregroundStyle(Color.App.textPrimary)
-            }
-        }
+        .normalToolbarView(title: "SeenParticipants.title", type: MessageParticipantsSeenNavigationValue.self)
         .onAppear {
             viewModel.getParticipants()
         }
@@ -64,13 +55,13 @@ struct MessageSeenParticipantRow: View {
 
     var body: some View {
         HStack {
-            let config = ImageLoaderConfig(url: participant.image ?? "", userName: participant.name ?? participant.username)
+            let config = ImageLoaderConfig(url: participant.image ?? "", userName: String.splitedCharacter(participant.name ?? participant.username ?? ""))
             ImageLoaderView(imageLoader: .init(config: config))
                 .id("\(participant.image ?? "")\(participant.id ?? 0)")
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
-                .background(Color.App.color1.opacity(0.4))
+                .background(Color(uiColor: String.getMaterialColorByCharCode(str: participant.name ?? participant.username ?? "")))
                 .clipShape(RoundedRectangle(cornerRadius:(22)))
 
             HStack(alignment: .center, spacing: 8) {

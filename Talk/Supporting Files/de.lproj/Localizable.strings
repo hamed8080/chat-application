@@ -68,6 +68,7 @@
 "General.imageSaved" = "Bild gespeichert.";
 "General.copied" = "In die Zwischenablage kopiert.";
 "General.ban" = "Der Server hat Sie für %@ Sekunden gesperrt.";
+"General.addText" = "Text hinzufügen";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -140,8 +141,10 @@
 /* Message */
 "Message.Participant.left" = "%@ hat die Gruppe verlassen.";
 "Message.Participant.removed" = "%@ entfernte %@ aus der Gruppe.";
+"Message.Participant.removedByMe" = "Du hast %@ aus der Gruppe entfernt.";
 "Message.Participant.joined" = "%@ ist der Gruppe beigetreten.";
 "Message.Participant.added" = "%@ fügte %@ zur Gruppe hinzu.";
+"Message.Participant.addedByMe" = "Sie haben %@ zur Gruppe hinzugefügt.";
 "Message.forwardedFrom" = "Weitergeleitet von";
 "Message.replyTo" = "Antworten auf";
 
@@ -186,9 +189,10 @@
 "Thread.publicThreadStructrue" = "Öffentliche Thread-Namen sollten eindeutige Namen ohne Leerzeichen und Sonderzeichen haben.";
 "Thread.enterValidName" = "Geben Sie den Namen des Gesprächs ein.";
 "Thread.public" = "Öffentlich";
+"Thread.private" = "Privat";
 "Thread.SendContainer.voiceRecording" = "Sprachaufnahme";
 "Thread.SendContainer.attachment" = "Anhang";
-"Thread.SendContainer.typeMessageHere" = "Hier Nachricht eingeben...";
+"Thread.SendContainer.typeMessageHere" = "Geben Sie hier ein...";
 "Thread.SendContainer.toForward" = "weiterleiten";
 "Thread.export" = "Exportieren";
 "ThreadList.Toolbar.startNewChat" = "Neuen Chat starten";
@@ -213,11 +217,12 @@
 "Thread.Tabs.voice" = "Sprachnachricht";
 "Thread.Tabs.link" = "Link";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
+"Thread.accessLocaitonPermission" = "Gehen Sie bitte zu „Einstellungen“ > „Sprechen“ und aktivieren Sie dann den Standortzugriff.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ hat eine Unterhaltung erstellt.";
 "Thread.Toolbar.participants" = "Teilnehmer";
 "Thread.sendAttachments" = "Senden Sie %@ Dateien";
-"Thread.public" = "Öffentlich %@";
+"Thread.public" = "%@ %@";
 "Thread.delete" = "Lösche %@";
 "Thread.inviteLink" = "Einladungslink";
 "Thread.isVoiceRecording" = "Nimmt Sprachaufnahme auf";
@@ -229,7 +234,8 @@
 "Thread.leaveButton" = "Verlassen";
 "Thread.leave.footer" = "Möchtest du diesen Chat wirklich verlassen?";
 "Thread.noMessage" = "Es kann keine Meldung angezeigt werden.";
-"Thread.onlyAdminError" = "Du bist der einzige Admin in der Gruppe, du kannst die Gruppe nicht verlassen oder löschen!";
+"Thread.onlyGroupAdminError" = "Du bist der einzige Admin in der Gruppe, du kannst die Gruppe nicht verlassen oder löschen!";
+"Thread.onlyChannelAdminError" = "Du bist der einzige Admin im Kanal, du kannst den Kanal nicht verlassen oder löschen!";
 
 /* ConnectionStatus */
 "ConnectionStatus.connecting" = "verbinden";
@@ -254,6 +260,7 @@
 /* Edit group */
 "EditGroup.groupName" = "Gruppenname";
 "EditGroup.groupDescription" = "Gruppenbeschreibung (optional)";
+"EditGroup.admins" = "Admins";
 
 /* Export Chat */
 "ExportChat.startTitle" = "Startdatum";
@@ -263,6 +270,9 @@
 /* DeleteMessageDialog */
 "DeleteMessageDialog.title" = "Ausgewählte Nachrichten löschen";
 "DeleteMessageDialog.subtitle" = "Sind Sie sicher, dass Sie alle ausgewählten Nachrichten löschen möchten?";
+"DeleteMessageDialog.singleDeleteIsPinMessage" = "Die gelöschte Nachricht ist eine angeheftete Nachricht, daher können Sie sie nicht für andere löschen.";
+"DeleteMessageDialog.multipleDeleteContainsPinMessage" = "Ausgewählte Nachrichten enthalten eine Pin-Nachricht, daher können Sie sie nicht für andere löschen.";
+"DeleteMessageDialog.deleteForMeAllOtherIfPossible" = "Löschen Sie für mich und andere, wo es möglich ist";
 
 /* PinMessageDialog */
 "PinMessageDialog.title" = "Wie möchtest du diese Nachricht anheften?";
@@ -293,7 +303,7 @@
 "Settings.logout" = "Abmelden";
 "Settings.notifictionSettings" = "Benachrichtigungseinstellungen";
 "Settings.download" = "Download-Einstellungen";
-"Settings.support" = "Unterstützung";
+"Settings.about" = "Um Talk";
 "Settings.userName" = "Nutzername";
 "Settings.phoneNumber" = "Telefonnummer";
 "Settings.bio" = "Biografie";
@@ -317,7 +327,8 @@
 /* Support */
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk wurde 2016 geboren. Dieser Messenger wurde mit dem Ziel produziert und entwickelt, eine tiefe und konstruktive Kommunikation zu schaffen und organisatorische und nicht-organisatorische Bedürfnisse zu verstehen. Es besteht die Hoffnung, dass Tak unter den aktuellen Bedingungen jeden Tag einen größeren Schritt auf dem Weg der nachhaltigen Entwicklung und der Schaffung einer sicheren und schnellen Plattform machen wird.";
-
+"Support.number" = "021-91033000 intern 9";
+"Support.callDetail" = "Um den Support von Talk zu kontaktieren, können Sie die folgenden Nummern verwenden, um mit den entsprechenden Experten zu kommunizieren";
 
 /* NotificationSettings */
 "Notification.Sound" = "Ton";
@@ -335,7 +346,7 @@
 "Tags.manageFolders" = "Ordner verwalten";
 
 /* Messages */
-"Messages.deletedMessageReply" = "Nachricht gelöscht.";
+"Messages.deletedMessageReply" = "Die Nachricht wurde gelöscht.";
 "Messages.Footer.edited" = "Bearbeitet";
 "Messages.resend" = "Erneut senden";
 "Messages.ActionMenu.reply" = "Antworten";
@@ -370,6 +381,7 @@
 
 /* Message Seen Participants */
 "SeenParticipants.title" = "Teilnehmer gesehen";
+"SeenParticipants.noOneSeenTheMssage" = "Niemand hat die Nachricht gesehen.";
 
 /* Message Types */
 "MessageType.text" = "Text";
@@ -385,3 +397,16 @@
 "MessageType.location" = "Ort";
 "MessageType.join" = "Beitreten";
 "MessageType.left" = "Verlassen";
+
+/* Delete Conatct In Conversation Detail */
+"ConversationDetail.deleteContact" = "Sind Sie sicher, dass Sie %@ aus Ihrer Kontaktliste löschen möchten?";
+
+/* Delete a Member in members tab */
+"DeleteParticipantDialog.title" = "Sind Sie sicher, dass Sie %@ aus %@ entfernen möchten?";
+
+/* SearchFiltersMessagesDialog */
+"SearchFiltersMessagesDialog.filter" = "Filter";
+"SearchFiltersMessagesDialog.showUnreadConversations" = "Ungelesene Konversationen anzeigen";
+
+/* Filters */
+"Filters.onlyUnreadConversations" = "Nur ungelesene Gespräche";

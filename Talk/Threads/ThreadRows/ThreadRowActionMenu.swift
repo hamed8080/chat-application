@@ -19,7 +19,7 @@ struct ThreadRowActionMenu: View {
     var canAddParticipant: Bool { thread.group ?? false && thread.admin ?? false == true }
 
     var body: some View {
-        if thread.pin == true || viewModel.serverSortedPinConversations.count < 5 {
+        if thread.pin == true || viewModel.serverSortedPins.count < 5 {
             ContextMenuButton(title: (thread.pin ?? false) ? "Thread.unpin" : "Thread.pin", image: "pin") {
                 viewModel.togglePin(thread)
                 showPopover.toggle()
@@ -65,7 +65,7 @@ struct ThreadRowActionMenu: View {
         if thread.group == true {
             let leaveKey = String(localized: .init("Thread.leave"))
             let key = thread.type?.isChannelType == true ? "Thread.channel" : "Thread.group"
-            ContextMenuButton(title: String(format: leaveKey, String(localized: .init(key))), image: "rectangle.portrait.and.arrow.right") {
+            ContextMenuButton(title: String(format: leaveKey, String(localized: .init(key))), image: "rectangle.portrait.and.arrow.right", iconColor: Color.App.red) {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(LeaveThreadDialog(conversation: thread))
                 showPopover.toggle()
             }
@@ -78,7 +78,7 @@ struct ThreadRowActionMenu: View {
             let key = thread.type?.isChannelType == true ? "Thread.channel" : thread.group == true ? "Thread.group" : ""
             let groupLocalized = String(format: deleteKey, String(localized: .init(key)))
             let p2pLocalized = String(localized: .init("Genreal.deleteConversation"))
-            ContextMenuButton(title: thread.group == true ? groupLocalized : p2pLocalized, image: "trash") {
+            ContextMenuButton(title: thread.group == true ? groupLocalized : p2pLocalized, image: "trash", iconColor: Color.App.red) {
                 AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteThreadDialog(threadId: thread.id))
                 showPopover.toggle()
             }

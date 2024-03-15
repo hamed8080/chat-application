@@ -24,7 +24,7 @@ public struct ConnectionStatusToolbar: View {
                 let localized = String(localized: .init(connectionStatus.stringValue))
                 Text(localized)
                     .fixedSize()
-                    .foregroundColor(Color.App.textSecondary)
+                    .foregroundColor(Color.App.toolbarSecondaryText)
                     .font(.iransansFootnote)
                     .onReceive(appstate.$connectionStatus) { newSate in
                         if EnvironmentValues.isTalkTest {
@@ -38,8 +38,9 @@ public struct ConnectionStatusToolbar: View {
                         }
                     }
                 ThreeDotAnimation()
-                    .frame(width: 26)
+                    .frame(width: 26, height: 12)
             }
+            .transition(.opacity)
         } else {
             EmptyView()
                 .hidden()
@@ -47,6 +48,7 @@ public struct ConnectionStatusToolbar: View {
                 .onReceive(appstate.$connectionStatus) { newSate in
                     self.connectionStatus = newSate
                 }
+                .transition(.opacity)
         }
     }
 }

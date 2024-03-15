@@ -77,8 +77,10 @@ final class ChatDelegateImplementation: ChatDelegate {
     private func onUserEvent(_ event: UserEventTypes) {
         switch event {
         case let .user(response):
-            if let user = response.result {
-                UserConfigManagerVM.instance.onUser(user)
+            Task {
+                if let user = response.result {
+                    UserConfigManagerVM.instance.onUser(user)
+                }
             }
         default:
             break

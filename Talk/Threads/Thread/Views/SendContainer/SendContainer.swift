@@ -22,7 +22,7 @@ struct SendContainer: View {
         ZStack(alignment: .bottom) {           
             VStack(spacing: 0) {
                 VStack(spacing: 0) {
-                    if viewModel.isInEditMode {
+                    if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true {
                         SelectionView(threadVM: threadVM)
                             .environmentObject(threadVM.selectedMessagesViewModel)
                     } else if viewModel.canShowMute {
@@ -46,19 +46,7 @@ struct SendContainer: View {
                 .opacity(viewModel.disableSend ? 0.3 : 1.0)
                 .disabled(viewModel.disableSend)
                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: viewModel.textMessage.isEmpty)
-                .onReceive(viewModel.$editMessage) { editMessage in
-                    if let editMessage {
-                        viewModel.textMessage = editMessage.message ?? ""
-                    }
-                }
-                .onReceive(threadVM.$isInEditMode) { newValue in
-                    if newValue != viewModel.isInEditMode {
-                        withAnimation {
-                            viewModel.isInEditMode = newValue
-                        }
-                    }
-                }
+                .animation(.easeInOut, value: viewModel.textMessage.isEmpty)
             }
         }
     }

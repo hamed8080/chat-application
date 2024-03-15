@@ -3,6 +3,14 @@
     {
       "filename" : "chat_bg.png",
       "idiom" : "universal"
+    },
+    {
+      "filename" : "chat-bg-iphone.png",
+      "idiom" : "iphone"
+    },
+    {
+      "filename" : "chat_bg 1.png",
+      "idiom" : "ipad"
     }
   ],
   "info" : {

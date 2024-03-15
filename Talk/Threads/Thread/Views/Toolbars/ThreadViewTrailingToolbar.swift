@@ -14,39 +14,42 @@ import Chat
 struct ThreadViewTrailingToolbar: View {
     private var thread: Conversation { viewModel.thread }
     let viewModel: ThreadViewModel
-    @EnvironmentObject var navVM: NavigationModel
-    @State var imageViewModel: ImageLoaderViewModel?
+    @State var imageLoader: ImageLoaderViewModel?
 
     var body: some View {
         Button {
-            navVM.append(threadViewModel: viewModel)
+            AppState.shared.objectsContainer.navVM.appendThreadDetail(threadViewModel: viewModel)
         } label: {
             ZStack {
-                if let imageLoader = imageLoader() {
-                    ImageLoaderView(imageLoader: imageLoader)
+                if thread.type == .selfThread {
+                    SelfThreadImageView(imageSize: 36, iconSize: 16)
+                } else if let imageLoader = imageLoader {
+                    ImageLoaderView(imageLoader: imageLoader, textFont: .iransansCaption3)
                 } else {
-                    Text(verbatim: String(thread.computedTitle.trimmingCharacters(in: .whitespacesAndNewlines).first ?? " "))
+                    Text(verbatim: String.splitedCharacter(thread.computedTitle))
                 }
             }
             .id("\(thread.id ?? 0)\(thread.computedImageURL ?? "")")
-            .font(.iransansBody)
+            .font(.iransansCaption3)
             .foregroundColor(.white)
-            .frame(width: 32, height: 32)
-            .background(Color.App.color1.opacity(0.4))
-            .clipShape(RoundedRectangle(cornerRadius:(16)))
+            .frame(width: 36, height: 36)
+            .background(Color(uiColor:String.getMaterialColorByCharCode(str: thread.computedTitle)))
+            .clipShape(RoundedRectangle(cornerRadius:(15)))
+            .padding(.trailing, 8)
         }
         .onReceive(NotificationCenter.thread.publisher(for: .thread)) { notification in
             if let threadEvent = notification.object as? ThreadEventTypes, case .updatedInfo(let resposne) = threadEvent, resposne.result?.id == thread.id {
-                imageViewModel = .init(config: .init(url: thread.computedImageURL ?? "", userName: thread.title))
+                setImageLoader()
             }
+        }
+        .task {
+            setImageLoader()
         }
     }
 
-    private func imageLoader() -> ImageLoaderViewModel? {
-        if let image = thread.computedImageURL, let avatarVM = viewModel.threadsViewModel?.avatars(for: image, metaData: nil, userName: thread.title){
-            return avatarVM
-        } else {
-            return nil
+    private func setImageLoader() {
+        if let image = thread.computedImageURL, let avatarVM = viewModel.threadsViewModel?.avatars(for: image, metaData: nil, userName: String.splitedCharacter(thread.title ?? "")) {
+            imageLoader = avatarVM
         }
     }
 }

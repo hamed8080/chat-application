@@ -47,11 +47,11 @@ public class AppOverlayViewModel: ObservableObject {
     public var transition: AnyTransition {
         switch type {
         case .gallery(message: _):
-            return .asymmetric(insertion: .scale.animation(.interpolatingSpring(mass: 1.0, stiffness: 0.1, damping: 0.9, initialVelocity: 0.5).speed(30)), removal: .move(edge: .bottom))
+            return .opacity
         case .galleryImageView(uiimage: _):
             return .asymmetric(insertion: .scale.animation(.interpolatingSpring(mass: 1.0, stiffness: 0.1, damping: 0.9, initialVelocity: 0.5).speed(30)), removal: .opacity)
         case .error(error: _):
-            return .asymmetric(insertion: .push(from: .top), removal: .move(edge: .top))
+            return .opacity
         case .dialog:
             return .asymmetric(insertion: .scale.animation(.interpolatingSpring(mass: 1.0, stiffness: 0.1, damping: 0.9, initialVelocity: 0.5).speed(20)), removal: .opacity)
         default:

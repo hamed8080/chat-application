@@ -15,6 +15,7 @@ import Logger
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDelegate {
     var window: UIWindow?
+    private var backgroundTaskID: UIBackgroundTaskIdentifier?
 
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -24,23 +25,18 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
         // Create the SwiftUI view that provides the window contents.
         let contentView = HomeContentView()
             .font(.iransansBody)
-
-        if #available(iOS 15.0, *) {
-            let appearance = UITabBarAppearance()
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-        }
         TokenManager.shared.initSetIsLogin()
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = CustomUIHostinViewController(rootView: contentView) // CustomUIHosting Needed for change status bar color per page
+            window.rootViewController = CustomUIHostinViewController(rootView: contentView) // CustomUIHosting is Needed for change status bar color per page
             self.window = window
             window.makeKeyAndVisible()
         }
         
         // MARK: Registering Launch Handlers for Tasks
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "ir.pod.talk.refreshToken", using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: EnvironmentValues.isTalkTest ? "ir.pod.talk-test.refreshToken" : "ir.pod.talk.refreshToken", using: nil) { task in
             // Downcast the parameter to an app refresh task as this identifier is used for a refresh request.
             if let task = task as? BGAppRefreshTask {
                 self.handleTaskRefreshToken(task)
@@ -50,10 +46,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
 
     func scene(_: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
-        if url.absoluteString.contains("Widget") == true {
-            let threadIdString = url.absoluteString.replacingOccurrences(of: "Widget://link-", with: "")
-            let threadId = Int(threadIdString) ?? 0
+        if let threadId = url.widgetThreaId {
             AppState.shared.showThread(thread: .init(id: threadId))
+        } else if let userName = url.openThreadUserName {
+            AppState.shared.openThreadWith(userName: userName)
+        } else if let decodedOpenURL = url.decodedOpenURL {
+            AppState.shared.openURL(url: decodedOpenURL)
         }
     }
 
@@ -90,12 +88,29 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
         // to restore the scene back to its current state.
         AppState.shared.lifeCycleState = .background
         scheduleAppRefreshToken()
+
+        self.backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "START_REQUESTING_MORE_BG_TIME") { [weak self] in
+            self?.endBGTask()
+        }
+
+        /// We request only 10 seconds, to keep the socket open.
+        /// More than this value leads to iOS getting suspicious and terminating the app afterward.
+        Timer.scheduledTimer(withTimeInterval: min(10, UIApplication.shared.backgroundTimeRemaining), repeats: false) { [weak self] _ in
+            self?.endBGTask()
+        }
+    }
+
+    func endBGTask() {
+        if let backgroundTaskID = backgroundTaskID {
+            UIApplication.shared.endBackgroundTask(backgroundTaskID)
+            self.backgroundTaskID = UIBackgroundTaskIdentifier.invalid
+        }
     }
 
     private func scheduleAppRefreshToken() {
         if let ssoToken = TokenManager.shared.getSSOTokenFromUserDefaults(), let createDate = TokenManager.shared.getCreateTokenDate() {
             let timeToStart = createDate.advanced(by: Double(ssoToken.expiresIn - 50)).timeIntervalSince1970 - Date().timeIntervalSince1970
-            let request = BGAppRefreshTaskRequest(identifier: "ir.pod.talk.refreshToken")
+            let request = BGAppRefreshTaskRequest(identifier: EnvironmentValues.isTalkTest ? "ir.pod.talk-test.refreshToken" : "ir.pod.talk.refreshToken")
             request.earliestBeginDate = Date(timeIntervalSince1970: timeToStart)
             do {
                 try BGTaskScheduler.shared.submit(request)
@@ -106,7 +121,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
     }
 
     private func handleTaskRefreshToken(_ task: BGAppRefreshTask) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in handleTaskRefreshToken method", level: .error, type: .sent, userInfo: nil)
             NotificationCenter.logs.post(name: .logs, object: log)
             await TokenManager.shared.getNewTokenWithRefreshToken()

@@ -9,6 +9,8 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 import ChatModels
+import Chat
+import TalkModels
 
 final class LocationRowView: UIImageView {
     private let gradient = CAGradientLayer()
@@ -40,13 +42,21 @@ final class LocationRowView: UIImageView {
         ])
     }
 
+    private func onTap(message: Message) {
+        if let url = message.neshanURL, UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        }
+    }
+
     public func set(_ viewModel: MessageRowViewModel) {
-        let canShow = viewModel.isMapType
+        let canShow = viewModel.rowType.isMap
         if canShow, let mapImage = viewModel.downloadFileVM?.fileURL?.imageScale(width: Int(800))?.image {
             image = UIImage(cgImage: mapImage)
+            layer.opacity = 1.0
         } else if canShow {
             image = UIImage(named: "empty_image")
             layer.insertSublayer(gradient, at: 0)
+            layer.opacity = 0.5
         }
         isHidden = !canShow
     }
@@ -54,6 +64,22 @@ final class LocationRowView: UIImageView {
     override func layoutSubviews() {
         super.layoutSubviews()
         gradient.frame = frame
+    }
+
+    private func setImage(viewModel: DownloadFileViewModel) {
+        if let scaledImage = viewModel.fileURL?.imageScale(width: Int(800))?.image {
+            image = UIImage(cgImage: scaledImage)
+            layer.opacity = 1.0
+        }
+    }
+
+    private func manageDownload(viewModel: DownloadFileViewModel) {
+        if viewModel.isInCache {
+            viewModel.state = .completed
+            viewModel.animateObjectWillChange()
+        } else {
+            viewModel.startDownload()
+        }
     }
 }
 

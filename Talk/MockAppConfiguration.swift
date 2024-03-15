@@ -99,7 +99,7 @@ In this new line we are going to test if it can break the line.
                     name: "John Doe")
             )
             let vm = makeViewModel(message: message)
-            vm.isNextMessageTheSameUser = false
+            vm.isLastMessageOfTheUser = false
             return vm
         }()
 

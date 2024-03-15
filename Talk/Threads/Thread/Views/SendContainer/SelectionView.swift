@@ -14,7 +14,6 @@ import TalkModels
 struct SelectionView: View {
     @EnvironmentObject var selectedMessagesViewModel: ThreadSelectedMessagesViewModel
     let threadVM: ThreadViewModel
-    var viewModel: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
     private var selectedCount: Int { selectedMessagesViewModel.selectedMessages.count }
 
@@ -42,9 +41,8 @@ struct SelectionView: View {
 
             /// Disable showing the delete button when forwarding in a conversation where we are not the admin and we just want to forward messages, so the delete button should be hidden.
             if !threadVM.thread.disableSend {
-                let isAdmin = threadVM.thread.admin == true || threadVM.thread.group != true
                 Button {
-                    appOverlayVM.dialogView = AnyView(DeleteMessageDialog(deleteForMe: true, deleteForOthers: isAdmin, viewModel: threadVM))
+                    appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init(threadVM: threadVM)))
                 } label: {
                     Image("ic_delete")
                         .resizable()
@@ -59,10 +57,8 @@ struct SelectionView: View {
 
             CloseButton {
                 selectedMessagesViewModel.clearSelection()
-                threadVM.isInEditMode = false
-                viewModel.clearSelection()
-                viewModel.animateObjectWillChange()
-            }            
+                selectedMessagesViewModel.animateObjectWillChange()
+            }
         }
     }
 }

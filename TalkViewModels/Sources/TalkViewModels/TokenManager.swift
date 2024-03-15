@@ -30,10 +30,10 @@ public final class TokenManager: ObservableObject {
 
     public func getNewTokenWithRefreshToken() async {
         guard let ssoTokenModel = getSSOTokenFromUserDefaults(),
-              let refreshToken = ssoTokenModel.refreshToken,
               let keyId = ssoTokenModel.keyId
         else { return }
         do {
+            let refreshToken = ssoTokenModel.refreshToken ?? ""
             let config = ChatManager.activeInstance?.config
             let serverType = Config.serverType(config: config) ?? .main
             var urlReq = URLRequest(url: URL(string: AppRoutes(serverType: serverType).refreshToken)!)
@@ -112,7 +112,8 @@ public final class TokenManager: ObservableObject {
     }
 
     public func setIsLoggedIn(isLoggedIn: Bool) {
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             await MainActor.run {
                 self.isLoggedIn = isLoggedIn
             }

@@ -24,12 +24,14 @@ struct ThreadViewCenterToolbar: View {
     private var partner: Participant? { thread.participants?.first(where: {$0.id == thread.partner }) }
 
     var body: some View {
-        VStack(alignment: .center) {
+        VStack(alignment: .center, spacing: appState.connectionStatus == .connected ? 4 : 0) {
             Button {
-                appState.objectsContainer.navVM.append(threadViewModel: viewModel)
+                appState.objectsContainer.navVM.appendThreadDetail(threadViewModel: viewModel)
             } label: {
                 Text(title)
                     .font(.iransansBoldBody)
+                    .foregroundStyle(Color.App.white)
+                    .padding(.horizontal, 48) // for super large titles we need to cut the text the best way for this is add a horizontal padding
             }
             .buttonStyle(.plain)
 
@@ -37,18 +39,21 @@ struct ThreadViewCenterToolbar: View {
                 ConnectionStatusToolbar()
             } else if let signalMessageText = viewModel.signalMessageText {
                 Text(signalMessageText)
-                    .foregroundColor(Color.App.color1)
+                    .foregroundColor(Color.App.toolbarSecondaryText)
                     .font(.iransansCaption2)
             } else if thread.group == true, let participantsCount = participantsCount?.localNumber(locale: Language.preferredLocale) {
                 let localizedLabel = String(localized: "Thread.Toolbar.participants")
                 Text("\(localizedLabel) \(participantsCount)")
                     .fixedSize()
-                    .foregroundColor(Color.App.textSecondary)
+                    .foregroundColor(Color.App.toolbarSecondaryText)
                     .font(.iransansFootnote)
-            } else if thread.group == nil || thread.group == false {
+            } else if thread.group == nil || thread.group == false, thread.type != .selfThread {
                 P2PThreadLastSeenView(thread: thread)
             }
         }
+        .animation(.easeInOut, value: appState.connectionStatus == .connected)
+        .animation(.easeInOut, value: title)
+        .animation(.easeInOut, value: viewModel.signalMessageText != nil)
         .onChange(of: viewModel.thread.computedTitle) { newValue in
             title = newValue
         }
@@ -99,7 +104,7 @@ struct P2PThreadLastSeenView : View {
         let formatted = String(format: localized, lastSeen)
         Text(lastSeen.isEmpty ? "" : formatted)
             .fixedSize()
-            .foregroundColor(Color.App.textSecondary)
+            .foregroundColor(Color.App.toolbarSecondaryText)
             .font(.iransansFootnote)
             .onAppear {
                 if lastSeen.isEmpty {

@@ -12,33 +12,69 @@ public struct NavigationBackButton: View {
     @EnvironmentObject var navViewModel: NavigationModel
     @Environment(\.dismiss) var dismiss
     let action: (() -> ())?
+    @GestureState private var isTouching = false
 
-    public init(action: (() -> Void)? = nil) {        
+    public init(action: (() -> Void)? = nil) {
         self.action = action
     }
 
     public var body: some View {
-        Button {
-            action?()
-            dismiss()
-        } label : {
-            HStack(spacing: 4) {
-                Image(systemName: "chevron.backward")
-                    .resizable()
-                    .scaledToFit()
-                    .padding(EdgeInsets(top: 8, leading: 0, bottom: 12, trailing: navViewModel.previousTitle.isEmpty ? 8 : 2))
-                    .fontWeight(.medium)
-                let localized = String(localized: .init(navViewModel.previousTitle))
-                let maxLength = UIDevice.current.userInterfaceIdiom == .pad ? 35 : 15
-                let string = String(localized.prefix(maxLength))
-                Text(string)
-                    .font(.iransansBody)
-                    .offset(y: -2)
-            }
-            .foregroundColor(Color.App.accent)
-            .contentShape(Rectangle())
+        HStack(spacing: 4) {
+            Image(systemName: "chevron.backward")
+                .resizable()
+                .scaledToFit()
+                .padding(EdgeInsets(top: 8, leading: 0, bottom: 12, trailing: navViewModel.previousTitle.isEmpty ? 8 : 2))
+                .fontWeight(.medium)
         }
+        .foregroundColor(Color.App.toolbarButton)
+        .background(Color.clear)
         .frame(minWidth: ToolbarButtonItem.buttonWidth, minHeight: ToolbarButtonItem.buttonWidth)
+        .contentShape(Rectangle())
+        .gesture(tapGesture.simultaneously(with: touchDownGesture))
+        .opacity(isTouching ? 0.5 : 1.0)
+    }
+
+    var touchDownGesture: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .updating($isTouching) { value, state, transaction in
+                transaction.animation = .easeInOut
+                state = true
+            }
+    }
+
+    var tapGesture: some Gesture {
+        TapGesture(count: 1)
+            .onEnded { _ in
+                action?()
+                dismiss()
+            }
+    }
+}
+
+public struct NormalNavigationBackButton: View {
+    @Environment(\.dismiss) var dismiss
+
+    public init() {}
+
+    public var body: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.backward")
+                        .resizable()
+                        .scaledToFit()
+                        .fontWeight(.medium)
+                        .frame(maxWidth: 16, maxHeight: 16)
+                    Text("General.back")
+                        .font(.iransansBody)
+                }
+            }
+            Spacer()
+        }
+        .padding(16)
+        .background(.ultraThinMaterial)        
     }
 }
 

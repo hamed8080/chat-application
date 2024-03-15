@@ -22,7 +22,7 @@ final class GroupParticipantNameView: UILabel {
     }
 
     private func configureView() {
-        font = UIFont.uiiransansBody
+        font = UIFont.uiiransansBoldBody
         numberOfLines = 1
     }
 
@@ -46,12 +46,6 @@ struct GroupParticipantNameViewWapper: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
 
-    }
-
-    private var padding: EdgeInsets {
-        let hasAlreadyPadding = viewModel.message.replyInfo != nil || viewModel.message.forwardInfo != nil
-        let padding: CGFloat = hasAlreadyPadding ? 0 : 4
-        return .init(top: padding, leading: padding, bottom: 0, trailing: padding)
     }
 }
 

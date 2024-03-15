@@ -50,6 +50,7 @@ struct SettingsView: View {
                 }
                 SettingNotificationSection()
                     .listRowSeparator(.hidden)
+                LoadTestsSection()
             }
 
             Group {
@@ -114,7 +115,8 @@ struct SettingSettingSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "gearshape.fill", title: "Settings.title", color: .gray, showDivider: false) {
-            navModel.appendPreference()
+            let value = PreferenceNavigationValue()
+            navModel.append(type: .preference(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -123,7 +125,6 @@ struct SettingSettingSection: View {
 }
 
 struct UserInformationSection: View {
-    @EnvironmentObject var navModel: NavigationModel
     @State var phone = ""
     @State var userName = ""
     @State var bio = ""
@@ -136,13 +137,13 @@ struct UserInformationSection: View {
 
         if !phone.isEmpty {
             VStack(alignment: .leading) {
+                Text("Settings.phoneNumber")
+                    .foregroundColor(Color.App.textSecondary)
+                    .font(.iransansCaption)
                 TextField("", text: $phone)
                     .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .disabled(true)
-                Text("Settings.phoneNumber")
-                    .foregroundColor(Color.App.textSecondary)
-                    .font(.iransansCaption)
             }
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.App.dividerPrimary)
@@ -150,13 +151,13 @@ struct UserInformationSection: View {
 
         if !userName.isEmpty {
             VStack(alignment: .leading) {
+                Text("Settings.userName")
+                    .foregroundColor(Color.App.textSecondary)
+                    .font(.iransansCaption)
                 TextField("", text: $userName)
                     .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
                     .disabled(true)
-                Text("Settings.userName")
-                    .foregroundColor(Color.App.textSecondary)
-                    .font(.iransansCaption)
             }
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.App.dividerPrimary)
@@ -164,6 +165,9 @@ struct UserInformationSection: View {
 
         if !bio.isEmpty {
             VStack(alignment: .leading) {
+                Text("Settings.bio")
+                    .foregroundColor(Color.App.textSecondary)
+                    .font(.iransansCaption)
                 Text(bio)
                     .foregroundColor(Color.App.textPrimary)
                     .font(.iransansSubheadline)
@@ -171,10 +175,6 @@ struct UserInformationSection: View {
                     .lineLimit(20)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-
-                Text("Settings.bio")
-                    .foregroundColor(Color.App.textSecondary)
-                    .font(.iransansCaption)
             }
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(Color.clear)
@@ -183,20 +183,26 @@ struct UserInformationSection: View {
             .frame(width: 0, height: 0)
             .listRowSeparator(.hidden)
             .onAppear {
-                let user = AppState.shared.user
-                phone = user?.cellphoneNumber ?? ""
-                userName = user?.username ?? ""
-                bio = user?.chatProfileVO?.bio ?? ""
+                updateUI(user: AppState.shared.user)
             }
-            .onReceive(NotificationCenter.connect.publisher(for: .connect)) { notification in
-                /// We use this to fetch the user profile image once the active instance is initialized.
-                if let status = notification.object as? ChatState, status == .connected {
-                    let user = AppState.shared.user
-                    phone = user?.cellphoneNumber ?? ""
-                    userName = user?.username ?? ""
-                    bio = user?.chatProfileVO?.bio ?? ""
+            .onReceive(NotificationCenter.user.publisher(for: .user)) { notif in
+                let event = notif.object as? UserEventTypes
+                if case let .user(response) = event, response.result != nil {
+                    updateUI(user: response.result)
                 }
             }
+            .onReceive(NotificationCenter.connect.publisher(for: .connect)) { notif in
+                /// We use this to fetch the user profile image once the active instance is initialized.
+                if let status = notif.object as? ChatState, status == .connected {
+                    updateUI(user: AppState.shared.user)
+                }
+            }
+    }
+
+    private func updateUI(user: User?) {
+        phone = user?.cellphoneNumber ?? ""
+        userName = user?.username ?? ""
+        bio = user?.chatProfileVO?.bio ?? ""
     }
 }
 
@@ -219,18 +225,10 @@ struct PreferenceView: View {
         }
         .background(Color.App.bgPrimary)
         .listStyle(.plain)
-        .navigationTitle("Settings.title")
-        .navigationBarBackButtonHidden(true)
         .onChange(of: model) { _ in
             model.save()
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                NavigationBackButton {
-                    AppState.shared.navViewModel?.remove(type: PreferenceNavigationValue.self)
-                }
-            }
-        }
+        .normalToolbarView(title: "Settings.title", type: PreferenceNavigationValue.self)        
     }
 }
 
@@ -266,7 +264,8 @@ struct SettingLogSection: View {
     var body: some View {
         if EnvironmentValues.isTalkTest {
             ListSectionButton(imageName: "doc.text.fill", title: "Settings.logs", color: .brown, showDivider: false) {
-                navModel.appendLog()
+                let value = LogNavigationValue()
+                navModel.append(type: .log(value), value: value)
             }
             .listRowInsets(.zero)
             .listRowBackground(Color.App.bgPrimary)
@@ -280,7 +279,8 @@ struct SettingArchivesSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "archivebox.fill", title: "Tab.archives", color: Color.App.color5, showDivider: false) {
-            navModel.appendArhives()
+            let value = ArchivesNavigationValue()
+            navModel.append(type: .archives(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -293,7 +293,8 @@ struct SettingLanguageSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "globe", title: "Settings.language", color: Color.App.red, showDivider: false, trailingView: selectedLanguage) {
-            navModel.appendLanguage()
+            let value = LanguageNavigationValue()
+            navModel.append(type: .language(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -310,17 +311,17 @@ struct SettingLanguageSection: View {
 }
 
 struct SavedMessageSection: View {
-    @EnvironmentObject var navModel: NavigationModel
 
     var body: some View {
         ListSectionButton(imageName: "bookmark.fill", title: "Settings.savedMessage", color: Color.App.color5, showDivider: false) {
-            ChatManager.activeInstance?.conversation.create(.init(title: String(localized: .init("Thread.selfThread")), type: .selfThread))
+            AppState.shared.openSelfThread()
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
         .listRowSeparatorTint(Color.App.dividerPrimary)
     }
 }
+
 struct DarkModeSection: View {
     @Environment(\.colorScheme) var currentSystemScheme
     @State var isDarkModeEnabled = AppSettingsModel.restore().isDarkModeEnabled ?? false
@@ -364,7 +365,8 @@ struct BlockedMessageSection: View {
     var body: some View {
         ListSectionButton(imageName: "hand.raised.slash", title: "General.blocked", color: Color.App.red, showDivider: false) {
             withAnimation {
-                navModel.appendBlockedContacts()
+                let value = BlockedContactsNavigationValue()
+                navModel.append(type: .blockedContacts(value), value: value)
             }
         }
         .listRowInsets(.zero)
@@ -379,8 +381,9 @@ struct SupportSection: View {
     @EnvironmentObject var container: ObjectsContainer
 
     var body: some View {
-        ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.support", color: Color.App.color2, showDivider: false) {
-            navModel.appendSupport()
+        ListSectionButton(imageName: "exclamationmark.bubble.fill", title: "Settings.about", color: Color.App.color2, showDivider: false) {
+            let value = SupportNavigationValue()
+            navModel.append(type: .support(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -411,7 +414,8 @@ struct SettingAssistantSection: View {
 
     var body: some View {
         ListSectionButton(imageName: "person.fill", title: "Settings.assistants", color: Color.App.color1, showDivider: false) {
-            navModel.appendAssistant()
+            let value = AssistantNavigationValue()
+            navModel.append(type: .assistant(value), value: value)
         }
         .listRowInsets(.zero)
         .listRowBackground(Color.App.bgPrimary)
@@ -424,15 +428,16 @@ struct UserProfileView: View {
     var userConfig: UserConfig? { container.userConfigsVM.currentUserConfig }
     var user: User? { userConfig?.user }
     @EnvironmentObject var viewModel: SettingViewModel
-    @State var imageLoader: ImageLoaderViewModel?
+    @EnvironmentObject var imageLoader: ImageLoaderViewModel
 
     var body: some View {
         HStack(spacing: 0) {
-            let config = ImageLoaderConfig(url: user?.image ?? "", userName: AppState.shared.user?.name)
-            ImageLoaderView(imageLoader: imageLoader ?? .init(config: config))
+            Image(uiImage: imageLoader.image)
+                .resizable()
                 .id("\(userConfig?.user.image ?? "")\(userConfig?.user.id ?? 0)")
+                .scaledToFill()
                 .frame(width: 64, height: 64)
-                .background(Color.App.color1.opacity(0.4))
+                .background(Color(uiColor: String.getMaterialColorByCharCode(str: AppState.shared.user?.name ?? "")))
                 .clipShape(RoundedRectangle(cornerRadius:(28)))
                 .padding(.trailing, 16)
 
@@ -442,7 +447,8 @@ struct UserProfileView: View {
             Spacer()
 
             Button {
-                AppState.shared.objectsContainer.navVM.appendEditProfile()
+                let value = EditProfileNavigationValue()
+                AppState.shared.objectsContainer.navVM.append(type: .editProfile(value), value: value)
             } label: {
                 Rectangle()
                     .fill(.clear)
@@ -461,18 +467,21 @@ struct UserProfileView: View {
         }
         .listRowInsets(.init(top: 16, leading: 16, bottom: 16, trailing: 16))
         .frame(height: 70)
-        .onReceive(NotificationCenter.user.publisher(for: .user)) { notification in
-            let event = notification.object as? UserEventTypes
-            if imageLoader?.isImageReady == false, case let .user(response) = event, let user = response.result {
-                let config = ImageLoaderConfig(url: user.image ?? "", size: .LARG, userName: user.name)
-                imageLoader = .init(config: config)
-                imageLoader?.fetch()
+    }
+}
+
+struct LoadTestsSection: View {
+    @EnvironmentObject var navModel: NavigationModel
+
+    var body: some View {
+        if EnvironmentValues.isTalkTest {
+            ListSectionButton(imageName: "testtube.2", title: "Load Tests", color: Color.App.color4, showDivider: false) {
+                let value = LoadTestsNavigationValue()
+                navModel.append(type: .loadTests(value), value: value)
             }
-        }
-        .onAppear {
-            let config = ImageLoaderConfig(url: user?.image ?? "", size: .LARG, userName: user?.name)
-            imageLoader = .init(config: config)
-            imageLoader?.fetch()
+            .listRowInsets(.zero)
+            .listRowBackground(Color.App.bgPrimary)
+            .listRowSeparatorTint(Color.App.dividerPrimary)
         }
     }
 }

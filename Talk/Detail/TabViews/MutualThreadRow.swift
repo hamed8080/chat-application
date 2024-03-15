@@ -20,13 +20,13 @@ struct MutualThreadRow: View {
 
     var body: some View {
         HStack {
-            let config = ImageLoaderConfig(url: thread.computedImageURL ?? "", userName: thread.title)
+            let config = ImageLoaderConfig(url: thread.computedImageURL ?? "", userName: String.splitedCharacter(thread.title ?? ""))
             ImageLoaderView(imageLoader: .init(config: config))
                 .id("\(thread.computedImageURL ?? "")\(thread.id ?? 0)")
                 .font(.iransansSubtitle)
                 .foregroundColor(.white)
                 .frame(width: 36, height: 36)
-                .background(Color.App.color1.opacity(0.4))
+                .background(Color(uiColor: String.getMaterialColorByCharCode(str: thread.title ?? "")))
                 .clipShape(RoundedRectangle(cornerRadius:(18)))
             Text(thread.computedTitle)
                 .font(.iransansSubheadline)

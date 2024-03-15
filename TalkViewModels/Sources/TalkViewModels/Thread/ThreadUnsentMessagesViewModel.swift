@@ -12,11 +12,13 @@ import ChatCore
 import ChatDTO
 import TalkModels
 import Combine
+import OSLog
 
 public final class ThreadUnsentMessagesViewModel: ObservableObject {
     let thread: Conversation
     @Published public private(set) var unsentMessages: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
+    weak var threadVM: ThreadViewModel?
 
     public static func == (lhs: ThreadUnsentMessagesViewModel, rhs: ThreadUnsentMessagesViewModel) -> Bool {
         rhs.thread.id == lhs.thread.id
@@ -82,5 +84,52 @@ public final class ThreadUnsentMessagesViewModel: ObservableObject {
         default:
             break
         }
+    }
+
+    public func cancelAllObservers() {
+        cancelable.forEach { cancelable in
+            cancelable.cancel()
+        }
+    }
+
+    public func resendUnsetMessage(_ message: Message) {
+        switch message {
+        case let req as SendTextMessage:
+            ChatManager.activeInstance?.message.send(req.sendTextMessageRequest)
+        case let req as EditTextMessage:
+            ChatManager.activeInstance?.message.edit(req.editMessageRequest)
+        case let req as ForwardMessage:
+            ChatManager.activeInstance?.message.send(req.forwardMessageRequest)
+        case let req as UploadFileMessage:
+            // remove unset message type to start upload again the new one.
+            threadVM?.historyVM.removeByUniqueId(req.uniqueId)
+            if message.isImage, let imageRequest = req.uploadImageRequest {
+                let imageMessage = UploadFileWithTextMessage(imageFileRequest: imageRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
+                threadVM?.uploadMessagesViewModel.append(contentsOf: ([imageMessage]))
+                self.animateObjectWillChange()
+            } else if let fileRequest = req.uploadFileRequest {
+                let fileMessage = UploadFileWithTextMessage(uploadFileRequest: fileRequest, sendTextMessageRequest: req.sendTextMessageRequest, thread: thread)
+                threadVM?.uploadMessagesViewModel.append(contentsOf: ([fileMessage]))
+                self.animateObjectWillChange()
+            }
+        default:
+            log("Type not detected!")
+        }
+    }
+
+    public func onUnSentEditCompletionResult(_ response: ChatResponse<Message>) {
+        if let message = response.result, thread.id == message.conversation?.id {
+            Task { [weak self] in
+                guard let self = self else { return }
+                threadVM?.historyVM.onDeleteMessage(response)
+                await threadVM?.historyVM.appendMessagesAndSort([message])
+            }
+        }
+    }
+
+    func log(_ string: String) {
+#if DEBUG
+        Logger.viewModels.info("\(string, privacy: .sensitive)")
+#endif
     }
 }

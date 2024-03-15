@@ -35,7 +35,7 @@ struct VoiceRecoderSenderView: View {
         HStack(spacing: 0){
             Button {
                 withAnimation {
-                    viewModel.threadViewModel?.sendAudiorecording()
+                    viewModel.threadViewModel?.sendMessageViewModel.sendAudiorecording()
                 }
             } label: {
                 Image(systemName: "arrow.up.circle.fill")

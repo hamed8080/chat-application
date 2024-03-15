@@ -81,8 +81,7 @@ struct NavigationTypeView: View {
 
     var body: some View {
         switch type {
-        case .conversation(let conversation):
-            if let viewModel = container.navVM.threadViewModel(threadId: conversation.id ?? 0) {
+        case .threadViewModel(let viewModel):
                 UIKitThreadViewWrapper(threadVM: viewModel)
 //                ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
 //                    .id(conversation.id) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
@@ -97,12 +96,11 @@ struct NavigationTypeView: View {
 //                    .environmentObject(viewModel.historyVM)
 //                    .environmentObject(viewModel.uploadMessagesViewModel)
 //                    .environmentObject(viewModel.unssetMessagesViewModel)
-            }
         case .contact(let contact):
             Text(contact.firstName ?? "")
                 .environmentObject(container.appOverlayVM)
-        case .detail(let detailViewModel):
-            DetailView()
+        case .threadDetil(let detailViewModel):
+            ThreadDetailView(thread: detailViewModel.thread)
                 .environmentObject(container.appOverlayVM)
                 .environmentObject(detailViewModel)
                 .environmentObject(container.threadsVM)
@@ -134,6 +132,8 @@ struct NavigationTypeView: View {
             LanguageView(container: container)
         case .editProfile(_):
             EditProfileView()
+        case .loadTests(_):
+            LoadTestsView()
         }
     }
 }
