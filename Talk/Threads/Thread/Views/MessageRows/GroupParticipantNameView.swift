@@ -27,11 +27,11 @@ final class GroupParticipantNameView: UILabel {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        let canShowName: Bool = !viewModel.isMe && viewModel.threadVM?.thread.group == true && viewModel.threadVM?.thread.type?.isChannelType == false
+        let name = viewModel.groupMessageParticipantName
         textColor = viewModel.participantColor
         textAlignment = viewModel.isMe ? .right : .left
-        text = viewModel.message.participant?.name ?? ""
-        isHidden = !canShowName
+        text = name
+        isHidden = name == nil
     }
 }
 

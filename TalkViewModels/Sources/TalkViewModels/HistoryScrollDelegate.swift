@@ -15,6 +15,7 @@ public protocol HistoryScrollDelegate: AnyObject {
     func relaod(at: IndexPath)
     func insertd(at: IndexPath)
     func insertd(at: [IndexPath])
+    func inserted(_ sections: IndexSet, _ rows: [IndexPath])
     func remove(at: IndexPath)
     func remove(at: [IndexPath])
 }

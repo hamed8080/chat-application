@@ -66,7 +66,6 @@ public final class HistorySeenViewModel: ObservableObject {
     private func canReduce(for message: Message) -> Bool {
         if isScrollingUp { return false }
         if thread.unreadCount ?? 0 == 0 { return false }
-        if message.id == LocalId.emptyMessageSlot.rawValue { return false }
         if message.id == LocalId.unreadMessageBanner.rawValue { return false }
         return message.id ?? 0 > thread.lastSeenMessageId ?? 1
     }

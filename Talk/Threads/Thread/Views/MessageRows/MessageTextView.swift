@@ -38,8 +38,7 @@ final class MessageTextView: UITextView {
         textColor = Color.App.textPrimaryUIColor
         backgroundColor = .clear
         font = UIFont.uiiransansBody
-
-        if message.message?.contains(AppRoutes.joinLink) == true {
+        if viewModel.rowType.isPublicLink {
             let tap = MessageTapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
             tap.viewModel = viewModel
             addGestureRecognizer(tap)

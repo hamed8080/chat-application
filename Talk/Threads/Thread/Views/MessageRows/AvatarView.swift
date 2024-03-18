@@ -12,14 +12,10 @@ import SwiftUI
 import TalkUI
 import TalkViewModels
 
-final class AvatarView: UIView {
+final class AvatarView: UIImageView {
     private let label = UILabel()
-    private let image = UIImageView()
     private var widthConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
-    public var viewModel: MessageRowViewModel!
-    var message: Message { viewModel.message }
-    var avatarVM: ImageLoaderViewModel? { viewModel.avatarImageLoader }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -33,7 +29,6 @@ final class AvatarView: UIView {
     private func configureView() {
         translatesAutoresizingMaskIntoConstraints = true
         label.translatesAutoresizingMaskIntoConstraints = false
-        image.translatesAutoresizingMaskIntoConstraints = false
 
         label.font = UIFont.uiiransansCaption
         label.textColor = Color.App.whiteUIColor
@@ -42,11 +37,10 @@ final class AvatarView: UIView {
         label.layer.cornerRadius = MessageRowViewModel.avatarSize / 2
         label.layer.masksToBounds = true
 
-        image.backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
-        image.layer.cornerRadius = MessageRowViewModel.avatarSize / 2
-        image.layer.masksToBounds = true
+        backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
+        layer.cornerRadius = MessageRowViewModel.avatarSize / 2
+        layer.masksToBounds = true
 
-        addSubview(image)
         addSubview(label)
 
         widthConstraint = widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize)
@@ -55,10 +49,6 @@ final class AvatarView: UIView {
         NSLayoutConstraint.activate([
             widthConstraint!,
             heightConstraint!,
-            image.centerXAnchor.constraint(equalTo: centerXAnchor),
-            image.centerYAnchor.constraint(equalTo: centerYAnchor),
-            image.widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
-            image.heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
             label.widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
             label.heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize),
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
@@ -67,14 +57,15 @@ final class AvatarView: UIView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        self.viewModel = viewModel
+        let avatarVM = viewModel.avatarImageLoader
         let showImage = avatarVM?.image != nil
         label.isHidden = showImage
-        image.isHidden = !showImage
+        isHidden = !showImage
         backgroundColor = viewModel.avatarColor
         if showImage {
-            image.image = avatarVM?.image
+            image = avatarVM?.image
         } else {
+            image = nil
             label.text = viewModel.avatarSplitedCharaters
         }
         if avatarVM?.isImageReady == false {
@@ -82,32 +73,29 @@ final class AvatarView: UIView {
                 await avatarVM?.fetch()
             }
         }
-        if hiddenView {
+        if hiddenView(viewModel) {
             isHidden = true
-        } else if showAvatarOrUserName {
+        } else if showAvatarOrUserName(viewModel) {
             isHidden = false
             widthConstraint?.constant = MessageRowViewModel.avatarSize
             heightConstraint?.constant = MessageRowViewModel.avatarSize 
-        } else if isSameUser {
+        } else if isSameUser(viewModel) {
+            image = nil
             isHidden = false
             widthConstraint?.constant = MessageRowViewModel.avatarSize
             heightConstraint?.constant = MessageRowViewModel.avatarSize
         }
     }
 
-    private var hiddenView: Bool {
-        viewModel.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false
+    private func hiddenView(_ viewModel: MessageRowViewModel) -> Bool {
+        viewModel.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false || viewModel.isMe
     }
 
-    private var imageLoaderId: String {
-        "\(message.participant?.image ?? "")\(message.participant?.id ?? 0)"
-    }
-
-    private var showAvatarOrUserName: Bool {
+    private func showAvatarOrUserName(_ viewModel: MessageRowViewModel) -> Bool {
         !viewModel.isMe && viewModel.isLastMessageOfTheUser && viewModel.isCalculated
     }
 
-    private var isSameUser: Bool {
+    private func isSameUser(_ viewModel: MessageRowViewModel) -> Bool {
         !viewModel.isMe && !viewModel.isLastMessageOfTheUser
     }
 }
@@ -116,7 +104,7 @@ struct AvatarViewWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
     func makeUIView(context: Context) -> some UIView {
-        let view = AvatarView()
+        let view = AvatarView(frame: .zero)
         view.set(viewModel)
         return view
     }

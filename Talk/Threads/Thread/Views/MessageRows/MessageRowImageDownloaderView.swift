@@ -35,9 +35,6 @@ final class MessageRowImageDownloaderView: UIImageView {
         translatesAutoresizingMaskIntoConstraints = false
         stack.translatesAutoresizingMaskIntoConstraints = false
 
-        layer.cornerRadius = 8
-        layer.masksToBounds = true
-
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
         let blurView = UIVisualEffectView(effect: blurEffect)
         blurView.frame = bounds

@@ -142,7 +142,7 @@ final class TextMessageTypeCell: UITableViewCell {
         }
     }
     private let hStack = UIStackView()
-    private let avatar = AvatarView()
+    private let avatar = AvatarView(frame: .zero)
     private let radio = SelectMessageRadio()
     private let messageContainer = TextMessageContainer()
 
@@ -196,6 +196,7 @@ final class TextMessageTypeCell: UITableViewCell {
 
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
+        hStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         contentView.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         messageContainer.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         avatar.set(viewModel)

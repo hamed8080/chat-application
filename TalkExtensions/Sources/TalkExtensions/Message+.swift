@@ -204,7 +204,7 @@ public extension Message {
         }
     }
 
-    class func makeRequest (model: SendMessageModel) -> (message: Message,req: SendTextMessageRequest) {
+    class func makeRequest(model: SendMessageModel) -> (message: Message,req: SendTextMessageRequest) {
         let req = SendTextMessageRequest(threadId: model.threadId,
                                          textMessage: model.textMessage,
                                          messageType: .text)
@@ -216,20 +216,6 @@ public extension Message {
                               uniqueId: req.uniqueId,
                               conversation: model.conversation)
         return (message, req)
-    }
-
-    class func slotWith(threadId: Int, meId: Int) -> Message {
-        let randomUserId = Int.random(in: (meId + 1)...(meId + 500))
-        let randomMe = Bool.random() ? meId : randomUserId;
-        let message = Message(
-            threadId: threadId,
-            id: LocalId.emptyMessageSlot.rawValue,
-            messageType: .text,
-            ownerId: randomMe,
-            uniqueId: UUID().uuidString,
-            conversation: Conversation(id: threadId)
-        )
-        return message
     }
 }
 

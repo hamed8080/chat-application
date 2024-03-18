@@ -9,11 +9,11 @@ import SwiftUI
 import ChatModels
 import TalkViewModels
 
-final class UnreadMessagesBubble: UIView {
+final class UnreadMessageBubbleUITableViewCell: UITableViewCell {
     private let label = UILabel()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureView()
     }
 
@@ -22,30 +22,24 @@ final class UnreadMessagesBubble: UIView {
     }
 
     private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+
         label.font = UIFont.uiiransansCaption
         label.textColor = Color.App.textPrimaryUIColor
         label.textAlignment = .center
         label.text = "Messages.unreadMessages".localized()
         label.backgroundColor = Color.App.dividerPrimaryUIColor
 
-        label.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(label)
+        contentView.addSubview(label)
 
         NSLayoutConstraint.activate([
-            label.heightAnchor.constraint(equalToConstant: 24),
-            label.leadingAnchor.constraint(equalTo: leadingAnchor),
-            label.trailingAnchor.constraint(equalTo: trailingAnchor),
-            label.topAnchor.constraint(equalTo: topAnchor),
+            heightAnchor.constraint(equalToConstant: 24),
+            label.bottomAnchor.constraint(equalTo: bottomAnchor),
+            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            label.topAnchor.constraint(equalTo: contentView.topAnchor),
         ])
-    }
-}
-
-final class UnreadBubbleUITableViewCell: UITableViewCell {
-    convenience init(viewModel: MessageRowViewModel) {
-        self.init(style: .default, reuseIdentifier: "UnreadBubbleUITableViewCell")
-        let label = UILabel(frame: contentView.frame)
-        label.text = "unread bubble"
-        contentView.addSubview(label)
     }
 }
 
@@ -53,7 +47,7 @@ struct UnreadMessagesBubbleWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
     func makeUIView(context: Context) -> some UIView {
-        return UnreadMessagesBubble()
+        return UnreadMessageBubbleUITableViewCell()
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {

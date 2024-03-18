@@ -29,7 +29,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
     }
     private var thread: Conversation { threadVM?.thread ?? .init(id: -1)}
     public var isAtBottomOfTheList: Bool = false
-
+    public var lastContentOffsetY: CGFloat = 0
     init() {}
 
     @MainActor
