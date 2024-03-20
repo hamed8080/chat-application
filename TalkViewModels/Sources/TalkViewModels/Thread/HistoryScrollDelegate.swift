@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 
 public protocol HistoryScrollDelegate: AnyObject {
-    func scrollTo(index: IndexPath)
-    func scrollTo(uniqueId: String)
+    func scrollTo(index: IndexPath, position: UITableView.ScrollPosition)
+    func scrollTo(uniqueId: String, position: UITableView.ScrollPosition)
     func reload()
     func relaod(at: IndexPath)
     func insertd(at: IndexPath)

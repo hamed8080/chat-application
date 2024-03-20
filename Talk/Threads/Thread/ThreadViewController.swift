@@ -15,7 +15,8 @@ import ChatModels
 
 final class ThreadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var viewModel: ThreadViewModel!
-    var tableView: UITableView!
+    private var tableView: UITableView!
+    private var moveToBottom = MoveToBottomButton()
     private var cancelable = Set<AnyCancellable> ()
 
     override func viewDidLoad() {
@@ -39,7 +40,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
+        ConversationHistoryCellFactory.height(tableView, indexPath)
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -50,30 +51,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let viewModel = viewModel.historyVM.viewModelWith(indexPath) else { return UITableViewCell() }
-        let message = viewModel.message
-        let identifier = cellIdentifier(for: message)
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier.rawValue, for: indexPath)
-        let type = message.type
-        switch type {
-        case .endCall, .startCall:
-            let cell = (cell as? CallEventUITableViewCell) ?? CallEventUITableViewCell()
-            cell.setValues(viewModel: viewModel)
-            return cell
-        case .participantJoin, .participantLeft:
-            let cell = (cell as? ParticipantsEventUITableViewCell) ?? ParticipantsEventUITableViewCell()
-            cell.setValues(viewModel: viewModel)
-            return cell
-        default:
-            if message is UnreadMessageProtocol {
-                return UnreadMessageBubbleUITableViewCell()
-            } else if let cell = cell as? TextMessageTypeCell, message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                cell.setValues(viewModel: viewModel)
-                return cell
-            } else {
-                return UITableViewCell()
-            }
-        }
+        ConversationHistoryCellFactory.reuse(tableView, indexPath, viewModel)
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -83,32 +61,6 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
 
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         viewModel.historyVM.didEndDisplay(indexPath)
-    }
-
-    enum CellTypes: String {
-        case call = "CallEventUITableViewCell"
-        case message = "TextMessageTypeCell"
-        case participants = "ParticipantsEventUITableViewCell"
-        case bubble = "UnreadMessageBubbleUITableViewCell"
-        case unknown
-    }
-
-    private func cellIdentifier(for message: Message) -> CellTypes {
-        let type = message.type
-        switch type {
-        case .endCall, .startCall:
-            return .call
-        case .participantJoin, .participantLeft:
-            return .participants
-        default:
-            if message is UnreadMessageProtocol {
-                return .bubble
-            } else if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                return .message
-            } else {
-                return .unknown
-            }
-        }
     }
 }
 
@@ -123,11 +75,7 @@ extension ThreadViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.prefetchDataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        tableView.register(TextMessageTypeCell.self, forCellReuseIdentifier: "TextMessageTypeCell")
-        tableView.register(CallEventUITableViewCell.self, forCellReuseIdentifier: "CallEventUITableViewCell")
-        tableView.register(ParticipantsEventUITableViewCell.self, forCellReuseIdentifier: "ParticipantsEventUITableViewCell")
-        tableView.register(UnreadMessageBubbleUITableViewCell.self, forCellReuseIdentifier: "UnreadMessageBubbleUITableViewCell")
+        ConversationHistoryCellFactory.registerCells(tableView)
         view.addSubview(tableView)
 
         let imageView = UIImageView(image: UIImage(named: "chat_bg"))
@@ -137,8 +85,18 @@ extension ThreadViewController {
 
         view.bringSubviewToFront(tableView)
 
+        moveToBottom.viewModel = viewModel
+
+        view.addSubview(moveToBottom)
+
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        moveToBottom.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
+            moveToBottom.widthAnchor.constraint(equalToConstant: 40),
+            moveToBottom.heightAnchor.constraint(equalToConstant: 40),
+            moveToBottom.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            moveToBottom.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -182,17 +140,18 @@ extension ThreadViewController: HistoryScrollDelegate {
         }
     }
     
-    func scrollTo(index: IndexPath) {
+    func scrollTo(index: IndexPath, position: UITableView.ScrollPosition) {
         DispatchQueue.main.async { [weak self] in
-            self?.tableView.scrollToRow(at: index, at: .bottom, animated: true)
+            self?.tableView.scrollToRow(at: index, at: position, animated: true)
         }
     }
 
-    func scrollTo(uniqueId: String) {
+    func scrollTo(uniqueId: String, position: UITableView.ScrollPosition) {
         let indexPath = viewModel.historyVM.indicesByMessageUniqueId(uniqueId)
         if let indexPath = indexPath {
             DispatchQueue.main.async { [weak self] in
-                self?.tableView.scrollToRow(at: IndexPath(item: indexPath.row, section: indexPath.section), at: .bottom, animated: false)
+                let indexPath = IndexPath(item: indexPath.row, section: indexPath.section)
+                self?.tableView.scrollToRow(at: indexPath, at: position, animated: false)
             }
         }
     }

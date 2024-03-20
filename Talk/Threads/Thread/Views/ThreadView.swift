@@ -24,13 +24,12 @@ struct ThreadView: View, DropDelegate {
                 .background(ThreadbackgroundView(threadId: viewModel.threadId))
                 .overlay(alignment: .bottom) {
                     VStack {
-                        MoveToBottomButton()
+//                        MoveToBottomButton()
                         SendContainerOverButtons()
                     }
                 }
                 .task {
                     viewModel.historyVM.start()
-                    viewModel.scrollVM.scrollProxy = scrollProxy
                     /// It will lead to a memory leak and so many other crashes like:
                     /// 1- In context menus almost every place we will see crashes.
                     /// 2- If we remove this section, the background won't work.

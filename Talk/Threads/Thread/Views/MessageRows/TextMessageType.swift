@@ -206,11 +206,14 @@ final class TextMessageTypeCell: UITableViewCell {
     }
 
     override func draw(_ rect: CGRect) {
-//        let rect = CGRect(x: 0, y: 0, width: vStack.frame.width, height: vStack.frame.height)
+//        let rect = CGRect(x: 0, y: 0, width: messageContainer.frame.width, height: messageContainer.frame.height)
 //        let shapeLayer = MessageRowBackground()
 //        let color = viewModel.isMe ? Color.App.bgChatMeUIColor! : Color.App.bgChatUserUIColor!
 //        shapeLayer.drawPath(color: color.cgColor, rect: rect)
-//        vStack.layer.insertSublayer(shapeLayer, at: 0)
+//        if messageContainer.layer.sublayers?.first is MessageRowBackground {
+//            messageContainer.layer.sublayers?.removeFirst()
+//        }
+//        messageContainer.layer.insertSublayer(shapeLayer, at: 0)
     }
 
     private func setDebugColors() {

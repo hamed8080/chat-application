@@ -112,10 +112,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func insertSortIndicesAtBottom(_ messages: [Message]) async -> (insertedSections: IndexSet, insertedRowsInOldLastSection: [IndexPath]) {
-        let beforeRowsCountLastSection = sections.last?.vms.count ?? 0
+        let beforeRowsCountLastSection = sections
+            .last?.vms
+            .filter{($0.message as? UnreadMessage) == nil } // Filter out banner
+            .count ?? 0
         let beforeSectionCount = sections.count
         await appendMessagesAndSort(messages)
         let afterSectionCount = sections.count
+        let beforeLastSectionindex = beforeSectionCount - 1
 
 //        let newSectionCount = afterSectionCount - beforeSectionCount
 
@@ -123,11 +127,19 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// 6- To update isLoading fields to hide the loading at the top.
         let insertedSections = IndexSet(beforeSectionCount..<afterSectionCount)
         var insertedRowsInOldLastSection: [IndexPath] = []
-        if sections.indices.contains(beforeSectionCount - 1) {
-            let newCountRowsInOldLastSection = sections[beforeSectionCount - 1].vms.count
+        if sections.indices.contains(beforeLastSectionindex) {
+            let newCountRowsInOldLastSection = sections[beforeLastSectionindex]
+                .vms
+                .filter{($0.message as? UnreadMessage) == nil}
+                .count
             let insertedItems = newCountRowsInOldLastSection - beforeRowsCountLastSection
             for i in 0..<insertedItems {
-                insertedRowsInOldLastSection.append(.init(row: beforeSectionCount + i + 1, section: beforeSectionCount - 1))
+                insertedRowsInOldLastSection.append(
+                    .init(
+                        row: beforeRowsCountLastSection + i + 1, // plus one for banner
+                        section: beforeLastSectionindex
+                    )
+                )
             }
         }
         return (insertedSections, insertedRowsInOldLastSection)
@@ -229,7 +241,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         await appendMessagesAndSort(messages)
         let uniqueId = message(for: thread.lastSeenMessageId)?.message.uniqueId
         delegate?.reload()
-        delegate?.scrollTo(uniqueId: uniqueId ?? "")
+        delegate?.scrollTo(uniqueId: uniqueId ?? "", position: .bottom)
         /// 3- Get the last Seen message time.
         let lastSeenMessageTime = thread.lastSeenMessageTime
         /// 4- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
@@ -245,13 +257,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// 6- Append the unread message banner and after sorting it will sit below the last message seen. and it will be added into the secion of lastseen message no the new ones.
         let sorted = messages.sortedByTime()
         let bannerIndexPath = await appenedUnreadMessagesBannerIfNeeed()
-        print("indexpath is section:\(bannerIndexPath?.section) row:\(bannerIndexPath?.row)")
         let tuple = await insertSortIndicesAtBottom(sorted)
         var insertedRowsInOldLastSection = tuple.insertedRowsInOldLastSection
         if let bannerIndexPath = bannerIndexPath {
             insertedRowsInOldLastSection.append(bannerIndexPath)
         }
-        print("bottom inserted section count is:\(tuple.insertedSections.count)")
         delegate?.inserted(tuple.insertedSections, insertedRowsInOldLastSection)
         /// 8-  Set whether it has more messages at the bottom or not.
         await setHasMoreBottom(response)
@@ -278,7 +288,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         await asyncAnimateObjectWillChange()
         if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
             delegate?.reload()
-            delegate?.scrollTo(uniqueId: uniqueId)
+            delegate?.scrollTo(uniqueId: uniqueId, position: .bottom)
             await threadViewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: false)
         }
         /// 6- Set whether it has more messages at the top or not.
@@ -326,7 +336,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
             guard let self = self else { return }
             /// 1- Move to a message locally if it exists.
             if await moveToMessageLocally(messageId, highlight: highlight) { return }
-            shimmerViewModel.show()
             sections.removeAll()
             /// 2- Fetch the top part of the message with the message itself.
             let toTimeReq = GetHistoryRequest(threadId: threadId, count: count, offset: 0, order: "desc", toTime: time.advanced(by: 1), readOnly: threadViewModel?.readOnly == true)
@@ -346,7 +355,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         threadViewModel?.scrollVM.disableExcessiveLoading()
         isFetchedServerFirstResponse = true
         /// 5- Update all the views to draw for the top part.
-        await asyncAnimateObjectWillChange()
         /// 7- Fetch the From to time (bottom part) to have a little bit of messages from the bottom.
         let fromTimeReq = GetHistoryRequest(threadId: threadId, count: count, fromTime: request.request.toTime?.advanced(by: -1), offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
         let fromReqManager = OnMoveTime(messageId: request.messageId, request: fromTimeReq, highlight: request.highlight)
@@ -360,12 +368,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// 8- Append and sort the array but not call to update the view.
         await appendMessagesAndSort(messages)
         await setHasMoreBottom(response)
-        /// 9- Update all the views to draw for the bottom part.
-        await asyncAnimateObjectWillChange()
         /// 6- Scroll to the message with its uniqueId.
         guard let uniqueId = message(for: request.messageId)?.message.uniqueId else { return }
         await threadViewModel?.scrollVM.showHighlightedAsync(uniqueId, request.messageId, highlight: request.highlight)
-        shimmerViewModel.hide()
     }
 
     /// Search for a message with an id in the messages array, and if it can find the message, it will redirect to that message locally, and there is no request sent to the server.

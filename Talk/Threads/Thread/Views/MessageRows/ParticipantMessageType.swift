@@ -13,8 +13,7 @@ import TalkUI
 import TalkViewModels
 
 final class ParticipantsEventUITableViewCell: UITableViewCell {
-    private let label = UILabel()
-    private let container = UIView()
+    private let label = PaddingUILabel(frame: .zero, horizontal: 32, vertical: 8)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -26,30 +25,30 @@ final class ParticipantsEventUITableViewCell: UITableViewCell {
     }
 
     private func configureView() {
-        label.font = UIFont.uiiransansBody
-        label.textColor = Color.App.textPrimaryUIColor
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        container.backgroundColor = UIColor.black.withAlphaComponent(0.2)
-        container.layer.cornerRadius = 15
-        container.layer.masksToBounds = true
-
-        container.addSubview(label)
-        addSubview(container)
-
         label.translatesAutoresizingMaskIntoConstraints = false
-        container.translatesAutoresizingMaskIntoConstraints = false
+
+        label.font = UIFont.uiiransansBody
+        label.numberOfLines = 1
+        label.textColor = Color.App.textPrimaryUIColor
+        label.layer.cornerRadius = 14
+        label.layer.masksToBounds = true
+        label.textAlignment = .center
+        label.backgroundColor = .black.withAlphaComponent(0.4)
+
+        contentView.addSubview(label)
 
         NSLayoutConstraint.activate([
-            container.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
-            container.trailingAnchor.constraint(greaterThanOrEqualTo: trailingAnchor),
-            container.centerXAnchor.constraint(equalTo: centerXAnchor),
-            container.centerYAnchor.constraint(equalTo: centerYAnchor),
-            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
-            label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
-            label.topAnchor.constraint(equalTo: container.topAnchor, constant: 8),
-            label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -4),
+            label.centerXAnchor.constraint(equalTo: centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: centerYAnchor),
+            label.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, multiplier: 1, constant: -32),
+            label.heightAnchor.constraint(greaterThanOrEqualToConstant: 24)
         ])
+
+        // Set content compression resistance priority
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        // Set content hugging priority
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 
     public func setValues(viewModel: MessageRowViewModel) {

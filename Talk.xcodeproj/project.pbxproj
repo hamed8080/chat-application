@@ -84,6 +84,8 @@
 		05593BA62AFF560A00316E39 /* ThreadSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05593BA42AFF560A00316E39 /* ThreadSearchView.swift */; };
 		05593BA82AFF916400316E39 /* ConversationTopSafeAreaInset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05593BA72AFF916400316E39 /* ConversationTopSafeAreaInset.swift */; };
 		05593BA92AFF916400316E39 /* ConversationTopSafeAreaInset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05593BA72AFF916400316E39 /* ConversationTopSafeAreaInset.swift */; };
+		055A2B5F2BA8BA91004C68CF /* ConversationHistoryCellFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055A2B5E2BA8BA91004C68CF /* ConversationHistoryCellFactory.swift */; };
+		055A2B602BA8BA91004C68CF /* ConversationHistoryCellFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055A2B5E2BA8BA91004C68CF /* ConversationHistoryCellFactory.swift */; };
 		0560C35E2AB77B0B009F6A58 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */; };
 		0560C35F2AB77B0B009F6A58 /* TabContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */; };
 		0560C3602AB77B0B009F6A58 /* TabButtonsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */; };
@@ -412,6 +414,7 @@
 		05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainerButton.swift; sourceTree = "<group>"; };
 		05593BA42AFF560A00316E39 /* ThreadSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSearchView.swift; sourceTree = "<group>"; };
 		05593BA72AFF916400316E39 /* ConversationTopSafeAreaInset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTopSafeAreaInset.swift; sourceTree = "<group>"; };
+		055A2B5E2BA8BA91004C68CF /* ConversationHistoryCellFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationHistoryCellFactory.swift; sourceTree = "<group>"; };
 		0560C35B2AB77B0B009F6A58 /* TabContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabContainerView.swift; sourceTree = "<group>"; };
 		0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
@@ -751,6 +754,7 @@
 			children = (
 				0570CB7C2AAEE98C001832E9 /* Views */,
 				05A6A2C52B3FE2D900DA0363 /* ThreadViewController.swift */,
+				055A2B5E2BA8BA91004C68CF /* ConversationHistoryCellFactory.swift */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -1259,6 +1263,7 @@
 				05E825CD2AF6542B00F3CBB2 /* LogoutDialogView.swift in Sources */,
 				05593BA82AFF916400316E39 /* ConversationTopSafeAreaInset.swift in Sources */,
 				05C27FA52AF4BD010008FE2E /* SelectionView.swift in Sources */,
+				055A2B5F2BA8BA91004C68CF /* ConversationHistoryCellFactory.swift in Sources */,
 				052CA3E12BA4164400E38E19 /* MyPHPicker.swift in Sources */,
 				0570CBDF2AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */,
 				052CA3F12BA41DFD00E38E19 /* CloseRecordingButton.swift in Sources */,
@@ -1427,6 +1432,7 @@
 				05E825CE2AF6542B00F3CBB2 /* LogoutDialogView.swift in Sources */,
 				05593BA92AFF916400316E39 /* ConversationTopSafeAreaInset.swift in Sources */,
 				05C27FA62AF4BD010008FE2E /* SelectionView.swift in Sources */,
+				055A2B602BA8BA91004C68CF /* ConversationHistoryCellFactory.swift in Sources */,
 				052CA3E22BA4164400E38E19 /* MyPHPicker.swift in Sources */,
 				0570CBE02AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */,
 				052CA3F22BA41DFD00E38E19 /* CloseRecordingButton.swift in Sources */,

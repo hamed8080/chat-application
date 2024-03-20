@@ -183,6 +183,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         replyContainerWidth = await calculateReplyContainerWidth()
         calculateSpacingPaddings()
         setAvatarColor()
+        await setParticipantEvent()
     }
 
     private func calculateImageSize() {

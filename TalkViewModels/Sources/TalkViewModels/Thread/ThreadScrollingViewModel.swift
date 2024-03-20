@@ -10,17 +10,13 @@ import Foundation
 import ChatModels
 import ChatDTO
 import ChatCore
-import SwiftUI
-
-public protocol ScrollToPositionProtocol {
-    func scrollToBottom(animation: Animation?)
-    func scrollToLastMessageIfLastMessageIsVisible(_ message: Message)
-}
+import UIKit
+import TalkModels
 
 public final class ThreadScrollingViewModel: ObservableObject {
     var task: Task<(), Never>?
     public var isProgramaticallyScroll: Bool = false
-    public var scrollProxy: ScrollViewProxy?
+    public weak var scrollDelegate: HistoryScrollDelegate? { threadVM?.historyVM.delegate }
     public var scrollingUP = false
     public weak var threadVM: ThreadViewModel? {
         didSet {
@@ -33,48 +29,30 @@ public final class ThreadScrollingViewModel: ObservableObject {
     init() {}
 
     @MainActor
-    private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.3), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) async {
-        guard let uniqueId = threadVM?.historyVM.messageViewModel(for: uniqueId)?.uniqueId else { return }
-        try? await Task.sleep(for: .milliseconds(delay))
-        if Task.isCancelled == true { return }
-        withAnimation(animation) {
-            scrollProxy?.scrollTo(uniqueId, anchor: anchor)
-        }
-
-        /// Ensure the view is shown as a result of SwiftUI can't properly move for the first time
-        try? await Task.sleep(for: .seconds(0.3))
-        withAnimation(animation) {
-            scrollProxy?.scrollTo(uniqueId, anchor: anchor)
-        }
+    private func scrollTo(_ uniqueId: String, position: UITableView.ScrollPosition = .bottom) async {
+        scrollDelegate?.scrollTo(uniqueId: uniqueId, position: position)
     }
 
-    public func scrollToSlot(_ uniqueId: String, anchor: UnitPoint? = .top) {
-        scrollProxy?.scrollTo(uniqueId, anchor: anchor)
-    }
-
-    public func scrollToBottom(animation: Animation? = .easeInOut) {
+    public func scrollToBottom() {
         if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
             threadVM?.historyVM.moveToTime(time, messageId, highlight: false)
         }
     }
 
-    public func scrollToEmptySpace(animation: Animation? = .easeInOut) {
+    public func scrollToEmptySpace() {
         task = Task {
-            try? await Task.sleep(for: .seconds(0.5))
-            withAnimation(animation) {
-                scrollProxy?.scrollTo(-3, anchor: .bottom)
-            }
+//            scrollDelegate?.scrollTo("\(LocalId.emptySpcae.rawValue)", position: .bottom)
         }
     }
 
     public func scrollToLastMessageIfLastMessageIsVisible(_ message: Message) async {
         if isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id), let uniqueId = message.uniqueId {
             disableExcessiveLoading()
-            await scrollTo(uniqueId, delay: 0.1, .easeInOut)
+            await scrollTo(uniqueId)
         }
     }
 
-    public func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) {
+    public func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, position: UITableView.ScrollPosition = .bottom) {
        task = Task {
             if Task.isCancelled { return }
             await MainActor.run {
@@ -82,18 +60,18 @@ public final class ThreadScrollingViewModel: ObservableObject {
                     NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
                 }
             }
-            await scrollTo(uniqueId, anchor: anchor)
+           await scrollTo(uniqueId, position: position)
         }
     }
 
-    public func showHighlightedAsync(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) async {
+    public func showHighlightedAsync(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, position: UITableView.ScrollPosition = .bottom) async {
         if Task.isCancelled { return }
         await MainActor.run {
             if highlight {
                 NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
             }
         }
-        await scrollTo(uniqueId, anchor: anchor)
+        await scrollTo(uniqueId, position: position)
     }
 
     public func disableExcessiveLoading() {

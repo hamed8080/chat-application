@@ -34,7 +34,6 @@ final class UnreadMessageBubbleUITableViewCell: UITableViewCell {
         contentView.addSubview(label)
 
         NSLayoutConstraint.activate([
-            heightAnchor.constraint(equalToConstant: 24),
             label.bottomAnchor.constraint(equalTo: bottomAnchor),
             label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
