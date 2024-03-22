@@ -14,6 +14,10 @@ import Combine
 import SwiftUI
 import ChatCore
 
+public protocol ThreadPinMessageViewModelDelegate: AnyObject {
+    func onUpdate()
+}
+
 public final class ThreadPinMessageViewModel: ObservableObject {
     public private(set) var text: String? = nil
     public private(set) var image: UIImage? = nil
@@ -23,19 +27,17 @@ public final class ThreadPinMessageViewModel: ObservableObject {
     public private(set) var isEnglish: Bool = true
     public private(set) var title: String = ""
     public private(set) var hasPinMessage: Bool = false
+    public private(set) var canUnpinMessage: Bool = false
     private let thread: Conversation
     private var cancelable: Set<AnyCancellable> = []
     var threadId: Int {thread.id ?? -1}
+    public weak var historyVM: ThreadHistoryViewModel?
+    public weak var delegate: ThreadPinMessageViewModelDelegate?
 
-    init(thread: Conversation) {
+    public init(thread: Conversation) {
         self.thread = thread
         message = thread.pinMessage
         setupObservers()
-        Task { [weak self] in
-            guard let self = self else { return }
-            downloadImageThumbnail()
-            await calculate()
-        }
     }
 
     private func setupObservers() {
@@ -58,7 +60,7 @@ public final class ThreadPinMessageViewModel: ObservableObject {
         case let .image(chatResponse, _):
             if requestUniqueId == chatResponse.uniqueId, let data = chatResponse.result {
                 image = UIImage(data: data)
-                animateObjectWillChange()
+                delegate?.onUpdate()
             }
         default:
             break
@@ -99,17 +101,19 @@ public final class ThreadPinMessageViewModel: ObservableObject {
         }
     }
 
-    private func calculate() async {
+    public func calculate() async {
         let hasPinMessage = message != nil
         let icon = fileMetadata?.file?.mimeType?.systemImageNameForFileExtension
         let isEnglish = message?.text?.naturalTextAlignment == .leading
         let title = messageText
+        let canUnpinMessage = thread.admin == true
         await MainActor.run {
             self.hasPinMessage = hasPinMessage
             self.icon = icon
             self.isEnglish = isEnglish
             self.title = title
-            animateObjectWillChange()
+            self.canUnpinMessage = canUnpinMessage
+            delegate?.onUpdate()
         }
     }
 
@@ -131,7 +135,7 @@ public final class ThreadPinMessageViewModel: ObservableObject {
     }
 
     /// We use a Task due to fileMetadata decoding.
-    private func downloadImageThumbnail() {
+    public func downloadImageThumbnail() {
         Task { [weak self] in
             guard let self = self else { return }
             guard let file = fileMetadata,
@@ -163,6 +167,12 @@ public final class ThreadPinMessageViewModel: ObservableObject {
 
     public func unpinMessage(_ messageId: Int) {
         ChatManager.activeInstance?.message.unpin(.init(messageId: messageId))
+    }
+
+    public func moveToPinnedMessage() {
+        if let time = message?.time, let messageId = message?.messageId {
+            historyVM?.moveToTime(time, messageId)
+        }
     }
 
     internal func cancelAllObservers() {

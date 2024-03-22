@@ -56,8 +56,8 @@
 		052CA3DF2BA4162600E38E19 /* ThreadEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3DD2BA4162600E38E19 /* ThreadEventView.swift */; };
 		052CA3E12BA4164400E38E19 /* MyPHPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3E02BA4164400E38E19 /* MyPHPicker.swift */; };
 		052CA3E22BA4164400E38E19 /* MyPHPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3E02BA4164400E38E19 /* MyPHPicker.swift */; };
-		052CA3E42BA4166300E38E19 /* ThreadPinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3E32BA4166300E38E19 /* ThreadPinMessage.swift */; };
-		052CA3E52BA4166300E38E19 /* ThreadPinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3E32BA4166300E38E19 /* ThreadPinMessage.swift */; };
+		052CA3E42BA4166300E38E19 /* ThreadPinMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3E32BA4166300E38E19 /* ThreadPinMessageView.swift */; };
+		052CA3E52BA4166300E38E19 /* ThreadPinMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3E32BA4166300E38E19 /* ThreadPinMessageView.swift */; };
 		052CA3E72BA4167B00E38E19 /* MoveToBottomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3E62BA4167B00E38E19 /* MoveToBottomButton.swift */; };
 		052CA3E82BA4167B00E38E19 /* MoveToBottomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052CA3E62BA4167B00E38E19 /* MoveToBottomButton.swift */; };
 		052CA3E92BA41DBD00E38E19 /* UploadMessageImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E3CC2A2B145B59002894E1 /* UploadMessageImageView.swift */; };
@@ -401,7 +401,7 @@
 		052CA3CF2BA411B800E38E19 /* MessageRowVideoDownloaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRowVideoDownloaderView.swift; sourceTree = "<group>"; };
 		052CA3DD2BA4162600E38E19 /* ThreadEventView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadEventView.swift; sourceTree = "<group>"; };
 		052CA3E02BA4164400E38E19 /* MyPHPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPHPicker.swift; sourceTree = "<group>"; };
-		052CA3E32BA4166300E38E19 /* ThreadPinMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadPinMessage.swift; sourceTree = "<group>"; };
+		052CA3E32BA4166300E38E19 /* ThreadPinMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadPinMessageView.swift; sourceTree = "<group>"; };
 		052CA3E62BA4167B00E38E19 /* MoveToBottomButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoveToBottomButton.swift; sourceTree = "<group>"; };
 		052CA3ED2BA41DF300E38E19 /* UnreadMentionsButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnreadMentionsButton.swift; sourceTree = "<group>"; };
 		052CA3F02BA41DFD00E38E19 /* CloseRecordingButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloseRecordingButton.swift; sourceTree = "<group>"; };
@@ -977,7 +977,7 @@
 				052CA3F02BA41DFD00E38E19 /* CloseRecordingButton.swift */,
 				052CA3ED2BA41DF300E38E19 /* UnreadMentionsButton.swift */,
 				052CA3E62BA4167B00E38E19 /* MoveToBottomButton.swift */,
-				052CA3E32BA4166300E38E19 /* ThreadPinMessage.swift */,
+				052CA3E32BA4166300E38E19 /* ThreadPinMessageView.swift */,
 				052CA3E02BA4164400E38E19 /* MyPHPicker.swift */,
 				052CA3DD2BA4162600E38E19 /* ThreadEventView.swift */,
 				0570CB8E2AAEE98C001832E9 /* ThreadSheetView.swift */,
@@ -1371,7 +1371,7 @@
 				05E869C62AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				05EC8A302ACBED930016361F /* ReactionCountView.swift in Sources */,
 				0570CC432AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
-				052CA3E42BA4166300E38E19 /* ThreadPinMessage.swift in Sources */,
+				052CA3E42BA4166300E38E19 /* ThreadPinMessageView.swift in Sources */,
 				05C27FA22AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC5B2AAEE98F001832E9 /* LinkView.swift in Sources */,
 				0570CC6F2AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
@@ -1540,7 +1540,7 @@
 				05E869C72AEF883000F6B200 /* DetailLoading.swift in Sources */,
 				0570CC3E2AAEE98F001832E9 /* ManageTagView.swift in Sources */,
 				05EC8A312ACBED930016361F /* ReactionCountView.swift in Sources */,
-				052CA3E52BA4166300E38E19 /* ThreadPinMessage.swift in Sources */,
+				052CA3E52BA4166300E38E19 /* ThreadPinMessageView.swift in Sources */,
 				05C27FA32AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */,
 				0570CC442AAEE98F001832E9 /* StartThreadContactPickerView.swift in Sources */,
 				0570CC5C2AAEE98F001832E9 /* LinkView.swift in Sources */,

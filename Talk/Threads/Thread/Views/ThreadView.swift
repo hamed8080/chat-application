@@ -53,7 +53,6 @@ struct ThreadView: View, DropDelegate {
         .safeAreaInset(edge: .top, spacing: 0) {
             VStack(spacing: 0) {
                 ThreadMainToolbar(viewModel: viewModel)
-                ThreadPinMessage(threadVM: viewModel)
                 AudioPlayerView(threadVM: viewModel)
             }
         }

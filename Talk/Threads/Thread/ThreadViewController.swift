@@ -17,6 +17,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
     var viewModel: ThreadViewModel!
     private var tableView: UITableView!
     private var moveToBottom = MoveToBottomButton()
+    private var pinMessageView: ThreadPinMessageView!
     private var cancelable = Set<AnyCancellable> ()
 
     override func viewDidLoad() {
@@ -29,6 +30,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
         super.viewWillAppear(animated)
         ThreadViewModel.threadWidth = view.frame.width
         viewModel.historyVM.start()
+        configureNavigationBar()
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -66,6 +68,25 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
 
 extension ThreadViewController {
     func configureViews() {
+        configureTableView()
+        configureMoveToBottom()
+        configurePinMessageView()
+        NSLayoutConstraint.activate([
+            moveToBottom.widthAnchor.constraint(equalToConstant: 40),
+            moveToBottom.heightAnchor.constraint(equalToConstant: 40),
+            moveToBottom.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            moveToBottom.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
+            pinMessageView.topAnchor.constraint(equalTo: view.topAnchor),
+            pinMessageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            pinMessageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.topAnchor.constraint(equalTo: pinMessageView.bottomAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+    }
+
+    private func configureTableView() {
         tableView = UITableView(frame: view.bounds, style: .plain)
         tableView.delegate = self
         tableView.dataSource = self
@@ -77,36 +98,34 @@ extension ThreadViewController {
         tableView.prefetchDataSource = self
         ConversationHistoryCellFactory.registerCells(tableView)
         view.addSubview(tableView)
-
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
         let imageView = UIImageView(image: UIImage(named: "chat_bg"))
         imageView.contentMode = .scaleAspectFill
         tableView.backgroundView = imageView
         tableView.backgroundColor = Color.App.bgPrimaryUIColor
+    }
 
-        view.bringSubviewToFront(tableView)
+    private func configureNavigationBar() {
+        navigationItem.title = viewModel.thread.computedTitle
+    }
 
+    private func configureMoveToBottom() {
         moveToBottom.viewModel = viewModel
-
         view.addSubview(moveToBottom)
-
-        tableView.translatesAutoresizingMaskIntoConstraints = false
         moveToBottom.translatesAutoresizingMaskIntoConstraints = false
+    }
 
-        NSLayoutConstraint.activate([
-            moveToBottom.widthAnchor.constraint(equalToConstant: 40),
-            moveToBottom.heightAnchor.constraint(equalToConstant: 40),
-            moveToBottom.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            moveToBottom.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
+    private func configurePinMessageView() {
+        pinMessageView = .init(viewModel: viewModel.threadPinMessageViewModel)
+        view.addSubview(pinMessageView)
+        pinMessageView.translatesAutoresizingMaskIntoConstraints = false
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel.historyVM.threshold = (view.window?.windowScene?.screen.bounds.size.height ?? 0) * 3.5
+        configureNavigationBar()
     }
 }
 

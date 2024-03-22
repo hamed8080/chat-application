@@ -91,6 +91,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         uploadMessagesViewModel.threadVM = self
         unsentMessagesViewModel.threadVM = self
         exportMessagesViewModel.thread = thread
+        threadPinMessageViewModel.historyVM = historyVM
     }
 
     // MARK: Actions
