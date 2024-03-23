@@ -40,17 +40,18 @@ struct ThreadHistoryList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .padding([.top, .bottom])
-            SpaceForAttachment()
-                .id(-3)
-                .listRowSeparator(.hidden)
-                .listRowInsets(.zero)
-                .listRowBackground(Color.clear)
 
             ForEach(viewModel.sections) { section in
                 SectionView(section: section)
                 MessageList(vms: section.vms, viewModel: viewModel)
             }
 
+            SpaceForAttachment()
+                .id(-3)
+                .listRowSeparator(.hidden)
+                .listRowInsets(.zero)
+                .listRowBackground(Color.clear)
+            
             ListLoadingView(isLoading: .constant(viewModel.bottomLoading))
                 .id(-2)
                 .listRowSeparator(.hidden)
