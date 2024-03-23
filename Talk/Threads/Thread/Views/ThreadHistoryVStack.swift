@@ -19,7 +19,6 @@ struct ThreadHistoryVStack: View {
     var body: some View {
         VStack(spacing: 0) {
             if viewModel.isEmptyThread {
-                EmptyThreadView()
             } else {
                 ThreadHistoryList()
             }

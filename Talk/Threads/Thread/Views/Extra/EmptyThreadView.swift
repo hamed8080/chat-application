@@ -9,39 +9,76 @@ import SwiftUI
 import TalkViewModels
 import TalkUI
 
-struct EmptyThreadView: View {
-    @EnvironmentObject private var viewModel: ThreadHistoryViewModel
-    @Environment(\.colorScheme) private var colorScheme
+public final class EmptyThreadView: UIView {
 
-    var body: some View {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                VStack {
-                    Text("Thread.noMessage")
-                        .font(.iransansSubtitle)
-                        .foregroundStyle(Color.App.textPrimary)
-                        .fontWeight(.regular)
-                    Image(systemName: "text.bubble")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 36, height: 36)
-                        .foregroundStyle(Color.App.accent)
-                }
-                .padding(48)
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                Spacer()
-            }
-            Spacer()
-        }
+    public init() {
+        super.init(frame: .zero)
+        configureView()
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func configureView() {
+
+        let vStack = UIStackView()
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+        vStack.axis = .vertical
+        vStack.spacing = 4
+        vStack.alignment = .center
+        vStack.layoutMargins = .init(horizontal: 48, vertical: 48)
+        vStack.isLayoutMarginsRelativeArrangement = true
+        vStack.layer.masksToBounds = true
+        vStack.layer.cornerRadius = 12
+
+        let effect = UIBlurEffect(style: .systemUltraThinMaterial)
+        let effectView = UIVisualEffectView(effect: effect)
+        effectView.translatesAutoresizingMaskIntoConstraints = false
+        vStack.addSubview(effectView)
+
+        let label = UILabel()
+        label.text = "Thread.noMessage".localized()
+        label.textColor = Color.App.textPrimaryUIColor
+        label.numberOfLines = 2
+        label.textAlignment = .center
+        label.font = UIFont.uiiransansSubtitle
+
+        let image = UIImageView(image: UIImage(systemName: "text.bubble"))
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.contentMode = .scaleAspectFit
+        image.tintColor = Color.App.accentUIColor
+
+        vStack.addArrangedSubview(label)
+        vStack.addArrangedSubview(image)
+
+        addSubview(vStack)
+
+        NSLayoutConstraint.activate([
+            vStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            vStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            vStack.centerYAnchor.constraint(equalTo: centerYAnchor),
+            effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            effectView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            effectView.topAnchor.constraint(equalTo: topAnchor),
+            effectView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            image.widthAnchor.constraint(equalToConstant: 36),
+            image.heightAnchor.constraint(equalToConstant: 36)
+        ])
     }
 }
 
+struct EmptyThreadViewWrapper: UIViewRepresentable {
+    func makeUIView(context: Context) -> some UIView {
+        return EmptyThreadView()
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+
+    }
+}
 struct EmptyThreadView_Previews: PreviewProvider {
     static var previews: some View {
-        EmptyThreadView()
-            .environmentObject(ThreadHistoryViewModel(threadViewModel: .init(thread: .init(id: 0))))
+        EmptyThreadViewWrapper()
     }
 }

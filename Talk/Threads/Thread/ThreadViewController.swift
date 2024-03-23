@@ -18,6 +18,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
     private var tableView: UITableView!
     private var moveToBottom = MoveToBottomButton()
     private var pinMessageView: ThreadPinMessageView!
+    private let emptyThreadView = EmptyThreadView()
     private var cancelable = Set<AnyCancellable> ()
 
     override func viewDidLoad() {
@@ -71,6 +72,7 @@ extension ThreadViewController {
         configureTableView()
         configureMoveToBottom()
         configurePinMessageView()
+        configureEmptyThreadView()
         NSLayoutConstraint.activate([
             moveToBottom.widthAnchor.constraint(equalToConstant: 40),
             moveToBottom.heightAnchor.constraint(equalToConstant: 40),
@@ -122,6 +124,23 @@ extension ThreadViewController {
         pinMessageView.translatesAutoresizingMaskIntoConstraints = false
     }
 
+    private func configureEmptyThreadView() {
+        emptyThreadView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyThreadView)
+        emptyThreadView.isHidden = true
+        NSLayoutConstraint.activate([
+            emptyThreadView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyThreadView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyThreadView.topAnchor.constraint(equalTo: view.topAnchor),
+            emptyThreadView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+    }
+
+    private func showEmptyThread(show: Bool) {
+        emptyThreadView.isHidden = !show
+        moveToBottom.isHidden = show
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel.historyVM.threshold = (view.window?.windowScene?.screen.bounds.size.height ?? 0) * 3.5
@@ -155,7 +174,9 @@ extension ThreadViewController {
 extension ThreadViewController: HistoryScrollDelegate {
     func reload() {
         DispatchQueue.main.async { [weak self] in
-            self?.tableView.reloadData()
+            guard let self = self else { return }
+            tableView.reloadData()
+            showEmptyThread(show: viewModel.historyVM.isEmptyThread)
         }
     }
     

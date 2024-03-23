@@ -283,7 +283,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 4- Disable excessive loading on the top part.
             threadViewModel?.scrollVM.disableExcessiveLoading()
         }
-        isFetchedServerFirstResponse = true
         /// 5- To update isLoading fields to hide the loading at the top and prepare the ui for scrolling to.
         await asyncAnimateObjectWillChange()
         if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
@@ -384,7 +383,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Scenario 7
-    /// When lastMessgeSeenId is bigger than thread.lastMessageVO.id as a result of server chat bug.
+    /// When lastMessgeSeenId is bigger than thread.lastMessageVO.id as a result of server chat bug or when the conversation is empty.
     private func trySeventhScenario() {
         if thread.lastMessageVO?.id ?? 0 < thread.lastSeenMessageId ?? 0 {
             requestBottomPartByCountAndOffset()
@@ -403,9 +402,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         let sortedMessages = messages.sortedByTime()
         await appendMessagesAndSort(sortedMessages)
         isFetchedServerFirstResponse = true
-        await asyncAnimateObjectWillChange()
+        delegate?.reload()
         await threadViewModel?.scrollVM.showHighlightedAsync(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
-        shimmerViewModel.hide()
     }
 
     // MARK: Scenario 8
