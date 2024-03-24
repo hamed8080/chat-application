@@ -10,124 +10,143 @@ import TalkViewModels
 import TalkExtensions
 import TalkUI
 import TalkModels
+import UIKit
+import Combine
 
-struct MainSendButtons: View {
-    @EnvironmentObject var viewModel: SendContainerViewModel
-    @EnvironmentObject var threadVM: ThreadViewModel
+public final class MainSendButtons: UIStackView {
+    private let btnToggleAttachmentButtons = UIButton(type: .system)
+    private let btnSend = UIButton(type: .system)
+    private let btnMic = UIButton(type: .system)
+    private let btnCamera = UIButton(type: .system)
+    private let multilineTextField = SendContainerTextView()
+    private let threadVM: ThreadViewModel
+    private var viewModel: SendContainerViewModel { threadVM.sendContainerViewModel }
+    private var cancellableSet = Set<AnyCancellable>()
 
-    var body: some View {
-        HStack(alignment: .bottom, spacing: 8) {
-            Button {
-                withAnimation(animation(appear: !viewModel.showActionButtons)) {
-                    viewModel.showActionButtons.toggle()
-                }
-            } label: {
-                Image(systemName: viewModel.showActionButtons ? "chevron.down" : "paperclip")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: viewModel.showActionButtons ? 16 : 20, height: viewModel.showActionButtons ? 16 : 20)
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.accent)
-                    .fontWeight(.medium)
-            }
-            .frame(width: 42, height: 42)
-            .background(Color.App.bgSendInput)
-            .clipShape(RoundedRectangle(cornerRadius:(22)))
-            .buttonStyle(.borderless)
-            .fontWeight(.light)
+    public init(viewModel: ThreadViewModel) {
+        self.threadVM = viewModel
+        super.init(frame: .zero)
+        configureView()
+        registerGestures()
+        registerObserver()
+    }
 
-            MultilineTextField(
-                "Thread.SendContainer.typeMessageHere",
-                text: $viewModel.textMessage,
-                textColor: UIColor(named: "text_primary"),
-                backgroundColor: Color.App.bgSendInput,
-                placeholderColor: Color.App.textPrimary.opacity(0.7),
-                mention: true,
-                focus: $viewModel.focusOnTextInput
-            )
-            .clipShape(RoundedRectangle(cornerRadius:(24)))
-            .environment(\.layoutDirection, Locale.current.identifier.contains("fa") ? .rightToLeft : .leftToRight)
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-            Button {
-                threadVM.attachmentsViewModel.clear()
-                threadVM.setupRecording()
-            } label: {
-                Image(systemName: "mic")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: viewModel.showAudio ? 20 : 0, height: viewModel.showAudio ? 20 : 0)
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.textSecondary)
-            }
-            .frame(width: viewModel.showAudio ? 48 : 0, height: viewModel.showAudio ? 48 : 0)
-            .buttonStyle(.borderless)
-            .fontWeight(.light)
-            //            .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
-            //.highPriorityGesture(switchRecordingGesture)
-            .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
+    private func configureView() {
+        translatesAutoresizingMaskIntoConstraints = false
+        btnToggleAttachmentButtons.translatesAutoresizingMaskIntoConstraints = false
+        btnSend.translatesAutoresizingMaskIntoConstraints = false
+        btnMic.translatesAutoresizingMaskIntoConstraints = false
+        btnCamera.translatesAutoresizingMaskIntoConstraints = false
+        multilineTextField.translatesAutoresizingMaskIntoConstraints = false
 
-            if viewModel.showCamera {
-                Button {
-                    threadVM.setupRecording()
-                } label: {
-                    Image(systemName: "camera")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 26, height: 24)
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.App.textSecondary)
-                }
-                .frame(width: 48, height: 48)
-                .buttonStyle(.borderless)
-                .fontWeight(.light)
-                //                .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
-                .disabled(true)
-                .opacity(0.2)
-                .highPriorityGesture(switchRecordingGesture)
-                .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
-            }
+        axis = .horizontal
+        spacing = 8
+        alignment = .bottom
+        layoutMargins = .init(horizontal: 8, vertical: 4)
+        isLayoutMarginsRelativeArrangement = true
 
-            if viewModel.showSendButton {
-                Button {
-                    if viewModel.showSendButton {
-                        threadVM.sendMessageViewModel.sendTextMessage()
-                    }
-                    threadVM.mentionListPickerViewModel.text = ""
-                    threadVM.sheetType = nil
-                    threadVM.animateObjectWillChange()
-                } label: {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: viewModel.showSendButton ? 26 : 0, height: viewModel.showSendButton ? 26 : 0)
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.App.white, Color.App.accent)
-                }
-                .frame(width: viewModel.showSendButton ? 48 : 0, height: viewModel.showSendButton ? 48 : 0)
-                .buttonStyle(.borderless)
-                .fontWeight(.light)
-                //            .keyboardShortcut(.return, modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
-            }
+        btnToggleAttachmentButtons.imageView?.contentMode = .scaleAspectFit
+        btnToggleAttachmentButtons.tintColor = Color.App.accentUIColor
+        btnToggleAttachmentButtons.layer.masksToBounds = true
+        btnToggleAttachmentButtons.layer.cornerRadius = 22
+        btnToggleAttachmentButtons.backgroundColor = Color.App.bgSendInputUIColor
+
+        btnMic.setImage(.init(systemName: "mic"), for: .normal)
+        btnMic.imageView?.contentMode = .scaleAspectFit
+        btnMic.tintColor = Color.App.textSecondaryUIColor
+
+        btnCamera.setImage(.init(systemName: "camera"), for: .normal)
+        btnCamera.imageView?.contentMode = .scaleAspectFit
+        btnCamera.tintColor = Color.App.textSecondaryUIColor
+        btnCamera.isHidden = true
+
+
+        btnSend.setImage(.init(systemName: "arrow.up.circle.fill"), for: .normal)
+        btnSend.imageView?.contentMode = .scaleAspectFit
+        btnSend.tintColor = Color.App.accentUIColor
+        btnSend.layer.masksToBounds = true
+        btnSend.layer.cornerRadius = 22
+
+        addArrangedSubviews([btnToggleAttachmentButtons, multilineTextField, btnMic, btnCamera])
+
+        NSLayoutConstraint.activate([
+            btnToggleAttachmentButtons.widthAnchor.constraint(equalToConstant: 48),
+            btnSend.widthAnchor.constraint(equalToConstant: 48),
+            btnMic.widthAnchor.constraint(equalToConstant: 48),
+            btnCamera.widthAnchor.constraint(equalToConstant: 48),
+            btnToggleAttachmentButtons.heightAnchor.constraint(equalToConstant: 48),
+            btnSend.heightAnchor.constraint(equalToConstant: 48),
+            btnMic.heightAnchor.constraint(equalToConstant: 48),
+            btnCamera.heightAnchor.constraint(equalToConstant: 48),
+        ])
+    }
+
+    private func registerGestures() {
+        let gesture = UISwipeGestureRecognizer()
+        gesture.direction = .up
+        gesture.addTarget(self, action: #selector(onSwiped))
+        btnMic.addGestureRecognizer(gesture)
+        btnCamera.addGestureRecognizer(gesture)
+    }
+
+    @objc private func onSwiped(_ sender: UIGestureRecognizer) {
+        viewModel.isVideoRecordingSelected.toggle()
+    }
+
+    @objc private func onBtnSendTapped(_ sender: UIButton) {
+        if viewModel.showSendButton {
+            threadVM.sendMessageViewModel.sendTextMessage()
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.3), value: viewModel.isVideoRecordingSelected)
+        threadVM.mentionListPickerViewModel.text = ""
+        threadVM.sheetType = nil
+        threadVM.animateObjectWillChange()
     }
 
-    private func animation(appear: Bool) -> Animation {
-        appear ? .spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2) : .easeOut(duration: 0.13)
+    @objc private func onBtnToggleAttachmentButtonsTapped(_ sender: UIButton) {
+        viewModel.showActionButtons.toggle()
     }
 
-    private var switchRecordingGesture: some Gesture {
-        DragGesture(minimumDistance: 10, coordinateSpace: .local)
-            .onEnded { newValue in
-                if abs(newValue.translation.height) > 32 {
-                    viewModel.isVideoRecordingSelected.toggle()
-                }
-            }
+    @objc private func onBtnMicTapped(_ sender: UIButton) {
+        threadVM.attachmentsViewModel.clear()
+        threadVM.setupRecording()
+    }
+
+    @objc private func onBtnCameraTapped(_ sender: UIButton) {
+        threadVM.setupRecording()
+    }
+
+    private func registerObserver() {
+        viewModel.objectWillChange.sink { [weak self] _ in
+            self?.onViewModelChanged()
+        }
+        .store(in: &cancellableSet)
+
+        viewModel.$showActionButtons.sink { [weak self] _ in
+            guard let self = self else { return }
+            let attImage = UIImage(systemName: viewModel.showActionButtons ? "chevron.down" : "paperclip")
+            btnToggleAttachmentButtons.setImage(attImage, for: .normal)
+        }
+        .store(in: &cancellableSet)
+    }
+
+    private func onViewModelChanged() {
+        btnMic.isHidden = viewModel.showCamera
+        btnCamera.isHidden = !viewModel.showCamera
+        btnSend.isHidden = !viewModel.showSendButton
     }
 }
 
 struct MainSendButtons_Previews: PreviewProvider {
+    struct MainSendButtonsWrapper: UIViewRepresentable {
+        func makeUIView(context: Context) -> some UIView { MainSendButtons(viewModel: .init(thread: .init(id: 1))) }
+        func updateUIView(_ uiView: UIViewType, context: Context) {}
+    }
+
     static var previews: some View {
-        MainSendButtons()
+        MainSendButtonsWrapper()
     }
 }

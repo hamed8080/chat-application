@@ -357,6 +357,8 @@
 		05EC8A312ACBED930016361F /* ReactionCountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2D2ACBED930016361F /* ReactionCountView.swift */; };
 		05EC8A322ACBED930016361F /* ReactionMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */; };
 		05EC8A332ACBED930016361F /* ReactionMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */; };
+		05F420202BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F4201F2BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift */; };
+		05F420212BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F4201F2BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift */; };
 		05F70E5A2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */; };
 		05F70E5B2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */; };
 		05F70E5D2B31E90700E0EF92 /* ThreadEmptySpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */; };
@@ -563,6 +565,7 @@
 		05E9C08C2B1EFBCE00E782BD /* ThreadListRowBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadListRowBackground.swift; sourceTree = "<group>"; };
 		05EC8A2D2ACBED930016361F /* ReactionCountView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionCountView.swift; sourceTree = "<group>"; };
 		05EC8A2E2ACBED930016361F /* ReactionMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionMenuView.swift; sourceTree = "<group>"; };
+		05F4201F2BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadBottomToolbar.swift; sourceTree = "<group>"; };
 		05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainerOverlayView.swift; sourceTree = "<group>"; };
 		05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadEmptySpaceView.swift; sourceTree = "<group>"; };
 		05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadLeadingToolbar.swift; sourceTree = "<group>"; };
@@ -1044,6 +1047,7 @@
 				05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */,
 				05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */,
 				05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */,
+				05F4201F2BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift */,
 			);
 			path = SendContainer;
 			sourceTree = "<group>";
@@ -1380,6 +1384,7 @@
 				0570CC392AAEE98F001832E9 /* TagRow.swift in Sources */,
 				051F26C72ADD0F8F00BF9841 /* SwipyView.swift in Sources */,
 				05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */,
+				05F420202BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift in Sources */,
 				05EC8A322ACBED930016361F /* ReactionMenuView.swift in Sources */,
 				0570CC752AAEE98F001832E9 /* AssistantView.swift in Sources */,
 			);
@@ -1549,6 +1554,7 @@
 				0570CC702AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
 				05F89CC02ADD105500A28EBB /* SwipyView.swift in Sources */,
 				0570CC3A2AAEE98F001832E9 /* TagRow.swift in Sources */,
+				05F420212BAFF6FD003ABCB7 /* ThreadBottomToolbar.swift in Sources */,
 				05EC8A332ACBED930016361F /* ReactionMenuView.swift in Sources */,
 				0570CC762AAEE98F001832E9 /* AssistantView.swift in Sources */,
 			);

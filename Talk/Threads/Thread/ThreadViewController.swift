@@ -16,6 +16,7 @@ import ChatModels
 final class ThreadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var viewModel: ThreadViewModel!
     private var tableView: UITableView!
+    private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
     private var moveToBottom = MoveToBottomButton()
     private var pinMessageView: ThreadPinMessageView!
     private let emptyThreadView = EmptyThreadView()
@@ -73,18 +74,22 @@ extension ThreadViewController {
         configureMoveToBottom()
         configurePinMessageView()
         configureEmptyThreadView()
+        configureSendContainer()
         NSLayoutConstraint.activate([
             moveToBottom.widthAnchor.constraint(equalToConstant: 40),
             moveToBottom.heightAnchor.constraint(equalToConstant: 40),
             moveToBottom.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            moveToBottom.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
+            moveToBottom.bottomAnchor.constraint(equalTo: sendContainer.topAnchor, constant: -16),
             pinMessageView.topAnchor.constraint(equalTo: view.topAnchor),
             pinMessageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             pinMessageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            sendContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            sendContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            sendContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.topAnchor.constraint(equalTo: pinMessageView.bottomAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.bottomAnchor.constraint(equalTo: sendContainer.topAnchor),
         ])
     }
 
@@ -110,6 +115,11 @@ extension ThreadViewController {
 
     private func configureNavigationBar() {
         navigationItem.title = viewModel.thread.computedTitle
+    }
+
+    private func configureSendContainer() {
+        sendContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(sendContainer)
     }
 
     private func configureMoveToBottom() {

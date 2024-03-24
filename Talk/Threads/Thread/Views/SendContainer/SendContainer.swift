@@ -62,9 +62,9 @@ struct AudioOrTextContainer: View {
                 .padding([.trailing], 12)
                 .animation(audioRecordingVM.isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: audioRecordingVM.isRecording)
                 .scaleEffect(x: viewModel.showRecordingView ? 1.0 : 0.001, y: viewModel.showRecordingView ? 1.0 : 0.001, anchor: .center)
-            MainSendButtons()
-                .environment(\.layoutDirection, .leftToRight)
-                .animation(audioRecordingVM.isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: audioRecordingVM.isRecording)
+//            MainSendButtons()
+//                .environment(\.layoutDirection, .leftToRight)
+//                .animation(audioRecordingVM.isRecording ? .spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3) : .linear, value: audioRecordingVM.isRecording)
                 .scaleEffect(x: viewModel.showRecordingView ? 0.001 : 1.0, y: viewModel.showRecordingView ? 0.001 : 1.0, anchor: .center)
         }
         .animation(.easeInOut, value: viewModel.showRecordingView)
