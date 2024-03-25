@@ -91,6 +91,7 @@ public final class MainSendButtons: UIStackView {
         gesture.addTarget(self, action: #selector(onSwiped))
         btnMic.addGestureRecognizer(gesture)
         btnCamera.addGestureRecognizer(gesture)
+        btnToggleAttachmentButtons.addTarget(self, action: #selector(onBtnToggleAttachmentButtonsTapped), for: .touchUpInside)
     }
 
     @objc private func onSwiped(_ sender: UIGestureRecognizer) {
@@ -125,10 +126,12 @@ public final class MainSendButtons: UIStackView {
         }
         .store(in: &cancellableSet)
 
-        viewModel.$showActionButtons.sink { [weak self] _ in
-            guard let self = self else { return }
-            let attImage = UIImage(systemName: viewModel.showActionButtons ? "chevron.down" : "paperclip")
-            btnToggleAttachmentButtons.setImage(attImage, for: .normal)
+        viewModel.$showActionButtons.sink { newValue in
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                guard let self = self else { return }
+                let attImage = UIImage(systemName: newValue ? "chevron.down" : "paperclip")
+                btnToggleAttachmentButtons.setImage(attImage, for: .normal)
+            }
         }
         .store(in: &cancellableSet)
     }

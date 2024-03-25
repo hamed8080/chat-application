@@ -26,9 +26,6 @@ struct SendContainerOverlayView: View {
             }
 
             VStack(spacing: 0) {
-                if viewModel.showActionButtons {
-                    AttachmentButtons(viewModel: threadVM.attachmentsViewModel)
-                }
                 AttachmentFiles()
                     .environmentObject(threadVM.attachmentsViewModel)
                     .padding(.top, threadVM.attachmentsViewModel.attachments.count > 0 ? 8 : 0)

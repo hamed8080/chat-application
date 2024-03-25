@@ -155,8 +155,8 @@
 		0570CC1E2AAEE98F001832E9 /* TextMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8B2AAEE98C001832E9 /* TextMessageType.swift */; };
 		0570CC1F2AAEE98F001832E9 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */; };
 		0570CC202AAEE98F001832E9 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */; };
-		0570CC212AAEE98F001832E9 /* AttachmentButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8D2AAEE98C001832E9 /* AttachmentButtons.swift */; };
-		0570CC222AAEE98F001832E9 /* AttachmentButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8D2AAEE98C001832E9 /* AttachmentButtons.swift */; };
+		0570CC212AAEE98F001832E9 /* AttachmentButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8D2AAEE98C001832E9 /* AttachmentButtonsView.swift */; };
+		0570CC222AAEE98F001832E9 /* AttachmentButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8D2AAEE98C001832E9 /* AttachmentButtonsView.swift */; };
 		0570CC232AAEE98F001832E9 /* ThreadSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8E2AAEE98C001832E9 /* ThreadSheetView.swift */; };
 		0570CC242AAEE98F001832E9 /* ThreadSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8E2AAEE98C001832E9 /* ThreadSheetView.swift */; };
 		0570CC252AAEE98F001832E9 /* MentionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8F2AAEE98C001832E9 /* MentionList.swift */; };
@@ -453,7 +453,7 @@
 		0570CB8A2AAEE98C001832E9 /* MessageActionMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageActionMenu.swift; sourceTree = "<group>"; };
 		0570CB8B2AAEE98C001832E9 /* TextMessageType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextMessageType.swift; sourceTree = "<group>"; };
 		0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
-		0570CB8D2AAEE98C001832E9 /* AttachmentButtons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentButtons.swift; sourceTree = "<group>"; };
+		0570CB8D2AAEE98C001832E9 /* AttachmentButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentButtonsView.swift; sourceTree = "<group>"; };
 		0570CB8E2AAEE98C001832E9 /* ThreadSheetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadSheetView.swift; sourceTree = "<group>"; };
 		0570CB8F2AAEE98C001832E9 /* MentionList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MentionList.swift; sourceTree = "<group>"; };
 		0570CB902AAEE98C001832E9 /* ThreadViewCenterToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadViewCenterToolbar.swift; sourceTree = "<group>"; };
@@ -1035,7 +1035,7 @@
 			children = (
 				05D813AF2B1AFD92006F0F1B /* ReplyPrivatelyMessageViewPlaceholder.swift */,
 				050C2C1D2AF0BE53000D380E /* AttachmentFiles.swift */,
-				0570CB8D2AAEE98C001832E9 /* AttachmentButtons.swift */,
+				0570CB8D2AAEE98C001832E9 /* AttachmentButtonsView.swift */,
 				0570CB962AAEE98C001832E9 /* SendContainer.swift */,
 				05C27F9B2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift */,
 				05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */,
@@ -1293,7 +1293,7 @@
 				050C2C1E2AF0BE53000D380E /* AttachmentFiles.swift in Sources */,
 				050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC252AAEE98F001832E9 /* MentionList.swift in Sources */,
-				0570CC212AAEE98F001832E9 /* AttachmentButtons.swift in Sources */,
+				0570CC212AAEE98F001832E9 /* AttachmentButtonsView.swift in Sources */,
 				0570CC492AAEE98F001832E9 /* LogView.swift in Sources */,
 				0570CC0B2AAEE98F001832E9 /* ForwardMessageRow.swift in Sources */,
 				053803D02B11F879005C8FAB /* DeleteThreadDialog.swift in Sources */,
@@ -1462,7 +1462,7 @@
 				050C2C1F2AF0BE53000D380E /* AttachmentFiles.swift in Sources */,
 				050B29172AB40DC20072706C /* ContainerSplitView.swift in Sources */,
 				0570CC262AAEE98F001832E9 /* MentionList.swift in Sources */,
-				0570CC222AAEE98F001832E9 /* AttachmentButtons.swift in Sources */,
+				0570CC222AAEE98F001832E9 /* AttachmentButtonsView.swift in Sources */,
 				0570CC4A2AAEE98F001832E9 /* LogView.swift in Sources */,
 				0570CC0C2AAEE98F001832E9 /* ForwardMessageRow.swift in Sources */,
 				05E869CA2AEFA57300F6B200 /* LanguageView.swift in Sources */,
