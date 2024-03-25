@@ -43,8 +43,6 @@ public final class ThreadPinMessageView: UIStackView, ThreadPinMessageViewModelD
         textButton.translatesAutoresizingMaskIntoConstraints = false
         unpinButton.translatesAutoresizingMaskIntoConstraints = false
 
-        backgroundColor = Color.App.bgPrimaryUIColor?.withAlphaComponent(0.5)
-
         bar.backgroundColor = Color.App.accentUIColor
         bar.layer.cornerRadius = 2
 

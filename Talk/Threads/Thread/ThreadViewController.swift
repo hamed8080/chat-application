@@ -18,7 +18,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
     private var tableView: UITableView!
     private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
     private var moveToBottom = MoveToBottomButton()
-    private var pinMessageView: ThreadPinMessageView!
+    private lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
     private let emptyThreadView = EmptyThreadView()
     private var cancelable = Set<AnyCancellable> ()
 
@@ -72,22 +72,22 @@ extension ThreadViewController {
     func configureViews() {
         configureTableView()
         configureMoveToBottom()
-        configurePinMessageView()
         configureEmptyThreadView()
         configureSendContainer()
+        configureTopToolbarVStack()
         NSLayoutConstraint.activate([
             moveToBottom.widthAnchor.constraint(equalToConstant: 40),
             moveToBottom.heightAnchor.constraint(equalToConstant: 40),
             moveToBottom.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             moveToBottom.bottomAnchor.constraint(equalTo: sendContainer.topAnchor, constant: -16),
-            pinMessageView.topAnchor.constraint(equalTo: view.topAnchor),
-            pinMessageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            pinMessageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topThreadToolbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topThreadToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topThreadToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             sendContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             sendContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             sendContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.topAnchor.constraint(equalTo: pinMessageView.bottomAnchor),
+            tableView.topAnchor.constraint(equalTo: topThreadToolbar.bottomAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: sendContainer.topAnchor),
         ])
@@ -113,6 +113,10 @@ extension ThreadViewController {
         tableView.backgroundColor = Color.App.bgPrimaryUIColor
     }
 
+    private func configureTopToolbarVStack() {
+        view.addSubview(topThreadToolbar)
+    }
+
     private func configureNavigationBar() {
         navigationItem.title = viewModel.thread.computedTitle
     }
@@ -126,12 +130,6 @@ extension ThreadViewController {
         moveToBottom.viewModel = viewModel
         view.addSubview(moveToBottom)
         moveToBottom.translatesAutoresizingMaskIntoConstraints = false
-    }
-
-    private func configurePinMessageView() {
-        pinMessageView = .init(viewModel: viewModel.threadPinMessageViewModel)
-        view.addSubview(pinMessageView)
-        pinMessageView.translatesAutoresizingMaskIntoConstraints = false
     }
 
     private func configureEmptyThreadView() {
