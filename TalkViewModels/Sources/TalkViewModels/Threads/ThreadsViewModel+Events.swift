@@ -92,9 +92,8 @@ extension ThreadsViewModel {
         case .threads(let response):
             if !response.cache {
                 Task {
-                    if isInCacheMode {
-                        isInCacheMode = false
-                        threads.removeAll()
+                    if isInCacheMode {                        
+                        clear()
                     }
                     if response.pop(prepend: "GET-THREADS") == nil {
                         await onThreads(response)
@@ -106,7 +105,7 @@ extension ThreadsViewModel {
                         await onNotActiveThreads(response)
                     }
                 }
-            } else if response.cache && ChatManager.activeInstance?.state != .chatReady {
+            } else if response.cache && AppState.shared.connectionStatus != .connected {
                 Task {
                     isInCacheMode = true
                     await onThreads(response)

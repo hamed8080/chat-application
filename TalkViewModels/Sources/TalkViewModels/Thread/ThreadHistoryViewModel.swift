@@ -652,7 +652,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 onMoveToTime(response)
                 onMoveFromTime(response)
                 logger.debug("End on history:\(Date().millisecondsSince1970)")
-            } else if response.cache && ChatManager.activeInstance?.state != .chatReady {
+            } else if response.cache && AppState.shared.connectionStatus != .connected {
                 Task {
                     await onHistoryCacheRsponse(response)
                 }
@@ -824,7 +824,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func removeAllSlotsWhenReachTopOfTheList() {
         if !hasNextTop {
             sections[0].vms.removeAll(where: {$0.message.id == LocalId.emptyMessageSlot.rawValue})
-            animateObjectWillChange()
         }
     }
 

@@ -259,6 +259,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func clear() {
+        isInCacheMode = false
         hasNext = false
         offset = 0
         count = 15
