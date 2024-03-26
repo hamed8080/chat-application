@@ -76,7 +76,9 @@ extension ThreadsViewModel {
     func onParticipantEvent(_ event: ParticipantEventTypes) {
         switch event {
         case .add(let chatResponse):
-            onAddPrticipant(chatResponse)
+            Task {
+                await onAddPrticipant(chatResponse)
+            }
         case .deleted(let chatResponse):
             onDeletePrticipant(chatResponse)
         default:
@@ -84,16 +86,36 @@ extension ThreadsViewModel {
         }
     }
 
+    
     func onThreadEvent(_ event: ThreadEventTypes?) {
         switch event {
         case .threads(let response):
             if !response.cache {
-                onThreads(response)
-                onUnreadThreads(response)
-                onNotActiveThreads(response)
+                Task {
+                    if isInCacheMode {
+                        isInCacheMode = false
+                        threads.removeAll()
+                    }
+                    if response.pop(prepend: "GET-THREADS") == nil {
+                        await onThreads(response)
+                    }
+                    if response.pop(prepend: "GET-UNREAD-THREADS") == nil {
+                        await onUnreadThreads(response)
+                    }
+                    if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") == nil {
+                        await onNotActiveThreads(response)
+                    }
+                }
+            } else if response.cache && ChatManager.activeInstance?.state != .chatReady {
+                Task {
+                    isInCacheMode = true
+                    await onThreads(response)
+                }
             }
         case .created(let response):
-            onCreate(response)
+            Task {
+                await onCreate(response)
+            }
         case .deleted(let response):
             onDeleteThread(response)
         case let .lastMessageDeleted(response), let .lastMessageEdited(response):
