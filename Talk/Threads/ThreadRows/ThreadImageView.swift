@@ -15,6 +15,8 @@ struct ThreadImageView: View {
     @State var thread: Conversation
     let threadsVM: ThreadsViewModel
     @State private var computedImageURL: String?
+    @State var splitedTitle = ""
+    @State var materialBackground: UIColor = .clear
 
     var body: some View {
         ZStack {
@@ -22,35 +24,42 @@ struct ThreadImageView: View {
                 SelfThreadImageView(imageSize: 54, iconSize: 27)
             } else if let image = computedImageURL {
                 ImageLoaderView(
-                    imageLoader: threadsVM.avatars(for: image, metaData: thread.metadata, userName: String.splitedCharacter(thread.title ?? "")),
+                    imageLoader: threadsVM.avatars(for: image, metaData: thread.metadata, userName: splitedTitle),
                     textFont: .iransansBoldBody
                 )
                 .id("\(computedImageURL ?? "")\(thread.id ?? 0)")
                 .font(.iransansBoldBody)
                 .foregroundColor(.white)
                 .frame(width: 54, height: 54)
-                .background(Color(uiColor: String.getMaterialColorByCharCode(str: thread.title ?? "")))
+                .background(Color(uiColor: materialBackground))
                 .clipShape(RoundedRectangle(cornerRadius:(24)))
             } else {
-                Text(verbatim: String.splitedCharacter(thread.computedTitle))
+                Text(verbatim: splitedTitle)
                     .id("\(computedImageURL ?? "")\(thread.id ?? 0)")
                     .font(.iransansBoldSubheadline)
                     .foregroundColor(.white)
                     .frame(width: 54, height: 54)
-                    .background(Color(uiColor: String.getMaterialColorByCharCode(str: thread.title ?? "")))
+                    .background(Color(uiColor: materialBackground))
                     .clipShape(RoundedRectangle(cornerRadius:(24)))
             }
         }.task {
             /// We do this beacuse computedImageURL use metadata decoder and it should not be on the main thread.
-            Task {
-                computedImageURL = thread.computedImageURL
-            }
+            await calculate()
         }
         .onReceive(thread.objectWillChange) { _ in /// update an image of a thread by another device
             if computedImageURL != self.thread.computedImageURL {
                 self.computedImageURL = thread.computedImageURL
             }
+            Task {
+                await calculate()
+            }
         }
+    }
+
+    private func calculate() async {
+        materialBackground = String.getMaterialColorByCharCode(str: thread.title ?? "")
+        splitedTitle = String.splitedCharacter(thread.computedTitle)
+        computedImageURL = thread.computedImageURL
     }
 }
 

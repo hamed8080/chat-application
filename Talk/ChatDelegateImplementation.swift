@@ -78,8 +78,10 @@ final class ChatDelegateImplementation: ChatDelegate {
         switch event {
         case let .user(response):
             Task {
-                if let user = response.result {
-                    UserConfigManagerVM.instance.onUser(user)
+                await MainActor.run {
+                    if let user = response.result {
+                        UserConfigManagerVM.instance.onUser(user)
+                    }
                 }
             }
         default:

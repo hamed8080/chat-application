@@ -37,6 +37,7 @@ public final class ThreadsViewModel: ObservableObject {
     @Published public var showUnreadConversations: Bool? = nil
     public var threadEventModels: [ThreadEventViewModel] = []
     private var cache: Bool = true
+    var isInCacheMode = false
 
     public init() {
         AppState.shared.$connectionStatus
@@ -47,14 +48,11 @@ public final class ThreadsViewModel: ObservableObject {
         registerNotifications()
     }
 
-    func onCreate(_ response: ChatResponse<Conversation>) {
+    func onCreate(_ response: ChatResponse<Conversation>) async {
         isLoading = false
         if let thread = response.result {
-            Task { [weak self] in
-                guard let self = self else { return }
-                await appendThreads(threads: [thread])
-                await asyncAnimateObjectWillChange()
-            }
+            await appendThreads(threads: [thread])
+            await asyncAnimateObjectWillChange()
         }
     }
 
@@ -100,6 +98,9 @@ public final class ThreadsViewModel: ObservableObject {
             offset = 0
             getThreads()
 //            refreshThreadsUnreadCount()
+        } else if status == .disconnected && !firstSuccessResponse {
+            // To get the cached version of the threads in SQLITE.
+            getThreads()
         }
     }
 
@@ -124,21 +125,18 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public func onThreads(_ response: ChatResponse<[Conversation]>) {
-        if response.pop(prepend: "GET-THREADS") == nil { return }
+    public func onThreads(_ response: ChatResponse<[Conversation]>) async {
         let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil})
         let pinThreads = response.result?.filter({$0.pin == true})
         let hasAnyResults = response.result?.count ?? 0 > 0
-        Task { [weak self] in
-            guard let self = self else { return }
-            /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
-            if let serverSortedPinIds = pinThreads?.compactMap({$0.id}), serverSortedPins.isEmpty {
-                serverSortedPins.removeAll()
-                serverSortedPins.append(contentsOf: serverSortedPinIds)
-            }
-            await appendThreads(threads: threads ?? [])
-            await asyncAnimateObjectWillChange()
+
+        /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
+        if let serverSortedPinIds = pinThreads?.compactMap({$0.id}), serverSortedPins.isEmpty {
+            serverSortedPins.removeAll()
+            serverSortedPins.append(contentsOf: serverSortedPinIds)
         }
+        await appendThreads(threads: threads ?? [])
+        await asyncAnimateObjectWillChange()
 
         if hasAnyResults {
             hasNext = response.hasNext
@@ -151,14 +149,10 @@ public final class ThreadsViewModel: ObservableObject {
         }
     }
 
-    public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) {
-        if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") == nil { return }
+    public func onNotActiveThreads(_ response: ChatResponse<[Conversation]>) async {        
         if let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil}) {
-            Task { [weak self] in
-                guard let self = self else { return }
-                await appendThreads(threads: threads)
-                await asyncAnimateObjectWillChange()
-            }
+            await appendThreads(threads: threads)
+            await asyncAnimateObjectWillChange()
         }
     }
 
@@ -209,16 +203,13 @@ public final class ThreadsViewModel: ObservableObject {
         animateObjectWillChange()
     }
 
-    func onAddPrticipant(_ response: ChatResponse<Conversation>) {
-        Task { [weak self] in
-            guard let self = self else { return }
-            if response.result?.participants?.first(where: {$0.id == AppState.shared.user?.id}) != nil, let newConversation = response.result {
-                /// It means an admin added a user to the conversation, and if the added user is in the app at the moment, should see this new conversation in its conversation list.
-                await appendThreads(threads: [newConversation])
-            }
-            isLoading = false
-            await asyncAnimateObjectWillChange()
+    func onAddPrticipant(_ response: ChatResponse<Conversation>) async {
+        if response.result?.participants?.first(where: {$0.id == AppState.shared.user?.id}) != nil, let newConversation = response.result {
+            /// It means an admin added a user to the conversation, and if the added user is in the app at the moment, should see this new conversation in its conversation list.
+            await appendThreads(threads: [newConversation])
         }
+        isLoading = false
+        await asyncAnimateObjectWillChange()
     }
 
     func onDeletePrticipant(_ response: ChatResponse<[Participant]>) {
@@ -268,6 +259,7 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func clear() {
+        isInCacheMode = false
         hasNext = false
         offset = 0
         count = 15
@@ -489,21 +481,17 @@ public final class ThreadsViewModel: ObservableObject {
         ChatManager.activeInstance?.conversation.get(req)
     }
 
-    public func onUnreadThreads(_ response: ChatResponse<[Conversation]>) {
-        if response.pop(prepend: "GET-UNREAD-THREADS") == nil { return }
+    public func onUnreadThreads(_ response: ChatResponse<[Conversation]>) async {        
         let threads = response.result?.filter({$0.isArchive == false || $0.isArchive == nil})
         let pinThreads = response.result?.filter({$0.pin == true})
         let hasAnyResults = response.result?.count ?? 0 > 0
-        Task { [weak self] in
-            guard let self = self else { return }
-            /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
-            if let serverSortedPinIds = pinThreads?.compactMap({$0.id}), serverSortedPins.isEmpty {
-                serverSortedPins.removeAll()
-                serverSortedPins.append(contentsOf: serverSortedPinIds)
-            }
-            await appendThreads(threads: threads ?? [])
-            await asyncAnimateObjectWillChange()
+        /// It only sets sorted pins once because if we have 5 pins, they are in the first response. So when the user scrolls down the list will not be destroyed every time.
+        if let serverSortedPinIds = pinThreads?.compactMap({$0.id}), serverSortedPins.isEmpty {
+            serverSortedPins.removeAll()
+            serverSortedPins.append(contentsOf: serverSortedPinIds)
         }
+        await appendThreads(threads: threads ?? [])
+        await asyncAnimateObjectWillChange()
 
         if hasAnyResults {
             hasNext = response.hasNext
