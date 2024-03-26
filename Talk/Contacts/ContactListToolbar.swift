@@ -47,7 +47,7 @@ struct ContactListToolbar: View {
                 Text("General.cancel")
                     .padding(.leading)
                     .font(.iransansBody)
-                    .foregroundStyle(Color.App.accent)
+                    .foregroundStyle(Color.App.toolbarButton)
             }
             .buttonStyle(.borderless)
             .frame(minWidth: 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
@@ -60,7 +60,7 @@ struct ContactListToolbar: View {
             }
             .frame(minWidth: 0, maxWidth: isInSearchMode ? 0 : ToolbarButtonItem.buttonWidth, minHeight: 0, maxHeight: isInSearchMode ? 0 : 38)
             .clipped()
-            .foregroundStyle(Color.App.accent)
+            .foregroundStyle(Color.App.toolbarButton)
         }
     }
 
@@ -72,6 +72,7 @@ struct ContactListToolbar: View {
                     viewModel.isInSelectionMode.toggle()
                 }
             }
+            .foregroundStyle(Color.App.toolbarButton)
 
 //            if !viewModel.showConversaitonBuilder {
 //                ToolbarButtonItem(imageName: "trash.fill", hint: "General.delete", padding: 10) {

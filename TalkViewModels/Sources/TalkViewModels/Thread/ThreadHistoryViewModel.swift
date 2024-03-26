@@ -34,6 +34,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public var shimmerViewModel: ShimmerViewModel = .init(delayToHide: 0)
     internal var seenVM: HistorySeenViewModel
     public var created: Bool = false
+    private var isJumpedToLastMessage = false
 
     // MARK: Computed Properties
     public var isEmptyThread: Bool {
@@ -431,6 +432,27 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
+    // MARK: On Cache History Response
+//    @MainActor
+    private func onHistoryCacheRsponse(_ response: ChatResponse<[Message]> ) async {
+        let messages = response.result ?? []
+        let sortedMessages = messages.sortedByTime()
+        await appendMessagesAndSort(sortedMessages)
+        threadViewModel?.scrollVM.disableExcessiveLoading()
+        isFetchedServerFirstResponse = false
+        if response.containsPartial(prependedKey: "MORE-TOP") {
+            hasNextTop = messages.count >= count // We just need the top part when the user open the thread while it's not connected.
+        }
+        topLoading = false
+        bottomLoading = false
+        shimmerViewModel.hide()
+        delegate?.reload()
+        if !isJumpedToLastMessage {
+            await threadViewModel?.scrollVM.showHighlightedAsync(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
+            isJumpedToLastMessage = true
+        }
+    }
+
     // MARK: Delete Message
     internal func removeByUniqueId(_ uniqueId: String?) {
         guard let uniqueId = uniqueId, let indices = indicesByMessageUniqueId(uniqueId) else { return }
@@ -449,7 +471,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         logger.debug("Start of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
         guard messages.count > 0 else { return }
         var viewModels: [MessageRowViewModel?] = []
-        for message in messages {
+        let set = Set(messages)
+        for message in set {
             let vm = insertOrUpdate(message)
             viewModels.append(vm)
         }
@@ -668,13 +691,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
                         await onMoveFromTime(request, response)
                     }
                     logger.debug("End on history:\(Date().millisecondsSince1970)")
+                    logger.debug("End on history:\(Date().millisecondsSince1970)")
+                }
+            } else if response.cache && ChatManager.activeInstance?.state != .chatReady {
+                Task {
+                    await onHistoryCacheRsponse(response)
                 }
             }
-            //            if response.cache == true {
-            //                isProgramaticallyScroll = true
-            //                appendMessagesAndSort(response.result ?? [])
-            //                animateObjectWillChange()
-            //            }
             break
         case .new(let response):
             onNewMessage(response)
@@ -824,6 +847,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
         if !isSimulated, status == .connected, isFetchedServerFirstResponse == true, threadViewModel?.isActiveThread == true {
             // After connecting again get latest messages.
             tryFifthScenario(status: status)
+        }
+
+        if status == .connected {
+            /// Clear old requests in queue when reconnect again
+            RequestsManager.shared.clear()
         }
 
         /// Fetch the history for the first time if the internet connection is not available.

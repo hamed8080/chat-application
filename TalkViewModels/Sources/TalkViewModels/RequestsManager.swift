@@ -94,6 +94,18 @@ class RequestsManager {
             return requests.contains(where: {$0.key == key})
         }
     }
+
+    func containsPartial(prependedKey: String) -> Bool {
+        queue.sync {
+            return requests.contains(where: {$0.key.contains(prependedKey)})
+        }
+    }
+
+    func clear() {
+        queue.sync {
+            requests.removeAll()
+        }
+    }
 }
 
 public extension ChatResponse {
@@ -114,5 +126,11 @@ public extension ChatResponse {
     func contains(prepend: String) -> Bool {
         guard let uniqueId = uniqueId else { return false }
         return RequestsManager.shared.contains(key: "\(prepend)-\(uniqueId)")
+    }
+
+    @discardableResult
+    func containsPartial(prependedKey: String) -> Bool {
+        guard let uniqueId = uniqueId else { return false }
+        return RequestsManager.shared.containsPartial(prependedKey: "\(prependedKey)-\(uniqueId)")
     }
 }
