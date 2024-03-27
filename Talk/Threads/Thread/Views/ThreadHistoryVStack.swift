@@ -40,6 +40,12 @@ struct ThreadHistoryList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .padding([.top, .bottom])
+                .onAppear {
+                    viewModel.isTopEndListAppeared = true
+                }
+                .onDisappear {
+                    viewModel.isTopEndListAppeared = false
+                }
 
             ForEach(viewModel.sections) { section in
                 SectionView(section: section)

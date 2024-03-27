@@ -78,7 +78,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private var cancelable: AnyCancellable?
     public var paddings = MessagePaddings()
     public var rowType = MessageViewRowType()
-    public var isSlot: Bool
     public var width: CGFloat? = nil
     public var height: CGFloat? = nil
 
@@ -101,12 +100,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        isSlot = message.id == LocalId.emptyMessageSlot.rawValue
-        if isSlot {
-            width = ThreadViewModel.maxAllowedWidth
-            height = 200
-            isMe = Bool.random()
-        }
         reactionsVM = MessageReactionsViewModel()
         reactionsVM.viewModel = self
         if message.uploadFile != nil {
@@ -523,7 +516,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             isMe = true
         }
         canShowIconFile = message.replyInfo?.messageType != .text && message.replyInfo?.deleted == false
-        isSlot = false
         width = nil
         height = nil
         registerObservers()

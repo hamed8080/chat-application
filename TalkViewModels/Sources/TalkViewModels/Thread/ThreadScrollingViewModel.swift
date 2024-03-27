@@ -74,7 +74,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
     }
 
-    public func showHighlighted(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) {
+    public func showHighlighted(_ uniqueId: String, _ messageId: Int, animation: Animation? = .easeInOut, highlight: Bool = true, anchor: UnitPoint? = .bottom) {
        task = Task {
             if Task.isCancelled { return }
             await MainActor.run {
@@ -82,7 +82,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
                     NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
                 }
             }
-            await scrollTo(uniqueId, anchor: anchor)
+           await scrollTo(uniqueId, animation, anchor: anchor)
         }
     }
 
