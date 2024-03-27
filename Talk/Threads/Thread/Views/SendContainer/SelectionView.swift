@@ -11,60 +11,104 @@ import TalkExtensions
 import TalkUI
 import TalkModels
 
-struct SelectionView: View {
-    @EnvironmentObject var selectedMessagesViewModel: ThreadSelectedMessagesViewModel
-    let threadVM: ThreadViewModel
-    @EnvironmentObject var appOverlayVM: AppOverlayViewModel
-    private var selectedCount: Int { selectedMessagesViewModel.selectedMessages.count }
+public final class SelectionView: UIStackView {
+    private let btnForward = UIButton(type: .system)
+    private let btnDelete = UIButton(type: .system)
+    private let lblCount = UILabel()
+    private let lblStatic = UILabel()
+    private let lblStaticForwardTO = UILabel()
+    private let closeButton = CloseButtonView()
+    private let viewModel: ThreadViewModel
 
-    var body: some View {
-        HStack(spacing: 0) {
-            SendContainerButton(image: "arrow.turn.up.right", fontWeight: .bold) {
-                threadVM.sheetType = .threadPicker
-                threadVM.animateObjectWillChange()
-            }
-            HStack(spacing: 2) {
-                Text(selectedCount.localNumber(locale: Language.preferredLocale) ?? "")
-                    .font(.iransansBoldBody)
-                    .foregroundStyle(Color.App.accent)
-                Text("General.selected")
-                    .foregroundStyle(Color.App.textSecondary)
-                if threadVM.forwardMessage != nil {
-                    Text("Thread.SendContainer.toForward")
-                        .foregroundStyle(Color.App.textSecondary)
-                }
-            }
-            .padding(.trailing)
-            .font(.iransansBody)
-            .offset(x: 8)
-            Spacer()
+    public init(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
+        configureViews()
+    }
 
-            /// Disable showing the delete button when forwarding in a conversation where we are not the admin and we just want to forward messages, so the delete button should be hidden.
-            if !threadVM.thread.disableSend {
-                Button {
-                    appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init(threadVM: threadVM)))
-                } label: {
-                    Image("ic_delete")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 19, height: 18)
-                        .tint(Color.App.iconSecondary)
-                }
-                .frame(width: 36, height: 36)
-                .buttonStyle(.borderless)
-                .fontWeight(.medium)
-            }
+    public required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-            CloseButton {
-                selectedMessagesViewModel.clearSelection()
-                selectedMessagesViewModel.animateObjectWillChange()
-            }
+    private func configureViews() {
+        btnForward.translatesAutoresizingMaskIntoConstraints = false
+        btnDelete.translatesAutoresizingMaskIntoConstraints = false
+
+        axis = .horizontal
+        spacing = 4
+        layoutMargins = .init(horizontal: 8, vertical: 4)
+        isLayoutMarginsRelativeArrangement = true
+
+        btnDelete.setImage(UIImage(systemName: "ic_delete"), for: .normal)
+        btnDelete.tintColor = Color.App.iconSecondaryUIColor
+
+        let image = UIImage(systemName: "arrow.turn.up.right")
+        btnForward.setImage(image, for: .normal)
+        btnForward.tintColor = Color.App.accentUIColor
+        btnForward.addTarget(self, action: #selector(forwardSelectedMessageTapped), for: .touchUpInside)
+
+        lblCount.font = UIFont.uiiransansBoldBody
+        lblCount.textColor = Color.App.accentUIColor
+
+        lblStatic.text = "General.selected".localized()
+        lblStatic.font = UIFont.uiiransansBody
+        lblStatic.textColor = Color.App.textSecondaryUIColor
+
+        lblStaticForwardTO.text = "Thread.SendContainer.toForward".localized()
+        lblStaticForwardTO.font = UIFont.uiiransansBody
+        lblStaticForwardTO.textColor = Color.App.textSecondaryUIColor
+
+        closeButton.action = { [weak self] in
+            self?.onClose()
         }
+
+        addArrangedSubview(btnForward)
+        addArrangedSubview(lblCount)
+        addArrangedSubview(lblStatic)
+        addArrangedSubview(lblStaticForwardTO)
+        addArrangedSubview(btnDelete)
+        addArrangedSubview(closeButton)
+
+        NSLayoutConstraint.activate([
+            btnForward.widthAnchor.constraint(equalToConstant: 36),
+            btnForward.heightAnchor.constraint(equalToConstant: 36),
+            btnDelete.widthAnchor.constraint(equalToConstant: 36),
+            btnDelete.heightAnchor.constraint(equalToConstant: 36),
+        ])
+    }
+
+    @objc private func forwardSelectedMessageTapped(_ sender: UIButton) {
+        viewModel.sheetType = .threadPicker
+        viewModel.animateObjectWillChange()
+    }
+
+    public func set() {
+        isHidden = viewModel.selectedMessagesViewModel.isInSelectMode
+        lblStaticForwardTO.isHidden = viewModel.forwardMessage != nil
+        btnDelete.isHidden = viewModel.thread.disableSend
+        let count = viewModel.selectedMessagesViewModel.selectedMessages.count
+        lblCount.text = count.localNumber(locale: Language.preferredLocale) ?? ""
+    }
+
+    private func deleteMessagesTapped(_ sender: UIButton) {
+//        appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init(threadVM: threadVM)))
+    }
+
+    private func onClose() {
+        viewModel.selectedMessagesViewModel.clearSelection()
+        viewModel.selectedMessagesViewModel.animateObjectWillChange()
     }
 }
 
 struct SelectionView_Previews: PreviewProvider {
+
+    struct SelectionViewWrapper: UIViewRepresentable {
+        let viewModel: ThreadViewModel
+        func makeUIView(context: Context) -> some UIView { SelectionView(viewModel: viewModel) }
+        func updateUIView(_ uiView: UIViewType, context: Context) {}
+    }
+
     static var previews: some View {
-        SelectionView(threadVM: .init(thread: .init(id: 1)))
+        SelectionViewWrapper(viewModel: .init(thread: .init(id: 1)))
     }
 }

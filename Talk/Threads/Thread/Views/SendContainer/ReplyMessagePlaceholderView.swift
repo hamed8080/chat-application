@@ -1,5 +1,5 @@
 //
-//  ReplyPrivatelyMessageViewPlaceholder.swift
+//  ReplyMessagePlaceholderView.swift
 //  Talk
 //
 //  Created by hamed on 11/3/23.
@@ -10,7 +10,7 @@ import TalkViewModels
 import TalkExtensions
 import TalkUI
 
-public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
+public final class ReplyMessagePlaceholderView: UIStackView {
     private let imageReply = UIImageView()
     private let vStack = UIStackView()
     private let nameLabel = UILabel()
@@ -30,7 +30,7 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
 
     private func configureViews() {
         imageReply.translatesAutoresizingMaskIntoConstraints = false
-
+        
         axis = .horizontal
         spacing = 4
         layoutMargins = .init(horizontal: 8, vertical: 4)
@@ -70,7 +70,7 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
 
     public func set() {
         isHidden = viewModel.replyMessage == nil
-        let replyMessage = AppState.shared.appStateNavigationModel.replyPrivately
+        let replyMessage = viewModel.replyMessage
         nameLabel.text = replyMessage?.participant?.name
         nameLabel.isHidden = replyMessage?.participant?.name == nil
         Task {
@@ -83,13 +83,15 @@ public final class ReplyPrivatelyMessagePlaceholderView: UIStackView {
 
     private func close() {
         viewModel.scrollVM.disableExcessiveLoading()
-        AppState.shared.appStateNavigationModel = .init()
+        viewModel.replyMessage = nil
+        viewModel.sendContainerViewModel.focusOnTextInput = false
+        viewModel.selectedMessagesViewModel.clearSelection()
         viewModel.animateObjectWillChange()
     }
 }
 
-struct ReplyPrivatelyMessagePlaceholderView_Previews: PreviewProvider {
-    struct ReplyPrivatelyMessagePlaceholderViewWrapper: UIViewRepresentable {
+struct ReplyMessagePlaceholderView_Previews: PreviewProvider {
+    struct ReplyMessagePlaceholderViewWrapper: UIViewRepresentable {
         let viewModel: ThreadViewModel
 
         func makeUIView(context: Context) -> some UIView {
@@ -111,7 +113,7 @@ struct ReplyPrivatelyMessagePlaceholderView_Previews: PreviewProvider {
         }
 
         var body: some View {
-            return ReplyPrivatelyMessagePlaceholderViewWrapper(viewModel: viewModel)
+            return ReplyMessagePlaceholderViewWrapper(viewModel: viewModel)
         }
     }
 

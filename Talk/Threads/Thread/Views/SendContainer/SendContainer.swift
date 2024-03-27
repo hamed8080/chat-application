@@ -23,23 +23,23 @@ struct SendContainer: View {
             VStack(spacing: 0) {
                 VStack(spacing: 0) {
                     if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true {
-                        SelectionView(threadVM: threadVM)
-                            .environmentObject(threadVM.selectedMessagesViewModel)
+//                        SelectionView(threadVM: threadVM)
+//                            .environmentObject(threadVM.selectedMessagesViewModel)
                     } else if viewModel.canShowMute {
-                        MuteChannelViewPlaceholder()
-                            .padding(10)
+//                        MuteChannelViewPlaceholder()
+//                            .padding(10)
                     } else {
-                        ForwardMessagesViewPlaceholder()
-                            .environmentObject(viewModel)
-                        ReplyPrivatelyMessageViewPlaceholder()
-                            .environmentObject(viewModel)
-                        ReplyMessageViewPlaceholder()
-                            .environmentObject(viewModel)
+//                        ForwardMessagesViewPlaceholder()
+//                            .environmentObject(viewModel)
+//                        ReplyPrivatelyMessageViewPlaceholder()
+//                            .environmentObject(viewModel)
+//                        ReplyMessageViewPlaceholder()
+//                            .environmentObject(viewModel)
                         MentionList()
                             .environmentObject(threadVM.mentionListPickerViewModel)
                             .environmentObject(viewModel)
-                        EditMessagePlaceholderView()
-                            .environmentObject(viewModel)
+//                        EditMessagePlaceholderView()
+//                            .environmentObject(viewModel)
                         AudioOrTextContainer()
                     }
                 }

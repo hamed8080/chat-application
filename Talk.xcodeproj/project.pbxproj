@@ -78,8 +78,8 @@
 		05511D702B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */; };
 		055444532B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */; };
 		055444542B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */; };
-		05551C262AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
-		05551C272AF4C631000F98B6 /* CloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButton.swift */; };
+		05551C262AF4C631000F98B6 /* CloseButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButtonView.swift */; };
+		05551C272AF4C631000F98B6 /* CloseButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C252AF4C631000F98B6 /* CloseButtonView.swift */; };
 		05551C292AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */; };
 		05551C2A2AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */; };
 		05593BA52AFF560A00316E39 /* ThreadSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05593BA42AFF560A00316E39 /* ThreadSearchView.swift */; };
@@ -308,10 +308,10 @@
 		05C099C42AD1143C007AAC6C /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C099C22AD1135D007AAC6C /* ToastView.swift */; };
 		05C27F982AF4AFF60008FE2E /* ConversationPlusContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F972AF4AFF60008FE2E /* ConversationPlusContextMenu.swift */; };
 		05C27F992AF4AFF60008FE2E /* ConversationPlusContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F972AF4AFF60008FE2E /* ConversationPlusContextMenu.swift */; };
-		05C27F9C2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9B2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift */; };
-		05C27F9D2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9B2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift */; };
-		05C27F9F2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9E2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift */; };
-		05C27FA02AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9E2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift */; };
+		05C27F9C2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9B2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift */; };
+		05C27F9D2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9B2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift */; };
+		05C27F9F2AF4BC910008FE2E /* MuteChannelBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9E2AF4BC910008FE2E /* MuteChannelBarView.swift */; };
+		05C27FA02AF4BC910008FE2E /* MuteChannelBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27F9E2AF4BC910008FE2E /* MuteChannelBarView.swift */; };
 		05C27FA22AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA12AF4BCD30008FE2E /* EditMessagePlaceholderView.swift */; };
 		05C27FA32AF4BCD30008FE2E /* EditMessagePlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA12AF4BCD30008FE2E /* EditMessagePlaceholderView.swift */; };
 		05C27FA52AF4BD010008FE2E /* SelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C27FA42AF4BD010008FE2E /* SelectionView.swift */; };
@@ -415,7 +415,7 @@
 		05466B092AEEA3F7005CC176 /* ArchivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivesView.swift; sourceTree = "<group>"; };
 		05511D6E2B84D8400005E2A4 /* ConversationDetailDeleteContactDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationDetailDeleteContactDialog.swift; sourceTree = "<group>"; };
 		055444522B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadTabDetailStickyHeaderSection.swift; sourceTree = "<group>"; };
-		05551C252AF4C631000F98B6 /* CloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButton.swift; sourceTree = "<group>"; };
+		05551C252AF4C631000F98B6 /* CloseButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloseButtonView.swift; sourceTree = "<group>"; };
 		05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendContainerButton.swift; sourceTree = "<group>"; };
 		05593BA42AFF560A00316E39 /* ThreadSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSearchView.swift; sourceTree = "<group>"; };
 		05593BA72AFF916400316E39 /* ConversationTopSafeAreaInset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTopSafeAreaInset.swift; sourceTree = "<group>"; };
@@ -542,8 +542,8 @@
 		05B4C17A2ACEF2AF00FBC4DC /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		05C099C22AD1135D007AAC6C /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		05C27F972AF4AFF60008FE2E /* ConversationPlusContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPlusContextMenu.swift; sourceTree = "<group>"; };
-		05C27F9B2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyMessageViewPlaceholder.swift; sourceTree = "<group>"; };
-		05C27F9E2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuteChannelViewPlaceholder.swift; sourceTree = "<group>"; };
+		05C27F9B2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyMessagePlaceholderView.swift; sourceTree = "<group>"; };
+		05C27F9E2AF4BC910008FE2E /* MuteChannelBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuteChannelBarView.swift; sourceTree = "<group>"; };
 		05C27FA12AF4BCD30008FE2E /* EditMessagePlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessagePlaceholderView.swift; sourceTree = "<group>"; };
 		05C27FA42AF4BD010008FE2E /* SelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionView.swift; sourceTree = "<group>"; };
 		05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSendButtons.swift; sourceTree = "<group>"; };
@@ -1040,13 +1040,13 @@
 				050C2C1D2AF0BE53000D380E /* AttachmentFiles.swift */,
 				0570CB8D2AAEE98C001832E9 /* AttachmentButtonsView.swift */,
 				0570CB962AAEE98C001832E9 /* SendContainer.swift */,
-				05C27F9B2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift */,
+				05C27F9B2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift */,
 				05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */,
-				05C27F9E2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift */,
+				05C27F9E2AF4BC910008FE2E /* MuteChannelBarView.swift */,
 				05C27FA12AF4BCD30008FE2E /* EditMessagePlaceholderView.swift */,
 				05C27FA42AF4BD010008FE2E /* SelectionView.swift */,
 				05C27FA72AF4BD330008FE2E /* MainSendButtons.swift */,
-				05551C252AF4C631000F98B6 /* CloseButton.swift */,
+				05551C252AF4C631000F98B6 /* CloseButtonView.swift */,
 				05551C282AF4C9D5000F98B6 /* SendContainerButton.swift */,
 				05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */,
 				05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */,
@@ -1329,7 +1329,7 @@
 				055444532B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */,
 				050B291A2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CBFF2AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
-				05C27F9C2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */,
+				05C27F9C2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift in Sources */,
 				0570CC012AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
 				0594FE572B0347B50031AADF /* AutomaticDownloadSettings.swift in Sources */,
 				05551C292AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */,
@@ -1338,7 +1338,7 @@
 				050B51B52AE7852B00B8DD49 /* LoginView.swift in Sources */,
 				05C6DA1B2B19F3020049BCDC /* EditProfileView.swift in Sources */,
 				052CA3D22BA411B800E38E19 /* UploadMessageType.swift in Sources */,
-				05551C262AF4C631000F98B6 /* CloseButton.swift in Sources */,
+				05551C262AF4C631000F98B6 /* CloseButtonView.swift in Sources */,
 				0570CC672AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC0F2AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
 				050620412B0B1FE10024476C /* MessageRowBackground.swift in Sources */,
@@ -1347,7 +1347,7 @@
 				052CA3DE2BA4162600E38E19 /* ThreadEventView.swift in Sources */,
 				0570CBF12AAEE98F001832E9 /* ThreadLastMessageView.swift in Sources */,
 				052CA3EC2BA41DC800E38E19 /* UploadMessageFileView.swift in Sources */,
-				05C27F9F2AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift in Sources */,
+				05C27F9F2AF4BC910008FE2E /* MuteChannelBarView.swift in Sources */,
 				050DE2092AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */,
 				0570CBE72AAEE98F001832E9 /* ParticipantRow.swift in Sources */,
 				0570CC692AAEE98F001832E9 /* AddOrEditContactView.swift in Sources */,
@@ -1500,7 +1500,7 @@
 				055444542B67D3FA00E16A2F /* ThreadTabDetailStickyHeaderSection.swift in Sources */,
 				050B291B2AB40DC20072706C /* NothingHasBeenSelectedView.swift in Sources */,
 				0570CC002AAEE98F001832E9 /* JoinToPublicThreadView.swift in Sources */,
-				05C27F9D2AF4BC460008FE2E /* ReplyMessageViewPlaceholder.swift in Sources */,
+				05C27F9D2AF4BC460008FE2E /* ReplyMessagePlaceholderView.swift in Sources */,
 				0570CC022AAEE98F001832E9 /* ThreadsSheetFactoryView.swift in Sources */,
 				0594FE5A2B034B050031AADF /* SettingNotificationSection.swift in Sources */,
 				05551C2A2AF4C9D5000F98B6 /* SendContainerButton.swift in Sources */,
@@ -1509,7 +1509,7 @@
 				050B51B62AE7852B00B8DD49 /* LoginView.swift in Sources */,
 				05C6DA1C2B19F3020049BCDC /* EditProfileView.swift in Sources */,
 				052CA3D32BA411B800E38E19 /* UploadMessageType.swift in Sources */,
-				05551C272AF4C631000F98B6 /* CloseButton.swift in Sources */,
+				05551C272AF4C631000F98B6 /* CloseButtonView.swift in Sources */,
 				0570CC682AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC102AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
 				050620422B0B1FE10024476C /* MessageRowBackground.swift in Sources */,
@@ -1518,7 +1518,7 @@
 				052CA3DF2BA4162600E38E19 /* ThreadEventView.swift in Sources */,
 				0570CBF22AAEE98F001832E9 /* ThreadLastMessageView.swift in Sources */,
 				052CA3EB2BA41DC800E38E19 /* UploadMessageFileView.swift in Sources */,
-				05C27FA02AF4BC910008FE2E /* MuteChannelViewPlaceholder.swift in Sources */,
+				05C27FA02AF4BC910008FE2E /* MuteChannelBarView.swift in Sources */,
 				050DE20A2AB1DD7E00418463 /* MessageReactionDetailView.swift in Sources */,
 				0570CBE82AAEE98F001832E9 /* ParticipantRow.swift in Sources */,
 				0570CC6A2AAEE98F001832E9 /* AddOrEditContactView.swift in Sources */,

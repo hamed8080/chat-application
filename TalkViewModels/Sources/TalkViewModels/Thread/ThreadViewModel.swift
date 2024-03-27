@@ -49,7 +49,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var readOnly = false
     private var cancelable: Set<AnyCancellable> = []
     public var signalMessageText: String?
-    public weak var forwardMessage: Message?
+    public var forwardMessage: Message?
     var model: AppSettingsModel = .init()
     public var canDownloadImages: Bool = false
     public var canDownloadFiles: Bool = false

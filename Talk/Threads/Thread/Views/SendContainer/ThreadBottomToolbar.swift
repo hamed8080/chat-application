@@ -14,12 +14,24 @@ public final class ThreadBottomToolbar: UIStackView {
     private let viewModel: ThreadViewModel
     private let mainSendButtons: MainSendButtons
     private let attachmentButtons: AttachmentButtonsView
+    private let replyPrivatelyPlaceholderView: ReplyPrivatelyMessagePlaceholderView
+    private let replyPlaceholderView: ReplyMessagePlaceholderView
+    private let forwardPlaceholderView: ForwardMessagePlaceholderView
+    private let editMessagePlaceholderView: EditMessagePlaceholderView
+    private let selectionView: SelectionView
+    private let muteBarView: MuteChannelBarView
     private var cancellableSet = Set<AnyCancellable>()
 
     public init(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
         self.mainSendButtons = MainSendButtons(viewModel: viewModel)
         self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel.sendContainerViewModel)
+        self.replyPlaceholderView = ReplyMessagePlaceholderView(viewModel: viewModel)
+        self.replyPrivatelyPlaceholderView = ReplyPrivatelyMessagePlaceholderView(viewModel: viewModel)
+        self.forwardPlaceholderView = ForwardMessagePlaceholderView(viewModel: viewModel)
+        self.editMessagePlaceholderView = EditMessagePlaceholderView(viewModel: viewModel)
+        self.selectionView = SelectionView(viewModel: viewModel)
+        self.muteBarView = MuteChannelBarView(viewModel: viewModel)
         super.init(frame: .zero)
         configureViews()
         registerObservers()
@@ -33,9 +45,14 @@ public final class ThreadBottomToolbar: UIStackView {
         translatesAutoresizingMaskIntoConstraints = false
         mainSendButtons.translatesAutoresizingMaskIntoConstraints = false
         attachmentButtons.translatesAutoresizingMaskIntoConstraints = false
-        
+        replyPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
+        forwardPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
+        editMessagePlaceholderView.translatesAutoresizingMaskIntoConstraints = false
+        selectionView.translatesAutoresizingMaskIntoConstraints = false
+        muteBarView.translatesAutoresizingMaskIntoConstraints = false
+
         axis = .vertical
-        alignment = .center
+        alignment = .fill
         spacing = 0
 
         let blurEffect = UIBlurEffect(style: .systemThickMaterial)
@@ -46,16 +63,24 @@ public final class ThreadBottomToolbar: UIStackView {
         addSubview(effectView)
 
         attachmentButtons.isHidden = true
+        replyPrivatelyPlaceholderView.isHidden = true
+        replyPlaceholderView.isHidden = true
+        forwardPlaceholderView.isHidden = true
+        editMessagePlaceholderView.isHidden = true
+        selectionView.isHidden = true
         addArrangedSubview(attachmentButtons)
-        addArrangedSubview(mainSendButtons)
-
+        addArrangedSubview(replyPlaceholderView)
+        addArrangedSubview(replyPrivatelyPlaceholderView)
+        addArrangedSubview(forwardPlaceholderView)
+        addArrangedSubview(editMessagePlaceholderView)
+        addArrangedSubview(selectionView)
+        if viewModel.sendContainerViewModel.canShowMute {
+            addArrangedSubview(muteBarView)
+        } else {
+            addArrangedSubview(mainSendButtons)
+        }
         NSLayoutConstraint.activate([
             topAnchor.constraint(equalTo: attachmentButtons.topAnchor, constant: -8),
-            mainSendButtons.leadingAnchor.constraint(equalTo: leadingAnchor),
-            mainSendButtons.trailingAnchor.constraint(equalTo: trailingAnchor),
-            mainSendButtons.bottomAnchor.constraint(equalTo: bottomAnchor),
-            attachmentButtons.bottomAnchor.constraint(equalTo: mainSendButtons.topAnchor),
-            attachmentButtons.centerXAnchor.constraint(equalTo: centerXAnchor),
             effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
             effectView.trailingAnchor.constraint(equalTo: trailingAnchor),
             effectView.topAnchor.constraint(equalTo: topAnchor),

@@ -35,6 +35,7 @@ public final class AttachmentButtonsView: UIStackView {
         axis = .horizontal
         spacing = 8
         alignment = .center
+        distribution = .fill
 
         addArrangedSubviews([btnGallery, btnFile, btnLocation])
     }
