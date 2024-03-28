@@ -552,24 +552,20 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Appear & Disappear
-    @MainActor
     public func onMessageAppear(_ message: Message) async {
         log("Message appear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
         guard let threadVM = threadViewModel else { return }
-        Task { [weak self] in
-            guard let self = self else { return }
-            if message.id == thread.lastMessageVO?.id, threadVM.scrollVM.isAtBottomOfTheList == false {
-                threadVM.scrollVM.isAtBottomOfTheList = true
-                threadVM.scrollVM.animateObjectWillChange()
-            }
-            seenVM.onAppear(message)
-            if let time = moreTopTime(message: message) {
-                moreTop(time)
-            }
+        if message.id == thread.lastMessageVO?.id, threadVM.scrollVM.isAtBottomOfTheList == false {
+            threadVM.scrollVM.isAtBottomOfTheList = true
+            threadVM.scrollVM.animateObjectWillChange()
+        }
+        seenVM.onAppear(message)
+        if let time = moreTopTime(message: message) {
+            moreTop(time)
+        }
 
-            if let time = moreBottomTime(message: message) {
-                moreBottom(time)
-            }
+        if let time = moreBottomTime(message: message) {
+            moreBottom(time)
         }
     }
 

@@ -24,6 +24,7 @@ struct EmptyThreadView: View {
                         .foregroundStyle(Color.App.textPrimary)
                         .fontWeight(.regular)
                     Image(systemName: "text.bubble")
+                        .interpolation(.none)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 36, height: 36)

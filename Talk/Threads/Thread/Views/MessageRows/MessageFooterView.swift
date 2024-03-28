@@ -37,6 +37,7 @@ struct MessageFooterView: View {
 
             if viewModel.isMe, isSelfThreadDelvived {
                 Image(uiImage: message.footerStatus.image)
+                    .interpolation(.none)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
@@ -45,6 +46,7 @@ struct MessageFooterView: View {
 
             if message.id != nil, message.id == thread?.pinMessage?.id {
                 Image(systemName: "pin.fill")
+                    .interpolation(.none)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)

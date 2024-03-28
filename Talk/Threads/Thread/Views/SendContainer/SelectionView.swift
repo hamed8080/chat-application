@@ -45,6 +45,7 @@ struct SelectionView: View {
                     appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init(threadVM: threadVM)))
                 } label: {
                     Image("ic_delete")
+                        .interpolation(.none)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 19, height: 18)

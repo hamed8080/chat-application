@@ -47,14 +47,14 @@ struct DownloadButton: View {
             }
             .frame(width: 46, height: 46)
             .background(scheme == .light ? Color.App.accent : Color.App.white)
-            .clipShape(RoundedRectangle(cornerRadius:(46 / 2)))
-            .transition(.scale)
+            .clipShape(RoundedRectangle(cornerRadius:(23)))
         }
         .buttonStyle(.borderless)
     }
 
     @ViewBuilder private var iconView: some View {
         Image(systemName: stateIcon.replacingOccurrences(of: ".circle", with: ""))
+            .interpolation(.none)
             .resizable()
             .scaledToFit()
             .frame(width: 16, height: 16)

@@ -47,6 +47,7 @@ struct UploadButton: View {
 
     @ViewBuilder private var iconView: some View {
         Image(systemName: stateIcon.replacingOccurrences(of: ".circle", with: ""))
+            .interpolation(.none)
             .resizable()
             .scaledToFit()
             .frame(width: 16, height: 16)

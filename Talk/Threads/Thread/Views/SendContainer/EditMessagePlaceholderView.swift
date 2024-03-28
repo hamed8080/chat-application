@@ -68,6 +68,7 @@ struct EditMessageImage: View {
     @ViewBuilder func image(viewModel: MessageRowViewModel) -> some View {
         if viewModel.message.isImage {
                 Image(uiImage: viewModel.image)
+                .interpolation(.none)
                 .frame(width: 32, height: 32)
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .clipped()
@@ -78,6 +79,7 @@ struct EditMessageImage: View {
     @ViewBuilder func iconImage(viewModel: MessageRowViewModel) -> some View {
         if viewModel.message.isFileType, let iconName = viewModel.message.iconName {
             Image(systemName: iconName)
+                .interpolation(.none)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 32, height: 32)

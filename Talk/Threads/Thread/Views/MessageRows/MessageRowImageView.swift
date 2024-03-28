@@ -20,6 +20,7 @@ struct MessageRowImageView: View {
         if message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed {
             ZStack {
                 Image(uiImage: viewModel.image)
+                    .interpolation(.none)
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: viewModel.imageWidth, maxHeight: viewModel.imageHeight)
@@ -108,6 +109,7 @@ struct OverlayDownloadImageButton: View {
 
     private var iconView: some View {
         Image(systemName: stateIcon)
+            .interpolation(.none)
             .resizable()
             .scaledToFit()
             .font(.system(size: 14, design: .rounded))
@@ -160,6 +162,7 @@ public struct UploadMessageImageView: View {
                 let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
 
                 Image(uiImage: image)
+                    .interpolation(.none)
                     .resizable()
                     .scaledToFill()
                     .frame(width: width, height: height)
@@ -221,6 +224,7 @@ struct OverladUploadImageButton: View {
 
     private var iconView: some View {
         Image(systemName: stateIcon)
+            .interpolation(.none)
             .resizable()
             .scaledToFit()
             .font(.system(size: 8, design: .rounded).bold())

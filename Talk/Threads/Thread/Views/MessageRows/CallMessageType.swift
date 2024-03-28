@@ -15,7 +15,6 @@ import TalkViewModels
 struct CallMessageType: View {
     @EnvironmentObject var viewModel: MessageRowViewModel
     var message: Message { viewModel.message }
-    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         HStack(alignment: .center) {
@@ -30,6 +29,7 @@ struct CallMessageType: View {
             }
 
             Image(systemName: message.type == .startCall ? "phone.arrow.up.right.fill" : "phone.down.fill")
+                .interpolation(.none)
                 .resizable()
                 .scaledToFit()
                 .frame(width: message.type == .startCall ? 12 : 18, height: message.type == .startCall ? 12 : 18)

@@ -17,15 +17,14 @@ struct ThreadHistoryVStack: View {
     @EnvironmentObject var viewModel: ThreadHistoryViewModel
 
     var body: some View {
-        VStack(spacing: 0) {
-            if viewModel.isEmptyThread {
-                EmptyThreadView()
-            } else {
-                ThreadHistoryList()
+        ThreadHistoryList()
+            .overlay {
+                if viewModel.isEmptyThread {
+                    EmptyThreadView()
+                }
             }
-        }
-        .overlay(ThreadHistoryShimmerView().environmentObject(viewModel.shimmerViewModel))
-        .environment(\.layoutDirection, .leftToRight)
+            .overlay(ThreadHistoryShimmerView().environmentObject(viewModel.shimmerViewModel))
+            .environment(\.layoutDirection, .leftToRight)
     }
 }
 
@@ -47,7 +46,7 @@ struct ThreadHistoryList: View {
                     viewModel.isTopEndListAppeared = false
                 }
 
-            ForEach(viewModel.sections) { section in
+            ForEach(viewModel.sections, id: \.id) { section in
                 SectionView(section: section)
                 MessageList(vms: section.vms, viewModel: viewModel)
             }
@@ -88,8 +87,13 @@ struct SectionView: View {
             Spacer()
         }
         .task {
-            if yearText == "" {
-                yearText = section.date.yearCondence ?? ""
+            Task.detached(priority: .background) {
+                if yearText == "" {
+                    let yearText = section.date.yearCondence ?? ""
+                    await MainActor.run {
+                        self.yearText = yearText
+                    }
+                }
             }
         }
     }
@@ -106,12 +110,12 @@ struct MessageList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .onAppear {
-                    Task {
+                    Task.detached(priority: .background) {
                         await viewModel.onMessageAppear(vm.message)
                     }
                 }
                 .onDisappear {
-                    Task {
+                    Task.detached(priority: .background) {
                         await viewModel.onMessegeDisappear(vm.message)
                     }
                 }

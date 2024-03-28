@@ -131,6 +131,7 @@ struct ReplyFileIcon: View {
         if !viewModel.isReplyImage, viewModel.canShowIconFile {
             if let iconName = self.message.replyIconName {
                 Image(systemName: iconName)
+                    .interpolation(.none)
                     .resizable()
                     .scaledToFill()
                     .frame(width: 32, height: 32)

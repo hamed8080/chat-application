@@ -25,6 +25,7 @@ struct MessageTextView: View {
                 .foregroundColor(Color.App.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, viewModel.paddings.textViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
+                .background(viewModel.isMe ? Color.App.bgChatMe : Color.App.bgChatUser)
         } else if let fileName = message.uploadFileName, message.isUnsentMessage == true {
             Text(fileName)
                 .multilineTextAlignment(viewModel.isEnglish ? .leading : .trailing)

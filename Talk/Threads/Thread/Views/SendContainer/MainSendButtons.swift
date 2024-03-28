@@ -23,6 +23,7 @@ struct MainSendButtons: View {
                 }
             } label: {
                 Image(systemName: viewModel.showActionButtons ? "chevron.down" : "paperclip")
+                    .interpolation(.none)
                     .resizable()
                     .scaledToFit()
                     .frame(width: viewModel.showActionButtons ? 16 : 20, height: viewModel.showActionButtons ? 16 : 20)
@@ -53,6 +54,7 @@ struct MainSendButtons: View {
                 threadVM.setupRecording()
             } label: {
                 Image(systemName: "mic")
+                    .interpolation(.none)
                     .resizable()
                     .scaledToFit()
                     .frame(width: viewModel.showAudio ? 20 : 0, height: viewModel.showAudio ? 20 : 0)
@@ -71,6 +73,7 @@ struct MainSendButtons: View {
                     threadVM.setupRecording()
                 } label: {
                     Image(systemName: "camera")
+                        .interpolation(.none)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 26, height: 24)
@@ -97,6 +100,7 @@ struct MainSendButtons: View {
                     threadVM.animateObjectWillChange()
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
+                        .interpolation(.none)
                         .resizable()
                         .scaledToFit()
                         .frame(width: viewModel.showSendButton ? 26 : 0, height: viewModel.showSendButton ? 26 : 0)

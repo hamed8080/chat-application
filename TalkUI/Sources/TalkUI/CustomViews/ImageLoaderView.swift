@@ -33,6 +33,7 @@ public struct ImageLoaderView: View {
                     .font(textFont)
             } else if imageLoader.isImageReady {
                 Image(uiImage: imageLoader.image)
+                    .interpolation(.none)
                     .resizable()
                     .aspectRatio(contentMode: contentMode)
             }

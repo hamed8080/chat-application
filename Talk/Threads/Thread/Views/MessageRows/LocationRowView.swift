@@ -54,6 +54,7 @@ struct MapImageDownloader: View {
         let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
 
         Image(uiImage: image)
+            .interpolation(.none)
             .resizable()
             .scaledToFill()
             .frame(width: width, height: height)

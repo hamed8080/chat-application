@@ -39,6 +39,7 @@ struct SendContainerButton: View {
         } label: {
             if let image {
                 Image(systemName: image)
+                    .interpolation(.none)
                     .resizable()
                     .scaledToFit()
                     .symbolRenderingMode(.palette)
