@@ -67,7 +67,6 @@ struct ThreadHistoryList: View {
             //                UnsentMessagesLoop(historyVM: viewModel)
         }
         .listStyle(.plain)
-        KeyboardHeightView()
     }
 }
 

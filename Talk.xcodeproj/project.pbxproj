@@ -269,8 +269,6 @@
 		05A3AD6C2B99F41C00536022 /* ThreadbackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A3AD6A2B99F41C00536022 /* ThreadbackgroundView.swift */; };
 		05A3AD6F2B99F4F100536022 /* EmptyThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A3AD6E2B99F4F100536022 /* EmptyThreadView.swift */; };
 		05A3AD702B99F4F100536022 /* EmptyThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A3AD6E2B99F4F100536022 /* EmptyThreadView.swift */; };
-		05A3AD722B99F60000536022 /* KeyboardHeightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A3AD712B99F60000536022 /* KeyboardHeightView.swift */; };
-		05A3AD732B99F60000536022 /* KeyboardHeightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A3AD712B99F60000536022 /* KeyboardHeightView.swift */; };
 		05A4AAA42B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */; };
 		05A4AAA52B1761BD00EC64A3 /* UnreadMentionsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */; };
 		05ABE5872B1900C300255C49 /* ForwardMessagesViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */; };
@@ -505,7 +503,6 @@
 		05A0CD702B1930C900F13EE5 /* DeleteContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteContactView.swift; sourceTree = "<group>"; };
 		05A3AD6A2B99F41C00536022 /* ThreadbackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadbackgroundView.swift; sourceTree = "<group>"; };
 		05A3AD6E2B99F4F100536022 /* EmptyThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyThreadView.swift; sourceTree = "<group>"; };
-		05A3AD712B99F60000536022 /* KeyboardHeightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardHeightView.swift; sourceTree = "<group>"; };
 		05A4AAA32B1761BD00EC64A3 /* UnreadMentionsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadMentionsButton.swift; sourceTree = "<group>"; };
 		05ABE5862B1900AF00255C49 /* ForwardMessagesViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForwardMessagesViewPlaceholder.swift; sourceTree = "<group>"; };
 		05B4C1772ACEF1FA00FBC4DC /* NavigationBackButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationBackButton.swift; sourceTree = "<group>"; };
@@ -959,7 +956,6 @@
 				05CC0B022B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift */,
 				05A3AD6A2B99F41C00536022 /* ThreadbackgroundView.swift */,
 				05A3AD6E2B99F4F100536022 /* EmptyThreadView.swift */,
-				05A3AD712B99F60000536022 /* KeyboardHeightView.swift */,
 			);
 			path = Extra;
 			sourceTree = "<group>";
@@ -1207,7 +1203,6 @@
 				05DAA42F2B29BE74007427DC /* ThreadListSearchBarFilterView.swift in Sources */,
 				0570CC6D2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
 				0570CBE52AAEE98F001832E9 /* CreateDirectThreadView.swift in Sources */,
-				05A3AD722B99F60000536022 /* KeyboardHeightView.swift in Sources */,
 				05DE92472B03E8E100C7A006 /* MessageRowFileView.swift in Sources */,
 				0564D5952B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */,
 				0570CC712AAEE98F001832E9 /* AssistantRow.swift in Sources */,
@@ -1368,7 +1363,6 @@
 				05DAA4302B29BE74007427DC /* ThreadListSearchBarFilterView.swift in Sources */,
 				0570CC6E2AAEE98F001832E9 /* BlockedContacts.swift in Sources */,
 				0570CBE62AAEE98F001832E9 /* CreateDirectThreadView.swift in Sources */,
-				05A3AD732B99F60000536022 /* KeyboardHeightView.swift in Sources */,
 				05DE92462B03E8E100C7A006 /* MessageRowFileView.swift in Sources */,
 				0564D5962B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */,
 				0570CC722AAEE98F001832E9 /* AssistantRow.swift in Sources */,

@@ -275,6 +275,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         sendContainerViewModel.cancelAllObservers()
         historyVM.cancelAllObservers()
         threadPinMessageViewModel.cancelAllObservers()
+        scrollVM.cancelAllObservers()
     }
 
     private func registerNotifications() {

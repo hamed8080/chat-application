@@ -11,6 +11,7 @@ import ChatModels
 import ChatDTO
 import ChatCore
 import SwiftUI
+import Combine
 
 public protocol ScrollToPositionProtocol {
     func scrollToBottom(animation: Animation?)
@@ -22,6 +23,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
     public var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false
+    private var cancelablleSet = Set<AnyCancellable>()
     public weak var threadVM: ThreadViewModel? {
         didSet {
             isAtBottomOfTheList = thread.lastMessageVO?.id == thread.lastSeenMessageId
@@ -30,7 +32,9 @@ public final class ThreadScrollingViewModel: ObservableObject {
     private var thread: Conversation { threadVM?.thread ?? .init(id: -1)}
     public var isAtBottomOfTheList: Bool = false
 
-    init() {}
+    init() {
+        registerObservers()
+    }
 
     @MainActor
     private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.3), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) async {
@@ -108,6 +112,48 @@ public final class ThreadScrollingViewModel: ObservableObject {
                 isProgramaticallyScroll = false
             }
         }
+    }
+
+    private func registerObservers() {
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.scrollToBottomIfPossible()
+        }
+
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.scrollToBottomIfPossible()
+        }
+
+        NotificationCenter.message.publisher(for: .message)
+            .sink { [weak self] notif in
+                guard let self = self else { return }
+                if let event = notif.object as? MessageEventTypes {
+                    if case .new(let response) = event, response.result?.conversation?.id == threadVM?.threadId {
+                        scrollToBottomIfPossible()
+                    }
+                }
+            }
+            .store(in: &cancelablleSet)
+    }
+
+    private func scrollToBottomIfPossible() {
+        // We have to wait until all the animations for clicking on TextField are finished and then start our animation.
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+            withAnimation(.easeInOut(duration: 0.4)) {
+                if self.isAtBottomOfTheList {
+                    self.scrollToBottom()
+                }
+            }
+        }
+    }
+
+    // MARK: Cancel Observers
+    internal func cancelAllObservers() {
+        cancelablleSet.forEach { cancelable in
+            cancelable.cancel()
+        }
+        cancelablleSet.removeAll()
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     public func cancelTask() {
