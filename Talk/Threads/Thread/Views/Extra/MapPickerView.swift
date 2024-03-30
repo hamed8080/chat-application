@@ -12,75 +12,137 @@ import TalkModels
 import TalkUI
 import TalkViewModels
 import ChatCore
+import Combine
 
-struct MapPickerView: View {
-    @Environment(\.dismiss) var dismiss
-    @StateObject var locationManager: LocationManager = .init()
-    @EnvironmentObject var viewModel: ThreadViewModel
+public final class MapPickerViewController: UIViewController {
+    private let mapView = MKMapView()
+    private let btnClose = UIButton(type: .system)
+    private let btnSubmit = SubmitBottomButtonUIView(text: "General.add")
+    private var cancelablleSet = Set<AnyCancellable>()
+    private let toastView = ToastUIView(message: AppErrorTypes.location_access_denied.localized)
+    private var locationManager: LocationManager = .init()
+    public var viewModel: ThreadViewModel?
 
-    var body: some View {
-        ZStack {
-            Map(coordinateRegion: $locationManager.region,
-                interactionModes: .all,
-                showsUserLocation: true,
-                annotationItems: [locationManager.currentLocation].compactMap { $0 }) { item in
-                    MapMarker(coordinate: item.location)
-                }
-            VStack {
-                Spacer()
-                SubmitBottomButton(text: "General.add") {
-                    if let location = locationManager.currentLocation {
-                        viewModel.attachmentsViewModel.append(attachments: [.init(type: .map, request: location)])
-                    }
-                    viewModel.sheetType = nil
-                    viewModel.animateObjectWillChange()
-                }
-                .environmentObject(viewModel)
-            }
-        }
-        .overlay(alignment: .topTrailing) {
-            closeButton
-        }
-        .overlay {
-            if locationManager.error != nil {
-                errorView
-            }
-        }
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        configureViews()
+        registerObservers()
     }
 
-    private var closeButton: some View {
-        Button {
+    private func configureViews() {
+        mapView.translatesAutoresizingMaskIntoConstraints = false
+        btnClose.translatesAutoresizingMaskIntoConstraints = false
+        btnSubmit.translatesAutoresizingMaskIntoConstraints = false
+
+        mapView.showsUserLocation = true
+        mapView.showsCompass = true
+        mapView.delegate = self
+        view.addSubview(mapView)
+
+
+        let image = UIImage(systemName: "xmark")
+        btnClose.setImage(image, for: .normal)
+        btnClose.imageView?.contentMode = .scaleAspectFit
+        btnClose.contentHorizontalAlignment = .fill
+        btnClose.contentVerticalAlignment = .fill
+        btnClose.tintColor = Color.App.accentUIColor
+        btnClose.layer.masksToBounds = true
+        btnClose.layer.cornerRadius = 12
+        btnClose.backgroundColor = Color.App.bgSendInputUIColor
+        btnClose.imageEdgeInsets = .init(all: 4)
+
+        btnClose.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
+        view.addSubview(btnClose)
+
+        btnSubmit.action = { [weak self] in
+            guard let self = self else { return }
+            submitTapped()
+            closeTapped(btnClose)
+        }
+        view.addSubview(btnSubmit)
+
+        toastView.isHidden = true
+        view.addSubview(toastView)
+
+        NSLayoutConstraint.activate([
+            toastView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            toastView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            toastView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            toastView.heightAnchor.constraint(equalToConstant: 96),
+            btnClose.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            btnClose.widthAnchor.constraint(equalToConstant: 24),
+            btnClose.heightAnchor.constraint(equalToConstant: 24),
+            btnClose.topAnchor.constraint(equalTo: view.topAnchor, constant: 8),
+            mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mapView.topAnchor.constraint(equalTo: view.topAnchor),
+            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            btnSubmit.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            btnSubmit.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            btnSubmit.heightAnchor.constraint(equalToConstant: 64),
+            btnSubmit.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+    }
+
+    private func registerObservers() {
+        locationManager.$error.sink { [weak self] error in
+            if error != nil {
+                self?.onError()
+            }
+        }
+        .store(in: &cancelablleSet)
+
+        locationManager.$region.sink { [weak self] region in
+            self?.onRegionChanged(region)
+        }
+        .store(in: &cancelablleSet)
+    }
+
+    private func submitTapped() {
+        if let location = locationManager.currentLocation {
+            viewModel?.attachmentsViewModel.append(attachments: [.init(type: .map, request: location)])
+        }
+        viewModel?.sheetType = nil
+        viewModel?.animateObjectWillChange()
+    }
+
+    @objc private func closeTapped(_ sender: UIButton) {
+        viewModel?.sheetType = nil
+        viewModel?.animateObjectWillChange()
+        dismiss(animated: true)
+    }
+    
+    private func onRegionChanged(_ region: MKCoordinateRegion) {
+        mapView.setRegion(region, animated: true)
+    }
+
+    private func onError() {
+        toastView.isHidden = false
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
             withAnimation {
-                viewModel.sheetType = nil
-                viewModel.animateObjectWillChange()
-                dismiss()
+                self.locationManager.error = nil
+                self.toastView.isHidden = true
             }
-        } label: {
-            Image(systemName: "xmark")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 16, height: 16)
-                .padding()
-                .foregroundColor(Color.App.accent)
-                .aspectRatio(contentMode: .fit)
-                .contentShape(Rectangle())
         }
-        .frame(width: 40, height: 40)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius:(20)))
-        .padding(4)
     }
 
-    private var errorView: some View {
-        ToastView(message: AppErrorTypes.location_access_denied.localized) {}
-            .onAppear {
-                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
-                    withAnimation {
-                        locationManager.error = nil
-                    }
-                }
-            }
-    }
+//    var body: some View {
+//        ZStack {
+//            Map(coordinateRegion: $locationManager.region,
+//                interactionModes: .all,
+//                showsUserLocation: true,
+//                annotationItems: [locationManager.currentLocation].compactMap { $0 }) { item in
+//                    MapMarker(coordinate: item.location)
+//                }
+//            VStack {
+//                Spacer()
+//                SubmitBottomButton(text: "General.add") {
+//
+//                }
+//                .environmentObject(viewModel)
+//            }
+//        }
+//    }
 }
 
 final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
@@ -123,8 +185,31 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
     }
 }
 
+extension MapPickerViewController: MKMapViewDelegate {
+    public func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        // Get the center coordinate of the map's visible region
+        let centerCoordinate = mapView.centerCoordinate
+
+        // Remove any existing annotation from the map
+        mapView.removeAnnotations(mapView.annotations)
+
+        // Create a new annotation at the center coordinate
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = centerCoordinate
+
+        // Add the annotation to the map
+        mapView.addAnnotation(annotation)
+    }
+}
+
 struct MapView_Previews: PreviewProvider {
+
+    struct MapPickerViewWrapper: UIViewControllerRepresentable {
+        func makeUIViewController(context: Context) -> some UIViewController { MapPickerViewController() }
+        func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+    }
+
     static var previews: some View {
-        MapPickerView()
+        MapPickerViewWrapper()
     }
 }

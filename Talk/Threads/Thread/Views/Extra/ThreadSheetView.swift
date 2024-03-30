@@ -60,63 +60,11 @@ struct ThreadSheetView: View {
                 closeSheet()
             }
         case .filePicker:
-            DocumentPicker { urls in
-                viewModel.attachmentsViewModel.filePickerViewModel.selectedFileUrls = urls
-                viewModel.attachmentsViewModel.addSelectedFile()
-                viewModel.sheetType = nil
-                viewModel.animateObjectWillChange()
-                viewModel.scrollVM.scrollToEmptySpace()
-            }
-            .onDisappear {
-                closeSheet()
-            }
+            EmptyView()
         case .locationPicker:
-            MapPickerView()
-                .environmentObject(viewModel)
-                .onDisappear {
-                    viewModel.scrollVM.scrollToEmptySpace()
-                    closeSheet()
-                }
+            EmptyView()
         case .galleryPicker:
-            MyPHPicker() { itemProviders in
-
-                itemProviders.forEach { provider in
-                    if provider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-                        _ = provider.loadDataRepresentation(for: .movie) { data, error in
-                            Task {
-                                DispatchQueue.main.async {
-                                    if let data = data {
-                                        let item = ImageItem(isVideo: true,
-                                                             data: data,
-                                                             width: 0,
-                                                             height: 0,
-                                                             originalFilename: provider.suggestedName ?? "unknown")
-                                        self.viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
-                                        viewModel.animateObjectWillChange() /// Send button to appear
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-                        provider.loadObject(ofClass: UIImage.self) { item, error in
-                            if let image = item as? UIImage {
-                                let item = ImageItem(data: image.pngData() ?? Data(),
-                                                     width: Int(image.size.width),
-                                                     height: Int(image.size.height),
-                                                     originalFilename: provider.suggestedName ?? "unknown")
-                                viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
-                                viewModel.animateObjectWillChange() /// Send button to appear
-                            }
-                        }
-                    }
-                }
-                viewModel.scrollVM.scrollToEmptySpace()
-            }
-            .onDisappear {
-                closeSheet()
-            }
+            EmptyView()
         default:
             Text("Sheet \(viewModel.sheetType.debugDescription) not implemented yet.")
         }

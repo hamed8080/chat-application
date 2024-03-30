@@ -67,6 +67,74 @@ public struct SubmitBottomButton: View {
     }
 }
 
+public final class SubmitBottomButtonUIView: UIView {
+    private let btnSubmit = UIButton(type: .system)
+    private let progressView = UIProgressView()
+    private let text: String
+    private let color: UIColor
+    public var action: (()-> Void)?
+
+    public init(text: String, color: UIColor = Color.App.accentUIColor!) {
+        self.text = text
+        self.color = color
+        super.init(frame: .zero)
+        configureView()
+    }
+
+    public required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func configureView() {
+        btnSubmit.translatesAutoresizingMaskIntoConstraints = false
+        btnSubmit.layer.masksToBounds = true
+        btnSubmit.layer.cornerRadius = 12
+        btnSubmit.backgroundColor = color
+        btnSubmit.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
+        btnSubmit.setTitle(text.localized(), for: .normal)
+        btnSubmit.setTitleColor(Color.App.textPrimaryUIColor, for: .normal)
+
+        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
+        let effectView = UIVisualEffectView(effect: blurEffect)
+        effectView.translatesAutoresizingMaskIntoConstraints = false
+
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        progressView.isHidden = true
+
+        let hStack = UIStackView()
+        hStack.translatesAutoresizingMaskIntoConstraints = false
+        hStack.axis = .horizontal
+        hStack.spacing = 8
+        hStack.alignment = .leading
+        hStack.addArrangedSubview(btnSubmit)
+        hStack.addArrangedSubview(progressView)
+
+        addSubview(effectView)
+        addSubview(hStack)
+
+        NSLayoutConstraint.activate([
+            btnSubmit.heightAnchor.constraint(equalToConstant: 48),
+            hStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            hStack.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            hStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            hStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
+            effectView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            effectView.topAnchor.constraint(equalTo: topAnchor),
+            effectView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            effectView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+    }
+
+    @objc private func submitTapped(_ sender: UIButton) {
+        action?()
+    }
+
+    public func update(enable: Bool = true, isLoading: Bool = false) {
+        btnSubmit.isEnabled = enable
+        progressView.isHidden = !isLoading
+    }
+}
+
 public struct SubmitBottomLabel: View {
     @Binding var isLoading: Bool
     @Binding var enableButton: Bool

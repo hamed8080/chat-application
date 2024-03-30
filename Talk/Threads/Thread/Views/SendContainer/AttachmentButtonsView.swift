@@ -11,8 +11,11 @@ import TalkModels
 import TalkUI
 import TalkViewModels
 import UIKit
+import MobileCoreServices
+import PhotosUI
 
 public final class AttachmentButtonsView: UIStackView {
+    private let vc: UIViewController
     private let viewModel: SendContainerViewModel
     private let btnGallery = AttchmentButton(title: "General.gallery", image: "photo.fill")
     private let btnFile = AttchmentButton(title: "General.file", image: "doc.fill")
@@ -20,7 +23,8 @@ public final class AttachmentButtonsView: UIStackView {
     private let btnContact = AttchmentButton(title: "General.contact", image: "person.2.crop.square.stack.fill")
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
 
-    public init(viewModel: SendContainerViewModel) {
+    public init(viewModel: SendContainerViewModel, vc: UIViewController) {
+        self.vc = vc
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
@@ -35,9 +39,13 @@ public final class AttachmentButtonsView: UIStackView {
         axis = .horizontal
         spacing = 8
         alignment = .center
-        distribution = .fill
+        distribution = .equalCentering
+        layoutMargins = .init(horizontal: 8)
+        isLayoutMarginsRelativeArrangement = true
+        let leadingSpacer = UIView(frame: .init(x: 0, y: 0, width: 66, height: 66))
+        let trailingSpacer = UIView(frame: .init(x: 0, y: 0, width: 66, height: 66))
 
-        addArrangedSubviews([btnGallery, btnFile, btnLocation])
+        addArrangedSubviews([leadingSpacer, btnGallery, btnFile, btnLocation, trailingSpacer])
     }
 
     private func registerGestures() {
@@ -59,21 +67,24 @@ public final class AttachmentButtonsView: UIStackView {
     }
 
     @objc private func onBtnGalleryTapped(_ sender: UIGestureRecognizer) {
-        threadVM?.sheetType = .galleryPicker
-        viewModel.showActionButtons.toggle()
-        threadVM?.animateObjectWillChange()
+        presentImagePicker()
+//        threadVM?.sheetType = .galleryPicker
+//        viewModel.showActionButtons.toggle()
+//        threadVM?.animateObjectWillChange()
     }
 
     @objc private func onBtnFileTapped(_ sender: UIGestureRecognizer) {
-        threadVM?.sheetType = .filePicker
-        viewModel.showActionButtons.toggle()
-        threadVM?.animateObjectWillChange()
+        presentFilePicker()
+//        threadVM?.sheetType = .filePicker
+//        viewModel.showActionButtons.toggle()
+//        threadVM?.animateObjectWillChange()
     }
 
     @objc private func onBtnLocationTapped(_ sender: UIGestureRecognizer) {
-        threadVM?.sheetType = .locationPicker
-        viewModel.showActionButtons.toggle()
-        threadVM?.animateObjectWillChange()
+        presentMapPicker()
+//        threadVM?.sheetType = .locationPicker
+//        viewModel.showActionButtons.toggle()
+//        threadVM?.animateObjectWillChange()
     }
 
     @objc private func onBtnContactTapped(_ sender: UIGestureRecognizer) {
@@ -81,7 +92,109 @@ public final class AttachmentButtonsView: UIStackView {
         viewModel.showActionButtons.toggle()
         threadVM?.animateObjectWillChange()
     }
+
+    private func closeSheet() {
+//        sheetBinding = false
+//        viewModel.sheetType = nil
+//        viewModel.animateObjectWillChange()
+    }
 }
+
+extension AttachmentButtonsView: UIDocumentPickerDelegate  {
+
+    public func presentFilePicker() {
+        let picker: UIDocumentPickerViewController
+        if #available(iOS 14, *) {
+            picker = UIDocumentPickerViewController(forOpeningContentTypes: [.item], asCopy: true)
+        } else {
+            picker = UIDocumentPickerViewController(documentTypes: [kUTTypeItem as String], in: .import)
+        }
+        picker.allowsMultipleSelection = true
+        picker.delegate = self
+        picker.modalPresentationStyle = .formSheet
+
+        vc.present(picker, animated: true)
+    }
+
+    public func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+//        viewModel.attachmentsViewModel.filePickerViewModel.selectedFileUrls = urls
+//        viewModel.attachmentsViewModel.addSelectedFile()
+//        viewModel.sheetType = nil
+//        viewModel.animateObjectWillChange()
+//        viewModel.scrollVM.scrollToEmptySpace()
+    }
+
+    public func documentPickerWasCancelled(_: UIDocumentPickerViewController) {
+        closeSheet()
+    }
+}
+
+extension AttachmentButtonsView: PHPickerViewControllerDelegate {
+
+    public func presentImagePicker() {
+        let library = PHPhotoLibrary.shared()
+        var config = PHPickerConfiguration(photoLibrary: library)
+        config.selectionLimit = 0
+        config.filter = .any(of: [.images, .livePhotos, .videos])
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        picker.modalPresentationStyle = .formSheet
+
+        vc.present(picker, animated: true)
+    }
+
+    public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        let itemProviders = results.map(\.itemProvider)
+        processProviders(itemProviders)
+    }
+
+    private func processProviders(_ itemProviders: [NSItemProvider]) {
+        itemProviders.forEach { provider in
+            if provider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+                _ = provider.loadDataRepresentation(for: .movie) { data, error in
+                    Task {
+                        DispatchQueue.main.async {
+                            if let data = data {
+                                let item = ImageItem(isVideo: true,
+                                                     data: data,
+                                                     width: 0,
+                                                     height: 0,
+                                                     originalFilename: provider.suggestedName ?? "unknown")
+//                                self.viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+//                                viewModel.animateObjectWillChange() /// Send button to appear
+                            }
+                        }
+                    }
+                }
+            }
+
+            if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                provider.loadObject(ofClass: UIImage.self) { item, error in
+                    if let image = item as? UIImage {
+                        let item = ImageItem(data: image.pngData() ?? Data(),
+                                             width: Int(image.size.width),
+                                             height: Int(image.size.height),
+                                             originalFilename: provider.suggestedName ?? "unknown")
+//                        viewModel.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+//                        viewModel.animateObjectWillChange() /// Send button to appear
+                    }
+                }
+            }
+        }
+//        viewModel.scrollVM.scrollToEmptySpace()
+    }
+}
+
+extension AttachmentButtonsView {
+    func presentMapPicker() {
+        let mapVC = MapPickerViewController()
+        mapVC.viewModel = threadVM
+        mapVC.modalPresentationStyle = .formSheet
+        vc.present(mapVC, animated: true)
+    }
+}
+
 
 public final class AttchmentButton: UIStackView {
     private let imageContainer = UIView()
@@ -159,7 +272,7 @@ public final class AttchmentButton: UIStackView {
 struct AttachmentDialog_Previews: PreviewProvider {
 
     struct AttachmentButtonsViewWrapper: UIViewRepresentable {
-        func makeUIView(context: Context) -> some UIView { AttachmentButtonsView(viewModel: .init(thread: .init(id: 1))) }
+        func makeUIView(context: Context) -> some UIView { AttachmentButtonsView(viewModel: .init(thread: .init(id: 1)), vc: .init()) }
         func updateUIView(_ uiView: UIViewType, context: Context) {}
     }
 

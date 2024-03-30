@@ -26,9 +26,9 @@ struct SendContainerOverlayView: View {
             }
 
             VStack(spacing: 0) {
-                AttachmentFiles()
-                    .environmentObject(threadVM.attachmentsViewModel)
-                    .padding(.top, threadVM.attachmentsViewModel.attachments.count > 0 ? 8 : 0)
+//                AttachmentFiles()
+//                    .environmentObject(threadVM.attachmentsViewModel)
+//                    .padding(.top, threadVM.attachmentsViewModel.attachments.count > 0 ? 8 : 0)
                 SendContainer(threadVM: threadVM)
             }
             .background(

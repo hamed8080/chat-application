@@ -16,7 +16,7 @@ import ChatModels
 final class ThreadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var viewModel: ThreadViewModel!
     private var tableView: UITableView!
-    private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
+    private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel, vc: self)
     private var moveToBottom = MoveToBottomButton()
     private lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
     private let emptyThreadView = EmptyThreadView()
@@ -25,6 +25,7 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
+        sendContainer.embed()
         viewModel.historyVM.delegate = self
     }
 

@@ -11,9 +11,11 @@ import TalkViewModels
 import Combine
 
 public final class ThreadBottomToolbar: UIStackView {
+    private let parentVC: UIViewController
     private let viewModel: ThreadViewModel
     private let mainSendButtons: MainSendButtons
     private let attachmentButtons: AttachmentButtonsView
+    private let attachmentFilesVC: AttachmentViewControllerContainer
     private let replyPrivatelyPlaceholderView: ReplyPrivatelyMessagePlaceholderView
     private let replyPlaceholderView: ReplyMessagePlaceholderView
     private let forwardPlaceholderView: ForwardMessagePlaceholderView
@@ -22,10 +24,12 @@ public final class ThreadBottomToolbar: UIStackView {
     private let muteBarView: MuteChannelBarView
     private var cancellableSet = Set<AnyCancellable>()
 
-    public init(viewModel: ThreadViewModel) {
+    public init(viewModel: ThreadViewModel, vc: UIViewController) {
+        self.parentVC = vc
         self.viewModel = viewModel
         self.mainSendButtons = MainSendButtons(viewModel: viewModel)
-        self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel.sendContainerViewModel)
+        self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel.sendContainerViewModel, vc: vc)
+        self.attachmentFilesVC = AttachmentViewControllerContainer(viewModel: viewModel)
         self.replyPlaceholderView = ReplyMessagePlaceholderView(viewModel: viewModel)
         self.replyPrivatelyPlaceholderView = ReplyPrivatelyMessagePlaceholderView(viewModel: viewModel)
         self.forwardPlaceholderView = ForwardMessagePlaceholderView(viewModel: viewModel)
@@ -45,6 +49,7 @@ public final class ThreadBottomToolbar: UIStackView {
         translatesAutoresizingMaskIntoConstraints = false
         mainSendButtons.translatesAutoresizingMaskIntoConstraints = false
         attachmentButtons.translatesAutoresizingMaskIntoConstraints = false
+        attachmentFilesVC.translatesAutoresizingMaskIntoConstraints = false
         replyPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
         forwardPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
         editMessagePlaceholderView.translatesAutoresizingMaskIntoConstraints = false
@@ -63,11 +68,13 @@ public final class ThreadBottomToolbar: UIStackView {
         addSubview(effectView)
 
         attachmentButtons.isHidden = true
+        attachmentFilesVC.isHidden = true
         replyPrivatelyPlaceholderView.isHidden = true
         replyPlaceholderView.isHidden = true
         forwardPlaceholderView.isHidden = true
         editMessagePlaceholderView.isHidden = true
         selectionView.isHidden = true
+        addArrangedSubview(attachmentFilesVC)
         addArrangedSubview(attachmentButtons)
         addArrangedSubview(replyPlaceholderView)
         addArrangedSubview(replyPrivatelyPlaceholderView)
@@ -86,6 +93,10 @@ public final class ThreadBottomToolbar: UIStackView {
             effectView.topAnchor.constraint(equalTo: topAnchor),
             effectView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
+    }
+
+    public func embed() {
+        attachmentFilesVC.embed(parentVC)
     }
 
     private func registerObservers() {
