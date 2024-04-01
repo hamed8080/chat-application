@@ -54,6 +54,8 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var canDownloadImages: Bool = false
     public var canDownloadFiles: Bool = false
 
+    public weak var delegate: ThreadViewDelegate?
+
     // MARK: Computed Properties
     public var threadId: Int { thread.id ?? 0 }
     public var isActiveThread: Bool { AppState.shared.objectsContainer.navVM.presentedThreadViewModel?.viewModel.threadId == threadId }

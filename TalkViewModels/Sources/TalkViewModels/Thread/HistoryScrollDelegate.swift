@@ -19,3 +19,13 @@ public protocol HistoryScrollDelegate: AnyObject {
     func remove(at: IndexPath)
     func remove(at: [IndexPath])
 }
+
+public protocol UnreadCountDelegate {
+    func onUnreadCountChanged()
+}
+
+public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate {
+    
+}
+
+

@@ -9,23 +9,22 @@ import Foundation
 import UIKit
 import SwiftUI
 import TalkViewModels
-import Combine
 import TalkModels
 import ChatModels
 
-final class ThreadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+final class ThreadViewController: UIViewController {
     var viewModel: ThreadViewModel!
     private var tableView: UITableView!
     private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel, vc: self)
-    private var moveToBottom = MoveToBottomButton()
+    private lazy var moveToBottom = MoveToBottomButton(viewModel: viewModel)
     private lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
     private let emptyThreadView = EmptyThreadView()
-    private var cancelable = Set<AnyCancellable> ()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
         sendContainer.embed()
+        viewModel.delegate = self
         viewModel.historyVM.delegate = self
     }
 
@@ -35,40 +34,9 @@ final class ThreadViewController: UIViewController, UITableViewDataSource, UITab
         viewModel.historyVM.start()
         configureNavigationBar()
     }
-
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.historyVM.sections.count
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.historyVM.sections[section].vms.count
-    }
-
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        ConversationHistoryCellFactory.height(tableView, indexPath)
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let sectionVM = viewModel.historyVM.sections[section]
-        let headerView = SectionHeaderView()
-        headerView.set(sectionVM)
-        return headerView
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        ConversationHistoryCellFactory.reuse(tableView, indexPath, viewModel)
-    }
-
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cell.backgroundColor = UIColor.clear
-        viewModel.historyVM.willDisplay(indexPath)
-    }
-
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        viewModel.historyVM.didEndDisplay(indexPath)
-    }
 }
 
+// MARK: Configure Views
 extension ThreadViewController {
     func configureViews() {
         configureTableView()
@@ -128,7 +96,6 @@ extension ThreadViewController {
     }
 
     private func configureMoveToBottom() {
-        moveToBottom.viewModel = viewModel
         view.addSubview(moveToBottom)
         moveToBottom.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -157,6 +124,44 @@ extension ThreadViewController {
     }
 }
 
+// MARK: TableView DataSource
+extension ThreadViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.historyVM.sections[section].vms.count
+    }
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.historyVM.sections.count
+    }
+}
+
+// MARK: TableView Delegate
+extension ThreadViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        ConversationHistoryCellFactory.height(tableView, indexPath)
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let sectionVM = viewModel.historyVM.sections[section]
+        let headerView = SectionHeaderView()
+        headerView.set(sectionVM)
+        return headerView
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        ConversationHistoryCellFactory.reuse(tableView, indexPath, viewModel)
+    }
+
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.backgroundColor = UIColor.clear
+        viewModel.historyVM.willDisplay(indexPath)
+    }
+
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        viewModel.historyVM.didEndDisplay(indexPath)
+    }
+}
+
 // MARK: Prefetch
 extension ThreadViewController: UITableViewDataSourcePrefetching {
     // start potentially long-running data operations early.
@@ -179,6 +184,13 @@ extension ThreadViewController {
     }
 }
 
+// MARK: ThreadViewDelegate
+extension ThreadViewController: ThreadViewDelegate {
+    func onUnreadCountChanged() {
+        moveToBottom.updateUnreadCount()
+    }
+}
+
 // MARK: Scrolling to
 extension ThreadViewController: HistoryScrollDelegate {
     func reload() {
@@ -188,7 +200,7 @@ extension ThreadViewController: HistoryScrollDelegate {
             showEmptyThread(show: viewModel.historyVM.isEmptyThread)
         }
     }
-    
+
     func scrollTo(index: IndexPath, position: UITableView.ScrollPosition) {
         DispatchQueue.main.async { [weak self] in
             self?.tableView.scrollToRow(at: index, at: position, animated: true)
@@ -249,13 +261,13 @@ extension ThreadViewController: HistoryScrollDelegate {
             self?.tableView.endUpdates()
         }
     }
-    
+
     func remove(at: IndexPath) {
         DispatchQueue.main.async { [weak self] in
             self?.tableView.deleteRows(at: [at], with: .fade)
         }
     }
-    
+
     func remove(at: [IndexPath]) {
         DispatchQueue.main.async { [weak self] in
             self?.tableView.deleteRows(at: at, with: .fade)
