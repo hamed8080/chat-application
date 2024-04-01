@@ -9,95 +9,95 @@ import SwiftUI
 import TalkViewModels
 import ChatModels
 import DSWaveformImage
+import Combine
 
-public struct AudioRecordingView: View {
-    @EnvironmentObject var viewModel: AudioRecordingViewModel
-    public init() {}
+public final class AudioRecordingView: UIStackView {
+    private let recordedAudioView: RecordedAudioView
+    private let recordingAudioView: RecordingAudioView
 
-    public var body: some View {
-        ZStack {
-            if viewModel.isRecording {
-                InVoiceRecordingView()
-            } else {
-                VoiceRecoderSenderView()
-            }
-        }
-        .animation(.easeInOut, value: viewModel.isRecording)
+    public init(viewModel: ThreadViewModel) {
+        recordedAudioView = RecordedAudioView(viewModel: viewModel)
+        recordingAudioView = RecordingAudioView(viewModel: viewModel.audioRecoderVM)
+        super.init(frame: .zero)
+        configureView()
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func configureView() {
+        axis = .horizontal
+        spacing = 0
+
+        addArrangedSubview(recordedAudioView)
+        addArrangedSubview(recordingAudioView)
     }
 }
 
-struct VoiceRecoderSenderView: View {
-    @EnvironmentObject var viewModel: AudioRecordingViewModel
-    @EnvironmentObject var audioPlayerVM: AVAudioPlayerViewModel
+public final class RecordedAudioView: UIStackView {
+    private let btnSend = CircularUIButton()
+    private let lblTimer = UILabel()
+    private let waveImageView = UIImageView()
+    private let btnTogglePlayer = UIButton(type: .system)
+    private var cancellableSet = Set<AnyCancellable>()
+    private let viewModel: ThreadViewModel
+    private var audioRecoderVM: AudioRecordingViewModel { viewModel.audioRecoderVM }
+    private var audioPlayerVM: AVAudioPlayerViewModel { AppState.shared.objectsContainer.audioPlayerVM }
     @State var image: UIImage = .init()
 
-    var body: some View {
-        HStack(spacing: 0){
-            Button {
-                withAnimation {
-                    viewModel.threadViewModel?.sendMessageViewModel.sendAudiorecording()
-                }
-            } label: {
-                Image(systemName: "arrow.up.circle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 26, height: 26)
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.white, Color.App.accent)
-            }
-            .frame(width: 48, height: 48)
-            .buttonStyle(.borderless)
-            .fontWeight(.light)
-//            .keyboardShortcut(.return, modifiers: [.command])
+    public init(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
+        configureView()
+        registerObservers()
+    }
 
-            Spacer()
-            HStack(spacing: 4) {
-                Text(viewModel.timerString)
-                    .foregroundStyle(Color.App.textPrimary)
-                    .font(.iransansCaption2)
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
+    private func configureView() {
 
-                Button {
-                    withAnimation {
-                        audioPlayerVM.toggle()
-                    }
-                } label: {
-                    Image(systemName: audioPlayerVM.isPlaying ? "pause.fill" : "play.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16, height: 16)
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.App.textPrimary)
-                        .fontWeight(.light)
-                }
-                .frame(width: 28, height: 28)
-                .buttonStyle(.borderless)
-//                .keyboardShortcut(.return, modifiers: [.command])
-            }
-            .frame(height: 28)
-            .padding(.horizontal, 12)
-            .background(Color.App.accent.opacity(0.2))
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+        axis = .horizontal
+        spacing = 0
+        alignment = .leading
 
-            Spacer()
-            Button {
-                withAnimation {
-                    viewModel.cancel()
-                    audioPlayerVM.close()
-                }
-            } label: {
-                Image(systemName: "trash")
-                    .font(.system(size: 16))
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.App.textPrimary)
-                    .fontWeight(.semibold)
-            }
-            .buttonStyle(.borderless)
-            .frame(width: 48, height: 48)
-        }.task {
+        let image = UIImage(systemName: "arrow.up") ?? .init()
+        btnSend.setup(image: image) { [weak self] in
+            self?.viewModel.sendMessageViewModel.sendAudiorecording()
+        }
+
+        let btnDelete = UIButton(type: .system)
+        btnDelete.addTarget(self, action: #selector(deleteTapped), for: .touchUpInside)
+        btnDelete.translatesAutoresizingMaskIntoConstraints = false
+        let deleteImage = UIImage(systemName: "trash")
+        btnDelete.setImage(deleteImage, for: .normal)
+        btnDelete.tintColor = Color.App.textPrimaryUIColor
+
+        lblTimer.textColor = Color.App.textPrimaryUIColor
+        lblTimer.font = .uiiransansCaption2
+
+        btnTogglePlayer.translatesAutoresizingMaskIntoConstraints = false
+
+        addArrangedSubview(btnSend)
+        addArrangedSubview(lblTimer)
+        addArrangedSubview(waveImageView)
+        addArrangedSubview(btnDelete)
+
+        NSLayoutConstraint.activate([
+            btnSend.widthAnchor.constraint(equalToConstant: 48),
+            btnSend.heightAnchor.constraint(equalToConstant: 48),
+            btnSend.widthAnchor.constraint(equalToConstant: 48),
+            btnDelete.widthAnchor.constraint(equalToConstant: 48),
+            btnDelete.heightAnchor.constraint(equalToConstant: 48),
+            btnTogglePlayer.widthAnchor.constraint(equalToConstant: 48),
+            btnTogglePlayer.heightAnchor.constraint(equalToConstant: 48),
+        ])
+    }
+
+    private func setup() {
+        Task {
             do {
                 guard let url = audioPlayerVM.fileURL else { return }
                 let waveformImageDrawer = WaveformImageDrawer()
@@ -118,82 +118,102 @@ struct VoiceRecoderSenderView: View {
                     renderer: LinearWaveformRenderer()
                 )
                 await MainActor.run {
-                    self.image = image
+                    self.waveImageView.image = image
                 }
             } catch {}
         }
     }
+
+    private func registerObservers() {
+        audioRecoderVM.$timerString.sink { [weak self] timerString in
+            self?.lblTimer.text = timerString
+        }
+        .store(in: &cancellableSet)
+
+        audioPlayerVM.$isPlaying.sink { [weak self] isPlaying in
+            let image = UIImage(systemName: isPlaying ? "pause.fill" : "play.fill")
+            self?.btnTogglePlayer.setImage(image, for: .normal)
+        }
+        .store(in: &cancellableSet)
+    }
+
+    @objc private func deleteTapped(_ sender: UIButton) {
+        audioRecoderVM.cancel()
+        audioPlayerVM.close()
+    }
+
+    @objc private func onTogglePlayerTapped(_ sender: UIButton) {
+        audioPlayerVM.toggle()
+    }
 }
 
-struct InVoiceRecordingView: View {
-    @EnvironmentObject var viewModel: AudioRecordingViewModel
+public final class RecordingAudioView: UIStackView {
+    private let btnMic = CircularUIButton()
+    private let lblTimer = UILabel()
+    private let dotRecordingIndicator = UIImageView()
+    private let viewModel: AudioRecordingViewModel
     @State var opacity: Double = 0
     @State var scale: CGFloat = 0.5
 
-    var body: some View {
-        HStack(spacing: 0) {
-            ZStack {
-                Circle()
-                    .fill(Color.App.accent.opacity(0.2))
-                    .frame(width: 64, height: 64)
-                    .scaleEffect(x: scale, y: scale, anchor: .center)
-                    .contentShape(Rectangle())
-                    .allowsTightening(false)
-                    .onAppear {
-                        Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
-                            withAnimation(.interpolatingSpring(mass: 0.5, stiffness: 0.8, damping: 0.8, initialVelocity: 3)) {
-                                scale = scale == 1 ? 0.5 : 1
-                            }
-                        }
-                    }
+    public init(viewModel: AudioRecordingViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
+        configureView()
+    }
 
-                Button {
-                    viewModel.stop()
-                    if let fileURL = viewModel.recordingOutputPath {
-                        try? AppState.shared.objectsContainer.audioPlayerVM.setup(fileURL: fileURL,
-                                                                             ext: fileURL.fileExtension,
-                                                                             title: fileURL.fileName,
-                                                                             subtitle: "")
-                    }
-                } label: {
-                    Image(systemName: "mic.fill")
-                        .font(.system(size: 16))
-                        .foregroundStyle(Color.App.textPrimary)
-                        .fontWeight(.semibold)
-                        .contentShape(Rectangle())
-                }
-                .frame(width: 48, height: 48)
-                .background(Color.App.accent)
-                .clipShape(RoundedRectangle(cornerRadius:(24)))
-            }
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-            Text("Thread.isVoiceRecording")
-                .foregroundStyle(Color.App.textSecondary)
-                .font(.iransansCaption)
-                .padding(.leading)
+    private func configureView() {
+        axis = .horizontal
+        spacing = 0
 
-            Spacer()
+        btnMic.translatesAutoresizingMaskIntoConstraints = false
+        let micImage = UIImage(systemName: "mic.fill")!
+        btnMic.setup(image: micImage, forgroundColor: Color.App.textPrimaryUIColor!)
 
-            Text(viewModel.timerString)
-                .font(.iransansBody)
-                .animation(.easeInOut, value: viewModel.timerString)
-                .padding(.trailing)
+        let lblStaticRecording = UILabel()
+        lblStaticRecording.text = "Thread.isVoiceRecording".localized()
+        lblStaticRecording.font = .uiiransansCaption
+        lblStaticRecording.textColor = Color.App.textSecondaryUIColor
 
-            Image(systemName: "circle.fill")
-                .font(.system(size: 6))
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(Color.App.red.opacity(opacity))
-                .onAppear {
-                    Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
-                        withAnimation(.interpolatingSpring(mass: 0.5, stiffness: 0.8, damping: 0.8, initialVelocity: 3)) {
-                            opacity = opacity == 1 ? 0 : 1
-                        }
-                    }
-                }
+        lblTimer.font = .uiiransansBody
+        lblTimer.textColor = Color.App.textPrimaryUIColor
+
+        dotRecordingIndicator.image = UIImage(systemName: "circle.fill")
+        dotRecordingIndicator.tintColor = Color.App.redUIColor
+        dotRecordingIndicator.translatesAutoresizingMaskIntoConstraints = false
+
+        addArrangedSubview(btnMic)
+        addArrangedSubview(lblStaticRecording)
+        addArrangedSubview(lblTimer)
+        addArrangedSubview(dotRecordingIndicator)
+
+        NSLayoutConstraint.activate([
+            dotRecordingIndicator.widthAnchor.constraint(equalToConstant: 6),
+            dotRecordingIndicator.heightAnchor.constraint(equalToConstant: 6),
+            btnMic.widthAnchor.constraint(equalToConstant: 48),
+            btnMic.heightAnchor.constraint(equalToConstant: 48),
+        ])
+    }
+
+    private func micTapped(_ sender: UIButton) {
+        viewModel.stop()
+        if let fileURL = viewModel.recordingOutputPath {
+            try? AppState.shared.objectsContainer.audioPlayerVM.setup(fileURL: fileURL,
+                                                                      ext: fileURL.fileExtension,
+                                                                      title: fileURL.fileName,
+                                                                      subtitle: "")
         }
-        .animation(.easeInOut, value: viewModel.isRecording)
-        .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
-        .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+    }
+
+    private func circleAnimation() {
+        Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
+            withAnimation(.interpolatingSpring(mass: 0.5, stiffness: 0.8, damping: 0.8, initialVelocity: 3)) {
+//                scale = scale == 1 ? 0.5 : 1
+            }
+        }
     }
 }
 
@@ -206,8 +226,13 @@ struct AudioRecordingView_Previews: PreviewProvider {
         return viewModel
     }
 
+    struct AudioRecordingViewWrapper: UIViewRepresentable {
+        let viewModel: ThreadViewModel
+        func makeUIView(context: Context) -> some UIView { AudioRecordingView(viewModel: viewModel) }
+        func updateUIView(_ uiView: UIViewType, context: Context) {}
+    }
+
     static var previews: some View {
-        AudioRecordingView()
-            .environmentObject(viewModel)
+        AudioRecordingViewWrapper(viewModel: threadVM)
     }
 }

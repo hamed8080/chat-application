@@ -9,17 +9,20 @@ import Foundation
 import UIKit
 import TalkViewModels
 import Combine
+import TalkUI
 
 public final class ThreadBottomToolbar: UIStackView {
     private let parentVC: UIViewController
     private let viewModel: ThreadViewModel
     private let mainSendButtons: MainSendButtons
+    private let audioRecordingView: AudioRecordingView
     private let attachmentButtons: AttachmentButtonsView
     private let attachmentFilesVC: AttachmentViewControllerContainer
     private let replyPrivatelyPlaceholderView: ReplyPrivatelyMessagePlaceholderView
     private let replyPlaceholderView: ReplyMessagePlaceholderView
     private let forwardPlaceholderView: ForwardMessagePlaceholderView
     private let editMessagePlaceholderView: EditMessagePlaceholderView
+    private let mentionTableView: MentionTableView
     private let selectionView: SelectionView
     private let muteBarView: MuteChannelBarView
     private var cancellableSet = Set<AnyCancellable>()
@@ -28,6 +31,7 @@ public final class ThreadBottomToolbar: UIStackView {
         self.parentVC = vc
         self.viewModel = viewModel
         self.mainSendButtons = MainSendButtons(viewModel: viewModel)
+        self.audioRecordingView = AudioRecordingView(viewModel: viewModel)
         self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel.sendContainerViewModel, vc: vc)
         self.attachmentFilesVC = AttachmentViewControllerContainer(viewModel: viewModel)
         self.replyPlaceholderView = ReplyMessagePlaceholderView(viewModel: viewModel)
@@ -36,6 +40,7 @@ public final class ThreadBottomToolbar: UIStackView {
         self.editMessagePlaceholderView = EditMessagePlaceholderView(viewModel: viewModel)
         self.selectionView = SelectionView(viewModel: viewModel)
         self.muteBarView = MuteChannelBarView(viewModel: viewModel)
+        self.mentionTableView = MentionTableView(viewModel: viewModel)
         super.init(frame: .zero)
         configureViews()
         registerObservers()
@@ -48,6 +53,7 @@ public final class ThreadBottomToolbar: UIStackView {
     private func configureViews() {
         translatesAutoresizingMaskIntoConstraints = false
         mainSendButtons.translatesAutoresizingMaskIntoConstraints = false
+        audioRecordingView.translatesAutoresizingMaskIntoConstraints = false
         attachmentButtons.translatesAutoresizingMaskIntoConstraints = false
         attachmentFilesVC.translatesAutoresizingMaskIntoConstraints = false
         replyPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
@@ -55,6 +61,7 @@ public final class ThreadBottomToolbar: UIStackView {
         editMessagePlaceholderView.translatesAutoresizingMaskIntoConstraints = false
         selectionView.translatesAutoresizingMaskIntoConstraints = false
         muteBarView.translatesAutoresizingMaskIntoConstraints = false
+        mentionTableView.translatesAutoresizingMaskIntoConstraints = false
 
         axis = .vertical
         alignment = .fill
@@ -74,6 +81,7 @@ public final class ThreadBottomToolbar: UIStackView {
         forwardPlaceholderView.isHidden = true
         editMessagePlaceholderView.isHidden = true
         selectionView.isHidden = true
+        audioRecordingView.isHidden = true
         addArrangedSubview(attachmentFilesVC)
         addArrangedSubview(attachmentButtons)
         addArrangedSubview(replyPlaceholderView)
@@ -81,6 +89,8 @@ public final class ThreadBottomToolbar: UIStackView {
         addArrangedSubview(forwardPlaceholderView)
         addArrangedSubview(editMessagePlaceholderView)
         addArrangedSubview(selectionView)
+        addArrangedSubview(audioRecordingView)
+        addArrangedSubview(mentionTableView)
         if viewModel.sendContainerViewModel.canShowMute {
             addArrangedSubview(muteBarView)
         } else {

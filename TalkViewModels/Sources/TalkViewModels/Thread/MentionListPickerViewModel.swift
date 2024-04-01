@@ -16,7 +16,7 @@ public final class MentionListPickerViewModel: ObservableObject {
     private let thread: Conversation
     private var threadId: Int { thread.id ?? -1 }
     @Published public var text: String = ""
-    @Published public private(set) var mentionList: ContiguousArray<Participant> = .init()
+    public private(set) var mentionList: ContiguousArray<Participant> = .init()
     private var cancelable: Set<AnyCancellable> = []
 
     public static func == (lhs: MentionListPickerViewModel, rhs: MentionListPickerViewModel) -> Bool {
