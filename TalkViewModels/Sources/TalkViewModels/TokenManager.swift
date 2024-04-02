@@ -6,13 +6,11 @@
 //
 
 import Chat
-import Combine
 import Foundation
 import ChatModels
 import TalkModels
 import OSLog
 import Logger
-import BackgroundTasks
 import TalkExtensions
 
 public final class TokenManager: ObservableObject {
@@ -41,7 +39,7 @@ public final class TokenManager: ObservableObject {
             urlReq.allHTTPHeaderFields = ["keyId": keyId]
             let resp = try await session.data(for: urlReq)
             let log = Logger.makeLog(prefix: "TALK_APP_REFRESH_TOKEN:", request: urlReq, response: resp)
-            NotificationCenter.logs.post(name: .logs, object: log)
+            post(log: log)
             let ssoToken = try JSONDecoder().decode(SSOTokenResponse.self, from: resp.0)
             await MainActor.run {
                 var ssoToken = ssoToken
@@ -51,18 +49,16 @@ public final class TokenManager: ObservableObject {
                 if AppState.shared.connectionStatus != .connected {
                     AppState.shared.connectionStatus = .connected
                     let log = Log(prefix: "TALK_APP", time: .now, message: "App State was not connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
-                    NotificationCenter.logs.post(name: .logs, object: log)
+                    post(log: log)
                 } else {
                     let log = Log(prefix: "TALK_APP", time: .now, message: "App State was connected and set token just happend without set observeable", level: .error, type: .sent, userInfo: nil)
-                    NotificationCenter.logs.post(name: .logs, object: log)
+                    post(log: log)
                 }
             }
         } catch {
-#if DEBUG
             let log = Log(prefix: "TALK_APP", time: .now, message: error.localizedDescription, level: .error, type: .sent, userInfo: nil)
-            NotificationCenter.logs.post(name: .logs, object: log)
-            Logger.viewModels.info("error on getNewTokenWithRefreshToken:\(error.localizedDescription, privacy: .sensitive)")
-#endif
+            post(log: log)
+            self.log("error on getNewTokenWithRefreshToken:\(error.localizedDescription)")
         }
     }
 
@@ -83,9 +79,7 @@ public final class TokenManager: ObservableObject {
     public func saveSSOToken(ssoToken: SSOTokenResponse) {
         let data = (try? JSONEncoder().encode(ssoToken)) ?? Data()
         let str = String(data: data, encoding: .utf8)
-#if DEBUG
-        Logger.viewModels.info("save token:\n\(str ?? "", privacy: .sensitive)")
-#endif
+        log("save token:\n\(str ?? "")")
         UserConfigManagerVM.instance.updateToken(ssoToken)
         refreshCreateTokenDate()
         if let encodedData = try? JSONEncoder().encode(ssoToken) {
@@ -128,11 +122,25 @@ public final class TokenManager: ObservableObject {
     }
 
     public func startTokenTimer() {
+#if DEBUG
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             if let createDate = TokenManager.shared.getCreateTokenDate(), let ssoTokenExipreTime = TokenManager.shared.getSSOTokenFromUserDefaults()?.expiresIn {
                 let expireIn = createDate.advanced(by: Double(ssoTokenExipreTime)).timeIntervalSince1970 - Date().timeIntervalSince1970
                 self?.secondToExpire = Double(expireIn)
             }
         }
+#endif
+    }
+
+    private func post(log: Log) {
+#if DEBUG
+        NotificationCenter.logs.post(name: .logs, object: log)
+#endif
+    }
+
+    private func log(_ message: String) {
+#if DEBUG
+        Logger.viewModels.info("\(message)")
+#endif
     }
 }

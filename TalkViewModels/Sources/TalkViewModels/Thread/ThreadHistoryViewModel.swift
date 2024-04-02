@@ -466,8 +466,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     // MARK: Appending and Sorting
     internal func appendMessagesAndSort(_ messages: [Message], isToTime: Bool = false) async {
-        let logger = Logger.viewModels
-        logger.debug("Start of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
+        log("Start of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
         guard messages.count > 0 else { return }
         var viewModels: [MessageRowViewModel?] = []
         let set = Set(messages)
@@ -482,7 +481,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         let flatMap = sections.flatMap{$0.vms}
         topSliceId = flatMap.prefix(thresholdToLoad).compactMap{$0.id}.last ?? 0
         bottomSliceId = flatMap.suffix(thresholdToLoad).compactMap{$0.id}.first ?? 0
-        logger.debug("End of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
+        log("End of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
         fetchReactions(messages: messages)
     }
 
@@ -522,8 +521,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func sort() {
-        let logger = Logger.viewModels
-        logger.debug("Start of the Sort function: \(Date().millisecondsSince1970)")
+        log("Start of the Sort function: \(Date().millisecondsSince1970)")
         sections.indices.forEach { sectionIndex in
             sections[sectionIndex].vms.sort { m1, m2 in
                 if m1 is UnreadMessageProtocol {
@@ -537,7 +535,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             }
         }
         sections.sort(by: {$0.date < $1.date})
-        logger.debug("End of the Sort function: \(Date().millisecondsSince1970)")
+        log("End of the Sort function: \(Date().millisecondsSince1970)")
     }
 
     internal func appendToNeedUpdate(_ vm: MessageRowViewModel) {
@@ -612,9 +610,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func onMessageEvent(_ event: MessageEventTypes?) {
         switch event {
         case .history(let response):
-            let logger = Logger.viewModels
             if !response.cache, response.subjectId == threadId {
-                logger.debug("Start on history:\(Date().millisecondsSince1970)")
+                log("Start on history:\(Date().millisecondsSince1970)")
                 /// For the first scenario.
                 onMoreTopFirstScenario(response)
                 onMoreBottomFirstScenario(response)
@@ -637,7 +634,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 /// For the sixth scenario.
                 onMoveToTime(response)
                 onMoveFromTime(response)
-                logger.debug("End on history:\(Date().millisecondsSince1970)")
+                log("End on history:\(Date().millisecondsSince1970)")
             } else if response.cache && AppState.shared.connectionStatus != .connected {
                 Task {
                     await onHistoryCacheRsponse(response)
@@ -781,14 +778,18 @@ public final class ThreadHistoryViewModel: ObservableObject {
     // MARK: Logging
     private func logHistoryRequest(req: GetHistoryRequest) {
 #if DEBUG
-        let date = Date().millisecondsSince1970
-        Logger.viewModels.debug("Start of sending history request: \(date) milliseconds")
+        Task.detached {
+            let date = Date().millisecondsSince1970
+            Logger.viewModels.debug("Start of sending history request: \(date) milliseconds")
+        }
 #endif
     }
 
     private func log(_ string: String) {
 #if DEBUG
-        Logger.viewModels.info("\(string, privacy: .sensitive)")
+        Task.detached {
+            Logger.viewModels.info("\(string, privacy: .sensitive)")
+        }
 #endif
     }
 

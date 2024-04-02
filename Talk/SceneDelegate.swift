@@ -124,9 +124,15 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIApplicationDele
         Task { [weak self] in
             guard let self = self else { return }
             let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in handleTaskRefreshToken method", level: .error, type: .sent, userInfo: nil)
-            NotificationCenter.logs.post(name: .logs, object: log)
+            self.log(log)
             await TokenManager.shared.getNewTokenWithRefreshToken()
             scheduleAppRefreshToken() /// Reschedule again when user receive a token.
         }
+    }
+
+    private func log(_ log: Log) {
+#if DEBUG
+        NotificationCenter.logs.post(name: .logs, object: log)
+#endif
     }
 }

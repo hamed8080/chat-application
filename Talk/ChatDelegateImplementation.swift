@@ -108,7 +108,7 @@ final class ChatDelegateImplementation: ChatDelegate {
         if error.code == 21 {
             Task {
                 let log = Log(prefix: "TALK_APP", time: .now, message: "Start a new Task in onError with error 21", level: .error, type: .sent, userInfo: nil)
-                NotificationCenter.logs.post(name: .logs, object: log)
+                onLog(log: log)
                 await TokenManager.shared.getNewTokenWithRefreshToken()
             }
             AppState.shared.connectionStatus = .unauthorized
@@ -130,8 +130,8 @@ final class ChatDelegateImplementation: ChatDelegate {
     }
 
     func onLog(log: Log) {
-        NotificationCenter.logs.post(name: .logs, object: log)
 #if DEBUG
+        NotificationCenter.logs.post(name: .logs, object: log)
         logger.debug("\(log.message ?? "")")
 #endif
     }
