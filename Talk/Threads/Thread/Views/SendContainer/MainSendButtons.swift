@@ -14,6 +14,9 @@ import TalkModels
 struct MainSendButtons: View {
     @EnvironmentObject var viewModel: SendContainerViewModel
     @EnvironmentObject var threadVM: ThreadViewModel
+    @State private var showCaptureImageView = false
+    @State private var showCaptureVideoView = false
+    @State private var showPopover = false
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
@@ -65,12 +68,12 @@ struct MainSendButtons: View {
             .buttonStyle(.borderless)
             .fontWeight(.light)
             //            .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
-            //.highPriorityGesture(switchRecordingGesture)
+            .highPriorityGesture(switchRecordingGesture)
             .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
 
             if viewModel.showCamera {
                 Button {
-                    threadVM.setupRecording()
+                    showPopover.toggle()
                 } label: {
                     Image(systemName: "camera")
                         .interpolation(.none)
@@ -83,9 +86,30 @@ struct MainSendButtons: View {
                 .frame(width: 48, height: 48)
                 .buttonStyle(.borderless)
                 .fontWeight(.light)
+                .popover(isPresented: $showPopover) {
+                    VStack(alignment: .leading, spacing: 32) {
+                        Button {
+                            showPopover.toggle()
+                            showCaptureVideoView.toggle()
+                        } label: {
+                            Label("Video", systemImage: "video")
+                        }
+
+                        Button {
+                            showPopover.toggle()
+                            showCaptureImageView.toggle()
+                        } label: {
+                            Label("Photo", systemImage: "photo.fill.on.rectangle.fill")
+                        }
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(Color.App.accent)
+                    .font(.headline)
+                    .fontWeight(.medium)
+                    .padding()
+                    .presentationCompactAdaptation(.popover)
+                }
                 //                .keyboardShortcut(.init("r"), modifiers: [.command]) // if enabled we may have memory leak when press the back button in ThreadView check if it works properly.
-                .disabled(true)
-                .opacity(0.2)
                 .highPriorityGesture(switchRecordingGesture)
                 .transition(.asymmetric(insertion: .move(edge: .bottom).animation(.easeIn(duration: 0.2)), removal: .push(from: .top).animation(.easeOut(duration: 0.2))))
             }
@@ -114,6 +138,26 @@ struct MainSendButtons: View {
             }
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.3), value: viewModel.isVideoRecordingSelected)
+        .fullScreenCover(isPresented: $showCaptureImageView) {
+            CameraCapturer(isVideo: false) { image, _, asset in
+                guard let image = image else { return }
+                let item = ImageItem(data: image.jpegData(compressionQuality: 80) ?? Data(),
+                                     width: Int(image.size.width),
+                                     height: Int(image.size.height),
+                                     originalFilename: "Talk-\(Date().millisecondsSince1970).jpg")
+                threadVM.attachmentsViewModel.addSelectedPhotos(imageItem: item)
+                threadVM.animateObjectWillChange()
+            }
+            .ignoresSafeArea()
+        }
+        .fullScreenCover(isPresented: $showCaptureVideoView) {
+            CameraCapturer(isVideo: true) { _, videoURL, asset in
+                guard let videoURL = videoURL else { return }
+                threadVM.attachmentsViewModel.addFileURL(url: videoURL)
+                threadVM.animateObjectWillChange()
+            }
+            .ignoresSafeArea()
+        }
     }
 
     private func animation(appear: Bool) -> Animation {

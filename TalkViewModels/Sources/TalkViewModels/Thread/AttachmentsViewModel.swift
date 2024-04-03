@@ -39,6 +39,12 @@ public final class AttachmentsViewModel: ObservableObject {
         animateObjectWillChange()
     }
 
+    public func addFileURL(url: URL) {
+        attachments.removeAll(where: {$0.type != .file})
+        attachments.append(.init(type: .file, request: url))
+        animateObjectWillChange()
+    }
+
     public func clear() {
         allImageItems.removeAll()
         filePickerViewModel.clear()

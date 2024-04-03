@@ -80,12 +80,11 @@ struct MessageActionMenu: View {
             }
 
             Group {
-                if EnvironmentValues.isTalkTest {
-                    if viewModel.message.isImage,
-                       let url = viewModel.downloadFileVM?.fileURL,
-                       let data = try? Data(contentsOf: url),
-                       let image = UIImage(data: data) {
-                        ContextMenuButton(title: "Messages.ActionMenu.saveImage", image: "square.and.arrow.down") {
+                if viewModel.message.isImage {
+                    ContextMenuButton(title: "Messages.ActionMenu.saveImage", image: "square.and.arrow.down") {
+                        if let url = viewModel.message.fileURL,
+                           let data = try? Data(contentsOf: url),
+                           let image = UIImage(data: data) {
                             UIImageWriteToSavedPhotosAlbum(image, viewModel, nil, nil)
                             let icon = Image(systemName: "externaldrive.badge.checkmark")
                                 .fontWeight(.semibold)
