@@ -17,13 +17,13 @@ final class ThreadViewController: UIViewController {
     private var tableView: UITableView!
     private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel, vc: self)
     private lazy var moveToBottom = MoveToBottomButton(viewModel: viewModel)
+    private lazy var unreadMentionsButton = UnreadMenitonsButton(viewModel: viewModel)
     private lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
     private let emptyThreadView = EmptyThreadView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
-        sendContainer.embed()
         viewModel.delegate = self
         viewModel.historyVM.delegate = self
     }
@@ -41,6 +41,7 @@ extension ThreadViewController {
     func configureViews() {
         configureTableView()
         configureMoveToBottom()
+        configureUnreadMentionsButton()
         configureEmptyThreadView()
         configureSendContainer()
         configureTopToolbarVStack()
@@ -58,7 +59,7 @@ extension ThreadViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.topAnchor.constraint(equalTo: topThreadToolbar.bottomAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: sendContainer.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
 
@@ -93,11 +94,19 @@ extension ThreadViewController {
     private func configureSendContainer() {
         sendContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(sendContainer)
+        sendContainer.onUpdateHeight = { [weak self] height in
+            self?.tableView.contentInset = .init(top: 0, left: 0, bottom: height, right: 0)
+        }
     }
 
     private func configureMoveToBottom() {
         view.addSubview(moveToBottom)
         moveToBottom.translatesAutoresizingMaskIntoConstraints = false
+    }
+
+    private func configureUnreadMentionsButton() {
+        view.addSubview(unreadMentionsButton)
+        unreadMentionsButton.translatesAutoresizingMaskIntoConstraints = false
     }
 
     private func configureEmptyThreadView() {
@@ -115,6 +124,7 @@ extension ThreadViewController {
     private func showEmptyThread(show: Bool) {
         emptyThreadView.isHidden = !show
         moveToBottom.isHidden = show
+        unreadMentionsButton.isHidden = show
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -188,6 +198,10 @@ extension ThreadViewController {
 extension ThreadViewController: ThreadViewDelegate {
     func onUnreadCountChanged() {
         moveToBottom.updateUnreadCount()
+    }
+
+    func onChangeUnreadMentions() {
+        unreadMentionsButton.onChangeUnreadMentions()
     }
 }
 

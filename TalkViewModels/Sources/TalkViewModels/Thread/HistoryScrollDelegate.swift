@@ -24,8 +24,12 @@ public protocol UnreadCountDelegate {
     func onUnreadCountChanged()
 }
 
-public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate {
-    
+public protocol ChangeUnreadMentionsDelegate {
+    func onChangeUnreadMentions()
+}
+
+public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate {
+
 }
 
 

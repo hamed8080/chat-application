@@ -12,12 +12,11 @@ import Combine
 import TalkUI
 
 public final class ThreadBottomToolbar: UIStackView {
-    private let parentVC: UIViewController
     private let viewModel: ThreadViewModel
     private let mainSendButtons: MainSendButtons
     private let audioRecordingView: AudioRecordingView
     private let attachmentButtons: AttachmentButtonsView
-    private let attachmentFilesVC: AttachmentViewControllerContainer
+    private let attachmentFilesTableView: AttachmentFilesTableView
     private let replyPrivatelyPlaceholderView: ReplyPrivatelyMessagePlaceholderView
     private let replyPlaceholderView: ReplyMessagePlaceholderView
     private let forwardPlaceholderView: ForwardMessagePlaceholderView
@@ -26,14 +25,14 @@ public final class ThreadBottomToolbar: UIStackView {
     private let selectionView: SelectionView
     private let muteBarView: MuteChannelBarView
     private var cancellableSet = Set<AnyCancellable>()
+    public var onUpdateHeight: ((CGFloat) -> Void)?
 
     public init(viewModel: ThreadViewModel, vc: UIViewController) {
-        self.parentVC = vc
         self.viewModel = viewModel
         self.mainSendButtons = MainSendButtons(viewModel: viewModel)
         self.audioRecordingView = AudioRecordingView(viewModel: viewModel)
         self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel.sendContainerViewModel, vc: vc)
-        self.attachmentFilesVC = AttachmentViewControllerContainer(viewModel: viewModel)
+        self.attachmentFilesTableView = AttachmentFilesTableView(viewModel: viewModel)
         self.replyPlaceholderView = ReplyMessagePlaceholderView(viewModel: viewModel)
         self.replyPrivatelyPlaceholderView = ReplyPrivatelyMessagePlaceholderView(viewModel: viewModel)
         self.forwardPlaceholderView = ForwardMessagePlaceholderView(viewModel: viewModel)
@@ -55,7 +54,7 @@ public final class ThreadBottomToolbar: UIStackView {
         mainSendButtons.translatesAutoresizingMaskIntoConstraints = false
         audioRecordingView.translatesAutoresizingMaskIntoConstraints = false
         attachmentButtons.translatesAutoresizingMaskIntoConstraints = false
-        attachmentFilesVC.translatesAutoresizingMaskIntoConstraints = false
+        attachmentFilesTableView.translatesAutoresizingMaskIntoConstraints = false
         replyPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
         forwardPlaceholderView.translatesAutoresizingMaskIntoConstraints = false
         editMessagePlaceholderView.translatesAutoresizingMaskIntoConstraints = false
@@ -71,18 +70,19 @@ public final class ThreadBottomToolbar: UIStackView {
         let effectView = UIVisualEffectView(effect: blurEffect)
         effectView.translatesAutoresizingMaskIntoConstraints = false
         effectView.layer.masksToBounds = true
-        effectView.layer.cornerRadius = 8
+        effectView.layer.cornerRadius = 0
+        effectView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         addSubview(effectView)
 
         attachmentButtons.isHidden = true
-        attachmentFilesVC.isHidden = true
+        attachmentFilesTableView.isHidden = true
         replyPrivatelyPlaceholderView.isHidden = true
         replyPlaceholderView.isHidden = true
         forwardPlaceholderView.isHidden = true
         editMessagePlaceholderView.isHidden = true
         selectionView.isHidden = true
         audioRecordingView.isHidden = true
-        addArrangedSubview(attachmentFilesVC)
+        addArrangedSubview(attachmentFilesTableView)
         addArrangedSubview(attachmentButtons)
         addArrangedSubview(replyPlaceholderView)
         addArrangedSubview(replyPrivatelyPlaceholderView)
@@ -105,10 +105,6 @@ public final class ThreadBottomToolbar: UIStackView {
         ])
     }
 
-    public func embed() {
-        attachmentFilesVC.embed(parentVC)
-    }
-
     private func registerObservers() {
         viewModel.sendContainerViewModel.$showActionButtons.sink { showActionButtons in
             if showActionButtons {
@@ -124,5 +120,10 @@ public final class ThreadBottomToolbar: UIStackView {
             }
         }
         .store(in: &cancellableSet)
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        onUpdateHeight?(bounds.height)
     }
 }

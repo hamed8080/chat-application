@@ -37,8 +37,6 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
         textColor = UIColor(named: "text_primary")
         returnKeyType = .done
         setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        layer.masksToBounds = true
-        layer.cornerRadius = 24
 
         placeholderLabel.text = "Thread.SendContainer.typeMessageHere".localized()
         placeholderLabel.textColor = Color.App.textPrimaryUIColor?.withAlphaComponent(0.7)
@@ -48,9 +46,9 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
         addSubview(placeholderLabel)
 
         NSLayoutConstraint.activate([
-            heightAnchor.constraint(greaterThanOrEqualToConstant: 52),
-            placeholderLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            placeholderLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            heightAnchor.constraint(greaterThanOrEqualToConstant: 48),
+            placeholderLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            placeholderLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             placeholderLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }

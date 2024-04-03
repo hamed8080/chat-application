@@ -82,7 +82,8 @@ struct NavigationTypeView: View {
     var body: some View {
         switch type {
         case .threadViewModel(let viewModel):
-                UIKitThreadViewWrapper(threadVM: viewModel)
+            UIKitThreadViewWrapper(threadVM: viewModel)
+                .ignoresSafeArea()
 //                ThreadView(viewModel: viewModel, threadsVM: container.threadsVM)
 //                    .id(conversation.id) /// Needs to set here not inside the ThreadView to force Stack call onAppear when user clicks on another thread on ThreadRow
 //                    .environmentObject(container.appOverlayVM)

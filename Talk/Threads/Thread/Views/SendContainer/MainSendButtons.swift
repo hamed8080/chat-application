@@ -18,6 +18,7 @@ public final class MainSendButtons: UIStackView {
     private let btnSend = UIButton(type: .system)
     private let btnMic = UIButton(type: .system)
     private let btnCamera = UIButton(type: .system)
+    private var btnEmoji = UIImageButton(imagePadding: .init(all: 8))
     private let multilineTextField = SendContainerTextView()
     private let threadVM: ThreadViewModel
     private var viewModel: SendContainerViewModel { threadVM.sendContainerViewModel }
@@ -42,6 +43,7 @@ public final class MainSendButtons: UIStackView {
         btnMic.translatesAutoresizingMaskIntoConstraints = false
         btnCamera.translatesAutoresizingMaskIntoConstraints = false
         multilineTextField.translatesAutoresizingMaskIntoConstraints = false
+        btnEmoji.translatesAutoresizingMaskIntoConstraints = false
 
         axis = .horizontal
         spacing = 8
@@ -71,7 +73,26 @@ public final class MainSendButtons: UIStackView {
         btnSend.layer.masksToBounds = true
         btnSend.layer.cornerRadius = 22
 
-        addArrangedSubviews([btnToggleAttachmentButtons, multilineTextField, btnMic, btnCamera])
+        let emojiImage = UIImage(named: "emoji")
+        btnEmoji.imageView.image = emojiImage
+        btnEmoji.imageView.tintColor = Color.App.redUIColor
+        btnEmoji.isHidden = true
+
+        let hStack = UIStackView()
+        hStack.translatesAutoresizingMaskIntoConstraints = false
+        hStack.axis = .horizontal
+        hStack.spacing = 8
+        hStack.layer.masksToBounds = true
+        hStack.layer.cornerRadius = 24
+        hStack.backgroundColor = Color.App.bgSendInputUIColor
+        hStack.alignment = .bottom
+        hStack.layoutMargins = .init(top: 0, left: 8, bottom: 0, right: 2)
+        hStack.isLayoutMarginsRelativeArrangement = true
+
+        hStack.addArrangedSubview(multilineTextField)
+        hStack.addArrangedSubview(btnEmoji)
+
+        addArrangedSubviews([btnToggleAttachmentButtons, hStack, btnMic, btnCamera])
 
         NSLayoutConstraint.activate([
             btnToggleAttachmentButtons.widthAnchor.constraint(equalToConstant: 48),
@@ -82,6 +103,8 @@ public final class MainSendButtons: UIStackView {
             btnSend.heightAnchor.constraint(equalToConstant: 48),
             btnMic.heightAnchor.constraint(equalToConstant: 48),
             btnCamera.heightAnchor.constraint(equalToConstant: 48),
+            btnEmoji.widthAnchor.constraint(equalToConstant: 48),
+            btnEmoji.heightAnchor.constraint(equalToConstant: 48),
         ])
     }
 

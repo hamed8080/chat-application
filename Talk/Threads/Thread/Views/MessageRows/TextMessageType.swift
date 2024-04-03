@@ -35,6 +35,7 @@ final class TextMessageContainer: UIStackView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
+        addMenus()
     }
 
     required init(coder: NSCoder) {
@@ -132,6 +133,21 @@ final class TextMessageContainer: UIStackView {
         locationRowView.backgroundColor = .magenta
         unsentMessageView.backgroundColor = .yellow.withAlphaComponent(0.2)
 #endif
+    }
+}
+
+extension TextMessageContainer: UIContextMenuInteractionDelegate {
+    private func addMenus() {
+        let menu = UIContextMenuInteraction(delegate: self)
+        addInteraction(menu)
+    }
+
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        let config = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            guard let self = self else { return UIMenu() }
+            return menu(model: .init(viewModel: viewModel))
+        }
+        return config
     }
 }
 

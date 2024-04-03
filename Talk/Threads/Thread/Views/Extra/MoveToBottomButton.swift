@@ -13,11 +13,7 @@ import TalkExtensions
 
 public final class MoveToBottomButton: UIButton {
     public let viewModel: ThreadViewModel
-    private var color: UIColor?
-    private var bgColor: UIColor?
-    private var shapeLayer = CAShapeLayer()
     private let imgCenter = UIImageView()
-    private var iconTint: UIColor?
     private let lblUnreadCount = PaddingUILabel(frame: .zero, horizontal: 4, vertical: 4)
 
     public init(viewModel: ThreadViewModel) {
@@ -34,6 +30,11 @@ public final class MoveToBottomButton: UIButton {
     private func configureView() {
         layer.backgroundColor = Color.App.bgPrimaryUIColor?.cgColor
         layer.cornerRadius = 20
+        layer.shadowRadius = 5
+        layer.shadowColor = Color.App.accentUIColor?.cgColor
+        layer.shadowOpacity = 0.1
+        layer.masksToBounds = false
+        layer.shadowOffset = .init(width: 0.0, height: 1.0)
 
         imgCenter.image = UIImage(systemName: "chevron.down")
         imgCenter.translatesAutoresizingMaskIntoConstraints = false
