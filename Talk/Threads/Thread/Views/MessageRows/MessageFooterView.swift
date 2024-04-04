@@ -28,6 +28,9 @@ final class MessageFooterView: UIStackView {
     }
     
     private func configureView() {
+        spacing = 4
+        axis = .horizontal
+
         statusImage.translatesAutoresizingMaskIntoConstraints = false
         statusImage.translatesAutoresizingMaskIntoConstraints = false
         pinImage.translatesAutoresizingMaskIntoConstraints = false
@@ -38,9 +41,6 @@ final class MessageFooterView: UIStackView {
         editedLabel.font = UIFont.uiiransansCaption2
         editedLabel.textColor = Color.App.textSecondaryUIColor
         pinImage.tintColor = Color.App.textPrimaryUIColor
-
-        spacing = 4
-        axis = .horizontal
 
         addArrangedSubview(timelabel)
         addArrangedSubview(editedLabel)

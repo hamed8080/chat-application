@@ -119,13 +119,7 @@ struct MessageRowShimmer: View {
                     .padding(.top, 10)
                 }
                 .padding(4)
-                .padding(isMe ? .trailing : .leading, 6) /// For tail
-                .background(
-                    MessageRowBackgroundSwiftUI.noTail
-                        .fill(Color("bg_chat_shimmer"))
-                        .scaleEffect(x: isMe ? 1 : -1, y: 1)
-                )
-                .contentShape(MessageRowBackgroundSwiftUI.withTail)
+                .padding(isMe ? .trailing : .leading, 6) /// For tail                
             }
             .frame(minWidth: 128, maxWidth: width, alignment: isMe ? .trailing : .leading)
 

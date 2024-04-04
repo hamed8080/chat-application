@@ -10,6 +10,7 @@ import TalkViewModels
 import TalkExtensions
 import TalkUI
 import TalkModels
+import Combine
 
 public final class SelectionView: UIStackView {
     private let btnForward = UIButton(type: .system)
@@ -19,11 +20,13 @@ public final class SelectionView: UIStackView {
     private let lblStaticForwardTO = UILabel()
     private let closeButton = CloseButtonView()
     private let viewModel: ThreadViewModel
+    private var cancellable = Set<AnyCancellable>()
 
     public init(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
+        registerObserver()
     }
 
     public required init(coder: NSCoder) {
@@ -82,12 +85,21 @@ public final class SelectionView: UIStackView {
         viewModel.animateObjectWillChange()
     }
 
-    public func set() {
-        isHidden = viewModel.selectedMessagesViewModel.isInSelectMode
-        lblStaticForwardTO.isHidden = viewModel.forwardMessage != nil
-        btnDelete.isHidden = viewModel.thread.disableSend
-        let count = viewModel.selectedMessagesViewModel.selectedMessages.count
-        lblCount.text = count.localNumber(locale: Language.preferredLocale) ?? ""
+    private func set() {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
+            isHidden = !viewModel.selectedMessagesViewModel.isInSelectMode
+            lblStaticForwardTO.isHidden = viewModel.forwardMessage != nil
+            btnDelete.isHidden = viewModel.thread.disableSend
+        }
+    }
+
+    public func updateCount() {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
+            let count = viewModel.selectedMessagesViewModel.selectedMessages.count
+            lblCount.text = count.localNumber(locale: Language.preferredLocale) ?? ""
+        }
     }
 
     private func deleteMessagesTapped(_ sender: UIButton) {
@@ -95,8 +107,16 @@ public final class SelectionView: UIStackView {
     }
 
     private func onClose() {
+        lblCount.text = ""
+        viewModel.delegate?.setSelection(false)
         viewModel.selectedMessagesViewModel.clearSelection()
-        viewModel.selectedMessagesViewModel.animateObjectWillChange()
+    }
+
+    private func registerObserver() {
+        viewModel.selectedMessagesViewModel.objectWillChange.sink { [weak self] _ in
+            self?.set()
+        }
+        .store(in: &cancellable)
     }
 }
 

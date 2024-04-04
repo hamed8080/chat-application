@@ -73,10 +73,13 @@ extension ThreadViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.prefetchDataSource = self
+        tableView.allowsMultipleSelection = false // Prevent the user select things when open the thread
+        tableView.allowsSelection = false // Prevent the user select things when open the thread
+        tableView.sectionHeaderTopPadding = 0
         ConversationHistoryCellFactory.registerCells(tableView)
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         let imageView = UIImageView(image: UIImage(named: "chat_bg"))
         imageView.contentMode = .scaleAspectFill
         tableView.backgroundView = imageView
@@ -170,6 +173,28 @@ extension ThreadViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         viewModel.historyVM.didEndDisplay(indexPath)
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let cell = tableView.cellForRow(at: indexPath) as? TextMessageTypeCell {
+            cell.select()
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if let cell = tableView.cellForRow(at: indexPath) as? TextMessageTypeCell {
+            cell.deselect()
+        }
+    }
+
+    func tableView(_ tableView: UITableView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        let sections = viewModel.historyVM.sections
+        if !sections[indexPath.section].vms.indices.contains(indexPath.row) { return false }
+        return sections[indexPath.section].vms[indexPath.row].message.isSelectable
+    }
 }
 
 // MARK: Prefetch
@@ -202,6 +227,18 @@ extension ThreadViewController: ThreadViewDelegate {
 
     func onChangeUnreadMentions() {
         unreadMentionsButton.onChangeUnreadMentions()
+    }
+
+    func setSelection(_ value: Bool) {
+        viewModel.selectedMessagesViewModel.setInSelectionMode(value)
+        tableView.allowsMultipleSelection = value
+        tableView.visibleCells.compactMap{$0 as? TextMessageTypeCell}.forEach { cell in
+            cell.setInSelectionMode(value)
+        }
+    }
+
+    func updateCount() {
+        sendContainer.selectionView.updateCount()
     }
 }
 

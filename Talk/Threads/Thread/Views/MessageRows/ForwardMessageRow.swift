@@ -41,6 +41,8 @@ final class ForwardMessageRow: UIStackView {
         vStack.axis = .vertical
         vStack.alignment = .leading
         vStack.spacing = 0
+        vStack.layoutMargins = .init(horizontal: 4, vertical: 8)
+        vStack.isLayoutMarginsRelativeArrangement = true
 
         forwardStaticLebel.font = UIFont.uiiransansCaption3
         forwardStaticLebel.textColor = Color.App.accentUIColor

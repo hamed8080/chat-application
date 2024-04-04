@@ -78,14 +78,14 @@ public final class DeleteMessagesViewModelModel: ObservableObject {
 
     public func deleteMessagesForMe() {
         threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
-        threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+        threadVM.selectedMessagesViewModel.setInSelectionMode(false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
         viewModel.animateObjectWillChange()
     }
 
     public func deleteForAll() {
         threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
-        threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+        threadVM.selectedMessagesViewModel.setInSelectionMode(false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
         viewModel.animateObjectWillChange()
     }
@@ -98,14 +98,14 @@ public final class DeleteMessagesViewModelModel: ObservableObject {
         if notPastDeleteTime.count > 0 {
             threadVM.historyVM.deleteMessages(notPastDeleteTime, forAll: true)
         }
-        threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+        threadVM.selectedMessagesViewModel.setInSelectionMode(false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
         viewModel.animateObjectWillChange()
     }
 
     public func cleanup() {
         viewModel.clearSelection()
-        threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+        threadVM.selectedMessagesViewModel.setInSelectionMode(false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
         viewModel.animateObjectWillChange()
     }

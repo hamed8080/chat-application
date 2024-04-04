@@ -33,9 +33,8 @@ final class ReplyInfoMessageRow: UIStackView {
     }
 
     private func configureView() {
-        layoutMargins = UIEdgeInsets(all: 8)
         backgroundColor = Color.App.bgSecondaryUIColor
-        layer.cornerRadius = 5
+        layer.cornerRadius = 8
         layer.masksToBounds = true
 
         imageIconView.translatesAutoresizingMaskIntoConstraints = false
@@ -48,6 +47,8 @@ final class ReplyInfoMessageRow: UIStackView {
         vStack.axis = .vertical
         vStack.alignment = .leading
         vStack.spacing = 0
+        vStack.layoutMargins = .init(all: 4)
+        vStack.isLayoutMarginsRelativeArrangement = true
 
         replyStaticLebel.font = UIFont.uiiransansCaption3
         replyStaticLebel.textColor = Color.App.textPrimaryUIColor

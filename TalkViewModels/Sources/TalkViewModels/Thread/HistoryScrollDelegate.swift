@@ -28,8 +28,11 @@ public protocol ChangeUnreadMentionsDelegate {
     func onChangeUnreadMentions()
 }
 
-public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate {
-
+public protocol ChangeSelectionDelegate {
+    func setSelection(_ value: Bool)
+    func updateCount()
 }
 
+public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate {
 
+}

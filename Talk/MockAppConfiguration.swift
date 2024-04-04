@@ -147,7 +147,7 @@ In this new line we are going to test if it can break the line.
                 time: UInt(Date().millisecondsSince1970),
                 participant: Participant(id: 0, name: "John Doe"))
             let vm = makeViewModel(message: message)
-            vm.isInSelectMode = true
+            vm.threadVM?.selectedMessagesViewModel.setInSelectionMode(true)
             return vm
         }()
 

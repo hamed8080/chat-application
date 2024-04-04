@@ -18,7 +18,7 @@ public extension Message {
     static let audioTypes = [ChatModels.MessageType.voice, .podSpaceSound, .sound, .podSpaceVoice]
     static let videoTypes = [ChatModels.MessageType.video, .podSpaceVideo, .video]
     static let fileTypes: [ChatModels.MessageType] = [.voice, .picture, .video, .sound, .file, .podSpaceFile, .podSpacePicture, .podSpaceSound, .podSpaceVoice, .podSpaceVideo]
-    static let unreactionableTypes = [ChatModels.MessageType.endCall, .endCall, .participantJoin, .participantLeft]
+    static let unreactionableTypes = [ChatModels.MessageType.endCall, .startCall, .participantJoin, .participantLeft]
 
     var forwardMessage: ForwardMessage? { self as? ForwardMessage }
     var forwardCount: Int? { forwardMessage?.forwardMessageRequest.messageIds.count }
@@ -51,6 +51,8 @@ public extension Message {
     var isAudio: Bool { Message.audioTypes.contains(messageType ?? .unknown) }
     var isVideo: Bool { Message.videoTypes.contains(messageType ?? .unknown) }
     var reactionableType: Bool { !Message.unreactionableTypes.contains(messageType ?? .unknown) }
+
+    var isSelectable: Bool { !Message.unreactionableTypes.contains(messageType ?? .unknown) }
 
     var fileHashCode: String { fileMetaData?.fileHash ?? fileMetaData?.file?.hashCode ?? "" }
 

@@ -40,6 +40,7 @@ final class AvatarView: UIImageView {
         backgroundColor = Color.App.color1UIColor?.withAlphaComponent(0.4)
         layer.cornerRadius = MessageRowViewModel.avatarSize / 2
         layer.masksToBounds = true
+        contentMode = .scaleAspectFill
 
         addSubview(label)
 
@@ -58,15 +59,10 @@ final class AvatarView: UIImageView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         let avatarVM = viewModel.avatarImageLoader
-        let showImage = avatarVM?.image != nil
-        label.isHidden = showImage
-        isHidden = !showImage
         backgroundColor = viewModel.avatarColor
-        if showImage {
-            image = avatarVM?.image
-        } else {
-            image = nil
-            label.text = viewModel.avatarSplitedCharaters
+        avatarVM?.onImage = { [weak self] image in
+            self?.image = image
+            self?.label.isHidden = true
         }
         if avatarVM?.isImageReady == false {
             Task {
@@ -74,21 +70,33 @@ final class AvatarView: UIImageView {
             }
         }
         if hiddenView(viewModel) {
+            backgroundColor = nil
             isHidden = true
         } else if showAvatarOrUserName(viewModel) {
             isHidden = false
             widthConstraint?.constant = MessageRowViewModel.avatarSize
-            heightConstraint?.constant = MessageRowViewModel.avatarSize 
+            heightConstraint?.constant = MessageRowViewModel.avatarSize
+            label.text = viewModel.avatarSplitedCharaters
+            if let image = avatarVM?.image {
+                self.image = image
+                label.isHidden = true
+            } else {
+                image = nil
+                label.isHidden = false
+            }
         } else if isSameUser(viewModel) {
+            backgroundColor = nil
             image = nil
             isHidden = false
+            label.isHidden = true
             widthConstraint?.constant = MessageRowViewModel.avatarSize
             heightConstraint?.constant = MessageRowViewModel.avatarSize
         }
     }
 
     private func hiddenView(_ viewModel: MessageRowViewModel) -> Bool {
-        viewModel.isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false || viewModel.isMe
+        let isInSelectMode = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true
+        return isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false || viewModel.isMe
     }
 
     private func showAvatarOrUserName(_ viewModel: MessageRowViewModel) -> Bool {

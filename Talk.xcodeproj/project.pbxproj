@@ -11,8 +11,6 @@
 		050260792B15C408005F3E64 /* ManuallyConnectionManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050260772B15C408005F3E64 /* ManuallyConnectionManagerView.swift */; };
 		0505D5AC2AE2CEC900A5B081 /* EditGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505D5AB2AE2CEC900A5B081 /* EditGroup.swift */; };
 		0505D5AD2AE2CEC900A5B081 /* EditGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0505D5AB2AE2CEC900A5B081 /* EditGroup.swift */; };
-		050620412B0B1FE10024476C /* MessageRowBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050620402B0B1FE10024476C /* MessageRowBackground.swift */; };
-		050620422B0B1FE10024476C /* MessageRowBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050620402B0B1FE10024476C /* MessageRowBackground.swift */; };
 		0506DE1F2AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
 		0506DE202AD42AF00009701E /* Talk.docc in Sources */ = {isa = PBXBuildFile; fileRef = 0506DE1E2AD42AF00009701E /* Talk.docc */; };
 		050B29162AB40DC20072706C /* ContainerSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050B290D2AB40DC20072706C /* ContainerSplitView.swift */; };
@@ -147,8 +145,6 @@
 		0570CC182AAEE98F001832E9 /* ReplyInfoMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB882AAEE98C001832E9 /* ReplyInfoMessageRow.swift */; };
 		0570CC192AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB892AAEE98C001832E9 /* ParticipantMessageType.swift */; };
 		0570CC1A2AAEE98F001832E9 /* ParticipantMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB892AAEE98C001832E9 /* ParticipantMessageType.swift */; };
-		0570CC1B2AAEE98F001832E9 /* MessageActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8A2AAEE98C001832E9 /* MessageActionMenu.swift */; };
-		0570CC1C2AAEE98F001832E9 /* MessageActionMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8A2AAEE98C001832E9 /* MessageActionMenu.swift */; };
 		0570CC1D2AAEE98F001832E9 /* TextMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8B2AAEE98C001832E9 /* TextMessageType.swift */; };
 		0570CC1E2AAEE98F001832E9 /* TextMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8B2AAEE98C001832E9 /* TextMessageType.swift */; };
 		0570CC1F2AAEE98F001832E9 /* SearchMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */; };
@@ -384,7 +380,6 @@
 /* Begin PBXFileReference section */
 		050260772B15C408005F3E64 /* ManuallyConnectionManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManuallyConnectionManagerView.swift; sourceTree = "<group>"; };
 		0505D5AB2AE2CEC900A5B081 /* EditGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditGroup.swift; sourceTree = "<group>"; };
-		050620402B0B1FE10024476C /* MessageRowBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRowBackground.swift; sourceTree = "<group>"; };
 		0506DE1E2AD42AF00009701E /* Talk.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Talk.docc; sourceTree = "<group>"; };
 		050B290D2AB40DC20072706C /* ContainerSplitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerSplitView.swift; sourceTree = "<group>"; };
 		050B290E2AB40DC20072706C /* ToolbarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
@@ -453,7 +448,6 @@
 		0570CB872AAEE98C001832E9 /* UnreadMessagesBubble.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnreadMessagesBubble.swift; sourceTree = "<group>"; };
 		0570CB882AAEE98C001832E9 /* ReplyInfoMessageRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplyInfoMessageRow.swift; sourceTree = "<group>"; };
 		0570CB892AAEE98C001832E9 /* ParticipantMessageType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParticipantMessageType.swift; sourceTree = "<group>"; };
-		0570CB8A2AAEE98C001832E9 /* MessageActionMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageActionMenu.swift; sourceTree = "<group>"; };
 		0570CB8B2AAEE98C001832E9 /* TextMessageType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextMessageType.swift; sourceTree = "<group>"; };
 		0570CB8C2AAEE98C001832E9 /* SearchMessageRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchMessageRow.swift; sourceTree = "<group>"; };
 		0570CB8D2AAEE98C001832E9 /* AttachmentButtonsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentButtonsView.swift; sourceTree = "<group>"; };
@@ -804,14 +798,12 @@
 				0570CB872AAEE98C001832E9 /* UnreadMessagesBubble.swift */,
 				0570CB882AAEE98C001832E9 /* ReplyInfoMessageRow.swift */,
 				0570CB892AAEE98C001832E9 /* ParticipantMessageType.swift */,
-				0570CB8A2AAEE98C001832E9 /* MessageActionMenu.swift */,
 				0570CB8B2AAEE98C001832E9 /* TextMessageType.swift */,
 				0594FE5F2B0386580031AADF /* GroupParticipantNameView.swift */,
 				0594FE622B0386F00031AADF /* MessageTextView.swift */,
 				0594FE652B0387370031AADF /* LocationRowView.swift */,
 				0594FE682B0387920031AADF /* UnsentMessageView.swift */,
 				057A18DE2B04C78A0007868D /* MessageParticipantsSeen.swift */,
-				050620402B0B1FE10024476C /* MessageRowBackground.swift */,
 				05DAA42B2B296C12007427DC /* SelectMessageInsideClickOverlay.swift */,
 				051D1BFE2BA0369100676CBD /* SelectMessageRadio.swift */,
 				05D1F2DD2B70D421000CE1FB /* DownloadButton.swift */,
@@ -1241,7 +1233,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0570CBE32AAEE98F001832E9 /* HomeContentView.swift in Sources */,
-				0570CC1B2AAEE98F001832E9 /* MessageActionMenu.swift in Sources */,
 				050B29182AB40DC20072706C /* ToolbarView.swift in Sources */,
 				051D1BFF2BA0369100676CBD /* SelectMessageRadio.swift in Sources */,
 				05F70E5A2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */,
@@ -1351,7 +1342,6 @@
 				05551C262AF4C631000F98B6 /* CloseButtonView.swift in Sources */,
 				0570CC672AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC0F2AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
-				050620412B0B1FE10024476C /* MessageRowBackground.swift in Sources */,
 				05903B632BBD09890098F382 /* ExpandHeaderView.swift in Sources */,
 				05C27F982AF4AFF60008FE2E /* ConversationPlusContextMenu.swift in Sources */,
 				05745AF32AF2B1B100102193 /* SettingProfileButton.swift in Sources */,
@@ -1413,7 +1403,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0570CBE42AAEE98F001832E9 /* HomeContentView.swift in Sources */,
-				0570CC1C2AAEE98F001832E9 /* MessageActionMenu.swift in Sources */,
 				050B29192AB40DC20072706C /* ToolbarView.swift in Sources */,
 				051D1C002BA0369100676CBD /* SelectMessageRadio.swift in Sources */,
 				05F70E5B2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */,
@@ -1523,7 +1512,6 @@
 				05551C272AF4C631000F98B6 /* CloseButtonView.swift in Sources */,
 				0570CC682AAEE98F001832E9 /* SyncView.swift in Sources */,
 				0570CC102AAEE98F001832E9 /* MessageFooterView.swift in Sources */,
-				050620422B0B1FE10024476C /* MessageRowBackground.swift in Sources */,
 				05903B642BBD09890098F382 /* ExpandHeaderView.swift in Sources */,
 				05C27F992AF4AFF60008FE2E /* ConversationPlusContextMenu.swift in Sources */,
 				05745AF42AF2B1B100102193 /* SettingProfileButton.swift in Sources */,

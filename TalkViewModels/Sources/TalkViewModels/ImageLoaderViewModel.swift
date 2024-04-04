@@ -45,6 +45,7 @@ public struct ImageLoaderConfig {
 
 public final class ImageLoaderViewModel: ObservableObject {
     @Published public private(set) var image: UIImage = .init()
+    public var onImage: ((UIImage) -> Void)?
     private(set) var fileMetadata: String?
     public private(set) var cancelable: Set<AnyCancellable> = []
     var uniqueId: String?
@@ -117,6 +118,7 @@ public final class ImageLoaderViewModel: ObservableObject {
                 guard let image = image else { return }
                 self?.image = image
                 self?.isFetching = false
+                self?.onImage?(image)
             }
         }
     }
@@ -133,6 +135,7 @@ public final class ImageLoaderViewModel: ObservableObject {
             DispatchQueue.main.async { [weak self] in
                 guard let image = image else { return }
                 self?.image = image
+                self?.onImage?(image)
             }
         }
     }

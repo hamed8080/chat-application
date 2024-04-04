@@ -12,8 +12,6 @@ import SwiftUI
 
 public final class SelectMessageRadio: UIView {
     private let imageView = UIImageView()
-    private var widthConstraint: NSLayoutConstraint?
-    private var heightConstraint: NSLayoutConstraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -27,33 +25,31 @@ public final class SelectMessageRadio: UIView {
     private func configureView() {
         translatesAutoresizingMaskIntoConstraints = false
         imageView.translatesAutoresizingMaskIntoConstraints = false
-
+        imageView.image = UIImage(systemName: "circle")
         imageView.contentMode = .scaleAspectFit
         addSubview(imageView)
 
-        widthConstraint = widthAnchor.constraint(equalToConstant: 48)
-        heightConstraint = heightAnchor.constraint(equalToConstant: 48)
+        let iconColor = UIColor.gray
+        let fillColor = UIColor.clear
+        let config = UIImage.SymbolConfiguration(paletteColors: [iconColor, fillColor])
+        imageView.image = UIImage(systemName: "circle", withConfiguration: config)
 
         NSLayoutConstraint.activate([
-            widthConstraint!,
-            heightConstraint!,
+            widthAnchor.constraint(equalToConstant: 48),
+            heightAnchor.constraint(equalToConstant: 48),
             imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            imageView.bottomAnchor.constraint(equalTo: bottomAnchor),
             imageView.widthAnchor.constraint(equalToConstant: 28),
             imageView.heightAnchor.constraint(equalToConstant: 28),
         ])
     }
 
-    public func set(_ viewModel: MessageRowViewModel) {
-        let isSelected = viewModel.isSelected
-        let iconColor = (isSelected ? Color.App.whiteUIColor : UIColor.gray) ?? .clear
-        let fillColor = (isSelected ? Color.App.accentUIColor : UIColor.clear) ?? .clear
-        let config = UIImage.SymbolConfiguration(paletteColors: [iconColor, fillColor])
-        imageView.image = UIImage(systemName: isSelected ? "checkmark.circle.fill" : "circle", withConfiguration: config)
-
-        let canShow = viewModel.isInSelectMode
-        isHidden = !canShow
-        widthConstraint?.constant = canShow ? 48 : 0
-        heightConstraint?.constant = canShow ? 48 : 0
+    public func set(selected: Bool) {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            let iconColor = (selected ? Color.App.whiteUIColor : UIColor.gray) ?? .clear
+            let fillColor = (selected ? Color.App.accentUIColor : UIColor.clear) ?? .clear
+            let config = UIImage.SymbolConfiguration(paletteColors: [iconColor, fillColor])
+            self?.imageView.image = UIImage(systemName: selected ? "checkmark.circle.fill" : "circle", withConfiguration: config)
+        }
     }
 }

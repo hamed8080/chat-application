@@ -22,7 +22,7 @@ public final class ThreadBottomToolbar: UIStackView {
     private let forwardPlaceholderView: ForwardMessagePlaceholderView
     private let editMessagePlaceholderView: EditMessagePlaceholderView
     private let mentionTableView: MentionTableView
-    private let selectionView: SelectionView
+    public let selectionView: SelectionView
     private let muteBarView: MuteChannelBarView
     private var cancellableSet = Set<AnyCancellable>()
     public var onUpdateHeight: ((CGFloat) -> Void)?

@@ -37,7 +37,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     public var message: Message
-    public var isInSelectMode: Bool = false
     public var isMe: Bool
     public var isHighlited: Bool = false
     public var highlightTimer: Timer?

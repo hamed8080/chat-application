@@ -31,10 +31,10 @@ final class MessageTextView: UITextView {
 
     public func set(_ viewModel: MessageRowViewModel) {
         let message = viewModel.message
-        textAlignment = viewModel.isMe ? .right : .left
         if !message.messageTitle.isEmpty {
             attributedText = viewModel.nsMarkdownTitle
         }
+        textAlignment = viewModel.isMe || !viewModel.isEnglish ? .right : .left
         textColor = Color.App.textPrimaryUIColor
         backgroundColor = .clear
         font = UIFont.uiiransansBody

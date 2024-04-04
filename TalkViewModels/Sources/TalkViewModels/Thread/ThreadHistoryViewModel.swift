@@ -866,17 +866,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    private func setRowsIsInSelectMode(newValue: Bool) {
-        sections.forEach { section in
-            section.vms.forEach { vm in
-                if newValue != vm.isInSelectMode {
-                    vm.isInSelectMode = newValue
-                    vm.animateObjectWillChange()
-                }
-            }
-        }
-    }
-
     private func updateAllRows() {
         sections.forEach { section in
             section.vms.forEach { vm in
@@ -1082,11 +1071,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
             .compactMap {$0.object as? Int}
             .sink { [weak self] newValue in
                 self?.setHighlight(messageId: newValue)
-            }
-            .store(in: &cancelable)
-        threadViewModel?.selectedMessagesViewModel.$isInSelectMode
-            .sink { [weak self] newValue in
-                self?.setRowsIsInSelectMode(newValue: newValue)
             }
             .store(in: &cancelable)
 
