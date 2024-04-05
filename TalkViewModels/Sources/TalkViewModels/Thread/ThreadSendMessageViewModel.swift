@@ -51,7 +51,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             sendReplyPrivatelyMessage()
         } else if let replyMessage = threadVM.replyMessage, let replyMessageId = replyMessage.id {
             sendReplyMessage(replyMessageId)
-        } else if sendVM.editMessage != nil {
+        } else if sendVM.isInEditMode {
             sendEditMessage()
         } else if attVM.attachments.count > 0 {
             sendAttachmentsMessage()
@@ -105,7 +105,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
         }
         attVM.clear()
         threadVM.replyMessage = nil
-        sendVM.focusOnTextInput = false
+        sendVM.setFocusOnTextView(focus: false)
     }
 
     public func sendSingleReplyAttachment(_ attachmentFile: AttachmentFile?, _ replyMessageId: Int) {
@@ -170,6 +170,10 @@ public final class ThreadSendMessageViewModel: ObservableObject {
                 guard let self = self else { return }
                 let tuple = Message.makeRequest(model: makeModel())
                 await self.historyVM?.appendMessagesAndSort([tuple.message])
+                let lastSectionIndex = max(0, (historyVM?.sections.count ?? 0) - 1)
+                let row = max((historyVM?.sections[lastSectionIndex].vms.count ?? 0) - 1, 0)
+                let indexPath = IndexPath(row: row, section: lastSectionIndex)
+                threadVM.delegate?.insertd(at: indexPath)
                 ChatManager.activeInstance?.message.send(tuple.req)
             }
         }
@@ -177,7 +181,6 @@ public final class ThreadSendMessageViewModel: ObservableObject {
 
     public func openDestinationConversationToForward(_ destinationConversation: Conversation?, _ contact: Contact?) {
         sendVM.clear() /// Close edit mode in ui
-        threadVM.sheetType = nil
         animateObjectWillChange()
         let messages = selectVM.selectedMessages.compactMap{$0.message}
         AppState.shared.openThread(from: threadId, conversation: destinationConversation, contact: contact, messages: messages)
@@ -244,7 +247,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     public func sendEditMessage() {
-        guard let editMessage = sendVM.editMessage, let messageId = editMessage.id else { return }
+        guard let editMessage = sendVM.getEditMessage(), let messageId = editMessage.id else { return }
         let req = EditMessageRequest(messageId: messageId, model: makeModel())
         ChatManager.activeInstance?.message.edit(req)
     }

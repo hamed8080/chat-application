@@ -13,6 +13,8 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
     public var onTextChanged: ((String?) -> Void)?
     public var onDone: ((String?) -> Void)?
     private let placeholderLabel = UILabel()
+    private var heightConstraint: NSLayoutConstraint!
+    private let initSize: CGFloat = 42
 
     public init() {
         super.init(frame: .zero, textContainer: nil)
@@ -24,9 +26,10 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
     }
 
     func configureView() {
+        translatesAutoresizingMaskIntoConstraints = true
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
         semanticContentAttribute = Locale.current.identifier.contains("fa") ? .forceRightToLeft : .forceLeftToRight
-
+        textContainerInset = .init(top: 12, left: 0, bottom: 0, right: 0)
         delegate = self
         isEditable = true
         font = UIFont(name: "IRANSansX", size: 16)
@@ -44,20 +47,26 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
         placeholderLabel.textAlignment = .left
         placeholderLabel.isUserInteractionEnabled = false
         addSubview(placeholderLabel)
+        heightConstraint = heightAnchor.constraint(equalToConstant: initSize)
 
         NSLayoutConstraint.activate([
-            heightAnchor.constraint(greaterThanOrEqualToConstant: 48),
-            placeholderLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            heightConstraint,
+            placeholderLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
             placeholderLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             placeholderLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }
 
     func recalculateHeight() {
-        let newSize = sizeThatFits(CGSize(width: frame.size.width, height: CGFloat.greatestFiniteMagnitude))
-        if frame.size.height != newSize.height {
+        let fittedSize = sizeThatFits(CGSize(width: frame.size.width, height: CGFloat.greatestFiniteMagnitude)).height
+        let minValue: CGFloat = initSize
+        let maxValue: CGFloat = 192
+        let newSize = min(max(fittedSize, minValue), maxValue)
+        if frame.size.height != newSize {
             DispatchQueue.main.async {
-                self.frame.size.height = newSize.height // !! must be called asynchronously
+                UIView.animate(withDuration: 0.3) { [weak self] in
+                    self?.heightConstraint.constant = newSize // !! must be called asynchronously
+                }
             }
         }
     }

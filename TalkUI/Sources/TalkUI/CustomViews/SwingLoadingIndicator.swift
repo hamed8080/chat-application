@@ -70,10 +70,8 @@ public struct SwingLoadingIndicator: View {
     private var widthReader: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
-                DispatchQueue.main.async {
-                    width = reader.size.width
-                    self.endXPosition = width + indicatorWidth
-                }
+                width = reader.size.width
+                self.endXPosition = width + indicatorWidth
             }
         }
     }

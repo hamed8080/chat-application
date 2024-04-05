@@ -88,9 +88,9 @@ public final class AttachmentButtonsView: UIStackView {
     }
 
     @objc private func onBtnContactTapped(_ sender: UIGestureRecognizer) {
-        threadVM?.sheetType = .contactPicker
-        viewModel.showActionButtons.toggle()
-        threadVM?.animateObjectWillChange()
+//        threadVM?.sheetType = .contactPicker
+//        viewModel.showActionButtons.toggle()
+//        threadVM?.animateObjectWillChange()
     }
 
     private func closeSheet() {

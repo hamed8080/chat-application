@@ -16,6 +16,8 @@ final class MessageRowImageDownloaderView: UIImageView {
     private let stack = UIStackView()
     private let fileSizeLabel = UILabel()
     private let progressView = CircleProgressButton(color: Color.App.whiteUIColor, iconTint: Color.App.whiteUIColor)
+    private var viewModel: MessageRowViewModel?
+    private var effectView: UIVisualEffectView!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -36,12 +38,12 @@ final class MessageRowImageDownloaderView: UIImageView {
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         let blurEffect = UIBlurEffect(style: .systemThinMaterial)
-        let blurView = UIVisualEffectView(effect: blurEffect)
-        blurView.frame = bounds
-        blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        addSubview(blurView)
+        effectView = UIVisualEffectView(effect: blurEffect)
+        effectView.frame = bounds
+        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addSubview(effectView)
 
-        bringSubviewToFront(blurView)
+        bringSubviewToFront(effectView)
 
         fileSizeLabel.font = UIFont.uiiransansBoldCaption2
         fileSizeLabel.textAlignment = .left
@@ -56,12 +58,16 @@ final class MessageRowImageDownloaderView: UIImageView {
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layer.cornerRadius = 18
 
+        isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
+        addGestureRecognizer(tapGesture)
+
         addSubview(stack)
 
         NSLayoutConstraint.activate([
             widthAnchor.constraint(greaterThanOrEqualToConstant: 128),
-            blurView.widthAnchor.constraint(equalTo: widthAnchor),
-            blurView.heightAnchor.constraint(equalTo: heightAnchor),
+            effectView.widthAnchor.constraint(equalTo: widthAnchor),
+            effectView.heightAnchor.constraint(equalTo: heightAnchor),
             stack.centerXAnchor.constraint(equalTo: centerXAnchor),
             stack.centerYAnchor.constraint(equalTo: centerYAnchor),
             progressView.widthAnchor.constraint(equalToConstant: 28),
@@ -70,7 +76,12 @@ final class MessageRowImageDownloaderView: UIImageView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
         image = viewModel.image
+        stack.isHidden = viewModel.downloadFileVM == nil
+        effectView.isHidden = viewModel.downloadFileVM == nil
+        isHidden = !viewModel.rowType.isImage
+
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
         progressView.animate(to: progress, systemIconName: stateIcon(viewModel: viewModel))
         if progress >= 1 {
@@ -80,21 +91,10 @@ final class MessageRowImageDownloaderView: UIImageView {
         if let fileSize = computedFileSize(viewModel: viewModel) {
             fileSizeLabel.text = fileSize
         }
-        let tap = MessageTapGestureRecognizer(target: self, action: #selector(onTap(_:)))
-        stack.isUserInteractionEnabled = true
-        stack.addGestureRecognizer(tap)
-        isHidden = !viewModel.rowType.isImage
     }
 
-    @objc func onTap(_ sender: MessageTapGestureRecognizer) {
-        guard let viewModel = sender.viewModel?.downloadFileVM else { return }
-        if viewModel.state == .paused {
-            viewModel.resumeDownload()
-        } else if viewModel.state == .downloading {
-            viewModel.pauseDownload()
-        } else {
-            viewModel.startDownload()
-        }
+    @objc func onTap(_ sender: UIGestureRecognizer) {
+        viewModel?.onTap()
     }
 
     private func stateIcon(viewModel: MessageRowViewModel) -> String {

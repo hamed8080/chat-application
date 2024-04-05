@@ -15,7 +15,7 @@ import Combine
 
 public final class MainSendButtons: UIStackView {
     private let btnToggleAttachmentButtons = UIButton(type: .system)
-    private let btnSend = UIButton(type: .system)
+    private let btnSend = UIImageButton(imagePadding: .init(all: 8))
     private let btnMic = UIButton(type: .system)
     private let btnCamera = UIButton(type: .system)
     private var btnEmoji = UIImageButton(imagePadding: .init(all: 8))
@@ -23,6 +23,7 @@ public final class MainSendButtons: UIStackView {
     private let threadVM: ThreadViewModel
     private var viewModel: SendContainerViewModel { threadVM.sendContainerViewModel }
     private var cancellableSet = Set<AnyCancellable>()
+    public static let initSize: CGFloat = 42
 
     public init(viewModel: ThreadViewModel) {
         self.threadVM = viewModel
@@ -47,15 +48,16 @@ public final class MainSendButtons: UIStackView {
 
         axis = .horizontal
         spacing = 8
-        alignment = .bottom
+        alignment = .center
         layoutMargins = .init(horizontal: 8, vertical: 4)
         isLayoutMarginsRelativeArrangement = true
 
         btnToggleAttachmentButtons.imageView?.contentMode = .scaleAspectFit
         btnToggleAttachmentButtons.tintColor = Color.App.accentUIColor
         btnToggleAttachmentButtons.layer.masksToBounds = true
-        btnToggleAttachmentButtons.layer.cornerRadius = 22
+        btnToggleAttachmentButtons.layer.cornerRadius = MainSendButtons.initSize / 2
         btnToggleAttachmentButtons.backgroundColor = Color.App.bgSendInputUIColor
+        btnToggleAttachmentButtons.setImage(UIImage(systemName: "paperclip"), for: .normal)
 
         btnMic.setImage(.init(systemName: "mic"), for: .normal)
         btnMic.imageView?.contentMode = .scaleAspectFit
@@ -66,12 +68,21 @@ public final class MainSendButtons: UIStackView {
         btnCamera.tintColor = Color.App.textSecondaryUIColor
         btnCamera.isHidden = true
 
-
-        btnSend.setImage(.init(systemName: "arrow.up.circle.fill"), for: .normal)
-        btnSend.imageView?.contentMode = .scaleAspectFit
-        btnSend.tintColor = Color.App.accentUIColor
+        let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold, scale: .medium)
+        if #available(iOS 13.0, *) {
+            btnSend.imageView.image = UIImage(systemName: "arrow.up", withConfiguration: config)
+        } else {
+            btnSend.imageView.image = UIImage(systemName: "arrow.up")
+        }
+        btnSend.imageView.contentMode = .scaleAspectFit
+        btnSend.tintColor = Color.App.textPrimaryUIColor
         btnSend.layer.masksToBounds = true
-        btnSend.layer.cornerRadius = 22
+        btnSend.layer.cornerRadius = (MainSendButtons.initSize - 8) / 2
+        btnSend.layer.backgroundColor = Color.App.accentUIColor?.cgColor
+        btnSend.isHidden = true
+        btnSend.action = { [weak self] in
+            self?.onBtnSendTapped()
+        }
 
         let emojiImage = UIImage(named: "emoji")
         btnEmoji.imageView.image = emojiImage
@@ -83,28 +94,32 @@ public final class MainSendButtons: UIStackView {
         hStack.axis = .horizontal
         hStack.spacing = 8
         hStack.layer.masksToBounds = true
-        hStack.layer.cornerRadius = 24
+        hStack.layer.cornerRadius = MainSendButtons.initSize / 2
         hStack.backgroundColor = Color.App.bgSendInputUIColor
         hStack.alignment = .bottom
-        hStack.layoutMargins = .init(top: 0, left: 8, bottom: 0, right: 2)
+        hStack.layoutMargins = .init(top: 0, left: 8, bottom: 0, right: 8)
         hStack.isLayoutMarginsRelativeArrangement = true
 
         hStack.addArrangedSubview(multilineTextField)
         hStack.addArrangedSubview(btnEmoji)
 
-        addArrangedSubviews([btnToggleAttachmentButtons, hStack, btnMic, btnCamera])
+        addArrangedSubviews([btnToggleAttachmentButtons, hStack, btnMic, btnCamera, btnSend])
+
+        multilineTextField.onTextChanged = { [weak self] text in
+            self?.viewModel.setText(newValue: text ?? "")
+        }
 
         NSLayoutConstraint.activate([
-            btnToggleAttachmentButtons.widthAnchor.constraint(equalToConstant: 48),
-            btnSend.widthAnchor.constraint(equalToConstant: 48),
-            btnMic.widthAnchor.constraint(equalToConstant: 48),
-            btnCamera.widthAnchor.constraint(equalToConstant: 48),
-            btnToggleAttachmentButtons.heightAnchor.constraint(equalToConstant: 48),
-            btnSend.heightAnchor.constraint(equalToConstant: 48),
-            btnMic.heightAnchor.constraint(equalToConstant: 48),
-            btnCamera.heightAnchor.constraint(equalToConstant: 48),
-            btnEmoji.widthAnchor.constraint(equalToConstant: 48),
-            btnEmoji.heightAnchor.constraint(equalToConstant: 48),
+            btnToggleAttachmentButtons.widthAnchor.constraint(equalToConstant: MainSendButtons.initSize),
+            btnSend.widthAnchor.constraint(equalToConstant: MainSendButtons.initSize - 8),
+            btnMic.widthAnchor.constraint(equalToConstant: MainSendButtons.initSize),
+            btnCamera.widthAnchor.constraint(equalToConstant: MainSendButtons.initSize),
+            btnToggleAttachmentButtons.heightAnchor.constraint(equalToConstant: MainSendButtons.initSize),
+            btnSend.heightAnchor.constraint(equalToConstant: MainSendButtons.initSize - 8),
+            btnMic.heightAnchor.constraint(equalToConstant: MainSendButtons.initSize),
+            btnCamera.heightAnchor.constraint(equalToConstant: MainSendButtons.initSize),
+            btnEmoji.widthAnchor.constraint(equalToConstant: MainSendButtons.initSize),
+            btnEmoji.heightAnchor.constraint(equalToConstant: MainSendButtons.initSize),
         ])
     }
 
@@ -118,20 +133,19 @@ public final class MainSendButtons: UIStackView {
     }
 
     @objc private func onSwiped(_ sender: UIGestureRecognizer) {
-        viewModel.isVideoRecordingSelected.toggle()
+        viewModel.toggleVideorecording()
     }
 
-    @objc private func onBtnSendTapped(_ sender: UIButton) {
+    @objc private func onBtnSendTapped() {
         if viewModel.showSendButton {
             threadVM.sendMessageViewModel.sendTextMessage()
         }
         threadVM.mentionListPickerViewModel.text = ""
-        threadVM.sheetType = nil
         threadVM.animateObjectWillChange()
     }
 
     @objc private func onBtnToggleAttachmentButtonsTapped(_ sender: UIButton) {
-        viewModel.showActionButtons.toggle()
+        viewModel.toggleActionButtons()
     }
 
     @objc private func onBtnMicTapped(_ sender: UIButton) {
@@ -148,21 +162,34 @@ public final class MainSendButtons: UIStackView {
             self?.onViewModelChanged()
         }
         .store(in: &cancellableSet)
-
-        viewModel.$showActionButtons.sink { newValue in
-            UIView.animate(withDuration: 0.3) { [weak self] in
-                guard let self = self else { return }
-                let attImage = UIImage(systemName: newValue ? "chevron.down" : "paperclip")
-                btnToggleAttachmentButtons.setImage(attImage, for: .normal)
-            }
-        }
-        .store(in: &cancellableSet)
     }
 
     private func onViewModelChanged() {
-        btnMic.isHidden = viewModel.showCamera
-        btnCamera.isHidden = !viewModel.showCamera
-        btnSend.isHidden = !viewModel.showSendButton
+        animateMainButtons()
+        animateActionButtonsIfNeeded()
+    }
+
+    private func animateMainButtons() {
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            guard let self = self else { return }
+            if btnMic.isHidden != !viewModel.showAudio {
+                btnMic.isHidden = !viewModel.showAudio
+            }
+            if btnCamera.isHidden != !viewModel.showCamera {
+                btnCamera.isHidden = !viewModel.showCamera
+            }
+            if btnSend.isHidden != !viewModel.showSendButton {
+                btnSend.isHidden = !viewModel.showSendButton
+            }
+        }
+    }
+
+    private func animateActionButtonsIfNeeded() {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
+            let attImage = UIImage(systemName: viewModel.showActionButtons ? "chevron.down" : "paperclip")
+            btnToggleAttachmentButtons.setImage(attImage, for: .normal)
+        }
     }
 }
 

@@ -13,11 +13,10 @@ import TalkModels
 
 public final class ForwardMessagePlaceholderView: UIStackView {
     private let imageReply = UIImageView()
-    private let vStack = UIStackView()
     private let staticForwardLabel = UILabel()
     private let messageLabel = UILabel()
     private let viewModel: ThreadViewModel
-    private let closeButton = CloseButtonView()
+
     private var isSingleForward: Bool {
         return AppState.shared.appStateNavigationModel.forwardMessageRequest?.messageIds.count == 1
     }
@@ -26,6 +25,7 @@ public final class ForwardMessagePlaceholderView: UIStackView {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
+        set()
     }
 
     public required init(coder: NSCoder) {
@@ -36,10 +36,11 @@ public final class ForwardMessagePlaceholderView: UIStackView {
         imageReply.translatesAutoresizingMaskIntoConstraints = false
 
         axis = .horizontal
-        spacing = 4
-        layoutMargins = .init(horizontal: 8, vertical: 4)
+        spacing = 12
+        layoutMargins = .init(horizontal: 8, vertical: 8)
         isLayoutMarginsRelativeArrangement = true
 
+        let vStack = UIStackView()
         vStack.axis = .vertical
         vStack.spacing = 0
         vStack.alignment = .leading
@@ -56,8 +57,10 @@ public final class ForwardMessagePlaceholderView: UIStackView {
         vStack.addArrangedSubview(messageLabel)
 
         imageReply.image = UIImage(systemName: "arrow.turn.up.right")
-        imageReply.tintColor = Color.App.iconSecondaryUIColor
+        imageReply.tintColor = Color.App.accentUIColor
+        imageReply.contentMode = .scaleAspectFit
 
+        let closeButton = CloseButtonView()
         closeButton.action = { [weak self] in
             self?.close()
         }
@@ -67,15 +70,15 @@ public final class ForwardMessagePlaceholderView: UIStackView {
         addArrangedSubview(closeButton)
 
         NSLayoutConstraint.activate([
-            imageReply.widthAnchor.constraint(equalToConstant: 24),
-            imageReply.heightAnchor.constraint(equalToConstant: 24),
+            heightAnchor.constraint(equalToConstant: 48),
+            imageReply.widthAnchor.constraint(equalToConstant: 16),
+            imageReply.heightAnchor.constraint(equalToConstant: 16),
         ])
     }
 
     public func set() {
-        isHidden = viewModel.replyMessage == nil
         let model = AppState.shared.appStateNavigationModel
-
+        isHidden = model.forwardMessageRequest == nil
         if isSingleForward {
             staticForwardLabel.text = "Thread.forwardTheMessage".localized()
             let message = model.forwardMessages?.first?.message ?? ""
@@ -91,9 +94,13 @@ public final class ForwardMessagePlaceholderView: UIStackView {
     }
 
     private func close() {
-        AppState.shared.appStateNavigationModel = .init()
-        viewModel.selectedMessagesViewModel.clearSelection()
-        viewModel.animateObjectWillChange()
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
+            isHidden = true
+            AppState.shared.appStateNavigationModel = .init()
+            viewModel.selectedMessagesViewModel.clearSelection()
+            viewModel.animateObjectWillChange()
+        }
     }
 }
 

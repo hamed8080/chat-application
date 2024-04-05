@@ -17,7 +17,7 @@ public final class SendContainerViewModel: ObservableObject {
     private let thread: Conversation
     public weak var threadVM: ThreadViewModel?
     public var threadId: Int { thread.id ?? -1 }
-    @Published public var textMessage: String
+    private var textMessage: String
     private var cancelable: Set<AnyCancellable> = []
     public var canShowMute: Bool {
         (thread.type?.isChannelType == true) &&
@@ -35,11 +35,11 @@ public final class SendContainerViewModel: ObservableObject {
     public var isVoice: Bool { threadVM?.attachmentsViewModel.attachments.count == 0 }
     public var showRecordingView: Bool { threadVM?.audioRecoderVM.isRecording == true || threadVM?.audioRecoderVM.recordingOutputPath != nil }
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
-    @Published public var showActionButtons: Bool = false
-    public var focusOnTextInput: Bool = false
-    @Published public var isVideoRecordingSelected = false
-    @Published public var isInEditMode: Bool = false
-    @Published public var editMessage: Message?
+    public private(set) var showActionButtons: Bool = false
+    public private(set) var focusOnTextInput: Bool = false
+    public private(set) var isVideoRecordingSelected = false
+    public var isInEditMode: Bool { editMessage != nil }
+    private var editMessage: Message?
     public var height: CGFloat = 0
     private var draft: String {
         get {
@@ -67,23 +67,6 @@ public final class SendContainerViewModel: ObservableObject {
     public init(thread: Conversation) {
         textMessage = UserDefaults.standard.string(forKey: "draft-\(thread.id ?? 0)") ?? ""
         self.thread = thread
-        setupNotificationObservers()
-    }
-
-    private func setupNotificationObservers() {
-        $textMessage
-            .sink { [weak self] newValue in
-                self?.onTextMessageChanged(newValue)
-            }
-            .store(in: &cancelable)
-        
-        $editMessage
-            .sink { [weak self] editMessage in
-                if editMessage != nil, self?.isDraft == false {
-                    self?.onTextMessageChanged(editMessage?.message ?? "")
-                }
-            }
-            .store(in: &cancelable)
     }
 
     private func onTextMessageChanged(_ newValue: String) {
@@ -103,8 +86,7 @@ public final class SendContainerViewModel: ObservableObject {
     public func clear() {
         textMessage = ""
         editMessage = nil
-        isInEditMode = false
-        threadVM?.animateObjectWillChange()
+        animateObjectWillChange()
     }
 
     private func isTextEmpty(text: String) -> Bool {
@@ -123,6 +105,36 @@ public final class SendContainerViewModel: ObservableObject {
 
     public func getText() -> String {
         textMessage.replacingOccurrences(of: "\u{200f}", with: "")
+    }
+
+    public func setText(newValue: String) {
+        textMessage = newValue
+        onTextMessageChanged(textMessage)
+        animateObjectWillChange()
+    }
+
+    public func setEditMessage(message: Message?) {
+        self.editMessage = message
+        animateObjectWillChange()
+    }
+
+    public func getEditMessage() -> Message? {
+        return editMessage
+    }
+
+    public func toggleActionButtons() {
+        showActionButtons.toggle()
+        animateObjectWillChange()
+    }
+
+    public func setFocusOnTextView(focus: Bool = false) {
+        focusOnTextInput = focus
+        animateObjectWillChange()
+    }
+
+    public func toggleVideorecording() {
+        isVideoRecordingSelected.toggle()
+        animateObjectWillChange()
     }
 
     public func cancelAllObservers() {

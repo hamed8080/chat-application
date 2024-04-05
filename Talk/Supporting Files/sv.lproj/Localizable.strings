@@ -145,7 +145,7 @@
 "Message.Participant.added" = "%@ lade till %@ i gruppen.";
 "Message.Participant.addedByMe" = "Du lade till %@ i gruppen.";
 "Message.forwardedFrom" = "Vidarebefordrad från";
-"Message.replyTo" = "Svara på";
+"Message.replyTo" = "Svara på:";
 
 /* System Events */
 "SMT.isTyping" = "skriver...";

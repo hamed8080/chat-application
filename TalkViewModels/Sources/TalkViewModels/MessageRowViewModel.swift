@@ -288,6 +288,27 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         if downloadFileVM == nil && image != MessageRowViewModel.emptyImage {
             AppState.shared.objectsContainer.appOverlayVM.galleryMessage = message
         } else if downloadFileVM?.state != .completed && downloadFileVM?.thumbnailData != nil {
+            manageDownloadFile()
+        } else {
+            shareFile()
+        }
+    }
+
+    private func shareFile() {
+        Task {
+            _ = await message.makeTempURL()
+            await MainActor.run {
+                // shareDownloadedFile.toggle()
+            }
+        }
+    }
+
+    private func manageDownloadFile() {
+        if downloadFileVM?.state == .paused {
+            downloadFileVM?.resumeDownload()
+        } else if downloadFileVM?.state == .downloading {
+            downloadFileVM?.pauseDownload()
+        } else {
             downloadFileVM?.startDownload()
         }
     }

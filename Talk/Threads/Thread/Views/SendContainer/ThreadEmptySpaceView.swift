@@ -17,7 +17,7 @@ struct ThreadEmptySpaceView: View {
         let hasForward = appState.appStateNavigationModel.forwardMessages != nil
         let hasReplyPrivately = appState.appStateNavigationModel.replyPrivately != nil
         let replyMessage = viewModel.replyMessage != nil
-        let hasEdit = viewModel.sendContainerViewModel.editMessage != nil
+        let hasEdit = viewModel.sendContainerViewModel.isInEditMode
         let isShowingAnyContainer = hasForward || audioRecordingVM.isRecording || hasReplyPrivately || replyMessage || hasEdit
         return isShowingAnyContainer ? 96 : 48
     }

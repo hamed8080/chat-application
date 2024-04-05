@@ -145,7 +145,7 @@
 "Message.Participant.added" = "%@ added %@.";
 "Message.Participant.addedByMe" = "You added %@ to the group.";
 "Message.forwardedFrom" = "Forwarded from";
-"Message.replyTo" = "Reply to";
+"Message.replyTo" = "Reply to:";
 
 /* System Events */
 "SMT.isTyping" = "is typing...";

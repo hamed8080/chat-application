@@ -55,15 +55,14 @@ struct MutableContextMenuOverlayView: View {
     var containerSafeAreaReader: some View {
         GeometryReader { reader in
             Color.clear.onAppear {
-                DispatchQueue.main.async {
-                    viewModel.containerSize = reader.size
-                    viewModel.safeAreaInsets = reader.safeAreaInsets
+                let reader  = reader
+                viewModel.containerSize = reader.size
+                viewModel.safeAreaInsets = reader.safeAreaInsets
 #if DEBUG
-                    logger.info("container size width: \(viewModel.containerSize.width) height: \(viewModel.containerSize.height)")
-                    logger.info("container safeAreaInsets Top:\(viewModel.safeAreaInsets.top)")
-                    logger.info("container safeAreaInsets Bottom:\(viewModel.safeAreaInsets.bottom)")
+                logger.info("container size width: \(viewModel.containerSize.width) height: \(viewModel.containerSize.height)")
+                logger.info("container safeAreaInsets Top:\(viewModel.safeAreaInsets.top)")
+                logger.info("container safeAreaInsets Bottom:\(viewModel.safeAreaInsets.bottom)")
 #endif
-                }
             }
         }
     }

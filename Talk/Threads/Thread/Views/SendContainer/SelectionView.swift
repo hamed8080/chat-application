@@ -42,8 +42,9 @@ public final class SelectionView: UIStackView {
         layoutMargins = .init(horizontal: 8, vertical: 4)
         isLayoutMarginsRelativeArrangement = true
 
-        btnDelete.setImage(UIImage(systemName: "ic_delete"), for: .normal)
+        btnDelete.setImage(UIImage(named: "ic_delete"), for: .normal)
         btnDelete.tintColor = Color.App.iconSecondaryUIColor
+        btnDelete.addTarget(self, action: #selector(deleteSelectedMessageTapped), for: .touchUpInside)
 
         let image = UIImage(systemName: "arrow.turn.up.right")
         btnForward.setImage(image, for: .normal)
@@ -65,10 +66,13 @@ public final class SelectionView: UIStackView {
             self?.onClose()
         }
 
+        let spacer = UIView(frame: .init(x: 0, y: 0, width: CGFloat.greatestFiniteMagnitude, height: 0))
+
         addArrangedSubview(btnForward)
         addArrangedSubview(lblCount)
         addArrangedSubview(lblStatic)
         addArrangedSubview(lblStaticForwardTO)
+        addArrangedSubview(spacer)
         addArrangedSubview(btnDelete)
         addArrangedSubview(closeButton)
 
@@ -81,8 +85,11 @@ public final class SelectionView: UIStackView {
     }
 
     @objc private func forwardSelectedMessageTapped(_ sender: UIButton) {
-        viewModel.sheetType = .threadPicker
-        viewModel.animateObjectWillChange()
+        viewModel.delegate?.openForwardPicker()
+    }
+
+    @objc private func deleteSelectedMessageTapped(_ sender: UIButton) {
+        AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(DeleteMessageDialog(viewModel: .init(threadVM: viewModel)))
     }
 
     private func set() {

@@ -16,6 +16,7 @@ final class AvatarView: UIImageView {
     private let label = UILabel()
     private var widthConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
+    private var viewModel: MessageRowViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -43,6 +44,10 @@ final class AvatarView: UIImageView {
         contentMode = .scaleAspectFill
 
         addSubview(label)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTap))
+        isUserInteractionEnabled = true
+        addGestureRecognizer(tapGesture)
 
         widthConstraint = widthAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize)
         heightConstraint = heightAnchor.constraint(equalToConstant: MessageRowViewModel.avatarSize)
@@ -58,6 +63,7 @@ final class AvatarView: UIImageView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
         let avatarVM = viewModel.avatarImageLoader
         backgroundColor = viewModel.avatarColor
         avatarVM?.onImage = { [weak self] image in
@@ -105,6 +111,12 @@ final class AvatarView: UIImageView {
 
     private func isSameUser(_ viewModel: MessageRowViewModel) -> Bool {
         !viewModel.isMe && !viewModel.isLastMessageOfTheUser
+    }
+
+    @objc func onTap(_ sender: UIGestureRecognizer) {
+        if let participant = viewModel?.message.participant {
+            AppState.shared.openThread(participant: participant)
+        }
     }
 }
 

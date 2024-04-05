@@ -52,6 +52,7 @@ final class MessageRowFileDownloaderView: UIStackView {
         fileNameLabel.textAlignment = .left
         fileNameLabel.textColor = Color.App.textPrimaryUIColor
         fileNameLabel.numberOfLines = 1
+        fileNameLabel.lineBreakMode = .byTruncatingMiddle
 
         fileTypeLabel.font = UIFont.uiiransansBoldCaption2
         fileTypeLabel.textAlignment = .left
@@ -67,6 +68,9 @@ final class MessageRowFileDownloaderView: UIStackView {
         vStack.addArrangedSubview(fileNameLabel)
         vStack.addArrangedSubview(typeSizeHStack)
 
+        progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
+        progressButton.isUserInteractionEnabled = true
+
         addArrangedSubview(progressButton)
         addArrangedSubview(vStack)
 
@@ -77,8 +81,8 @@ final class MessageRowFileDownloaderView: UIStackView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
-        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         self.viewModel = viewModel
+        semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         let metaData = viewModel.fileMetaData
         let progress = CGFloat(viewModel.downloadFileVM?.downloadPercent ?? 0)
         progressButton.animate(to: progress, systemIconName: stateIcon())
@@ -99,7 +103,6 @@ final class MessageRowFileDownloaderView: UIStackView {
         let lastSplit = String(split?.last ?? "")
         let extensionName = (ext ?? lastSplit)
         fileTypeLabel.text = extensionName.uppercased()
-        progressButton.addTarget(self, action: #selector(onTap), for: .touchUpInside)
 
         let message = viewModel.message
         let canShow = !message.isUploadMessage && message.isFileType && !viewModel.rowType.isMap && !message.isImage && !message.isAudio && !message.isVideo
@@ -120,33 +123,7 @@ final class MessageRowFileDownloaderView: UIStackView {
     }
 
     @objc private func onTap() {
-        print("tapped")
-        guard let downloadVM = downloadVM else { return }
-        if downloadVM.state == .completed {
-            shareFile()
-        } else {
-            manageDownload()
-        }
-    }
-
-    private func manageDownload() {
-        guard let viewModel = downloadVM else { return }
-        if viewModel.state == .paused {
-            viewModel.resumeDownload()
-        } else if viewModel.state == .downloading {
-            viewModel.pauseDownload()
-        } else {
-            viewModel.startDownload()
-        }
-    }
-
-    private func shareFile() {
-        Task {
-            _ = await message?.makeTempURL()
-            await MainActor.run {
-//                shareDownloadedFile.toggle()
-            }
-        }
+        viewModel?.onTap()
     }
 }
 

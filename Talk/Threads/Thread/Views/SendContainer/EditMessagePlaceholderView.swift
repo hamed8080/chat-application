@@ -10,22 +10,22 @@ import TalkViewModels
 import TalkExtensions
 import TalkUI
 import ChatModels
+import Combine
 
 public final class EditMessagePlaceholderView: UIStackView {
-    private let staticImageReply = UIImageView()
     private let messageImageView = UIImageView()
-    private let closeButton = CloseButtonView()
     private let messageLabel = UILabel()
     private let nameLabel = UILabel()
-    private let vStack = UIStackView()
 
-    let viewModel: ThreadViewModel
-    var sendVM: SendContainerViewModel { viewModel.sendContainerViewModel }
+    private let viewModel: ThreadViewModel
+    private var sendVM: SendContainerViewModel { viewModel.sendContainerViewModel }
+    private var cancellable: AnyCancellable?
 
     public init(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
+        registerObservers()
     }
 
     public required init(coder: NSCoder) {
@@ -33,11 +33,9 @@ public final class EditMessagePlaceholderView: UIStackView {
     }
 
     private func configureViews() {
-        staticImageReply.translatesAutoresizingMaskIntoConstraints = false
-
         axis = .horizontal
         spacing = 4
-        layoutMargins = .init(horizontal: 8, vertical: 4)
+        layoutMargins = .init(horizontal: 8, vertical: 8)
         isLayoutMarginsRelativeArrangement = true
 
         nameLabel.font = UIFont.uiiransansBody
@@ -48,44 +46,81 @@ public final class EditMessagePlaceholderView: UIStackView {
         messageLabel.textColor = Color.App.textPlaceholderUIColor
         messageLabel.numberOfLines = 2
 
+        let vStack = UIStackView()
+        vStack.axis = .vertical
+        vStack.spacing = 2
+        vStack.alignment = .leading
         vStack.addArrangedSubview(nameLabel)
         vStack.addArrangedSubview(messageLabel)
 
-        staticImageReply.image = UIImage(systemName: "pencil")
-        staticImageReply.tintColor = Color.App.accentUIColor
+        let staticImageReply = UIImageButton(imagePadding: .init(all: 8))
+        staticImageReply.isUserInteractionEnabled = false
+        staticImageReply.imageView.image = UIImage(systemName: "pencil")
+        staticImageReply.translatesAutoresizingMaskIntoConstraints = false
+        staticImageReply.imageView.tintColor = Color.App.accentUIColor
         staticImageReply.contentMode = .scaleAspectFit
 
         messageImageView.layer.cornerRadius = 4
         messageImageView.layer.masksToBounds = true
         messageImageView.contentMode = .scaleAspectFit
+        messageImageView.translatesAutoresizingMaskIntoConstraints = true
+        messageImageView.isHidden = true
 
-        addArrangedSubview(messageImageView)
-        addArrangedSubview(closeButton)
-        addArrangedSubview(vStack)
+        let closeButton = CloseButtonView()
+        closeButton.action = { [weak self] in
+            self?.close()
+        }
+
         addArrangedSubview(staticImageReply)
+        addArrangedSubview(messageImageView)
+        addArrangedSubview(vStack)
+        addArrangedSubview(closeButton)
 
         NSLayoutConstraint.activate([
-            messageImageView.widthAnchor.constraint(equalToConstant: 32),
-            messageImageView.heightAnchor.constraint(equalToConstant: 32),
-            staticImageReply.widthAnchor.constraint(equalToConstant: 24),
-            staticImageReply.heightAnchor.constraint(equalToConstant: 24),
+            messageImageView.widthAnchor.constraint(equalToConstant: 36),
+            messageImageView.heightAnchor.constraint(equalToConstant: 36),
+            staticImageReply.widthAnchor.constraint(equalToConstant: 36),
+            staticImageReply.heightAnchor.constraint(equalToConstant: 36),
         ])
     }
 
     public func set() {
-        isHidden = sendVM.editMessage == nil
-        guard let editMessage = sendVM.editMessage else { return }
-        let isFileType = editMessage.isFileType
+        isHidden = !sendVM.isInEditMode
+        guard let editMessage = sendVM.getEditMessage() else { return }
         let iconName = editMessage.iconName
+        let isFileType = editMessage.isFileType == true
         let isImage = editMessage.isImage == true
         messageImageView.layer.cornerRadius = isImage ? 4 : 16
         messageLabel.text = editMessage.message ?? ""
-        messageLabel.backgroundColor = isImage ? .clear : Color.App.accentUIColor
+        nameLabel.text = editMessage.participant?.name
+        nameLabel.isHidden = editMessage.participant?.name == nil
 
         if isImage, let image = viewModel.historyVM.messageViewModel(for: editMessage)?.image {
             messageImageView.image = image
+            messageImageView.isHidden = false
+        } else if isFileType, let iconName = iconName {
+            messageImageView.image = UIImage(systemName: iconName)
+            messageImageView.isHidden = false
         } else {
             messageImageView.image = nil
+            messageImageView.isHidden = true
+        }
+    }
+
+    private func registerObservers() {
+        cancellable = viewModel.sendContainerViewModel.objectWillChange.sink { [weak self] _ in
+            self?.animateEditPlaceholderIfNeeded()
+        }
+    }
+
+    private func animateEditPlaceholderIfNeeded() {
+        let isInEditMode = viewModel.sendContainerViewModel.isInEditMode
+        if isInEditMode {
+            set()
+        }
+
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.isHidden = !isInEditMode
         }
     }
 
@@ -93,7 +128,6 @@ public final class EditMessagePlaceholderView: UIStackView {
         viewModel.scrollVM.disableExcessiveLoading()
         sendVM.clear()
     }
-
 }
 
 struct EditMessagePlaceholderView_Previews: PreviewProvider {
@@ -106,9 +140,9 @@ struct EditMessagePlaceholderView_Previews: PreviewProvider {
     struct Preview: View {
         var viewModel: ThreadViewModel {
             let viewModel = ThreadViewModel(thread: .init(id: 1))
-            viewModel.sendContainerViewModel.editMessage = .init(threadId: 1,
+            viewModel.sendContainerViewModel.setEditMessage(message: .init(threadId: 1,
                                                                  message: "Test message", messageType: .text,
-                                                                 participant: .init(name: "John Doe"))
+                                                                 participant: .init(name: "John Doe")))
             return viewModel
         }
 

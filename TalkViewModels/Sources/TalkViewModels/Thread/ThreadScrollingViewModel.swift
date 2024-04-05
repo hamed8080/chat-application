@@ -29,8 +29,8 @@ public final class ThreadScrollingViewModel: ObservableObject {
     init() {}
 
     @MainActor
-    private func scrollTo(_ uniqueId: String, position: UITableView.ScrollPosition = .bottom) async {
-        scrollDelegate?.scrollTo(uniqueId: uniqueId, position: position)
+    private func scrollTo(_ uniqueId: String, position: UITableView.ScrollPosition = .bottom, animate: Bool) async {
+        scrollDelegate?.scrollTo(uniqueId: uniqueId, position: position, animate: animate)
     }
 
     public func scrollToBottom() {
@@ -48,7 +48,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
     public func scrollToLastMessageIfLastMessageIsVisible(_ message: Message) async {
         if isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id), let uniqueId = message.uniqueId {
             disableExcessiveLoading()
-            await scrollTo(uniqueId)
+            await scrollTo(uniqueId, animate: true)
         }
     }
 
@@ -60,7 +60,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
                     NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
                 }
             }
-           await scrollTo(uniqueId, position: position)
+           await scrollTo(uniqueId, position: position, animate: false)
         }
     }
 
@@ -71,7 +71,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
                 NotificationCenter.default.post(name: Notification.Name("HIGHLIGHT"), object: messageId)
             }
         }
-        await scrollTo(uniqueId, position: position)
+        await scrollTo(uniqueId, position: position, animate: false)
     }
 
     public func disableExcessiveLoading() {

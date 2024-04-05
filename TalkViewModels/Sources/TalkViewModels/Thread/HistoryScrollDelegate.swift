@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 
 public protocol HistoryScrollDelegate: AnyObject {
-    func scrollTo(index: IndexPath, position: UITableView.ScrollPosition)
-    func scrollTo(uniqueId: String, position: UITableView.ScrollPosition)
+    func scrollTo(index: IndexPath, position: UITableView.ScrollPosition, animate: Bool)
+    func scrollTo(uniqueId: String, position: UITableView.ScrollPosition, animate: Bool)
     func reload()
     func relaod(at: IndexPath)
     func insertd(at: IndexPath)
@@ -33,6 +33,14 @@ public protocol ChangeSelectionDelegate {
     func updateCount()
 }
 
-public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate {
+public protocol LastMessageAppearedDelegate {
+    func lastMessageAppeared(_ appeared: Bool)
+}
+
+public protocol SheetsDelegate {
+    func openForwardPicker()
+}
+
+public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate {
 
 }

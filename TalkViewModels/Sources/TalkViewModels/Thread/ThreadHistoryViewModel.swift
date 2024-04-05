@@ -242,7 +242,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         await appendMessagesAndSort(messages)
         let uniqueId = message(for: thread.lastSeenMessageId)?.message.uniqueId
         delegate?.reload()
-        delegate?.scrollTo(uniqueId: uniqueId ?? "", position: .bottom)
+        delegate?.scrollTo(uniqueId: uniqueId ?? "", position: .bottom, animate: false)
         /// 3- Get the last Seen message time.
         let lastSeenMessageTime = thread.lastSeenMessageTime
         /// 4- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
@@ -288,7 +288,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         await asyncAnimateObjectWillChange()
         if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
             delegate?.reload()
-            delegate?.scrollTo(uniqueId: uniqueId, position: .bottom)
+            delegate?.scrollTo(uniqueId: uniqueId, position: .bottom, animate: false)
             await threadViewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: false)
         }
         /// 6- Set whether it has more messages at the top or not.
@@ -550,12 +550,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     // MARK: Appear & Disappear    
     public func onMessageAppear(_ message: Message) {
-        log("Message appear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
-        guard let threadVM = threadViewModel else { return }
         Task { [weak self] in
             guard let self = self else { return }
-            if message.id == thread.lastMessageVO?.id, threadVM.scrollVM.isAtBottomOfTheList == false {
-                threadVM.scrollVM.isAtBottomOfTheList = true
+            log("Message appear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
+            if message.id == thread.lastMessageVO?.id, threadViewModel?.scrollVM.isAtBottomOfTheList == false {
+                threadViewModel?.scrollVM.isAtBottomOfTheList = true
+                threadViewModel?.delegate?.lastMessageAppeared(true)
             }
             seenVM.onAppear(message)
         }
@@ -584,9 +584,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     public func onMessegeDisappear(_ message: Message) {
-        log("Message disappear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
-        if message.id == thread.lastMessageVO?.id, threadViewModel?.scrollVM.isAtBottomOfTheList == true {
-            threadViewModel?.scrollVM.isAtBottomOfTheList = false            
+        Task { [weak self] in
+            guard let self = self else { return }
+            log("Message disappear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
+            if message.id == thread.lastMessageVO?.id, threadViewModel?.scrollVM.isAtBottomOfTheList == true {
+                threadViewModel?.scrollVM.isAtBottomOfTheList = false
+                threadViewModel?.delegate?.lastMessageAppeared(false)
+            }
         }
     }
 

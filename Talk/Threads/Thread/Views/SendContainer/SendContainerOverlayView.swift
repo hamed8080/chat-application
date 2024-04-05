@@ -20,7 +20,7 @@ struct SendContainerOverlayView: View {
                     .fill(Color.App.bgSecondary.opacity(0.4))
                     .onTapGesture {
                         withAnimation(.easeOut(duration: 0.13)) {
-                            viewModel.showActionButtons.toggle()
+                            viewModel.toggleVideorecording()
                         }
                     }
             }

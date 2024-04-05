@@ -102,13 +102,10 @@ public final class MapPickerViewController: UIViewController {
         if let location = locationManager.currentLocation {
             viewModel?.attachmentsViewModel.append(attachments: [.init(type: .map, request: location)])
         }
-        viewModel?.sheetType = nil
         viewModel?.animateObjectWillChange()
     }
 
     @objc private func closeTapped(_ sender: UIButton) {
-        viewModel?.sheetType = nil
-        viewModel?.animateObjectWillChange()
         dismiss(animated: true)
     }
     

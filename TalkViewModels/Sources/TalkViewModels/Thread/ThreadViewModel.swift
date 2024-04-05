@@ -28,7 +28,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public var thread: Conversation
     public var replyMessage: Message?
     @Published public var dismiss = false
-    public var sheetType: ThreadSheetType?
     public var exportMessagesViewModel: ExportMessagesViewModel = .init()
     public var unsentMessagesViewModel: ThreadUnsentMessagesViewModel
     public var uploadMessagesViewModel: ThreadUploadMessagesViewModel
@@ -143,7 +142,6 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     public func setupExportMessage(startDate: Date, endDate: Date) {
         exportMessagesViewModel.objectWillChange
             .sink { [weak self] in
-                self?.sheetType = .exportMessagesFile
                 self?.animateObjectWillChange()
             }
             .store(in: &cancelable)

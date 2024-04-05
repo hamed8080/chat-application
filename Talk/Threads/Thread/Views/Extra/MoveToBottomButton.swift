@@ -74,6 +74,14 @@ public final class MoveToBottomButton: UIButton {
         lblUnreadCount.isHidden = viewModel.thread.unreadCount == 0 || viewModel.thread.unreadCount == nil
         lblUnreadCount.text = viewModel.thread.unreadCountString ?? ""
     }
+
+    public func setVisibility(visible: Bool) {
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                self?.isHidden = !visible
+            }
+        }
+    }
 }
 
 struct MoveToBottomButton_Previews: PreviewProvider {

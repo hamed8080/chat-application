@@ -12,6 +12,7 @@ import TalkViewModels
 import TalkModels
 
 final class MessageTextView: UITextView {
+    private var viewModel: MessageRowViewModel?
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -27,9 +28,14 @@ final class MessageTextView: UITextView {
         isScrollEnabled = false
         isEditable = false
         isSelectable = false /// Only is going to be enable when we are in context menu
+        ///
+        isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
+        addGestureRecognizer(tap)
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
         let message = viewModel.message
         if !message.messageTitle.isEmpty {
             attributedText = viewModel.nsMarkdownTitle
@@ -38,17 +44,12 @@ final class MessageTextView: UITextView {
         textColor = Color.App.textPrimaryUIColor
         backgroundColor = .clear
         font = UIFont.uiiransansBody
-        if viewModel.rowType.isPublicLink {
-            let tap = MessageTapGestureRecognizer(target: self, action: #selector(onTapJoinGroup(_:)))
-            tap.viewModel = viewModel
-            addGestureRecognizer(tap)
-        }
-
+        isUserInteractionEnabled = viewModel.rowType.isPublicLink
         let canShow = message.messageTitle.isEmpty == false && !viewModel.rowType.isPublicLink
         isHidden = !canShow
     }
 
-    @objc func onTapJoinGroup(_ sender: MessageTapGestureRecognizer) {
+    @objc func onTapJoinGroup(_ sender: UIGestureRecognizer) {
         print("tap on group link")
     }
 }

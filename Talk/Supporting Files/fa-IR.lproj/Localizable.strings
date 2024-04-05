@@ -146,7 +146,7 @@
 "Message.Participant.added" = "%@ %@ را به گروه اضافه کرد.";
 "Message.Participant.addedByMe" = "شما %@ را به گروه اضافه کردید.";
 "Message.forwardedFrom" = "ارسال از طرف";
-"Message.replyTo" = "پاسخ به";
+"Message.replyTo" = "پاسخ به:";
 
 /* System Events */
 "SMT.isTyping" = "در حال تایپ...";

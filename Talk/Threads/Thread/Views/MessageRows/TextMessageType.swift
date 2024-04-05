@@ -187,6 +187,7 @@ struct ActionModel {
     var message: Message { viewModel.message }
 }
 
+//MARK: Action menus
 extension TextMessageContainer {
 
     public func menu(model: ActionModel) -> UIMenu {
@@ -216,7 +217,7 @@ extension TextMessageContainer {
             let emptyText = message.message == nil || message.message == ""
             let title = emptyText ? "General.addText".localized() : "General.edit".localized()
             let editAction = UIAction(title: title, image: UIImage(systemName: "pencil.circle")) { [weak self] _ in
-                self?.onForwardAction(model)
+                self?.onEditAction(model)
             }
             menus.append(editAction)
         }
@@ -275,8 +276,7 @@ extension TextMessageContainer {
 
     private func onReplyAction(_ model: ActionModel) {
         model.threadVM?.replyMessage = model.message
-        model.threadVM?.sendContainerViewModel.focusOnTextInput = true
-        model.threadVM?.animateObjectWillChange()
+        model.threadVM?.sendContainerViewModel.setFocusOnTextView(focus: true)
     }
 
     private func onReplyPrivatelyAction(_ model: ActionModel) {
@@ -287,15 +287,13 @@ extension TextMessageContainer {
 
     private func onForwardAction(_ model: ActionModel) {
         model.threadVM?.forwardMessage = model.message
-        model.viewModel.isSelected = true
+        cell?.select()
+        model.threadVM?.delegate?.setSelection(true)
         model.threadVM?.selectedMessagesViewModel.setInSelectionMode(true)
-        model.viewModel.animateObjectWillChange()
-        model.threadVM?.animateObjectWillChange()
     }
 
     private func onEditAction(_ model: ActionModel) {
-        model.threadVM?.sendContainerViewModel.editMessage = model.message
-        model.threadVM?.objectWillChange.send()
+        model.threadVM?.sendContainerViewModel.setEditMessage(message: model.message)
     }
 
     private func onSeenListAction(_ model: ActionModel) {
@@ -347,7 +345,6 @@ extension TextMessageContainer {
         cell?.select()
         model.threadVM?.delegate?.setSelection(true)
         model.threadVM?.selectedMessagesViewModel.setInSelectionMode(true)
-
     }
 }
 
@@ -456,10 +453,6 @@ final class TextMessageTypeCell: UITableViewCell {
             contentView.backgroundColor = nil
         }
     }
-}
-
-class MessageTapGestureRecognizer: UITapGestureRecognizer {
-    var viewModel: MessageRowViewModel?
 }
 
 struct TextMessageTypeCellWapper: UIViewRepresentable {

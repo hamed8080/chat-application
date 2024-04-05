@@ -67,7 +67,8 @@ extension ThreadViewController {
         tableView = UITableView(frame: view.bounds, style: .plain)
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.estimatedRowHeight = 86
+        tableView.estimatedRowHeight = 128
+        tableView.estimatedSectionHeaderHeight = 32
         tableView.rowHeight = UITableView.automaticDimension
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
@@ -150,9 +151,6 @@ extension ThreadViewController: UITableViewDataSource {
 
 // MARK: TableView Delegate
 extension ThreadViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        ConversationHistoryCellFactory.height(tableView, indexPath)
-    }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let sectionVM = viewModel.historyVM.sections[section]
@@ -186,14 +184,20 @@ extension ThreadViewController: UITableViewDelegate {
         }
     }
 
-    func tableView(_ tableView: UITableView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-
-    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        let sections = viewModel.historyVM.sections
-        if !sections[indexPath.section].vms.indices.contains(indexPath.row) { return false }
-        return sections[indexPath.section].vms[indexPath.row].message.isSelectable
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let replyAction = UIContextualAction(style: .normal, title: "") { [weak self] action, view, _ in
+            guard let self = self else { return }
+            let section = viewModel.historyVM.sections[indexPath.section]
+            if section.vms.indices.contains(indexPath.row) {
+                let message = section.vms[indexPath.row].message
+                viewModel.replyMessage = message
+                viewModel.sendContainerViewModel.setFocusOnTextView(focus: true)
+            }
+        }
+        replyAction.image = UIImage(systemName: "arrowshape.turn.up.left.circle")
+        replyAction.backgroundColor = UIColor.clear.withAlphaComponent(0.001)
+        let config = UISwipeActionsConfiguration(actions: [replyAction])
+        return config
     }
 }
 
@@ -240,6 +244,25 @@ extension ThreadViewController: ThreadViewDelegate {
     func updateCount() {
         sendContainer.selectionView.updateCount()
     }
+
+    func lastMessageAppeared(_ appeared: Bool) {
+        moveToBottom.setVisibility(visible: !appeared)
+    }
+
+    func openForwardPicker() {
+        let view = SelectConversationOrContactList { [weak self] (conversation, contact) in
+            self?.viewModel.sendMessageViewModel.openDestinationConversationToForward(conversation, contact)
+        }
+        .environmentObject(AppState.shared.objectsContainer.threadsVM)
+        .contextMenuContainer()
+        .environmentObject(viewModel)
+        .onDisappear {
+            //closeSheet()
+        }
+        let hostVC = UIHostingController(rootView: view)
+        hostVC.modalPresentationStyle = .formSheet
+        present(hostVC, animated: true)
+    }
 }
 
 // MARK: Scrolling to
@@ -252,18 +275,18 @@ extension ThreadViewController: HistoryScrollDelegate {
         }
     }
 
-    func scrollTo(index: IndexPath, position: UITableView.ScrollPosition) {
+    func scrollTo(index: IndexPath, position: UITableView.ScrollPosition, animate: Bool = true) {
         DispatchQueue.main.async { [weak self] in
-            self?.tableView.scrollToRow(at: index, at: position, animated: true)
+            self?.tableView.scrollToRow(at: index, at: position, animated: animate)
         }
     }
 
-    func scrollTo(uniqueId: String, position: UITableView.ScrollPosition) {
+    func scrollTo(uniqueId: String, position: UITableView.ScrollPosition, animate: Bool = true) {
         let indexPath = viewModel.historyVM.indicesByMessageUniqueId(uniqueId)
         if let indexPath = indexPath {
             DispatchQueue.main.async { [weak self] in
                 let indexPath = IndexPath(item: indexPath.row, section: indexPath.section)
-                self?.tableView.scrollToRow(at: indexPath, at: position, animated: false)
+                self?.tableView.scrollToRow(at: indexPath, at: position, animated: animate)
             }
         }
     }

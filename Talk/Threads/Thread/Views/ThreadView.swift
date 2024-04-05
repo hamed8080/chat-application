@@ -42,7 +42,6 @@ struct ThreadView: View, DropDelegate {
         .simultaneousGesture(tap.simultaneously(with: drag))
         .navigationBarBackButtonHidden(true)
         .background(Color.App.textSecondary.opacity(0.1).edgesIgnoringSafeArea(.bottom))
-        .background(SheetEmptyBackground())
         .onDrop(of: [.image], delegate: self)
         .safeAreaInset(edge: .bottom) {
             ThreadEmptySpaceView()

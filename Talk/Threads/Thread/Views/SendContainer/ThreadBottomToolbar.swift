@@ -78,7 +78,6 @@ public final class ThreadBottomToolbar: UIStackView {
         attachmentFilesTableView.isHidden = true
         replyPrivatelyPlaceholderView.isHidden = true
         replyPlaceholderView.isHidden = true
-        forwardPlaceholderView.isHidden = true
         editMessagePlaceholderView.isHidden = true
         selectionView.isHidden = true
         audioRecordingView.isHidden = true
@@ -106,20 +105,29 @@ public final class ThreadBottomToolbar: UIStackView {
     }
 
     private func registerObservers() {
-        viewModel.sendContainerViewModel.$showActionButtons.sink { showActionButtons in
-            if showActionButtons {
-                UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseInOut) { [weak self] in
-                    guard let self = self else { return }
-                    attachmentButtons.isHidden = !showActionButtons
-                }
-            } else {
-                UIView.animate(withDuration: 0.2) { [weak self] in
-                    guard let self = self else { return }
-                    attachmentButtons.isHidden = !showActionButtons
-                }
-            }
+        viewModel.sendContainerViewModel.objectWillChange.sink { [weak self] _ in
+            self?.onModelChanged()
         }
         .store(in: &cancellableSet)
+    }
+
+    private func onModelChanged() {
+        animateAttachmentButtonIfNeede()
+    }
+
+    private func animateAttachmentButtonIfNeede() {
+        let showActionButtons = viewModel.sendContainerViewModel.showActionButtons
+        if showActionButtons {
+            UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseInOut) { [weak self] in
+                guard let self = self else { return }
+                attachmentButtons.isHidden = !showActionButtons
+            }
+        } else {
+            UIView.animate(withDuration: 0.2) { [weak self] in
+                guard let self = self else { return }
+                attachmentButtons.isHidden = !showActionButtons
+            }
+        }
     }
 
     public override func layoutSubviews() {

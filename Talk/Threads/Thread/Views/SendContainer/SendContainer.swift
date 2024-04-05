@@ -46,7 +46,7 @@ struct SendContainer: View {
                 .opacity(viewModel.disableSend ? 0.3 : 1.0)
                 .disabled(viewModel.disableSend)
                 .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-                .animation(.easeInOut, value: viewModel.textMessage.isEmpty)
+                .animation(.easeInOut, value: viewModel.getText().isEmpty)
             }
         }
     }

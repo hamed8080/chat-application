@@ -22,6 +22,7 @@ final class ReplyInfoMessageRow: UIStackView {
     private let deletedLabel = UILabel()
     private let replyLabel = UILabel()
     private let bar = UIView()
+    private var viewModel: MessageRowViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,12 +51,12 @@ final class ReplyInfoMessageRow: UIStackView {
         vStack.layoutMargins = .init(all: 4)
         vStack.isLayoutMarginsRelativeArrangement = true
 
-        replyStaticLebel.font = UIFont.uiiransansCaption3
-        replyStaticLebel.textColor = Color.App.textPrimaryUIColor
+        replyStaticLebel.font = UIFont.uiiransansBoldCaption2
+        replyStaticLebel.textColor = Color.App.accentUIColor
         replyStaticLebel.text = "Message.replyTo".localized()
 
         participantLabel.font = UIFont.uiiransansBoldCaption2
-        participantLabel.textColor = Color.App.textPrimaryUIColor
+        participantLabel.textColor = Color.App.accentUIColor
 
 
         replyLabel.font = UIFont.uiiransansCaption3
@@ -78,10 +79,19 @@ final class ReplyInfoMessageRow: UIStackView {
         bar.layer.cornerRadius = 2
         bar.layer.masksToBounds = true
 
-        vStack.addArrangedSubview(replyStaticLebel)
-        vStack.addArrangedSubview(participantLabel)
+        let hStack = UIStackView()
+        hStack.axis = .horizontal
+        hStack.spacing = 2
+        hStack.addArrangedSubview(replyStaticLebel)
+        hStack.addArrangedSubview(participantLabel)
+
+        vStack.addArrangedSubview(hStack)
         vStack.addArrangedSubview(deletedLabel)
         vStack.addArrangedSubview(imageTextHStack)
+
+        isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onReplyTapped))
+        addGestureRecognizer(tap)
 
         addArrangedSubview(bar)
         addArrangedSubview(vStack)
@@ -94,6 +104,7 @@ final class ReplyInfoMessageRow: UIStackView {
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
         semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         vStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         let replyInfo = viewModel.message.replyInfo
@@ -108,20 +119,12 @@ final class ReplyInfoMessageRow: UIStackView {
         if viewModel.isReplyImage, let url = viewModel.replyLink {
             imageIconView.setValues(config: .init(url: url, metaData: viewModel.message.replyInfo?.metadata))
         }
-        registerGestures(viewModel)
         let canShow = viewModel.message.replyInfo != nil
         isHidden = !canShow
         imageIconView.isHidden = !hasImage
     }
 
-    private func registerGestures(_ viewModel: MessageRowViewModel) {
-        isUserInteractionEnabled = true
-        let tap = MessageTapGestureRecognizer(target: self, action: #selector(onReplyTapped(_:)))
-        tap.viewModel = viewModel
-        addGestureRecognizer(tap)
-    }
-
-    @objc func onReplyTapped(_ sender: MessageTapGestureRecognizer) {
+    @objc func onReplyTapped(_ sender: UIGestureRecognizer) {
         print("on reply tapped")
     }
 }

@@ -17,6 +17,7 @@ final class ForwardMessageRow: UIStackView {
     private let forwardStaticLebel = UILabel()
     private let participantLabel = UILabel()
     private let bar = UIView()
+    private var viewModel: MessageRowViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -62,12 +63,17 @@ final class ForwardMessageRow: UIStackView {
         addArrangedSubview(bar)
         addArrangedSubview(vStack)
 
+        isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onForwardTapped))
+        addGestureRecognizer(tap)
+
         NSLayoutConstraint.activate([
             bar.widthAnchor.constraint(equalToConstant: 1.5),
         ])
     }
 
     public func set(_ viewModel: MessageRowViewModel) {
+        self.viewModel = viewModel
         backgroundColor = viewModel.isMe ? Color.App.bgChatMeUIColor : Color.App.bgChatUserDarkUIColor
         semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         vStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
@@ -76,18 +82,10 @@ final class ForwardMessageRow: UIStackView {
         bar.isHidden = !canShow
         participantLabel.text = viewModel.message.forwardInfo?.participant?.name ?? viewModel.message.participant?.name
         participantLabel.isHidden = viewModel.message.forwardInfo?.participant?.name == nil
-        registerGestures(viewModel: viewModel)
         isHidden = !canShow
     }
 
-    private func registerGestures(viewModel: MessageRowViewModel) {
-        isUserInteractionEnabled = true
-        let tap = MessageTapGestureRecognizer(target: self, action: #selector(onForwardTapped))
-        tap.viewModel = viewModel
-        addGestureRecognizer(tap)
-    }
-
-    @IBAction func onForwardTapped(_ sender: MessageTapGestureRecognizer) {
+    @IBAction func onForwardTapped(_ sender: UIGestureRecognizer) {
         print("on forward tapped")
     }
 }
