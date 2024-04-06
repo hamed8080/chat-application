@@ -133,15 +133,11 @@ struct MessageRowImageDownloaderWapper: UIViewRepresentable {
 
 struct MessageRowImageDownloader_Previews: PreviewProvider {
     struct Preview: View {
-        @StateObject var viewModel: MessageRowViewModel
+        var viewModel: MessageRowViewModel
 
         init(viewModel: MessageRowViewModel) {
             ThreadViewModel.maxAllowedWidth = 340
-            self._viewModel = StateObject(wrappedValue: viewModel)
-            Task {
-                await viewModel.performaCalculation()
-                await viewModel.asyncAnimateObjectWillChange()
-            }
+            self.viewModel = viewModel
         }
 
         var body: some View {

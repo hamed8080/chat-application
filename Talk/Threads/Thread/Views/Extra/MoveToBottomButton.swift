@@ -35,6 +35,8 @@ public final class MoveToBottomButton: UIButton {
         layer.shadowOpacity = 0.1
         layer.masksToBounds = false
         layer.shadowOffset = .init(width: 0.0, height: 1.0)
+        let readAllMeessges = viewModel.thread.lastMessageVO?.id ?? -1 == viewModel.thread.lastSeenMessageId ?? 0
+        isHidden = readAllMeessges
 
         imgCenter.image = UIImage(systemName: "chevron.down")
         imgCenter.translatesAutoresizingMaskIntoConstraints = false

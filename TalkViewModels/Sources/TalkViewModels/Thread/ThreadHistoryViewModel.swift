@@ -35,6 +35,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
     internal var seenVM: HistorySeenViewModel
     public var created: Bool = false
     private var isJumpedToLastMessage = false
+    // Prevent Message rows view models from requesting any reconfigure for row until this insertion happens whether in the top or bottom
+    public var isInInsertionTop = false
+    public var isInInsertionBottom = false
 
     // MARK: Computed Properties
     public var isEmptyThread: Bool {
@@ -112,7 +115,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         return (insertedSections, insertedRowsInOldSectionZero)
     }
 
-    private func insertSortIndicesAtBottom(_ messages: [Message]) async -> (insertedSections: IndexSet, insertedRowsInOldLastSection: [IndexPath]) {
+    private func insertSortIndicesAtBottom(_ messages: [Message], countBanner: Bool) async -> (insertedSections: IndexSet, insertedRowsInOldLastSection: [IndexPath]) {
         let beforeRowsCountLastSection = sections
             .last?.vms
             .filter{($0.message as? UnreadMessage) == nil } // Filter out banner
@@ -137,7 +140,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             for i in 0..<insertedItems {
                 insertedRowsInOldLastSection.append(
                     .init(
-                        row: beforeRowsCountLastSection + i + 1, // plus one for banner
+                        row: beforeRowsCountLastSection + i + (countBanner ? 1 : 0), // plus one for banner
                         section: beforeLastSectionindex
                     )
                 )
@@ -160,6 +163,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func onMoreTop(_ response: ChatResponse<[Message]>) async {
+        isInInsertionTop = true
         let messages = response.result ?? []
         /// 3- Append and sort the array but not call to update the view.
         let tuple = await insertSortIndicesAtTop(messages)
@@ -167,7 +171,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         threadViewModel?.scrollVM.disableExcessiveLoading()
         delegate?.inserted(tuple.insertedSections, tuple.insertedRowsInOldSectionZero)
         await setHasMoreTop(response)
-        isFetchedServerFirstResponse = true
+        isInInsertionTop = false
     }
 
     private func moreBottom(prepend: String = "MORE-BOTTOM", _ fromTime: UInt?) {
@@ -180,16 +184,19 @@ public final class ThreadHistoryViewModel: ObservableObject {
         ChatManager.activeInstance?.message.history(req)
     }
 
+
     private func onMoreBottom(_ response: ChatResponse<[Message]>) async {
+        isInInsertionBottom = true
         let messages = response.result ?? []
         /// 3- Append and sort the array but not call to update the view.
-        let tuple = await insertSortIndicesAtBottom(messages)
+        let tuple = await insertSortIndicesAtBottom(messages, countBanner: false)
         /// 4- Disable excessive loading on the top part.
         threadViewModel?.scrollVM.disableExcessiveLoading()
         delegate?.inserted(tuple.insertedSections, tuple.insertedRowsInOldLastSection)
         /// 7- Set whether it has more messages at the bottom or not.
         await setHasMoreBottom(response)
         isFetchedServerFirstResponse = true
+        isInInsertionBottom = false
     }
 
     // MARK: Scenarios utilities
@@ -237,6 +244,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func onMoreTopFirstScenario(_ response: ChatResponse<[Message]>) async {
+        isInInsertionTop = true
         let messages = response.result ?? []
         /// 2- Append and sort  and calculate the array but not call to update the view.
         await appendMessagesAndSort(messages)
@@ -251,14 +259,16 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
         /// 5- Set whether it has more messages at the top or not.
         await setHasMoreTop(response)
+        isInInsertionTop = false
     }
 
     private func onMoreBottomFirstScenario(_ response: ChatResponse<[Message]>) async {
+        isInInsertionBottom = true
         let messages = response.result ?? []
         /// 6- Append the unread message banner and after sorting it will sit below the last message seen. and it will be added into the secion of lastseen message no the new ones.
         let sorted = messages.sortedByTime()
         let bannerIndexPath = await appenedUnreadMessagesBannerIfNeeed()
-        let tuple = await insertSortIndicesAtBottom(sorted)
+        let tuple = await insertSortIndicesAtBottom(sorted, countBanner: true)
         var insertedRowsInOldLastSection = tuple.insertedRowsInOldLastSection
         if let bannerIndexPath = bannerIndexPath {
             insertedRowsInOldLastSection.append(bannerIndexPath)
@@ -266,6 +276,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         delegate?.inserted(tuple.insertedSections, insertedRowsInOldLastSection)
         /// 8-  Set whether it has more messages at the bottom or not.
         await setHasMoreBottom(response)
+        isInInsertionBottom = false
     }
 
     // MARK: Scenario 2
@@ -277,6 +288,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func onMoreTopSecondScenario(_ response: ChatResponse<[Message]>) async {
+        isInInsertionTop = true
         let messages = response.result ?? []
         if response.result?.count ?? 0 > 0 {
             /// 2- Append and sort the array but not call to update the view and do calculaiton.
@@ -294,6 +306,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// 6- Set whether it has more messages at the top or not.
         await setHasMoreTop(response)
         shimmerViewModel.hide()
+        isInInsertionTop = false
     }
 
     // MARK: Scenario 3 or 4 more top/bottom.
@@ -316,6 +329,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func onMoreBottomFifthScenario(_ response: ChatResponse<[Message]>) async {
+        isInInsertionBottom = true
         let messages = response.result ?? []
         /// 2- Append the unread message banner at the end of the array. It does not need to be sorted because it has been sorted by the above function.
         if response.result?.count ?? 0 > 0 {
@@ -328,6 +342,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         await setHasMoreBottom(response)
         /// 5- To update isLoading fields to hide the loading at the bottom.
         await asyncAnimateObjectWillChange()
+        isInInsertionBottom = false
     }
 
     // MARK: Scenario 6
@@ -347,6 +362,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func onMoveToTime(_ request: OnMoveTime, _ response: ChatResponse<[Message]>) async {
+        isInInsertionTop = true
         let messages = response.result ?? []
         /// 3- Append and sort the array but not call to update the view.
         await appendMessagesAndSort(messages)
@@ -361,9 +377,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
         RequestsManager.shared.append(prepend: "FROM-TIME", value: fromReqManager)
         logHistoryRequest(req: fromTimeReq)
         ChatManager.activeInstance?.message.history(fromTimeReq)
+        isInInsertionTop = false
     }
 
     private func onMoveFromTime(_ request: OnMoveTime, _ response: ChatResponse<[Message]>) async {
+        isInInsertionBottom = true
         let messages = response.result ?? []
         /// 8- Append and sort the array but not call to update the view.
         await appendMessagesAndSort(messages)
@@ -371,6 +389,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         /// 6- Scroll to the message with its uniqueId.
         guard let uniqueId = message(for: request.messageId)?.message.uniqueId else { return }
         await threadViewModel?.scrollVM.showHighlightedAsync(uniqueId, request.messageId, highlight: request.highlight)
+        isInInsertionBottom = false
     }
 
     /// Search for a message with an id in the messages array, and if it can find the message, it will redirect to that message locally, and there is no request sent to the server.
@@ -399,12 +418,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     private func onFetchByOffset(_ response: ChatResponse<[Message]>) async {
+        isInInsertionTop = true
         let messages = response.result ?? []
         let sortedMessages = messages.sortedByTime()
         await appendMessagesAndSort(sortedMessages)
         isFetchedServerFirstResponse = true
         delegate?.reload()
         await threadViewModel?.scrollVM.showHighlightedAsync(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
+        isInInsertionTop = false
     }
 
     // MARK: Scenario 8
@@ -435,6 +456,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     // MARK: On Cache History Response
 //    @MainActor
     private func onHistoryCacheRsponse(_ response: ChatResponse<[Message]> ) async {
+        isInInsertionTop = true
         let messages = response.result ?? []
         let sortedMessages = messages.sortedByTime()
         await appendMessagesAndSort(sortedMessages)
@@ -451,6 +473,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             await threadViewModel?.scrollVM.showHighlightedAsync(sortedMessages.last?.uniqueId ?? "", sortedMessages.last?.id ?? -1, highlight: false)
             isJumpedToLastMessage = true
         }
+        isInInsertionTop = false
     }
 
     // MARK: Delete Message
@@ -552,8 +575,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
     public func onMessageAppear(_ message: Message) {
         Task { [weak self] in
             guard let self = self else { return }
-            log("Message appear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
-            if message.id == thread.lastMessageVO?.id, threadViewModel?.scrollVM.isAtBottomOfTheList == false {
+            log("Message appeared id: \(message.id ?? 0) uniqueId: \(message.uniqueId ?? "") message:\(message.message ?? "") isAtBottomOfTheList:\(threadViewModel?.scrollVM.isAtBottomOfTheList == true)")
+            if message.id == thread.lastMessageVO?.id {
                 threadViewModel?.scrollVM.isAtBottomOfTheList = true
                 threadViewModel?.delegate?.lastMessageAppeared(true)
             }
@@ -726,13 +749,19 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     private func onNewMessage(_ response: ChatResponse<Message>) {
         if threadId == response.subjectId, let message = response.result {
+            isInInsertionTop = true
             Task { [weak self] in
                 guard let self = self else { return }
-                await appendMessagesAndSort([message])
+                print("before: section count \(sections.count) rowsCount:\(sections.last?.vms.count ?? 0)")
+                let tuple = await insertSortIndicesAtBottom([message], countBanner: false)
+                /// 4- Disable excessive loading on the top part.
+                threadViewModel?.scrollVM.disableExcessiveLoading()
                 await updateNeeded()
-                await asyncAnimateObjectWillChange()
+                print("after: section count \(sections.count) rowsCount:\(sections.last?.vms.count ?? 0)")
+                delegate?.inserted(tuple.insertedSections, tuple.insertedRowsInOldLastSection)
                 await threadViewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(message)
                 setSeenForAllOlderMessages(newMessage: message)
+                isInInsertionTop = false
             }
         }
     }
@@ -883,7 +912,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     // MARK: New Message handlers
     private func updateNeeded() async {
         for (_, vm) in needUpdates.enumerated() {
-            await vm.asyncAnimateObjectWillChange()
+            vm.reconfigRow()
         }
         needUpdates.removeAll()
     }
@@ -896,7 +925,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         if isNotMe, unseenMessages?.count ?? 0 > 0 {
             unseenMessages?.forEach { vm in
                 vm.message.seen = true
-                vm.animateObjectWillChange()
+                vm.reconfigRow()
             }
         }
     }
@@ -916,7 +945,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 .forEach { vm in
                     vm.message.delivered = true
                     vm.message.seen = true
-                    vm.animateObjectWillChange()
+                    vm.reconfigRow()
                 }
         }        
     }
@@ -980,6 +1009,14 @@ public final class ThreadHistoryViewModel: ObservableObject {
         guard
             let sectionIndex = sections.firstIndex(where: { $0.vms.contains(where: { $0.message.uniqueId == uniqueId || $0.id == id }) }),
             let messageIndex = sections[sectionIndex].vms.firstIndex(where: { $0.message.uniqueId == uniqueId || $0.id == id })
+        else { return nil }
+        return .init(row: messageIndex, section: sectionIndex)
+    }
+
+    public func indexPath(for viewModel: MessageRowViewModel) -> IndexPath? {
+        guard
+        let sectionIndex = sections.firstIndex(where: { $0.vms.contains(where: { $0.id == viewModel.id }) }),
+        let messageIndex = sections[sectionIndex].vms.firstIndex(where: { $0.id == viewModel.id })
         else { return nil }
         return .init(row: messageIndex, section: sectionIndex)
     }

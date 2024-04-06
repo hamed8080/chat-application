@@ -15,7 +15,7 @@ import TalkModels
 import TalkExtensions
 
 final class TextMessageContainer: UIStackView {
-    var cell: TextMessageTypeCell?
+    public weak var cell: TextMessageTypeCell?
     private var viewModel: MessageRowViewModel!
     private let messageRowFileDownloader = MessageRowFileDownloaderView()
     private let messageRowImageDownloader = MessageRowImageDownloaderView(frame: .zero)
@@ -337,7 +337,6 @@ extension TextMessageContainer {
             AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
         } else {
             model.threadVM?.threadPinMessageViewModel.unpinMessage(model.message.id ?? -1)
-            model.threadVM?.animateObjectWillChange()
         }
     }
 
@@ -470,29 +469,29 @@ struct TextMessageTypeCellWapper: UIViewRepresentable {
 }
 
 struct TextMessageType_Previews: PreviewProvider {
-    struct Preview: View {
-        @StateObject var viewModel: MessageRowViewModel
-
-        init(viewModel: MessageRowViewModel) {
-            ThreadViewModel.maxAllowedWidth = 340
-            self._viewModel = StateObject(wrappedValue: viewModel)
-            Task {
-                await viewModel.performaCalculation()
-                await viewModel.asyncAnimateObjectWillChange()
-            }
-        }
-
-        var body: some View {
-            TextMessageTypeCellWapper(viewModel: viewModel)
-        }
-    }
+//    struct Preview: View {
+//        @StateObject var viewModel: MessageRowViewModel
+//
+//        init(viewModel: MessageRowViewModel) {
+//            ThreadViewModel.maxAllowedWidth = 340
+//            self._viewModel = StateObject(wrappedValue: viewModel)
+//            Task {
+//                await viewModel.performaCalculation()
+//                await viewModel.asyncAnimateObjectWillChange()
+//            }
+//        }
+//
+//        var body: some View {
+//            TextMessageTypeCellWapper(viewModel: viewModel)
+//        }
+//    }
 
     static var previews: some View {
         let viewModels = MockAppConfiguration.shared.viewModels
 //        Preview(viewModel: viewModels.first(where: {$0.isMe})!)
 //            .previewDisplayName("IsMe")
-        Preview(viewModel: viewModels.first(where: {$0.message.replyInfo != nil })!)
-            .previewDisplayName("Reply")
+//        Preview(viewModel: viewModels.first(where: {$0.message.replyInfo != nil })!)
+//            .previewDisplayName("Reply")
 //        Preview(viewModel: viewModels.first(where: {$0.message.isImage == true})!)
 //            .previewDisplayName("ImageDownloader")
 //        Preview(viewModel: viewModels.first(where: {$0.message.isFileType == true && !$0.message.isImage})!)

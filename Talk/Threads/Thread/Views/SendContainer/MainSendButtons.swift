@@ -105,6 +105,10 @@ public final class MainSendButtons: UIStackView {
 
         addArrangedSubviews([btnToggleAttachmentButtons, hStack, btnMic, btnCamera, btnSend])
 
+        if !viewModel.isTextEmpty() {
+            multilineTextField.text = viewModel.getText()
+            multilineTextField.hidePlaceholder()
+        }
         multilineTextField.onTextChanged = { [weak self] text in
             self?.viewModel.setText(newValue: text ?? "")
         }

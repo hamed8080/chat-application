@@ -29,11 +29,12 @@ final class UnreadMessageBubbleUITableViewCell: UITableViewCell {
         label.textColor = Color.App.textPrimaryUIColor
         label.textAlignment = .center
         label.text = "Messages.unreadMessages".localized()
-        label.backgroundColor = Color.App.dividerPrimaryUIColor
+        label.backgroundColor = UIColor.white.withAlphaComponent(0.08)
 
         contentView.addSubview(label)
 
         NSLayoutConstraint.activate([
+            heightAnchor.constraint(equalToConstant: 30),
             label.bottomAnchor.constraint(equalTo: bottomAnchor),
             label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),

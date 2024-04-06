@@ -15,7 +15,7 @@ import ChatModels
 final class ThreadViewController: UIViewController {
     var viewModel: ThreadViewModel!
     private var tableView: UITableView!
-    private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel, vc: self)
+    private lazy var sendContainer = ThreadBottomToolbar(viewModel: viewModel)
     private lazy var moveToBottom = MoveToBottomButton(viewModel: viewModel)
     private lazy var unreadMentionsButton = UnreadMenitonsButton(viewModel: viewModel)
     private lazy var topThreadToolbar = TopThreadToolbar(viewModel: viewModel)
@@ -34,6 +34,21 @@ final class ThreadViewController: UIViewController {
         viewModel.historyVM.start()
         configureNavigationBar()
     }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        var hasAnyInstanceInStack = false
+        navigationController?.viewControllers.forEach({ hostVC in
+            hostVC.children.forEach { vc in
+                if vc == self {
+                    hasAnyInstanceInStack = true
+                }
+            }
+        })
+        if !hasAnyInstanceInStack {
+            AppState.shared.objectsContainer.navVM.remove(threadId: viewModel.threadId)
+        }
+    }
 }
 
 // MARK: Configure Views
@@ -50,7 +65,7 @@ extension ThreadViewController {
             moveToBottom.heightAnchor.constraint(equalToConstant: 40),
             moveToBottom.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             moveToBottom.bottomAnchor.constraint(equalTo: sendContainer.topAnchor, constant: -16),
-            topThreadToolbar.topAnchor.constraint(equalTo: view.topAnchor),
+            topThreadToolbar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             topThreadToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topThreadToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             sendContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -127,7 +142,6 @@ extension ThreadViewController {
 
     private func showEmptyThread(show: Bool) {
         emptyThreadView.isHidden = !show
-        moveToBottom.isHidden = show
         unreadMentionsButton.isHidden = show
     }
 
@@ -294,6 +308,16 @@ extension ThreadViewController: HistoryScrollDelegate {
     func relaod(at: IndexPath) {
         DispatchQueue.main.async { [weak self] in
             self?.tableView.reloadRows(at: [at], with: .fade)
+        }
+    }
+
+    func reconfig(at: IndexPath) {
+        DispatchQueue.main.async { [weak self] in
+            /// Prevent to reconfigure if the cell is not currently visible on the screen
+            /// The desired cell will be dequeued and call cellForRowAtIndexPath and set valid properties if it wants to show.
+            if self?.tableView.indexPathsForVisibleRows?.contains(where: {$0.row == at.row && $0.section == at.section}) == true {
+                self?.tableView.reconfigureRows(at: [at])
+            }
         }
     }
 

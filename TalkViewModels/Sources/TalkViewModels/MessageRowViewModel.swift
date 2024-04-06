@@ -7,7 +7,6 @@
 
 import Chat
 import MapKit
-import SwiftUI
 import TalkExtensions
 import ChatModels
 import TalkModels
@@ -17,7 +16,7 @@ import OSLog
 import ChatCore
 import Combine
 
-public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable {
+public final class MessageRowViewModel: Identifiable, Hashable {
     public static func == (lhs: MessageRowViewModel, rhs: MessageRowViewModel) -> Bool {
         lhs.id == rhs.id
     }
@@ -115,6 +114,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             Task { [weak self] in
                 await self?.prepareImage()
                 await self?.updateVideo()
+                self?.reconfigRow()
             }
         }
     }
@@ -123,7 +123,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         highlightTimer?.invalidate()
         highlightTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false) { [weak self] _ in
             self?.isHighlited = false
-            self?.animateObjectWillChange()
+            self?.reconfigRow()
         }
     }
 
@@ -134,12 +134,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let paddingTrailing: CGFloat = isReplyOrForward ? (isMe ? 16 : 10) : (isMe ? 4 + tailWidth : 4)
         let paddingTop: CGFloat = isReplyOrForward ? 10 : 4
         let paddingBottom: CGFloat = 4
-        paddings.paddingEdgeInset = .init(top: paddingTop, leading: paddingLeading, bottom: paddingBottom, trailing: paddingTrailing)
+        paddings.paddingEdgeInset = .init(top: paddingTop, left: paddingLeading, bottom: paddingBottom, right: paddingTrailing)
     }
 
     public func recalculateWithAnimation() async {
         await performaCalculation()
-        self.animateObjectWillChange()
+        self.reconfigRow()
     }
 
     public func performaCalculation() async {
@@ -223,14 +223,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         }
     }
 
-    public func toggleSelection() {
-        withAnimation(!isSelected ? .spring(response: 0.4, dampingFraction: 0.3, blendDuration: 0.3) : .linear) {
-            isSelected.toggle()
-            threadVM?.selectedMessagesViewModel.animateObjectWillChange()
-            animateObjectWillChange()
-        }
-    }
-
     private var realImage: UIImage? {
         guard let cgImage = downloadFileVM?.fileURL?.imageScale(width: 420)?.image else { return nil }
         return UIImage(cgImage: cgImage)
@@ -256,7 +248,6 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             image = MessageRowViewModel.emptyImage
             blurRadius = 0
         }
-        await asyncAnimateObjectWillChange()
     }
 
     private func downloadBlurImageWithDelay(delay: TimeInterval = 1.0, _ downloadVM: DownloadFileViewModel) {
@@ -269,7 +260,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     private func updateVideo() async {
         if message.isVideo, downloadFileVM?.state == .completed {
-            await asyncAnimateObjectWillChange()
+            reconfigRow()
         }
     }
 
@@ -280,7 +271,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         } else if downloadFileVM?.isInCache == true {
             downloadFileVM?.state = .completed // it will set the state to complete and then push objectWillChange to call onReceive and start scale the image on the background thread
             downloadFileVM?.animateObjectWillChange()
-            animateObjectWillChange()
+            reconfigRow()
         }
     }
 
@@ -344,8 +335,8 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         return try? AttributedString(markdown: "\(message.addOrRemoveParticipantString(meId: AppState.shared.user?.id) ?? "") \(date)")
     }
 
-    private func calculateTextViewPadding() -> EdgeInsets {
-      return EdgeInsets(top: !message.isImage && message.replyInfo == nil && message.forwardInfo == nil ? 6 : 0, leading: 6, bottom: 0, trailing: 6)
+    private func calculateTextViewPadding() -> UIEdgeInsets {
+      return UIEdgeInsets(top: !message.isImage && message.replyInfo == nil && message.forwardInfo == nil ? 6 : 0, left: 6, bottom: 0, right: 6)
     }
 
     private func calculateLocalizeReplyFileName() -> String? {
@@ -407,7 +398,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let font = UIFont(name: "IRANSansX", size: 14) ?? .systemFont(ofSize: 14)
         let textWidth = text.widthOfString(usingFont: font) + replyPrimaryMessageFileIconWidth()
         let minimumWidth: CGFloat = 128
-        let maxOriginal = max(minimumWidth, textWidth + paddings.paddingEdgeInset.leading + paddings.paddingEdgeInset.trailing)
+        let maxOriginal = max(minimumWidth, textWidth + paddings.paddingEdgeInset.left + paddings.paddingEdgeInset.right)
         return maxOriginal
     }
 
@@ -440,7 +431,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     public func setHighlight() {
         isHighlited = true
-        animateObjectWillChange()
+        reconfigRow()
         startHighlightTimer()
     }
 
@@ -462,18 +453,18 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     public func setDelivered() {
         message.delivered = true
-        animateObjectWillChange()
+        reconfigRow()
     }
 
     public func setSent(messageTime: UInt?) {
         message.time = messageTime
-        animateObjectWillChange()
+        reconfigRow()
     }
 
     public func setSeen() {
         message.delivered = true
         message.seen = true
-        animateObjectWillChange()
+        reconfigRow()
     }
 
     public func setEdited(_ edited: Message) {
@@ -501,11 +492,11 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         paddings.replyViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
         paddings.forwardViewSpacingTop = groupMessageParticipantName != nil ? 10 : 0
         paddings.fileViewSpacingTop = (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
-        paddings.radioPadding = EdgeInsets(top: 0, leading: isMe ? 8 : 0, bottom: 8, trailing: isMe ? 8 : 0)
+        paddings.radioPadding = UIEdgeInsets(top: 0, left: isMe ? 8 : 0, bottom: 8, right: isMe ? 8 : 0)
         paddings.mapViewSapcingTop =  (groupMessageParticipantName != nil || message.replyInfo != nil || message.forwardInfo != nil) ? 10 : 0
         let hasAlreadyPadding = message.replyInfo != nil || message.forwardInfo != nil
         let padding: CGFloat = hasAlreadyPadding ? 0 : 4
-        paddings.groupParticipantNamePadding = .init(top: padding, leading: padding, bottom: 0, trailing: padding)
+        paddings.groupParticipantNamePadding = .init(top: padding, left: padding, bottom: 0, right: padding)
     }
 
     public func swapUploadMessageWith(_ message: Message) {
@@ -547,6 +538,17 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         participantEvenMarkdown = try! NSAttributedString(markdown: "\(message.addOrRemoveParticipantString(meId: meId) ?? "") - \(date)")
     }
 
+    public func reconfigRow() {
+        Task.detached(priority: .background) { [weak self] in
+            guard let self = self else { return }
+            while threadVM?.historyVM.isInInsertionTop == true || threadVM?.historyVM.isInInsertionBottom == true {
+                print("Queuing the row to reconfig for message id:\(message.id ?? 0) message:\(message.message ?? "") type:\(message.type ?? .unknown)")
+            }
+            if let indexPath = threadVM?.historyVM.indexPath(for: self) {
+                threadVM?.delegate?.reconfig(at: indexPath)
+            }
+        }
+    }
 
     deinit {
         clearDownloadViewModel()

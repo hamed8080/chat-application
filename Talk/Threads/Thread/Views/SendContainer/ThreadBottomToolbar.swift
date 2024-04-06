@@ -27,11 +27,11 @@ public final class ThreadBottomToolbar: UIStackView {
     private var cancellableSet = Set<AnyCancellable>()
     public var onUpdateHeight: ((CGFloat) -> Void)?
 
-    public init(viewModel: ThreadViewModel, vc: UIViewController) {
+    public init(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
         self.mainSendButtons = MainSendButtons(viewModel: viewModel)
         self.audioRecordingView = AudioRecordingView(viewModel: viewModel)
-        self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel.sendContainerViewModel, vc: vc)
+        self.attachmentButtons = AttachmentButtonsView(viewModel: viewModel.sendContainerViewModel)
         self.attachmentFilesTableView = AttachmentFilesTableView(viewModel: viewModel)
         self.replyPlaceholderView = ReplyMessagePlaceholderView(viewModel: viewModel)
         self.replyPrivatelyPlaceholderView = ReplyPrivatelyMessagePlaceholderView(viewModel: viewModel)

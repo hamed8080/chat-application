@@ -72,15 +72,4 @@ public final class ConversationHistoryCellFactory {
         tableView.register(ParticipantsEventUITableViewCell.self, forCellReuseIdentifier: "ParticipantsEventUITableViewCell")
         tableView.register(UnreadMessageBubbleUITableViewCell.self, forCellReuseIdentifier: "UnreadMessageBubbleUITableViewCell")
     }
-
-    public class func height(_ tableView: UITableView, _ indexPath: IndexPath) -> CGFloat {
-        let cell = tableView.cellForRow(at: indexPath)
-        if cell is UnreadMessageBubbleUITableViewCell {
-            return 24
-        }
-        if cell is ParticipantsEventUITableViewCell {
-            return 32
-        }
-        return UITableView.automaticDimension
-    }
 }

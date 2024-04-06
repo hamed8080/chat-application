@@ -10,7 +10,7 @@ import TalkViewModels
 
 /// This view is for when the user is in selection mode to tap to select a message and if the user clicks inside the message, it will conflict with default actions inside the message view such as opening a map, opening the gallery, etc...
 struct SelectMessageInsideClickOverlay: View {
-    @EnvironmentObject var viewModel: MessageRowViewModel
+    var viewModel: MessageRowViewModel
 
     var body: some View {
         if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true {
@@ -20,7 +20,6 @@ struct SelectMessageInsideClickOverlay: View {
                 .onTapGesture {
                     viewModel.isSelected.toggle()
                     viewModel.threadVM?.selectedMessagesViewModel.animateObjectWillChange()
-                    viewModel.animateObjectWillChange()
                 }
         }
     }
@@ -28,6 +27,6 @@ struct SelectMessageInsideClickOverlay: View {
 
 struct SelectMessageInsideClickOverlay_Previews: PreviewProvider {
     static var previews: some View {
-        SelectMessageInsideClickOverlay()
+        SelectMessageInsideClickOverlay(viewModel: .init(message: .init(), viewModel: .init(thread: .init())))
     }
 }

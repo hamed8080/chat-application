@@ -98,6 +98,10 @@ public final class SendContainerTextView: UITextView, UITextViewDelegate {
         let isRTLChar = text.count == 1 && text.first == "\u{200f}"
         return text.isEmpty || isRTLChar
     }
+
+    public func hidePlaceholder() {
+        placeholderLabel.isHidden = true
+    }
 }
 
 #if DEBUG

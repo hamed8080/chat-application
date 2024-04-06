@@ -12,7 +12,7 @@ import ChatModels
 
 struct DownloadButton: View {
     @EnvironmentObject var viewModel: DownloadFileViewModel
-    @EnvironmentObject var messageRowVM: MessageRowViewModel
+    var messageRowVM: MessageRowViewModel
     @EnvironmentObject var audioVM: AVAudioPlayerViewModel
     private var isSameFile: Bool { viewModel.fileURL != nil && audioVM.fileURL?.absoluteString == viewModel.fileURL?.absoluteString }
     @Environment(\.colorScheme) var scheme
@@ -79,8 +79,8 @@ struct DownloadButton: View {
 
 struct DownloadButton_Previews: PreviewProvider {
     static var previews: some View {
-        DownloadButton {
-            
+        DownloadButton(messageRowVM: .init(message: .init(), viewModel: .init(thread: .init()))) {
+
         }
     }
 }

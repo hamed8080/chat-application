@@ -26,12 +26,12 @@ public final class SendContainerViewModel: ObservableObject {
     }
     public var disableSend: Bool { thread.disableSend && isInEditMode == false && !canShowMute }
     public var showSendButton: Bool {
-        !isTextEmpty(text: textMessage) ||
+        !isTextEmpty() ||
         threadVM?.attachmentsViewModel.attachments.count ?? 0 > 0 ||
         AppState.shared.appStateNavigationModel.forwardMessageRequest != nil
     }
-    public var showCamera: Bool { isTextEmpty(text: textMessage) && isVideoRecordingSelected }
-    public var showAudio: Bool { isTextEmpty(text: textMessage) && !isVideoRecordingSelected && isVoice }
+    public var showCamera: Bool { isTextEmpty() && isVideoRecordingSelected }
+    public var showAudio: Bool { isTextEmpty() && !isVideoRecordingSelected && isVoice }
     public var isVoice: Bool { threadVM?.attachmentsViewModel.attachments.count == 0 }
     public var showRecordingView: Bool { threadVM?.audioRecoderVM.isRecording == true || threadVM?.audioRecoderVM.recordingOutputPath != nil }
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
@@ -69,15 +69,15 @@ public final class SendContainerViewModel: ObservableObject {
         self.thread = thread
     }
 
-    private func onTextMessageChanged(_ newValue: String) {
-        if Language.isRTL && newValue.first != "\u{200f}" {
-            textMessage = "\u{200f}\(newValue)"
+    private func onTextMessageChanged() {
+        if Language.isRTL && textMessage.first != "\u{200f}" {
+            textMessage = "\u{200f}\(textMessage)"
         }
-        threadVM?.mentionListPickerViewModel.text = newValue
-        threadVM?.sendStartTyping(newValue)
-        let isRTLChar = newValue.count == 1 && newValue.first == "\u{200f}"
-        if !isTextEmpty(text: newValue) && !isRTLChar {
-            draft = newValue
+        threadVM?.mentionListPickerViewModel.text = textMessage
+        threadVM?.sendStartTyping(textMessage)
+        let isRTLChar = textMessage.count == 1 && textMessage.first == "\u{200f}"
+        if !isTextEmpty() && !isRTLChar {
+            draft = textMessage
         } else {
             draft = ""
         }
@@ -89,8 +89,8 @@ public final class SendContainerViewModel: ObservableObject {
         animateObjectWillChange()
     }
 
-    private func isTextEmpty(text: String) -> Bool {
-        let sanitizedText = text.replacingOccurrences(of: "\u{200f}", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+    public func isTextEmpty() -> Bool {
+        let sanitizedText = textMessage.replacingOccurrences(of: "\u{200f}", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         return sanitizedText.isEmpty
     }
 
@@ -109,7 +109,7 @@ public final class SendContainerViewModel: ObservableObject {
 
     public func setText(newValue: String) {
         textMessage = newValue
-        onTextMessageChanged(textMessage)
+        onTextMessageChanged()
         animateObjectWillChange()
     }
 

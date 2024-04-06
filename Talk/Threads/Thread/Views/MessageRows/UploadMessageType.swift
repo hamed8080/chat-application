@@ -13,7 +13,7 @@ import TalkUI
 import TalkViewModels
 
 struct UploadMessageType: View {
-    @EnvironmentObject var viewModel: MessageRowViewModel
+    var viewModel: MessageRowViewModel
     var message: Message { viewModel.message }
 
     var body: some View {

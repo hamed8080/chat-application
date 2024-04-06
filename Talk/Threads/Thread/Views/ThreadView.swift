@@ -106,7 +106,6 @@ struct ThreadView: View, DropDelegate {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         viewModel.historyVM.sections.flatMap{$0.vms}.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
             rowViewModel.showReactionsOverlay = false
-            rowViewModel.animateObjectWillChange()
         }
     }
 }

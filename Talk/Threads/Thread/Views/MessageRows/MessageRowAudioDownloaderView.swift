@@ -152,15 +152,11 @@ final class MessageRowAudioDownloaderView: UIStackView {
 
 struct MessageRowAudioDownloaderWapper: UIViewRepresentable {
 
-    @StateObject var viewModel: MessageRowViewModel
+    var viewModel: MessageRowViewModel
 
     init(viewModel: MessageRowViewModel) {
         ThreadViewModel.maxAllowedWidth = 340
-        self._viewModel = StateObject(wrappedValue: viewModel)
-        Task {
-            await viewModel.performaCalculation()
-            await viewModel.asyncAnimateObjectWillChange()
-        }
+        self.viewModel = viewModel
     }
 
     func makeUIView(context: Context) -> some UIView {

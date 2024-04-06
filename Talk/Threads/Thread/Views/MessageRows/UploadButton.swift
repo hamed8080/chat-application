@@ -10,7 +10,7 @@ import TalkViewModels
 import ChatModels
 
 struct UploadButton: View {
-    @EnvironmentObject var messageRowVM: MessageRowViewModel
+    var messageRowVM: MessageRowViewModel
     @EnvironmentObject var viewModel: UploadFileViewModel
     @Environment(\.colorScheme) var scheme
     var message: Message { messageRowVM.message }
@@ -77,6 +77,6 @@ struct UploadButton: View {
 
 struct UploadButton_Previews: PreviewProvider {
     static var previews: some View {
-        UploadButton()
+        UploadButton(messageRowVM: .init(message: .init(), viewModel: .init(thread: .init())))
     }
 }

@@ -59,14 +59,12 @@ struct ReactionMenuView: View {
 struct ReactionMenuView_Previews: PreviewProvider {
     struct Preview: View {
         static let message = Message(id: 1, message: "TEST", messageType: .text)
-        @StateObject var viewModel = MessageRowViewModel(message: Preview.message, viewModel: ThreadViewModel(thread: Conversation(id: 1)))
+        var viewModel = MessageRowViewModel(message: Preview.message, viewModel: ThreadViewModel(thread: Conversation(id: 1)))
         var body: some View {
             ReactionMenuView()
-                .environmentObject(viewModel)
                 .onAppear {
                     Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
                         viewModel.showReactionsOverlay = true
-                        viewModel.animateObjectWillChange()
                     }
                 }
         }

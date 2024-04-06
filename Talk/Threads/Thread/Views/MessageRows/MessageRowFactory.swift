@@ -23,7 +23,6 @@ struct MessageRowFactory: View {
                 switch type {
                 case .endCall, .startCall:
                     CallMessageWapper(viewModel: viewModel)
-                        .environmentObject(viewModel)
                 case .participantJoin, .participantLeft:
                     ParticipantsEventUITableViewCellWapper(viewModel: viewModel)
                 default:
@@ -37,14 +36,14 @@ struct MessageRowFactory: View {
                 }
             }
         }
-        .background(TextMessageSelectedBackground().environmentObject(viewModel))
+        .background(TextMessageSelectedBackground(viewModel: viewModel))
         .transition(.asymmetric(insertion: .push(from: viewModel.isMe ? .trailing : .leading), removal: .move(edge: viewModel.isMe ? .trailing : .leading)))
     }
 }
 
 struct TextMessageSelectedBackground: View {
     @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject var viewModel: MessageRowViewModel
+    var viewModel: MessageRowViewModel
 
     var body: some View {
         let selectedColor = colorScheme == .dark ? Color.App.accent.opacity(0.1) : Color.App.dividerPrimary.opacity(0.5)
@@ -55,7 +54,6 @@ struct TextMessageSelectedBackground: View {
                 if viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true {
                     viewModel.isSelected.toggle()
                     viewModel.threadVM?.selectedMessagesViewModel.animateObjectWillChange()
-                    viewModel.animateObjectWillChange()
                 }
             }
     }

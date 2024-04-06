@@ -15,16 +15,15 @@ import MobileCoreServices
 import PhotosUI
 
 public final class AttachmentButtonsView: UIStackView {
-    private let vc: UIViewController
     private let viewModel: SendContainerViewModel
     private let btnGallery = AttchmentButton(title: "General.gallery", image: "photo.fill")
     private let btnFile = AttchmentButton(title: "General.file", image: "doc.fill")
     private let btnLocation = AttchmentButton(title: "General.location", image: "location.fill")
     private let btnContact = AttchmentButton(title: "General.contact", image: "person.2.crop.square.stack.fill")
     private var threadVM: ThreadViewModel? { viewModel.threadVM }
+    private var vc: UIViewController? { threadVM?.delegate as? UIViewController }
 
-    public init(viewModel: SendContainerViewModel, vc: UIViewController) {
-        self.vc = vc
+    public init(viewModel: SendContainerViewModel) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         configureViews()
@@ -112,8 +111,7 @@ extension AttachmentButtonsView: UIDocumentPickerDelegate  {
         picker.allowsMultipleSelection = true
         picker.delegate = self
         picker.modalPresentationStyle = .formSheet
-
-        vc.present(picker, animated: true)
+        vc?.present(picker, animated: true)
     }
 
     public func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
@@ -139,8 +137,7 @@ extension AttachmentButtonsView: PHPickerViewControllerDelegate {
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
         picker.modalPresentationStyle = .formSheet
-
-        vc.present(picker, animated: true)
+        vc?.present(picker, animated: true)
     }
 
     public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -191,7 +188,7 @@ extension AttachmentButtonsView {
         let mapVC = MapPickerViewController()
         mapVC.viewModel = threadVM
         mapVC.modalPresentationStyle = .formSheet
-        vc.present(mapVC, animated: true)
+        vc?.present(mapVC, animated: true)
     }
 }
 
@@ -272,7 +269,7 @@ public final class AttchmentButton: UIStackView {
 struct AttachmentDialog_Previews: PreviewProvider {
 
     struct AttachmentButtonsViewWrapper: UIViewRepresentable {
-        func makeUIView(context: Context) -> some UIView { AttachmentButtonsView(viewModel: .init(thread: .init(id: 1)), vc: .init()) }
+        func makeUIView(context: Context) -> some UIView { AttachmentButtonsView(viewModel: .init(thread: .init(id: 1))) }
         func updateUIView(_ uiView: UIViewType, context: Context) {}
     }
 
