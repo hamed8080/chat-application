@@ -14,13 +14,13 @@ import Chat
 import TalkModels
 
 struct ThreadHistoryVStack: View {
-    @EnvironmentObject var viewModel: ThreadHistoryViewModel
+    var viewModel: ThreadHistoryViewModel
 
     var body: some View {
         VStack(spacing: 0) {
             if viewModel.isEmptyThread {
             } else {
-                ThreadHistoryList()
+                ThreadHistoryList(viewModel: viewModel)
             }
         }
         .overlay(ThreadHistoryShimmerView().environmentObject(viewModel.shimmerViewModel))
@@ -29,7 +29,7 @@ struct ThreadHistoryVStack: View {
 }
 
 struct ThreadHistoryList: View {
-    @EnvironmentObject var viewModel: ThreadHistoryViewModel
+    var viewModel: ThreadHistoryViewModel
 
     var body: some View {
         List {

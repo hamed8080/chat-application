@@ -12,10 +12,9 @@ import ChatModels
 import TalkModels
 import ChatCore
 import ChatDTO
-import SwiftUI
 import OSLog
 
-public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
+public final class ThreadViewModel: Identifiable, Hashable {
     public static func == (lhs: ThreadViewModel, rhs: ThreadViewModel) -> Bool {
         rhs.threadId == lhs.threadId
     }

@@ -20,7 +20,7 @@ struct ThreadView: View, DropDelegate {
 
     var body: some View {
         ScrollViewReader { scrollProxy in
-            ThreadHistoryVStack()
+            ThreadHistoryVStack(viewModel: viewModel.historyVM)
                 .background(ThreadbackgroundView(threadId: viewModel.threadId))
                 .overlay(alignment: .bottom) {
                     VStack {
@@ -104,9 +104,6 @@ struct ThreadView: View, DropDelegate {
             NotificationCenter.cancelSearch.post(name: .cancelSearch, object: true)
         }
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        viewModel.historyVM.sections.flatMap{$0.vms}.filter{ $0.showReactionsOverlay == true }.forEach { rowViewModel in
-            rowViewModel.showReactionsOverlay = false
-        }
     }
 }
 

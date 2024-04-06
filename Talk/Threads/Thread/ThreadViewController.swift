@@ -187,13 +187,13 @@ extension ThreadViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let cell = tableView.cellForRow(at: indexPath) as? TextMessageTypeCell {
+        if let cell = tableView.cellForRow(at: indexPath) as? TextMessageBaseCellType {
             cell.select()
         }
     }
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        if let cell = tableView.cellForRow(at: indexPath) as? TextMessageTypeCell {
+        if let cell = tableView.cellForRow(at: indexPath) as? TextMessageBaseCellType {
             cell.deselect()
         }
     }
@@ -250,7 +250,7 @@ extension ThreadViewController: ThreadViewDelegate {
     func setSelection(_ value: Bool) {
         viewModel.selectedMessagesViewModel.setInSelectionMode(value)
         tableView.allowsMultipleSelection = value
-        tableView.visibleCells.compactMap{$0 as? TextMessageTypeCell}.forEach { cell in
+        tableView.visibleCells.compactMap{$0 as? TextMessageBaseCellType}.forEach { cell in
             cell.setInSelectionMode(value)
         }
     }
@@ -276,6 +276,18 @@ extension ThreadViewController: ThreadViewDelegate {
         let hostVC = UIHostingController(rootView: view)
         hostVC.modalPresentationStyle = .formSheet
         present(hostVC, animated: true)
+    }
+
+    func startTopAnimation(_ animate: Bool) {
+
+    }
+
+    func startCenterAnimation(_ animate: Bool) {
+
+    }
+
+    func startBottomAnimation(_ animate: Bool) {
+
     }
 }
 

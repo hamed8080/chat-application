@@ -90,7 +90,7 @@ final class AvatarView: UIImageView {
                 image = nil
                 label.isHidden = false
             }
-        } else if isSameUser(viewModel) {
+        } else if !viewModel.isLastMessageOfTheUser {
             backgroundColor = nil
             image = nil
             isHidden = false
@@ -102,15 +102,11 @@ final class AvatarView: UIImageView {
 
     private func hiddenView(_ viewModel: MessageRowViewModel) -> Bool {
         let isInSelectMode = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == true
-        return isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false || viewModel.isMe
+        return isInSelectMode || (viewModel.threadVM?.thread.group ?? false) == false
     }
 
     private func showAvatarOrUserName(_ viewModel: MessageRowViewModel) -> Bool {
-        !viewModel.isMe && viewModel.isLastMessageOfTheUser && viewModel.isCalculated
-    }
-
-    private func isSameUser(_ viewModel: MessageRowViewModel) -> Bool {
-        !viewModel.isMe && !viewModel.isLastMessageOfTheUser
+        viewModel.isLastMessageOfTheUser && viewModel.isCalculated
     }
 
     @objc func onTap(_ sender: UIGestureRecognizer) {

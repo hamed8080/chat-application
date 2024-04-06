@@ -42,6 +42,12 @@ public protocol SheetsDelegate {
     func openForwardPicker()
 }
 
-public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate {
+public protocol LoadingDelegate {
+    func startTopAnimation(_ animate: Bool)
+    func startCenterAnimation(_ animate: Bool)
+    func startBottomAnimation(_ animate: Bool)
+}
+
+public protocol ThreadViewDelegate: AnyObject, UnreadCountDelegate, ChangeUnreadMentionsDelegate, ChangeSelectionDelegate, LastMessageAppearedDelegate, SheetsDelegate, HistoryScrollDelegate, LoadingDelegate {
 
 }

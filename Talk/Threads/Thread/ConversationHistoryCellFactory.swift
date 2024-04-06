@@ -14,62 +14,38 @@ import ChatModels
 public final class ConversationHistoryCellFactory {
     class func reuse(_ tableView: UITableView, _ indexPath: IndexPath, _ viewModel: ThreadViewModel) -> UITableViewCell {
         guard let viewModel = viewModel.historyVM.viewModelWith(indexPath) else { return UITableViewCell() }
-        let message = viewModel.message
-        let identifier = cellIdentifier(for: message)
+        let identifier = viewModel.rowType.cellType
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier.rawValue, for: indexPath)
-        let type = message.type
-        switch type {
-        case .endCall, .startCall:
+        switch identifier {
+        case .call:
             let cell = (cell as? CallEventUITableViewCell) ?? CallEventUITableViewCell()
             cell.setValues(viewModel: viewModel)
             return cell
-        case .participantJoin, .participantLeft:
+        case .partnerMessage:
+            let cell = cell as? TextMessagePartnerCellType ?? .init()
+            cell.setValues(viewModel: viewModel)
+            return cell
+        case .meMessage:
+            let cell = cell as? TextMessageMeCellType ?? .init()
+            cell.setValues(viewModel: viewModel)
+            return cell
+        case .participants:
             let cell = (cell as? ParticipantsEventUITableViewCell) ?? ParticipantsEventUITableViewCell()
             cell.setValues(viewModel: viewModel)
             return cell
-        default:
-            if message is UnreadMessageProtocol {
-                return UnreadMessageBubbleUITableViewCell()
-            } else if let cell = cell as? TextMessageTypeCell, message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                cell.setValues(viewModel: viewModel)
-                return cell
-            } else {
-                return UITableViewCell()
-            }
-        }
-    }
-
-    enum CellTypes: String {
-        case call = "CallEventUITableViewCell"
-        case message = "TextMessageTypeCell"
-        case participants = "ParticipantsEventUITableViewCell"
-        case unreadBanner = "UnreadMessageBubbleUITableViewCell"
-        case unknown
-    }
-
-    private class func cellIdentifier(for message: Message) -> CellTypes {
-        let type = message.type
-        switch type {
-        case .endCall, .startCall:
-            return .call
-        case .participantJoin, .participantLeft:
-            return .participants
-        default:
-            if message is UnreadMessageProtocol {
-                return .unreadBanner
-            } else if message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage {
-                return .message
-            } else {
-                return .unknown
-            }
+        case .unreadBanner:
+            return UnreadMessageBubbleUITableViewCell()
+        case .unknown:
+            return UITableViewCell()
         }
     }
 
     public class func registerCells(_ tableView: UITableView) {
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        tableView.register(TextMessageTypeCell.self, forCellReuseIdentifier: "TextMessageTypeCell")
-        tableView.register(CallEventUITableViewCell.self, forCellReuseIdentifier: "CallEventUITableViewCell")
-        tableView.register(ParticipantsEventUITableViewCell.self, forCellReuseIdentifier: "ParticipantsEventUITableViewCell")
-        tableView.register(UnreadMessageBubbleUITableViewCell.self, forCellReuseIdentifier: "UnreadMessageBubbleUITableViewCell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellTypes.unknown.rawValue)
+        tableView.register(TextMessagePartnerCellType.self, forCellReuseIdentifier: CellTypes.partnerMessage.rawValue)
+        tableView.register(TextMessageMeCellType.self, forCellReuseIdentifier: CellTypes.meMessage.rawValue)
+        tableView.register(CallEventUITableViewCell.self, forCellReuseIdentifier: CellTypes.call.rawValue)
+        tableView.register(ParticipantsEventUITableViewCell.self, forCellReuseIdentifier: CellTypes.participants.rawValue)
+        tableView.register(UnreadMessageBubbleUITableViewCell.self, forCellReuseIdentifier: CellTypes.unreadBanner.rawValue)
     }
 }

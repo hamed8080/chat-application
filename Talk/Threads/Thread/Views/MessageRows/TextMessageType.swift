@@ -15,7 +15,7 @@ import TalkModels
 import TalkExtensions
 
 final class TextMessageContainer: UIStackView {
-    public weak var cell: TextMessageTypeCell?
+    public weak var cell: TextMessageBaseCellType?
     private var viewModel: MessageRowViewModel!
     private let messageRowFileDownloader = MessageRowFileDownloaderView()
     private let messageRowImageDownloader = MessageRowImageDownloaderView(frame: .zero)
@@ -347,23 +347,20 @@ extension TextMessageContainer {
     }
 }
 
-final class TextMessageTypeCell: UITableViewCell {
+public class TextMessageBaseCellType: UITableViewCell {
     private var viewModel: MessageRowViewModel!
-    private let hStack = UIStackView()
-    private let avatar = AvatarView(frame: .zero)
+    let hStack = UIStackView()
+    private var avatar: AvatarView?
     private let radio = SelectMessageRadio()
     private let messageContainer = TextMessageContainer()
-
     private var message: Message { viewModel.message }
     private var isEmptyMessage: Bool { message.message == nil || message.message?.isEmpty == true  }
-    private var leadingConstraint: NSLayoutConstraint!
-    private var trailingConstraint: NSLayoutConstraint!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureView()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -382,7 +379,11 @@ final class TextMessageTypeCell: UITableViewCell {
 
         messageContainer.cell = self
         hStack.addArrangedSubview(radio)
-        hStack.addArrangedSubview(avatar)
+        if self is TextMessagePartnerCellType {
+            let avatar = AvatarView(frame: .zero)
+            hStack.addArrangedSubview(avatar)
+            self.avatar = avatar
+        }
         hStack.addArrangedSubview(messageContainer)
 
         contentView.addSubview(hStack)
@@ -391,8 +392,6 @@ final class TextMessageTypeCell: UITableViewCell {
     }
 
     private func setConstraints() {
-        leadingConstraint = hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8)
-        trailingConstraint = hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8)
         NSLayoutConstraint.activate([
             messageContainer.widthAnchor.constraint(lessThanOrEqualToConstant: ThreadViewModel.maxAllowedWidth),
             hStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
@@ -402,12 +401,9 @@ final class TextMessageTypeCell: UITableViewCell {
 
     public func setValues(viewModel: MessageRowViewModel) {
         self.viewModel = viewModel
-        leadingConstraint.isActive = !viewModel.isMe
-        trailingConstraint.isActive = viewModel.isMe
         hStack.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
-        contentView.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
         messageContainer.semanticContentAttribute = viewModel.isMe ? .forceRightToLeft : .forceLeftToRight
-        avatar.set(viewModel)
+        avatar?.set(viewModel)
         messageContainer.set(viewModel)
         radio.isHidden = viewModel.threadVM?.selectedMessagesViewModel.isInSelectMode == false
         radio.set(selected: viewModel.isSelected)
@@ -454,11 +450,35 @@ final class TextMessageTypeCell: UITableViewCell {
     }
 }
 
+public final class TextMessagePartnerCellType: TextMessageBaseCellType {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        hStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8).isActive = true
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+public final class TextMessageMeCellType: TextMessageBaseCellType {
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        hStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+}
+
 struct TextMessageTypeCellWapper: UIViewRepresentable {
     let viewModel: MessageRowViewModel
 
     func makeUIView(context: Context) -> some UIView {
-        let view = TextMessageTypeCell()
+        let view = TextMessageMeCellType()
         view.setValues(viewModel: viewModel)
         return view
     }

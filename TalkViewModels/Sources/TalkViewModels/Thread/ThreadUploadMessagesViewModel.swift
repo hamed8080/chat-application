@@ -44,7 +44,7 @@ public final class ThreadUploadMessagesViewModel {
     internal func append(contentsOf requests: [Message]) {
         Task {
             await threadVM?.historyVM.appendMessagesAndSort(requests)
-            await threadVM?.historyVM.asyncAnimateObjectWillChange()
+//            await threadVM?.historyVM.asyncAnimateObjectWillChange()
             if let last = requests.last {
                 await threadVM?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(last)
             }
@@ -54,7 +54,7 @@ public final class ThreadUploadMessagesViewModel {
     internal func append(request: Message) {
         Task {
             await threadVM?.historyVM.appendMessagesAndSort([request])
-            await threadVM?.historyVM.asyncAnimateObjectWillChange()
+//            await threadVM?.historyVM.asyncAnimateObjectWillChange()
             await threadVM?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(request)
         }
     }

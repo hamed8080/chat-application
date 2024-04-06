@@ -24,7 +24,6 @@ public final class MessageRowViewModel: Identifiable, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-
     public let uniqueId: String = UUID().uuidString
     public var id: Int { message.id ?? -1 }
     public var isCalculated = false
@@ -32,7 +31,7 @@ public final class MessageRowViewModel: Identifiable, Hashable {
     public var nsMarkdownTitle = NSAttributedString()
     public var timeString: String = ""
     public static var avatarSize: CGFloat = 37
-    public var reactionsVM: MessageReactionsViewModel
+    public var reactionsVM: MessageReactionsViewModel?
     public var downloadFileVM: DownloadFileViewModel?
     public weak var threadVM: ThreadViewModel?
     public var message: Message
@@ -40,7 +39,6 @@ public final class MessageRowViewModel: Identifiable, Hashable {
     public var isHighlited: Bool = false
     public var highlightTimer: Timer?
     public var isSelected = false
-    public var showReactionsOverlay = false
     public var isFirstMessageOfTheUser: Bool = false
     public var isLastMessageOfTheUser: Bool = false
     public var canShowIconFile: Bool = false
@@ -72,7 +70,6 @@ public final class MessageRowViewModel: Identifiable, Hashable {
     public var image: UIImage = MessageRowViewModel.emptyImage
     public var groupMessageParticipantName: String?
     public var avatarImageLoader: ImageLoaderViewModel?
-    public var replyContainerWidth: CGFloat?
     private var cancelable: AnyCancellable?
     public var paddings = MessagePaddings()
     public var rowType = MessageViewRowType()
@@ -99,8 +96,10 @@ public final class MessageRowViewModel: Identifiable, Hashable {
         }
         self.threadVM = viewModel
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        reactionsVM = MessageReactionsViewModel()
-        reactionsVM.viewModel = self
+        if message.reactionableType {
+            reactionsVM = MessageReactionsViewModel()
+            reactionsVM?.viewModel = self
+        }
         if message.uploadFile != nil {
             uploadViewModel = .init(message: message)
             isMe = true
@@ -179,9 +178,9 @@ public final class MessageRowViewModel: Identifiable, Hashable {
         paddings.textViewPadding = calculateTextViewPadding()
         localizedReplyFileName = calculateLocalizeReplyFileName()
         calculateGroupParticipantName()
-        replyContainerWidth = await calculateReplyContainerWidth()
         calculateSpacingPaddings()
         setAvatarColor()
+        setCellType()
         await setParticipantEvent()
     }
 
@@ -370,24 +369,6 @@ public final class MessageRowViewModel: Identifiable, Hashable {
         }
     }
 
-    private func calculateReplyContainerWidth() async -> CGFloat? {
-        guard let replyInfo = message.replyInfo else { return nil }
-        let messageFileText = textForContianerCalculation()
-        let textWidth = messageContainerTextWidth()
-
-        let senderNameWithIconOrImageInReply = replySenderWidthWithIconOrImage(replyInfo: replyInfo)
-        let maxWidthWithSender = max(textWidth, senderNameWithIconOrImageInReply)
-
-        if !message.isImage, messageFileText.count < 60 {
-            return max(senderNameWithIconOrImageInReply, maxWidthWithSender)
-        } else if !message.isImage, replyInfo.message?.count ?? 0 < messageFileText.count {
-            let maxAllowedWidth = min(maxWidthWithSender, ThreadViewModel.maxAllowedWidth)
-            return maxAllowedWidth
-        } else {
-            return nil
-        }
-    }
-
     private func replyPrimaryMessageFileIconWidth() -> CGFloat {
         if fileName == nil || fileName?.isEmpty == true { return 0 }
         return 32
@@ -503,7 +484,6 @@ public final class MessageRowViewModel: Identifiable, Hashable {
         uploadViewModel = nil
         self.message = message
         downloadFileVM?.message = message
-        threadVM?.historyVM.appendToNeedUpdate(self)
     }
 
     private func setAvatarColor() {
@@ -522,8 +502,11 @@ public final class MessageRowViewModel: Identifiable, Hashable {
             self.downloadFileVM = DownloadFileViewModel(message: message)
         }
         self.isMe = message.isMe(currentUserId: AppState.shared.user?.id)
-        reactionsVM = MessageReactionsViewModel()
-        reactionsVM.viewModel = self
+        if message.reactionableType {
+            reactionsVM = MessageReactionsViewModel()
+            reactionsVM?.viewModel = self
+        }
+
         if message.uploadFile != nil {
             uploadViewModel = .init(message: message)
             isMe = true
@@ -536,6 +519,25 @@ public final class MessageRowViewModel: Identifiable, Hashable {
         let meId = AppState.shared.user?.id
         let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
         participantEvenMarkdown = try! NSAttributedString(markdown: "\(message.addOrRemoveParticipantString(meId: meId) ?? "") - \(date)")
+    }
+
+    private func setCellType() {
+        let type = message.type
+        let isBareMessage = message.isTextMessageType || message.isUnsentMessage || message.isUploadMessage
+        switch type {
+        case .endCall, .startCall:
+            rowType.cellType = .call
+        case .participantJoin, .participantLeft:
+            rowType.cellType = .participants
+        default:
+            if message is UnreadMessageProtocol {
+                rowType.cellType = .unreadBanner
+            } else if isMe, isBareMessage {
+                rowType.cellType = .meMessage
+            } else if !isMe, isBareMessage {
+                rowType.cellType = .partnerMessage
+            }
+        }
     }
 
     public func reconfigRow() {

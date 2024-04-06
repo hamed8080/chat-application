@@ -15,7 +15,7 @@ import OSLog
 import TalkModels
 import Combine
 
-public final class ThreadHistoryViewModel: ObservableObject {
+public final class ThreadHistoryViewModel {
     // MARK: Stored Properties
     public var sections: ContiguousArray<MessageSection> = .init()
     private var needUpdates: ContiguousArray<MessageRowViewModel> = .init()
@@ -177,7 +177,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func moreBottom(prepend: String = "MORE-BOTTOM", _ fromTime: UInt?) {
         if !hasNextBottom || bottomLoading { return }
         bottomLoading = true
-        animateObjectWillChange()
+        threadViewModel?.delegate?.startBottomAnimation(true)
         let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
         RequestsManager.shared.append(prepend: prepend, value: req)
         logHistoryRequest(req: req)
@@ -205,6 +205,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             hasNextTop = response.hasNext
             isFetchedServerFirstResponse = true
             topLoading = false
+            threadViewModel?.delegate?.startBottomAnimation(false)
         }
     }
 
@@ -213,6 +214,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             hasNextBottom = response.hasNext
             isFetchedServerFirstResponse = true
             bottomLoading = false
+            threadViewModel?.delegate?.startBottomAnimation(false)
         }
     }
 
@@ -296,8 +298,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 4- Disable excessive loading on the top part.
             threadViewModel?.scrollVM.disableExcessiveLoading()
         }
-        /// 5- To update isLoading fields to hide the loading at the top and prepare the ui for scrolling to.
-        await asyncAnimateObjectWillChange()
         if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
             delegate?.reload()
             delegate?.scrollTo(uniqueId: uniqueId, position: .bottom, animate: false)
@@ -319,7 +319,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
            threadViewModel?.isActiveThread == true,
            let lastMessageInListTime = sections.last?.vms.last?.message.time {
             bottomLoading = true
-            animateObjectWillChange()
+            threadViewModel?.delegate?.startBottomAnimation(true)
             let fromTime = lastMessageInListTime.advanced(by: 1)
             let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: threadViewModel?.readOnly == true)
             RequestsManager.shared.append(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", value: req)
@@ -340,8 +340,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
         /// 4- Set whether it has more messages at the bottom or not.
         await setHasMoreBottom(response)
-        /// 5- To update isLoading fields to hide the loading at the bottom.
-        await asyncAnimateObjectWillChange()
         isInInsertionBottom = false
     }
 
@@ -516,6 +514,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         } else {
             vm.message.updateMessage(message: message)
         }
+        needUpdates.append(vm)
         return vm
     }
 
@@ -558,10 +557,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
         sections.sort(by: {$0.date < $1.date})
         logger.debug("End of the Sort function: \(Date().millisecondsSince1970)")
-    }
-
-    internal func appendToNeedUpdate(_ vm: MessageRowViewModel) {
-        needUpdates.append(vm)
     }
 
     private func fetchReactions(messages: [Message]) {
@@ -664,7 +659,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func onUploadCanceled(_ uniqueId: String?) {
         if let uniqueId = uniqueId {
             removeByUniqueId(uniqueId)
-            animateObjectWillChange()
+//            animateObjectWillChange()
         }
     }
 
@@ -817,7 +812,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
         if sections[indices.section].vms.count == 0 {
             sections.remove(at: indices.section)
         }
-        animateObjectWillChange()
+        delegate?.remove(at: indices)
     }
 
     // MARK: Check Same User
@@ -871,7 +866,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         if topLoading || bottomLoading {
             topLoading = false
             bottomLoading = false
-            animateObjectWillChange()
+            threadViewModel?.delegate?.startTopAnimation(false)
+            threadViewModel?.delegate?.startBottomAnimation(false)
         }
     }
 

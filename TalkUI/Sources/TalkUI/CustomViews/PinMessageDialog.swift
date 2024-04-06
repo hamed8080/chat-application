@@ -12,10 +12,11 @@ import TalkModels
 
 public struct PinMessageDialog: View {
     @EnvironmentObject var appOverlayVM: AppOverlayViewModel
-    @EnvironmentObject var threadVM: ThreadViewModel
+    var threadVM: ThreadViewModel
     let message: Message
 
-    public init(message: Message) {
+    public init(message: Message, threadVM: ThreadViewModel) {
+        self.threadVM = threadVM
         self.message = message
     }
 
@@ -31,7 +32,6 @@ public struct PinMessageDialog: View {
                 Button {
                     threadVM.threadPinMessageViewModel.togglePinMessage(message, notifyAll: true)
                     appOverlayVM.dialogView = nil
-                    threadVM.animateObjectWillChange()
                 } label: {
                     Text("PinMessageDialog.pinAndNotify")
                         .foregroundStyle(Color.App.accent)
@@ -41,7 +41,6 @@ public struct PinMessageDialog: View {
                 Button {
                     threadVM.threadPinMessageViewModel.togglePinMessage(message, notifyAll: false)
                     appOverlayVM.dialogView = nil
-                    threadVM.animateObjectWillChange()
                 } label: {
                     Text("PinMessageDialog.justPin")
                         .foregroundStyle(Color.App.accent)
@@ -50,7 +49,6 @@ public struct PinMessageDialog: View {
 
                 Button {
                     appOverlayVM.dialogView = nil
-                    threadVM.animateObjectWillChange()
                 } label: {
                     Text("General.cancel")
                         .foregroundStyle(Color.App.textPlaceholder)
@@ -66,6 +64,6 @@ public struct PinMessageDialog: View {
 
 struct PinMessageDialog_Previews: PreviewProvider {
     static var previews: some View {
-        PinMessageDialog(message: .init(id: 1))
+        PinMessageDialog(message: .init(id: 1), threadVM: .init(thread: .init(id: 1)))
     }
 }
