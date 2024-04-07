@@ -32,13 +32,13 @@ public class ContactsViewModel: ObservableObject {
     @Published public var isLoading = false
     @Published public var searchContactString: String = ""
     public var blockedContacts: ContiguousArray<BlockedContactResponse> = []
-    @Published public var addContact: Contact?
-    @Published public var editContact: Contact?
-    @Published public var showAddOrEditContactSheet = false
+    public var addContact: Contact?
+    public var editContact: Contact?
+    public var showAddOrEditContactSheet = false
     public var isBuilder: Bool = false
-    @Published public var isInSelectionMode = false
-    @Published public var successAdded: Bool = false
-    @Published public var userNotFound: Bool = false
+    public var isInSelectionMode = false
+    public var successAdded: Bool = false
+    public var userNotFound: Bool = false
 
     public init(isBuilder: Bool = false) {
         self.isBuilder = isBuilder
@@ -228,6 +228,7 @@ public class ContactsViewModel: ObservableObject {
                 } else {
                     self.contacts.insert(newContact, at: 0)
                 }
+                updateActiveThreadsContactName(contact: newContact)
             }
             editContact = nil
             showAddOrEditContactSheet = false
@@ -342,5 +343,22 @@ public class ContactsViewModel: ObservableObject {
         if UserDefaults.standard.bool(forKey: "sync_contacts") == true {
             ChatManager.activeInstance?.contact.sync()
         }
+    }
+
+    public func updateActiveThreadsContactName(contact: Contact) {
+        AppState.shared.objectsContainer.navVM.pathsTracking
+            .compactMap{$0 as? ConversationNavigationValue}
+            .compactMap{$0.viewModel}
+            .compactMap{$0.historyVM}
+            .compactMap{$0.sections}
+            .flatMap{$0}
+            .compactMap{$0.vms}
+            .flatMap{$0}
+            .filter{$0.message.participant?.id == contact.id}
+            .forEach { viewModel in
+                viewModel.message.participant?.contactName = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
+                viewModel.message.participant?.name = "\(contact.firstName ?? "") \(contact.lastName ?? "")"
+                viewModel.animateObjectWillChange()
+            }
     }
 }

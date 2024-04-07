@@ -56,6 +56,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         return try? JSONDecoder.instance.decode(FileMetaData.self, from: fileMetadata)
     }
     private var isFetching: Bool = false
+    private var accesQueue = DispatchQueue(label: "ChatFileManagerSerialQueue")
     private var fileURL: URL? {
         guard let URLObject = URLObject, let fileManager = ChatManager.activeInstance?.file else { return nil }
         if fileManager.isFileExist(URLObject) {
@@ -138,20 +139,22 @@ public final class ImageLoaderViewModel: ObservableObject {
     }
 
     /// The hashCode decode FileMetaData so it needs to be done on the background thread.
-    public func fetch() async {
-        if isFetching { return }
-        isFetching = true
-        fileMetadata = config.metaData
-        if isSDKImage {
-            await getFromSDK()
-        } else if let fileURL = fileURL {
-            setImage(fileURL: fileURL)
-        } else {
-            await downloadFromAnyURL(thumbnail: config.thumbnail)
+    public func fetch() {
+        accesQueue.sync {
+            if isFetching { return }
+            isFetching = true
+            fileMetadata = config.metaData
+            if isSDKImage {
+                getFromSDK()
+            } else if let fileURL = fileURL {
+                setImage(fileURL: fileURL)
+            } else {
+                downloadFromAnyURL(thumbnail: config.thumbnail)
+            }
         }
     }
 
-    private func getFromSDK() async {
+    private func getFromSDK() {
         let req = ImageRequest(hashCode: hashCode, forceToDownloadFromServer: config.forceToDownloadFromServer, size: config.size, thumbnail: config.thumbnail)
         uniqueId = req.uniqueId
         RequestsManager.shared.append(prepend: "ImageLoader", value: req)
@@ -171,7 +174,7 @@ public final class ImageLoaderViewModel: ObservableObject {
         }
     }
 
-    private func downloadFromAnyURL(thumbnail: Bool) async {
+    private func downloadFromAnyURL(thumbnail: Bool) {
         guard let req = reqWithHeader else { return }
         let task = URLSession.shared.dataTask(with: req) { [weak self] data, _, _ in
             self?.update(data: data)

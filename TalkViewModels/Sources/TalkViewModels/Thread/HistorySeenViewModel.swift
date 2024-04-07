@@ -83,6 +83,7 @@ public final class HistorySeenViewModel: ObservableObject {
             reduceThreadListLocally(to: newUnreadCount)
         }
         reduceLastMessageLocally(message)
+        threadVM?.animateObjectWillChange()
     }
 
     private func reduceThreadListLocally(to newUnreadCount: Int) {
@@ -102,7 +103,6 @@ public final class HistorySeenViewModel: ObservableObject {
                 threadsVM.threads[index].unreadCount = 0
                 threadsVM.animateObjectWillChange()
             }
-            threadVM?.animateObjectWillChange()
         }
     }
 

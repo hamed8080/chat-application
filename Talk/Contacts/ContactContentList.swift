@@ -62,6 +62,7 @@ struct ContactContentList: View {
 
             Button {
                 viewModel.showAddOrEditContactSheet.toggle()
+                viewModel.animateObjectWillChange()
             } label: {
                 Label("Contacts.addContact", systemImage: "person.badge.plus")
                     .foregroundStyle(Color.App.accent)
@@ -73,12 +74,14 @@ struct ContactContentList: View {
                 StickyHeaderSection(header: "Contacts.searched")
                     .listRowInsets(.zero)
                 ForEach(viewModel.searchedContacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: true)
+                    ContactRowContainer(isSearchRow: true)
+                        .environmentObject(contact)
                 }
                 .padding()
             } else {
                 ForEach(viewModel.contacts) { contact in
-                    ContactRowContainer(contact: contact, isSearchRow: false)
+                    ContactRowContainer(isSearchRow: false)
+                        .environmentObject(contact)
                 }
                 .padding()
                 .listRowInsets(.zero)
@@ -128,7 +131,7 @@ struct ContactContentList: View {
 
 struct ContactRowContainer: View {
     @EnvironmentObject var viewModel: ContactsViewModel
-    let contact: Contact
+    @EnvironmentObject var contact: Contact
     let isSearchRow: Bool
     var separatorColor: Color {
         if !isSearchRow {
@@ -139,8 +142,8 @@ struct ContactRowContainer: View {
     }
 
     var body: some View {
-        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode, contact: contact)
-            .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)\(contact.blocked == true ? "Blocked" : "UnBlocked")")
+        ContactRow(isInSelectionMode: $viewModel.isInSelectionMode)
+//            .id("\(isSearchRow ? "SearchRow" : "Normal")\(contact.id ?? 0)\(contact.blocked == true ? "Blocked" : "UnBlocked")")
             .animation(.spring(), value: viewModel.isInSelectionMode)
             .listRowBackground(Color.App.bgPrimary)
             .listRowSeparatorTint(separatorColor)
@@ -149,6 +152,7 @@ struct ContactRowContainer: View {
                     Button {
                         viewModel.editContact = contact
                         viewModel.showAddOrEditContactSheet.toggle()
+                        viewModel.animateObjectWillChange()
                     } label: {
                         Label("General.edit", systemImage: "pencil")
                     }

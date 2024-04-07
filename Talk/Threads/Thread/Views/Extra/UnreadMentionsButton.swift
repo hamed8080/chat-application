@@ -20,6 +20,7 @@ struct UnreadMentionsButton: View {
                 Spacer()
                 Button {
                     withAnimation {
+                        threadVM.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge where we have mentiond
                         threadVM.moveToFirstUnreadMessage()
                     }
                 } label: {
@@ -30,7 +31,7 @@ struct UnreadMentionsButton: View {
                         .contentShape(Rectangle())
                 }
                 .frame(width: 40, height: 40)
-                .background(.ultraThinMaterial)
+                .background(.regularMaterial)
                 .clipShape(RoundedRectangle(cornerRadius:(20)))
                 .shadow(color: .gray.opacity(0.4), radius: 2)
                 .overlay(alignment: .top) {

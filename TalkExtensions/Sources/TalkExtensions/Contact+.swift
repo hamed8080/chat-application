@@ -8,6 +8,8 @@
 import ChatModels
 import Foundation
 
+extension Contact: ObservableObject {}
+
 public extension Contact {
     func update(_ newContact: Contact) {
         blocked = newContact.blocked

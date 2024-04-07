@@ -126,11 +126,11 @@ public final class ObjectsContainer: ObservableObject {
         } else {
             userProfileImageVM.config = config
         }
-        Task {
-            // We wait for the cache to fill its properties, due to forceToDownloadFromServer having set to false,
-            // we have to wait for init and then the cache is not nil and can find the file
-            try? await Task.sleep(for: .seconds(1))
-            await userProfileImageVM.fetch()
+
+        // We wait for the cache to fill its properties, due to forceToDownloadFromServer having set to false,
+        // we have to wait for init and then the cache is not nil and can find the file
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
+            self?.userProfileImageVM.fetch()
         }
     }
 }

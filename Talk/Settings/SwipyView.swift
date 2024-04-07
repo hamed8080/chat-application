@@ -97,9 +97,7 @@ struct UserConfigView: View {
                 .onReceive(NotificationCenter.connect.publisher(for: .connect)) { notification in
                     /// We use this to fetch the user profile image once the active instance is initialized.
                     if let status = notification.object as? ChatState, status == .connected, !imageLoader.isImageReady {
-                        Task {
-                            await imageLoader.fetch()
-                        }
+                        imageLoader.fetch()
                     }
                 }
 

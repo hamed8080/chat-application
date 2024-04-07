@@ -91,7 +91,7 @@ struct AddOrEditContactView: View {
         .animation(.easeInOut, value: focusState)
         .animation(.easeInOut, value: viewModel.userNotFound)
         .font(.iransansBody)
-        .onReceive(viewModel.$successAdded) { newValue in
+        .onChange(of: viewModel.successAdded) { newValue in
             if newValue == true {
                 withAnimation {
                     dismiss()

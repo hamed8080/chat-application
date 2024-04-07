@@ -14,7 +14,7 @@ import TalkViewModels
 
 struct ContactRow: View {
     @Binding public var isInSelectionMode: Bool
-    let contact: Contact
+    @EnvironmentObject var contact: Contact
     var contactImageURL: String? { contact.image ?? contact.user?.image }
 
     var body: some View {
@@ -81,7 +81,8 @@ struct ContactRow_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            ContactRow(isInSelectionMode: $isInSelectionMode, contact: MockData.contact)
+            ContactRow(isInSelectionMode: $isInSelectionMode)
+                .environmentObject(MockData.contact)
                 .environmentObject(ContactsViewModel())
                 .preferredColorScheme(.dark)
         }

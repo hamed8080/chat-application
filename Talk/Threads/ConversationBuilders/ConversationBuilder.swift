@@ -142,7 +142,8 @@ struct EditCreatedConversationDetail: View {
 
             Section {
                 ForEach(viewModel.selectedContacts) { contact in
-                    ContactRow(isInSelectionMode: .constant(false), contact: contact)
+                    ContactRow(isInSelectionMode: .constant(false))
+                        .environmentObject(contact)
                         .listRowBackground(Color.App.bgPrimary)
                         .listRowSeparatorTint(Color.App.dividerPrimary)
                 }

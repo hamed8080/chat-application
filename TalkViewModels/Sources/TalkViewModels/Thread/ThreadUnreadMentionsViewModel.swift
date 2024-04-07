@@ -62,8 +62,16 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
         switch event {
         case .history(let response):
             onUnreadMentions(response)
+        case .new(let response):
+            onNewMesssage(response)
         default:
             break
+        }
+    }
+
+    private func onNewMesssage(_ response: ChatResponse<Message>) {
+        if let message = response.result, !message.isMe(currentUserId: AppState.shared.user?.id ?? -1), message.mentioned == true {
+            unreadMentions.append(message)
         }
     }
 

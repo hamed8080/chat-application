@@ -27,6 +27,7 @@ struct UserActionMenu: View {
                                       user: .init(username: participant.username))
                 contactViewModel.addContact = contact
                 contactViewModel.showAddOrEditContactSheet = true
+                contactViewModel.animateObjectWillChange()
             }
         }
 

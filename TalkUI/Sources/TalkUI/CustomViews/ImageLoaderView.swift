@@ -42,9 +42,7 @@ public struct ImageLoaderView: View {
         .animation(.easeInOut, value: imageLoader.isImageReady)
         .onAppear {
             if !imageLoader.isImageReady {
-                Task {
-                    await imageLoader.fetch()
-                }
+                imageLoader.fetch()
             }
         }
     }
