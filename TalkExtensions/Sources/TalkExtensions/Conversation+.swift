@@ -83,6 +83,13 @@ public extension Conversation {
         return title ?? ""
     }
 
+
+    static let textDirectionMark = Language.isRTL ? "\u{200f}" : "\u{200e}"
+
+    var titleRTLString: String {
+        return Message.textDirectionMark + computedTitle
+    }
+
     var disableSend: Bool {
         if type != .channel {
             return false

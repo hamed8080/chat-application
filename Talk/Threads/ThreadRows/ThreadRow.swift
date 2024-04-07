@@ -42,7 +42,7 @@ struct ThreadRow: View {
                             .frame(width: 16, height: 16)
                             .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
                     }
-                    Text(thread.computedTitle)
+                    Text(thread.titleRTLString)
                         .lineLimit(1)
                         .font(.iransansSubheadline)
                         .fontWeight(.semibold)

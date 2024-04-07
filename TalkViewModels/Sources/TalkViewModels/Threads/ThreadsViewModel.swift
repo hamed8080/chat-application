@@ -15,6 +15,7 @@ import ChatCore
 import ChatDTO
 import TalkExtensions
 import OSLog
+import Logger
 
 /// It needs to be ObservableObject because when a message is seen deleted... the object needs to update not the whole Thread ViewModel.
 extension Conversation: ObservableObject {}
@@ -90,14 +91,11 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
         if firstSuccessResponse == false, status == .connected {
-            offset = 0
-            getThreads()
+           refresh()
         } else if status == .connected, firstSuccessResponse == true {
             // After connecting again
-            threads.removeAll()
-            offset = 0
-            getThreads()
-//            refreshThreadsUnreadCount()
+            // We should call this method because if the token expire all the data inside InMemory Cache of the SDK is invalid
+            refresh()
         } else if status == .disconnected && !firstSuccessResponse {
             // To get the cached version of the threads in SQLITE.
             getThreads()
@@ -514,6 +512,28 @@ public final class ThreadsViewModel: ObservableObject {
         threads.removeAll()
         offset = 0
         getThreads()
+    }
+
+    public func onPinMessage(_ response: ChatResponse<PinMessage>) {
+        if response.result != nil, let threadIndex = firstIndex(response.subjectId) {
+            threads[threadIndex].pinMessage = response.result
+            threads[threadIndex].pin = true
+        }
+    }
+
+    public func onUNPinMessage(_ response: ChatResponse<PinMessage>) {
+        if response.result != nil, let threadIndex = firstIndex(response.subjectId) {
+            threads[threadIndex].pinMessage = nil
+            threads[threadIndex].pin = false
+        }
+    }
+
+    func log(_ string: String) {
+#if DEBUG
+        let log = Log(prefix: "TALK_APP", time: .now, message: string, level: .warning, type: .internalLog, userInfo: nil)
+        NotificationCenter.logs.post(name: .logs, object: log)
+        Logger.viewModels.info("\(string, privacy: .sensitive)")
+#endif
     }
 }
 

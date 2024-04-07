@@ -28,7 +28,7 @@ struct MessageActionMenu: View {
                 }
             }
 
-            if threadVM?.thread.group == true, !viewModel.isMe {
+            if threadVM?.thread.group == true, !viewModel.isMe && threadVM?.thread.type?.isChannelType == false {
                 ContextMenuButton(title: "Messages.ActionMenu.replyPrivately", image: "arrowshape.turn.up.left") {
                     withAnimation(animation(appear: true)) {
                         guard let participant = message.participant else { return }

@@ -94,14 +94,15 @@ extension ThreadsViewModel {
                 Task {
                     if isInCacheMode {                        
                         clear()
+                        log("Clear all SQLITE cached version of conversions")
                     }
-                    if response.pop(prepend: "GET-THREADS") == nil {
+                    if response.pop(prepend: "GET-THREADS") != nil {
                         await onThreads(response)
                     }
-                    if response.pop(prepend: "GET-UNREAD-THREADS") == nil {
+                    if response.pop(prepend: "GET-UNREAD-THREADS") != nil {
                         await onUnreadThreads(response)
                     }
-                    if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") == nil {
+                    if response.pop(prepend: "GET-NOT-ACTIVE-THREADS") != nil {
                         await onNotActiveThreads(response)
                     }
                 }
@@ -175,6 +176,10 @@ extension ThreadsViewModel {
             onSeen(response)
         case .deleted(let response):
             onMessageDeleted(response)
+        case .pin(let response):
+            onPinMessage(response)
+        case .unpin(let response):
+            onUNPinMessage(response)
         default:
             break
         }

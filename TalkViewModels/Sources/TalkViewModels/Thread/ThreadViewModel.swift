@@ -346,7 +346,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func onDragged(translation: CGSize, startLocation: CGPoint) {
         scrollVM.cancelTask()
-        scrollVM.isProgramaticallyScroll = false
+        scrollVM.setProgramaticallyScrollingState(newState: false)
         scrollVM.scrollingUP = translation.height > 10
         scrollVM.animateObjectWillChange()
         let isSwipeEdge = Language.isRTL ? (startLocation.x > ThreadViewModel.threadWidth - 20) : startLocation.x < 20

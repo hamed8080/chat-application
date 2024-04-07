@@ -757,7 +757,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     // MARK: Time for more Bottom and Top
     private func moreTopTime(message: Message) -> UInt? {
         guard let scrollVM = threadViewModel?.scrollVM else { return nil }
-        if scrollVM.isProgramaticallyScroll == false,
+        if scrollVM.getProgramaticallyScrollingState() == false,
            isInTopSlice(message),
            let time = sections.first?.vms.first?.message.time {
             return time
@@ -768,7 +768,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     private func moreBottomTime(message: Message) -> UInt? {
         guard let scrollVM = threadViewModel?.scrollVM else { return nil }
-        if scrollVM.isProgramaticallyScroll == false, isInBottomSlice(message) {
+        if scrollVM.getProgramaticallyScrollingState() == false, isInBottomSlice(message) {
             return sections.last?.vms.last?.message.time?.advanced(by: 1)
         } else {
             return nil

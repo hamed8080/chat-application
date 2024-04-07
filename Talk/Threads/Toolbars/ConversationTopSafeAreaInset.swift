@@ -49,6 +49,7 @@ struct ConversationTopSafeAreaInset: View {
             Button {
                 AppState.shared.objectsContainer.contactsVM.searchContactString = ""
                 AppState.shared.objectsContainer.searchVM.searchText = ""
+                AppState.shared.objectsContainer.threadsVM.showUnreadConversations = false
                 isInSearchMode.toggle()
             } label: {
                 Text("General.cancel")

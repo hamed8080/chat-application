@@ -20,10 +20,11 @@ public protocol ScrollToPositionProtocol {
 
 public final class ThreadScrollingViewModel: ObservableObject {
     var task: Task<(), Never>?
-    public var isProgramaticallyScroll: Bool = false
+    private var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false
     private var cancelablleSet = Set<AnyCancellable>()
+    private var queue = DispatchQueue(label: "ScrollingStateSerialQueue")
     public weak var threadVM: ThreadViewModel? {
         didSet {
             isAtBottomOfTheList = thread.lastMessageVO?.id == thread.lastSeenMessageId
@@ -104,12 +105,12 @@ public final class ThreadScrollingViewModel: ObservableObject {
         task = Task { [weak self] in
             await MainActor.run { [weak self] in
                 guard let self = self else { return }
-                isProgramaticallyScroll = true
+                setProgramaticallyScrollingState(newState: true)
             }
             try? await Task.sleep(for: .seconds(1))
             await MainActor.run { [weak self] in
                 guard let self = self else { return }
-                isProgramaticallyScroll = false
+                setProgramaticallyScrollingState(newState: false)
             }
         }
     }
@@ -154,6 +155,18 @@ public final class ThreadScrollingViewModel: ObservableObject {
         cancelablleSet.removeAll()
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    public func getProgramaticallyScrollingState() -> Bool {
+        queue.sync {
+            return isProgramaticallyScroll
+        }
+    }
+
+    public func setProgramaticallyScrollingState(newState: Bool) {
+        queue.sync {
+            isProgramaticallyScroll = newState
+        }
     }
 
     public func cancelTask() {
