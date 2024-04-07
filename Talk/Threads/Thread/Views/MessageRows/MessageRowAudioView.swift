@@ -113,7 +113,13 @@ struct MessageRowAudioView: View {
 
     private func onTapGesture() {
         if viewModel.downloadFileVM?.state == .completed {
-            togglePlaying()
+            if isSameFile {
+                togglePlaying()
+            } else {
+                audioVM.close()
+                togglePlaying()
+            }
+
         } else {
             manageDownload()
         }

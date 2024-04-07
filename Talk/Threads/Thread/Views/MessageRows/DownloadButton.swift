@@ -20,7 +20,7 @@ struct DownloadButton: View {
     private var percent: Int64 { viewModel.downloadPercent }
     let action: () -> Void
     private var stateIcon: String {
-        if message?.isAudio == true, viewModel.state == .completed {
+        if message?.isAudio == true, viewModel.state == .completed, isSameFile {
             if audioVM.isPlaying {
                 return "pause.fill"
             } else {
