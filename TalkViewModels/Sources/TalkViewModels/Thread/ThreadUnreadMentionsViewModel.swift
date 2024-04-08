@@ -16,6 +16,12 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     let thread: Conversation
     @Published public private(set) var unreadMentions: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
+    public private(set) var hasMention: Bool = false
+    public weak var threadVM: ThreadViewModel? {
+        didSet {
+            hasMention = thread.mentioned == true
+        }
+    }
 
     public static func == (lhs: ThreadUnreadMentionsViewModel, rhs: ThreadUnreadMentionsViewModel) -> Bool {
         rhs.thread.id == lhs.thread.id
@@ -39,6 +45,11 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
             .store(in: &cancelable)
     }
 
+    public func scrollToMentionedMessage() {
+        threadVM?.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge where we have mentiond
+        threadVM?.moveToFirstUnreadMessage()
+    }
+
     public func fetchAllUnreadMentions() {
         let req = GetHistoryRequest(threadId: thread.id ?? -1, count: 25, offset: 0, order: "desc", unreadMentioned: true)
         RequestsManager.shared.append(prepend: "UnreadMentions", value: req)
@@ -47,6 +58,9 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
 
     public func setAsRead(id: Int?) {
         unreadMentions.removeAll(where: { $0.id == id })
+        if unreadMentions.isEmpty {
+            hasMention = false
+        }
         animateObjectWillChange()
     }
 

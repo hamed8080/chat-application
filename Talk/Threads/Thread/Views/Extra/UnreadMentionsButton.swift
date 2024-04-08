@@ -10,18 +10,14 @@ import TalkViewModels
 
 struct UnreadMentionsButton: View {
     @EnvironmentObject var viewModel: ThreadUnreadMentionsViewModel
-    @EnvironmentObject var threadVM: ThreadViewModel
-    @State private var timerToUpdate: Timer?
-    var hasMention: Bool { threadVM.thread.mentioned ?? false }
 
     var body: some View {
-        if hasMention {
+        if viewModel.hasMention {
             HStack {
                 Spacer()
                 Button {
                     withAnimation {
-                        threadVM.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge where we have mentiond
-                        threadVM.moveToFirstUnreadMessage()
+                        viewModel.scrollToMentionedMessage()
                     }
                 } label: {
                     Text("@")
@@ -36,15 +32,17 @@ struct UnreadMentionsButton: View {
                 .shadow(color: .gray.opacity(0.4), radius: 2)
                 .overlay(alignment: .top) {
                     let unreadCount = viewModel.unreadMentions.count
-                    Text(verbatim: "\(unreadCount)")
-                        .font(.iransansBoldCaption)
-                        .frame(height: 24)
-                        .frame(minWidth: 24)
-                        .background(Color.App.accent)
-                        .foregroundStyle(Color.App.white)
-                        .clipShape(RoundedRectangle(cornerRadius:(24)))
-                        .offset(x: 0, y: -16)
-                        .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCount)
+                    if unreadCount > 0 {
+                        Text(verbatim: "\(unreadCount)")
+                            .font(.iransansBoldCaption)
+                            .frame(height: 24)
+                            .frame(minWidth: 24)
+                            .background(Color.App.accent)
+                            .foregroundStyle(Color.App.white)
+                            .clipShape(RoundedRectangle(cornerRadius:(24)))
+                            .offset(x: 0, y: -16)
+                            .animation(.spring(response: 0.5, dampingFraction: 0.5, blendDuration: 0.3), value: unreadCount)
+                    }
                 }
             }
             .environment(\.layoutDirection, .leftToRight)

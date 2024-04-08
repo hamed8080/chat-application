@@ -80,6 +80,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     public var rowType = MessageViewRowType()
     public var width: CGFloat? = nil
     public var height: CGFloat? = nil
+    public private(set) var isPreparingThumbnailImageForUploadedImage = false
 
     public var isDownloadCompleted: Bool {
         downloadFileVM?.state == .completed
@@ -249,8 +250,12 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             blurRadius = 0
             clearDownloadViewModel()
         } else if let blurImage = blurImage {
+            isPreparingThumbnailImageForUploadedImage = false
             image = blurImage
             blurRadius = 16
+        } else if isPreparingThumbnailImageForUploadedImage {
+            // do nothing stay with the current uploaded image in local until it will set by a new thumbnail data.
+            // It will help the UI stay stable during changes and not shaking after uploading image
         } else {
             image = MessageRowViewModel.emptyImage
             blurRadius = 0
@@ -465,6 +470,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     public func uploadCompleted(_ uniqueId: String?, _ fileMetaData: FileMetaData?, _ data: Data?, _ error: Error?) {
         if message.isImage {
+            isPreparingThumbnailImageForUploadedImage = true
             setAsDownloadedImage()
         }
     }

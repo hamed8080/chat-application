@@ -371,11 +371,15 @@ public final class ThreadsViewModel: ObservableObject {
     /// This method will be called whenver we send seen for an unseen message by ourself.
     public func onLastSeenMessageUpdated(_ response: ChatResponse<LastSeenMessageResponse>) {
         if let index = firstIndex(response.subjectId) {
-            threads[index].lastSeenMessageTime = response.result?.lastSeenMessageTime
-            threads[index].lastSeenMessageId = response.result?.lastSeenMessageId
-            threads[index].lastSeenMessageNanos = response.result?.lastSeenMessageNanos
+            let thread = threads[index]
+            thread.lastSeenMessageTime = response.result?.lastSeenMessageTime
+            thread.lastSeenMessageId = response.result?.lastSeenMessageId
+            thread.lastSeenMessageNanos = response.result?.lastSeenMessageNanos
+            if response.result?.unreadCount == 0, thread.mentioned == true {
+                thread.mentioned = false
+            }
             setUnreadCount(response.result?.unreadCount ?? response.contentCount, threadId: response.subjectId)
-            threads[index].animateObjectWillChange()
+            thread.animateObjectWillChange()
             animateObjectWillChange()
         }
     }

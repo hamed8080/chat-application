@@ -38,36 +38,42 @@ struct NormalLastMessageContainer: View {
     var lastMsgVO: Message? { thread.lastMessageVO }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
+            let isFileType = lastMsgVO?.isFileType == true
+            let isMe = lastMsgVO?.isMe(currentUserId: AppState.shared.user?.id ?? -1) == true
             if let addOrRemoveParticipantString = lastMsgVO?.addOrRemoveParticipantString(meId: AppState.shared.user?.id) {
                 Text(addOrRemoveParticipantString)
                     .font(.iransansBody)
                     .lineLimit(1)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
-            } else if let participantName = lastMsgVO?.participant?.name, thread.group == true {
+            } else if let participantName = lastMsgVO?.participant?.contactName ?? lastMsgVO?.participant?.name, thread.group == true {
+                let meVerb = String(localized: .init("General.you"))
                 let localized = String(localized: .init("Thread.Row.lastMessageSender"))
-                Text(Message.textDirectionMark + String(format: localized, participantName) )
+                let participantName = String(format: localized, participantName)
+                let name = isMe ? "\(meVerb):" : participantName
+                Text(Message.textDirectionMark + name)
                     .font(.iransansBody)
                     .lineLimit(1)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
             }
 
-            if lastMsgVO?.isFileType == true, let iconName = lastMsgVO?.iconName {
-                Image(systemName: iconName)
-                    .resizable()
-                    .frame(width: 16, height: 16)
-                    .foregroundStyle(Color.App.color1)
-            }
+//            if lastMsgVO?.isFileType == true, let iconName = lastMsgVO?.iconName {
+//                Image(systemName: iconName)
+//                    .resizable()
+//                    .frame(width: 16, height: 16)
+//                    .foregroundStyle(Color.App.color1)
+//            }
 
-            if let message = thread.lastMessageVO?.message?.replacingOccurrences(of: "\n", with: " ").prefix(50) {
+            if !isFileType, let message = lastMsgVO?.message?.replacingOccurrences(of: "\n", with: " ").prefix(50) {
                 Text(String(message))
                     .font(.iransansBody)
                     .lineLimit(1)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)
-            }
-
-            if lastMsgVO?.isFileType == true, lastMsgVO?.message.isEmptyOrNil == true, let fileStringName = lastMsgVO?.fileStringName {
-                Text(fileStringName.localized())
+            } else if isFileType {
+                let fileStringName = lastMsgVO?.fileStringName ?? "MessageType.file"
+                let sentVerb = String(localized: .init(isMe ? "Genral.mineSendVerb" : "General.thirdSentVerb"))
+                let formatted = String(format: sentVerb, fileStringName.localized())
+                Text(Message.textDirectionMark + "\(formatted)")
                     .font(.iransansCaption2)
                     .lineLimit(thread.group == false ? 2 : 1)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)

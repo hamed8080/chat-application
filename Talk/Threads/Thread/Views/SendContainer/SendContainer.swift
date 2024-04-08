@@ -76,7 +76,7 @@ struct SendContainerOverButtons: View {
     @EnvironmentObject var audioRecordingVM: AudioRecordingViewModel
 
     var body: some View {
-        if audioRecordingVM.isRecording || viewModel.thread.mentioned == true {
+        if audioRecordingVM.isRecording || viewModel.unreadMentionsViewModel.hasMention == true {
             VStack(alignment: .trailing, spacing: 8) {
                 UnreadMentionsButton()
                     .environmentObject(viewModel.unreadMentionsViewModel)

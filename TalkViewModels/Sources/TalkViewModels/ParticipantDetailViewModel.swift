@@ -158,6 +158,9 @@ public final class ParticipantDetailViewModel: ObservableObject, Hashable {
                 }
             }
             partnerContact = response.result?.first
+            if let index = AppState.shared.objectsContainer.contactsVM.contacts.firstIndex(where: {$0.id == contact.id}) {
+                AppState.shared.objectsContainer.contactsVM.contacts[index] = contact
+            }
         }
         if response.pop(prepend: "ParticipantEditContact") != nil {
             successEdited = true

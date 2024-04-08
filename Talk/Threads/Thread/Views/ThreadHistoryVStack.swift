@@ -39,6 +39,8 @@ struct ThreadHistoryList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .padding([.top, .bottom])
+                .padding([.top, .bottom], viewModel.topLoading ? 8 : 0)
+                .animation(.easeInOut, value: viewModel.topLoading)
                 .onAppear {
                     viewModel.isTopEndListAppeared = true
                 }
@@ -62,10 +64,12 @@ struct ThreadHistoryList: View {
                 .listRowSeparator(.hidden)
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
-                .padding([.top, .bottom])
+                .padding([.top, .bottom], viewModel.bottomLoading ? 8 : 0)
+                .animation(.easeInOut, value: viewModel.bottomLoading)
 
             //                UnsentMessagesLoop(historyVM: viewModel)
         }
+        .environment(\.defaultMinListRowHeight, 0)
         .listStyle(.plain)
     }
 }

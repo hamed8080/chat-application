@@ -90,6 +90,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         sendContainerViewModel.threadVM = self
         uploadMessagesViewModel.threadVM = self
         unsentMessagesViewModel.threadVM = self
+        unreadMentionsViewModel.threadVM = self
         exportMessagesViewModel.thread = thread
     }
 

@@ -68,6 +68,9 @@
 "General.copied" = "Copied to clipboard.";
 "General.ban" = "The server has banned you for %@ seconds.";
 "General.addText" = "Add text";
+"General.you" = "You";
+"Genral.mineSendVerb" = "Sent a %@";
+"General.thirdSentVerb" = "sent a %@";
 
 /* Tabs */
 "Tab.chats" = "Chats";

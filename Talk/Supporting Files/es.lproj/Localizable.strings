@@ -70,6 +70,9 @@
 "General.copied" = "Kopierat till urklipp.";
 "General.ban" = "The server has banned you for %@ seconds.";
 "General.addText" = "Añadir texto";
+"General.you" = "Tú";
+"Genral.mineSendVerb" = "Enviaste un %@";
+"General.thirdSentVerb" = "%@ enviado";
 
 /* Pestañas */
 "Tab.chats" = "Chats";

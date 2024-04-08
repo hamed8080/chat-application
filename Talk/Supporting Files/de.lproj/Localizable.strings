@@ -69,6 +69,9 @@
 "General.copied" = "In die Zwischenablage kopiert.";
 "General.ban" = "Der Server hat Sie für %@ Sekunden gesperrt.";
 "General.addText" = "Text hinzufügen";
+"General.you" = "Du";
+"Genral.mineSendVerb" = "%@ abgeschickt";
+"General.thirdSentVerb" = "Sie haben eine %@ gesendet";
 
 /* Tabs */
 "Tab.chats" = "Chats";

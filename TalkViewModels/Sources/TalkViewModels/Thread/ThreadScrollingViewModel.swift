@@ -47,7 +47,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
         }
 
         /// Ensure the view is shown as a result of SwiftUI can't properly move for the first time
-        try? await Task.sleep(for: .seconds(0.3))
+        try? await Task.sleep(for: .seconds(0.5))
         withAnimation(animation) {
             scrollProxy?.scrollTo(uniqueId, anchor: anchor)
         }

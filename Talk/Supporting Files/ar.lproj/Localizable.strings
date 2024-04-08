@@ -68,6 +68,9 @@
 "General.copied" = "تم النسخ إلى الحافظة.";
 "General.ban" = "قام الخادم بحظرك لمدة %@ ثانية.";
 "General.addText" = "أضف نصًا";
+"General.you" = "أنت";
+"Genral.mineSendVerb" = "%@ أرسلت ملفًا";
+"General.thirdSentVerb" = "%@ أرسلت";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";

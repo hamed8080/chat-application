@@ -69,6 +69,9 @@
 "General.copied" = "کپی شد در کلیپبورد.";
 "General.ban" = "شما توسط سرور به مدت %@ ثانیه بن شدید.";
 "General.addText" = "افزودن متن";
+"General.you" = "شما";
+"Genral.mineSendVerb" = "%@ فرستادید";
+"General.thirdSentVerb" = "%@ فرستاد";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";
@@ -385,7 +388,7 @@
 
 /* Message Types */
 "MessageType.text" = "متن";
-"MessageType.voice" = "صدا";
+"MessageType.voice" = "پیام صوتی";
 "MessageType.picture" = "عکس";
 "MessageType.video" = "ویدیو";
 "MessageType.sound" = "موزیک";

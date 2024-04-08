@@ -17,7 +17,7 @@ struct MessageRowImageView: View {
     private var message: Message { viewModel.message }
 
     var body: some View {
-        if message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed {
+        if (message.uploadFile == nil || viewModel.uploadViewModel?.state == .completed) && !viewModel.isPreparingThumbnailImageForUploadedImage {
             ZStack {
                 Image(uiImage: viewModel.image)
                     .interpolation(.none)
@@ -41,7 +41,7 @@ struct MessageRowImageView: View {
             .padding(.top, viewModel.paddings.fileViewSpacingTop) /// We don't use spacing in the Main row in VStack because we don't want to have extra spcace.
         }
         
-        if message.uploadFile?.uploadImageRequest != nil {
+        if message.uploadFile?.uploadImageRequest != nil || viewModel.isPreparingThumbnailImageForUploadedImage {
             UploadMessageImageView(viewModel: viewModel)
         }
     }
@@ -155,24 +155,20 @@ public struct UploadMessageImageView: View {
     public var body: some View {
         ZStack {
             if let data = message.uploadFile?.uploadImageRequest?.dataToSend, let image = UIImage(data: data) {
-                /// We use max to at least have a width, because there are times that maxWidth is nil.
-                let width = max(128, (ThreadViewModel.maxAllowedWidth)) - (8 + MessageRowBackground.tailSize.width)
-                /// We use max to at least have a width, because there are times that maxWidth is nil.
-                /// We use min to prevent the image gets bigger than 320 if it's bigger.
-                let height = min(320, max(128, (ThreadViewModel.maxAllowedWidth)))
-
                 Image(uiImage: image)
                     .interpolation(.none)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: width, height: height)
+                    .frame(width: viewModel.imageWidth, height: viewModel.imageHeight)
                     .blur(radius: 16, opaque: false)
                     .clipped()
                     .zIndex(0)
                     .clipShape(RoundedRectangle(cornerRadius:(8)))
             }
-            OverladUploadImageButton(messageRowVM: viewModel)
-                .environmentObject(viewModel.uploadViewModel!)
+            if let uploadViewModel = viewModel.uploadViewModel {
+                OverladUploadImageButton(messageRowVM: viewModel)
+                    .environmentObject(uploadViewModel)
+            }
         }
         .task {
             viewModel.uploadViewModel?.startUploadImage()

@@ -68,6 +68,9 @@
 "General.imageSaved" = "Bild sparad.";
 "General.ban" = "Servern har blockerat dig i %@ sekunder.";
 "General.addText" = "Lägg till text";
+"General.you" = "Du";
+"Genral.mineSendVerb" = "Du skickade en %@";
+"General.thirdSentVerb" = "%@ har skickats";
 
 /* Tabs */
 "Tab.chats" = "Chattar";
