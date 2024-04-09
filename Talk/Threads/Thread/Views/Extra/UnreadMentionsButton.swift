@@ -46,6 +46,7 @@ struct UnreadMentionsButton: View {
                 }
             }
             .environment(\.layoutDirection, .leftToRight)
+            .padding(EdgeInsets(top: 0, leading: 8, bottom: 8, trailing: 8))
         }
     }
 }

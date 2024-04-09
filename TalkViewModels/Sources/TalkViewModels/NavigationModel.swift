@@ -139,3 +139,12 @@ public extension NavigationModel {
         selectedId = threadViewModel?.threadId
     }
 }
+
+
+public extension NavigationModel {
+    func updateConversationInViewModel(_ conversation: Conversation) {
+        if let vm = threadStack.first(where: {$0.viewModel.id == conversation.id})?.viewModel {
+            vm.updateConversation(conversation)
+        }
+    }
+}

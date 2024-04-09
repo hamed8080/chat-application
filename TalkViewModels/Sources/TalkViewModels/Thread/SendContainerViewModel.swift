@@ -14,10 +14,10 @@ import Combine
 import TalkModels
 
 public final class SendContainerViewModel: ObservableObject {
-    private let thread: Conversation
-    public weak var threadVM: ThreadViewModel?
+    public weak var viewModel: ThreadViewModel?
+    private var thread: Conversation { viewModel?.thread ?? .init() }
     public var threadId: Int { thread.id ?? -1 }
-    @Published public var textMessage: String
+    @Published public var textMessage: String = ""
     private var cancelable: Set<AnyCancellable> = []
     public var canShowMute: Bool {
         (thread.type?.isChannelType == true) &&
@@ -27,13 +27,13 @@ public final class SendContainerViewModel: ObservableObject {
     public var disableSend: Bool { thread.disableSend && isInEditMode == false && !canShowMute }
     public var showSendButton: Bool {
         !isTextEmpty(text: textMessage) ||
-        threadVM?.attachmentsViewModel.attachments.count ?? 0 > 0 ||
+        viewModel?.attachmentsViewModel.attachments.count ?? 0 > 0 ||
         AppState.shared.appStateNavigationModel.forwardMessageRequest != nil
     }
     public var showCamera: Bool { isTextEmpty(text: textMessage) && isVideoRecordingSelected }
     public var showAudio: Bool { isTextEmpty(text: textMessage) && !isVideoRecordingSelected && isVoice }
-    public var isVoice: Bool { threadVM?.attachmentsViewModel.attachments.count == 0 }
-    public var showRecordingView: Bool { threadVM?.audioRecoderVM.isRecording == true || threadVM?.audioRecoderVM.recordingOutputPath != nil }
+    public var isVoice: Bool { viewModel?.attachmentsViewModel.attachments.count == 0 }
+    public var showRecordingView: Bool { viewModel?.audioRecoderVM.isRecording == true || viewModel?.audioRecoderVM.recordingOutputPath != nil }
     /// We will need this for UserDefault purposes because ViewModel.thread is nil when the view appears.
     @Published public var showActionButtons: Bool = false
     public var focusOnTextInput: Bool = false
@@ -56,17 +56,11 @@ public final class SendContainerViewModel: ObservableObject {
 
     private var isDraft: Bool { !draft.isEmpty }
 
-    public static func == (lhs: SendContainerViewModel, rhs: SendContainerViewModel) -> Bool {
-        rhs.thread.id == lhs.thread.id
-    }
+    public init() {}
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(thread)
-    }
-
-    public init(thread: Conversation) {
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         textMessage = UserDefaults.standard.string(forKey: "draft-\(thread.id ?? 0)") ?? ""
-        self.thread = thread
         setupNotificationObservers()
     }
 
@@ -90,8 +84,8 @@ public final class SendContainerViewModel: ObservableObject {
         if Language.isRTL && newValue.first != "\u{200f}" {
             textMessage = "\u{200f}\(newValue)"
         }
-        threadVM?.mentionListPickerViewModel.text = newValue
-        threadVM?.sendStartTyping(newValue)
+        viewModel?.mentionListPickerViewModel.text = newValue
+        viewModel?.sendStartTyping(newValue)
         let isRTLChar = newValue.count == 1 && newValue.first == "\u{200f}"
         if !isTextEmpty(text: newValue) && !isRTLChar {
             draft = newValue
@@ -104,7 +98,7 @@ public final class SendContainerViewModel: ObservableObject {
         textMessage = ""
         editMessage = nil
         isInEditMode = false
-        threadVM?.animateObjectWillChange()
+        viewModel?.animateObjectWillChange()
     }
 
     private func isTextEmpty(text: String) -> Bool {

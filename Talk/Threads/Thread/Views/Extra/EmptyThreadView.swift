@@ -43,6 +43,6 @@ struct EmptyThreadView: View {
 struct EmptyThreadView_Previews: PreviewProvider {
     static var previews: some View {
         EmptyThreadView()
-            .environmentObject(ThreadHistoryViewModel(threadViewModel: .init(thread: .init(id: 0))))
+            .environmentObject(ThreadHistoryViewModel())
     }
 }

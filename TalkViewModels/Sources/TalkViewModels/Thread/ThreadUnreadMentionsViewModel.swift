@@ -13,26 +13,15 @@ import ChatDTO
 import Combine
 
 public final class ThreadUnreadMentionsViewModel: ObservableObject {
-    let thread: Conversation
-    @Published public private(set) var unreadMentions: ContiguousArray<Message> = .init()
+    private weak var viewModel: ThreadViewModel?
+    private var thread: Conversation? { viewModel?.thread }
+    public private(set) var unreadMentions: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
     public private(set) var hasMention: Bool = false
-    public weak var threadVM: ThreadViewModel? {
-        didSet {
-            hasMention = thread.mentioned == true
-        }
-    }
 
-    public static func == (lhs: ThreadUnreadMentionsViewModel, rhs: ThreadUnreadMentionsViewModel) -> Bool {
-        rhs.thread.id == lhs.thread.id
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(thread)
-    }
-
-    public init(thread: Conversation) {
-        self.thread = thread
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
+        hasMention = thread?.mentioned == true
         setupNotificationObservers()
     }
 
@@ -46,12 +35,12 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     }
 
     public func scrollToMentionedMessage() {
-        threadVM?.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge where we have mentiond
-        threadVM?.moveToFirstUnreadMessage()
+        viewModel?.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge where we have mentiond
+        viewModel?.moveToFirstUnreadMessage()
     }
 
     public func fetchAllUnreadMentions() {
-        let req = GetHistoryRequest(threadId: thread.id ?? -1, count: 25, offset: 0, order: "desc", unreadMentioned: true)
+        let req = GetHistoryRequest(threadId: thread?.id ?? -1, count: 25, offset: 0, order: "desc", unreadMentioned: true)
         RequestsManager.shared.append(prepend: "UnreadMentions", value: req)
         ChatManager.activeInstance?.message.history(req)
     }
@@ -69,6 +58,7 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
             self.unreadMentions.removeAll()
             self.unreadMentions.append(contentsOf: unreadMentions)
             self.unreadMentions.sort(by: {$0.time ?? 0 < $1.time ?? 1})
+            animateObjectWillChange()
         }
     }
 
@@ -86,6 +76,8 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     private func onNewMesssage(_ response: ChatResponse<Message>) {
         if let message = response.result, !message.isMe(currentUserId: AppState.shared.user?.id ?? -1), message.mentioned == true {
             unreadMentions.append(message)
+            hasMention = true
+            animateObjectWillChange()
         }
     }
 

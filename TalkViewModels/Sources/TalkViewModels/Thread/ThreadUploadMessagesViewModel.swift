@@ -15,20 +15,14 @@ import Combine
 import SwiftUI
 
 public final class ThreadUploadMessagesViewModel {
-    internal weak var threadVM: ThreadViewModel?
-    private let thread: Conversation
+    weak var viewModel: ThreadViewModel?
+    private var thread: Conversation? { viewModel?.thread }
     private var cancelable: Set<AnyCancellable> = []
 
-    public static func == (lhs: ThreadUploadMessagesViewModel, rhs: ThreadUploadMessagesViewModel) -> Bool {
-        rhs.thread.id == lhs.thread.id
-    }
+    public init() {}
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(thread)
-    }
-
-    public init(thread: Conversation) {
-        self.thread = thread
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         setupNotificationObservers()
     }
 
@@ -43,32 +37,32 @@ public final class ThreadUploadMessagesViewModel {
 
     internal func append(contentsOf requests: [Message]) {
         Task {
-            await threadVM?.historyVM.appendMessagesAndSort(requests)
-            await threadVM?.historyVM.asyncAnimateObjectWillChange()
+            await viewModel?.historyVM.appendMessagesAndSort(requests)
+            await viewModel?.historyVM.asyncAnimateObjectWillChange()
             if let last = requests.last {
-                await threadVM?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(last)
+                await viewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(last)
             }
         }
     }
 
     internal func append(request: Message) {
         Task {
-            await threadVM?.historyVM.appendMessagesAndSort([request])
-            await threadVM?.historyVM.asyncAnimateObjectWillChange()
-            await threadVM?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(request)
+            await viewModel?.historyVM.appendMessagesAndSort([request])
+            await viewModel?.historyVM.asyncAnimateObjectWillChange()
+            await viewModel?.scrollVM.scrollToLastMessageIfLastMessageIsVisible(request)
         }
     }
 
     public func cancel(_ uniqueId: String?) {
         ChatManager.activeInstance?.message.cancel(uniqueId: uniqueId ?? "")
-        threadVM?.historyVM.removeByUniqueId(uniqueId)
+        viewModel?.historyVM.removeByUniqueId(uniqueId)
     }
 
     private func onUploadEvent(_ event: UploadEventTypes) {
         switch event {
         case .canceled(uniqueId: let uniqueId):
             withAnimation {
-                threadVM?.historyVM.removeByUniqueId(uniqueId)
+                viewModel?.historyVM.removeByUniqueId(uniqueId)
             }
         default:
             break

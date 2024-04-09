@@ -23,9 +23,11 @@ struct ThreadView: View, DropDelegate {
             ThreadHistoryVStack()
                 .background(ThreadbackgroundView(threadId: viewModel.threadId))
                 .overlay(alignment: .bottom) {
-                    VStack {
+                    VStack(spacing: 16) {
+                        UnreadMentionsButton()
+                            .environmentObject(viewModel.unreadMentionsViewModel)
                         MoveToBottomButton()
-                        SendContainerOverButtons()
+                        CloseRecordingButton()                            
                     }
                 }
                 .task {

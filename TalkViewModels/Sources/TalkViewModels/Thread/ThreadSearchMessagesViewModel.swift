@@ -14,7 +14,9 @@ import TalkModels
 import Combine
 
 public final class ThreadSearchMessagesViewModel: ObservableObject {
-    private let threadId: Int
+    public weak var viewModel: ThreadViewModel?
+    private var thread: Conversation? { viewModel?.thread }
+    private var threadId: Int { thread?.id ?? -1 }
     @Published public private(set) var searchedMessages: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
     public var isInSearchMode: Bool = false
@@ -24,16 +26,10 @@ public final class ThreadSearchMessagesViewModel: ObservableObject {
     private var hasMore = true
     @Published public var isLoading = false
 
-    public static func == (lhs: ThreadSearchMessagesViewModel, rhs: ThreadSearchMessagesViewModel) -> Bool {
-        rhs.threadId == lhs.threadId
-    }
+    public init(){}
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(threadId)
-    }
-
-    public init(threadId: Int) {
-        self.threadId = threadId
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         setupNotificationObservers()
     }
 

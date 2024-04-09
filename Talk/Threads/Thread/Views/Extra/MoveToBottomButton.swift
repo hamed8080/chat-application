@@ -20,7 +20,7 @@ struct MoveToBottomButton: View {
                 Spacer()
                 Button {
                     withAnimation {
-                        viewModel.threadVM?.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge
+                        viewModel.viewModel?.scrollVM.scrollingUP = false//open sending unread counts if we scrolled up and there is a new messge
                         viewModel.scrollToBottom()
                         viewModel.isAtBottomOfTheList = true
                         viewModel.animateObjectWillChange()

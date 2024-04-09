@@ -15,22 +15,17 @@ import Combine
 import OSLog
 
 public final class ThreadUnsentMessagesViewModel: ObservableObject {
-    let thread: Conversation
+    public weak var viewModel: ThreadViewModel?
+    private var thread: Conversation? { viewModel?.thread }
     @Published public private(set) var unsentMessages: ContiguousArray<Message> = .init()
     private var cancelable: Set<AnyCancellable> = []
     weak var threadVM: ThreadViewModel?
 
-    public static func == (lhs: ThreadUnsentMessagesViewModel, rhs: ThreadUnsentMessagesViewModel) -> Bool {
-        rhs.thread.id == lhs.thread.id
-    }
+    public init() {}
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(thread)
-    }
-
-    public init(thread: Conversation) {
-        self.thread = thread
-        if let threadId = thread.id {
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
+        if let threadId = thread?.id {
             ChatManager.activeInstance?.message.unsentTextMessages(.init(threadId: threadId))
             ChatManager.activeInstance?.message.unsentEditMessages(.init(threadId: threadId))
             ChatManager.activeInstance?.message.unsentFileMessages(.init(threadId: threadId))
@@ -58,7 +53,7 @@ public final class ThreadUnsentMessagesViewModel: ObservableObject {
 
     func onQueueForwardMessages(_ response: ChatResponse<[ForwardMessageRequest]>) {
         unsentMessages.append(contentsOf: response.result?.compactMap { ForwardMessage(from: $0,
-                                                                                       destinationThread: .init(id: $0.threadId, title: thread.title),
+                                                                                       destinationThread: .init(id: $0.threadId, title: thread?.title),
                                                                                        thread: thread) } ?? [])
     }
 
@@ -118,7 +113,7 @@ public final class ThreadUnsentMessagesViewModel: ObservableObject {
     }
 
     public func onUnSentEditCompletionResult(_ response: ChatResponse<Message>) {
-        if let message = response.result, thread.id == message.conversation?.id {
+        if let message = response.result, thread?.id == message.conversation?.id {
             Task { [weak self] in
                 guard let self = self else { return }
                 threadVM?.historyVM.onDeleteMessage(response)

@@ -13,22 +13,17 @@ import ChatDTO
 import Combine
 
 public final class MentionListPickerViewModel: ObservableObject {
-    private let thread: Conversation
-    private var threadId: Int { thread.id ?? -1 }
+    private weak var viewModel: ThreadViewModel?
+    private var thread: Conversation? { viewModel?.thread }
+    private var threadId: Int { thread?.id ?? -1 }
     @Published public var text: String = ""
     @Published public private(set) var mentionList: ContiguousArray<Participant> = .init()
     private var cancelable: Set<AnyCancellable> = []
 
-    public static func == (lhs: MentionListPickerViewModel, rhs: MentionListPickerViewModel) -> Bool {
-        rhs.thread.id == lhs.thread.id
-    }
+    public init() {}
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(thread)
-    }
-
-    public init(thread: Conversation) {
-        self.thread = thread
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         setupNotificationObservers()
     }
 
@@ -49,7 +44,7 @@ public final class MentionListPickerViewModel: ObservableObject {
     }
 
     public func searchForParticipantInMentioning(_ text: String) {
-        if thread.group == false || thread.group == nil { return }
+        if thread?.group == false || thread?.group == nil { return }
         /// remove the hidden RTL character for forcing the UITextView to write from right to left.
         let text = text.replacingOccurrences(of: "\u{200f}", with: "")
         if text.last == "@" {

@@ -15,7 +15,8 @@ import ChatDTO
 import ChatCore
 
 public final class ParticipantsViewModel: ObservableObject {
-    public weak var thread: Conversation?
+    private weak var viewModel: ThreadViewModel?
+    public var thread: Conversation? { viewModel?.thread }
     private var hasNext = true
     private var count = 15
     private var offset = 0
@@ -27,8 +28,10 @@ public final class ParticipantsViewModel: ObservableObject {
     @Published public var searchType: SearchParticipantType = .name
     private var cancelable: Set<AnyCancellable> = []
 
-    public init(thread: Conversation? = nil) {
-        self.thread = thread
+    public init() {}
+
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         NotificationCenter.participant.publisher(for: .participant)
             .compactMap { $0.object as? ParticipantEventTypes }
             .sink { [weak self] event in

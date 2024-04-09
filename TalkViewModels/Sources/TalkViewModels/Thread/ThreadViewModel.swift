@@ -25,27 +25,28 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
     }
 
     // MARK: Stored Properties
-    public var thread: Conversation
+    public private(set) var thread: Conversation
     public var replyMessage: Message?
     @Published public var dismiss = false
     public var sheetType: ThreadSheetType?
     public var exportMessagesViewModel: ExportMessagesViewModel = .init()
-    public var unsentMessagesViewModel: ThreadUnsentMessagesViewModel
-    public var uploadMessagesViewModel: ThreadUploadMessagesViewModel
-    public var searchedMessagesViewModel: ThreadSearchMessagesViewModel
+    public var unsentMessagesViewModel: ThreadUnsentMessagesViewModel = .init()
+    public var uploadMessagesViewModel: ThreadUploadMessagesViewModel = .init()
+    public var searchedMessagesViewModel: ThreadSearchMessagesViewModel = .init()
     public var selectedMessagesViewModel: ThreadSelectedMessagesViewModel = .init()
-    public var unreadMentionsViewModel: ThreadUnreadMentionsViewModel
-    public var participantsViewModel: ParticipantsViewModel
+    public var unreadMentionsViewModel: ThreadUnreadMentionsViewModel = .init()
+    public var participantsViewModel: ParticipantsViewModel = .init()
     public var attachmentsViewModel: AttachmentsViewModel = .init()
-    public var mentionListPickerViewModel: MentionListPickerViewModel
-    public var sendContainerViewModel: SendContainerViewModel
+    public var mentionListPickerViewModel: MentionListPickerViewModel = .init()
+    public var sendContainerViewModel: SendContainerViewModel = .init()
     public var audioRecoderVM: AudioRecordingViewModel = .init()
     public var scrollVM: ThreadScrollingViewModel = .init()
-    public var historyVM: ThreadHistoryViewModel!
-    public var sendMessageViewModel: ThreadSendMessageViewModel!
-    public weak var threadsViewModel: ThreadsViewModel?
+    public var historyVM: ThreadHistoryViewModel = .init()
+    public var sendMessageViewModel: ThreadSendMessageViewModel = .init()
     public var participantsColorVM: ParticipantsColorViewModel = .init()
-    public var threadPinMessageViewModel: ThreadPinMessageViewModel
+    public var threadPinMessageViewModel: ThreadPinMessageViewModel = .init()
+    public var seenVM: HistorySeenViewModel = .init()
+    public weak var threadsViewModel: ThreadsViewModel?
     public var readOnly = false
     private var cancelable: Set<AnyCancellable> = []
     public var signalMessageText: String?
@@ -70,28 +71,33 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     // MARK: Initializer
     public init(thread: Conversation, readOnly: Bool = false, threadsViewModel: ThreadsViewModel? = nil) {
-        self.unsentMessagesViewModel = .init(thread: thread)
-        self.uploadMessagesViewModel = .init(thread: thread)
-        self.unreadMentionsViewModel = .init(thread: thread)
-        self.mentionListPickerViewModel = .init(thread: thread)
-        self.sendContainerViewModel = .init(thread: thread)
-        self.searchedMessagesViewModel = .init(threadId: thread.id ?? -1)
-        self.threadPinMessageViewModel = ThreadPinMessageViewModel(thread: thread)
-        self.readOnly = readOnly
-        self.thread = thread
         self.threadsViewModel = threadsViewModel
-        self.participantsViewModel = ParticipantsViewModel(thread: thread)
-        self.historyVM = ThreadHistoryViewModel(threadViewModel: self)
-        self.sendMessageViewModel = ThreadSendMessageViewModel(threadVM: self)
-        scrollVM.threadVM = self
+        self.thread = thread
+        self.readOnly = readOnly
+        setup()
+    }
+
+    public func setup() {
+        seenVM.setup(viewModel: self)
+        unreadMentionsViewModel.setup(viewModel: self)
+        mentionListPickerViewModel.setup(viewModel: self)
+        sendContainerViewModel.setup(viewModel: self)
+        searchedMessagesViewModel.setup(viewModel: self)
+        threadPinMessageViewModel.setup(viewModel: self)
+        participantsViewModel.setup(viewModel: self)
+        historyVM.setup(viewModel: self)
+        sendMessageViewModel.setup(viewModel: self)
+        scrollVM.setup(viewModel: self)
+        unsentMessagesViewModel.setup(viewModel: self)
+        selectedMessagesViewModel.setup(viewModel: self)
+        uploadMessagesViewModel.setup(viewModel: self)
+        exportMessagesViewModel.setup(viewModel: self)
         registerNotifications()
         setAppSettingsModel()
-        selectedMessagesViewModel.threadVM = self
-        sendContainerViewModel.threadVM = self
-        uploadMessagesViewModel.threadVM = self
-        unsentMessagesViewModel.threadVM = self
-        unreadMentionsViewModel.threadVM = self
-        exportMessagesViewModel.thread = thread
+    }
+
+    public func updateConversation(_ conversation: Conversation) {
+        self.thread = conversation
     }
 
     // MARK: Actions

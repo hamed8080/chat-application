@@ -230,7 +230,7 @@ struct ParticipantSearchView: View {
 
 struct MemberView_Previews: PreviewProvider {
     static var previews: some View {
-        let viewModel = ParticipantsViewModel(thread: MockData.thread)
+        let viewModel = ParticipantsViewModel()
         List {
             MemberView()
         }

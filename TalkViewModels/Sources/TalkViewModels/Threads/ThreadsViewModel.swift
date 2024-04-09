@@ -59,24 +59,25 @@ public final class ThreadsViewModel: ObservableObject {
 
     public func onNewMessage(_ response: ChatResponse<Message>) {
         if let message = response.result, let index = firstIndex(message.conversation?.id) {
-            threads[index].time = response.result?.conversation?.time
+            let thread = threads[index]
+            thread.time = response.result?.conversation?.time
             let isMe = response.result?.participant?.id == AppState.shared.user?.id
             if !isMe {
-                threads[index].unreadCount = (threads[index].unreadCount ?? 0) + 1
+                thread.unreadCount = (threads[index].unreadCount ?? 0) + 1
             }
-            threads[index].lastMessageVO = response.result
-            threads[index].lastSeenMessageId = response.result?.conversation?.lastSeenMessageId
-            threads[index].lastSeenMessageTime = response.result?.conversation?.lastSeenMessageTime
-            threads[index].lastSeenMessageNanos = response.result?.conversation?.lastSeenMessageNanos
-            threads[index].lastMessage = response.result?.message
+            thread.lastMessageVO = response.result
+            thread.lastSeenMessageId = response.result?.conversation?.lastSeenMessageId
+            thread.lastSeenMessageTime = response.result?.conversation?.lastSeenMessageTime
+            thread.lastSeenMessageNanos = response.result?.conversation?.lastSeenMessageNanos
+            thread.lastMessage = response.result?.message
             /// We only set the mentioned true because if the user sends multiple messages inside a thread but one message has been mention, the list will set it to false which is wrong.
             if response.result?.mentioned == true {
-                threads[index].mentioned = true
+                thread.mentioned = true
             }
-            if threads[index].pin == false {
+            if thread.pin == false {
                 sort()
             }
-            threads[index].animateObjectWillChange()
+            thread.animateObjectWillChange()
             animateObjectWillChange()
         }
         getNotActiveThreads(response.result?.conversation)
@@ -134,6 +135,7 @@ public final class ThreadsViewModel: ObservableObject {
             serverSortedPins.append(contentsOf: serverSortedPinIds)
         }
         await appendThreads(threads: threads ?? [])
+        updatePresentedViewModels(response.result ?? [])
         await asyncAnimateObjectWillChange()
 
         if hasAnyResults {
@@ -144,6 +146,14 @@ public final class ThreadsViewModel: ObservableObject {
 
         if firstSuccessResponse {
             shimmerViewModel.hide()
+        }
+    }
+
+    /// After connect and reconnect all the threads will be removed from the array
+    /// So the ThreadViewModel which contains this thread object have different refrence than what's inside the array
+    private func updatePresentedViewModels(_ conversations: [Conversation]) {
+        conversations.forEach { conversation in
+            AppState.shared.objectsContainer.navVM.updateConversationInViewModel(conversation)
         }
     }
 

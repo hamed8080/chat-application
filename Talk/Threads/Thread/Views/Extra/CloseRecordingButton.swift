@@ -39,6 +39,7 @@ struct CloseRecordingButton: View {
                 .shadow(color: .gray.opacity(0.4), radius: 2)
             }
             .environment(\.layoutDirection, .leftToRight)
+            .padding(EdgeInsets(top: 0, leading: viewModel.isRecording ? 20 : 8, bottom: 8, trailing: 0))
         }
     }
 }

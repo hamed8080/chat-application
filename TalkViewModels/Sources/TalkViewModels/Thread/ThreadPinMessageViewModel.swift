@@ -15,6 +15,7 @@ import SwiftUI
 import ChatCore
 
 public final class ThreadPinMessageViewModel: ObservableObject {
+    private weak var viewModel: ThreadViewModel?
     public private(set) var text: String? = nil
     public private(set) var image: UIImage? = nil
     public private(set) var message: PinMessage?
@@ -23,12 +24,14 @@ public final class ThreadPinMessageViewModel: ObservableObject {
     public private(set) var isEnglish: Bool = true
     public private(set) var title: String = ""
     public private(set) var hasPinMessage: Bool = false
-    private let thread: Conversation
+    private var thread: Conversation { viewModel?.thread ?? .init() }
     private var cancelable: Set<AnyCancellable> = []
     var threadId: Int {thread.id ?? -1}
 
-    init(thread: Conversation) {
-        self.thread = thread
+    public init() {}
+
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         message = thread.pinMessage
         setupObservers()
         Task { [weak self] in

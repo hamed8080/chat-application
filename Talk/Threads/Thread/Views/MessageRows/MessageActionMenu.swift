@@ -139,7 +139,8 @@ struct MessageActionMenu: View {
                     withAnimation(animation(appear: true)) {
                         if let threadVM {
                             viewModel.isSelected = true
-                            let deleteVM = DeleteMessagesViewModelModel(threadVM: threadVM)
+                            let deleteVM = DeleteMessagesViewModelModel()
+                            deleteVM.setup(viewModel: threadVM)
                             let dialog = DeleteMessageDialog(viewModel: deleteVM)
                             AppState.shared.objectsContainer.appOverlayVM.dialogView = AnyView(dialog)
                         }

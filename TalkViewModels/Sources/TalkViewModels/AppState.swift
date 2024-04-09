@@ -302,6 +302,7 @@ public extension AppState {
     }
 
     private func onSearchP2PThreads(thread: Conversation?) {
+        let thread = getRefrenceObject(thread) ?? thread
         if let thread = thread {
             objectsContainer.navVM.append(thread: thread)
         } else {
@@ -315,6 +316,12 @@ public extension AppState {
                 ($0.partner == coreUserId || ($0.participants?.contains(where: {$0.coreUserId == coreUserId}) ?? false))
                 && $0.group == false && $0.type == .normal}
             )
+    }
+
+    /// It will search through the Conversation array to prevent creation of new refrence.
+    /// If we don't use object refrence in places that needs to open the thread there will be a inconsistensy in data such as reply privately.
+    private func getRefrenceObject(_ conversation: Conversation?) -> Conversation? {
+        objectsContainer.threadsVM.threads.first{ $0.id == conversation?.id}
     }
 
     func checkForGroupOffline(tharedId: Int) -> Conversation? {

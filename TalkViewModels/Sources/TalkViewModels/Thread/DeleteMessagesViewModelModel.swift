@@ -9,32 +9,33 @@ import Foundation
 import ChatModels
 
 public final class DeleteMessagesViewModelModel: ObservableObject {
-    public let threadVM: ThreadViewModel
-    public var viewModel: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
+    public weak var viewModel: ThreadViewModel?
+    private var thread: Conversation { viewModel?.thread ?? .init() }
     public var deleteForMe: Bool = true
     public var deleteForOthers: Bool = false
     public var deleteForOthserIfPossible: Bool = false
-    public var hasPinnedMessage: Bool { messages.contains(where: {$0.id == threadVM.thread.pinMessage?.id }) }
+    public var hasPinnedMessage: Bool { messages.contains(where: {$0.id == viewModel?.thread.pinMessage?.id }) }
     public var isSingle: Bool { messages.count == 1 }
     public var isVstackLayout: Bool = false
-    public var isSelfThread: Bool { threadVM.thread.type == .selfThread }
+    public var isSelfThread: Bool { viewModel?.thread.type == .selfThread }
     /// 86_400_000 is equal to the number of milliseconds in a day
     public var pastDeleteTimeForOthers: [Message] { messages.filter({ Int64($0.time ?? 0) + (86_400_000) < Date().millisecondsSince1970 }) }
     public var notPastDeleteTime: [Message] { messages.filter({!pastDeleteTimeForOthers.contains($0)}) }
 
-    private var thread: Conversation { threadVM.thread }
     private var isGroup: Bool { thread.group == true }
     private var isAdmin: Bool { thread.admin == true }
     private var meUserId: Int { AppState.shared.user?.id ?? -1 }
-    private var messages: [Message] { threadVM.selectedMessagesViewModel.selectedMessages.compactMap({$0.message}) }
+    private var messages: [Message] { viewModel?.selectedMessagesViewModel.selectedMessages.compactMap({$0.message}) ?? [] }
     private var containsMe: Bool { messages.contains(where: { $0.isMe(currentUserId: meUserId) }) }
     private var containsNotMe: Bool { messages.contains(where: { !$0.isMe(currentUserId: meUserId) }) }
     private var onlyMyMessages: Bool { !containsNotMe }
     private var onlyOthersMessages: Bool { !containsMe }
     private var isOnlyContainsPastMessages: Bool { pastDeleteTimeForOthers.count == messages.count }
 
-    public init(threadVM: ThreadViewModel) {
-        self.threadVM = threadVM
+    public init() {}
+
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         deleteForOthers = isDeletableForOthers()
         deleteForOthserIfPossible = isDeletableForOthersIfPossible()
         isVstackLayout = deleteForOthserIfPossible && !deleteForOthers
@@ -77,36 +78,36 @@ public final class DeleteMessagesViewModelModel: ObservableObject {
     }
 
     public func deleteMessagesForMe() {
-        threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}))
-        threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+        viewModel?.historyVM.deleteMessages(viewModel?.selectedMessagesViewModel.selectedMessages.compactMap({$0.message}) ?? [])
+        viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-        viewModel.animateObjectWillChange()
+        viewModel?.selectedMessagesViewModel.animateObjectWillChange()
     }
 
     public func deleteForAll() {
-        threadVM.historyVM.deleteMessages(viewModel.selectedMessages.compactMap({$0.message}), forAll: true)
-        threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+        viewModel?.historyVM.deleteMessages(viewModel?.selectedMessagesViewModel.selectedMessages.compactMap({$0.message}) ?? [], forAll: true)
+        viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-        viewModel.animateObjectWillChange()
+        viewModel?.selectedMessagesViewModel.animateObjectWillChange()
     }
 
     public func deleteForMeAndAllOthersPossible() {
 
         if pastDeleteTimeForOthers.count > 0 {
-            threadVM.historyVM.deleteMessages(pastDeleteTimeForOthers, forAll: false)
+            viewModel?.historyVM.deleteMessages(pastDeleteTimeForOthers, forAll: false)
         }
         if notPastDeleteTime.count > 0 {
-            threadVM.historyVM.deleteMessages(notPastDeleteTime, forAll: true)
+            viewModel?.historyVM.deleteMessages(notPastDeleteTime, forAll: true)
         }
-        threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+        viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-        viewModel.animateObjectWillChange()
+        viewModel?.selectedMessagesViewModel.animateObjectWillChange()
     }
 
     public func cleanup() {
-        viewModel.clearSelection()
-        threadVM.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
+        viewModel?.selectedMessagesViewModel.clearSelection()
+        viewModel?.selectedMessagesViewModel.setInSelectionMode(isInSelectionMode: false)
         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-        viewModel.animateObjectWillChange()
+        viewModel?.selectedMessagesViewModel.animateObjectWillChange()
     }
 }

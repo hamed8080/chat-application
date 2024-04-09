@@ -25,21 +25,21 @@ public final class ThreadScrollingViewModel: ObservableObject {
     public var scrollingUP = false
     private var cancelablleSet = Set<AnyCancellable>()
     private var queue = DispatchQueue(label: "ScrollingStateSerialQueue")
-    public weak var threadVM: ThreadViewModel? {
-        didSet {
-            isAtBottomOfTheList = thread.lastMessageVO?.id == thread.lastSeenMessageId
-        }
-    }
-    private var thread: Conversation { threadVM?.thread ?? .init(id: -1)}
+    public weak var viewModel: ThreadViewModel?
+    private var thread: Conversation { viewModel?.thread ?? .init(id: -1)}
     public var isAtBottomOfTheList: Bool = false
 
-    init() {
+    public init() {}
+
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
+        isAtBottomOfTheList = thread.lastMessageVO?.id == thread.lastSeenMessageId
         registerObservers()
     }
 
     @MainActor
     private func scrollTo(_ uniqueId: String, delay: TimeInterval = TimeInterval(0.3), _ animation: Animation? = .easeInOut, anchor: UnitPoint? = .bottom) async {
-        guard let uniqueId = threadVM?.historyVM.messageViewModel(for: uniqueId)?.uniqueId else { return }
+        guard let uniqueId = viewModel?.historyVM.messageViewModel(for: uniqueId)?.uniqueId else { return }
         try? await Task.sleep(for: .milliseconds(delay))
         if Task.isCancelled == true { return }
         withAnimation(animation) {
@@ -59,15 +59,18 @@ public final class ThreadScrollingViewModel: ObservableObject {
 
     public func scrollToBottom(animation: Animation? = .easeInOut) {
         if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
-            threadVM?.historyVM.moveToTime(time, messageId, highlight: false)
+            viewModel?.historyVM.moveToTime(time, messageId, highlight: false)
         }
     }
 
+    /// When user append a new attachment it will scroll above the attachments container if we are showing the last message.
     public func scrollToEmptySpace(animation: Animation? = .easeInOut) {
-        task = Task {
-            try? await Task.sleep(for: .seconds(0.5))
-            withAnimation(animation) {
-                scrollProxy?.scrollTo(-3, anchor: .bottom)
+        if isAtBottomOfTheList {
+            task = Task {
+                try? await Task.sleep(for: .seconds(0.5))
+                withAnimation(animation) {
+                    scrollProxy?.scrollTo(-3, anchor: .bottom)
+                }
             }
         }
     }
@@ -117,26 +120,15 @@ public final class ThreadScrollingViewModel: ObservableObject {
 
     private func registerObservers() {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { [weak self] _ in
-            self?.scrollToBottomIfPossible()
+            self?.scrollToBottomOnKeyboardChange()
         }
 
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak self] _ in
-            self?.scrollToBottomIfPossible()
+            self?.scrollToBottomOnKeyboardChange()
         }
-
-        NotificationCenter.message.publisher(for: .message)
-            .sink { [weak self] notif in
-                guard let self = self else { return }
-                if let event = notif.object as? MessageEventTypes {
-                    if case .new(let response) = event, response.result?.conversation?.id == threadVM?.threadId {
-                        scrollToBottomIfPossible()
-                    }
-                }
-            }
-            .store(in: &cancelablleSet)
     }
 
-    private func scrollToBottomIfPossible() {
+    private func scrollToBottomOnKeyboardChange() {
         // We have to wait until all the animations for clicking on TextField are finished and then start our animation.
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
             withAnimation(.easeInOut(duration: 0.4)) {

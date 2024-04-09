@@ -23,9 +23,10 @@ public final class HistorySeenViewModel: ObservableObject {
     private let queue = DispatchQueue(label: "SEEN_SERIAL_QUEUE")    
     private var threadId: Int { thread.id ?? 0 }
     private var threadsVM: ThreadsViewModel { threadVM?.threadsViewModel ?? .init() }
+    public init() {}
 
-    public init(threadViewModel: ThreadViewModel) {
-        self.threadVM = threadViewModel
+    public func setup(viewModel: ThreadViewModel) {
+        self.threadVM = viewModel
         seenPublisher
             .debounce(for: 0.5, scheduler: RunLoop.main)
             .removeDuplicates()

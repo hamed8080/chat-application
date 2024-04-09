@@ -97,6 +97,6 @@ public struct DeleteMessageDialog: View {
 
 struct DeleteMessageDialog_Previews: PreviewProvider {
     static var previews: some View {
-        DeleteMessageDialog(viewModel: .init(threadVM: .init(thread: Conversation(id: 1))))
+        DeleteMessageDialog(viewModel: .init())
     }
 }

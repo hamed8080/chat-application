@@ -17,16 +17,16 @@ import OSLog
 import Combine
 
 public final class ThreadSendMessageViewModel: ObservableObject {
-    private weak var threadVM: ThreadViewModel!
+    private weak var viewModel: ThreadViewModel?
     private var createThreadCompletion: (()-> Void)?
     private var cancelable: Set<AnyCancellable> = []
 
-    private var thread: Conversation { threadVM.thread }
+    private var thread: Conversation { viewModel?.thread ?? .init() }
     private var threadId: Int { thread.id ?? 0 }
-    private var attVM: AttachmentsViewModel { threadVM.attachmentsViewModel }
-    private var uplVM: ThreadUploadMessagesViewModel { threadVM.uploadMessagesViewModel }
-    private var sendVM: SendContainerViewModel { threadVM.sendContainerViewModel }
-    private var selectVM: ThreadSelectedMessagesViewModel { threadVM.selectedMessagesViewModel }
+    private var attVM: AttachmentsViewModel { viewModel?.attachmentsViewModel ?? .init() }
+    private var uplVM: ThreadUploadMessagesViewModel { viewModel?.uploadMessagesViewModel ?? .init() }
+    private var sendVM: SendContainerViewModel { viewModel?.sendContainerViewModel ?? .init() }
+    private var selectVM: ThreadSelectedMessagesViewModel { viewModel?.selectedMessagesViewModel ?? .init() }
     private var navModel: AppStateNavigationModel {
         get {
             return AppState.shared.appStateNavigationModel
@@ -34,12 +34,14 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             AppState.shared.appStateNavigationModel = newValue
         }
     }
-    private var historyVM: ThreadHistoryViewModel? { threadVM.historyVM }
+    private var historyVM: ThreadHistoryViewModel? { viewModel?.historyVM }
     private var seenVM: HistorySeenViewModel? { historyVM?.seenVM }
-    private var recorderVM: AudioRecordingViewModel { threadVM.audioRecoderVM }
+    private var recorderVM: AudioRecordingViewModel { viewModel?.audioRecoderVM ?? .init() }
 
-    init(threadVM: ThreadViewModel) {
-        self.threadVM = threadVM
+    public init() {}
+
+    public func setup(viewModel: ThreadViewModel) {
+        self.viewModel = viewModel
         registerNotifications()
     }
 
@@ -49,7 +51,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             sendForwardMessages()
         } else if navModel.replyPrivately != nil {
             sendReplyPrivatelyMessage()
-        } else if let replyMessage = threadVM.replyMessage, let replyMessageId = replyMessage.id {
+        } else if let replyMessage = viewModel?.replyMessage, let replyMessageId = replyMessage.id {
             sendReplyMessage(replyMessageId)
         } else if sendVM.editMessage != nil {
             sendEditMessage()
@@ -61,7 +63,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
 
         /// A delay is essential for creating a conversation with a person for the person if we are in simulated mode.
         /// It prevents to delete textMessage inside the SendContainerViewModel with the clear method.
-        Timer.scheduledTimer(withTimeInterval: threadVM.isSimulatedThared ? 0.5 : 0, repeats: false) { [weak self] _ in
+        Timer.scheduledTimer(withTimeInterval: viewModel?.isSimulatedThared == true ? 0.5 : 0, repeats: false) { [weak self] _ in
             self?.sendVM.clear() // close ui
         }
         seenVM?.sendSeenForAllUnreadMessages()
@@ -104,7 +106,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
             }
         }
         attVM.clear()
-        threadVM.replyMessage = nil
+        viewModel?.replyMessage = nil
         sendVM.focusOnTextInput = false
     }
 
@@ -177,7 +179,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
 
     public func openDestinationConversationToForward(_ destinationConversation: Conversation?, _ contact: Contact?) {
         sendVM.clear() /// Close edit mode in ui
-        threadVM.sheetType = nil
+        viewModel?.sheetType = nil
         animateObjectWillChange()
         let messages = selectVM.selectedMessages.compactMap{$0.message}
         AppState.shared.openThread(from: threadId, conversation: destinationConversation, contact: contact, messages: messages)
@@ -259,7 +261,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     public func send(completion: @escaping ()-> Void) {
-        if threadVM.isSimulatedThared {
+        if viewModel?.isSimulatedThared == true {
             self.createThreadCompletion = completion
             createP2PThread()
         } else {
@@ -276,7 +278,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
 
     public func onCreateP2PThread(_ response: ChatResponse<Conversation>) {
         guard response.pop(prepend: "CREATE-P2P") != nil, let thread = response.result else { return }
-        self.threadVM.thread = thread
+        self.viewModel?.updateConversation(thread)
         navModel.userToCreateThread = nil
         animateObjectWillChange()
         createThreadCompletion?()
@@ -286,7 +288,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     func makeModel(_ uploadFileIndex: Int? = nil) -> SendMessageModel {
         let textMessage = sendVM.getText()
         return SendMessageModel(textMessage: textMessage,
-                                replyMessage: threadVM.replyMessage,
+                                replyMessage: viewModel?.replyMessage,
                                 meId: AppState.shared.user?.id,
                                 conversation: thread,
                                 threadId: threadId,
