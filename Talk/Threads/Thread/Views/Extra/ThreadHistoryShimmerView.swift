@@ -14,18 +14,23 @@ struct ThreadHistoryShimmerView: View {
 
     var body: some View {
         if viewModel.isShowing {
-            List {
-                ForEach(1...10, id: \.self) { id in
-                    MessageRowShimmer(id: id)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(.zero)
-                        .listRowBackground(Color.clear)
+            ScrollViewReader { reader in
+                List {
+                    ForEach(1...10, id: \.self) { id in
+                        MessageRowShimmer(id: id)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(.zero)
+                            .listRowBackground(Color.clear)
+                    }
+                }
+                .environmentObject(viewModel.itemViewModel)
+                .listStyle(.plain)
+                .background(ThreadbackgroundView(threadId: 0))
+                .transition(.opacity)
+                .onAppear() {
+                    reader.scrollTo(10)
                 }
             }
-            .environmentObject(viewModel.itemViewModel)
-            .listStyle(.plain)
-            .background(ThreadbackgroundView(threadId: 0))
-            .transition(.opacity)
         }
     }
 }
