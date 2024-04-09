@@ -54,7 +54,7 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     }
 
     func onUnreadMentions(_ response: ChatResponse<[Message]>) {
-        if !response.cache, response.pop(prepend: "UnreadMentions") != nil, let unreadMentions = response.result {
+        if response.subjectId == thread?.id, !response.cache, response.pop(prepend: "UnreadMentions") != nil, let unreadMentions = response.result {
             self.unreadMentions.removeAll()
             self.unreadMentions.append(contentsOf: unreadMentions)
             self.unreadMentions.sort(by: {$0.time ?? 0 < $1.time ?? 1})
@@ -74,7 +74,7 @@ public final class ThreadUnreadMentionsViewModel: ObservableObject {
     }
 
     private func onNewMesssage(_ response: ChatResponse<Message>) {
-        if let message = response.result, !message.isMe(currentUserId: AppState.shared.user?.id ?? -1), message.mentioned == true {
+        if response.subjectId == thread?.id, let message = response.result, !message.isMe(currentUserId: AppState.shared.user?.id ?? -1), message.mentioned == true {
             unreadMentions.append(message)
             hasMention = true
             animateObjectWillChange()

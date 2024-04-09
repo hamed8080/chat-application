@@ -17,6 +17,7 @@ struct MessageRowAudioView: View {
     private var message: Message { viewModel.message }
     @EnvironmentObject var audioVM: AVAudioPlayerViewModel
     private var isSameFile: Bool { viewModel.downloadFileVM?.fileURL != nil && audioVM.fileURL?.absoluteString == viewModel.downloadFileVM?.fileURL?.absoluteString }
+    private var progress: CGFloat { isSameFile ? min(audioVM.currentTime / audioVM.duration, 1.0) : 0 }
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
@@ -53,15 +54,15 @@ struct MessageRowAudioView: View {
     }
 
     @ViewBuilder private var audioProgress: some View {
-        if viewModel.downloadFileVM?.state == .completed, isSameFile {
-            VStack(alignment: .leading, spacing: 4) {
-                ProgressView(value: min(audioVM.currentTime / audioVM.duration, 1.0), total: 1.0)
-                    .progressViewStyle(.linear)
-                    .tint(Color.App.textPrimary)
-                    .frame(maxWidth: 172)
-                Text("\(audioVM.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(audioVM.duration.timerString(locale: Language.preferredLocale) ?? "")")
-                    .foregroundColor(Color.App.textPrimary)
-            }
+        VStack(alignment: .leading, spacing: 1) {
+            let timerString = isSameFile ? "\(audioVM.currentTime.timerString(locale: Language.preferredLocale) ?? "") / \(audioVM.duration.timerString(locale: Language.preferredLocale) ?? "")" : " " // We use space to prevent the text collapse
+            ProgressView(value: progress, total: 1.0)
+                .progressViewStyle(.linear)
+                .tint(Color.App.textPrimary)
+                .frame(maxWidth: 172)
+            Text(timerString)
+                .foregroundColor(Color.App.textPrimary)
+                .frame(minHeight: 10)
         }
     }
 
@@ -122,6 +123,13 @@ struct MessageRowAudioView: View {
 
         } else {
             manageDownload()
+        }
+
+        if viewModel.threadVM?.scrollVM.isAtBottomOfTheList == true {
+            Task {
+                try? await Task.sleep(for: .seconds(0.2))
+                viewModel.threadVM?.scrollVM.scrollToBottom()
+            }
         }
     }
 

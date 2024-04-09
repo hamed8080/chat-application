@@ -24,13 +24,6 @@ struct AvatarView: View {
             .padding(.trailing, trailing)
     }
 
-    static var emptyP2PSender: some View {
-        Rectangle()
-            .fill(Color.clear)
-            .frame(width: 8)
-            .padding(.trailing, 8)
-    }
-
     @ViewBuilder var body: some View {
         if hiddenView {
             EmptyView()

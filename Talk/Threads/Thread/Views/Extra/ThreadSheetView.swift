@@ -55,6 +55,7 @@ struct ThreadSheetView: View {
         case .threadPicker:
             SelectConversationOrContactList { (conversation, contact) in
                 viewModel.sendMessageViewModel.openDestinationConversationToForward(conversation, contact)
+                viewModel.selectedMessagesViewModel.clearSelection() // it is essential to clean up the ui after the user tap on either a contact or a thread
             }
             .onDisappear {
                 closeSheet()

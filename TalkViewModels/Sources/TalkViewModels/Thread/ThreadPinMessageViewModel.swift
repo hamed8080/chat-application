@@ -13,6 +13,7 @@ import Chat
 import Combine
 import SwiftUI
 import ChatCore
+import TalkModels
 
 public final class ThreadPinMessageViewModel: ObservableObject {
     private weak var viewModel: ThreadViewModel?
@@ -104,8 +105,9 @@ public final class ThreadPinMessageViewModel: ObservableObject {
 
     private func calculate() async {
         let hasPinMessage = message != nil
+        let isFileType = fileMetadata != nil
         let icon = fileMetadata?.file?.mimeType?.systemImageNameForFileExtension
-        let isEnglish = message?.text?.naturalTextAlignment == .leading
+        let isEnglish = isFileType && Language.isRTL ? false : message?.text?.naturalTextAlignment == .leading
         let title = messageText
         await MainActor.run {
             self.hasPinMessage = hasPinMessage

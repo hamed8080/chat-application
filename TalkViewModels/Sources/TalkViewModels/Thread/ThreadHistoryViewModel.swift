@@ -248,6 +248,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     private func onMoreTopSecondScenario(_ response: ChatResponse<[Message]>) {
         guard response.pop(prepend: "MORE-TOP-SECOND-SCENARIO") != nil, let messages = response.result else { return }
+        let lastSeenId = thread.lastSeenMessageId
         Task { [weak self] in
             guard let self = self else { return }
             if response.result?.count ?? 0 > 0 {
@@ -261,10 +262,10 @@ public final class ThreadHistoryViewModel: ObservableObject {
             await setHasMoreTop(response)
             /// 6- To update isLoading fields to hide the loading at the top and prepare the ui for scrolling to.
             await asyncAnimateObjectWillChange()
-
-            if let uniqueId = thread.lastMessageVO?.uniqueId, let messageId = thread.lastMessageVO?.id {
-                await viewModel?.scrollVM.showHighlightedAsync(uniqueId, messageId, highlight: false)
-            }
+            let isLastSeenReallyExist = messages.contains(where: {$0.id == lastSeenId })
+            let lastSortedMessage = sections.last?.vms.last?.message
+            let message = isLastSeenReallyExist ? thread.lastMessageVO : lastSortedMessage
+            await viewModel?.scrollVM.showHighlightedAsync(message?.uniqueId ?? "", message?.id ?? -1, highlight: false)
             shimmerViewModel.hide()
         }
     }
@@ -735,7 +736,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     internal func isFirstMessageOfTheUser(_ message: Message) async -> Bool {
         guard let tuples = self.message(for: message.id) else { return false }
         let sectionIndex = tuples.sectionIndex
-        let nextIndex = tuples.messageIndex + 1
+        let nextIndex = tuples.messageIndex - 1
         let isNextIndexExist = sections[sectionIndex].vms.indices.contains(nextIndex)
         if isNextIndexExist {
             let nextMessage = sections[sectionIndex].vms[nextIndex]
@@ -747,7 +748,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     internal func isLastMessageOfTheUser(_ message: Message) async -> Bool {
         guard let tuples = self.message(for: message.id) else { return false }
         let sectionIndex = tuples.sectionIndex
-        let prevIndex = tuples.messageIndex - 1
+        let prevIndex = tuples.messageIndex + 1
         let isPreviousIndexExist = sections[sectionIndex].vms.indices.contains(prevIndex)
         if isPreviousIndexExist {
             let prevMessage = sections[sectionIndex].vms[prevIndex]

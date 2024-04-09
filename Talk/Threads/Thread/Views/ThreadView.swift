@@ -50,14 +50,18 @@ struct ThreadView: View, DropDelegate {
         .safeAreaInset(edge: .bottom) {
             ThreadEmptySpaceView()
         }
+        .overlay(alignment: .top) {
+            ThreadPinMessage(threadVM: viewModel)
+        }
+        .overlay(alignment: .top) {
+            AudioPlayerView(threadVM: viewModel)
+        }
         .overlay(alignment: .bottom) {
             SendContainerOverlayView()
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             VStack(spacing: 0) {
                 ThreadMainToolbar(viewModel: viewModel)
-                ThreadPinMessage(threadVM: viewModel)
-                AudioPlayerView(threadVM: viewModel)
             }
         }
         .background(threadWidthSetter)

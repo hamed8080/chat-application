@@ -34,6 +34,13 @@ struct LocationRowView: View {
             /// Message.id equal to nil means that we are in upload mode we don't have id
             if let uploadMessage = message as? UploadFileWithLocationMessage, message.id == nil {
                 ChatManager.activeInstance?.message.send(uploadMessage.locationRequest)
+            } else {
+                viewModel.downloadFileVM?.startDownload()
+            }
+        }
+        .onReceive(viewModel.objectWillChange) { newValue in
+            if (viewModel.message as? UploadFileWithLocationMessage) == nil {
+                viewModel.downloadFileVM?.startDownload()
             }
         }
     }
@@ -44,6 +51,7 @@ struct MapImageDownloader: View {
     /// 0.2 Makes the map placeholder dimmer.
     @State private var opacity: CGFloat = 0.05
     @EnvironmentObject var viewModel: DownloadFileViewModel
+    @EnvironmentObject var messageVM: MessageRowViewModel
 
     var body: some View {
 
@@ -84,8 +92,6 @@ struct MapImageDownloader: View {
         if viewModel.isInCache {
             viewModel.state = .completed
             viewModel.animateObjectWillChange()
-        } else {
-            viewModel.startDownload()
         }
     }
 }
