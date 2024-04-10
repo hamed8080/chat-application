@@ -66,7 +66,9 @@ struct ThreadSheetView: View {
                 viewModel.attachmentsViewModel.addSelectedFile()
                 viewModel.sheetType = nil
                 viewModel.animateObjectWillChange()
-                viewModel.scrollVM.scrollToEmptySpace()
+                Task {
+                    await viewModel.scrollVM.scrollToEmptySpace()
+                }
             }
             .onDisappear {
                 closeSheet()
@@ -75,8 +77,10 @@ struct ThreadSheetView: View {
             MapPickerView()
                 .environmentObject(viewModel)
                 .onDisappear {
-                    viewModel.scrollVM.scrollToEmptySpace()
-                    closeSheet()
+                    Task {
+                        await viewModel.scrollVM.scrollToEmptySpace()
+                        closeSheet()
+                    }
                 }
         case .galleryPicker:
             MyPHPicker() { itemProviders in
@@ -113,7 +117,9 @@ struct ThreadSheetView: View {
                         }
                     }
                 }
-                viewModel.scrollVM.scrollToEmptySpace()
+                Task {
+                    await viewModel.scrollVM.scrollToEmptySpace()
+                }
             }
             .onDisappear {
                 closeSheet()

@@ -136,16 +136,17 @@ public final class ThreadsViewModel: ObservableObject {
         }
         await appendThreads(threads: threads ?? [])
         updatePresentedViewModels(response.result ?? [])
-        await asyncAnimateObjectWillChange()
+        await MainActor.run {
+            if hasAnyResults {
+                hasNext = response.hasNext
+                firstSuccessResponse = true
+            }
+            isLoading = false
 
-        if hasAnyResults {
-            hasNext = response.hasNext
-            firstSuccessResponse = true
-        }
-        isLoading = false
-
-        if firstSuccessResponse {
-            shimmerViewModel.hide()
+            if firstSuccessResponse {
+                shimmerViewModel.hide()
+            }
+            animateObjectWillChange()
         }
     }
 

@@ -36,11 +36,13 @@ struct ReplyMessageViewPlaceholder: View {
 
                 Spacer()
                 CloseButton {
-                    viewModel.scrollVM.disableExcessiveLoading()
-                    viewModel.replyMessage = nil
-                    viewModel.sendContainerViewModel.focusOnTextInput = false
-                    viewModel.selectedMessagesViewModel.clearSelection()
-                    viewModel.animateObjectWillChange()
+                    Task {
+                        await viewModel.scrollVM.disableExcessiveLoading()
+                        viewModel.replyMessage = nil
+                        viewModel.sendContainerViewModel.focusOnTextInput = false
+                        viewModel.selectedMessagesViewModel.clearSelection()
+                        viewModel.animateObjectWillChange()
+                    }
                 }
                 .padding(.trailing, 4)
             }

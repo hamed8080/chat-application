@@ -37,9 +37,11 @@ struct ReplyPrivatelyMessageViewPlaceholder: View {
 
                 Spacer()
                 CloseButton {
-                    viewModel.scrollVM.disableExcessiveLoading()
-                    AppState.shared.appStateNavigationModel = .init()
-                    viewModel.animateObjectWillChange()
+                    Task {
+                        await viewModel.scrollVM.disableExcessiveLoading()
+                        AppState.shared.appStateNavigationModel = .init()
+                        viewModel.animateObjectWillChange()
+                    }
                 }
                 .padding(.trailing, 4)
             }

@@ -137,10 +137,12 @@ struct ThreadDetailView: View {
 
     var leadingViews: some View {
         NavigationBackButton {
-            viewModel.threadVM?.scrollVM.disableExcessiveLoading()
-            AppState.shared.objectsContainer.contactsVM.editContact = nil
-            AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
-            AppState.shared.objectsContainer.threadDetailVM.clear()
+            Task {
+                await viewModel.threadVM?.scrollVM.disableExcessiveLoading()
+                AppState.shared.objectsContainer.contactsVM.editContact = nil
+                AppState.shared.objectsContainer.navVM.remove(type: ThreadDetailViewModel.self)
+                AppState.shared.objectsContainer.threadDetailVM.clear()
+            }
         }
     }
 }

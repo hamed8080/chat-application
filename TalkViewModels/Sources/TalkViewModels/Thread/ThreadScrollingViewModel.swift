@@ -19,7 +19,7 @@ public protocol ScrollToPositionProtocol {
 }
 
 public final class ThreadScrollingViewModel: ObservableObject {
-    var task: Task<(), Never>?
+    private var task: Task<(), Never>?
     private var isProgramaticallyScroll: Bool = false
     public var scrollProxy: ScrollViewProxy?
     public var scrollingUP = false
@@ -27,13 +27,17 @@ public final class ThreadScrollingViewModel: ObservableObject {
     private var queue = DispatchQueue(label: "ScrollingStateSerialQueue")
     public weak var viewModel: ThreadViewModel?
     private var thread: Conversation { viewModel?.thread ?? .init(id: -1)}
-    public var isAtBottomOfTheList: Bool = false
+    @MainActor public var isAtBottomOfTheList: Bool = false
 
     public init() {}
 
     public func setup(viewModel: ThreadViewModel) {
         self.viewModel = viewModel
-        isAtBottomOfTheList = thread.lastMessageVO?.id == thread.lastSeenMessageId
+        Task {
+            await MainActor.run {
+                isAtBottomOfTheList = thread.lastMessageVO?.id == thread.lastSeenMessageId
+            }
+        }
         registerObservers()
     }
 
@@ -64,26 +68,23 @@ public final class ThreadScrollingViewModel: ObservableObject {
     }
 
     /// When user append a new attachment it will scroll above the attachments container if we are showing the last message.
-    public func scrollToEmptySpace(animation: Animation? = .easeInOut) {
-        if isAtBottomOfTheList {
-            task = Task {
-                try? await Task.sleep(for: .seconds(0.5))
-                withAnimation(animation) {
-                    scrollProxy?.scrollTo(-3, anchor: .bottom)
-                }
+    public func scrollToEmptySpace(animation: Animation? = .easeInOut) async {
+        if await isAtBottomOfTheList {
+            try? await Task.sleep(for: .seconds(0.5))
+            withAnimation(animation) {
+                scrollProxy?.scrollTo(-3, anchor: .bottom)
             }
         }
     }
 
     public func scrollToLastMessageIfLastMessageIsVisible(_ message: Message) async {
-        if isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id), let uniqueId = message.uniqueId {
-            disableExcessiveLoading()
+        if await isAtBottomOfTheList || message.isMe(currentUserId: AppState.shared.user?.id), let uniqueId = message.uniqueId {
+            await disableExcessiveLoading()
             await scrollTo(uniqueId, delay: 0.1, .easeInOut)
         }
     }
 
-    public func showHighlighted(_ uniqueId: String, _ messageId: Int, animation: Animation? = .easeInOut, highlight: Bool = true, anchor: UnitPoint? = .bottom) {
-       task = Task {
+    public func showHighlighted(_ uniqueId: String, _ messageId: Int, animation: Animation? = .easeInOut, highlight: Bool = true, anchor: UnitPoint? = .bottom) async {
             if Task.isCancelled { return }
             await MainActor.run {
                 if highlight {
@@ -91,7 +92,6 @@ public final class ThreadScrollingViewModel: ObservableObject {
                 }
             }
            await scrollTo(uniqueId, animation, anchor: anchor)
-        }
     }
 
     public func showHighlightedAsync(_ uniqueId: String, _ messageId: Int, highlight: Bool = true, anchor: UnitPoint? = .bottom) async {
@@ -104,17 +104,12 @@ public final class ThreadScrollingViewModel: ObservableObject {
         await scrollTo(uniqueId, anchor: anchor)
     }
 
-    public func disableExcessiveLoading() {
-        task = Task { [weak self] in
-            await MainActor.run { [weak self] in
-                guard let self = self else { return }
-                setProgramaticallyScrollingState(newState: true)
-            }
+    @MainActor
+    public func disableExcessiveLoading() async {
+        task = Task {
+            setProgramaticallyScrollingState(newState: true)
             try? await Task.sleep(for: .seconds(1))
-            await MainActor.run { [weak self] in
-                guard let self = self else { return }
-                setProgramaticallyScrollingState(newState: false)
-            }
+            setProgramaticallyScrollingState(newState: false)
         }
     }
 
@@ -130,10 +125,13 @@ public final class ThreadScrollingViewModel: ObservableObject {
 
     private func scrollToBottomOnKeyboardChange() {
         // We have to wait until all the animations for clicking on TextField are finished and then start our animation.
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-            withAnimation(.easeInOut(duration: 0.4)) {
-                if self.isAtBottomOfTheList {
-                    self.scrollToBottom()
+        Task.detached(priority: .background){
+            try? await Task.sleep(for: .seconds(0.5))
+            await MainActor.run {
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    if self.isAtBottomOfTheList {
+                        self.scrollToBottom()
+                    }
                 }
             }
         }

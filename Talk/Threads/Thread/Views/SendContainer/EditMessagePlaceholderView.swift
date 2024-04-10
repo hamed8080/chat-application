@@ -36,15 +36,19 @@ struct EditMessagePlaceholderView: View {
 
                 Spacer()
                 CloseButton {
-                    threadVM.scrollVM.disableExcessiveLoading()
-                    viewModel.clear()
+                    Task {
+                        await threadVM.scrollVM.disableExcessiveLoading()
+                        viewModel.clear()
+                    }
                 }
                 .padding(.trailing, 4)
             }
             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .bottom)))
             .onAppear {
                 if let messageId = editMessage.id, let uniqueId = editMessage.uniqueId, messageId == threadVM.thread.lastMessageVO?.id {
-                    threadVM.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
+                    Task {
+                        await threadVM.scrollVM.showHighlighted(uniqueId, messageId, highlight: false)
+                    }
                 }
             }
         }

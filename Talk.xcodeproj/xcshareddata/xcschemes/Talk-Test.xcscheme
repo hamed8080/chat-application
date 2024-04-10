@@ -33,6 +33,7 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      enableThreadSanitizer = "YES"
       disablePerformanceAntipatternChecker = "YES"
       language = "fa-IR"
       region = "IR"
@@ -86,6 +87,16 @@
             key = "CG_NUMERICS_SHOW_BACKTRACE"
             value = ""
             isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "talk.pod.ir.async.debug"
+            value = "1"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "talk.pod.ir.chat.threadStore.debug"
+            value = "1"
+            isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>

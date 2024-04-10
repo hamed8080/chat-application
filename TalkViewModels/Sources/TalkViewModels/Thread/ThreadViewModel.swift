@@ -280,7 +280,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
         participantsViewModel.cancelAllObservers()
         mentionListPickerViewModel.cancelAllObservers()
         sendContainerViewModel.cancelAllObservers()
-        historyVM.cancelAllObservers()
+        historyVM.cancel()
         threadPinMessageViewModel.cancelAllObservers()
         scrollVM.cancelAllObservers()
     }

@@ -23,8 +23,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private var hasNextBottom = true
     private let count: Int = 25
     private let thresholdToLoad = 20
-    public private(set) var topLoading = false
-    public private(set) var bottomLoading = false
+    @MainActor public private(set) var topLoading = false
+    @MainActor public private(set) var bottomLoading = false
     private var topSliceId: Int = 0
     private var bottomSliceId: Int = 0
     public var isTopEndListAppeared: Bool = false
@@ -37,17 +37,18 @@ public final class ThreadHistoryViewModel: ObservableObject {
     internal var seenVM: HistorySeenViewModel? { viewModel?.seenVM }
     public var created: Bool = false
     private var isJumpedToLastMessage = false
+    private var tasks: [Task<Void, Error>] = []
 
     // MARK: Computed Properties
-    public var isEmptyThread: Bool {
+    @MainActor public var isEmptyThread: Bool {
         let noMessage = isFetchedServerFirstResponse == true && sections.count == 0
         let emptyThread = viewModel?.isSimulatedThared == true
         return emptyThread || noMessage
     }
     private var thread: Conversation { viewModel?.thread ?? .init(id: -1) }
     private var threadId: Int { thread.id ?? -1 }
-    public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
-    public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.vms.last?.id != thread.lastMessageVO?.id && hasNextBottom }
+    @MainActor public var canLoadMoreTop: Bool { hasNextTop && !topLoading }
+    @MainActor public var canLoadMoreBottom: Bool { !bottomLoading && sections.last?.vms.last?.id != thread.lastMessageVO?.id && hasNextBottom }
     private var isSimulated: Bool { viewModel?.isSimulatedThared == true }
     public typealias Indices = (message: Message, sectionIndex: Array<MessageSection>.Index, messageIndex: Array<Message>.Index)
 
@@ -92,7 +93,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         tryNinthScenario()
     }
 
-    private func moreTop(prepend: String = "MORE-TOP", delay: TimeInterval = 0.5, _ toTime: UInt?) {
+    @MainActor
+    private func moreTop(prepend: String = "MORE-TOP", delay: TimeInterval = 0.5, _ toTime: UInt?) async {
         if !canLoadMoreTop { return }
         topLoading = true
         oldFirstMessageInFirstSection = sections.first?.vms.first?.message
@@ -114,7 +116,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 3- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(messages)
             /// 4- Disable excessive loading on the top part.
-            viewModel?.scrollVM.disableExcessiveLoading()
+            await viewModel?.scrollVM.disableExcessiveLoading()
             /// 5- Set whether it has more messages at the top or not.
             await setHasMoreTop(response)
             isFetchedServerFirstResponse = true
@@ -126,7 +128,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
 
     private func moveToLastTopMessage() async {
         if isTopEndListAppeared {
-            viewModel?.scrollVM.showHighlighted(oldFirstMessageInFirstSection?.uniqueId ?? "",
+            await viewModel?.scrollVM.showHighlighted(oldFirstMessageInFirstSection?.uniqueId ?? "",
                                                       oldFirstMessageInFirstSection?.id ?? -1,
                                                       animation: nil,
                                                       highlight: false,
@@ -135,7 +137,8 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    private func moreBottom(prepend: String = "MORE-BOTTOM", _ fromTime: UInt?) {
+    @MainActor
+    private func moreBottom(prepend: String = "MORE-BOTTOM", _ fromTime: UInt?) async {
         if !hasNextBottom || bottomLoading { return }
         bottomLoading = true
         animateObjectWillChange()
@@ -152,10 +155,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
             /// 3- Append and sort the array but not call to update the view.
             await appendMessagesAndSort(messages)
             /// 4- Disable excessive loading on the top part.
-            viewModel?.scrollVM.disableExcessiveLoading()
+            await viewModel?.scrollVM.disableExcessiveLoading()
             /// 7- Set whether it has more messages at the bottom or not.
             await setHasMoreBottom(response)
-            isFetchedServerFirstResponse = true
             /// 8- To update isLoading fields to hide the loading at the bottom.
             await asyncAnimateObjectWillChange()
         }
@@ -166,10 +168,13 @@ public final class ThreadHistoryViewModel: ObservableObject {
         if !response.cache {
             hasNextTop = response.hasNext
             isFetchedServerFirstResponse = true
-            topLoading = false
+            await MainActor.run {
+                topLoading = false
+            }
         }
     }
 
+    @MainActor
     private func setHasMoreBottom(_ response: ChatResponse<[Message]>) async {
         if !response.cache {
             hasNextBottom = response.hasNext
@@ -198,7 +203,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func tryFirstScenario() {
         /// 1- Get the top part to time messages
         if thread.lastMessageVO?.id ?? 0 > thread.lastSeenMessageId ?? 0, let toTime = thread.lastSeenMessageTime {
-            moreTop(prepend: "MORE-TOP-FIRST-SCENARIO", delay: TimeInterval(0), toTime.advanced(by: 1))
+            Task {
+                await moreTop(prepend: "MORE-TOP-FIRST-SCENARIO", delay: TimeInterval(0), toTime.advanced(by: 1))
+            }
         }
     }
 
@@ -212,7 +219,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             let lastSeenMessageTime = thread.lastSeenMessageTime
             /// 4- Fetch from time messages to get to the bottom part and new messages to stay there if the user scrolls down.
             if let fromTime = lastSeenMessageTime {
-                moreBottom(prepend: "MORE-BOTTOM-FIRST-SCENARIO", fromTime.advanced(by: 1))
+                await moreBottom(prepend: "MORE-BOTTOM-FIRST-SCENARIO", fromTime.advanced(by: 1))
             }
             /// 5- Set whether it has more messages at the top or not.
             await setHasMoreTop(response)
@@ -242,7 +249,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
     private func trySecondScenario() {
         /// 1- Get the top part to time messages
         if thread.lastMessageVO?.id ?? 0 == thread.lastSeenMessageId ?? 0, let toTime = thread.lastSeenMessageTime {
-            moreTop(prepend: "MORE-TOP-SECOND-SCENARIO", toTime.advanced(by: 1))
+            Task {
+                await moreTop(prepend: "MORE-TOP-SECOND-SCENARIO", toTime.advanced(by: 1))
+            }
         }
     }
 
@@ -255,7 +264,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
                 /// 2- Append and sort the array but not call to update the view and do calculaiton.
                 await appendMessagesAndSort(messages)
                 /// 4- Disable excessive loading on the top part.
-                viewModel?.scrollVM.disableExcessiveLoading()
+                await viewModel?.scrollVM.disableExcessiveLoading()
             }
             isFetchedServerFirstResponse = true
             /// 5- Set whether it has more messages at the top or not.
@@ -279,8 +288,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
            isFetchedServerFirstResponse == true,
            viewModel?.isActiveThread == true,
            let lastMessageInListTime = sections.last?.vms.last?.message.time {
-            bottomLoading = true
-            animateObjectWillChange()
+            Task {
+                await MainActor.run {
+                    bottomLoading = true
+                    animateObjectWillChange()
+                }
+            }
             let fromTime = lastMessageInListTime.advanced(by: 1)
             let req = GetHistoryRequest(threadId: threadId, count: count, fromTime: fromTime, offset: 0, order: "asc", readOnly: viewModel?.readOnly == true)
             RequestsManager.shared.append(prepend: "MORE-BOTTOM-FIFTH-SCENARIO", value: req)
@@ -334,7 +347,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
             await appendMessagesAndSort(messages)
             /// We set this property to true because in the seven scenario there is no way to set this property to true.
             /// 4- Disable excessive loading on the top part.
-            viewModel?.scrollVM.disableExcessiveLoading()
+            await viewModel?.scrollVM.disableExcessiveLoading()
             isFetchedServerFirstResponse = true
             /// 5- Update all the views to draw for the top part.
             await asyncAnimateObjectWillChange()
@@ -433,19 +446,19 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: On Cache History Response
-//    @MainActor
     private func onHistoryCacheRsponse(_ response: ChatResponse<[Message]> ) async {
         let messages = response.result ?? []
         let sortedMessages = messages.sortedByTime()
         await appendMessagesAndSort(sortedMessages)
-        viewModel?.scrollVM.disableExcessiveLoading()
+        await viewModel?.scrollVM.disableExcessiveLoading()
         isFetchedServerFirstResponse = false
         if response.containsPartial(prependedKey: "MORE-TOP") {
             hasNextTop = messages.count >= count // We just need the top part when the user open the thread while it's not connected.
         }
-        topLoading = false
-        bottomLoading = false
-
+        await MainActor.run {
+            topLoading = false
+            bottomLoading = false
+        }
         await asyncAnimateObjectWillChange()
         shimmerViewModel.hide()
 
@@ -468,7 +481,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Appending and Sorting
-    internal func appendMessagesAndSort(_ messages: [Message], isToTime: Bool = false) async {
+    internal func appendMessagesAndSort(_ messages: [Message]) async {
         log("Start of the appendMessagesAndSort: \(Date().millisecondsSince1970)")
         guard messages.count > 0 else { return }
         var viewModels: [MessageRowViewModel?] = []
@@ -553,23 +566,26 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Appear & Disappear
+    @MainActor
     public func onMessageAppear(_ message: Message) async {
+        let copy = message.copy
         log("Message appear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
         guard let threadVM = viewModel else { return }
         if message.id == thread.lastMessageVO?.id, threadVM.scrollVM.isAtBottomOfTheList == false {
             threadVM.scrollVM.isAtBottomOfTheList = true
             threadVM.scrollVM.animateObjectWillChange()
         }
-        seenVM?.onAppear(message)
-        if let time = moreTopTime(message: message) {
-            moreTop(time)
+        seenVM?.onAppear(copy)
+        if canLoadMoreTop, let time = moreTopTime(messageId: message.id) {
+            await moreTop(time)
         }
 
-        if let time = moreBottomTime(message: message) {
-            moreBottom(time)
+        if canLoadMoreBottom, let time = moreBottomTime(messageId: message.id) {
+            await moreBottom(time)
         }
     }
 
+    @MainActor
     public func onMessegeDisappear(_ message: Message) async {
         log("Message disappear\(message.id ?? 0) uniqueId: \(message.uniqueId ?? "")")
         if message.id == thread.lastMessageVO?.id, viewModel?.scrollVM.isAtBottomOfTheList == true {
@@ -758,10 +774,10 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Time for more Bottom and Top
-    private func moreTopTime(message: Message) -> UInt? {
+    private func moreTopTime(messageId: Int?) -> UInt? {
         guard let scrollVM = viewModel?.scrollVM else { return nil }
-        if scrollVM.getProgramaticallyScrollingState() == false,
-           isInTopSlice(message),
+        if !scrollVM.scrollingUP { return nil }
+        if scrollVM.getProgramaticallyScrollingState() == false, isInTopSlice(messageId),
            let time = sections.first?.vms.first?.message.time {
             return time
         } else {
@@ -769,9 +785,9 @@ public final class ThreadHistoryViewModel: ObservableObject {
         }
     }
 
-    private func moreBottomTime(message: Message) -> UInt? {
+    private func moreBottomTime(messageId: Int?) -> UInt? {
         guard let scrollVM = viewModel?.scrollVM else { return nil }
-        if scrollVM.getProgramaticallyScrollingState() == false, isInBottomSlice(message) {
+        if scrollVM.getProgramaticallyScrollingState() == false, isInBottomSlice(messageId) {
             return sections.last?.vms.last?.message.time?.advanced(by: 1)
         } else {
             return nil
@@ -796,7 +812,19 @@ public final class ThreadHistoryViewModel: ObservableObject {
 #endif
     }
 
-    // MARK: Cancel Observers
+    // MARK: Cancel Task and Observers
+    internal func cancel() {
+        cancelTasks()
+        cancelAllObservers()
+    }
+
+    internal func cancelTasks() {
+        tasks.forEach { task in
+            task.cancel()
+        }
+        tasks = []
+    }
+
     internal func cancelAllObservers() {
         cancelable.forEach { cancelable in
             cancelable.cancel()
@@ -804,6 +832,7 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Cleanup
+    @MainActor
     private func onCancelTimer(key: String) {
         if topLoading || bottomLoading {
             topLoading = false
@@ -899,12 +928,12 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Finding index and ViewModels
-    private func isInTopSlice(_ message: Message) -> Bool {
-        return message.id ?? 0 <= topSliceId
+    private func isInTopSlice(_ messageId: Int?) -> Bool {
+        return messageId ?? 0 <= topSliceId
     }
 
-    private func isInBottomSlice(_ message: Message) -> Bool {
-        return message.id ?? 0 >= bottomSliceId
+    private func isInBottomSlice(_ messageId: Int?) -> Bool {
+        return messageId ?? 0 >= bottomSliceId
     }
 
     private func sectionIndexByUniqueId(_ message: Message) -> Array<MessageSection>.Index? {
@@ -1037,9 +1066,11 @@ public final class ThreadHistoryViewModel: ObservableObject {
             }
             .store(in: &cancelable)
         NotificationCenter.onRequestTimer.publisher(for: .onRequestTimer)
-            .sink { [weak self] newValue in
+            .sink { newValue in
                 if let key = newValue.object as? String {
-                    self?.onCancelTimer(key: key)
+                    Task { [weak self] in
+                        await self?.onCancelTimer(key: key)
+                    }
                 }
             }
             .store(in: &cancelable)

@@ -113,12 +113,12 @@ struct MessageList: View {
                 .listRowInsets(.zero)
                 .listRowBackground(Color.clear)
                 .onAppear {
-                    Task.detached(priority: .background) {
+                    Task {
                         await viewModel.onMessageAppear(vm.message)
                     }
                 }
                 .onDisappear {
-                    Task.detached(priority: .background) {
+                    Task {
                         await viewModel.onMessegeDisappear(vm.message)
                     }
                 }

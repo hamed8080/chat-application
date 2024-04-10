@@ -18,8 +18,8 @@ struct CloseRecordingButton: View {
             HStack {
                 Spacer()
                 Button {
-                    withAnimation {
-                        scrollVM.disableExcessiveLoading()
+                    Task {
+                        await scrollVM.disableExcessiveLoading()
                         viewModel.cancel()
                     }
                 } label: {

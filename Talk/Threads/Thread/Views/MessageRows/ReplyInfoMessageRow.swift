@@ -96,7 +96,7 @@ struct ReplyInfoMessageRow: View {
 
     private func moveToMessage() {
         Task {
-            threadVM?.scrollVM.disableExcessiveLoading()
+            await threadVM?.scrollVM.disableExcessiveLoading()
             if !isReplyPrivately, let tuple = replayTimeId {
                 threadVM?.historyVM.moveToTime(tuple.time, tuple.id)
             } else if let replyPrivatelyInfo = message.replyInfo?.replyPrivatelyInfo {
