@@ -80,7 +80,9 @@ struct NormalLastMessageContainer: View {
             }
 
             if thread.lastMessageVO == nil, let creator = thread.inviter?.name {
-                let localizedLabel = String(localized: .init("Thread.createdAConversation"))
+                let type = thread.type
+                let key = type?.isChannelType == true ? "Thread.createdAChannel" : "Thread.createdAGroup"
+                let localizedLabel = String(localized: .init(key))
                 let text = String(format: localizedLabel, creator)
                 Text(text)
                     .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)

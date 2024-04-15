@@ -222,7 +222,8 @@
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.accessLocaitonPermission" = "Gehen Sie bitte zu „Einstellungen“ > „Sprechen“ und aktivieren Sie dann den Standortzugriff.";
 "Thread.Row.lastMessageSender" = "%@:";
-"Thread.createdAConversation" = "%@ hat eine Unterhaltung erstellt.";
+"Thread.createdAGroup" = "%@ eine Gruppe erstellt.";
+"Thread.createdAChannel" = "%@ einen Kanal erstellt.";
 "Thread.Toolbar.participants" = "Teilnehmer";
 "Thread.sendAttachments" = "Senden Sie %@ Dateien";
 "Thread.public" = "%@ %@";

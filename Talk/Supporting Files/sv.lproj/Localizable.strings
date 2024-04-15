@@ -221,7 +221,8 @@
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.accessLocaitonPermission" = "Gå till inställningarna > Prata och aktivera sedan platsåtkomst.";
 "Thread.Row.lastMessageSender" = "%@:";
-"Thread.createdAConversation" = "%@ skapade en konversation.";
+"Thread.createdAGroup" = "%@ skapat en grupp.";
+"Thread.createdAChannel" = "%@ skapat en kanal.";
 "Thread.Toolbar.participants" = "Deltagare";
 "Thread.sendAttachments" = "Skicka %@ filer";
 "Thread.typeString" = "%@ %@";

@@ -222,6 +222,8 @@
 "Thread.accessLocaitonPermission" = "Please go to the settings>Talk and then turn on location access.";
 "Thread.Row.lastMessageSender" = "%@:";
 "Thread.createdAConversation" = "%@ created a conversation.";
+"Thread.createdAGroup" = "%@ created a group.";
+"Thread.createdAChannel" = "%@ created a channel.";
 "Thread.Toolbar.participants" = "Participants";
 "Thread.sendAttachments" = "Send %@ files";
 "Thread.typeString" = "%@ %@";
