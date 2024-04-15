@@ -9,7 +9,6 @@ import Chat
 import ChatModels
 import Combine
 import SwiftUI
-import Swipy
 import TalkModels
 import TalkUI
 import TalkViewModels

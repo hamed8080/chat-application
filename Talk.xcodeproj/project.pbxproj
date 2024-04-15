@@ -34,7 +34,6 @@
 		051AA77B2AE05E8C008F93C1 /* MyPHPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058022032AE05DFA002816C7 /* MyPHPicker.swift */; };
 		051ED3232B4D75BC00D963A0 /* LeaveThreadDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051ED3222B4D75BC00D963A0 /* LeaveThreadDialog.swift */; };
 		051ED3242B4D75BC00D963A0 /* LeaveThreadDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051ED3222B4D75BC00D963A0 /* LeaveThreadDialog.swift */; };
-		051F26C72ADD0F8F00BF9841 /* SwipyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F26C62ADD0F8F00BF9841 /* SwipyView.swift */; };
 		052191562B2F262300CC99D1 /* MutualThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052191552B2F262300CC99D1 /* MutualThreadRow.swift */; };
 		052191572B2F262300CC99D1 /* MutualThreadRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052191552B2F262300CC99D1 /* MutualThreadRow.swift */; };
 		053803D02B11F879005C8FAB /* DeleteThreadDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */; };
@@ -63,7 +62,6 @@
 		0560C3632AB77B0B009F6A58 /* TabButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */; };
 		0564D5952B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0564D5942B4D16C6003B4322 /* ColorSchemeModifier.swift */; };
 		0564D5962B4D16C6003B4322 /* ColorSchemeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0564D5942B4D16C6003B4322 /* ColorSchemeModifier.swift */; };
-		056A1E7B2AB564DA00B51359 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 056A1E7A2AB564DA00B51359 /* Swipy */; };
 		056ACA4D2B28485800C7E9FF /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 056ACA4C2B28485800C7E9FF /* DSWaveformImage */; };
 		056ACA4F2B286F6000C7E9FF /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 056ACA4E2B286F6000C7E9FF /* DSWaveformImage */; };
 		0570CBDF2AAEE98E001832E9 /* ChatDelegateImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */; };
@@ -292,7 +290,6 @@
 		05C6DA1C2B19F3020049BCDC /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C6DA1A2B19F3020049BCDC /* EditProfileView.swift */; };
 		05CC0B032B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CC0B022B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift */; };
 		05CC0B042B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CC0B022B7DFE30009AFBC4 /* ThreadHistoryShimmerView.swift */; };
-		05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 05D1DB8B2ABC0E2000513DE5 /* Swipy */; };
 		05D1F2DE2B70D421000CE1FB /* DownloadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D1F2DD2B70D421000CE1FB /* DownloadButton.swift */; };
 		05D1F2DF2B70D421000CE1FB /* DownloadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D1F2DD2B70D421000CE1FB /* DownloadButton.swift */; };
 		05D1F2E12B70D461000CE1FB /* UploadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D1F2E02B70D461000CE1FB /* UploadButton.swift */; };
@@ -351,7 +348,6 @@
 		05F70E5B2B31E8D900E0EF92 /* SendContainerOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E592B31E8D900E0EF92 /* SendContainerOverlayView.swift */; };
 		05F70E5D2B31E90700E0EF92 /* ThreadEmptySpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */; };
 		05F70E5E2B31E90700E0EF92 /* ThreadEmptySpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F70E5C2B31E90700E0EF92 /* ThreadEmptySpaceView.swift */; };
-		05F89CC02ADD105500A28EBB /* SwipyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F26C62ADD0F8F00BF9841 /* SwipyView.swift */; };
 		05F9151D2AE637FB008C070B /* ThreadLeadingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */; };
 		05F9151E2AE638AE008C070B /* ThreadLeadingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9151C2AE637FB008C070B /* ThreadLeadingToolbar.swift */; };
 		05F9ECC12ABAD540000C6725 /* AppOverlayFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F9ECC02ABAD540000C6725 /* AppOverlayFactory.swift */; };
@@ -379,7 +375,6 @@
 		050DE2082AB1DD7E00418463 /* MessageReactionDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageReactionDetailView.swift; sourceTree = "<group>"; };
 		0516ACF72AC930C40096E5A2 /* ToolbarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarButtonItem.swift; sourceTree = "<group>"; };
 		051ED3222B4D75BC00D963A0 /* LeaveThreadDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveThreadDialog.swift; sourceTree = "<group>"; };
-		051F26C62ADD0F8F00BF9841 /* SwipyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipyView.swift; sourceTree = "<group>"; };
 		052191552B2F262300CC99D1 /* MutualThreadRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutualThreadRow.swift; sourceTree = "<group>"; };
 		052F46652B21F5B400085C26 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
 		053803CF2B11F879005C8FAB /* DeleteThreadDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteThreadDialog.swift; sourceTree = "<group>"; };
@@ -395,7 +390,6 @@
 		0560C35C2AB77B0B009F6A58 /* TabButtonsContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonsContainer.swift; sourceTree = "<group>"; };
 		0560C35D2AB77B0B009F6A58 /* TabButtonItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabButtonItem.swift; sourceTree = "<group>"; };
 		0564D5942B4D16C6003B4322 /* ColorSchemeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSchemeModifier.swift; sourceTree = "<group>"; };
-		056A1E792AB564BE00B51359 /* Swipy */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipy; path = ../../Swipy; sourceTree = "<group>"; };
 		0570CB172AAEE02A001832E9 /* Talk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Talk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0570CB332AAEE04B001832E9 /* Talk-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Talk-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0570CB632AAEE98C001832E9 /* ChatDelegateImplementation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatDelegateImplementation.swift; sourceTree = "<group>"; };
@@ -563,7 +557,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				056ACA4D2B28485800C7E9FF /* DSWaveformImage in Frameworks */,
-				05D1DB8C2ABC0E2000513DE5 /* Swipy in Frameworks */,
 				0570CCBC2AAEEE78001832E9 /* TalkUI in Frameworks */,
 				0570CCB82AAEEE78001832E9 /* TalkExtensions in Frameworks */,
 				0570CCBE2AAEEE78001832E9 /* TalkViewModels in Frameworks */,
@@ -578,7 +571,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				056ACA4F2B286F6000C7E9FF /* DSWaveformImage in Frameworks */,
-				056A1E7B2AB564DA00B51359 /* Swipy in Frameworks */,
 				0570CCAF2AAEEE22001832E9 /* TalkUI in Frameworks */,
 				0570CCB12AAEEE22001832E9 /* TalkViewModels in Frameworks */,
 				0570CCAD2AAEEE22001832E9 /* TalkModels in Frameworks */,
@@ -832,7 +824,6 @@
 			children = (
 				0570CBA82AAEE98D001832E9 /* SettingsView.swift */,
 				05FE15F02ADA5591009AC44A /* SupportView.swift */,
-				051F26C62ADD0F8F00BF9841 /* SwipyView.swift */,
 				05E869C82AEFA57300F6B200 /* LanguageView.swift */,
 				05745AF22AF2B1B100102193 /* SettingProfileButton.swift */,
 				05E825CC2AF6542B00F3CBB2 /* LogoutDialogView.swift */,
@@ -931,7 +922,6 @@
 		0570CCA32AAEECF5001832E9 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				056A1E792AB564BE00B51359 /* Swipy */,
 				0570CCA82AAEED33001832E9 /* TalkExtensions */,
 				0570CCA62AAEED33001832E9 /* TalkModels */,
 				0570CCA52AAEED33001832E9 /* TalkUI */,
@@ -1070,7 +1060,6 @@
 				0570CCB92AAEEE78001832E9 /* TalkModels */,
 				0570CCBB2AAEEE78001832E9 /* TalkUI */,
 				0570CCBD2AAEEE78001832E9 /* TalkViewModels */,
-				05D1DB8B2ABC0E2000513DE5 /* Swipy */,
 				05DDC8472AEC240D009F9942 /* ActionableContextMenu */,
 				056ACA4C2B28485800C7E9FF /* DSWaveformImage */,
 			);
@@ -1096,7 +1085,6 @@
 				0570CCAC2AAEEE22001832E9 /* TalkModels */,
 				0570CCAE2AAEEE22001832E9 /* TalkUI */,
 				0570CCB02AAEEE22001832E9 /* TalkViewModels */,
-				056A1E7A2AB564DA00B51359 /* Swipy */,
 				05DDC8492AEC2412009F9942 /* ActionableContextMenu */,
 				056ACA4E2B286F6000C7E9FF /* DSWaveformImage */,
 			);
@@ -1351,7 +1339,6 @@
 				05F70E5D2B31E90700E0EF92 /* ThreadEmptySpaceView.swift in Sources */,
 				05DAA42C2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */,
 				0570CC392AAEE98F001832E9 /* TagRow.swift in Sources */,
-				051F26C72ADD0F8F00BF9841 /* SwipyView.swift in Sources */,
 				05B4C1782ACEF1FA00FBC4DC /* NavigationBackButton.swift in Sources */,
 				05EC8A322ACBED930016361F /* ReactionMenuView.swift in Sources */,
 				0570CC752AAEE98F001832E9 /* AssistantView.swift in Sources */,
@@ -1514,7 +1501,6 @@
 				05F70E5E2B31E90700E0EF92 /* ThreadEmptySpaceView.swift in Sources */,
 				05DAA42D2B296C12007427DC /* SelectMessageInsideClickOverlay.swift in Sources */,
 				0570CC702AAEE98F001832E9 /* BlockedAssistantsView.swift in Sources */,
-				05F89CC02ADD105500A28EBB /* SwipyView.swift in Sources */,
 				0570CC3A2AAEE98F001832E9 /* TagRow.swift in Sources */,
 				05EC8A332ACBED930016361F /* ReactionMenuView.swift in Sources */,
 				0570CC762AAEE98F001832E9 /* AssistantView.swift in Sources */,
@@ -1853,10 +1839,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		056A1E7A2AB564DA00B51359 /* Swipy */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Swipy;
-		};
 		056ACA4C2B28485800C7E9FF /* DSWaveformImage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 056ACA4B2B28485800C7E9FF /* XCRemoteSwiftPackageReference "DSWaveformImage" */;
@@ -1898,10 +1880,6 @@
 		0570CCBD2AAEEE78001832E9 /* TalkViewModels */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TalkViewModels;
-		};
-		05D1DB8B2ABC0E2000513DE5 /* Swipy */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Swipy;
 		};
 		05DDC8472AEC240D009F9942 /* ActionableContextMenu */ = {
 			isa = XCSwiftPackageProductDependency;
