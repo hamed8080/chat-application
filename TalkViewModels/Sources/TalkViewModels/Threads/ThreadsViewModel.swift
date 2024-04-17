@@ -537,14 +537,12 @@ public final class ThreadsViewModel: ObservableObject {
     public func onPinMessage(_ response: ChatResponse<PinMessage>) {
         if response.result != nil, let threadIndex = firstIndex(response.subjectId) {
             threads[threadIndex].pinMessage = response.result
-            threads[threadIndex].pin = true
         }
     }
 
     public func onUNPinMessage(_ response: ChatResponse<PinMessage>) {
         if response.result != nil, let threadIndex = firstIndex(response.subjectId) {
             threads[threadIndex].pinMessage = nil
-            threads[threadIndex].pin = false
         }
     }
 

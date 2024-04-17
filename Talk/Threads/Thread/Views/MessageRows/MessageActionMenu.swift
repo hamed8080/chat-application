@@ -12,6 +12,7 @@ import TalkViewModels
 import ActionableContextMenu
 import TalkUI
 import TalkModels
+import Chat
 
 struct MessageActionMenu: View {
     private var message: Message { viewModel.message }
@@ -85,7 +86,7 @@ struct MessageActionMenu: View {
             }
 
             Group {
-                if isImage {
+                if isImage, isImageDownloaded() {
                     ContextMenuButton(title: "Messages.ActionMenu.saveImage", image: "square.and.arrow.down") {
                         onSaveImageTapped()
                     }
@@ -206,6 +207,11 @@ struct MessageActionMenu: View {
                 .foregroundStyle(Color.App.white)
             AppState.shared.objectsContainer.appOverlayVM.toast(leadingView: icon, message: "General.imageSaved", messageColor: Color.App.textPrimary)
         }
+    }
+
+    private func isImageDownloaded() -> Bool {
+        guard let chat = ChatManager.activeInstance, let url = message.url else { return false }
+        return chat.file.isFileExist(url) || chat.file.isFileExistInGroup(url)
     }
 
     private func onClearCacheTapped() {
