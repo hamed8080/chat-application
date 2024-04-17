@@ -170,7 +170,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
         send {
             Task { [weak self] in
                 guard let self = self else { return }
-                let tuple = Message.makeRequest(model: makeModel())
+                let tuple = Message.makeRequest(model: makeModel(), checkLink: true)
                 await self.historyVM?.appendMessagesAndSort([tuple.message])
                 ChatManager.activeInstance?.message.send(tuple.req)
             }
