@@ -63,7 +63,7 @@ public final class ThreadScrollingViewModel: ObservableObject {
 
     public func scrollToBottom(animation: Animation? = .easeInOut) {
         if let messageId = thread.lastMessageVO?.id, let time = thread.lastMessageVO?.time {
-            viewModel?.historyVM.moveToTime(time, messageId, highlight: false)
+            viewModel?.historyVM.moveToTime(time, messageId, highlight: false, moveToBottom: true)
         }
     }
 

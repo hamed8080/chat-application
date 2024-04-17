@@ -165,7 +165,7 @@ public final class ThreadViewModel: ObservableObject, Identifiable, Hashable {
 
     public func moveToFirstUnreadMessage() {
         if let unreadMessage = unreadMentionsViewModel.unreadMentions.first, let time = unreadMessage.time {
-            historyVM.moveToTime(time, unreadMessage.id ?? -1, highlight: true)
+            historyVM.moveToTime(time, unreadMessage.id ?? -1, highlight: true, moveToBottom: true)
             unreadMentionsViewModel.setAsRead(id: unreadMessage.id)
             if unreadMentionsViewModel.unreadMentions.count == 0 {
                 thread.mentioned = false

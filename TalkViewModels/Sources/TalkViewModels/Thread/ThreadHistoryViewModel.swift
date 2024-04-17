@@ -321,11 +321,17 @@ public final class ThreadHistoryViewModel: ObservableObject {
     }
 
     // MARK: Scenario 6
-    public func moveToTime(_ time: UInt, _ messageId: Int, highlight: Bool = true) {
+    public func moveToTime(_ time: UInt, _ messageId: Int, highlight: Bool = true, moveToBottom: Bool = false) {
         Task { [weak self] in
             guard let self = self else { return }
             /// 1- Move to a message locally if it exists.
-            if await moveToMessageLocally(messageId, highlight: highlight) { return }
+            if moveToBottom, !isLastSeenMessageExist() {
+                sections.removeAll()
+            } else if await moveToMessageLocally(messageId, highlight: highlight) {
+                return
+            } else {
+                log("The message id to move to is not exist in the list")
+            }
             shimmerViewModel.show()
             sections.removeAll()
             /// 2- Fetch the top part of the message with the message itself.
@@ -1045,6 +1051,18 @@ public final class ThreadHistoryViewModel: ObservableObject {
         } else {
             return nil
         }
+    }
+
+    public func isLastSeenMessageExist() -> Bool {
+        guard let lastSeenId = thread.lastSeenMessageId else { return false }
+        var isExist = false
+        // we get two bottom to check if it is in today list or previous day
+        for section in sections.suffix(2) {
+            if section.vms.contains(where: {$0.message.id == lastSeenId }) {
+                isExist = true
+            }
+        }
+        return isExist
     }
 
     // MARK: Register Notifications
