@@ -51,10 +51,10 @@ struct ThreadView: View, DropDelegate {
             ThreadEmptySpaceView()
         }
         .overlay(alignment: .top) {
-            ThreadPinMessage(threadVM: viewModel)
-        }
-        .overlay(alignment: .top) {
-            AudioPlayerView(threadVM: viewModel)
+            VStack(spacing: 0) {
+                ThreadPinMessage(threadVM: viewModel)
+                AudioPlayerView(threadVM: viewModel)
+            }
         }
         .overlay(alignment: .bottom) {
             SendContainerOverlayView()
