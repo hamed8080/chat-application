@@ -21,6 +21,16 @@ public extension Date {
     var localTimeOrDate: String? {
         timeOrDate(local: Language.preferredLocale)
     }
+
+    var fileDateString: String {
+        let date = Date()
+        let calendar = Calendar.current
+        let dateCmp = calendar.dateComponents([.year, .month, .day], from: date)
+        let timeCmp = calendar.dateComponents([.hour, .minute], from: date)
+        let dateString = "\(dateCmp.year ?? 0)-\(dateCmp.month ?? 0)-\(dateCmp.day ?? 0)"
+        let time = "\(timeCmp.hour ?? 0)-\(timeCmp.minute ?? 0)"
+        return "\(dateString)-\(time)"
+    }
 }
 
 public extension Int {

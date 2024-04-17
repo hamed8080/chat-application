@@ -49,14 +49,16 @@ struct MainSendButtons: View {
         let item = ImageItem(data: image.jpegData(compressionQuality: 80) ?? Data(),
                              width: Int(image.size.width),
                              height: Int(image.size.height),
-                             originalFilename: "Talk-\(Date().millisecondsSince1970).jpg")
+                             originalFilename: "image-\(Date().fileDateString).jpg")
         threadVM.attachmentsViewModel.addSelectedPhotos(imageItem: item)
         threadVM.animateObjectWillChange()
     }
 
     private func onVideoCapture(_ videoURL: URL?) {
-        guard let videoURL = videoURL else { return }
-        threadVM.attachmentsViewModel.addFileURL(url: videoURL)
+        guard let videoURL = videoURL, let data = try? Data(contentsOf: videoURL) else { return }
+        let fileName = "video-\(Date().fileDateString).mov"
+        let item = ImageItem(id: UUID(), isVideo: true, data: data, width: 0, height: 0, originalFilename: fileName)
+        threadVM.attachmentsViewModel.addSelectedPhotos(imageItem: item)
         threadVM.animateObjectWillChange()
     }
 

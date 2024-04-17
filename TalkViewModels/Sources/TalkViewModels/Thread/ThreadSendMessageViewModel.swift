@@ -215,7 +215,7 @@ public final class ThreadSendMessageViewModel: ObservableObject {
     }
 
     public func sendVideos(_ imageItems: [ImageItem]) {
-        for (index, item) in imageItems.filter({$0.isVideo}).enumerated() {
+        for (index, item) in imageItems.enumerated() {
             let videoMessage = UploadFileWithTextMessage(videoItem: item, videoModel: makeModel(index))
             self.uplVM.append(contentsOf: ([videoMessage]))
         }
