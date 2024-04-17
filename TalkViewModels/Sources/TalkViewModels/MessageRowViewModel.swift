@@ -201,16 +201,21 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
             let originalHeight: CGFloat = imageHeight
             var designerWidth: CGFloat = maxWidth
             var designerHeight: CGFloat = maxWidth
-            let originalRatio: CGFloat = originalWidth / originalHeight
-            let designRatio: CGFloat = designerWidth / designerHeight
+            let originalRatio: CGFloat = max(0, originalWidth / originalHeight) // To escape nan 0/0 is equal to nan
+            let designRatio: CGFloat = max(0, designerWidth / designerHeight) // To escape nan 0/0 is equal to nan
             if originalRatio > designRatio {
-                designerHeight = designerWidth / originalRatio
+                designerHeight = max(0, designerWidth / originalRatio) // To escape nan 0/0 is equal to nan
             } else {
                 designerWidth = designerHeight * originalRatio
             }
             let isSquare = originalRatio >= 1 && originalRatio <= 1.5
             self.imageWidth = isSquare ? designerWidth : designerWidth * 1.5
             self.imageHeight = isSquare ? designerHeight : designerHeight * 1.5
+            // We do this because if we got NAN as a result of 0 / 0 we have to prepare a value other than zero
+            // Because in maxWidth we can not say maxWidth is Equal zero and minWidth is equal 128
+            if self.imageWidth == 0 {
+                self.imageWidth = ThreadViewModel.maxAllowedWidth
+            }
         }
     }
 

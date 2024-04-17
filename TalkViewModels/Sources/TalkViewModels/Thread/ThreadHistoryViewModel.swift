@@ -848,11 +848,6 @@ public final class ThreadHistoryViewModel: ObservableObject {
             tryFifthScenario(status: status)
         }
 
-        if status == .connected {
-            /// Clear old requests in queue when reconnect again
-            RequestsManager.shared.clear()
-        }
-
         /// Fetch the history for the first time if the internet connection is not available.
         if !isSimulated, status == .connected, hasSentHistoryRequest == true, sections.isEmpty {
             startFetchingHistory()

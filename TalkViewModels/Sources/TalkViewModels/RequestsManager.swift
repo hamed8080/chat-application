@@ -9,10 +9,11 @@ import Foundation
 import ChatDTO
 import ChatCore
 import Additive
+import OSLog
 
 class RequestsManager {
     public static let shared = RequestsManager()
-    public var requests: [String: ChatDTO.UniqueIdProtocol] = [:]
+    fileprivate var requests: [String: ChatDTO.UniqueIdProtocol] = [:]
     private var queue = DispatchQueue(label: "RequestQueue")
 
     private init(){}
@@ -42,6 +43,7 @@ class RequestsManager {
     func remove(prepend: String, for key: String) {
         queue.async { [weak self] in
             guard let self = self else { return }
+            log("removing key: \(key) prepend: \(prepend)")
             remove(key: "\(prepend)-\(key)")
         }
     }
@@ -50,6 +52,7 @@ class RequestsManager {
         queue.async { [weak self] in
             guard let self = self else { return }
             if !requests.keys.contains(key) { return }
+            log("removing key: \(key)")
             requests.removeValue(forKey: key)
         }
     }
@@ -58,6 +61,7 @@ class RequestsManager {
         queue.sync {
             let prependedKey = "\(prepend)-\(key)"
             if !requests.keys.contains(prependedKey) { return nil }
+            log("poping prepend: \(prepend) with uniqueId \(key)")
             let value = requests[prependedKey]
             requests.removeValue(forKey: prependedKey)
             return value
@@ -67,6 +71,7 @@ class RequestsManager {
     func pop(for key: String) -> ChatDTO.UniqueIdProtocol? {
         queue.sync {
             if !requests.keys.contains(key) { return nil }
+            log("poping uniqueId \(key)")
             let value = requests[key]
             requests.removeValue(forKey: key)
             return value
@@ -80,6 +85,7 @@ class RequestsManager {
             self?.queue.async {  [weak self] in
                 guard let self = self else { return }
                 if requests.keys.contains(where: { $0 == key}) {
+                    log("addCancelTimer remvove: uniqueId \(key)")
                     remove(key: key)
                     DispatchQueue.main.async {
                         NotificationCenter.onRequestTimer.post(name: .onRequestTimer, object: key)
@@ -103,8 +109,22 @@ class RequestsManager {
 
     func clear() {
         queue.sync {
+            log("remove all requests")
             requests.removeAll()
         }
+    }
+
+    func getAllKeys() -> [String] {
+        queue.sync {
+            Array(requests.keys)
+        }
+    }
+    
+    // MARK: Logs
+    private func log(_ string: String) {
+#if DEBUG
+        Logger.viewModels.info("\(string, privacy: .sensitive)")
+#endif
     }
 }
 
