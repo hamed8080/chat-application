@@ -150,8 +150,8 @@ public extension AppState {
             showThread(thread: thraed)
         }
 
-        if !response.cache, (response.pop(prepend: "SEARCH-P2P") as? ThreadsRequest) != nil {
-            onSearchP2PThreads(thread: response.result?.first)
+        if !response.cache, let req = (response.pop(prepend: "SEARCH-P2P") as? ThreadsRequest) {
+            onSearchP2PThreads(thread: response.result?.first, request: req)
         }
 
         if !response.cache, (response.pop(prepend: "SEARCH-GROUP-THREAD") as? ThreadsRequest) != nil {
@@ -301,12 +301,12 @@ public extension AppState {
         }
     }
 
-    private func onSearchP2PThreads(thread: Conversation?) {
+    private func onSearchP2PThreads(thread: Conversation?, request: ThreadsRequest? = nil) {
         let thread = getRefrenceObject(thread) ?? thread
         if let thread = thread {
             objectsContainer.navVM.append(thread: thread)
         } else {
-            showEmptyThread()
+            showEmptyThread(userName: request?.userName)
         }
     }
 
@@ -329,13 +329,13 @@ public extension AppState {
             .first(where: { $0.group == true && $0.id == tharedId })
     }
 
-    func showEmptyThread() {
+    func showEmptyThread(userName: String? = nil) {
         guard let participant = appStateNavigationModel.userToCreateThread else { return }
         withAnimation {
             let particpants = [participant]
             let conversation = Conversation(id: LocalId.emptyThread.rawValue,
                                             image: participant.image,
-                                            title: participant.name,
+                                            title: participant.name ?? userName,
                                             participants: particpants)
             objectsContainer.navVM.append(thread: conversation)
             isLoading = false

@@ -29,9 +29,6 @@ public extension NSMutableAttributedString {
                     addAttributes(attributedList, range: range)
                 }
             }
-
-
-
         }
     }
 
