@@ -71,6 +71,8 @@
 "General.you" = "You";
 "Genral.mineSendVerb" = "Sent a %@";
 "General.thirdSentVerb" = "sent a %@";
+"General.noDescription" = "No description!";
+"General.noResult" = "There is no result";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -189,7 +191,7 @@
 "Thread.spam" = "Spam";
 "Thread.archive" = "Archive";
 "Thread.unarchive" = "UNArchive";
-"Thread.invite" = "Invite";
+"Thread.invite" = "Add memebers";
 "Thread.switchToPublic" = "Switch to public thread";
 "Thread.selectToStartConversation" = "Select to start a conversation";
 "Thread.newGroup" = "New Group";
@@ -222,10 +224,10 @@
 "Thread.Tabs.mutualgroup" = "Mutual Groups";
 "Thread.Tabs.photos" = "Photos";
 "Thread.Tabs.videos" = "Videos";
-"Thread.Tabs.file" = "File";
-"Thread.Tabs.music" = "Music";
-"Thread.Tabs.voice" = "Voice";
-"Thread.Tabs.link" = "Link";
+"Thread.Tabs.file" = "Files";
+"Thread.Tabs.music" = "Musics";
+"Thread.Tabs.voice" = "Voices";
+"Thread.Tabs.link" = "Links";
 "Thread.accessMicrophonePermission" = "Please go to the settings>Talk and then turned on microphone toggle.";
 "Thread.accessLocaitonPermission" = "Please go to the settings>Talk and then turn on location access.";
 "Thread.Row.lastMessageSender" = "%@:";
@@ -258,7 +260,7 @@
 
 /* Participant */
 "Participant" = "participant";
-"Participant.Search.Type.name" = "Name";
+"Participant.Search.Type.name" = "Name or Family";
 "Participant.Search.Type.username" = "User Name";
 "Participant.Search.Type.cellphoneNumber" = "Mobile";
 "Participant.Search.Type.admin" = "Admin";
@@ -339,6 +341,7 @@
 "Settings.darkModeEnabled" = "Dark Mode";
 
 /* Support */
+"Support.title" = "Talk messenger";
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk was born in 2016. This messenger was produced and developed with the aim of creating deep and constructive communication and understanding organizational and non-organizational needs. It is hoped that according to the current conditions, Tak will take a stronger step every day on the path of sustainable development and creating a safe and fast platform.";
 "Support.number" = "021-91033000 internal 9";
@@ -428,3 +431,6 @@
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "المحادثات غير المقروءة فقط";
+
+/* MapPicker */
+"MapPicker.sendSelectedLocation" = "Send selected location";

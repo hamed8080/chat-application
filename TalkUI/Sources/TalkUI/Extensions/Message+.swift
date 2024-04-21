@@ -3,8 +3,8 @@ import ChatModels
 
 public extension Message {
     static let clockImage = UIImage(named: "clock")
-    static let sentImage = UIImage(named: "single_chekmark")
-    static let seenImage = UIImage(named: "double_checkmark")
+    static let sentImage = UIImage(named: "ic_single_check_mark")
+    static let seenImage = UIImage(named: "ic_double_check_mark")
     static let leadingTail = UIImage(named: "leading_tail")!
     static let trailingTail = UIImage(named: "trailing_tail")!
     static let emptyImage = UIImage(named: "empty_image")!

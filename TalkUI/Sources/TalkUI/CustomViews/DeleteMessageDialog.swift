@@ -56,7 +56,7 @@ public struct DeleteMessageDialog: View {
             }
         }
         .frame(maxWidth: 320)
-        .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+        .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
         .background(MixMaterialBackground())
         .onDisappear {
             viewModel.cleanup()

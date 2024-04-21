@@ -31,6 +31,10 @@ public extension Date {
         let time = "\(timeCmp.hour ?? 0)-\(timeCmp.minute ?? 0)"
         return "\(dateString)-\(time)"
     }
+
+    var onlyLocaleTime: String {
+        getTime(localIdentifire: Language.preferredLocale.identifier)
+    }
 }
 
 public extension Int {

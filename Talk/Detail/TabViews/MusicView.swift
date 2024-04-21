@@ -28,9 +28,13 @@ struct MusicView: View {
                         viewModel.loadMore()
                     }
                 }
-            MessageListMusicView()
-                .padding(.top, 8)
-                .environmentObject(viewModel)
+            if viewModel.isLoading || viewModel.messages.count > 0 {
+                MessageListMusicView()
+                    .padding(.top, 8)
+                    .environmentObject(viewModel)
+            } else {
+                EmptyResultViewInTabs()
+            }
         }
     }
 }

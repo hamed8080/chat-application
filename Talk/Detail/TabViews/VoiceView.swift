@@ -28,9 +28,14 @@ struct VoiceView: View {
                         viewModel.loadMore()
                     }
                 }
-            MessageListVoiceView()
-                .padding(.top, 8)
-                .environmentObject(viewModel)
+
+            if viewModel.isLoading || viewModel.messages.count > 0 {
+                MessageListVoiceView()
+                    .padding(.top, 8)
+                    .environmentObject(viewModel)
+            } else {
+                EmptyResultViewInTabs()
+            }
         }
     }
 }

@@ -32,6 +32,8 @@ public extension NSMutableAttributedString {
         }
     }
 
+    private static let userMentionFont = UIFont(name: "IRANSansX-Bold", size: 14)
+
     func addUserColor(_ color: UIColor = .blue) {
         if let userRegex = NSRegularExpression.userRegEx {
             let allRange = NSRange(string.startIndex..., in: string)
@@ -42,7 +44,8 @@ public extension NSMutableAttributedString {
                     if let link = NSURL(string: "showUser:User?userName=\(sanitizedUserName)") {
                         addAttributes([
                             NSAttributedString.Key.link: link,
-                            NSAttributedString.Key.foregroundColor: color
+                            NSAttributedString.Key.foregroundColor: color,
+                            NSAttributedString.Key.font: NSMutableAttributedString.userMentionFont ?? .systemFont(ofSize: 14, weight: .bold)
                         ], range: range)
                     }
                 }

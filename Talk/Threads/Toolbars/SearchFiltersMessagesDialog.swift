@@ -24,16 +24,6 @@ struct SearchFiltersMessagesDialog: View {
             }
             unreadToggle
             HStack {
-                Button {
-                    withAnimation {
-                        AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-                    }
-                } label: {
-                    Text("General.cancel")
-                        .foregroundStyle(Color.App.textPlaceholder)
-                        .font(.iransansBody)
-                        .frame(minWidth: 48, minHeight: 48)
-                }
 
                 Button {
                     withAnimation {
@@ -45,6 +35,19 @@ struct SearchFiltersMessagesDialog: View {
                         .foregroundStyle(Color.App.accent)
                         .font(.iransansBody)
                         .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
+                }
+
+                Button {
+                    withAnimation {
+                        AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
+                    }
+                } label: {
+                    Text("General.cancel")
+                        .foregroundStyle(Color.App.textPlaceholder)
+                        .font(.iransansBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
                 }
             }
         }

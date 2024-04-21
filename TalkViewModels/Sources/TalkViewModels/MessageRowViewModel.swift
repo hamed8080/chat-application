@@ -330,7 +330,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     private func calculateAddOrRemoveParticipantRow() -> AttributedString? {
         if ![.participantJoin, .participantLeft].contains(message.type) { return nil }
-        let date = Date(milliseconds: Int64(message.time ?? 0)).localFormattedTime ?? ""
+        let date = Date(milliseconds: Int64(message.time ?? 0)).onlyLocaleTime
         return try? AttributedString(markdown: "\(message.addOrRemoveParticipantString(meId: AppState.shared.user?.id) ?? "") \(date)")
     }
 
@@ -351,7 +351,7 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
     private func calculateCallTexts() {
         if ![.endCall, .startCall].contains(message.type) { return }
         let date = Date(milliseconds: Int64(message.time ?? 0))
-        callDateText = date.localFormattedTime ?? ""
+        callDateText = date.onlyLocaleTime
     }
 
     private func setAvatarViewModel() {
@@ -371,14 +371,16 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
 
     private func calculateReplyContainerWidth() async -> CGFloat? {
         guard let replyInfo = message.replyInfo else { return nil }
+
+        let staticReplyTextWidth = replyStaticTextWidth()
         let messageFileText = textForContianerCalculation()
         let textWidth = messageContainerTextWidth()
 
         let senderNameWithIconOrImageInReply = replySenderWidthWithIconOrImage(replyInfo: replyInfo)
-        let maxWidthWithSender = max(textWidth, senderNameWithIconOrImageInReply)
+        let maxWidthWithSender = max(textWidth + staticReplyTextWidth, senderNameWithIconOrImageInReply + staticReplyTextWidth)
 
         if !message.isImage, messageFileText.count < 60 {
-            return max(senderNameWithIconOrImageInReply, maxWidthWithSender)
+            return maxWidthWithSender
         } else if !message.isImage, replyInfo.message?.count ?? 0 < messageFileText.count {
             let maxAllowedWidth = min(maxWidthWithSender, ThreadViewModel.maxAllowedWidth)
             return maxAllowedWidth
@@ -418,6 +420,13 @@ public final class MessageRowViewModel: ObservableObject, Identifiable, Hashable
         let senderFont = UIFont(name: "IRANSansX-Bold", size: 12) ?? .systemFont(ofSize: 12)
         let senderNameWidth = senderNameText.widthOfString(usingFont: senderFont)
         return senderNameWidth
+    }
+
+    private func replyStaticTextWidth() -> CGFloat {
+        let staticText = "Message.replyTo".localized()
+        let font = UIFont(name: "IRANSansX-Bold", size: 12) ?? .systemFont(ofSize: 12)
+        let width = staticText.widthOfString(usingFont: font) + 12
+        return width
     }
 
     private func replySenderWidthWithIconOrImage(replyInfo: ReplyInfo) -> CGFloat {

@@ -31,9 +31,14 @@ struct VideoView: View {
                         viewModel.loadMore()
                     }
                 }
-            MessageListVideoView()
-                .padding(.top, 8)
-                .environmentObject(viewModel)
+
+            if viewModel.isLoading || viewModel.messages.count > 0 {
+                MessageListVideoView()
+                    .padding(.top, 8)
+                    .environmentObject(viewModel)
+            } else {
+                EmptyResultViewInTabs()
+            }
         }
     }
 }

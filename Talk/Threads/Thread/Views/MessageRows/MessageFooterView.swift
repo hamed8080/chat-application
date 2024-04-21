@@ -24,10 +24,11 @@ struct MessageFooterView: View {
     }
 
     var body: some View {
-        HStack {
-            Text(viewModel.timeString)
-                .foregroundColor(Color.App.textPrimary.opacity(0.5))
-                .font(.iransansCaption2)
+        HStack(spacing: 2) {
+
+            if !viewModel.isMe {
+                timeView
+            }
 
             if message.edited == true {
                 Text("Messages.Footer.edited")
@@ -35,12 +36,16 @@ struct MessageFooterView: View {
                     .font(.iransansCaption2)
             }
 
+            if viewModel.isMe {
+                timeView
+            }
+
             if viewModel.isMe, isSelfThreadDelvived {
                 Image(uiImage: message.footerStatus.image)
                     .interpolation(.none)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 12, height: 12)
+                    .frame(width: 16, height: 16)
                     .foregroundColor(message.footerStatus.fgColor)
             }
 
@@ -55,5 +60,12 @@ struct MessageFooterView: View {
         }
         .font(.subheadline)
         .padding(EdgeInsets(top: 4, leading: 6, bottom: 0, trailing: 6)) /// Top 4 for spacing in VStack in TextMessageType
+    }
+
+    private var timeView: some View {
+        Text(viewModel.timeString)
+            .foregroundColor(Color.App.textPrimary.opacity(0.5))
+            .font(.iransansCaption2)
+            .fontWeight(.medium)
     }
 }

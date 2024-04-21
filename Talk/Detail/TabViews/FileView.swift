@@ -30,9 +30,13 @@ struct FileView: View {
                         viewModel.loadMore()
                     }
                 }
-            MessageListFileView()
-                .padding(.top, 8)
-                .environmentObject(viewModel)
+            if viewModel.isLoading || viewModel.messages.count > 0 {
+                MessageListFileView()
+                    .padding(.top, 8)
+                    .environmentObject(viewModel)
+            } else {
+                EmptyResultViewInTabs()
+            }
         }
     }
 }

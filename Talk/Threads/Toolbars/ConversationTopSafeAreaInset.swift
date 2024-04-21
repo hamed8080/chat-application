@@ -52,15 +52,16 @@ struct ConversationTopSafeAreaInset: View {
                 AppState.shared.objectsContainer.threadsVM.showUnreadConversations = false
                 isInSearchMode.toggle()
             } label: {
-                Text("General.cancel")
-                    .padding(.leading)
+                Image(systemName: "xmark")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(12)
                     .font(.iransansBody)
                     .foregroundStyle(Color.App.toolbarButton)
             }
             .buttonStyle(.borderless)
             .frame(minWidth: 0, minHeight: 0, maxHeight: isInSearchMode ? 38 : 0)
             .clipped()
-            .padding(.horizontal, 8)
         } else {
             ToolbarButtonItem(imageName: "magnifyingglass", hint: "Search", padding: 10) {
                 withAnimation {

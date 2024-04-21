@@ -35,6 +35,7 @@ struct NormalLastMessageContainer: View {
     let thread: Conversation
     // It must be here because we need to redraw the view after the thread inside ViewModel has changed.
     @EnvironmentObject var viewModel: ThreadsViewModel
+    private static let pinImage = Image("ic_pin")
 
     var body: some View {
         if let callMessage = callMessage {
@@ -44,12 +45,14 @@ struct NormalLastMessageContainer: View {
             HStack(spacing: 0) {
                 if let addOrRemoveParticipant = addOrRemoveParticipant {
                     Text(addOrRemoveParticipant)
-                        .font(.iransansBody)
+                        .font(.iransansCaption2)
+                        .fontWeight(.medium)
                         .lineLimit(1)
                         .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
                 } else if let participantName = participantName {
                     Text(participantName)
-                        .font(.iransansBody)
+                        .font(.iransansCaption2)
+                        .fontWeight(.medium)
                         .lineLimit(1)
                         .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
                 }
@@ -63,12 +66,14 @@ struct NormalLastMessageContainer: View {
 
                 if let fiftyFirstCharacter = fiftyFirstCharacter {
                     Text(fiftyFirstCharacter)
-                        .font(.iransansBody)
+                        .font(.iransansCaption2)
+                        .fontWeight(.regular)
                         .lineLimit(1)
                         .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)
                 } else if let sentFileString = sentFileString {
                     Text(sentFileString)
                         .font(.iransansCaption2)
+                        .fontWeight(.regular)
                         .lineLimit(thread.group == false ? 2 : 1)
                         .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.textSecondary)
                 }
@@ -77,8 +82,28 @@ struct NormalLastMessageContainer: View {
                     Text(createConversationString)
                         .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.accent)
                         .font(.iransansCaption2)
+                        .fontWeight(.regular)
                 }
                 Spacer()
+
+                if thread.mute == true {
+                    Image(systemName: "bell.slash.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
+                }
+
+
+                if thread.pin == true, hasSpaceToShowPin {
+                    NormalLastMessageContainer.pinImage
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
+                        .padding(.leading, thread.pin == true ? 4 : 0)
+                        .offset(y: -2)
+                }
             }
         }
     }
@@ -87,6 +112,11 @@ struct NormalLastMessageContainer: View {
     private var isCallType: Bool { lastMsgVO?.callHistory != nil }
     private var isMe: Bool { lastMsgVO?.isMe(currentUserId: AppState.shared.user?.id ?? -1) == true }
     private var isFileType: Bool { lastMsgVO?.isFileType == true }
+
+    private var hasSpaceToShowPin: Bool {
+        let allActive = thread.pin == true && thread.mute == true && thread.unreadCount ?? 0 > 0
+        return !allActive
+    }
 
     private var fiftyFirstCharacter: String? {
         if !isFileType, let message = lastMsgVO?.message?.replacingOccurrences(of: "\n", with: " ").prefix(50) {

@@ -71,6 +71,8 @@
 "General.you" = "أنت";
 "Genral.mineSendVerb" = "%@ أرسلت ملفًا";
 "General.thirdSentVerb" = "%@ أرسلت";
+"General.noDescription" = "بدون وصف!";
+"General.noResult" = "لا توجد نتيجة";
 
 /* Tabs */
 "Tab.chats" = "المحادثات";
@@ -336,6 +338,7 @@
 "Settings.darkModeEnabled" = "الوضع الداكن";
 
 /* Support */
+"Support.title" = "Talk messenger";
 "Support.version" = "إصدار: %@";
 "Support.aboutUsText" = "ولد Talk في عام 2016. تم إنتاج وتطوير هذا الرسول بهدف خلق تواصل عميق وبناء وفهم الاحتياجات التنظيمية وغير التنظيمية. ومن المأمول أنه وفقًا للظروف الحالية، سيتخذ تاك خطوة أقوى كل يوم على طريق التنمية المستدامة وإنشاء منصة آمنة وسريعة.";
 "Support.number" = "021-91033000 داخلي 9";
@@ -421,3 +424,6 @@
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "المحادثات غير المقروءة فقط";
+
+/* MapPicker */
+"MapPicker.sendSelectedLocation" = "إرسال الموقع المحدد";

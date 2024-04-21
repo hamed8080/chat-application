@@ -17,12 +17,12 @@
 "General.back" = "برگشت";
 "General.delete" = "حذف";
 "Genreal.deleteConversation" = "حذف گفتگو";
-"General.cancel" = "لغو";
+"General.cancel" = "انصراف";
 "General.showMore" = "نمایش بیشتر";
 "General.showLess" = "نمایش کمتر";
 "General.close" = "بستن";
 "General.send" = "ارسال";
-"General.add" = "اضافه";
+"General.add" = "افزودن";
 "General.select" = "انتخاب";
 "General.typeMessageHere" = "پیام خود را اینجا بنویسید...";
 "General.more" = "بیشتر";
@@ -72,6 +72,8 @@
 "General.you" = "شما";
 "Genral.mineSendVerb" = "%@ فرستادید";
 "General.thirdSentVerb" = "%@ فرستاد";
+"General.noDescription" = "بدون توضیحات!";
+"General.noResult" = "نتیجه ای وجود ندارد";
 
 /* Tabs */
 "Tab.chats" = "گفتگو ها";
@@ -190,7 +192,7 @@
 "Thread.spam" = "اعلام به عنوان مزاحم";
 "Thread.archive" = "آرشیو کردن";
 "Thread.unarchive" = "از آرشیو خارج کردن";
-"Thread.invite" = "دعوت کردن";
+"Thread.invite" = "افزودن اعضا";
 "Thread.switchToPublic" = "تغییر به گروهی";
 "Thread.selectToStartConversation" = "یک گفتگو را انتخاب کنید.";
 "Thread.newGroup" = "گروه جدید";
@@ -221,12 +223,12 @@
 "Thread.enterFastMessageType" = "%@ را اینجا وارد کنید...";
 "Thread.Tabs.members" = "اعضا";
 "Thread.Tabs.mutualgroup" = "گروه های مشترک";
-"Thread.Tabs.photos" = "تصویر";
-"Thread.Tabs.videos" = "ویدیو";
-"Thread.Tabs.file" = "فایل";
-"Thread.Tabs.music" = "موزیک";
-"Thread.Tabs.voice" = "صدا";
-"Thread.Tabs.link" = "لینک";
+"Thread.Tabs.photos" = "تصاویر";
+"Thread.Tabs.videos" = "ویدیوها";
+"Thread.Tabs.file" = "فایل ها";
+"Thread.Tabs.music" = "موزیک ها";
+"Thread.Tabs.voice" = "صدا ها";
+"Thread.Tabs.link" = "لینک ها";
 "Thread.accessMicrophonePermission" = "لطفاً به قسمت تنظیمات و سپس اپلیکیشن تاک مراجعه کنید و سپس میکروفن را روشن کنید.";
 "Thread.accessLocaitonPermission" = "لطفاً به قسمت تنظیمات و سپس اپلیکیشن تاک مراجعه کنید و سپس دسترسی به موقعیت مکانی را فعال کنید.";
 "Thread.Row.lastMessageSender" = "%@:";
@@ -258,9 +260,9 @@
 
 /* Participant */
 "Participant" = "عضو";
-"Participant.Search.Type.name" = "نام";
+"Participant.Search.Type.name" = "نام و نام خانوادگی";
 "Participant.Search.Type.username" = "نام کاربری";
-"Participant.Search.Type.cellphoneNumber" = "شماره تماس";
+"Participant.Search.Type.cellphoneNumber" = "موبایل";
 "Participant.Search.Type.admin" = "مدیر";
 "Participant.admin" = "مدیر";
 "Participant.online" = "آنلاین";
@@ -337,8 +339,9 @@
 "Settings.darkModeEnabled" = "حالت شب";
 
 /* Support */
+"Support.title" = "پیام رسان تاک";
 "Support.version" = "نسخه: %@";
-"Support.aboutUsText" = "تاک، در سال 1396 متولد شد. این پیام رسان با هدف ایجاد ارتباط عمیق و سازنده و درک نیازمندی های سازمانی و غیر سازمانی تولید و توسعه داده شده است. امید است با توجه به شرایط حال حاضر تاک هر روز در مسیر توسعه پایدار و ایجاد بستری امن و سریع قدمی محکمتر بردارد.";
+"Support.aboutUsText" = "تاک، در سال ۱۳۹۶ متولد شد. این پیام رسان با هدف ایجاد ارتباط عمیق و سازنده و درک نیازمندی های سازمانی و غیر سازمانی تولید و توسعه داده شده است. امید است با توجه به شرایط حال حاضر تاک هر روز در مسیر توسعه پایدار و ایجاد بستری امن و سریع قدمی محکمتر بردارد.";
 "Support.number" = "۰۲۱-۹۱۰۳۳۰۰۰ داخلی ۹";
 "Support.callDetail" = "برای تماس با واحد پشتیبانی تاک میتوانید از شماره های زیر جهت برقراری ارتباط با کارشناسان مربوطه استفاده نمایید";
 
@@ -359,7 +362,7 @@
 
 /*  Messages */
 "Messages.deletedMessageReply" = "پیام پاک شده است.";
-"Messages.Footer.edited" = "اصلاح شده";
+"Messages.Footer.edited" = "ویرایش شده";
 "Messages.resend" = "ارسال مجدد";
 "Messages.ActionMenu.reply" = "پاسخ";
 "Messages.ActionMenu.replyPrivately" = "پاسخ خصوصی";
@@ -422,3 +425,6 @@
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "فقط گفتگو های خوانده نشده";
+
+/* MapPicker */
+"MapPicker.sendSelectedLocation" = "ارسال موقعیت انتخاب شده";

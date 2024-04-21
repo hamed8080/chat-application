@@ -26,6 +26,19 @@ struct DeleteParticipantDialog: View {
             HStack {
                 Button {
                     withAnimation {
+                        viewModel.removePartitipant(participant)
+                        AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
+                    }
+                } label: {
+                    Text("General.delete")
+                        .foregroundStyle(Color.App.accent)
+                        .font(.iransansBody)
+                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
+                }
+
+                Button {
+                    withAnimation {
                         AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
                     }
                 } label: {
@@ -33,23 +46,12 @@ struct DeleteParticipantDialog: View {
                         .foregroundStyle(Color.App.textPlaceholder)
                         .font(.iransansBody)
                         .frame(minWidth: 48, minHeight: 48)
-                }
-
-                Button {
-                    withAnimation {
-                        viewModel.removePartitipant(participant)
-                        AppState.shared.objectsContainer.appOverlayVM.dialogView = nil
-                    }
-                } label: {
-                    Text("General.delete")
-                        .foregroundStyle(Color.App.red)
-                        .font(.iransansBody)
-                        .frame(minWidth: 48, minHeight: 48)
+                        .fontWeight(.medium)
                 }
             }
         }
         .frame(maxWidth: 320)
-        .padding(EdgeInsets(top: 16, leading: 16, bottom: 6, trailing: 16))
+        .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
         .background(MixMaterialBackground())
     }
 

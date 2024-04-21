@@ -54,10 +54,12 @@ struct ReplyInfoMessageRow: View {
                     ReplyImageIcon(viewModel: viewModel)
                     ReplyFileIcon()
                     VStack(alignment: .leading, spacing: 2) {
-                        if let name = message.replyInfo?.participant?.name {
-                            Text("\(name)")
-                                .font(.iransansBoldCaption2)
-                                .foregroundStyle(Color.App.accent)
+                        HStack(spacing: 2) {
+                            if viewModel.isMe {
+                                isMeHeaderParticipantNameView
+                            } else {
+                                partnerHeaderParticipantName
+                            }
                         }
 
                         if let hinTextMessage = viewModel.localizedReplyFileName, !hinTextMessage.isEmpty {
@@ -106,6 +108,30 @@ struct ReplyInfoMessageRow: View {
                 )
             }
         }
+    }
+
+    @ViewBuilder
+    private var isMeHeaderParticipantNameView: some View {
+        Text(verbatim: "\(String(localized: .init("Message.replyTo"))):")
+            .font(.iransansBoldCaption2)
+            .foregroundStyle(Color.App.accent)
+        if let name = message.replyInfo?.participant?.name {
+            Text("\(name)")
+                .font(.iransansBoldCaption2)
+                .foregroundStyle(Color.App.accent)
+        }
+    }
+
+    @ViewBuilder
+    private var partnerHeaderParticipantName: some View {
+        if let name = message.replyInfo?.participant?.name {
+            Text("\(name)")
+                .font(.iransansBoldCaption2)
+                .foregroundStyle(Color.App.accent)
+        }
+        Text(verbatim: "\(String(localized: .init("Message.replyTo"))):")
+            .font(.iransansBoldCaption2)
+            .foregroundStyle(Color.App.accent)
     }
 }
 

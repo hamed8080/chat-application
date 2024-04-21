@@ -26,16 +26,25 @@ struct PictureView: View {
 
     var body: some View {
         StickyHeaderSection(header: "", height:  4)
-        LazyVGrid(columns: columns, alignment: .leading, spacing: spacing) {
-            if viewWidth != 0 {
-                MessageListPictureView(itemWidth: abs(itemWidth))
+        if viewModel.isLoading || viewModel.messages.count > 0 {
+            LazyVGrid(columns: columns, alignment: .leading, spacing: spacing) {
+                if viewWidth != 0 {
+                    MessageListPictureView(itemWidth: abs(itemWidth))
+                }
             }
-        }
-        .padding(padding)
-        .environmentObject(viewModel)
-        .background(frameReader)
-        .onAppear {
-            onLoad()
+            .padding(padding)
+            .environmentObject(viewModel)
+            .background(frameReader)
+            .onAppear {
+                onLoad()
+            }
+        } else {
+            HStack {
+                Spacer()
+                EmptyResultViewInTabs()
+                    .padding(.top, 9)
+                Spacer()
+            }
         }
     }
 

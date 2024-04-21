@@ -22,7 +22,7 @@ struct ThreadRow: View {
     let onTap: (() -> Void)?
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             SelectedThreadBar(thread: thread, isSelected: isSelected)
             ThreadImageView(thread: thread, threadsVM: viewModel)
             VStack(alignment: .leading, spacing: 6) {
@@ -45,23 +45,10 @@ struct ThreadRow: View {
                     Text(thread.titleRTLString)
                         .lineLimit(1)
                         .font(.iransansSubheadline)
-                        .fontWeight(.semibold)
-                    if thread.mute == true {
-                        Image(systemName: "speaker.slash.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 12, height: 12)
-                            .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
-                    }
+                        .fontWeight(.semibold)                    
                     Spacer()
-                    if thread.pin == true {
-                        Image(systemName: "pin.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 16, height: 16)
-                            .foregroundStyle(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
-                    }
-
+                    MutableMessageStatusView(isSelected: isSelected)
+                        .environmentObject(thread)
                     ThreadTimeText(thread: thread, isSelected: isSelected)
                 }
                 HStack {
@@ -225,6 +212,7 @@ struct ThreadTimeText: View {
                 Text(timeString)
                     .lineLimit(1)
                     .font(.iransansCaption2)
+                    .fontWeight(.medium)
                     .foregroundColor(isSelected ? Color.App.textPrimary : Color.App.iconSecondary)
             }
         }

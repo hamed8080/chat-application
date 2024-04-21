@@ -71,6 +71,8 @@
 "General.you" = "Du";
 "Genral.mineSendVerb" = "Du skickade en %@";
 "General.thirdSentVerb" = "%@ har skickats";
+"General.noDescription" = "Ingen beskrivning!";
+"General.noResult" = "Det finns inget resultat";
 
 /* Tabs */
 "Tab.chats" = "Chattar";
@@ -336,6 +338,7 @@
 "Settings.darkModeEnabled" = "Mörkt läge";
 
 /* Support */
+"Support.title" = "Talk messenger";
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk föddes 2016. Denna budbärare producerades och utvecklades med syftet att skapa djup och konstruktiv kommunikation och förstå organisatoriska och icke-organisatoriska behov. Förhoppningen är att Tak, enligt rådande förutsättningar, varje dag tar ett starkare steg på vägen mot hållbar utveckling och att skapa en säker och snabb plattform.";
 "Support.number" = "021-91033000 intern 9";
@@ -421,3 +424,6 @@
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "Endast olästa konversationer";
+
+/* MapPicker */
+"MapPicker.sendSelectedLocation" = "Skicka vald plats";

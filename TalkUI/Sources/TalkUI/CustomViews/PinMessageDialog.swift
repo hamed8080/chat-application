@@ -55,11 +55,12 @@ public struct PinMessageDialog: View {
                     Text("General.cancel")
                         .foregroundStyle(Color.App.textPlaceholder)
                         .font(.iransansBoldBody)
+                        .fontWeight(.medium)
                 }
             }
         }
         .frame(maxWidth: 320)
-        .padding(EdgeInsets(top: 6, leading: 16, bottom: 16, trailing: 16))
+        .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
         .background(MixMaterialBackground())
     }
 }

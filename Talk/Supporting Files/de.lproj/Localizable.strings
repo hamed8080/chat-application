@@ -72,6 +72,8 @@
 "General.you" = "Du";
 "Genral.mineSendVerb" = "%@ abgeschickt";
 "General.thirdSentVerb" = "Sie haben eine %@ gesendet";
+"General.noDescription" = "Keine Beschreibung!";
+"General.noResult" = "Es gibt kein Ergebnis";
 
 /* Tabs */
 "Tab.chats" = "Chats";
@@ -337,6 +339,7 @@
 "Settings.darkModeEnabled" = "Dunkler Modus";
 
 /* Support */
+"Support.title" = "Talk messenger";
 "Support.version" = "Version: %@";
 "Support.aboutUsText" = "Talk wurde 2016 geboren. Dieser Messenger wurde mit dem Ziel produziert und entwickelt, eine tiefe und konstruktive Kommunikation zu schaffen und organisatorische und nicht-organisatorische Bedürfnisse zu verstehen. Es besteht die Hoffnung, dass Tak unter den aktuellen Bedingungen jeden Tag einen größeren Schritt auf dem Weg der nachhaltigen Entwicklung und der Schaffung einer sicheren und schnellen Plattform machen wird.";
 "Support.number" = "021-91033000 intern 9";
@@ -422,3 +425,6 @@
 
 /* Filters */
 "Filters.onlyUnreadConversations" = "Nur ungelesene Gespräche";
+
+/* MapPicker */
+"MapPicker.sendSelectedLocation" = "Ausgewählten Standort senden";

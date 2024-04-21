@@ -22,8 +22,6 @@ struct SecondaryMessageView: View {
         HStack {
             if draft.isEmpty {
                 ThreadLastMessageView(isSelected: isSelected, thread: thread)
-                MutableMessageStatusView(isSelected: isSelected)
-                    .environmentObject(thread)
             } else {
                 DraftView(draft: draft)
             }
@@ -51,9 +49,11 @@ struct MutableMessageStatusView: View {
         if let lastMessageSentStatus = thread.messageStatusIcon(currentUserId: AppState.shared.user?.id) {
             Image(uiImage: lastMessageSentStatus.icon)
                 .resizable()
-                .frame(width: 14, height: 14)
+                .scaledToFit()
+                .frame(width: 22, height: 22)
                 .foregroundColor(isSelected ? Color.App.white : lastMessageSentStatus.fgColor)
                 .font(.subheadline)
+                .offset(y: -2)
         }
     }
 }

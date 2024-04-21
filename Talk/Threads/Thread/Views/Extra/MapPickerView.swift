@@ -28,7 +28,7 @@ struct MapPickerView: View {
                 }
             VStack {
                 Spacer()
-                SubmitBottomButton(text: "General.add") {
+                SubmitBottomButton(text: "MapPicker.sendSelectedLocation") {
                     if let location = locationManager.currentLocation {
                         viewModel.attachmentsViewModel.append(attachments: [.init(type: .map, request: location)])
                     }

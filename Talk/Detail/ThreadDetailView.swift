@@ -70,9 +70,9 @@ struct ThreadDetailView: View {
             //            .init(title: "Thread.Tabs.mutualgroup", view: AnyView(MutualThreadsView().ignoresSafeArea(.all))),
             .init(title: "Thread.Tabs.photos", view: AnyView(PictureView(conversation: thread, messageType: .podSpacePicture))),
             .init(title: "Thread.Tabs.videos", view: AnyView(VideoView(conversation: thread, messageType: .podSpaceVideo))),
-            .init(title: "Thread.Tabs.file", view: AnyView(FileView(conversation: thread, messageType: .podSpaceFile))),
             .init(title: "Thread.Tabs.music", view: AnyView(MusicView(conversation: thread, messageType: .podSpaceSound))),
             .init(title: "Thread.Tabs.voice", view: AnyView(VoiceView(conversation: thread, messageType: .podSpaceVoice))),
+            .init(title: "Thread.Tabs.file", view: AnyView(FileView(conversation: thread, messageType: .podSpaceFile))),
             .init(title: "Thread.Tabs.link", view: AnyView(LinkView(conversation: thread, messageType: .link)))
         ]
         if thread.group == false || thread.group == nil {
@@ -161,7 +161,7 @@ struct TarilingEditConversation: View {
                         .navigationBarBackButtonHidden(true)
                 }
             } label: {
-                Image(systemName: "pencil")
+                Image("ic_edit")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
@@ -188,7 +188,7 @@ struct EditContactTrailingButton: View {
                     .background(Color.App.bgSecondary)
                     .navigationBarBackButtonHidden(true)
             } label: {
-                Image(systemName: "pencil")
+                Image("ic_edit")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
@@ -394,9 +394,8 @@ struct ThreadDescription: View {
     @EnvironmentObject var viewModel: ThreadDetailViewModel
 
     var body: some View {
-        if let description = viewModel.thread?.description.validateString {
-            InfoRowItem(key: "General.description", value: description, lineLimit: nil)
-        }
+        let description = viewModel.thread?.description.validateString ?? "General.noDescription".localized()
+        InfoRowItem(key: "General.description", value: description, lineLimit: nil)
     }
 }
 
