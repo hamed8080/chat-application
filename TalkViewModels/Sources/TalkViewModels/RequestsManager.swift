@@ -11,7 +11,7 @@ import ChatCore
 import Additive
 import OSLog
 
-class RequestsManager {
+public class RequestsManager {
     public static let shared = RequestsManager()
     fileprivate var requests: [String: ChatDTO.UniqueIdProtocol] = [:]
     private var queue = DispatchQueue(label: "RequestQueue")
@@ -107,7 +107,7 @@ class RequestsManager {
         }
     }
 
-    func clear() {
+    public func clear() {
         queue.sync {
             log("remove all requests")
             requests.removeAll()

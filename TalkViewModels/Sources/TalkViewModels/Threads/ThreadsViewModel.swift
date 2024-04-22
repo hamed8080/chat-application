@@ -91,11 +91,6 @@ public final class ThreadsViewModel: ObservableObject {
     }
 
     public func onConnectionStatusChanged(_ status: Published<ConnectionStatus>.Publisher.Output) {
-        if status == .connected {
-            /// Clear old requests in queue when reconnect again
-            RequestsManager.shared.clear()
-        }
-
         if firstSuccessResponse == false, status == .connected {
            refresh()
         } else if status == .connected, firstSuccessResponse == true {

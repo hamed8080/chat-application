@@ -48,6 +48,8 @@ final class ChatDelegateImplementation: ChatDelegate {
                     self.log("🟡 Async ready")
                 case .chatReady:
                     self.log("🟢 chat ready Called\(String(describing: currentUser))")
+                    /// Clear old requests in queue when reconnect again
+                    RequestsManager.shared.clear()
                     AppState.shared.connectionStatus = .connected
                 case .uninitialized:
                     self.log("Chat object is not initialized.")
