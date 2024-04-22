@@ -130,7 +130,9 @@ public final class ObjectsContainer: ObservableObject {
         // We wait for the cache to fill its properties, due to forceToDownloadFromServer having set to false,
         // we have to wait for init and then the cache is not nil and can find the file
         Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
-            self?.userProfileImageVM.fetch()
+            if user != nil {
+                self?.userProfileImageVM.fetch()
+            }
         }
     }
 }
